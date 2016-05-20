@@ -1,0 +1,86 @@
+/*!
+ * Custom Bootstrap Properties for Saperstone Studios
+ */
+ 
+/* Overall Styles */
+a {
+    color: #980f7f;
+}
+a:hover,a:focus {
+	color: #980f7f;
+}
+
+/* Nav Styles */
+.navbar-inverse {
+	background-color: white;
+    border-top: 10px #980f7f solid;
+    border-bottom: 10px #980f7f solid;
+    margin-bottom: 10px;
+}
+.navbar-inverse:after {
+	position: absolute;
+	display: block;
+	content: '';
+	border-bottom: 5px #980f7f solid;
+	height: 20px;
+	width: 100%;
+	box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+.navbar-inverse .navbar-toggle .icon-bar {
+	background-color: #980f7f;
+}
+
+   .nav-logo-link {
+    position: absolute;
+   }
+.nav-logo {
+    position: relative;
+    height: 100px;
+    top: -20px;
+    background-color: #eaeaea;
+    z-index: 99;
+}
+#nav-logo-link:after {
+    content: '';
+    float: left;
+    background: transparent;
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 20px 100px 0 0;
+    border-color: #eaeaea transparent transparent transparent;
+    top: -21px;
+    position: relative;
+    -moz-transform: scale(.9999);
+}
+#nav-logo-link-2 {
+    height: 100px;
+    width: 230px;
+    top: -10px;
+}
+#nav-logo-link-2:after {
+    content: '';
+    float: right;
+    background: transparent;
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 0 100px 20px 0;
+    border-color: transparent #eaeaea transparent transparent;
+    top: -11px;
+    position: relative;
+    -moz-transform: scale(.9999);
+}
+@media (max-width: 768px) {
+	.page-content {
+	    padding-top: 45px;
+	}
+}
+
+/* Footer Styles */
+
+footer {
+    margin: 15px 0;
+}
