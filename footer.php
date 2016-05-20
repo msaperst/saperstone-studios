@@ -1,3 +1,5 @@
+<hr>
+
 <!-- Footer -->
 <footer>
 	<div class="row">
@@ -10,22 +12,24 @@
 		</div>
 		<div class="col-md-4 text-center">
 			<ul class="list-inline social-buttons">
-				<li><a target="_blank" href="https://www.facebook.com/SaperstoneStudios"><i
+				<li><a target="_blank"
+					href="https://www.facebook.com/SaperstoneStudios"><i
 						class="fa fa-facebook"></i></a></li>
 				<li><a target="_blank" href="http://instagram.com/lasaperstone"><i
 						class="fa fa-instagram"></i></a></li>
 				<li><a target="_blank" href="https://twitter.com/LaSaperstone"><i
 						class="fa fa-twitter"></i></a></li>
-				<li><a target="_blank" href="https://saperstonestudios.com/Blog/blogFeed.xml"><i
+				<li><a target="_blank"
+					href="https://saperstonestudios.com/Blog/blogFeed.xml"><i
 						class="fa fa-rss"></i></a></li>
-				<li><a target="_blank" href="https://plus.google.com/+SaperstoneStudios"><i
+				<li><a target="_blank"
+					href="https://plus.google.com/+SaperstoneStudios"><i
 						class="fa fa-google-plus"></i></a></li>
 			</ul>
 		</div>
 		<div class="col-md-4 text-right">
 			<ul class="list-inline quicklinks">
-				<li><a href="/Privacy-Policy.php">Privacy Policy</a>
-				</li>
+				<li><a href="/Privacy-Policy.php">Privacy Policy</a></li>
 				<li><a href="/Terms-of-Use.php">Terms of Use</a></li>
 			</ul>
 		</div>
@@ -36,3 +40,19 @@
 		</div>
 	</div>
 </footer>
+
+<!-- jQuery -->
+<script src="js/jquery.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="js/nav.js"></script>
+
+<!-- Script to Activate the Carousel -->
+<script>
+    $('.carousel').carousel({
+        interval: 5000 //changes the speed
+    })
+    </script>
