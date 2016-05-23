@@ -44,7 +44,12 @@ Gallery.prototype.loadImages = function() {
                     // our view link
                     var link = $('<a>');
                     link.addClass('info no-border');
-                    link.attr('href','#');
+                    link.attr('href','javascript:void(0);');
+                    link.attr('data-toggle','modal');
+                    link.attr('data-target','#'+Gallery.gallery);
+                    link.on('click', function() {
+                        $('#'+Gallery.gallery).carousel(parseInt( v.sequence));
+                    });
                     // add our image icon
                     var view = $('<i>');
                     view.addClass('fa fa-search fa-2x');
