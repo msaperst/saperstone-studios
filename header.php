@@ -6,6 +6,11 @@ session_set_cookie_params(2*7*24*60*60);
 // Making the cookie live for 2 weeks
 
 session_start();
+// Start our session
+
+$nav = "main";
+// Define our default menu
+
 ?>
 
 <meta charset="utf-8">

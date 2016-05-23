@@ -9,7 +9,7 @@
 
 <body>
 
-    <?php require "nav-main.php"; ?>
+    <?php require "nav.php"; ?>
 
     <!-- Page Content -->
     <div class="container">
