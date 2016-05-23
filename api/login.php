@@ -57,7 +57,7 @@ if ($_POST ['submit'] == 'Login') {
             mysqli_query ( $db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
             // Update last login in DB
         } else
-            $err [] = 'Wrong username and/or password!';
+            $err [] = 'Credentials do not match our records!';
     }
     
     if ($err) {

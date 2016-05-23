@@ -133,7 +133,7 @@ header.carousel {
 	position: relative;
 }
 
-.loginmodal-container input[type=text], input[type=password] {
+.loginmodal-container input[type=text], input[type=password], input[type=email] {
 	height: 44px;
 	font-size: 16px;
 	width: 100%;
@@ -147,7 +147,7 @@ header.carousel {
 	-moz-box-sizing: border-box;
 }
 
-.loginmodal-container input[type=text]:hover, input[type=password]:hover
+.loginmodal-container input[type=text]:hover, input[type=password]:hover, input[type=email]:hover
 	{
 	border: 1px solid #b9b9b9;
 	border-top: 1px solid #a0a0a0;
@@ -199,11 +199,11 @@ header.carousel {
 .loginmodal-container span {
 	float: right;
 }
-#login-error {
+.error {
 	color: red;
 	font-weight: bold;
 }
-#login-message {
+.success {
 	color: green;
 	font-weight: bold;
 }

@@ -2,7 +2,7 @@
 		<div class="collapse navbar-collapse"
 			id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="index.php">Home</a></li>
+<!-- 				<li><a href="index.php">Home</a></li> -->
 				<li class="dropdown"><a href="javascript:void(0);"
 					class="dropdown-toggle" data-toggle="dropdown">Details<b
 						class="caret"></b></a>

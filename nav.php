@@ -70,13 +70,30 @@
     		<h2>Login to Your Account</h2><br>
     		<input id="login-user" type="text" name="user" placeholder="Username" />
     		<input id="login-pass" type="password" name="pass" placeholder="Password" />
-    		<div id="login-error"></div>
-    		<div id="login-message"></div>
+    		<div id="login-error" class="error"></div>
+    		<div id="login-message" class="success"></div>
     		<button id="login-submit" type="submit" class="btn btn-primary">Login</button>
     		<span>Remember Me <input id="login-remember" type="checkbox" name="remember" /></span>
     	    <div class="login-help">
-    		    <a href="#">Register</a> - <a href="#">Forgot Password</a>
+    		    <a href="#">Register</a> - <a id="login-forgot-password" href="javascript:void(0);">Forgot Username/Password</a>
     	    </div>
+    	</div>
+    </div>
+</div>
+
+<div class="modal fade" id="forgot-password-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+    	<div class="loginmodal-container">
+    		<h2>Forgotten Credentials</h2><br>
+    		<input id="forgot-password-email" type="email" name="email" placeholder="Email" />
+    		<div id="forgot-password-instructions">A reset code will be sent to your email address. If you already have one, <a id="forgot-password-prev-code" href="javascript:void(0);">click here</a></div>
+    		<div id="forgot-password-error" class="error"></div>
+    		<div id="forgot-password-message" class="success"></div>
+    		<input id="forgot-password-code" type="text" name="code" placeholder="Reset Code" style="display:none;" />
+    		<input id="forgot-password-new-password" type="password" name="pass" placeholder="Password" style="display:none;" />
+    		<input id="forgot-password-new-password-confirm" type="password" name="pass-conf" placeholder="Re-type Password" style="display:none;" />
+    		<button id="forgot-password-submit" type="submit" class="btn btn-primary">Send Code</button>
+    		<button id="forgot-password-reset-password" type="submit" class="btn btn-primary" style="display:none;">Reset Password</button>
     	</div>
     </div>
 </div>
