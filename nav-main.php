@@ -6,7 +6,6 @@
 					class="dropdown-toggle" data-toggle="dropdown">Portraits<b
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="/portrait/home.php">Home</a></li>
 						<li><a href="#">Details</a></li>
 						<li><a href="/portrait/gallery.php">Gallery</a></li>
 						<li><a href="#">Retouch</a></li>

@@ -4,6 +4,7 @@
 <head>
 
 	<?php require "header.php"; ?>
+	<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
 
@@ -19,23 +20,35 @@
 			<div class="col-lg-12">
 				<h2 class="page-header text-center">Photography Services</h2>
 			</div>
-			<div class="col-md-4 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/700x450" alt="">
-				</a>
+			<div class="col-md-4 col-sm-6 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/700x450"
+						alt="">
+					<div class="overlay">
+						<h2>Portraits</h2>
+						<a class="info" href="/portrait/index.php">See More</a>
+					</div>
+				</div>
 			</div>
-			<div class="col-md-4 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/700x450" alt="">
-				</a>
+			<div class="col-md-4 col-sm-6 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/700x450"
+						alt="">
+					<div class="overlay">
+						<h2>Weddings</h2>
+						<a class="info" href="#">See More</a>
+					</div>
+				</div>
 			</div>
-			<div class="col-md-4 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/700x450" alt="">
-				</a>
+			<div class="col-md-4 col-sm-6 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/700x450"
+						alt="">
+					<div class="overlay">
+						<h2>Commercial</h2>
+						<a class="info" href="#">See More</a>
+					</div>
+				</div>
 			</div>
 		</div>
 		<!-- /.row -->

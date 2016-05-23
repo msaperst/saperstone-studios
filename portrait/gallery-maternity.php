@@ -33,7 +33,7 @@
 				<h1 class="page-header text-center">Maternity Gallery</h1>
 				<ol class="breadcrumb">
 					<li><a href="/">Home</a></li>
-					<li><a href="home.php">Portraits</a></li>
+					<li><a href="index.php">Portraits</a></li>
 					<li><a href="gallery.php">Gallery</a></li>
 					<li class="active">Maternity</li>
 				</ol>
