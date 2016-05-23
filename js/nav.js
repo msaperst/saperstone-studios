@@ -3,7 +3,7 @@ $(function() {
             $('#nav-search-input').parent().parent().width() - 50);
 
     $('#login-submit').click(function(){
-        $.post("api/login.php", {
+        $.post("/api/login.php", {
             username : $('#login-user').val(),
             password : $('#login-pass').val(),
             rememberMe : $('#login-remember').is(':checked') ? 1 : 0,
@@ -18,7 +18,7 @@ $(function() {
     });
     
     $('#logout-button').click(function() {
-        $.post("api/login.php", {
+        $.post("/api/login.php", {
             submit : "Logout"
         }).done(function(data) {
             location.reload();

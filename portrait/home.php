@@ -3,7 +3,8 @@
 
 <head>
 
-	<?php require "header.php"; ?>
+	<?php require "../header.php"; ?>
+	<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
 
@@ -11,11 +12,11 @@
 
     <?php
     $nav = "portrait";
-    require "nav.php";
+    require "../nav.php";
     
     // get our gallery images
-    require "php/sql.php";
-    $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait';";
+    require "../php/sql.php";
+    $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-home';";
     $result = mysqli_query($db, $sql);
     $images = array();
     while($row = mysqli_fetch_assoc($result)) {
@@ -108,58 +109,70 @@
     
 		<!-- Portrait Services Section -->
 		<div class="row">
-			<div class="col-md-6 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/700x450" alt="">
-				</a>
+			<div class="col-md-6 col-sm-6 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/700x450"
+						alt="">
+					<div class="overlay">
+						<h2>Details</h2>
+						<a class="info" href="#">See More</a>
+					</div>
+				</div>
 			</div>
-			<div class="col-md-6 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/700x450" alt="">
-				</a>
+			<div class="col-md-6 col-sm-6 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/700x450"
+						alt="">
+					<div class="overlay">
+						<h2>Gallery</h2>
+						<a class="info" href="gallery.php">See More</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-12 col-sm-12 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/1200x250"
+						alt="">
+					<div class="overlay">
+						<h2>Retouch</h2>
+						<a class="info" href="#">See More</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/700x450"
+						alt="">
+					<div class="overlay">
+						<h2>About</h2>
+						<a class="info" href="#">See More</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/700x450"
+						alt="">
+					<div class="overlay">
+						<h2>Reviews</h2>
+						<a class="info" href="#">See More</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-12 col-sm-12 col-xs-12">
+				<div class="hovereffect img-portfolio">
+					<img class="img-responsive" src="http://placehold.it/1200x650"
+						alt="">
+					<div class="overlay">
+						<h2>Blog</h2>
+						<a class="info" href="#">See More</a>
+					</div>
+				</div>
 			</div>
 		</div>
 		<!-- /.row -->
 
-		<div class="row">
-			<div class="col-md-12 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/1200x250" alt="">
-				</a>
-			</div>
-		</div>
-		<!-- /.row -->
-
-		<div class="row">
-			<div class="col-md-6 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/700x350" alt="">
-				</a>
-			</div>
-			<div class="col-md-6 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/700x350" alt="">
-				</a>
-			</div>
-		</div>
-		<!-- /.row -->
-
-		<div class="row">
-			<div class="col-md-12 col-sm-6">
-				<a href="portfolio-item.html"> <img
-					class="img-responsive img-portfolio img-hover"
-					src="http://placehold.it/1200x950" alt="">
-				</a>
-			</div>
-		</div>
-		<!-- /.row -->
-
-        <?php require "footer.php"; ?>
+        <?php require "../footer.php"; ?>
 
     </div>
 	<!-- /.container -->

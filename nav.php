@@ -10,9 +10,9 @@
 					class="icon-bar"></span>
 			</button>
 			<a id="nav-logo-link" class="nav-logo-link navbar-brand" href="/"><img
-				class="nav-logo" id="nav-logo" src="img/2014websitelogo250px.png"></a>
+				class="nav-logo" id="nav-logo" src="/img/2014websitelogo250px.png"></a>
 			<a id="nav-logo-link-2" class="nav-logo-link navbar-brand" href="/"><img
-				class="nav-logo" id="nav-logo-2" src="img/2014websitelogo250px.png"></a>
+				class="nav-logo" id="nav-logo-2" src="/img/2014websitelogo250px.png"></a>
 		</div>
 		<!-- Collect the nav links, forms, and other content for toggling -->
 		

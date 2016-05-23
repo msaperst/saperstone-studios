@@ -6,9 +6,9 @@
 					class="dropdown-toggle" data-toggle="dropdown">Portraits<b
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="/portrait-home.php">Home</a></li>
+						<li><a href="/portrait/home.php">Home</a></li>
 						<li><a href="#">Details</a></li>
-						<li><a href="/portrait-gallery.php">Gallery</a></li>
+						<li><a href="/portrait/gallery.php">Gallery</a></li>
 						<li><a href="#">Retouch</a></li>
 					</ul></li>
 				<li class="dropdown"><a href="javascript:void(0);"
@@ -32,15 +32,6 @@
 						<li><a href="portfolio-item.html">Single Portfolio Item</a></li>
 					</ul></li>
 				<li class="dropdown"><a href="javascript:void(0);"
-					class="dropdown-toggle" data-toggle="dropdown">Information<b
-						class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li><a href="/about.html">About</a></li>
-        				<li><a href="/services.html">Services</a></li>
-        				<li><a href="/services.html">Reviews</a></li>
-        				<li><a href="/contact.php">Contact</a></li>
-					</ul></li>
-				<li class="dropdown"><a href="javascript:void(0);"
 					class="dropdown-toggle" data-toggle="dropdown">Blog<b
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
@@ -48,4 +39,13 @@
 						<li><a href="#">Most Popular</a></li>
 						<li><a href="#">Categories</a></li>
 						<li><input id="nav-search-input"/> <i id="nav-search-icon" class="fa fa-search"></i></li>
+					</ul></li>
+				<li class="dropdown"><a href="javascript:void(0);"
+					class="dropdown-toggle" data-toggle="dropdown">Information<b
+						class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li><a href="/about.html">About</a></li>
+        				<li><a href="/services.html">Services</a></li>
+        				<li><a href="/services.html">Reviews</a></li>
+        				<li><a href="/contact.php">Contact</a></li>
 					</ul></li>
