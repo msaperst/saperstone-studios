@@ -57,21 +57,6 @@
     </div>
 	<!-- /.container -->
 
-	<!-- Gallery JavaScript -->
-	<script src="/js/gallery.js"></script>
-
-	<!-- Script to Activate the Gallery -->
-	<script>
-		var gallery = new Gallery( "gallery-maternity", 4, <?php echo count($images); ?> );
-		
- 		var loaded = 0;
-        $(document).scroll(function(){
-            if( $('footer').isOnScreen() && loaded < <?php echo count($images); ?> ) {
-                loaded = gallery.loadImages();
-            }
-        });
-    </script>
-
 	<!-- Slideshow Modal -->
 	<div id="gallery-maternity" class="modal fade" role="dialog">
 		<div class="modal-dialog modal-lg">
@@ -134,7 +119,22 @@
 
 		</div>
 	</div>
+    <!-- End of Modal -->
+    
+    <!-- Gallery JavaScript -->
+	<script src="/js/gallery.js"></script>
 
+	<!-- Script to Activate the Gallery -->
+	<script>
+		var gallery = new Gallery( "gallery-maternity", 4, <?php echo count($images); ?> );
+		
+ 		var loaded = 0;
+        $(window,document).on("scroll resize", function(){
+            if( $('footer').isOnScreen() && loaded < <?php echo count($images); ?> ) {
+                loaded = gallery.loadImages();
+            }
+        });
+    </script>
 
 </body>
 

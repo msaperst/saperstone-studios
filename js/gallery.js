@@ -44,7 +44,7 @@ Gallery.prototype.loadImages = function() {
                     // our view link
                     var link = $('<a>');
                     link.addClass('info no-border');
-                    link.attr('href','javascript:void(0);');
+                    //link.attr('href','javascript:void(0);');
                     link.attr('data-toggle','modal');
                     link.attr('data-target','#'+Gallery.gallery);
                     link.on('click', function() {
