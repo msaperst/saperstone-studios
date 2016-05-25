@@ -6,7 +6,7 @@ $(document).ready(function() {
             {
                 "orderable" : false,
                 "searchable": false,
-                "width": "57px",
+                "width": "59px",
                 "data" : function(row, type, val, meta) {
                     var buttons = '<button type="button" class="btn btn-sm btn-warning edit-album-btn">' +
                         '<i class="fa fa-pencil-square-o"></i></button>' +

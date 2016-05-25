@@ -15,7 +15,7 @@
     require_once"../nav.php";
     
     // get our gallery images
-    require_once"../php/sql.php";
+    require "../php/sql.php";
     $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-maternity' ORDER BY `sequence`;";
     $result = mysqli_query ( $db, $sql );
     $images = array ();

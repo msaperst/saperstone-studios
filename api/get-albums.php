@@ -20,7 +20,7 @@ if (getRole () != "admin") {
 $sql = "SELECT albums.*, COUNT(album_images.album) AS images FROM `album_images` JOIN `albums` ON album_images.album = albums.id GROUP BY album_images.album;";
 $result = mysqli_query ( $db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $r ['date'] = date ( 'Y-m-d', strtotime ( $r ['date'] ) );
+    $r ['date'] = substr( $r ['date'], 0, 10 );
     $response [] = $r;
 }
 echo "{\"data\":" . json_encode ( $response ) . "}";
