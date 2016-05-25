@@ -12,7 +12,6 @@ for directory in "../albums/"*; do
         year=`echo $date | cut -d ',' -f 3`
     fi
     echo "INSERT INTO \`albums\` (\`id\`, \`name\`, \`description\`, \`date\`) VALUES (NULL, '$name', '$description', '$year-$month-$day');"
-exit
 
     if [ ! -d "$directory/full" ]; then		#if no full directory, move our files
         mkdir "$directory/full"
