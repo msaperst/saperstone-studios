@@ -3,14 +3,14 @@
 
 <head>
 
-	<?php require "header.php"; ?>
+	<?php require_once"header.php"; ?>
 	<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
 
 <body>
 
-    <?php require "nav.php"; ?>
+    <?php require_once"nav.php"; ?>
 
     <!-- Page Content -->
 	<div class="page-content container">
@@ -92,13 +92,13 @@
 					endless!</p>
 				<p>
 					Have a photography or retouch assignment for Saperstone Studios? <a
-						href="contact.html">Let us tell your story</a>!
+						href="/contact.php">Let us tell your story</a>!
 				</p>
 			</div>
 		</div>
 		<!-- /.row -->
 
-        <?php require "footer.php"; ?>
+        <?php require_once"footer.php"; ?>
 
     </div>
 	<!-- /.container -->

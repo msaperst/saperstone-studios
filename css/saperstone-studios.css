@@ -2,7 +2,17 @@
  * Custom Bootstrap Properties for Saperstone Studios
  */
 
+/* Attempts to prevent screenshot */
+@media print {
+    html, body {
+       display: none;  /* hide whole page */
+    }
+}
+
 /* Overall Styles */
+.hidden { 
+	display: none;
+}
 a, a:hover, a:focus {
 	color: #00ab9e;
 }

@@ -1,0 +1,6 @@
+/*!
+ * Custom Properties for The Admin Page
+ */
+.save-album-button,.cancel-album-btn {
+	display: none;
+}

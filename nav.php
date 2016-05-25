@@ -19,10 +19,10 @@
 		<?php
 		    switch( $nav ) {
 		        case "portrait":
-		            require "nav-portrait.php";
+		            require_once"nav-portrait.php";
 		            break;
 		        default:
-		            require "nav-main.php";
+		            require_once"nav-main.php";
 		    }
 		    ?>
 		    
@@ -34,7 +34,7 @@
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a href="#">Manage Users</a></li>
-						<li><a href="#">Manage Galleries</a></li>
+						<li><a href="/albums/manage.php">Manage Albums</a></li>
 						<li><a href="#">Manage Posts</a></li>
 						<li><a href="#">Write New Post</a></li>
 					</ul></li>

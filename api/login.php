@@ -1,27 +1,26 @@
 <?php
+require_once"../php/sql.php";
 
-require "../php/sql.php";
-
-session_name('ssLogin');
+session_name ( 'ssLogin' );
 // Starting the session
 
-session_set_cookie_params(2*7*24*60*60);
+session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 // Making the cookie live for 2 weeks
 
-session_start();
+session_start ();
 
-if (isset( $_SESSION ) && isset($_SESSION ['hash']) && ! isset ( $_COOKIE ['ssRemember'] ) && ! isset($_SESSION ['rememberMe'])) {
+if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['ssRemember'] ) && ! isset ( $_SESSION ['rememberMe'] )) {
     // If you are logged in, but you don't have the tzRemember cookie (browser restart)
     // and you have not checked the rememberMe checkbox:
     
-    $_SESSION = array ();
+    session_unset ();
     session_destroy ();
     
     // Destroy the session
 }
 
 if ($_POST ['submit'] == 'Logout') {
-    $_SESSION = array ();
+    session_unset ();
     session_destroy ();
     exit ();
 }

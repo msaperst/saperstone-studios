@@ -1,5 +1,5 @@
 <?php
-require "../php/sql.php";
+require_once"../php/sql.php";
 
 $response = array ();
 $start = 0;

@@ -3,7 +3,7 @@
 
 <head>
 
-	<?php require "../header.php"; ?>
+	<?php require_once"../header.php"; ?>
 	<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
@@ -12,10 +12,10 @@
 
     <?php
     $nav = "portrait";
-    require "../nav.php";
+    require_once"../nav.php";
     
     // get our gallery images
-    require "../php/sql.php";
+    require_once"../php/sql.php";
     $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-home';";
     $result = mysqli_query($db, $sql);
     $images = array();
@@ -172,7 +172,7 @@
 		</div>
 		<!-- /.row -->
 
-        <?php require "../footer.php"; ?>
+        <?php require_once"../footer.php"; ?>
 
     </div>
 	<!-- /.container -->

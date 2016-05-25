@@ -1,12 +1,14 @@
 <?php
-session_name('ssLogin');
-// Starting the session
-
-session_set_cookie_params(2*7*24*60*60);
-// Making the cookie live for 2 weeks
-
-session_start();
-// Start our session
+if (session_status () != PHP_SESSION_ACTIVE) {
+    session_name ( 'ssLogin' );
+    // Starting the session
+    
+    session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
+    // Making the cookie live for 2 weeks
+    
+    session_start ();
+    // Start our session
+}
 
 $nav = "main";
 // Define our default menu
@@ -40,5 +42,5 @@ $nav = "main";
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
-<?php require "php/user.php"; ?>
+
+<?php require_once"php/user.php"; ?>

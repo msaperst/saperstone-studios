@@ -1,6 +1,6 @@
 <?php
 
-require "../php/sql.php";
+require_once"../php/sql.php";
 
 if( isset ( $_POST ['email'] ) && filter_var($_POST ['email'], FILTER_VALIDATE_EMAIL) ) {
     $resetCode = generatePassword( 8 );
