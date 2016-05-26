@@ -3,14 +3,14 @@
 
 <head>
 
-	<?php require_once"../header.php"; ?>
+	<?php require_once "../header.php"; ?>
 	<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
 
 <body>
 
-    <?php $nav = "portrait"; require_once"../nav.php"; ?>
+    <?php $nav = "portrait"; require_once "../nav.php"; ?>
     
     <!-- Page Content -->
 	<div class="container">
@@ -113,7 +113,7 @@
 		</div>
 		<!-- /.row -->
 
-        <?php require_once"../footer.php"; ?>
+        <?php require_once "../footer.php"; ?>
 
     </div>
 	<!-- /.container -->

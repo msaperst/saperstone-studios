@@ -3,7 +3,7 @@
 
 <head>
 
-	<?php require_once"../header.php"; ?>
+	<?php require_once "../header.php"; ?>
 	<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
@@ -12,10 +12,10 @@
 
     <?php
     $nav = "portrait";
-    require_once"../nav.php";
+    require_once "../nav.php";
     
     // get our gallery images
-    require_once"../php/sql.php";
+    require "../php/sql.php";
     $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-home';";
     $result = mysqli_query($db, $sql);
     $images = array();
@@ -44,7 +44,7 @@
             <!-- Content Column -->
             <div class="col-md-9">
 			    <!-- Carousel -->
-		    	<div id="portraitCarousel" class="carousel slide" style="height:400px;">
+		    	<div id="portraitCarousel" class="carousel slide">
 	        		<!-- Indicators -->
             		<ol class="carousel-indicators">
             			<?php
@@ -67,7 +67,7 @@
             			        $active_class = " active";
             			    }
             			    echo "<div class='item$active_class'>";
-            			    echo "	<div class='fill'";
+            			    echo "	<div class='contain'";
             			    echo "		style=\"background-image: url('".$image['location']."');\"></div>";
             			    echo "	<div class='carousel-caption'>";
             			    echo "		<h2>".$image['caption']."</h2>";
@@ -172,7 +172,7 @@
 		</div>
 		<!-- /.row -->
 
-        <?php require_once"../footer.php"; ?>
+        <?php require_once "../footer.php"; ?>
 
     </div>
 	<!-- /.container -->

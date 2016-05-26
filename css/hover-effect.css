@@ -90,6 +90,10 @@
 	transition-delay: .2s;
 }
 
+.hovereffect:hover a {
+	cursor: pointer;
+}
+
 /* for when we want a clean image - no border */
 .hovereffect a.no-border {
 	position: relative;

@@ -4,6 +4,7 @@ for directory in "../albums/"*; do
     if [ ! -d $directory ]; then
         continue
     fi
+    location=`basename $directory`
     echo ""
     name=""
     # create our album in mysql
@@ -16,9 +17,9 @@ for directory in "../albums/"*; do
         year=`sed '4q;d' $directory/details.txt | cut -d ',' -f 6 | tr -d '[[:space:]]' | cut -c1-4`
     fi
     if [ -z "$name" ]; then
-        name=`basename $directory`
+        name=`basename $location`
     fi
-    echo "INSERT INTO \`albums\` (\`id\`, \`name\`, \`description\`, \`date\`) VALUES (NULL, '$name', '$description', '$year-$month-$day');"
+    echo "INSERT INTO \`albums\` (\`id\`, \`name\`, \`description\`, \`date\`, \`location\`) VALUES (NULL, '$name', '$description', '$year-$month-$day', '$location');"
 
     if [ ! -d "$directory/full" ]; then		#if no full directory, move our files
         mkdir "$directory/full"

@@ -3,13 +3,13 @@
 
 <head>
 
-	<?php require_once"header.php"; ?>
+	<?php require_once "header.php"; ?>
 
 </head>
 
 <body>
 
-    <?php require_once"nav.php"; ?>
+    <?php require_once "nav.php"; ?>
 
     <!-- Page Content -->
     <div class="container">
@@ -111,7 +111,7 @@
         </div>
         <!-- /.row -->
 
-        <?php require_once"footer.php"; ?>
+        <?php require_once "footer.php"; ?>
 
     </div>
     <!-- /.container -->

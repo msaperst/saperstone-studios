@@ -38,7 +38,6 @@ if( isset( $_POST['date'] ) ) {
 }
 
 $sql = "UPDATE albums SET name='$name', description='$description', date='$date' WHERE id='$id';";
-echo $sql;
 mysqli_query ( $db, $sql );
 exit ();
 

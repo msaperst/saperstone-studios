@@ -4,19 +4,19 @@ $.fn.isOnScreen = function(){
     return bounds.top < window.innerHeight && bounds.bottom > 0;
 }
 
-function Gallery(gallery, columns, totalImages) {
+function Album(albumId, columns, totalImages) {
     this.loaded = 0;
-    this.gallery = gallery;
+    this.albumId = albumId;
     this.columns = columns;
     this.totalImages = totalImages;
     
     this.loadImages();
 }
 
-Gallery.prototype.loadImages = function() {
-    var Gallery = this;
-    $.get( "/api/get-gallery-images.php",
-            { gallery: Gallery.gallery, start: Gallery.loaded, howMany: Gallery.columns },
+Album.prototype.loadImages = function() {
+    var Album = this;
+    $.get( "/api/get-album-images.php",
+            { albumId: Album.albumId, start: Album.loaded, howMany: Album.columns },
             function( data ) {
                 // load each of our 4 images on the screen
                 $.each(data, function(k, v) {
@@ -46,9 +46,9 @@ Gallery.prototype.loadImages = function() {
                     link.addClass('info no-border');
                     //link.attr('href','javascript:void(0);');
                     link.attr('data-toggle','modal');
-                    link.attr('data-target','#'+Gallery.gallery);
+                    link.attr('data-target','#album');
                     link.on('click', function() {
-                        $('#'+Gallery.gallery).carousel(parseInt( v.sequence));
+                        $('#album').carousel(parseInt( v.sequence));
                     });
                     // add our image icon
                     var view = $('<i>');
@@ -62,12 +62,12 @@ Gallery.prototype.loadImages = function() {
                 });
                 // when we done, see if we need to load more
                 if( $('footer').isOnScreen() ) {
-                    Gallery.loadImages();
+                    Album.loadImages();
                 } else {
                 }
             },
             "json"
     );
-    Gallery.loaded += Gallery.columns;
-    return Gallery.loaded;
+    Album.loaded += Album.columns;
+    return Album.loaded;
 };

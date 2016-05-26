@@ -1,5 +1,5 @@
 <?php
-require_once"../php/sql.php";
+require_once "../php/sql.php";
 
 session_name ( 'ssLogin' );
 // Starting the session

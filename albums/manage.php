@@ -22,7 +22,7 @@ if (getRole () != "admin") {
 
 <head>
 
-	<?php require_once"../header.php"; ?>
+	<?php require_once "../header.php"; ?>
 	<link
 	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
 	rel="stylesheet">
@@ -31,7 +31,7 @@ if (getRole () != "admin") {
 
 <body>
 
-    <?php require_once"../nav.php"; ?>
+    <?php require_once "../nav.php"; ?>
 
     <!-- Page Content -->
 	<div class="container">
@@ -55,7 +55,12 @@ if (getRole () != "admin") {
 				<table id="albums" class="display" cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th></th>
+							<th>
+								<button id="add-album-btn" type="button"
+									class="btn btn-xs btn-success">
+									<i class="fa fa-plus"></i>
+								</button>
+							</th>
 							<th>ID</th>
 							<th>Album Name</th>
 							<th>Album Description</th>
@@ -74,7 +79,7 @@ if (getRole () != "admin") {
 		</div>
 		<!-- /.row -->
 
-        <?php require_once"../footer.php"; ?>
+        <?php require_once "../footer.php"; ?>
 
     </div>
 	<!-- /.container -->

@@ -3,7 +3,7 @@
 
 <head>
 
-	<?php require_once"../header.php"; ?>
+	<?php require_once "../header.php"; ?>
 	<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
@@ -12,7 +12,7 @@
 
     <?php
     $nav = "portrait";
-    require_once"../nav.php";
+    require_once "../nav.php";
     
     // get our gallery images
     require "../php/sql.php";
@@ -44,21 +44,21 @@
 		<!-- Services Section -->
 		<div class="row">
 			<div id="col-0"
-				class="col-md-3 col-sm-6 col-xs-12 col-gallery col-gallery-left"></div>
-			<div id="col-1" class="col-md-3 col-sm-6 col-xs-12 col-gallery"></div>
-			<div id="col-2" class="col-md-3 col-sm-6 col-xs-12 col-gallery"></div>
+				class="col-md-3 col-sm-6 col-gallery col-gallery-left"></div>
+			<div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
+			<div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
 			<div id="col-3"
-				class="col-md-3 col-sm-6 col-xs-12 col-gallery col-gallery-right"></div>
+				class="col-md-3 col-sm-6 col-gallery col-gallery-right"></div>
 		</div>
 		<!-- /.row -->
 
-        <?php require_once"../footer.php"; ?>
+        <?php require_once "../footer.php"; ?>
 
     </div>
 	<!-- /.container -->
 
 	<!-- Slideshow Modal -->
-	<div id="gallery-maternity" class="modal fade" role="dialog">
+	<div id="portrait-maternity" class="modal fade" role="dialog">
 		<div class="modal-dialog modal-lg">
 			<!-- Modal content-->
 			<div class="modal-content">
@@ -68,8 +68,7 @@
 				</div>
 				<div class="modal-body">
 					<!-- Carousel -->
-					<div id="gallery-maternity-carousel" class="carousel slide"
-						style="height: 400px;">
+					<div id="portrait-maternity-carousel" class="carousel slide">
 						<!-- Indicators -->
 						<ol class="carousel-indicators">
             			<?php
@@ -78,7 +77,7 @@
                 if ($num == 0) {
                     $class = " class='active'";
                 }
-                echo "<li data-target='#gallery-maternity-carousel' data-slide-to='$num'$class></li>";
+                echo "<li data-target='#portrait-maternity-carousel' data-slide-to='$num'$class></li>";
             }
             ?>
             		</ol>
@@ -92,7 +91,7 @@
                     $active_class = " active";
                 }
                 echo "<div class='item$active_class'>";
-                echo "	<div class='fill'";
+                echo "	<div class='contain'";
                 echo "		style=\"background-image: url('" . $image ['location'] . "');\"></div>";
                 echo "	<div class='carousel-caption'>";
                 echo "		<h2>" . $image ['caption'] . "</h2>";
@@ -104,10 +103,10 @@
 
 						<!-- Controls -->
 						<a class="left carousel-control"
-							href="#gallery-maternity-carousel" data-slide="prev"> <span
+							href="#portrait-maternity-carousel" data-slide="prev"> <span
 							class="icon-prev"></span>
 						</a> <a class="right carousel-control"
-							href="#gallery-maternity-carousel" data-slide="next"> <span
+							href="#portrait-maternity-carousel" data-slide="next"> <span
 							class="icon-next"></span>
 						</a>
 					</div>
@@ -126,7 +125,7 @@
 
 	<!-- Script to Activate the Gallery -->
 	<script>
-		var gallery = new Gallery( "gallery-maternity", 4, <?php echo count($images); ?> );
+		var gallery = new Gallery( "portrait-maternity", 4, <?php echo count($images); ?> );
 		
  		var loaded = 0;
         $(window,document).on("scroll resize", function(){

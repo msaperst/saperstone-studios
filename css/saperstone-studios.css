@@ -233,7 +233,7 @@ footer {
 
 /* Our generic carousel pages */
 .carousel {
-    height: 100%;
+    height: 578px;
 }
 
 .carousel .item,
@@ -247,6 +247,13 @@ footer {
     height: 100%;
     background-position: center;
     background-size: cover;
+}
+.carousel .contain {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 @media(max-width:767px) {
@@ -267,4 +274,14 @@ footer {
 }
 .col-gallery-right {
 	padding-right: 15px;
+}
+
+.tooltip-wrapper {
+	display: inline-block;
+}
+.tooltip-wrapper.disabled {
+    cursor: not-allowed;
+}
+.tooltip-wrapper .btn {
+	 pointer-events: none;
 }

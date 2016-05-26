@@ -43,4 +43,4 @@ $nav = "main";
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-<?php require_once"php/user.php"; ?>
+<?php require_once "php/user.php"; ?>

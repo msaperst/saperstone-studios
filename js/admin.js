@@ -6,13 +6,15 @@ $(document).ready(function() {
             {
                 "orderable" : false,
                 "searchable": false,
-                "width": "59px",
+                "width": "39px",
                 "data" : function(row, type, val, meta) {
-                    var buttons = '<button type="button" class="btn btn-sm btn-warning edit-album-btn">' +
-                        '<i class="fa fa-pencil-square-o"></i></button>' +
-                        '<button type="button" class="btn btn-sm btn-success save-album-btn hidden">' +
+                    var buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' +
+                        '<i class="fa fa-pencil-square-o"></i></button> ' +
+                        '<button type="button" class="btn btn-xs btn-danger delete-album-btn">' +
+                        '<i class="fa fa-trash-o"></i></button>' +
+                        '<button type="button" class="btn btn-xs btn-success save-album-btn hidden">' +
                         '<i class="fa fa-floppy-o"></i></button> ' +
-                        '<button type="button" class="btn btn-sm btn-danger cancel-album-btn hidden">' +
+                        '<button type="button" class="btn btn-xs btn-danger cancel-album-btn hidden">' +
                         '<i class="fa fa-ban"></i></button>';
                     return buttons;
                 },
@@ -24,7 +26,9 @@ $(document).ready(function() {
                 "searchable": false,
                 "targets" : 1
             }, {
-                "data" : "name",
+                "data" : function(row, type, val, meta) {
+                    return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
+                },
                 "className" : "album-name",
                 "targets" : 2
             }, {
@@ -59,6 +63,7 @@ function setupAlbumTable() {
     $('.edit-album-btn').off().click(function(){  //our inline edit functionality
         //switch our buttons
         $(this).closest('td').find('.edit-album-btn').addClass('hidden');
+        $(this).closest('td').find('.delete-album-btn').addClass('hidden');
         $(this).closest('td').find('.save-album-btn').removeClass('hidden');
         $(this).closest('td').find('.cancel-album-btn').removeClass('hidden');
 
@@ -67,7 +72,7 @@ function setupAlbumTable() {
         var nameInput = $('<input />');
         nameInput.attr('type', 'text');
         nameInput.attr('class', 'form-control');
-        nameInput.val(nameCell.html());
+        nameInput.val($('a',nameCell).html());
         nameInput.attr('original-value', nameCell.html());
         nameCell.empty().append(nameInput);
 
@@ -92,13 +97,14 @@ function setupAlbumTable() {
     $('.save-album-btn').off().click(function(){  //our inline save functionality
         //switch our buttons
         $(this).closest('td').find('.edit-album-btn').removeClass('hidden');
+        $(this).closest('td').find('.delete-album-btn').removeClass('hidden');
         $(this).closest('td').find('.save-album-btn').addClass('hidden');
         $(this).closest('td').find('.cancel-album-btn').addClass('hidden');
         
         //reset our name cell
         var nameCell = $(this).closest('tr').find('.album-name');
         var nameInput = $('input', nameCell).val();
-        nameCell.empty().append(nameInput);
+        nameCell.empty().append("<a href='album.php?album=" + $(this).closest('tr').attr('album-id') + "'>" + nameInput + "</a>");
         
         //reset our description cell
         var descriptionCell = $(this).closest('tr').find('.album-description');
@@ -113,7 +119,7 @@ function setupAlbumTable() {
         //send our update
         $.post("/api/update-album.php", {
             id : $(this).closest('tr').attr('album-id'),
-            name : $(this).closest('tr').find('.album-name').html(),
+            name : $(this).closest('tr').find('.album-name a').html(),
             description : $(this).closest('tr').find('.album-description').html(),
             date : $(this).closest('tr').find('.album-date').html(),
         }).done(function(data) {
@@ -122,6 +128,7 @@ function setupAlbumTable() {
     $('.cancel-album-btn').off().click(function(){  //our inline cancel functionality
         //switch our buttons
         $(this).closest('td').find('.edit-album-btn').removeClass('hidden');
+        $(this).closest('td').find('.delete-album-btn').removeClass('hidden');
         $(this).closest('td').find('.save-album-btn').addClass('hidden');
         $(this).closest('td').find('.cancel-album-btn').addClass('hidden');
 
@@ -139,5 +146,32 @@ function setupAlbumTable() {
         var dateCell = $(this).closest('tr').find('.album-date');
         var dateInput = $('input', dateCell).attr('original-value');
         dateCell.empty().append(dateInput);
+    });
+    $('.delete-album-btn').off().click(function(){
+        var row = $(this).closest('tr');
+        BootstrapDialog.show({
+            title: 'Are You Sure?',
+            message: 'Are you sure you want to delete the album <b>' + $(row).find('.album-name a').html() + '</b>',
+            buttons: [{
+                icon: 'glyphicon glyphicon-trash',
+                label: 'Delete',
+                cssClass: 'btn-danger',
+                action: function(dialogItself){
+                    dialogItself.close();
+                    //send our update
+                    $.post("/api/delete-album.php", {
+                        id : $(row).attr('album-id'),
+                    }).done(function(data) {
+                        var table = $('#albums').DataTable();
+                        table.row( $(row) ).remove().draw();
+                    });                    
+                }
+            }, {
+                label: 'Close',
+                action: function(dialogItself){
+                    dialogItself.close();
+                }
+            }]
+        });
     });
 }

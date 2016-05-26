@@ -19,10 +19,10 @@
 		<?php
 		    switch( $nav ) {
 		        case "portrait":
-		            require_once"nav-portrait.php";
+		            require_once "nav-portrait.php";
 		            break;
 		        default:
-		            require_once"nav-main.php";
+		            require_once "nav-main.php";
 		    }
 		    ?>
 		    
