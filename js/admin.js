@@ -56,7 +56,35 @@ $(document).ready(function() {
     $('#albums').on( 'draw.dt search.dt', function () {
         setupAlbumTable();
     });
-    
+
+    $('#add-album-btn').click(function(){
+        BootstrapDialog.show({
+            title: 'Add A New Album',
+            message: '<input placeholder="Album Name" type="text" class="form-control"/>' +
+                '<input placeholder="Album Description" type="text" class="form-control"/>' +
+                '<input placeholder="Album Date" type="date" class="form-control"/>',
+            buttons: [{
+                icon: 'glyphicon glyphicon-save',
+                label: 'Save',
+                cssClass: 'btn-success',
+                action: function(dialogItself){
+                    dialogItself.close();
+                    //send our update
+                    $.post("/api/add-album.php", {
+                        id : $(row).attr('album-id')
+                    }).done(function(data) {
+                        var table = $('#albums').DataTable();
+                        table.row( $(row) ).remove().draw();
+                    });                    
+                }
+            }, {
+                label: 'Close',
+                action: function(dialogItself){
+                    dialogItself.close();
+                }
+            }]
+        });
+    });
 });
 
 function setupAlbumTable() {
