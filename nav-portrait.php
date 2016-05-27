@@ -7,8 +7,7 @@
 					class="dropdown-toggle" data-toggle="dropdown">Details<b
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">Session Info</a></li>
-						<li><a href="#">What to Wear</a></li>
+						<li><a href="what-to-wear.php">What to Wear</a></li>
 						<li><a href="#">Investment</a></li>
 						<li><a href="#">Products</a></li>
 					</ul></li>

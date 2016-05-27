@@ -4,18 +4,20 @@
 
 /* Attempts to prevent screenshot */
 @media print {
-    html, body {
-       display: none;  /* hide whole page */
-    }
+	html, body {
+		display: none; /* hide whole page */
+	}
 }
 
 /* Overall Styles */
-.hidden { 
+.hidden {
 	display: none;
 }
+
 a, a:hover, a:focus {
 	color: #00ab9e;
 }
+
 header.carousel {
 	height: 70%;
 }
@@ -90,12 +92,6 @@ header.carousel {
 	-moz-transform: scale(.9999);
 }
 
-@media ( max-width : 768px) {
-	.page-content { /* adjusting for low hanging banner */
-		padding-top: 45px;
-	}
-}
-
 .navbar-nav>li>a:hover, .navbar-nav>li>a:focus {
 	color: #00ab9e !important;
 }
@@ -105,6 +101,7 @@ header.carousel {
 	color: #00ab9e;
 	background-color: #eaeaea;
 }
+
 .navbar-inverse .navbar-nav>.open.no-dropdown>a {
 	cursor: default;
 }
@@ -143,7 +140,8 @@ header.carousel {
 	position: relative;
 }
 
-.loginmodal-container input[type=text], input[type=password], input[type=email] {
+.loginmodal-container input[type=text], input[type=password], input[type=email]
+	{
 	height: 44px;
 	font-size: 16px;
 	width: 100%;
@@ -157,8 +155,8 @@ header.carousel {
 	-moz-box-sizing: border-box;
 }
 
-.loginmodal-container input[type=text]:hover, input[type=password]:hover, input[type=email]:hover
-	{
+.loginmodal-container input[type=text]:hover, input[type=password]:hover,
+	input[type=email]:hover {
 	border: 1px solid #b9b9b9;
 	border-top: 1px solid #a0a0a0;
 	-moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -206,13 +204,16 @@ header.carousel {
 .login-help {
 	font-size: 12px;
 }
+
 .loginmodal-container span {
 	float: right;
 }
+
 .error {
 	color: red;
 	font-weight: bold;
 }
+
 .success {
 	color: green;
 	font-weight: bold;
@@ -233,45 +234,47 @@ footer {
 
 /* Our generic carousel pages */
 .carousel {
-    height: 578px;
+	height: 400px;
 }
 
-.carousel .item,
-.carousel .item.active,
-.carousel .carousel-inner {
-    height: 100%;
+.carousel .item, .carousel .item.active, .carousel .carousel-inner {
+	height: 100%;
 }
 
 .carousel .fill {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-size: cover;
-}
-.carousel .contain {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
+	width: 100%;
+	height: 100%;
+	background-position: center;
+	background-size: cover;
 }
 
-@media(max-width:767px) {
-    .carousel .carousel {
-        height: 70%;
-    }
+.carousel .contain {
+	width: 100%;
+	height: 100%;
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+@media ( max-width :767px) {
+	.carousel .carousel {
+		height: 70%;
+	}
 }
 
 /* For our image tiling */
 .gallery {
 	margin-bottom: 10px;
 }
+
 .col-gallery {
 	padding: 0px 5px;
 }
+
 .col-gallery-left {
 	padding-left: 15px;
 }
+
 .col-gallery-right {
 	padding-right: 15px;
 }
@@ -279,9 +282,21 @@ footer {
 .tooltip-wrapper {
 	display: inline-block;
 }
+
 .tooltip-wrapper.disabled {
-    cursor: not-allowed;
+	cursor: not-allowed;
 }
+
 .tooltip-wrapper .btn {
-	 pointer-events: none;
+	pointer-events: none;
+}
+
+/* adjusting for low hanging banner */
+@media ( max-width : 768px) {
+	.page-content {
+		padding-top: 45px;
+	}
+	.navbar-nav {
+		padding-top: 55px;
+	}
 }

@@ -64,8 +64,8 @@ $(document).ready(function() {
                 '<input placeholder="Album Description" type="text" class="form-control"/>' +
                 '<input placeholder="Album Date" type="date" class="form-control"/>',
             buttons: [{
-                icon: 'glyphicon glyphicon-save',
-                label: 'Save',
+                icon: 'glyphicon glyphicon-folder-close',
+                label: ' Create Album',
                 cssClass: 'btn-success',
                 action: function(dialogItself){
                     dialogItself.close();

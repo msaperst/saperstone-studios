@@ -25,7 +25,7 @@
     ?>
     
     <!-- Page Content -->
-	<div class="container">
+	<div class="page-content container">
 
 		<!-- Page Heading/Breadcrumbs -->
 		<div class="row">
@@ -58,7 +58,7 @@
 	<!-- /.container -->
 
 	<!-- Slideshow Modal -->
-	<div id="portrait-maternity" class="modal fade" role="dialog">
+	<div id="portrait-maternity" class="modal fade modal-carousel" role="dialog">
 		<div class="modal-dialog modal-lg">
 			<!-- Modal content-->
 			<div class="modal-content">
@@ -68,7 +68,7 @@
 				</div>
 				<div class="modal-body">
 					<!-- Carousel -->
-					<div id="portrait-maternity-carousel" class="carousel slide">
+					<div id="portrait-maternity-carousel" class="carousel slide carousel-three-by-two">
 						<!-- Indicators -->
 						<ol class="carousel-indicators">
             			<?php

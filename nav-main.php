@@ -6,7 +6,7 @@
 					class="dropdown-toggle" data-toggle="dropdown">Portraits<b
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">Details</a></li>
+						<li><a href="/portrait/details.php">Details</a></li>
 						<li><a href="/portrait/gallery.php">Gallery</a></li>
 						<li><a href="#">Retouch</a></li>
 					</ul></li>
@@ -43,7 +43,7 @@
 					class="dropdown-toggle" data-toggle="dropdown">Information<b
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="/about.html">About</a></li>
+						<li><a href="/about.php">About</a></li>
         				<li><a href="/services.html">Services</a></li>
         				<li><a href="/services.html">Reviews</a></li>
         				<li><a href="/contact.php">Contact</a></li>
