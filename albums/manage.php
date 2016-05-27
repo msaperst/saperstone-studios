@@ -34,7 +34,7 @@ if (getRole () != "admin") {
     <?php require_once "../nav.php"; ?>
 
     <!-- Page Content -->
-	<div class="container">
+	<div class="page-content container">
 
 		<!-- Page Heading/Breadcrumbs -->
 		<div class="row">
