@@ -60,19 +60,23 @@ $(document).ready(function() {
     $('#add-album-btn').click(function(){
         BootstrapDialog.show({
             title: 'Add A New Album',
-            message: '<input placeholder="Album Name" type="text" class="form-control"/>' +
-                '<input placeholder="Album Description" type="text" class="form-control"/>' +
-                '<input placeholder="Album Date" type="date" class="form-control"/>',
+            message: '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control"/>' +
+                '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control"/>' +
+                '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>' +
+                '<div id="new-album-error" class="error"></div>' +
+                '<div id="new-album-message" class="success"></div>',
             buttons: [{
                 icon: 'glyphicon glyphicon-folder-close',
                 label: ' Create Album',
                 cssClass: 'btn-success',
                 action: function(dialogItself){
-                    dialogItself.close();
                     //send our update
                     $.post("/api/add-album.php", {
-                        id : $(row).attr('album-id')
+                        name : $('#new-album-name').val(),
+                        description : $('#new-album-description').val(),
+                        date : $('#new-album-date').val()
                     }).done(function(data) {
+                        dialogItself.close();
                         var table = $('#albums').DataTable();
                         table.row( $(row) ).remove().draw();
                     });                    
