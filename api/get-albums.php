@@ -17,7 +17,7 @@ if (getRole () != "admin") {
     exit ();
 }
 
-$sql = "SELECT albums.*, COUNT(album_images.album) AS images FROM `album_images` JOIN `albums` ON album_images.album = albums.id GROUP BY album_images.album;";
+$sql = "SELECT albums.*, COUNT(album_images.album) AS 'images' FROM albums LEFT JOIN album_images ON albums.id = album_images.album GROUP BY albums.id;";
 $result = mysqli_query ( $db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     $r ['date'] = substr( $r ['date'], 0, 10 );
