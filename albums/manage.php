@@ -26,7 +26,7 @@ if (getRole () != "admin") {
 	<link
 	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
 	rel="stylesheet">
-	<link
+<link
 	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
 	rel="stylesheet">
 
@@ -101,8 +101,14 @@ if (getRole () != "admin") {
 				<div class="modal-body">
 					<p>Please wait while the data loads...</p>
 				</div>
+				<div id="resize-progress" class="progress">
+					<div class="progress-bar progress-bar-striped active"
+						role="progressbar" aria-valuenow="100" aria-valuemin="0"
+						aria-valuemax="100" style="width: 100%">Checking files...</div>
+				</div>
 				<div class="modal-footer">
-<!-- 					<button id="add-images-button" type="button" class="btn btn-default btn-success">Add Images</button> -->
+					<button id="make-thumbs-button" type="button"
+						class="btn btn-default btn-warning">Make Thumbnails</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
@@ -112,8 +118,8 @@ if (getRole () != "admin") {
 
 	<script
 		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-	<script
-		src="http://hayageek.github.io/jQuery-Upload-File/4.0.10/jquery.uploadfile.min.js"></script>
+	<script src="/js/jquery.uploadfile.js"></script>
+	<!-- 		src="http://hayageek.github.io/jQuery-Upload-File/4.0.10/jquery.uploadfile.min.js"></script> -->
 	<script src="/js/admin.js"></script>
 
 </body>

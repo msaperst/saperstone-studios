@@ -54,7 +54,7 @@ $(document).ready(function() {
             }
         ],
         "fnCreatedRow": function( nRow, aData, iDataIndex ) {
-            $(nRow).attr('album-id',aData['id']);
+            $(nRow).attr('album-id',aData.id);
         }
     });
     $('#albums').on( 'draw.dt search.dt', function () {
@@ -125,25 +125,65 @@ function addImages(id) {
             $('#addImagesModal .modal-title').empty().append( "Add Images to " + data.name );
             $('#addImagesModal .modal-body').empty();
             $('.ajax-file-upload-container').remove();
-            $(".modal-body").uploadFile({
-                url:"/api/upload-images.php",
-                multiple:true,
-                dragDrop:true,
-                fileName:"myfile",
-                sequential:true,
-                sequentialCount:5,
-                acceptFiles:"image/*",
+            $('#add-images-button').remove();
+            $("#add-images-button").uploadFile({
+                url: "/api/upload-images.php",
+                multiple: true,
+                dragDrop: true,
+                uploadButtonLocation: $('.modal-footer'),
+                uploadContainer: $('.modal-body'),
+                uploadButtonClass: "btn btn-default btn-success",
+                statusBarWidth: "48%",
+                dragdropWidth: "100%",
+                fileName: "myfile",
+                sequential: true,
+                sequentialCount: 5,
+                acceptFiles: "image/*",
+                uploadQueueOrder: "bottom",
                 dynamicFormData: function() {
-                    var data ={ album: $('#addImagesModal').attr('album-id') }
+                    var data = { album: $('#addImagesModal').attr('album-id') };
                     return data;
                 },
+                onSubmit: function(files) {
+                    $('.ajax-file-upload-container').show();
+                    // make modal non closable, and spin icons
+                },
                 onSuccess: function(files,data,xhr,pd) {
-                    // do something for resizing and clearing upload thingies
+                    setTimeout(function() {pd.statusbar.remove();}, 5000);
+                },
+                afterUploadAll: function(obj) {
+                    setTimeout(function() {$('.ajax-file-upload-container').show();}, 5000);
+                    // do something to update the row with the images
                 },
             });
         },
         "json"
     );
+    
+    $('#make-thumbs-button').off().click(function(){
+        $("#resize-progress").show();
+        $.post("/api/make-thumbs.php", {
+            id : $("#addImagesModal").attr('album-id'),
+        }).done(function(data) {
+            var myVar = setInterval( function(){ 
+                $.get(
+                    "/scripts/status.txt",
+                    function (data){
+                        $('#resize-progress .progress-bar').html( data );
+                        if( data.indexOf("Done") == 0 ) {
+                            clearInterval(myVar);
+                            $('#resize-progress .progress-bar').removeClass('active');
+                            setTimeout(function() {$('#resize-progress').hide();}, 5000);
+                        }
+                        if( data.indexOf("Error") == 0 ) {
+                            clearInterval(myVar);
+                            $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
+                        }
+                    }
+                ); 
+            }, 100);
+        });
+    });
 }
 
 function setupAlbumTable() {

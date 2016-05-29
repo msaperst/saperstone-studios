@@ -12,11 +12,13 @@ session_start ();
 
 require_once "../php/user.php";
 
+// ensure we are logged in appropriately
 if (getRole () != "admin") {
     header ( "HTTP/1.0 403 Forbidden" );
     exit ();
 }
 
+// confirm we have an album name
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = $_POST ['name'];
 } else {
@@ -24,6 +26,7 @@ if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     exit ();
 }
 
+// sanitize our inputs
 if (isset ( $_POST ['name'] )) {
     $name = mysqli_real_escape_string ( $db, $_POST ['name'] );
 }
@@ -34,8 +37,15 @@ if (isset ( $_POST ['date'] )) {
     $date = mysqli_real_escape_string ( $db, $_POST ['date'] );
 }
 
-$sql = "INSERT INTO `albums` (`name`, `description`, `date`) VALUES ('$name', '$description', '$date');";
+// generate our location for the files
+$location = preg_replace ( "/[^A-Za-z0-9]/", '', $name );
+$location = $location . "_" . time ();
+mkdir ( "../albums/$location" );
+
+$sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`) VALUES ('$name', '$description', '$date', '$location');";
 mysqli_query ( $db, $sql );
 $last_id = mysqli_insert_id ( $db );
 
 echo $last_id;
+
+exit ();

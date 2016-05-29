@@ -10,7 +10,7 @@ $(function() {
             submit : "Login"
         }).done(function(data) {
             $('#login-error').html(data);
-            if(data == "") {
+            if(data === "") {
                 $('#login-message').html("Successfully Logged In");
                 location.reload();
             }
@@ -44,7 +44,7 @@ $(function() {
             email : $('#forgot-password-email').val(),
         }).done(function(data) {
             $('#forgot-password-error').html(data);
-            if(data == "") {
+            if(data === "") {
                 $('#forgot-password-message').html("Reset code has been sent, please enter it below, along with a new password");
                 resetPasswordForm();
             }
@@ -62,7 +62,7 @@ $(function() {
             passwordConfirm : $('#forgot-password-new-password-confirm').val(),
         }).done(function(data) {
             $('#forgot-password-error').html(data);
-            if(data == "") {
+            if(data === "") {
                 $('#forgot-password-message').html("Your password has been successfully reset. You can now login with your new credentials.");
                 setTimeout(function() {$('#forgot-password-modal').modal('hide');}, 10000);
             }
