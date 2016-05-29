@@ -102,8 +102,7 @@ if (getRole () != "admin") {
 					<p>Please wait while the data loads...</p>
 				</div>
 				<div class="modal-footer">
-					<button id="add-images-button" type="button" class="btn btn-default btn-success">Add
-						Images</button>
+<!-- 					<button id="add-images-button" type="button" class="btn btn-default btn-success">Add Images</button> -->
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>

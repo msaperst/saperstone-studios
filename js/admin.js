@@ -124,6 +124,7 @@ function addImages(id) {
             $('#addImagesModal').attr('album-id',id);
             $('#addImagesModal .modal-title').empty().append( "Add Images to " + data.name );
             $('#addImagesModal .modal-body').empty();
+            $('.ajax-file-upload-container').remove();
             $(".modal-body").uploadFile({
                 url:"/api/upload-images.php",
                 multiple:true,
