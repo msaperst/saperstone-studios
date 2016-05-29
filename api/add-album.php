@@ -20,7 +20,7 @@ if (getRole () != "admin") {
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = $_POST ['name'];
 } else {
-    echo "Album name is not provided";
+    echo "Album name is required!";
     exit ();
 }
 

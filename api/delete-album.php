@@ -31,7 +31,9 @@ mysqli_query ( $db, $sql );
 $sql = "DELETE FROM album_images WHERE album='$id';";
 mysqli_query ( $db, $sql );
 
-system("rm -rf ".escapeshellarg("../albums/" . $row ['location']));
+if( $row ['location'] != "" ) {
+    system("rm -rf ".escapeshellarg("../albums/" . $row ['location']));
+}
 exit ();
 
 ?>

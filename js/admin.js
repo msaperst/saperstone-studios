@@ -40,7 +40,11 @@ $(document).ready(function() {
                 "className" : "album-date",
                 "targets" : 4
             }, {
-                "data" : "images",
+                "data" : function(row, type, val, meta) {
+                    var buttons = '<button type="button" class="btn btn-xs btn-success add-images-btn">' +
+                        '<i class="fa fa-plus"></i></button>';
+                    return row.images + buttons;
+                },
                 "className" : "album-images",
                 "targets" : 5
             }, {
@@ -70,15 +74,35 @@ $(document).ready(function() {
                 label: ' Create Album',
                 cssClass: 'btn-success',
                 action: function(dialogItself){
+                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                    $button.spin();
+                    dialogItself.enableButtons(false);
+                    dialogItself.setClosable(false);
                     //send our update
                     $.post("/api/add-album.php", {
                         name : $('#new-album-name').val(),
                         description : $('#new-album-description').val(),
                         date : $('#new-album-date').val()
                     }).done(function(data) {
-                        dialogItself.close();
-                        var table = $('#albums').DataTable();
-                        table.row( $(row) ).remove().draw();
+                        if( Math.round(data) == data ) {
+                            var table = $('#albums').DataTable();
+                            table.row.add({
+                                "id":           data,
+                                "name":         $('#new-album-name').val(),
+                                "description":  $('#new-album-description').val(),
+                                "date":         $('#new-album-date').val(),
+                                "images":       "0",
+                                "lastAccessed": "0000-00-00 00:00:00",
+                                "location":     ""
+                            }).draw(false);
+                            dialogItself.close();
+                            addImages( data );
+                        } else {
+                            $('#new-album-error').html(data);
+                        }
+                        $button.stopSpin();
+                        dialogItself.enableButtons(true);
+                        dialogItself.setClosable(true);
                     });                    
                 }
             }, {
@@ -91,7 +115,40 @@ $(document).ready(function() {
     });
 });
 
+function addImages(id) {
+    $('#addImagesModal').modal();
+    $.get( 
+        "/api/get-album.php",
+        { id: id },
+        function( data ) {
+            $('#addImagesModal').attr('album-id',id);
+            $('#addImagesModal .modal-title').empty().append( "Add Images to " + data.name );
+            $('#addImagesModal .modal-body').empty();
+            $(".modal-body").uploadFile({
+                url:"/api/upload-images.php",
+                multiple:true,
+                dragDrop:true,
+                fileName:"myfile",
+                sequential:true,
+                sequentialCount:5,
+                acceptFiles:"image/*",
+                dynamicFormData: function() {
+                    var data ={ album: $('#addImagesModal').attr('album-id') }
+                    return data;
+                },
+                onSuccess: function(files,data,xhr,pd) {
+                    // do something for resizing and clearing upload thingies
+                },
+            });
+        },
+        "json"
+    );
+}
+
 function setupAlbumTable() {
+    $('.add-images-btn').off().click(function(){
+        addImages($(this).closest('tr').attr('album-id'));
+    });
     $('.edit-album-btn').off().click(function(){  //our inline edit functionality
         //switch our buttons
         $(this).closest('td').find('.edit-album-btn').addClass('hidden');
@@ -189,13 +246,17 @@ function setupAlbumTable() {
                 label: 'Delete',
                 cssClass: 'btn-danger',
                 action: function(dialogItself){
-                    dialogItself.close();
+                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                    $button.disable();
+                    $button.spin();
+                    dialogItself.setClosable(false);
                     //send our update
                     $.post("/api/delete-album.php", {
                         id : $(row).attr('album-id'),
                     }).done(function(data) {
                         var table = $('#albums').DataTable();
-                        table.row( $(row) ).remove().draw();
+                        table.row( $(row) ).remove().draw( false );
+                        dialogItself.close();
                     });                    
                 }
             }, {

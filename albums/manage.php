@@ -26,6 +26,10 @@ if (getRole () != "admin") {
 	<link
 	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
 	rel="stylesheet">
+	<link
+	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+	rel="stylesheet">
+
 
 </head>
 
@@ -84,8 +88,33 @@ if (getRole () != "admin") {
     </div>
 	<!-- /.container -->
 
+	<!-- Add Images Modal -->
+	<div id="addImagesModal" class="modal fade" role="dialog" album-id="">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Add Images to...</h4>
+				</div>
+				<div class="modal-body">
+					<p>Please wait while the data loads...</p>
+				</div>
+				<div class="modal-footer">
+					<button id="add-images-button" type="button" class="btn btn-default btn-success">Add
+						Images</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
 	<script
 		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script
+		src="http://hayageek.github.io/jQuery-Upload-File/4.0.10/jquery.uploadfile.min.js"></script>
 	<script src="/js/admin.js"></script>
 
 </body>
