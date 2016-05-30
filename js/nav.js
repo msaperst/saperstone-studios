@@ -17,6 +17,12 @@ $(function() {
         });
     });
     
+    $('.loginmodal-container').keypress(function(e) {
+        if(e.which == 13) {
+            $( "#login-submit" ).trigger( "click" );
+        }
+    });
+    
     $('#logout-button').click(function() {
         $.post("/api/login.php", {
             submit : "Logout"

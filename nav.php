@@ -72,8 +72,13 @@
     		<input id="login-pass" type="password" name="pass" placeholder="Password" />
     		<div id="login-error" class="error"></div>
     		<div id="login-message" class="success"></div>
+    		<span>
+    			<div class="checkbox">
+        			<label><input type="checkbox"> Remember me</label>
+      			</div>
+    		</span>
     		<button id="login-submit" type="submit" class="btn btn-primary">Login</button>
-    		<span>Remember Me <input id="login-remember" type="checkbox" name="remember" /></span>
+<!--     		<span>Remember Me <input id="login-remember" type="checkbox" name="remember" /></span> -->
     	    <div class="login-help">
     		    <a href="#">Register</a> - <a id="login-forgot-password" href="javascript:void(0);">Forgot Username/Password</a>
     	    </div>
