@@ -6,7 +6,7 @@
  * http://hayageek.com/
  */
 (function ($) {
-    if($.fn.ajaxForm == undefined) {
+    if($.fn.ajaxForm === undefined) {
         $.getScript(("https:" == document.location.protocol ? "https://" : "http://") + "malsup.github.io/jquery.form.js");
     }
     var feature = {};
@@ -64,7 +64,7 @@
             serialize:true,
             sequential:false,
             uploadButtonLocation: obj,
-            uploadContainer: null,
+            uploadContainer: obj,
             sequentialCount:2,
             customProgressBar: false,
             abortButtonClass: "ajax-file-upload-abort",
@@ -112,8 +112,6 @@
             s.multiple = false;
         }
 
-//        $(s.uploadButtonLocation).html("");
-        
         var uploadLabel = $('<div>' + s.uploadStr + '</div>');
 
         $(uploadLabel).addClass(s.uploadButtonClass);
@@ -154,8 +152,7 @@
 
             if(mainQ.length >= 1 )
                 submitPendingUploads();
-
-        }
+        };
 
         this.getFileCount = function () {
             return obj.selectedFiles;

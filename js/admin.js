@@ -96,7 +96,7 @@ $(document).ready(function() {
                                 "location":     ""
                             }).draw(false);
                             dialogItself.close();
-                            addImages( data );
+//                            addImages( data );
                         } else {
                             $('#new-album-error').html(data);
                         }
@@ -126,7 +126,7 @@ function addImages(id) {
             $('#addImagesModal .modal-body').empty();
             $('.ajax-file-upload-container').remove();
             $('#add-images-button').remove();
-            $("#add-images-button").uploadFile({
+            $('.modal-body').uploadFile({
                 url: "/api/upload-images.php",
                 multiple: true,
                 dragDrop: true,
@@ -150,9 +150,10 @@ function addImages(id) {
                 },
                 onSuccess: function(files,data,xhr,pd) {
                     setTimeout(function() {pd.statusbar.remove();}, 5000);
+                    $('#albums').dataTable().fnUpdate('Zebra' , $("tr[album-id='"+$('#addImagesModal').attr('album-id')+"']"), 4 );
                 },
                 afterUploadAll: function(obj) {
-                    setTimeout(function() {$('.ajax-file-upload-container').show();}, 5000);
+                    setTimeout(function() {$('.ajax-file-upload-container').hide();}, 5000);
                     // do something to update the row with the images
                 },
             });
@@ -170,12 +171,12 @@ function addImages(id) {
                     "/scripts/status.txt",
                     function (data){
                         $('#resize-progress .progress-bar').html( data );
-                        if( data.indexOf("Done") == 0 ) {
+                        if( data.indexOf("Done") === 0 ) {
                             clearInterval(myVar);
                             $('#resize-progress .progress-bar').removeClass('active');
                             setTimeout(function() {$('#resize-progress').hide();}, 5000);
                         }
-                        if( data.indexOf("Error") == 0 ) {
+                        if( data.indexOf("Error") === 0 ) {
                             clearInterval(myVar);
                             $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
                         }
@@ -284,7 +285,7 @@ function setupAlbumTable() {
             message: 'Are you sure you want to delete the album <b>' + $(row).find('.album-name a').html() + '</b>',
             buttons: [{
                 icon: 'glyphicon glyphicon-trash',
-                label: 'Delete',
+                label: ' Delete',
                 cssClass: 'btn-danger',
                 action: function(dialogItself){
                     var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
