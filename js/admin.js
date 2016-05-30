@@ -126,7 +126,7 @@ function editAlbum(id) {
             BootstrapDialog.show({
                 draggable: true,
                 size: BootstrapDialog.SIZE_WIDE,
-                title: 'Edit <b>' + data.name + '</b>',
+                title: 'Edit Album <b>' + data.name + '</b>',
                 message: function(dialogItself){
                     var inputs =  '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' +
                        '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' +
@@ -155,7 +155,7 @@ function editAlbum(id) {
                             message: 'Are you sure you want to delete the album <b>' + data.name + '</b>',
                             buttons: [{
                                 icon: 'glyphicon glyphicon-trash',
-                                label: 'Delete',
+                                label: ' Delete',
                                 cssClass: 'btn-danger',
                                 action: function(dialogInItself){
                                     var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.

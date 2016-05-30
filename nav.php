@@ -33,7 +33,7 @@
 					class="dropdown-toggle" data-toggle="dropdown">Admin<b
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">Manage Users</a></li>
+						<li><a href="/users.php">Manage Users</a></li>
 						<li><a href="/albums/manage.php">Manage Albums</a></li>
 						<li><a href="#">Manage Posts</a></li>
 						<li><a href="#">Write New Post</a></li>
