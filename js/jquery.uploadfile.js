@@ -112,7 +112,7 @@
             s.multiple = false;
         }
 
-        var uploadLabel = $('<div>' + s.uploadStr + '</div>');
+        var uploadLabel = $('<button>' + s.uploadStr + '</button>');
 
         $(uploadLabel).addClass(s.uploadButtonClass);
         $(uploadLabel).attr("id","add-images-button");

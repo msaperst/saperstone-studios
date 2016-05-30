@@ -24,7 +24,10 @@ for file in $location/{.,}*; do
         filename=$(basename "$file")
         file_info=`identify $file`;
         file_type=`echo $file_info | cut -d ' ' -f 2`;
-        if [ "$file_type" != "TXT" ] && [ ! -f "$location/full/$filename" ]; then
+        file_size=`echo $file_info | cut -d ' ' -f 3`;
+        width=`echo $file_size | cut -d 'x' -f 1`;
+        height=`echo $file_size | cut -d 'x' -f 2`;
+        if [ "$file_type" != "TXT" ] && ( [ "$width" -gt "1000" ] || [ "$height" -gt "1000" ] ); then
             echo "Resizing file $filename..." > $output;
             cp "$file" "$location/full/";
             mogrify -resize 1000x1000\> "$file"

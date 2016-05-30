@@ -74,11 +74,6 @@ if (getRole () != "admin") {
 						</tr>
 					</thead>
 				</table>
-				<?php
-    // get our albums
-    $sql = "SELECT albums.*, COUNT(album_images.album) AS images FROM `album_images` JOIN `albums` ON album_images.album = albums.id GROUP BY album_images.album;";
-    
-    ?>
 			</div>
 		</div>
 		<!-- /.row -->
@@ -88,38 +83,9 @@ if (getRole () != "admin") {
     </div>
 	<!-- /.container -->
 
-	<!-- Add Images Modal -->
-	<div id="addImagesModal" class="modal fade" role="dialog" album-id="">
-		<div class="modal-dialog">
-
-			<!-- Modal content-->
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Add Images to...</h4>
-				</div>
-				<div class="modal-body">
-					<p>Please wait while the data loads...</p>
-				</div>
-				<div id="resize-progress" class="progress">
-					<div class="progress-bar progress-bar-striped active"
-						role="progressbar" aria-valuenow="100" aria-valuemin="0"
-						aria-valuemax="100" style="width: 100%">Checking files...</div>
-				</div>
-				<div class="modal-footer">
-					<button id="make-thumbs-button" type="button"
-						class="btn btn-default btn-warning">Make Thumbnails</button>
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				</div>
-			</div>
-
-		</div>
-	</div>
-
 	<script
 		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 	<script src="/js/jquery.uploadfile.js"></script>
-	<!-- 		src="http://hayageek.github.io/jQuery-Upload-File/4.0.10/jquery.uploadfile.min.js"></script> -->
 	<script src="/js/admin.js"></script>
 
 </body>

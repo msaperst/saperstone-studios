@@ -306,7 +306,7 @@ footer {
     float: right;
 }
 .ajax-file-upload-container {
-	margin: 0px 8px 20px 12px !important;
+	margin-top: 15px !important;
 	display: none;
 }
 .ajax-upload-dragdrop {
@@ -316,6 +316,6 @@ footer {
 	display: inline-block;
 }
 #resize-progress {
-	margin: 0px 15px 15px 15px;
+	margin-top: 15px;
 	display: none;
 }
