@@ -154,7 +154,7 @@ function editUser(data) {
             emailInputDiv.addClass('col-sm-10');
             var emailInput = $('<input>');
             emailInput.attr('id','user-email');
-            emailInput.attr('type','email');
+            emailInput.attr('type','text');
             emailInput.addClass('form-control');
             emailInput.attr('placeholder','Email Address');
             if ( data !== null ) {
@@ -250,9 +250,72 @@ function editUser(data) {
                                 $('#user-error').html(data);
                                 if(data === "") {
                                     user_table.ajax.reload( null, false );
-                                    dialogInItself.close();
                                     dialogItself.close();
                                 }
+                                $button.stopSpin();
+                                dialogInItself.close();
+                                enableDialogButtons(dialogItself);
+                            });                    
+                        }
+                    }, {
+                        label: 'Close',
+                        action: function(dialogInItself){
+                            $button.stopSpin();
+                            enableDialogButtons(dialogItself);
+                            dialogInItself.close();
+                        }
+                    }]
+                });
+            }
+        }, {
+            id: 'user-update-password-btn',
+            icon: 'glyphicon glyphicon-edit',
+            label: ' Update Password',
+            cssClass: 'btn-warning',
+            action: function(dialogItself){
+                var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                $button.spin();
+                disableDialogButtons(dialogItself);
+                //send our update
+                BootstrapDialog.show({
+                    draggable: true,
+                    title: 'Change User Password',
+                    message: function(dialogInItself){
+                        var inputs = $('<div>');
+
+                        var passwordInput = $('<input>');
+                        passwordInput.attr('id','user-password');
+                        passwordInput.attr('type','password');
+                        passwordInput.addClass('form-control');
+                        passwordInput.attr('placeholder','Password');
+                        inputs.append(passwordInput);
+
+                        var passwordConfirmInput = $('<input>');
+                        passwordConfirmInput.attr('id','user-password-confirm');
+                        passwordConfirmInput.attr('type','password');
+                        passwordConfirmInput.addClass('form-control');
+                        passwordConfirmInput.attr('placeholder','Re-type Password');
+                        inputs.append(passwordConfirmInput);
+                        
+                        return inputs;
+                    },
+                    buttons: [{
+                        icon: 'glyphicon glyphicon-save',
+                        label: ' Update',
+                        cssClass: 'btn-success',
+                        action: function(dialogInItself){
+                            var $buttonIn = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                            $buttonIn.spin();
+                            dialogInItself.enableButtons(false);
+                            dialogInItself.setClosable(false);
+                            //send our update
+                            $.post("/api/update-user-password.php", {
+                                id : data.id,
+                                password : $('#user-password').val(),
+                                passwordConfirm : $('#user-password-confirm').val(),
+                            }).done(function(data) {
+                                $('#user-error').html(data);
+                                $buttonIn.stopSpin();
                                 $button.stopSpin();
                                 dialogInItself.close();
                                 enableDialogButtons(dialogItself);

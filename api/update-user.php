@@ -36,7 +36,7 @@ if( isset( $_POST['username'] ) && $_POST['username'] != "" ) {
     echo "Username is not provided";
     exit();
 }
-if( isset( $_POST['email'] ) && $_POST['email'] != "" ) {
+if( isset( $_POST['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
     $email = mysqli_real_escape_string ( $db, $_POST ['email'] );
 } else {
     echo "Email is not provided";
