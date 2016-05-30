@@ -29,6 +29,9 @@ if (getRole () != "admin") {
 <link
 	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
 	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
+	rel="stylesheet">
 
 
 </head>
@@ -85,6 +88,8 @@ if (getRole () != "admin") {
 
 	<script
 		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
 	<script src="/js/jquery.uploadfile.js"></script>
 	<script src="/js/admin.js"></script>
 
