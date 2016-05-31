@@ -145,7 +145,7 @@
 						alt="">
 					<div class="overlay">
 						<h2>About</h2>
-						<a class="info" href="#">See More</a>
+						<a class="info" href="/about.php">See More</a>
 					</div>
 				</div>
 			</div>

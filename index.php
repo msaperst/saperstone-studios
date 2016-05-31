@@ -22,8 +22,8 @@
 			</div>
 			<div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="http://placehold.it/700x450"
-						alt="">
+					<img class="img-responsive" src="/img/portraits.jpg" width="100%"
+						alt="Portraits">
 					<div class="overlay">
 						<h2>Portraits</h2>
 						<a class="info" href="/portrait/index.php">See More</a>
@@ -32,8 +32,8 @@
 			</div>
 			<div class="col-md-4 col-sm-6 col-xs-12">
 				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="http://placehold.it/700x450"
-						alt="">
+					<img class="img-responsive" src="/img/weddings.jpg" width="100%"
+						alt="Weddings">
 					<div class="overlay">
 						<h2>Weddings</h2>
 						<a class="info" href="#">See More</a>

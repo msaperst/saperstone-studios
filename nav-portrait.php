@@ -25,7 +25,7 @@
 						<li><a href="#">Vacations</a></li>
 					</ul></li>
 				<li><a href="#">Retouch</a></li>
-				<li><a href="#">About</a></li>
+				<li><a href="/about.php">About</a></li>
 				<li><a href="#">Reviews</a></li>
 				<li><a href="#">Blog</a></li>
 				<li><a href="/contact.php">Contact</a></li>
