@@ -249,7 +249,7 @@ function editAlbum(id) {
                         dragDrop: true,
                         uploadButtonLocation: $('.bootstrap-dialog-footer-buttons'),
                         uploadContainer: $('#upload-container'),
-                        uploadButtonClass: "btn btn-default btn-success",
+                        uploadButtonClass: "btn btn-default btn-info",
                         statusBarWidth: "48%",
                         dragdropWidth: "100%",
                         fileName: "myfile",

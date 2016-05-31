@@ -291,6 +291,39 @@ footer {
 	pointer-events: none;
 }
 
+/* our query results formatting */
+
+ul.search-results {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+	margin-top: -15px;
+	left: 15px;
+	right: auto;
+}
+
+.selected-album {
+	border: 1px solid lightgrey;
+	padding: 5px 0px 5px 5px;
+	margin: 5px;
+	border-radius: 5px;
+	pointer-events: none;
+}
+.selected-album:after {
+	content: '\f014';
+    font-family: FontAwesome;
+    font-weight: normal;
+    font-style: normal;
+    padding: 6px;
+    text-decoration: none;
+    background-color: red;
+    margin-left: 5px;
+    border-left: 1px solid lightgrey;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+    cursor: pointer;
+    pointer-events: all;
+}
+
 /* adjusting for low hanging banner */
 @media ( max-width : 768px) {
 	.page-content {
