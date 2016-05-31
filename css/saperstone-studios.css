@@ -305,7 +305,7 @@ ul.search-results {
 	display: inline-block;
 	border: 1px solid lightgrey;
 	padding: 3px 0px 3px 5px;
-	margin: 5px;
+	margin: 0px 5px 10px 5px;
 	border-radius: 5px;
 	pointer-events: none;
 }

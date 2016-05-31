@@ -284,9 +284,14 @@ function editUser(data) {
                             $buttonIn.spin();
                             dialogInItself.enableButtons(false);
                             dialogInItself.setClosable(false);
+                            var albums = [];
+                            $('#user-albums .selected-album').each(function(){
+                                albums.push( $(this).attr('album-id') );
+                            });
                             //send our update
                             $.post("/api/update-user-albums.php", {
-                                id : data.id,
+                                user : data.id,
+                                albums: albums
                             }).done(function(data) {
                                 $('#user-error').html(data);
                                 $buttonIn.stopSpin();
@@ -303,11 +308,21 @@ function editUser(data) {
                             dialogInItself.close();
                         }
                     }],
-                    onshow: function(dialogInItself){
+                    onshown: function(dialogInItself){
                         var albumsDiv = $('<div>');
                         albumsDiv.attr('id','user-albums');
-                        albumsDiv.css({'padding':'0px 10px 10px 10px'});
+                        albumsDiv.css({'padding':'0px 10px 5px 10px'});
                         dialogInItself.$modalBody.after(albumsDiv);
+                        $.get( 
+                            "/api/get-user-albums.php",
+                            { user: data.id },
+                            function( user_albums ) {
+                                for (var i = 0, len = user_albums.length; i < len; i++) {
+                                    addAlbum( user_albums[i].album );
+                                }
+                            },
+                            "json"
+                        );
                     }
                 });
             }
