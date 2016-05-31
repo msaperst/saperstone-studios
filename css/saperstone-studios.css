@@ -302,8 +302,9 @@ ul.search-results {
 }
 
 .selected-album {
+	display: inline-block;
 	border: 1px solid lightgrey;
-	padding: 5px 0px 5px 5px;
+	padding: 3px 0px 3px 5px;
 	margin: 5px;
 	border-radius: 5px;
 	pointer-events: none;
