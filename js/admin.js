@@ -141,6 +141,117 @@ function editAlbum(id) {
                     return inputs;
                 }, 
                 buttons: [{
+                    id: 'album-users-btn',
+                    icon: 'glyphicon glyphicon-picture',
+                    label: ' Update Users',
+                    cssClass: 'btn-info',
+                    action: function(dialogItself){
+                        var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                        $button.spin();
+                        disableDialogButtons(dialogItself);
+                        //send our update
+                        BootstrapDialog.show({
+                            draggable: true,
+                            title: 'Users for Album <b>' + data.name + '</b>',
+                            message: function(dialogInItself){
+                                var inputs = $('<div class="open">');
+
+                                var searchInput = $('<input>');
+                                searchInput.attr('id','user-search');
+                                searchInput.attr('type','text');
+                                searchInput.addClass('form-control');
+                                searchInput.attr('placeholder','Enter User Name');
+                                searchInput.on("keyup focus", function(){
+                                    var search_ele = $(this);
+                                    var keyword = search_ele.val();
+                                    $.get( 
+                                        "/api/search-users.php",
+                                        { keyword: keyword }, 
+                                        function( data ) {
+                                            $('.search-results').remove();
+                                            var results_ul = $('<ul class="dropdown-menu search-results">');
+                                            $.each(data, function(key, user) {
+                                                if( $(".selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
+                                                } else {
+                                                    var result_li = $('<li>');
+                                                    var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
+                                                    result_a.click(function(){
+                                                        addUser( user.id );
+                                                        $('.search-results').remove();
+                                                    });
+                                                    results_ul.append(result_li.append(result_a));
+                                                }
+                                            });
+                                            results_ul.hover(
+                                                function () { resultsSelected = true; },
+                                                function () { resultsSelected = false; }
+                                            );
+                                            search_ele.after( results_ul );
+                                        },
+                                        "json"
+                                    );
+                                });
+                                searchInput.focusout(function(event){
+                                    if( !resultsSelected ) {
+                                        $('.search-results').remove();
+                                    }
+                                });
+                                inputs.append(searchInput);
+
+                                return inputs;
+                            },
+                            buttons: [{
+                                icon: 'glyphicon glyphicon-save',
+                                label: ' Update',
+                                cssClass: 'btn-success',
+                                action: function(dialogInItself){
+                                    var $buttonIn = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                                    $buttonIn.spin();
+                                    dialogInItself.enableButtons(false);
+                                    dialogInItself.setClosable(false);
+                                    var users = [];
+                                    $('#album-users .selected-album').each(function(){
+                                        users.push( $(this).attr('user-id') );
+                                    });
+                                    //send our update
+                                    $.post("/api/update-album-users.php", {
+                                        album : data.id,
+                                        users: users
+                                    }).done(function(data) {
+                                        $('#new-album-error').html(data);
+                                        $buttonIn.stopSpin();
+                                        $button.stopSpin();
+                                        dialogInItself.close();
+                                        enableDialogButtons(dialogItself);
+                                    });                    
+                                }
+                            }, {
+                                label: 'Close',
+                                action: function(dialogInItself){
+                                    $button.stopSpin();
+                                    enableDialogButtons(dialogItself);
+                                    dialogInItself.close();
+                                }
+                            }],
+                            onshown: function(dialogInItself){
+                                var albumsDiv = $('<div>');
+                                albumsDiv.attr('id','album-users');
+                                albumsDiv.css({'padding':'0px 10px 5px 10px'});
+                                dialogInItself.$modalBody.after(albumsDiv);
+                                $.get( 
+                                    "/api/get-album-users.php",
+                                    { album: data.id },
+                                    function( album_users ) {
+                                        for (var i = 0, len = album_users.length; i < len; i++) {
+                                            addUser( album_users[i].user );
+                                        }
+                                    },
+                                    "json"
+                                );
+                            }
+                        });
+                    }
+                }, {
                     icon: 'glyphicon glyphicon-trash',
                     label: ' Delete Album',
                     cssClass: 'btn-danger',
@@ -282,6 +393,25 @@ function editAlbum(id) {
         },
         "json"
     );
+}
+
+function addUser(id) {
+    var albumSpan = $('<span>');
+    albumSpan.addClass('selected-album');
+    albumSpan.attr('user-id',id);
+    albumSpan.click(function(){
+        $(this).remove();
+    });
+    $.get( 
+        "/api/get-user.php",
+        { id: id },
+        function( data ) {
+            albumSpan.html(data.usr);
+            $('#album-users').append(albumSpan);
+        },
+        "json"
+    );
+    
 }
 
 function disableDialogButtons(dialog) {
