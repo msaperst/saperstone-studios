@@ -14,6 +14,7 @@ require_once "../php/user.php";
 
 if (! isset ( $_GET ['album'] )) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
+    include "../errors/404.php";
     exit ();
 }
 require "../php/sql.php";
@@ -21,6 +22,7 @@ $sql = "SELECT * FROM `albums` WHERE id = '" . $_GET ['album'] . "';";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
 if (! $album_info ['name']) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
+    include "../errors/404.php";
     exit ();
 }
 ?>

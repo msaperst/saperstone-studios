@@ -12,6 +12,7 @@ require_once "../php/user.php";
 
 if (getRole () != "admin") {
     header ( 'HTTP/1.0 401 Unauthorized' );
+    include "../errors/401.php";
     exit ();
 }
 
