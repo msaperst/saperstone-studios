@@ -14,7 +14,7 @@ require_once "../php/user.php";
 
 // ensure we are logged in appropriately
 if (getRole () != "admin") {
-    header ( "HTTP/1.0 403 Forbidden" );
+    header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }
 

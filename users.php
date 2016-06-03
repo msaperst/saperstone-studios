@@ -11,7 +11,7 @@ session_start ();
 require_once "php/user.php";
 
 if (getRole () != "admin") {
-    header ( "HTTP/1.0 403 Forbidden" );
+    header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }
 
