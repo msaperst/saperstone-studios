@@ -40,7 +40,10 @@ if (isset ( $_POST ['date'] )) {
 // generate our location for the files
 $location = preg_replace ( "/[^A-Za-z0-9]/", '', $name );
 $location = $location . "_" . time ();
-mkdir ( "../albums/$location" );
+if (! mkdir ( "../albums/$location", 0755, true )) {
+    echo "Unable to create album";
+    exit ();
+}
 
 $sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`) VALUES ('$name', '$description', '$date', '$location');";
 mysqli_query ( $db, $sql );
