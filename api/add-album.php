@@ -41,6 +41,8 @@ if (isset ( $_POST ['date'] )) {
 $location = preg_replace ( "/[^A-Za-z0-9]/", '', $name );
 $location = $location . "_" . time ();
 if (! mkdir ( "../albums/$location", 0755, true )) {
+    $error = error_get_last();
+    echo "$error<br/>";
     echo "Unable to create album";
     exit ();
 }
