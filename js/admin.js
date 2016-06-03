@@ -368,7 +368,7 @@ function editAlbum(id) {
                         fileName: "myfile",
                         sequential: true,
                         sequentialCount: 5,
-                        acceptFiles: "image/*",
+                        acceptFiles: "image/*,.nef,.cr2",
                         uploadQueueOrder: "bottom",
                         formData: { "album" : id },
                         onLoad: function(obj) {
