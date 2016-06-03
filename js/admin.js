@@ -80,7 +80,7 @@ $(document).ready(function() {
                         description : $('#new-album-description').val(),
                         date : $('#new-album-date').val()
                     }).done(function(data) {
-                        if( Math.round(data) == data && data !== 0 ) {
+                        if( Math.round(data) == data && data !== '0' ) {
                             var table = $('#albums').DataTable();
                             table.row.add({
                                 "id":           data,
@@ -93,7 +93,7 @@ $(document).ready(function() {
                             }).draw(false);
                             dialogItself.close();
                             editAlbum( data );
-                        } else if ( data === 0 ) {
+                        } else if ( data === '0' ) {
                             $('#new-album-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
                         } else {
                             $('#new-album-error').html(data);

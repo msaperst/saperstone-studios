@@ -487,7 +487,7 @@ function editUser(data) {
                     role : $('#user-role').val(),
                     active : $('#user-active').is(':checked') ? 1 : 0,
                 }).done(function(data) {
-                    if( Math.round(data) == data && data !== 0 ) {
+                    if( Math.round(data) == data && data !== '0' ) {
                         user_table.ajax.reload( null, false );
                         dialogItself.close();
                         // reload the modal
@@ -499,7 +499,7 @@ function editUser(data) {
                             },
                             "json"
                         );
-                    } else if ( data === 0 ) {
+                    } else if ( data === '0' ) {
                         $('#user-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
                     } else {
                         $('#user-error').html(data);
