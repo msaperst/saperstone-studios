@@ -12,12 +12,19 @@ session_start ();
 
 require_once "../php/user.php";
 
-if (getRole () != "admin") {
+if ( !isLoggedIn() ) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }
 
-$sql = "SELECT albums.*, COUNT(album_images.album) AS 'images' FROM albums LEFT JOIN album_images ON albums.id = album_images.album GROUP BY albums.id;";
+$sql;
+
+if( getRole() == "admin" ) {    
+    $sql = "SELECT albums.*, COUNT(album_images.album) AS 'images' FROM albums LEFT JOIN album_images ON albums.id = album_images.album GROUP BY albums.id;";
+} else {
+    $id = getUserId();
+    $sql = "SELECT albums.*, COUNT(album_images.album) AS 'images' FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id LEFT JOIN album_images ON albums.id = album_images.album WHERE albums_for_users.user = '$id' GROUP BY albums.id;";
+}
 $result = mysqli_query ( $db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     $r ['date'] = substr( $r ['date'], 0, 10 );

@@ -20,7 +20,13 @@ if (getRole () != "admin") {
 if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
     $id = $_POST ['album'];
 } else {
-    echo "Album id is required!";
+    if( !isset ( $_POST ['album'] ) ) {
+        echo "Album id is required!";
+    } elseif ( $_POST ['album'] != "" ) {
+        echo "Album id cannot be blank!";
+    } else {
+        echo "Some other Album id error occurred!";
+    }
     exit ();
 }
 

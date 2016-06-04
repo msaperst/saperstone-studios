@@ -3,7 +3,7 @@ var album_table;
 $(document).ready(function() {
     album_table = $('#albums').DataTable({
         "ajax" : "/api/get-albums.php",
-        "order": [[ 2, "asc" ]],
+        "order": [[ 1, "asc" ]],
         "columnDefs": [
             {
                 "orderable" : false,
@@ -15,33 +15,27 @@ $(document).ready(function() {
                 },
                 "targets" : 0
             }, {
-                "data" : "id",
-                "className" : "album-id",
-                "visible": false,
-                "searchable": false,
-                "targets" : 1
-            }, {
                 "data" : function(row, type, val, meta) {
                     return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
                 },
                 "className" : "album-name",
-                "targets" : 2
+                "targets" : 1
             }, {
                 "data" : "description",
                 "className" : "album-description",
-                "targets" : 3
+                "targets" : 2
             }, {
                 "data" : "date",
                 "className" : "album-date",
-                "targets" : 4
+                "targets" : 3
             }, {
                 "data" : "images",
                 "className" : "album-images",
-                "targets" : 5
+                "targets" : 4
             }, {
                 "data" : "lastAccessed",
                 "className" : "album-last-accessed",
-                "targets" : 6
+                "targets" : 5
             }
         ],
         "fnCreatedRow": function( nRow, aData, iDataIndex ) {

@@ -9,6 +9,18 @@ function isLoggedIn() {
     }
     return false;
 }
+
+function getUserId() {
+    require "sql.php";
+    if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
+        $row = mysqli_fetch_assoc ( mysqli_query ( $db, "SELECT id FROM users WHERE hash='{$_SESSION['hash']}';" ) );
+        if ($row ['id']) {
+            return $row ['id'];
+        }
+    }
+    return "";
+}
+
 function getUser() {
     require "sql.php";
     if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {

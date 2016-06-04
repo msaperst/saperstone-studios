@@ -26,7 +26,9 @@ $nav = "main";
 	Saperstone Studios</title>
 
 <!-- Bootstrap Core CSS -->
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+<link
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	rel="stylesheet">
 
 <!-- Custom CSS -->
 <link href="/css/modern-business.css" rel="stylesheet">

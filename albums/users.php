@@ -8,11 +8,11 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "php/user.php";
+require_once "../php/user.php";
 
 if (getRole () != "admin") {
     header ( 'HTTP/1.0 401 Unauthorized' );
-    include "errors/401.php";
+    include "../errors/401.php";
     exit ();
 }
 
@@ -23,7 +23,7 @@ if (getRole () != "admin") {
 
 <head>
 
-	<?php require_once "header.php"; ?>
+	<?php require_once "../header.php"; ?>
 	<link
 	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
 	rel="stylesheet">
@@ -35,7 +35,7 @@ if (getRole () != "admin") {
 
 <body>
 
-    <?php require_once "nav.php"; ?>
+    <?php require_once "../nav.php"; ?>
 
     <!-- Page Content -->
 	<div class="page-content container">
@@ -79,7 +79,7 @@ if (getRole () != "admin") {
 		</div>
 		<!-- /.row -->
 
-        <?php require_once "footer.php"; ?>
+        <?php require_once "../footer.php"; ?>
 
     </div>
 	<!-- /.container -->

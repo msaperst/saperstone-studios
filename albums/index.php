@@ -10,7 +10,7 @@ session_start ();
 
 require_once "../php/user.php";
 
-if (getRole () != "admin") {
+if ( !isLoggedIn() ) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     include "../errors/401.php";
     exit ();
@@ -47,12 +47,27 @@ if (getRole () != "admin") {
 		<!-- Page Heading/Breadcrumbs -->
 		<div class="row">
 			<div class="col-lg-12">
+				<?php 
+				if( getRole() == "admin" ) {
+				?>
 				<h1 class="page-header text-center">Manage Albums</h1>
 				<ol class="breadcrumb">
 					<li><a href="/">Home</a></li>
 					<li class="active">Administration</li>
 					<li class="active">Manage Albums</li>
 				</ol>
+				<?php
+				} else {
+				?>
+				<h1 class="page-header text-center">View Albums</h1>
+				<ol class="breadcrumb">
+					<li><a href="/">Home</a></li>
+					<li class="active">Profile</li>
+					<li class="active">Albums</li>
+				</ol>
+				<?php 
+				}
+				?>
 			</div>
 		</div>
 		<!-- /.row -->
@@ -63,18 +78,29 @@ if (getRole () != "admin") {
 				<table id="albums" class="display" cellspacing="0" width="100%">
 					<thead>
 						<tr>
+    						<?php
+    						if( getRole() == "admin" || getRole() == "uploader" ) {
+    						?>
 							<th>
 								<button id="add-album-btn" type="button"
 									class="btn btn-xs btn-success">
 									<i class="fa fa-plus"></i>
 								</button>
 							</th>
-							<th>ID</th>
+    						<?php
+    						}
+    						?>
 							<th>Album Name</th>
 							<th>Album Description</th>
 							<th>Album Date</th>
 							<th>Images</th>
+    						<?php
+    						if( getRole() == "admin" || getRole() == "uploader" ) {
+    						?>
 							<th>Last Accessed</th>
+    						<?php 
+    						}
+    						?>
 						</tr>
 					</thead>
 				</table>
@@ -92,7 +118,17 @@ if (getRole () != "admin") {
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
 	<script src="/js/jquery.uploadfile.js"></script>
-	<script src="/js/admin.js"></script>
+	<?php
+	if( getRole() == "admin" || getRole() == "uploader" ) {
+	?>
+	<script src="/js/albums-manage.js"></script>
+	<?php
+	} else {
+	?>
+	<script src="/js/albums.js"></script>
+	<?php
+	}
+	?>
 
 </body>
 

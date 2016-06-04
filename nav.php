@@ -26,34 +26,38 @@
 		    }
 		    ?>
 		    
-				<?php
-                    if (getRole () == "admin") {
+              	<?php
+                    if (!isLoggedIn ()) {
                 ?>
-				<li class="dropdown"><a href="javascript:void(0);"
-					class="dropdown-toggle" data-toggle="dropdown">Admin<b
-						class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li><a href="/users.php">Manage Users</a></li>
-						<li><a href="/albums/manage.php">Manage Albums</a></li>
-						<li><a href="#">Manage Posts</a></li>
-						<li><a href="#">Write New Post</a></li>
-					</ul></li>
-				<?php
+    			<li><a href="javascript:void(0);" data-toggle="modal" data-target="#login-modal"><i class="fa fa-sign-in"></i> Login</a></li>
+                <?php
+                    } elseif (getRole () == "admin") {
+                ?>
+    			<li class="dropdown"><a href="javascript:void(0);"
+    				class="dropdown-toggle" data-toggle="dropdown"><?php echo getUser (); ?><b
+    					class="caret"></b></a>
+    				<ul class="dropdown-menu">
+    					<li><a href="/albums/users.php">Manage Users</a></li>
+    					<li><a href="/albums/index.php">Manage Albums</a></li>
+    					<li><a href="#">Manage Posts</a></li>
+    					<li><a href="#">Write New Post</a></li>
+    					<li><a href="#">Manage Profile</a></li>
+    					<li><a id='logout-button' href="javascript:void(0);"><i class="fa fa-sign-out"></i> Logout</a></li>
+    				</ul></li>
+           	    <?php
+                    } else {
+                ?>
+    			<li class="dropdown"><a href="javascript:void(0);"
+    				class="dropdown-toggle" data-toggle="dropdown"><?php echo getUser (); ?><b
+    					class="caret"></b></a>
+    				<ul class="dropdown-menu">
+    					<li><a href="/albums/index.php">View Albums</a></li>
+    					<li><a href="#">Manage Profile</a></li>
+    					<li><a id='logout-button' href="javascript:void(0);"><i class="fa fa-sign-out"></i> Logout</a></li>
+    				</ul></li>
+           	    <?php
                     }
                 ?>
-				<li>
-                  	<?php
-                        if (!isLoggedIn ()) {
-                    ?>
-                    <a href="javascript:void(0);" data-toggle="modal" data-target="#login-modal"><i class="fa fa-sign-in"></i> Login</a>
-                    <?php
-                        } else {
-                    ?>
-                    <a id='logout-button' href="javascript:void(0);"><i class="fa fa-sign-out"></i> Logout (<?php echo getUser (); ?>)</a>               	        
-               	    <?php
-                        }
-                    ?>
-                    </li>
 
 			</ul>
 		</div>
