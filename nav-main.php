@@ -44,7 +44,14 @@
 						class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a href="/about.php">About</a></li>
+        				<?php
+                        if (!isLoggedIn ()) {
+                        ?>
+						<li><a href="/albums.php">Albums</a></li>
+                        <?php
+                        }
+                        ?>
         				<li><a href="/services.html">Services</a></li>
-        				<li><a href="/services.html">Reviews</a></li>
+        				<li><a href="#">Reviews</a></li>
         				<li><a href="/contact.php">Contact</a></li>
 					</ul></li>
