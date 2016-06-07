@@ -61,7 +61,7 @@ Album.prototype.loadImages = function() {
                     shortest.obj.append(holder);
                 });
                 // when we done, see if we need to load more
-                if( $('footer').isOnScreen() ) {
+                if( $('footer').isOnScreen() && Album.totalImages > Album.loaded) {
                     Album.loadImages();
                 } else {
                 }
