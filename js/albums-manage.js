@@ -54,7 +54,6 @@ $(document).ready(function() {
                 var inputs =  '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control"/>' +
                    '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control"/>' +
                    '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>' +
-                   '<div id="upload-container"></div>' + 
                    '<div id="new-album-error" class="error"></div>' +
                    '<div id="new-album-message" class="success"></div>';
                 return inputs;
@@ -127,6 +126,8 @@ function editAlbum(id) {
                     var inputs =  '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' +
                        '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' +
                        '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' +
+                       '<p></p>' +
+                       '<input placeholder="Album Code" id="new-album-code" type="text" class="form-control" value="' + data.code + '" />' +
                        '<p></p>' +
                        '<div id="upload-container"></div>' +
                        '<div id="resize-progress" class="progress">' +
@@ -336,6 +337,7 @@ function editAlbum(id) {
                             name : $('#new-album-name').val(),
                             description : $('#new-album-description').val(),
                             date : $('#new-album-date').val(),
+                            code : $('#new-album-code').val(),
                         }).done(function(data) {
                             dialogItself.close();
                             album_table.ajax.reload( null, false );

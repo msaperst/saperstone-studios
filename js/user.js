@@ -155,7 +155,7 @@ function editUser(data) {
             emailInputDiv.addClass('col-sm-10');
             var emailInput = $('<input>');
             emailInput.attr('id','user-email');
-            emailInput.attr('type','text');
+            emailInput.attr('type','email');
             emailInput.addClass('form-control');
             emailInput.attr('placeholder','Email Address');
             if ( data !== null ) {

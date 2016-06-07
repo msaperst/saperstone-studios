@@ -36,9 +36,18 @@ if( isset( $_POST['description'] ) ) {
 if( isset( $_POST['date'] ) ) {
     $date = mysqli_real_escape_string ( $db, $_POST ['date'] );
 }
+if( isset( $_POST['code'] ) && $_POST['code'] != "" ) {
+    $code = mysqli_real_escape_string ( $db, $_POST ['code'] );
+}
 
-$sql = "UPDATE albums SET name='$name', description='$description', date='$date' WHERE id='$id';";
+$sql = "UPDATE albums SET name='$name', description='$description', date='$date', code=NULL WHERE id='$id';";
 mysqli_query ( $db, $sql );
+if( isset( $_POST['code'] ) && $_POST['code'] != "" ) {
+    echo "setting code";
+    $code = mysqli_real_escape_string ( $db, $_POST ['code'] );
+    $sql = "UPDATE albums SET code='$code' WHERE id='$id';";
+    mysqli_query ( $db, $sql );
+}
 exit ();
 
 ?>

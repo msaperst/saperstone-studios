@@ -1,3 +1,5 @@
+var my_role;
+
 $(function() {
     $('#nav-search-input').width(
             $('#nav-search-input').parent().parent().width() - 50);
@@ -77,10 +79,18 @@ $(function() {
     
     if (window.location.hash) {
         if (window.location.hash == "#album") {
-            findAlbum();
+            $.get("/api/get-my-role.php", {
+            }).done(function(data) {
+                my_role = data;
+                findAlbum();
+            });
         }
     }
     
+    $.get("/api/get-my-role.php", {
+    }).done(function(data) {
+        my_role = data;
+    });
 });
 window.onhashchange=function(){
     if (window.location.hash == "#album") {
@@ -102,14 +112,20 @@ function findAlbum() {
         draggable: true,
         title: 'Find An Album',
         message: function(dialogItself){
-            var inputs =  '<input placeholder="Album Code" id="find-album-code" type="text" class="form-control"/>' +
-               '<div id="find-album-error" class="error"></div>' +
+            var inputs =  '<input placeholder="Album Code" id="find-album-code" type="text" class="form-control"/>';
+            if( my_role == 'downloader' || my_role == 'uploader' ) {
+                inputs += '<div class="checkbox">' +
+                        '<label><input id="find-album-add" type="checkbox" value="" checked>Add to my albums</label>' + 
+                        '</div>';
+            }
+            inputs += '<div id="find-album-error" class="error"></div>' +
                '<div id="find-album-message" class="success"></div>';
             return inputs;
         }, 
         buttons: [{
             icon: 'glyphicon glyphicon-search',
             label: ' Find Album',
+            hotkey: 13,
             cssClass: 'btn-success',
             action: function(dialogItself){
                 var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
@@ -117,13 +133,22 @@ function findAlbum() {
                 dialogItself.enableButtons(false);
                 dialogItself.setClosable(false);
                 //send our update
-                $.post("/api/find-album.php", {
-                    code : $('#find-album-code').val()
+                $.get("/api/find-album.php", {
+                    code : $('#find-album-code').val(),
+                    albumAdd : $('#find-album-add').is(':checked') ? 1 : 0,
                 }).done(function(data) {
-                    //goto album url
                     $button.stopSpin();
                     dialogItself.enableButtons(true);
                     dialogItself.setClosable(true);
+                    //goto album url if it exists
+                    if( Math.round(data) == data && data !== '0' ) {
+                        $('#find-album-message').html("Navigating to album");
+                        window.location.href = '/albums/album.php?album=' + data;
+                    } else if ( data === '0' ) {
+                        $('#find-album-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
+                    } else {
+                        $('#find-album-error').html(data);
+                    }
                 });                    
             }
         }, {
