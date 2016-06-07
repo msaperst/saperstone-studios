@@ -25,15 +25,11 @@ if ( !isLoggedIn() ) {
 
 	<?php require_once "../header.php"; ?>
 	<link
-	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
-	rel="stylesheet">
-<link
-	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
-	rel="stylesheet">
-<link
-	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
-	rel="stylesheet">
-
+    	href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
+    	rel="stylesheet">
+	<link
+    	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    	rel="stylesheet">
 
 </head>
 
@@ -75,6 +71,18 @@ if ( !isLoggedIn() ) {
 		<!-- Services Section -->
 		<div class="row">
 			<div class="col-lg-12">
+    			<?php 
+    			if( getRole() != "admin" ) {
+    			?>
+        			<div id="add-album-div" class="form-group form-inline text-center">
+                    	<label for="album-code">Add Album:</label>
+                    	<input type="text" class="form-control" id="album-code" placeholder="Album Code" />
+                    	<button class="btn btn-success" id="album-code-add"><i class="fa fa-plus-circle"></i>
+                  	</div>
+                  	<div id="add-album-error" class="error"></div>
+				<?php
+				}
+				?>
 				<table id="albums" class="display" cellspacing="0" width="100%">
 					<thead>
 						<tr>
@@ -115,8 +123,6 @@ if ( !isLoggedIn() ) {
 
 	<script
 		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
 	<script src="/js/jquery.uploadfile.js"></script>
 	<?php
 	if( getRole() == "admin" || getRole() == "uploader" ) {

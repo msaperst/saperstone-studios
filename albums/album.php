@@ -100,11 +100,13 @@ if (! $album_info ['name']) {
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
 					<h4 class="modal-title"><?php echo $album_info['name']; ?>
-						<small><?php echo $album_info['description']; ?></small></h4>
+						<small><?php echo $album_info['description']; ?></small>
+					</h4>
 				</div>
 				<div class="modal-body">
 					<!-- Carousel -->
-					<div id="album-carousel" class="carousel slide carousel-three-by-two">
+					<div id="album-carousel"
+						class="carousel slide carousel-three-by-two">
 						<!-- Indicators -->
 						<!-- 						<ol class="carousel-indicators"> -->
             			<?php
@@ -148,28 +150,39 @@ if (! $album_info ['name']) {
 				<div class="modal-footer">
 					<span class="pull-left">
 						<?php
-						$disabled = "";
-    					if( !isLoggedIn() ) {
-    					?>
-        					<div class="tooltip-wrapper disabled" data-toggle="tooltip" data-placement="top" title="Login or create an account for this feature.">
-        						<button type="button" class="btn btn-default" disabled>Purcahse/Download Image</button>
-        					</div>
-        					<div class="tooltip-wrapper disabled" data-toggle="tooltip" data-placement="top" title="Login or create an account for this feature.">
-	        					<button type="button" class="btn btn-default" disabled>Purcahse/Share Image</button>
-        					</div>
-        					<div class="tooltip-wrapper disabled" data-toggle="tooltip" data-placement="top" title="Login or create an account for this feature.">
-								<button type="button" class="btn btn-default" disabled>Add to Cart</button>
-        					</div>
+    $disabled = "";
+    if (! isLoggedIn ()) {
+        ?>
+        					<div class="tooltip-wrapper disabled" data-toggle="tooltip"
+							data-placement="top"
+							title="Login or create an account for this feature.">
+							<button type="button" class="btn btn-default" disabled>Purcahse/Download
+								Image</button>
+						</div>
+						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
+							data-placement="top"
+							title="Login or create an account for this feature.">
+							<button type="button" class="btn btn-default" disabled>Purcahse/Share
+								Image</button>
+						</div>
+						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
+							data-placement="top"
+							title="Login or create an account for this feature.">
+							<button type="button" class="btn btn-default" disabled>Add to
+								Cart</button>
+						</div>
 					    <?php
-    					} else {
-					    ?>
-    					<button type="button" class="btn btn-default">Purcahse/Download Image</button>
-    					<button type="button" class="btn btn-default">Purcahse/Share Image</button>
+    } else {
+        ?>
+    					<button type="button" class="btn btn-default">Purcahse/Download
+							Image</button>
+						<button type="button" class="btn btn-default">Purcahse/Share Image</button>
 						<button type="button" class="btn btn-default">Add to Cart</button>
-						<?php    					    
-    					}
-    					?>
-    					<button type="button" class="btn btn-default" >Set/Unset As Favorite</button>
+						<?php
+    }
+    ?>
+    					<button type="button" class="btn btn-default">Set/Unset As
+							Favorite</button>
 					</span>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>

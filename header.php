@@ -31,6 +31,9 @@ $nav = "main";
 	rel="stylesheet"
 	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
 	crossorigin="anonymous">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
+	rel="stylesheet">
 
 <!-- Custom CSS -->
 <link href="/css/modern-business.css" rel="stylesheet">

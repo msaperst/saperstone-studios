@@ -29,4 +29,17 @@ $(document).ready(function() {
             $(nRow).attr('album-id',aData.id);
         }
     });
+    
+    $('#add-album-div').keypress(function(e) {
+        if(e.which == 13) {
+            addAlbum();
+        }
+    });
+    $('#album-code-add').click(function(){
+        addAlbum();
+    });
 });
+
+function addAlbum() {
+    
+}

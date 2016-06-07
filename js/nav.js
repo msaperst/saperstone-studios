@@ -74,7 +74,19 @@ $(function() {
             }
         });
     });
+    
+    if (window.location.hash) {
+        if (window.location.hash == "#album") {
+            findAlbum();
+        }
+    }
+    
 });
+window.onhashchange=function(){
+    if (window.location.hash == "#album") {
+        findAlbum();
+    }
+};
 
 function resetPasswordForm() {
     $('#forgot-password-instructions').hide();
@@ -83,4 +95,43 @@ function resetPasswordForm() {
     $('#forgot-password-new-password').show();
     $('#forgot-password-new-password-confirm').show();
     $('#forgot-password-reset-password').show();
+}
+
+function findAlbum() {
+    BootstrapDialog.show({
+        draggable: true,
+        title: 'Find An Album',
+        message: function(dialogItself){
+            var inputs =  '<input placeholder="Album Code" id="find-album-code" type="text" class="form-control"/>' +
+               '<div id="find-album-error" class="error"></div>' +
+               '<div id="find-album-message" class="success"></div>';
+            return inputs;
+        }, 
+        buttons: [{
+            icon: 'glyphicon glyphicon-search',
+            label: ' Find Album',
+            cssClass: 'btn-success',
+            action: function(dialogItself){
+                var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                $button.spin();
+                dialogItself.enableButtons(false);
+                dialogItself.setClosable(false);
+                //send our update
+                $.post("/api/find-album.php", {
+                    code : $('#find-album-code').val()
+                }).done(function(data) {
+                    //goto album url
+                    $button.stopSpin();
+                    dialogItself.enableButtons(true);
+                    dialogItself.setClosable(true);
+                });                    
+            }
+        }, {
+            label: 'Close',
+            action: function(dialogItself){
+                window.location.hash = "";
+                dialogItself.close();
+            }
+        }],
+    });
 }
