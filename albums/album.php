@@ -10,9 +10,7 @@ session_start ();
 
 require_once "../php/user.php";
 
-// TODO - need to put in some authentication checks here
-
-if (! isset ( $_GET ['album'] )) {
+if (! isset ( $_GET ['album'] )) { //if no album is set, throw a 404 error
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "../errors/404.php";
     exit ();
@@ -20,10 +18,30 @@ if (! isset ( $_GET ['album'] )) {
 require "../php/sql.php";
 $sql = "SELECT * FROM `albums` WHERE id = '" . $_GET ['album'] . "';";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
-if (! $album_info ['name']) {
+if (! $album_info ['name']) {   //if the album doesn't exist, throw a 404 error
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "../errors/404.php";
     exit ();
+}
+
+if( getRole() != "admin" && $album_info['code'] == "" ) {    //if not an admin and no exists for the album
+    if( !isLoggedIn() ) {   //if not logged in, throw an error
+        header ( 'HTTP/1.0 401 Unauthorized' );
+        include "../errors/401.php";
+        exit ();
+    } else {
+        $sql = "SELECT * FROM albums_for_users WHERE user = '" . getUserId() . "';";
+        $result = mysqli_query ( $db, $sql );
+        $albums = array();
+        while ( $r = mysqli_fetch_assoc ( $result ) ) {
+            $albums [] = $r['album'];
+        }
+        if( ! in_array( $_GET ['album'], $albums ) ) {  //if not in album list
+            header ( 'HTTP/1.0 401 Unauthorized' );
+            include "../errors/401.php";
+            exit ();
+        }
+    }
 }
 ?>
 
