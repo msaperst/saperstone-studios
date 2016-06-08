@@ -1,6 +1,10 @@
 var my_role;
+var my_id;
 
 $(function() {
+    my_role = $('#my-user-role').val();
+    my_id = $('#my-user-id').val();
+    
     $('#nav-search-input').width(
             $('#nav-search-input').parent().parent().width() - 50);
 
@@ -79,18 +83,9 @@ $(function() {
     
     if (window.location.hash) {
         if (window.location.hash == "#album") {
-            $.get("/api/get-my-role.php", {
-            }).done(function(data) {
-                my_role = data;
-                findAlbum();
-            });
+            findAlbum();
         }
     }
-    
-    $.get("/api/get-my-role.php", {
-    }).done(function(data) {
-        my_role = data;
-    });
 });
 window.onhashchange=function(){
     if (window.location.hash == "#album") {

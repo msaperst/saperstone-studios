@@ -103,9 +103,10 @@ if ( !isLoggedIn() ) {
 							<th>Album Date</th>
 							<th>Images</th>
     						<?php
-    						if( getRole() == "admin" || getRole() == "uploader" ) {
+    						if( getRole() == "admin" ) {
     						?>
 							<th>Last Accessed</th>
+							<th>Access Code</th>
     						<?php 
     						}
     						?>
@@ -125,9 +126,13 @@ if ( !isLoggedIn() ) {
 		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 	<script src="/js/jquery.uploadfile.js"></script>
 	<?php
-	if( getRole() == "admin" || getRole() == "uploader" ) {
+	if( getRole() == "admin" ) {
 	?>
-	<script src="/js/albums-manage.js"></script>
+	<script src="/js/albums-admin.js"></script>
+	<?php
+	} elseif ( getRole() == "uploader" ) {
+	?>
+	<script src="/js/albums-uploader.js"></script>
 	<?php
 	} else {
 	?>

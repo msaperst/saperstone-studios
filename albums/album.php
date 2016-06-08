@@ -82,12 +82,10 @@ if( getRole() != "admin" && $album_info['code'] == "" ) {    //if not an admin a
 				<ol class="breadcrumb">
 					<li><a href="/">Home</a></li>
 					<?php
-    if (getRole () == "admin") {
-        echo "<li><a href=\"/albums/manage.php\">Albums</a></li>";
-    } else {
-        echo "<li><a href=\"/albums/index.php\">Albums</a></li>";
-    }
-    ?>
+                    if (isLoggedIn ()) {
+                        echo "<li><a href=\"/albums/index.php\">Albums</a></li>";
+                    }
+                    ?>
 					<li class="active"><?php echo $album_info['name']; ?></li>
 				</ol>
 			</div>

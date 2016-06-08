@@ -12,15 +12,31 @@ session_start ();
 
 require_once "../php/user.php";
 
-if (getRole () != "admin") {
-    header ( 'HTTP/1.0 401 Unauthorized' );
+$id = "";
+if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
+    $id = ( int ) $_POST ['id'];
+} else {
+    if (! isset ( $_POST ['id'] )) {
+        echo "Album id is required!";
+    } elseif ($_POST ['id'] != "") {
+        echo "Album id cannot be blank!";
+    } else {
+        echo "Some other Album id error occurred!";
+    }
     exit ();
 }
 
-if (isset ( $_POST ['id'] )) {
-    $id = $_POST ['id'];
+$sql = "SELECT * FROM albums WHERE id = $id;";
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+if ($album_info ['id']) {
 } else {
-    echo "ID is not provided";
+    echo "That ID doesn't match any albums";
+    exit ();
+}
+// only admin users and uploader users who own the album can make updates
+if (getRole () == "admin" || (getRole () == "uploader" && getUserId () == $album_info ['owner'])) {
+} else {
+    header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }
 
@@ -30,9 +46,11 @@ $sql = "DELETE FROM albums WHERE id='$id';";
 mysqli_query ( $db, $sql );
 $sql = "DELETE FROM album_images WHERE album='$id';";
 mysqli_query ( $db, $sql );
+$sql = "DELETE FROM albums_for_users WHERE album='$id';";
+mysqli_query ( $db, $sql );
 
-if( $row ['location'] != "" ) {
-    system("rm -rf ".escapeshellarg("../albums/" . $row ['location']));
+if ($row ['location'] != "") {
+    system ( "rm -rf " . escapeshellarg ( "../albums/" . $row ['location'] ) );
 }
 exit ();
 

@@ -13,7 +13,7 @@ session_start ();
 require_once "../php/user.php";
 
 // ensure we are logged in appropriately
-if (getRole () != "admin") {
+if (getRole () != "admin" && getRole () != "uploader") {
     header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }
@@ -41,15 +41,20 @@ if (isset ( $_POST ['date'] )) {
 $location = preg_replace ( "/[^A-Za-z0-9]/", '', $name );
 $location = $location . "_" . time ();
 if (! mkdir ( "../albums/$location", 0755, true )) {
-    $error = error_get_last();
-    echo $error['message']."<br/>";
+    $error = error_get_last ();
+    echo $error ['message'] . "<br/>";
     echo "Unable to create album";
     exit ();
 }
 
-$sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`) VALUES ('$name', '$description', '$date', '$location');";
+$sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', '$date', '$location', '" . getUserId () . "');";
 mysqli_query ( $db, $sql );
 $last_id = mysqli_insert_id ( $db );
+
+if( getRole () == "uploader" ) {
+    $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" .getUserId(). "', '$last_id');";
+    mysqli_query ( $db, $sql );
+}
 
 echo $last_id;
 

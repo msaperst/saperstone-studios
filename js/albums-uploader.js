@@ -9,8 +9,11 @@ $(document).ready(function() {
                 "orderable" : false,
                 "searchable": false,
                 "data" : function(row, type, val, meta) {
-                    var buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' +
+                    var buttons = "";
+                    if( row.owner == my_id ) {
+                        buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' +
                         '<i class="fa fa-pencil-square-o"></i></button>';
+                    }
                     return buttons;
                 },
                 "targets" : 0
@@ -32,10 +35,6 @@ $(document).ready(function() {
                 "data" : "images",
                 "className" : "album-images",
                 "targets" : 4
-            }, {
-                "data" : "lastAccessed",
-                "className" : "album-last-accessed",
-                "targets" : 5
             }
         ],
         "fnCreatedRow": function( nRow, aData, iDataIndex ) {
@@ -127,8 +126,6 @@ function editAlbum(id) {
                        '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' +
                        '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' +
                        '<p></p>' +
-                       '<input placeholder="Album Code" id="new-album-code" type="text" class="form-control" value="' + data.code + '" />' +
-                       '<p></p>' +
                        '<div id="upload-container"></div>' +
                        '<div id="resize-progress" class="progress">' +
                        '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div>' +
@@ -138,117 +135,6 @@ function editAlbum(id) {
                     return inputs;
                 }, 
                 buttons: [{
-                    id: 'album-users-btn',
-                    icon: 'glyphicon glyphicon-picture',
-                    label: ' Update Users',
-                    cssClass: 'btn-info',
-                    action: function(dialogItself){
-                        var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
-                        $button.spin();
-                        disableDialogButtons(dialogItself);
-                        //send our update
-                        BootstrapDialog.show({
-                            draggable: true,
-                            title: 'Users for Album <b>' + data.name + '</b>',
-                            message: function(dialogInItself){
-                                var inputs = $('<div class="open">');
-
-                                var searchInput = $('<input>');
-                                searchInput.attr('id','user-search');
-                                searchInput.attr('type','text');
-                                searchInput.addClass('form-control');
-                                searchInput.attr('placeholder','Enter User Name');
-                                searchInput.on("keyup focus", function(){
-                                    var search_ele = $(this);
-                                    var keyword = search_ele.val();
-                                    $.get( 
-                                        "/api/search-users.php",
-                                        { keyword: keyword }, 
-                                        function( data ) {
-                                            $('.search-results').remove();
-                                            var results_ul = $('<ul class="dropdown-menu search-results">');
-                                            $.each(data, function(key, user) {
-                                                if( $(".selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
-                                                } else {
-                                                    var result_li = $('<li>');
-                                                    var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-                                                    result_a.click(function(){
-                                                        addUser( user.id );
-                                                        $('.search-results').remove();
-                                                    });
-                                                    results_ul.append(result_li.append(result_a));
-                                                }
-                                            });
-                                            results_ul.hover(
-                                                function () { resultsSelected = true; },
-                                                function () { resultsSelected = false; }
-                                            );
-                                            search_ele.after( results_ul );
-                                        },
-                                        "json"
-                                    );
-                                });
-                                searchInput.focusout(function(event){
-                                    if( !resultsSelected ) {
-                                        $('.search-results').remove();
-                                    }
-                                });
-                                inputs.append(searchInput);
-
-                                return inputs;
-                            },
-                            buttons: [{
-                                icon: 'glyphicon glyphicon-save',
-                                label: ' Update',
-                                cssClass: 'btn-success',
-                                action: function(dialogInItself){
-                                    var $buttonIn = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
-                                    $buttonIn.spin();
-                                    dialogInItself.enableButtons(false);
-                                    dialogInItself.setClosable(false);
-                                    var users = [];
-                                    $('#album-users .selected-album').each(function(){
-                                        users.push( $(this).attr('user-id') );
-                                    });
-                                    //send our update
-                                    $.post("/api/update-album-users.php", {
-                                        album : data.id,
-                                        users: users
-                                    }).done(function(data) {
-                                        $('#new-album-error').html(data);
-                                        $buttonIn.stopSpin();
-                                        $button.stopSpin();
-                                        dialogInItself.close();
-                                        enableDialogButtons(dialogItself);
-                                    });                    
-                                }
-                            }, {
-                                label: 'Close',
-                                action: function(dialogInItself){
-                                    $button.stopSpin();
-                                    enableDialogButtons(dialogItself);
-                                    dialogInItself.close();
-                                }
-                            }],
-                            onshown: function(dialogInItself){
-                                var albumsDiv = $('<div>');
-                                albumsDiv.attr('id','album-users');
-                                albumsDiv.css({'padding':'0px 10px 5px 10px'});
-                                dialogInItself.$modalBody.after(albumsDiv);
-                                $.get( 
-                                    "/api/get-album-users.php",
-                                    { album: data.id },
-                                    function( album_users ) {
-                                        for (var i = 0, len = album_users.length; i < len; i++) {
-                                            addUser( album_users[i].user );
-                                        }
-                                    },
-                                    "json"
-                                );
-                            }
-                        });
-                    }
-                }, {
                     icon: 'glyphicon glyphicon-trash',
                     label: ' Delete Album',
                     cssClass: 'btn-danger',

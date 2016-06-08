@@ -12,17 +12,13 @@ session_start ();
 
 require_once "../php/user.php";
 
-if (getRole () != "admin") {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    exit ();
-}
-
+$id = "";
 if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
-    $id = $_POST ['album'];
+    $id = ( int ) $_POST ['album'];
 } else {
-    if( !isset ( $_POST ['album'] ) ) {
+    if (! isset ( $_POST ['album'] )) {
         echo "Album id is required!";
-    } elseif ( $_POST ['album'] != "" ) {
+    } elseif ($_POST ['album'] != "") {
         echo "Album id cannot be blank!";
     } else {
         echo "Some other Album id error occurred!";
@@ -31,8 +27,18 @@ if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
 }
 
 $sql = "SELECT * FROM albums WHERE id = $id;";
-$result = mysqli_query ( $db, $sql );
-$album_info = mysqli_fetch_assoc ( $result );
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+if ($album_info ['id']) {
+} else {
+    echo "That ID doesn't match any albums";
+    exit ();
+}
+// only admin users and uploader users who own the album can make updates
+if (getRole () == "admin" || (getRole () == "uploader" && getUserId () == $album_info ['owner'])) {
+} else {
+    header ( 'HTTP/1.0 401 Unauthorized' );
+    exit ();
+}
 
 $sql = "SELECT MAX(sequence) as next FROM album_images WHERE album = '$id';";
 $result = mysqli_query ( $db, $sql );
