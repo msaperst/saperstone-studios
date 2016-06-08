@@ -10,7 +10,7 @@ session_start ();
 
 require_once "../php/user.php";
 
-if (! isset ( $_GET ['album'] )) { //if no album is set, throw a 404 error
+if (! isset ( $_GET ['album'] )) { // if no album is set, throw a 404 error
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "../errors/404.php";
     exit ();
@@ -18,25 +18,25 @@ if (! isset ( $_GET ['album'] )) { //if no album is set, throw a 404 error
 require "../php/sql.php";
 $sql = "SELECT * FROM `albums` WHERE id = '" . $_GET ['album'] . "';";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
-if (! $album_info ['name']) {   //if the album doesn't exist, throw a 404 error
+if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "../errors/404.php";
     exit ();
 }
 
-if( getRole() != "admin" && $album_info['code'] == "" ) {    //if not an admin and no exists for the album
-    if( !isLoggedIn() ) {   //if not logged in, throw an error
+if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin and no code exists for the album
+    if (! isLoggedIn ()) { // if not logged in, throw an error
         header ( 'HTTP/1.0 401 Unauthorized' );
         include "../errors/401.php";
         exit ();
-    } else {
-        $sql = "SELECT * FROM albums_for_users WHERE user = '" . getUserId() . "';";
+    } else { // if logged in
+        $sql = "SELECT * FROM albums_for_users WHERE user = '" . getUserId () . "';";
         $result = mysqli_query ( $db, $sql );
-        $albums = array();
+        $albums = array ();
         while ( $r = mysqli_fetch_assoc ( $result ) ) {
-            $albums [] = $r['album'];
+            $albums [] = $r ['album'];
         }
-        if( ! in_array( $_GET ['album'], $albums ) ) {  //if not in album list
+        if (! in_array ( $_GET ['album'], $albums )) { // and if not in album user list
             header ( 'HTTP/1.0 401 Unauthorized' );
             include "../errors/401.php";
             exit ();
@@ -82,10 +82,10 @@ if( getRole() != "admin" && $album_info['code'] == "" ) {    //if not an admin a
 				<ol class="breadcrumb">
 					<li><a href="/">Home</a></li>
 					<?php
-                    if (isLoggedIn ()) {
-                        echo "<li><a href=\"/albums/index.php\">Albums</a></li>";
-                    }
-                    ?>
+    if (isLoggedIn ()) {
+        echo "<li><a href=\"/albums/index.php\">Albums</a></li>";
+    }
+    ?>
 					<li class="active"><?php echo $album_info['name']; ?></li>
 				</ol>
 			</div>
@@ -102,7 +102,7 @@ if( getRole() != "admin" && $album_info['code'] == "" ) {    //if not an admin a
 				class="col-md-3 col-sm-6 col-gallery col-gallery-right"></div>
 		</div>
 		<!-- /.row -->
-
+		
         <?php require_once "../footer.php"; ?>
 
     </div>
@@ -166,7 +166,15 @@ if( getRole() != "admin" && $album_info['code'] == "" ) {    //if not an admin a
 				<div class="modal-footer">
 					<span class="pull-left">
 						<?php
-    $disabled = "";
+    if (getRole () == "admin") {
+        ?>
+            					<button type="button"
+							class="btn btn-default btn-warning">Delete Image</button>
+        
+						<?php
+    }
+    ?>
+						<?php
     if (! isLoggedIn ()) {
         ?>
         					<div class="tooltip-wrapper disabled" data-toggle="tooltip"
@@ -207,6 +215,17 @@ if( getRole() != "admin" && $album_info['code'] == "" ) {    //if not an admin a
 		</div>
 	</div>
 	<!-- End of Modal -->
+	
+	<!-- Actions For the Page -->
+	<nav class="navbar navbar-actions navbar-fixed-bottom breadcrumb">
+		<div class="container text-center">
+			<span class="text-center"><button class="btn btn-default btn-danger">Action 1</button></span>
+			<span class="text-center"><button class="btn btn-default btn-warning">Action 2</button></span>
+			<span class="text-center"><button class="btn btn-default btn-info">Action 3</button></span>
+			<span class="text-center"><button class="btn btn-default btn-success">Action 4</button></span>
+			<span class="text-center"><button class="btn btn-default">Action 5</button></span>
+		</div>
+	</nav>
 
 	<!-- Gallery JavaScript -->
 	<script src="/js/album.js"></script>

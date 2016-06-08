@@ -23,6 +23,15 @@ header.carousel {
 }
 
 /* Nav Styles */
+.navbar-actions {
+	margin-bottom: 0px;
+}
+.navbar-actions span{
+    display: inline-block;
+    width: 19%;
+    min-width: 100px;
+}
+
 .navbar-inverse {
 	background-color: white;
 	border-top: 10px #980f7f solid;
