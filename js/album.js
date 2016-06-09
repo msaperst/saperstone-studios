@@ -71,3 +71,46 @@ Album.prototype.loadImages = function() {
     Album.loaded += Album.columns;
     return Album.loaded;
 };
+
+$(document).ready(function() {
+    $('#delete-image-btn').click(function(){
+        var img = $('#album-carousel div.active div');
+        $('#album-carousel').carousel("pause");
+        BootstrapDialog.show({
+            draggable: true,
+            title: 'Are You Sure?',
+            message: 'Are you sure you want to delete the image <b>' + img.attr('alt') + '</b>',
+            buttons: [{
+                icon: 'glyphicon glyphicon-trash',
+                label: ' Delete',
+                cssClass: 'btn-danger',
+                action: function(dialogInItself){
+                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                    $button.spin();
+                    dialogInItself.enableButtons(false);
+                    dialogInItself.setClosable(false);
+                    //send our update
+                    $.post("/api/delete-image.php", {
+                        album : img.attr('album-id'),
+                        image : img.attr('image-id')
+                    }).done(function(data) {
+                        dialogInItself.close();
+                        //go to the next image
+                        $('#album-carousel').carousel("next");
+                        $('#album-carousel').carousel();
+                        //cleanup the dom
+                        $('.gallery img[alt="'+img.attr('alt')+'"]').parent().remove();
+                        img.parent().remove();
+                        //TODO - need to redo the sequence or how we sequence after deletion, or carousel displays wrong image
+                    });
+                }
+            }, {
+                label: 'Close',
+                action: function(dialogInItself){
+                    $('#album-carousel').carousel("cycle");
+                    dialogInItself.close();
+                }
+            }]
+        });
+    });
+});

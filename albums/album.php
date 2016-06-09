@@ -52,6 +52,11 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 
 	<?php require_once "../header.php"; ?>
 	<link href="/css/hover-effect.css" rel="stylesheet">
+	<style>
+	    footer {
+	         margin-bottom: 55px;
+	    }
+	</style>
 
 </head>
 
@@ -145,8 +150,8 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                     $active_class = " active";
                 }
                 echo "<div class='item$active_class'>";
-                echo "	<div class='contain'";
-                echo "		style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                echo "	<div class='contain' album-id='" . $album_info['id'] . "' image-id='" . $image['sequence'] . "'";
+                echo "		alt='" . $image['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
                 echo "	<div class='carousel-caption'>";
                 echo "		<h2>" . $image ['caption'] . "</h2>";
                 echo "	</div>";
@@ -166,46 +171,43 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 				<div class="modal-footer">
 					<span class="pull-left">
 						<?php
-    if (getRole () == "admin") {
-        ?>
-            					<button type="button"
-							class="btn btn-default btn-warning">Delete Image</button>
-        
+                        if (getRole () == "admin") {
+                        ?>
+    					<button id="delete-image-btn" type="button"
+								class="btn btn-default btn-danger">Delete Image</button>
 						<?php
-    }
-    ?>
-						<?php
-    if (! isLoggedIn ()) {
-        ?>
-        					<div class="tooltip-wrapper disabled" data-toggle="tooltip"
-							data-placement="top"
-							title="Login or create an account for this feature.">
+                        }
+                        if (! isLoggedIn ()) {
+                        ?>
+    					<div class="tooltip-wrapper disabled" data-toggle="tooltip"
+								data-placement="top"
+								title="Login or create an account for this feature.">
 							<button type="button" class="btn btn-default" disabled>Purcahse/Download
 								Image</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
-							data-placement="top"
-							title="Login or create an account for this feature.">
+								data-placement="top"
+								title="Login or create an account for this feature.">
 							<button type="button" class="btn btn-default" disabled>Purcahse/Share
 								Image</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
-							data-placement="top"
-							title="Login or create an account for this feature.">
-							<button type="button" class="btn btn-default" disabled>Add to
+								data-placement="top"
+								title="Login or create an account for this feature.">
+							<button id="cart-image-btn" type="button" class="btn btn-default btn-warning" disabled>Add to
 								Cart</button>
 						</div>
 					    <?php
-    } else {
-        ?>
+                        } else {
+                        ?>
     					<button type="button" class="btn btn-default">Purcahse/Download
 							Image</button>
 						<button type="button" class="btn btn-default">Purcahse/Share Image</button>
-						<button type="button" class="btn btn-default">Add to Cart</button>
+						<button id="cart-image-btn" type="button" class="btn btn-default btn-warning">Add to Cart</button>
 						<?php
-    }
-    ?>
-    					<button type="button" class="btn btn-default">Set/Unset As
+                        }
+                        ?>
+    					<button id="favorite-image-btn" type="button" class="btn btn-default btn-success">Set/Unset As
 							Favorite</button>
 					</span>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -219,11 +221,47 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 	<!-- Actions For the Page -->
 	<nav class="navbar navbar-actions navbar-fixed-bottom breadcrumb">
 		<div class="container text-center">
-			<span class="text-center"><button class="btn btn-default btn-danger">Action 1</button></span>
-			<span class="text-center"><button class="btn btn-default btn-warning">Action 2</button></span>
-			<span class="text-center"><button class="btn btn-default btn-info">Action 3</button></span>
-			<span class="text-center"><button class="btn btn-default btn-success">Action 4</button></span>
-			<span class="text-center"><button class="btn btn-default">Action 5</button></span>
+		
+			<?php
+            if (! isLoggedIn ()) {
+            ?>
+			<span class="text-center"><div class="tooltip-wrapper disabled" data-toggle="tooltip"
+					data-placement="top"
+					title="Login or create an account for this feature.">
+				<button type="button" class="btn btn-default" disabled>Purcahse/Download
+						All</button>
+			</div></span>
+			<span class="text-center"><div class="tooltip-wrapper disabled" data-toggle="tooltip"
+					data-placement="top"
+					title="Login or create an account for this feature.">
+				<button type="button" class="btn btn-default" disabled>Purcahse/Share
+						All</button>
+			</div></span>
+			<span class="text-center"><div class="tooltip-wrapper disabled" data-toggle="tooltip"
+					data-placement="top"
+					title="Login or create an account for this feature.">
+				<button id="cart-btn" type="button" class="btn btn-default btn-warning" disabled>Cart</button>
+			</div></span>
+		    <?php
+            } else {
+            ?>
+			<span class="text-center"><button type="button" class="btn btn-default">Purcahse/Download
+					All</button></span>
+			<span class="text-center"><button type="button" class="btn btn-default">Purcahse/Share 
+					All</button></span>
+			<span class="text-center"><button id="cart-btn" type="button" class="btn btn-default btn-warning">Cart</button></span>
+			<?php
+            }
+            ?>
+			<span class="text-center"><button id="favorite-btn" type="button" class="btn btn-default btn-success">Favorites</button></span>
+			<?php
+            if (getRole () == "admin") {
+            ?>
+            <span class="text-center"><button id="access-btn" type="button" class="btn btn-default btn-info">Access</button></span>
+			<?php
+            }
+            ?>
+			
 		</div>
 	</nav>
 

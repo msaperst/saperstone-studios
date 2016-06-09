@@ -24,7 +24,7 @@ header.carousel {
 
 /* Nav Styles */
 .navbar-actions {
-	margin-bottom: 0px;
+	margin-bottom: -1px;
 }
 .navbar-actions span{
     display: inline-block;
