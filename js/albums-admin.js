@@ -302,30 +302,44 @@ function editAlbum(id) {
                         var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
                         $button.spin();
                         disableDialogButtons(dialogItself);
-                        //send our update
-                        $("#resize-progress").show();
-                        $.post("/api/make-thumbs.php", {
-                            id : id,
-                        }).done(function(data) {
-                            var myVar = setInterval( function(){ 
-                                $.get(
-                                    "/scripts/status.txt",
-                                    function (data){
-                                        $('#resize-progress .progress-bar').html( data );
-                                        if( data.indexOf("Done") === 0 ) {
-                                            clearInterval(myVar);
-                                            $('#resize-progress .progress-bar').removeClass('active');
-                                            setTimeout(function() {$('#resize-progress').hide();}, 5000);
-                                            $button.stopSpin();
-                                            enableDialogButtons(dialogItself);
-                                        }
-                                        if( data.indexOf("Error") === 0 ) {
-                                            clearInterval(myVar);
-                                            $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
-                                        }
-                                    }
-                                ); 
-                            }, 100);
+                        var markup;
+                        //need to determine how to make thumbs, with proof all over, watermark in corner, or no watermark
+                        BootstrapDialog.show({
+                            draggable: true,
+                            title: 'Make Thumbnails How?',
+                            message: 'What do you want to put on your viewable thumbnails?',
+                            buttons: [{
+                                icon: 'glyphicon glyphicon-eye-close',
+                                label: ' Proof',
+                                cssClass: 'btn-warning',
+                                action: function(dialogInItself){
+                                    dialogInItself.close();
+                                    makeThumbs( id, $button, dialogItself, "proof" );
+                                }
+                            }, {
+                                icon: 'glyphicon glyphicon-eye-open',
+                                label: ' Watermark',
+                                cssClass: 'btn-info',
+                                action: function(dialogInItself){
+                                    dialogInItself.close();
+                                    makeThumbs( id, $button, dialogItself, "watermark" );
+                                }
+                            }, {
+                                icon: 'glyphicon glyphicon-globe',
+                                label: ' Nothing',
+                                cssClass: 'btn-danger',
+                                action: function(dialogInItself){
+                                    dialogInItself.close();
+                                    makeThumbs( id, $button, dialogItself, "none" );
+                                }
+                            }, {
+                                label: 'Close',
+                                action: function(dialogInItself){
+                                    $button.stopSpin();
+                                    enableDialogButtons(dialogItself);
+                                    dialogInItself.close();
+                                }
+                            }]
                         });
                     }
                 }, {
@@ -414,6 +428,34 @@ function addUser(id) {
         "json"
     );
     
+}
+
+function makeThumbs(id, button, dialog, markup) {
+    $("#resize-progress").show();
+    $.post("/api/make-thumbs.php", {
+        id : id,
+        markup: markup
+    }).done(function(data) {
+        var myVar = setInterval( function(){ 
+            $.get(
+                "/scripts/status.txt",
+                function (data){
+                    $('#resize-progress .progress-bar').html( data );
+                    if( data.indexOf("Done") === 0 ) {
+                        clearInterval(myVar);
+                        $('#resize-progress .progress-bar').removeClass('active');
+                        setTimeout(function() {$('#resize-progress').hide();}, 5000);
+                        button.stopSpin();
+                        enableDialogButtons(dialog);
+                    }
+                    if( data.indexOf("Error") === 0 ) {
+                        clearInterval(myVar);
+                        $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
+                    }
+                }
+            ); 
+        }, 100);
+    });
 }
 
 function disableDialogButtons(dialog) {

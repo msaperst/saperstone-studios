@@ -99,12 +99,10 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 
 		<!-- Services Section -->
 		<div class="row">
-			<div id="col-0"
-				class="col-md-3 col-sm-6 col-gallery col-gallery-left"></div>
+			<div id="col-0"	class="col-md-3 col-sm-6 col-gallery"></div>
 			<div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
 			<div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
-			<div id="col-3"
-				class="col-md-3 col-sm-6 col-gallery col-gallery-right"></div>
+			<div id="col-3" class="col-md-3 col-sm-6 col-gallery"></div>
 		</div>
 		<!-- /.row -->
 		

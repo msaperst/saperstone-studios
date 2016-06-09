@@ -2,16 +2,21 @@
 
 output="../scripts/status.txt";
 
-if [ "$#" -ne 2 ]; then
-    echo "Error: No album information provided" > $output;
+if [ "$#" -ne 3 ]; then
+    echo "Error: Appropriate album information not provided" > $output;
+    sleep 1;
+    rm $output;
     exit;
 fi
-id=$1
-album=$2;
+id=$1;
+markup=$2;
+album=$3;
 location="../albums/$album";
 
 if [ ! -d "$location" ]; then
     echo "Error: Album doesn't exist" > $output;
+    sleep 1;
+    rm $output;
     exit;
 fi
 
@@ -30,9 +35,20 @@ for file in $location/{.,}*; do
         if [ "$file_type" != "TXT" ] && ( [ "$width" -gt "1000" ] || [ "$height" -gt "1000" ] ); then
             echo "Resizing file $filename..." > $output;
             cp "$file" "$location/full/";
-            mogrify -resize 1000x1000\> "$file"
-            convert -units PixelsPerInch -density 72 "$file" "$file"
-            composite -dissolve 85 -gravity southwest -geometry 200x150+30+0 ../img/watermark.png "$file" "$file"
+            mogrify -resize 1000x1000\> "$file";
+            convert -units PixelsPerInch -density 72 "$file" "$file";
+            if [ "$markup" == "proof" ]; then
+                composite -dissolve 40 -tile ../img/proof.png "$file" "$file";
+            elif [ "$markup" == "watermark" ]; then
+                composite -dissolve 85 -gravity southwest -geometry 200x150+30+0 ../img/watermark.png "$file" "$file";
+            elif [ "$markup" == "none" ]; then
+                echo "no watermark needed";
+            else
+                echo "Markup not properly provided" > $output;
+                sleep 1;
+                rm $output;
+                exit;
+            fi
             #update mysql
             file_info=`identify $file`;
             file_size=`echo $file_info | cut -d ' ' -f 3`;
@@ -44,5 +60,5 @@ for file in $location/{.,}*; do
 done
 
 echo "Done" > $output;
-sleep 1
+sleep 1;
 rm $output;

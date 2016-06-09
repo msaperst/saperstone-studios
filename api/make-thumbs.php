@@ -40,8 +40,20 @@ if (getRole () == "admin" || (getRole () == "uploader" && getUserId () == $album
     exit ();
 }
 
+$markup = "";
+if (isset ( $_POST ['markup'] ) ) {
+    $markup = mysqli_real_escape_string ( $db, $_POST ['markup'] );
+} else {
+    echo "Markup is required!";
+    exit();
+}
+if ($_POST ['markup'] != "proof" && $_POST ['markup'] != "watermark" && $_POST ['markup'] != "none") {
+    echo "Markup is not a valid option!";
+    exit ();
+}
+
 $sql = "SELECT * FROM albums WHERE id = $id;";
 $result = mysqli_query ( $db, $sql );
 $album_info = mysqli_fetch_assoc ( $result );
 
-system ( "../scripts/make-thumbs.sh $id " . $album_info ['location'] . " > /dev/null 2>&1 &" );
+system ( "../scripts/make-thumbs.sh $id $markup " . $album_info ['location'] . " > /dev/null 2>&1 &" );

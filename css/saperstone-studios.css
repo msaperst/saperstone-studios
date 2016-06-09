@@ -276,17 +276,25 @@ footer {
 	margin-bottom: 10px;
 }
 
-.col-gallery {
-	padding: 0px 5px;
+#col-0 {
+	padding: 0px 0px 0px 15px;
+}
+#col-1 {
+	padding: 0px 5px 0px 10px
+}
+#col-2 {
+	padding: 0px 10px 0px 5px
+}
+#col-3 {
+	padding: 0px 15px 0px 0px;
+}
+@media ( max-width :767px) {
+	.col-gallery {
+	   padding: 0px 15px 0px 15px !important;
+	}
 }
 
-.col-gallery-left {
-	padding-left: 15px;
-}
 
-.col-gallery-right {
-	padding-right: 15px;
-}
 
 .tooltip-wrapper {
 	display: inline-block;
