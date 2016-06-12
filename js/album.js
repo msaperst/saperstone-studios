@@ -37,6 +37,7 @@ Album.prototype.loadImages = function() {
                     var img = $('<img>');
                     img.attr('src',v.location);
                     img.attr('alt',v.title);
+                    img.attr('image-id',v.sequence);
                     img.attr('width','100%');
                     // create our overlay
                     var overlay = $('<div>');
@@ -48,7 +49,9 @@ Album.prototype.loadImages = function() {
                     link.attr('data-toggle','modal');
                     link.attr('data-target','#album');
                     link.on('click', function() {
-                        $('#album').carousel(parseInt( v.sequence));
+                        var carouselImage = $('#album-carousel .item').index( $('#album-carousel .contain[image-id="'+v.sequence+'"]').parent() );
+                        $('#album').carousel(parseInt( carouselImage ));
+                        isFavorite();
                     });
                     // add our image icon
                     var view = $('<i>');
@@ -97,11 +100,10 @@ $(document).ready(function() {
                         dialogInItself.close();
                         //go to the next image
                         $('#album-carousel').carousel("next");
-                        $('#album-carousel').carousel();
                         //cleanup the dom
                         $('.gallery img[alt="'+img.attr('alt')+'"]').parent().remove();
                         img.parent().remove();
-                        //TODO - need to redo the sequence or how we sequence after deletion, or carousel displays wrong image
+                        $('#album-carousel').carousel();
                     });
                 }
             }, {
@@ -113,4 +115,86 @@ $(document).ready(function() {
             }]
         });
     });
+    
+    $('#set-favorite-image-btn').click(function(){
+        var img = $('#album-carousel div.active div');
+        //send our update
+        $.post("/api/set-favorite.php", {
+            album : img.attr('album-id'),
+            image : img.attr('image-id')
+        }).done(function(data) {
+            setFavorite();
+        });
+    });
+    $('#unset-favorite-image-btn').click(function(){
+        var img = $('#album-carousel div.active div');
+        //send our update
+        $.post("/api/unset-favorite.php", {
+            album : img.attr('album-id'),
+            image : img.attr('image-id')
+        }).done(function(data) {
+            unsetFavorite();
+        });
+    });
+    
+    $('#favorite-btn').click(function(){
+        $('#favorites-list').empty();
+        $('#favorites').modal();
+        $.get("/api/get-favorites.php", {
+            album : $('#album').attr('album-id'),
+        }, function(data) {
+            $.each(data, function(i, image) {
+                var li = $('<li image-id="' + data[i].sequence + '" class="img-favorite">');
+                li.css('background-image', 'url(' + data[i].location + ')');
+                li.click(function(){
+                    $.post("/api/unset-favorite.php", {
+                        album : $('#album').attr('album-id'),
+                        image : $(this).attr('image-id')
+                    });
+                    $(this).remove();
+                });
+                $('#favorites-list').append( li );
+            });
+        }, "json" );
+    });
+    
+    //on start of slide, disable all buttons
+    $('#album-carousel').on('slide.bs.carousel', function(){
+        $('#album .btn-action').each(function(){
+            $(this).prop("disabled",true);
+        });
+    });
+    //once slide completes, check for a favorite, which will re-enable
+    $('#album-carousel').on('slid.bs.carousel', function(){
+        isFavorite();
+    });
 });
+
+function isFavorite() {
+    $('#album .btn-action').each(function(){
+        $(this).prop("disabled",true);
+    });
+    var img = $('#album-carousel div.active div');
+    $.get("/api/is-favorite.php", {
+        album : img.attr('album-id'),
+        image : img.attr('image-id')
+    }).done(function(data) {
+        if( Math.round(data) == data && data == 1 ) {
+            setFavorite();
+        } else {
+            unsetFavorite();
+        }
+        $('#album .btn-action').each(function(){
+            $(this).prop("disabled",false);
+        });
+    });
+}
+
+function setFavorite() {
+    $('#set-favorite-image-btn').addClass('hidden');
+    $('#unset-favorite-image-btn').removeClass('hidden');
+}
+function unsetFavorite() {
+    $('#set-favorite-image-btn').removeClass('hidden');
+    $('#unset-favorite-image-btn').addClass('hidden');
+}

@@ -12,9 +12,11 @@ session_start ();
 
 require_once "../php/user.php";
 
-if (getRole () != "admin") {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    exit ();
+$user;
+if (! isLoggedIn ()) {
+    $user = $_SERVER ['REMOTE_ADDR'];
+} else {
+    $user = getUserId ();
 }
 
 $album = "";
@@ -53,18 +55,15 @@ if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
     exit ();
 }
 
-//delete our image from mysql table
-$sql = "SELECT location FROM album_images WHERE album='$album' AND sequence='$sequence';";
-$row = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
-$sql = "DELETE FROM album_images WHERE album='$album' AND sequence='$sequence';";
-mysqli_query ( $db, $sql );
-
-//delete our image from the file system
-if ($row ['location'] != "") {
-    system ( "rm -f " . escapeshellarg ( "../" . $row ['location'] ) );
-    $parts = explode ( "/", $row ['location'] );
-    $full = array_splice ( $parts, count ( $parts ) - 1, 0, "full" );
-    system ( "rm -f " . escapeshellarg ( "../" . implode ( "/", $parts ) ) );
+$sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+if ($album_info ['title']) {
+} else {
+    echo "That image doesn't match anything";
+    exit ();
 }
 
+// update our mysql database
+$sql = "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('$user', '$album', '$sequence');";
+mysqli_query ( $db, $sql );
 exit ();

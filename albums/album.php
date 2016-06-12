@@ -81,16 +81,16 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 		<!-- Page Heading/Breadcrumbs -->
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header text-center"><?php echo $album_info['name']; ?>
+				<h1 class="page-header text-center"><span id='album-title'><?php echo $album_info['name']; ?></span>
 					<small><?php echo $album_info['description']; ?></small>
 				</h1>
 				<ol class="breadcrumb">
 					<li><a href="/">Home</a></li>
 					<?php
-    if (isLoggedIn ()) {
-        echo "<li><a href=\"/albums/index.php\">Albums</a></li>";
-    }
-    ?>
+                    if (isLoggedIn ()) {
+                        echo "<li><a href=\"/albums/index.php\">Albums</a></li>";
+                    }
+                    ?>
 					<li class="active"><?php echo $album_info['name']; ?></li>
 				</ol>
 			</div>
@@ -98,7 +98,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 		<!-- /.row -->
 
 		<!-- Services Section -->
-		<div class="row">
+		<div id="album-thumbs" class="row">
 			<div id="col-0"	class="col-md-3 col-sm-6 col-gallery"></div>
 			<div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
 			<div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
@@ -112,7 +112,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 	<!-- /.container -->
 
 	<!-- Slideshow Modal -->
-	<div id="album" class="modal fade modal-carousel" role="dialog">
+	<div id="album" album-id="<?php echo $_GET ['album']; ?>" class="modal fade modal-carousel" role="dialog">
 		<div class="modal-dialog modal-lg">
 			<!-- Modal content-->
 			<div class="modal-content">
@@ -127,36 +127,33 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 					<div id="album-carousel"
 						class="carousel slide carousel-three-by-two">
 						<!-- Indicators -->
-						<!-- 						<ol class="carousel-indicators"> -->
             			<?php
-            foreach ( $images as $num => $image ) {
-                $class = "";
-                if ($num == 0) {
-                    $class = " class='active'";
-                }
-                // echo "<li data-target='#album-carousel' data-slide-to='$num'$class></li>";
-            }
-            ?>
-<!--             		</ol> -->
+                        foreach ( $images as $num => $image ) {
+                            $class = "";
+                            if ($num == 0) {
+                                $class = " class='active'";
+                            }
+                        }
+                        ?>
 
 						<!-- Wrapper for slides -->
 						<div class="carousel-inner">
             			<?php
-            foreach ( $images as $num => $image ) {
-                $active_class = "";
-                if ($num == 0) {
-                    $active_class = " active";
-                }
-                echo "<div class='item$active_class'>";
-                echo "	<div class='contain' album-id='" . $album_info['id'] . "' image-id='" . $image['sequence'] . "'";
-                echo "		alt='" . $image['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
-                echo "	<div class='carousel-caption'>";
-                echo "		<h2>" . $image ['caption'] . "</h2>";
-                echo "	</div>";
-                echo "</div>";
-            }
-            ?>
-            		</div>
+                        foreach ( $images as $num => $image ) {
+                            $active_class = "";
+                            if ($num == 0) {
+                                $active_class = " active";
+                            }
+                            echo "<div class='item$active_class'>";
+                            echo "	<div class='contain' album-id='" . $album_info['id'] . "' image-id='" . $image['sequence'] . "'";
+                            echo "		alt='" . $image['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                            echo "	<div class='carousel-caption'>";
+                            echo "		<h2>" . $image ['caption'] . "</h2>";
+                            echo "	</div>";
+                            echo "</div>";
+                        }
+                        ?>
+	            		</div>
 
 						<!-- Controls -->
 						<a class="left carousel-control" href="#album-carousel"
@@ -172,7 +169,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                         if (getRole () == "admin") {
                         ?>
     					<button id="delete-image-btn" type="button"
-								class="btn btn-default btn-danger">Delete Image</button>
+								class="btn btn-default btn-danger btn-action"><i class="fa fa-trash"></i> Delete Image</button>
 						<?php
                         }
                         if (! isLoggedIn ()) {
@@ -180,38 +177,84 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
     					<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 								data-placement="top"
 								title="Login or create an account for this feature.">
-							<button type="button" class="btn btn-default" disabled>Purcahse/Download
+							<button type="button" class="btn btn-default" disabled><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
 								Image</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 								data-placement="top"
 								title="Login or create an account for this feature.">
-							<button type="button" class="btn btn-default" disabled>Purcahse/Share
+							<button type="button" class="btn btn-default" disabled><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share
 								Image</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 								data-placement="top"
 								title="Login or create an account for this feature.">
-							<button id="cart-image-btn" type="button" class="btn btn-default btn-warning" disabled>Add to
+							<button id="cart-image-btn" type="button" class="btn btn-default btn-warning" disabled><i class="fa fa-shopping-cart"></i> Add to
 								Cart</button>
 						</div>
 					    <?php
                         } else {
                         ?>
-    					<button type="button" class="btn btn-default">Purcahse/Download
+    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
 							Image</button>
-						<button type="button" class="btn btn-default">Purcahse/Share Image</button>
-						<button id="cart-image-btn" type="button" class="btn btn-default btn-warning">Add to Cart</button>
+						<button type="button" class="btn btn-default btn-action"><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share Image</button>
+						<button id="cart-image-btn" type="button" class="btn btn-default btn-warning btn-action"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
 						<?php
                         }
                         ?>
-    					<button id="favorite-image-btn" type="button" class="btn btn-default btn-success">Set/Unset As
-							Favorite</button>
+    					<button id="set-favorite-image-btn" type="button" class="btn btn-default btn-action"><i class="fa fa-heart"></i> Favorite</button>
+    					<button id="unset-favorite-image-btn" type="button" class="btn btn-default btn-success btn-action hidden"><i class="fa fa-heart error"></i> Favorite</button>
 					</span>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 
+		</div>
+	</div>
+	<!-- End of Modal -->
+	
+	<!-- Favorites Modal -->
+	<div id="favorites" album-id="<?php echo $_GET ['album']; ?>" class="modal fade modal-carousel" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">My Favorite Images for <b><?php echo $album_info['name']; ?></b></h4>
+				</div>
+				<div class="modal-body">
+					<ul id="favorites-list" class="list-inline"></ul>
+				</div>
+				<div class="modal-footer">
+					<span class="pull-left">
+						<?php
+                        if (! isLoggedIn ()) {
+                        ?>
+    					<div class="tooltip-wrapper disabled" data-toggle="tooltip"
+								data-placement="top"
+								title="Login or create an account for this feature.">
+							<button type="button" class="btn btn-default" disabled><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
+								Favorites</button>
+						</div>
+						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
+								data-placement="top"
+								title="Login or create an account for this feature.">
+							<button type="button" class="btn btn-default" disabled><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share
+								Favorites </button>
+						</div>
+					    <?php
+                        } else {
+                        ?>
+    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
+							Image</button>
+						<button type="button" class="btn btn-default btn-action"><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share Image</button>
+						<?php
+                        }
+                        ?>
+					</span>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
 		</div>
 	</div>
 	<!-- End of Modal -->
@@ -243,19 +286,19 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 		    <?php
             } else {
             ?>
-			<span class="text-center"><button type="button" class="btn btn-default">Purcahse/Download
+			<span class="text-center"><button type="button" class="btn btn-default"><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
 					All</button></span>
-			<span class="text-center"><button type="button" class="btn btn-default">Purcahse/Share 
+			<span class="text-center"><button type="button" class="btn btn-default"><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share 
 					All</button></span>
-			<span class="text-center"><button id="cart-btn" type="button" class="btn btn-default btn-warning">Cart</button></span>
+			<span class="text-center"><button id="cart-btn" type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Cart</button></span>
 			<?php
             }
             ?>
-			<span class="text-center"><button id="favorite-btn" type="button" class="btn btn-default btn-success">Favorites</button></span>
+			<span class="text-center"><button id="favorite-btn" type="button" class="btn btn-default btn-success"><i class="fa fa-heart error"></i> Favorites</button></span>
 			<?php
             if (getRole () == "admin") {
             ?>
-            <span class="text-center"><button id="access-btn" type="button" class="btn btn-default btn-info">Access</button></span>
+            <span class="text-center"><button id="access-btn" type="button" class="btn btn-default btn-info"><i class="fa fa-picture-o"></i> Access</button></span>
 			<?php
             }
             ?>

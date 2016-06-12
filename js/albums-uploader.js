@@ -188,6 +188,7 @@ function editAlbum(id) {
                         $("#resize-progress").show();
                         $.post("/api/make-thumbs.php", {
                             id : id,
+                            markup: "watermark"
                         }).done(function(data) {
                             var myVar = setInterval( function(){ 
                                 $.get(

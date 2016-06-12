@@ -374,3 +374,26 @@ ul.search-results {
 	margin-top: 15px;
 	display: none;
 }
+
+/* more album custom formatting */
+.img-favorite {
+	width: 120px;
+	height: 120px;
+	margin: 10px;
+	background-size: cover;
+	background-position: 50%;
+}
+
+#favorites-list li {
+    pointer-events: none;
+}
+#favorites-list li:after {
+	content: '\f1f8';
+    font-family: FontAwesome;
+    color: red;
+    cursor: pointer;
+    pointer-events: all;
+    position: relative;
+    left: 93px;
+    font-size: 20px;
+}
