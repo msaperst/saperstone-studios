@@ -1,4 +1,5 @@
 var album_table;
+var resultsSelected = false;
 
 $(document).ready(function() {
     album_table = $('#albums').DataTable({

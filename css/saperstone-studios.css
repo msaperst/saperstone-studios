@@ -22,6 +22,16 @@ header.carousel {
 	height: 70%;
 }
 
+/* Modal Stylizing */
+.modal-header {
+	background-color: #428bca;
+	color: #fff;
+    font-size: 16px;
+}
+.modal-header small {
+    color: #ddd;
+}
+
 /* Nav Styles */
 .navbar-actions {
 	margin-bottom: -1px;
@@ -309,15 +319,16 @@ footer {
 }
 
 /* our query results formatting */
+.open {
+	position: relative;
+}
 ul.search-results {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
-	margin-top: -15px;
-	left: 15px;
 	right: auto;
 }
 
-.selected-album {
+.selected-album,.selected-user {
 	display: inline-block;
 	border: 1px solid lightgrey;
 	padding: 3px 0px 3px 5px;
@@ -326,7 +337,7 @@ ul.search-results {
 	pointer-events: none;
 }
 
-.selected-album:after {
+.selected-album:after,.selected-user:after {
 	content: '\f014';
 	font-family: FontAwesome;
 	font-weight: normal;

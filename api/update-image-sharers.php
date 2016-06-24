@@ -25,12 +25,19 @@ if (isset ( $_POST ['album'] )) {
     exit ();
 }
 
-$sql = "DELETE FROM albums_for_users WHERE album = $album";
+if (isset ( $_POST ['image'] )) {
+    $image = $_POST ['image'];
+} else {
+    echo "Image is not provided";
+    exit ();
+}
+
+$sql = "DELETE FROM `share_rights` WHERE `album` = '$album' AND `image` = '$image'";
 mysqli_query ( $db, $sql );
 
 if( isset( $_POST['users'] ) ) {
     foreach ( $_POST ['users'] as $user ) {
-        $sql = "INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '$user', '$album' );";
+        $sql = "INSERT INTO `share_rights` ( `user`, `album`, `image` ) VALUES ( '$user', '$album', '$image' );";
         mysqli_query ( $db, $sql );
     }
 }

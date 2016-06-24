@@ -76,45 +76,13 @@ Album.prototype.loadImages = function() {
 };
 
 $(document).ready(function() {
-    $('#delete-image-btn').click(function(){
-        var img = $('#album-carousel div.active div');
-        $('#album-carousel').carousel("pause");
-        BootstrapDialog.show({
-            draggable: true,
-            title: 'Are You Sure?',
-            message: 'Are you sure you want to delete the image <b>' + img.attr('alt') + '</b>',
-            buttons: [{
-                icon: 'glyphicon glyphicon-trash',
-                label: ' Delete',
-                cssClass: 'btn-danger',
-                action: function(dialogInItself){
-                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
-                    $button.spin();
-                    dialogInItself.enableButtons(false);
-                    dialogInItself.setClosable(false);
-                    //send our update
-                    $.post("/api/delete-image.php", {
-                        album : img.attr('album-id'),
-                        image : img.attr('image-id')
-                    }).done(function(data) {
-                        dialogInItself.close();
-                        //go to the next image
-                        $('#album-carousel').carousel("next");
-                        //cleanup the dom
-                        $('.gallery img[alt="'+img.attr('alt')+'"]').parent().remove();
-                        img.parent().remove();
-                        $('#album-carousel').carousel();
-                    });
-                }
-            }, {
-                label: 'Close',
-                action: function(dialogInItself){
-                    $('#album-carousel').carousel("cycle");
-                    dialogInItself.close();
-                }
-            }]
-        });
+    $('#album-carousel').carousel({
+        interval: false,
+        pause: "none",
     });
+    $(document).on('mouseleave','#album-carousel', function(){
+        $(this).carousel('pause');
+      });
     
     $('#set-favorite-image-btn').click(function(){
         var img = $('#album-carousel div.active div');

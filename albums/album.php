@@ -125,7 +125,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 				<div class="modal-body">
 					<!-- Carousel -->
 					<div id="album-carousel"
-						class="carousel slide carousel-three-by-two">
+						class="carousel slide carousel-three-by-two" data-pause="false" data-interval="false">
 						<!-- Indicators -->
             			<?php
                         foreach ( $images as $num => $image ) {
@@ -166,25 +166,17 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 				<div class="modal-footer">
 					<span class="pull-left">
 						<?php
-                        if (getRole () == "admin") {
-                        ?>
-    					<button id="delete-image-btn" type="button"
-								class="btn btn-default btn-danger btn-action"><i class="fa fa-trash"></i> Delete Image</button>
-						<?php
-                        }
                         if (! isLoggedIn ()) {
                         ?>
     					<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 								data-placement="top"
 								title="Login or create an account for this feature.">
-							<button type="button" class="btn btn-default" disabled><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
-								Image</button>
+							<button type="button" class="btn btn-default" disabled><i class="fa fa-download"></i> Download</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 								data-placement="top"
 								title="Login or create an account for this feature.">
-							<button type="button" class="btn btn-default" disabled><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share
-								Image</button>
+							<button type="button" class="btn btn-default" disabled><i class="fa fa-share"></i> Share</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 								data-placement="top"
@@ -195,15 +187,24 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 					    <?php
                         } else {
                         ?>
-    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
-							Image</button>
-						<button type="button" class="btn btn-default btn-action"><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share Image</button>
+    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-download"></i> Download</button>
+						<button type="button" class="btn btn-default btn-action"><i class="fa fa-share"></i> Share</button>
 						<button id="cart-image-btn" type="button" class="btn btn-default btn-warning btn-action"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
 						<?php
                         }
                         ?>
     					<button id="set-favorite-image-btn" type="button" class="btn btn-default btn-action"><i class="fa fa-heart"></i> Favorite</button>
     					<button id="unset-favorite-image-btn" type="button" class="btn btn-default btn-success btn-action hidden"><i class="fa fa-heart error"></i> Favorite</button>
+    					<?php 
+                        if (getRole () == "admin") {
+                        ?>
+    					<button id="access-image-btn" type="button"
+								class="btn btn-default btn-info btn-action"><i class="fa fa-picture-o"></i> Access</button>
+    					<button id="delete-image-btn" type="button"
+								class="btn btn-default btn-danger btn-action"><i class="fa fa-trash"></i> Delete</button>
+						<?php
+                        }
+                        ?>
 					</span>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
@@ -233,21 +234,20 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
     					<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 								data-placement="top"
 								title="Login or create an account for this feature.">
-							<button type="button" class="btn btn-default" disabled><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
+							<button type="button" class="btn btn-default" disabled><i class="fa fa-download"></i> Download
 								Favorites</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 								data-placement="top"
 								title="Login or create an account for this feature.">
-							<button type="button" class="btn btn-default" disabled><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share
+							<button type="button" class="btn btn-default" disabled><i class="fa fa-share"></i> Share
 								Favorites </button>
 						</div>
 					    <?php
                         } else {
                         ?>
-    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i> Purcahse/Download
-							Image</button>
-						<button type="button" class="btn btn-default btn-action"><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share Image</button>
+    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-download"></i> Download Image</button>
+						<button type="button" class="btn btn-default btn-action"><i class="fa fa-share"></i> Share Image</button>
 						<?php
                         }
                         ?>
@@ -308,6 +308,13 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 
 	<!-- Gallery JavaScript -->
 	<script src="/js/album.js"></script>
+	<?php
+	if(getRole() == "admin") {
+	?>
+	<script src="/js/album-admin.js"></script>
+	<?php
+	}
+	?>
 
 	<!-- Script to Activate the Gallery -->
 	<script>
