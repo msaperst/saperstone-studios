@@ -51,7 +51,10 @@ Album.prototype.loadImages = function() {
                     link.on('click', function() {
                         var carouselImage = $('#album-carousel .item').index( $('#album-carousel .contain[image-id="'+v.sequence+'"]').parent() );
                         $('#album').carousel(parseInt( carouselImage ));
-                        isFavorite();
+                        $('#album .btn-action').each(function(){
+                            $(this).prop("disabled",true);
+                        });
+                        getDetails();
                     });
                     // add our image icon
                     var view = $('<i>');
@@ -134,11 +137,11 @@ $(document).ready(function() {
     });
     //once slide completes, check for a favorite, which will re-enable
     $('#album-carousel').on('slid.bs.carousel', function(){
-        isFavorite();
+        getDetails();
     });
 });
 
-function isFavorite() {
+function getDetails() {
     $('#album .btn-action').each(function(){
         $(this).prop("disabled",true);
     });
@@ -152,8 +155,29 @@ function isFavorite() {
         } else {
             unsetFavorite();
         }
-        $('#album .btn-action').each(function(){
-            $(this).prop("disabled",false);
+        $.get("/api/is-downloadable.php", {
+            album : img.attr('album-id'),
+            image : img.attr('image-id')
+        }).done(function(data) {
+            if( Math.round(data) == data && data == 1 ) {
+                setDownloadable();
+            } else {
+                unsetDownloadable();
+            }
+            $.get("/api/is-shareable.php", {
+                album : img.attr('album-id'),
+                image : img.attr('image-id')
+            }).done(function(data) {
+                if( Math.round(data) == data && data == 1 ) {
+                    setShareable();
+                } else {
+                    unsetShareable();
+                }
+                
+                $('#album .btn-action').each(function(){
+                    $(this).prop("disabled",false);
+                });
+            });
         });
     });
 }
@@ -165,4 +189,22 @@ function setFavorite() {
 function unsetFavorite() {
     $('#set-favorite-image-btn').removeClass('hidden');
     $('#unset-favorite-image-btn').addClass('hidden');
+}
+
+function setDownloadable() {
+    $('#not-downloadable-image-btn').addClass('hidden');
+    $('#downloadable-image-btn').removeClass('hidden');
+}
+function unsetDownloadable() {
+    $('#not-downloadable-image-btn').removeClass('hidden');
+    $('#downloadable-image-btn').addClass('hidden');
+}
+
+function setShareable() {
+    $('#not-shareable-image-btn').addClass('hidden');
+    $('#shareable-image-btn').removeClass('hidden');
+}
+function unsetShareable() {
+    $('#not-shareable-image-btn').removeClass('hidden');
+    $('#shareable-image-btn').addClass('hidden');
 }

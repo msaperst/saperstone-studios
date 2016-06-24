@@ -187,8 +187,18 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 					    <?php
                         } else {
                         ?>
-    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-download"></i> Download</button>
-						<button type="button" class="btn btn-default btn-action"><i class="fa fa-share"></i> Share</button>
+    					<button id="downloadable-image-btn" type="button" class="btn btn-default btn-action btn-success hidden"><i class="fa fa-download"></i> Download</button>
+    					<div id="not-downloadable-image-btn" class="tooltip-wrapper disabled" data-toggle="tooltip"
+								data-placement="top"
+								title="Purchase full rights to this image in order to download it.">
+	    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-download"></i> Download</button>
+    					</div>
+    					<button id="shareable-image-btn" type="button" class="btn btn-default btn-action btn-success hidden"><i class="fa fa-share"></i> Share</button>
+    					<div id="not-shareable-image-btn" class="tooltip-wrapper disabled" data-toggle="tooltip"
+								data-placement="top"
+								title="Purchase social media rights to this image in order to share it on social media.">
+	    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-share"></i> Share</button>
+    					</div>
 						<button id="cart-image-btn" type="button" class="btn btn-default btn-warning btn-action"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
 						<?php
                         }

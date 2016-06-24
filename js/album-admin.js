@@ -255,11 +255,11 @@ $(document).ready(function() {
     $('#access-btn').click(function(){
         BootstrapDialog.show({
             draggable: true,
-            title: 'Who Do You Want To Give Access To For Album <b>'+$('#album').attr('album-id')+'</b>?',
+            title: 'Who Do You Want To Give Access To For Album <b>'+$('#album-title').html()+'</b>?',
             message: function(dialogInItself){
                 var inputs = $('<div>');
                 var albumDiv = $('<div id="albumDiv">');
-                albumDiv.append('<h4>Overall Album Access</h4>');
+                albumDiv.append('<h4>Album Access</h4>');
                 var albumInput = $('<div class="open">');
 
                 var searchAlbumInput = $('<input>');
