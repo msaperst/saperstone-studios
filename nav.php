@@ -39,6 +39,7 @@
     				<ul class="dropdown-menu">
     					<li><a href="/albums/users.php">Manage Users</a></li>
     					<li><a href="/albums/index.php">Manage Albums</a></li>
+    					<li><a href="/albums/products.php">Manage Products</a></li>
     					<li><a href="#">Manage Posts</a></li>
     					<li><a href="#">Write New Post</a></li>
     					<li><a href="#">Manage Profile</a></li>

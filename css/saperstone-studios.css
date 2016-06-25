@@ -22,6 +22,11 @@ header.carousel {
 	height: 70%;
 }
 
+.editable-header {
+	width: 80%;
+    display: inline-block;
+}
+
 /* Modal Stylizing */
 .modal-header {
 	background-color: #428bca;
