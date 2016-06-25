@@ -16,11 +16,11 @@ function setupProduct() {
     saveProduct();
     cancelEditProduct();
     addProduct();
-    setupSize()
+    setupSize();
 }
 
 function editSize() {
-    $('.edit-size-button').click(function(){
+    $('.edit-size-button').off().click(function(){
         var row = $(this).closest('tr');
         $('.edit-size-button', row).addClass('hidden');
         $('.delete-size-button', row).addClass('hidden');
@@ -57,7 +57,7 @@ function editSize() {
 }
 
 function cancelEditSize() {
-    $('.cancel-size-button').click(function(){
+    $('.cancel-size-button').off().click(function(){
         var row = $(this).closest('tr');
         $('.edit-size-button', row).removeClass('hidden');
         $('.delete-size-button', row).removeClass('hidden');
@@ -76,7 +76,7 @@ function cancelEditSize() {
 }
 
 function deleteSize() {
-    $('.delete-size-button').click(function(){
+    $('.delete-size-button').off().click(function(){
         var row = $(this).closest('tr');
         BootstrapDialog.show({
             draggable: true,
@@ -110,7 +110,7 @@ function deleteSize() {
 }
 
 function saveSize() {
-    $('.save-size-button').click(function(){
+    $('.save-size-button').off().click(function(){
         var button = $(this);
         var row = $(this).closest('tr');
         $('i', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
@@ -146,7 +146,7 @@ function saveSize() {
 }
 
 function addSize() {
-    $('.add-size-button').click(function(){
+    $('.add-size-button').off().click(function(){
         var button = $(this);
         var row = $(this).closest('tr');
         $('i', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
@@ -200,7 +200,7 @@ function addSize() {
 }
 
 function editProduct() {
-    $('.edit-product-button').click(function(){
+    $('.edit-product-button').off().click(function(){
         var div = $(this).closest('div');
         $('.edit-product-button', div).addClass('hidden');
         $('.delete-product-button', div).addClass('hidden');
@@ -217,7 +217,7 @@ function editProduct() {
 }
 
 function cancelEditProduct() {
-    $('.cancel-product-button').click(function(){
+    $('.cancel-product-button').off().click(function(){
         var div = $(this).closest('div');
         $('.edit-product-button', div).removeClass('hidden');
         $('.delete-product-button', div).removeClass('hidden');
@@ -230,7 +230,7 @@ function cancelEditProduct() {
 }
 
 function deleteProduct() {
-    $('.delete-product-button').click(function(){
+    $('.delete-product-button').off().click(function(){
         var div = $(this).closest('div');
         BootstrapDialog.show({
             draggable: true,
@@ -264,7 +264,7 @@ function deleteProduct() {
 }
 
 function saveProduct() {
-    $('.save-product-button').click(function(){
+    $('.save-product-button').off().click(function(){
         var button = $(this);
         var div = $(this).closest('div');
         $('i', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
@@ -292,7 +292,7 @@ function saveProduct() {
 }
 
 function addProduct() {
-    $('.add-product-button').click(function(){
+    $('.add-product-button').off().click(function(){
         var header = $(this).closest('h2');
         BootstrapDialog.show({
             draggable: true,
@@ -302,6 +302,7 @@ function addProduct() {
             buttons: [{
                 icon: 'glyphicon glyphicon-save',
                 label: ' Save',
+                hotkey: 13,
                 cssClass: 'btn-success',
                 action: function(dialogInItself){
                     var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
@@ -339,7 +340,7 @@ function addProduct() {
                                     '<div id="product-size-error" class="error"></div>' +
                                 '</div>' );
                             dialogInItself.close();
-                            setupProduct()
+                            setupProduct();
                         } else {
                             $('#product-error').html( data );
                             $button.stopSpin();
