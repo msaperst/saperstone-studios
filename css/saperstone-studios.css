@@ -27,6 +27,14 @@ header.carousel {
     display: inline-block;
 }
 
+.table.borderless th, .table.borderless td { 
+     border-top: none !important; 
+ }
+
+input[type=number] {
+	padding-right: 0px;
+}
+
 /* Modal Stylizing */
 .modal-header {
 	background-color: #428bca;

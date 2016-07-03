@@ -81,11 +81,11 @@ Album.prototype.loadImages = function() {
 $(document).ready(function() {
     $('#album-carousel').carousel({
         interval: false,
-        pause: "none",
+        pause: "false",
     });
-    $(document).on('mouseleave','#album-carousel', function(){
-        $(this).carousel('pause');
-      });
+//    $(document).on('mouseleave','#album-carousel', function(){
+//        $(this).carousel('pause');
+//    });
     
     $('#set-favorite-image-btn').click(function(){
         var img = $('#album-carousel div.active div');
@@ -127,6 +127,50 @@ $(document).ready(function() {
                 $('#favorites-list').append( li );
             });
         }, "json" );
+    });
+    
+    //show our cart
+    $('#cart-image-btn').click(function(){
+        $('#cart').modal();
+    });
+    //show different tabs on our cart
+    $(".nav-tabs a").click(function(){
+        $(this).tab('show');
+    });
+    //update our cart
+    $('.product-count input').change(function(){
+        var img = $('#album-carousel div.active div');
+        var row = $(this).closest('tr');
+        var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g,""));
+        $('.product-total', row).html("$"+price*$(this).val());
+        if( $('.product-total', row).html() == "$0" ) {
+            $('.product-total', row).html("--");
+        }
+        //update our database
+        var products = {};
+        $('.product-count input').each(function(){
+            var product = $(this).closest('tr').attr('product-id');
+            var count = parseInt($(this).val()) || 0;
+            if( count !== 0 ) {
+                products[product] = count;
+            }
+        });
+        $.post("/api/update-cart.php", {
+            album : img.attr('album-id'),
+            image : img.attr('image-id'),
+            products : products
+        });
+        //update our count on the page
+        var total = 0;
+        $('.product-count input').each(function(){
+            var num = parseInt($(this).val()) || 0;
+            total += num;
+        });
+        if( total > 0 ) {
+            $('#cart-count').html(total).css({'padding-left':'10px'});
+        } else {
+            $('#cart-count').html("").css({'padding-left':''});
+        }
     });
     
     //on start of slide, disable all buttons

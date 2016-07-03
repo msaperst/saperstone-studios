@@ -256,12 +256,88 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 					    <?php
                         } else {
                         ?>
-    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-download"></i> Download Image</button>
-						<button type="button" class="btn btn-default btn-action"><i class="fa fa-share"></i> Share Image</button>
+    					<button type="button" class="btn btn-default btn-action"><i class="fa fa-download"></i> Download Images</button>
+						<button type="button" class="btn btn-default btn-action"><i class="fa fa-share"></i> Share Images</button>
 						<?php
                         }
                         ?>
 					</span>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End of Modal -->
+	
+	<!-- Cart Modal -->
+	<div id="cart" album-id="<?php echo $_GET ['album']; ?>" class="modal fade" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">What Product Do You Want?</h4>
+				</div>
+				<div class="modal-body">
+					<ul class="nav nav-tabs">
+						<?php
+						require "../php/sql.php";
+						$sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';";
+						$row = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+						$categories = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
+						$categories = array_diff($categories, ["other"]);
+						
+						$counter = 0;
+						foreach( $categories as $category ) {
+						?>
+						<li<?php if ($counter == 0) { echo " class='active'"; }?>><a href="#<?php echo $category; ?>"><?php echo ucwords($category); ?></a></li>
+						<?php 
+						$counter++;
+						}
+						?>
+                    </ul>
+                  	<div class="tab-content">
+                   		<?php
+                   		$counter = 0;
+                   		foreach( $categories as $category ) {
+                   		?>
+                   		<div id="<?php echo $category; ?>" class="row tab-pane fade<?php if ($counter == 0) { echo " in active"; }?>">
+   			        		<?php 
+                    		$sql = "SELECT `id`,`name` FROM `product_types` WHERE `category` = '$category';";
+                            $result = mysqli_query ( $db, $sql );
+                            while ( $r = mysqli_fetch_assoc ( $result ) ) {
+                            ?>
+                            <div class="col-md-4 col-sm-6" product-type='<?php echo $r['id']; ?>'>
+                                <h3><?php echo ucwords($r['name']); ?></h3>
+                                <table class="table borderless">
+                                <?php 
+                    			$sql = "SELECT * FROM `products` WHERE `product_type` = '".$r['id']."';";
+                    			$sesult = mysqli_query ( $db, $sql );
+                    			while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+                			    ?>
+                			    <tr product-id='<?php echo $s['id']; ?>'>
+                			    	<td class="product-size"><?php echo $s['size']; ?></td>
+                			    	<td class="product-count"><input class="form-control input-sm" type="number" min="0" /></td>
+                			    	<td class="product-price">$<?php echo $s['price']; ?></td>
+                			    	<td class="product-total" style="width:25%">--</td>
+                			    </tr>
+                                <?php 
+                    			}
+                    			?>
+                                </table>
+                            </div>
+                            <?php 
+                            }
+                            ?>
+                   		</div>
+                   		<?php 
+                   		$counter++;
+                   		}
+                   		?>
+               		</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Review Order & Checkout</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
@@ -291,7 +367,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 			<span class="text-center"><div class="tooltip-wrapper disabled" data-toggle="tooltip"
 					data-placement="top"
 					title="Login or create an account for this feature.">
-				<button id="cart-btn" type="button" class="btn btn-default btn-warning" disabled>Cart</button>
+				<button id="cart-btn" type="button" class="btn btn-default btn-warning" disabled>Cart <b id="cart-count" class="error"></b></button>
 			</div></span>
 		    <?php
             } else {
@@ -300,7 +376,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 					All</button></span>
 			<span class="text-center"><button type="button" class="btn btn-default"><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share 
 					All</button></span>
-			<span class="text-center"><button id="cart-btn" type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Cart</button></span>
+			<span class="text-center"><button id="cart-btn" type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Cart <b id="cart-count" class="error"></b></button></span>
 			<?php
             }
             ?>
