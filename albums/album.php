@@ -269,8 +269,8 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 	</div>
 	<!-- End of Modal -->
 	
-	<!-- Cart Modal -->
-	<div id="cart" album-id="<?php echo $_GET ['album']; ?>" class="modal fade" role="dialog">
+	<!-- Single Image Cart Modal -->
+	<div id="cart-image" album-id="<?php echo $_GET ['album']; ?>" class="modal fade" role="dialog">
 		<div class="modal-dialog modal-lg">
 			<!-- Modal content-->
 			<div class="modal-content">
@@ -337,7 +337,86 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                		</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Review Order & Checkout</button>
+					<button id="reviewOrder" type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Review Order & Checkout</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End of Modal -->
+	
+	<!-- Gallery Cart Modal -->
+	<div id="cart" album-id="<?php echo $_GET ['album']; ?>" class="modal fade" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Review Your Cart</h4>
+				</div>
+				<div class="modal-body">
+					<div id="cart-shipping">
+    					<div class="row">
+    						<p class="text-center">Shipping Information</p>
+    					</div>
+    					<div class="row">
+    						<div class="col-md-4 has-error">
+    							<label class="sr-only" for="cart-name">Name</label>
+    							<input id="cart-name" type="text" placeholder="Name" class="form-control" value="<?php echo getName(); ?>" required />
+    						</div>
+    						<div class="col-md-4 has-error">
+    							<label class="sr-only" for="cart-email">Email</label>
+    							<input id="cart-email" type="email" placeholder="Email" class="form-control" value="<?php echo getEmail(); ?>" required />
+    						</div>
+    						<div class="col-md-4 has-error">
+    							<label class="sr-only" for="cart-phone">Phone</label>
+    							<input id="cart-phone" type="tel" placeholder="Phone" class="form-control" required />
+    						</div>
+    					</div>
+    					<div class="row">
+    						<div class="col-md-12 has-error">
+    							<label class="sr-only" for="cart-address">Address</label>
+    							<input id="cart-address" type="text" placeholder="Address" class="form-control" required />
+    						</div>
+    					</div>
+    					<div class="row">
+    						<div class="col-md-4 has-error">
+    							<label class="sr-only" for="cart-city">City</label>
+    							<input id="cart-city" type="text" placeholder="City" class="form-control" required />
+    						</div>
+    						<div class="col-md-4 has-error">
+    							<label class="sr-only" for="cart-state">State</label>
+    							<input id="cart-state" type="text" placeholder="State" class="form-control" required />
+    						</div>
+    						<div class="col-md-4 has-error">
+    							<label class="sr-only" for="cart-zip">Zip</label>
+    							<input id="cart-zip" type="text" placeholder="Zip Code" class="form-control" required />
+    						</div>
+    					</div>
+					</div>
+					<div class="row">
+						<p> </p>
+						<p class="text-center">Please confirm details for each item</p>
+					</div>
+					<div class="row">
+						<table id="cart-table" class="table">
+							<thead>
+								<tr><th></th><th>Preview</th><th>Product</th><th>Size</th><th>Price</th><th>Options</th></tr>
+							</thead>
+							<tbody id="cart-items">
+							</tbody>
+							<tfoot>
+								<tr><th colspan="3"><th>Tax:</th><th id="cart-tax"></th><th></th></tr>
+								<tr><th></th><th colspan="3">
+									<label class="sr-only" for="cart-coupon">Coupon</label>
+									<input id="cart-coupon" type="text" placeholder="Coupon Code" class="form-control" />
+								</th><th id="cart-total"></th><th></th></tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button id="cart-submit" type="button" class="btn btn-default btn-success" disabled><i class="fa fa-credit-card"></i> Place Order</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
@@ -376,8 +455,18 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
 					All</button></span>
 			<span class="text-center"><button type="button" class="btn btn-default"><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share 
 					All</button></span>
+			<?php
+			$sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '".getUserId()."';";
+			$result = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+			if ( $result['total'] > 0 ) {
+			?>
+			<span class="text-center"><button id="cart-btn" type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Cart <b id="cart-count" class="error" style="padding-left: 10px;"><?php echo $result['total']; ?></b></button></span>
+			<?php
+			} else {
+			?>
 			<span class="text-center"><button id="cart-btn" type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Cart <b id="cart-count" class="error"></b></button></span>
 			<?php
+			}
             }
             ?>
 			<span class="text-center"><button id="favorite-btn" type="button" class="btn btn-default btn-success"><i class="fa fa-heart error"></i> Favorites</button></span>

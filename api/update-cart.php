@@ -42,42 +42,20 @@ if ($album_info ['id']) {
     exit ();
 }
 
-$sequence = "";
-if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
-    $sequence = ( int ) $_POST ['image'];
-} else {
-    if (! isset ( $_POST ['image'] )) {
-        echo "Image id is required!";
-    } elseif ($_POST ['image'] != "") {
-        echo "Image id cannot be blank!";
-    } else {
-        echo "Some other Image id error occurred!";
-    }
-    exit ();
-}
-
-$sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
-if ($album_info ['title']) {
-} else {
-    echo "That image doesn't match anything";
-    exit ();
-}
-
 // empty out our old cart for this image
-$sql = "DELETE FROM `cart` WHERE `user` = '$user' AND `album` = '$album' and `image` = '$sequence'";
+$sql = "DELETE FROM `cart` WHERE `user` = '$user' AND `album` = '$album';";
 mysqli_query ( $db, $sql );
 
 // for each product, add it back in
-if (isset ( $_POST ['products'] ) && is_array ( $_POST ['products'] )) {
-    foreach ( $_POST ['products'] as $product => $count ) {
-        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '$user', '$album', '$sequence', '$product', '$count');";
+if (isset ( $_POST ['images'] ) && is_array ( $_POST ['images'] )) {
+    foreach ( $_POST ['images'] as $image ) {
+        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '$user', '$album', '" . $image ['image'] . "', '" . $image ['product'] . "', '" . $image ['count'] . "');";
         mysqli_query ( $db, $sql );
     }
 }
 
 $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '$user';";
 $result = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
-echo $result['total'];
+echo $result ['total'];
 
 exit ();

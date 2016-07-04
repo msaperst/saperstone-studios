@@ -29,7 +29,11 @@ header.carousel {
 
 .table.borderless th, .table.borderless td { 
      border-top: none !important; 
- }
+}
+
+table td {
+	vertical-align: middle !important;
+}
 
 input[type=number] {
 	padding-right: 0px;
