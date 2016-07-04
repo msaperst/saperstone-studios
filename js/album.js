@@ -50,7 +50,7 @@ Album.prototype.loadImages = function() {
                     link.attr('data-target','#album');
                     link.on('click', function() {
                         var carouselImage = $('#album-carousel .item').index( $('#album-carousel .contain[image-id="'+v.sequence+'"]').parent() );
-                        $('#album').carousel(parseInt( carouselImage ));
+                        $('#album-carousel').carousel(parseInt( carouselImage ));
                         $('#album .btn-action').each(function(){
                             $(this).prop("disabled",true);
                         });
@@ -131,7 +131,26 @@ $(document).ready(function() {
     
     //show our cart
     $('#cart-image-btn').click(function(){
+        var img = $('#album-carousel div.active div');
         $('#cart').modal();
+        $('.product-count input').each(function(){
+            $(this).val("");
+        });
+        $('.product-total').each(function(){
+            $(this).html("--");
+        });
+        $.get("/api/get-cart-image.php", {
+            album : img.attr('album-id'),
+            image : img.attr('image-id'),
+        }, function(data) {
+            for (var i = 0, len = data.length; i < len; i++) {
+                console.log( data[i] );
+                var row =  $('#cart tr[product-id="'+data[i].product+'"]');
+                var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g,""));
+                $('input', row).val(data[i].count);
+                $('.product-total', row).html("$"+price*data[i].count);
+            }
+        }, "json" );
     });
     //show different tabs on our cart
     $(".nav-tabs a").click(function(){
@@ -155,7 +174,7 @@ $(document).ready(function() {
                 products[product] = count;
             }
         });
-        $.post("/api/update-cart.php", {
+        $.post("/api/update-cart-image.php", {
             album : img.attr('album-id'),
             image : img.attr('image-id'),
             products : products
