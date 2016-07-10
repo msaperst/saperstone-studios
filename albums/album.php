@@ -258,6 +258,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                         ?>
     					<button type="button" class="btn btn-default btn-action"><i class="fa fa-download"></i> Download Images</button>
 						<button type="button" class="btn btn-default btn-action"><i class="fa fa-share"></i> Share Images</button>
+						<button type="button" class="btn btn-default btn-action btn-success"><i class="fa fa-paper-plane"></i> Submit Images</button>
 						<?php
                         }
                         ?>
