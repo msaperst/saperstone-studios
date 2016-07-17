@@ -29,7 +29,8 @@ $(function() {
                     name: name,
                     phone: phone,
                     email: email,
-                    message: message
+                    resolution: $( window ).width() + "x" + $( window ).height(), 
+                    message: message,
                 },
                 cache: false,
                 success: function() {
