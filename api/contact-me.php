@@ -52,7 +52,7 @@ $html .= "<b>Resoluation</b>: $resolution<br/>";
 $html .= "<b>OS</b>: " . $browser ['platform'] . "<br/>";
 // $html .= "<b>IP</b>: $IP<br/>";
 $html .= "<b>Full UA</b>: " . $_SERVER ['HTTP_USER_AGENT'] . "<br/>";
-$html .= "Submitted from <a href='$referrer'>$referrer</a><br/>";
+$html .= "<b>Submitted From</b>: <a href='$referrer'>$referrer</a><br/>";
 $html .= "<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$message<br/><br/>";
 $html .= "</body></html>";
 
@@ -79,7 +79,7 @@ $text .= "Resoluation: $resolution";
 $text .= "OS: " . $browser ['platform'] . "\n";
 // $text .= "IP: $IP\n";
 $text .= "Full UA: " . $_SERVER ['HTTP_USER_AGENT'] . "\n";
-$text .= "Submitted from $referrer\n";
+$text .= "Submitted From: $referrer\n";
 $text .= "\n\t\t$message";
 
 $crlf = "\n";

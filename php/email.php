@@ -1,8 +1,5 @@
 <?php
-$host = "ssl://smtp.verizon.net";
-$port = "465";
-$username = "vze134ek8";
-$password = "Burning1";
+$params = parse_ini_file( "env.ini" );
 
 $headers = array (
         'Reply-To' => $from,
@@ -12,11 +9,11 @@ $headers = array (
 );
 $headers = $mime->headers ( $headers );
 $smtp = Mail::factory ( 'smtp', array (
-        'host' => $host,
-        'port' => $port,
+        'host' => $params['email.host'],
+        'port' => $params['email.port'],
         'auth' => true,
-        'username' => $username,
-        'password' => $password 
+        'username' => $params['email.username'],
+        'password' => $params['email.password']
 ) );
 
 $mail = $smtp->send ( $to, $headers, $body );
