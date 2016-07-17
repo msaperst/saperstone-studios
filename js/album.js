@@ -225,7 +225,7 @@ $(document).ready(function() {
                                 var item = {};
                                 item.product = $(this).attr('product-id');
                                 item.image = $(this).attr('image-id');
-                                item.count = 1
+                                item.count = 1;
                                 cart.push(item);
                             }
                         });
@@ -409,7 +409,7 @@ function arrayHasJSON(myArray,product,image) {
             hasJSON = true;
             break;
         }
-    };
+    }
     return hasJSON;
 }
 function incrementProduct(myArray,product,image) {

@@ -1,57 +1,57 @@
 
 <!-- Collect the nav links, forms, and other content for toggling -->
 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-	<ul class="nav navbar-nav navbar-right">
-		<li class="dropdown"><a href="javascript:void(0);"
-			class="dropdown-toggle" data-toggle="dropdown">Portraits<b
-				class="caret"></b></a>
-			<ul class="dropdown-menu">
-				<li><a href="/portrait/details.php">Details</a></li>
-				<li><a href="/portrait/gallery.php">Gallery</a></li>
-				<li><a href="#">Retouch</a></li>
-			</ul></li>
-		<li class="dropdown"><a href="javascript:void(0);"
-			class="dropdown-toggle" data-toggle="dropdown">Weddings<b
-				class="caret"></b></a>
-			<ul class="dropdown-menu">
-				<li><a href="portfolio-1-col.html">1 Column Portfolio</a></li>
-				<li><a href="portfolio-2-col.html">2 Column Portfolio</a></li>
-				<li><a href="portfolio-3-col.html">3 Column Portfolio</a></li>
-				<li><a href="portfolio-4-col.html">4 Column Portfolio</a></li>
-				<li><a href="portfolio-item.html">Single Portfolio Item</a></li>
-			</ul></li>
-		<li class="dropdown"><a href="javascript:void(0);"
-			class="dropdown-toggle" data-toggle="dropdown">Commercial<b
-				class="caret"></b></a>
-			<ul class="dropdown-menu">
-				<li><a href="portfolio-1-col.html">1 Column Portfolio</a></li>
-				<li><a href="portfolio-2-col.html">2 Column Portfolio</a></li>
-				<li><a href="portfolio-3-col.html">3 Column Portfolio</a></li>
-				<li><a href="portfolio-4-col.html">4 Column Portfolio</a></li>
-				<li><a href="portfolio-item.html">Single Portfolio Item</a></li>
-			</ul></li>
-		<li class="dropdown"><a href="javascript:void(0);"
-			class="dropdown-toggle" data-toggle="dropdown">Blog<b class="caret"></b></a>
-			<ul class="dropdown-menu">
-				<li><a href="#">Recent Posts</a></li>
-				<li><a href="#">Most Popular</a></li>
-				<li><a href="#">Categories</a></li>
-				<li><input id="nav-search-input" /> <i id="nav-search-icon"
-					class="fa fa-search"></i></li>
-			</ul></li>
-		<li class="dropdown"><a href="javascript:void(0);"
-			class="dropdown-toggle" data-toggle="dropdown">Information<b
-				class="caret"></b></a>
-			<ul class="dropdown-menu">
-				<li><a href="/about.php">About</a></li>
-				<?php
+    <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown"><a href="javascript:void(0);"
+            class="dropdown-toggle" data-toggle="dropdown">Portraits<b
+                class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="/portrait/details.php">Details</a></li>
+                <li><a href="/portrait/gallery.php">Gallery</a></li>
+                <li><a href="#">Retouch</a></li>
+            </ul></li>
+        <li class="dropdown"><a href="javascript:void(0);"
+            class="dropdown-toggle" data-toggle="dropdown">Weddings<b
+                class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="portfolio-1-col.html">1 Column Portfolio</a></li>
+                <li><a href="portfolio-2-col.html">2 Column Portfolio</a></li>
+                <li><a href="portfolio-3-col.html">3 Column Portfolio</a></li>
+                <li><a href="portfolio-4-col.html">4 Column Portfolio</a></li>
+                <li><a href="portfolio-item.html">Single Portfolio Item</a></li>
+            </ul></li>
+        <li class="dropdown"><a href="javascript:void(0);"
+            class="dropdown-toggle" data-toggle="dropdown">Commercial<b
+                class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="portfolio-1-col.html">1 Column Portfolio</a></li>
+                <li><a href="portfolio-2-col.html">2 Column Portfolio</a></li>
+                <li><a href="portfolio-3-col.html">3 Column Portfolio</a></li>
+                <li><a href="portfolio-4-col.html">4 Column Portfolio</a></li>
+                <li><a href="portfolio-item.html">Single Portfolio Item</a></li>
+            </ul></li>
+        <li class="dropdown"><a href="javascript:void(0);"
+            class="dropdown-toggle" data-toggle="dropdown">Blog<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="#">Recent Posts</a></li>
+                <li><a href="#">Most Popular</a></li>
+                <li><a href="#">Categories</a></li>
+                <li><input id="nav-search-input" /> <i id="nav-search-icon"
+                    class="fa fa-search"></i></li>
+            </ul></li>
+        <li class="dropdown"><a href="javascript:void(0);"
+            class="dropdown-toggle" data-toggle="dropdown">Information<b
+                class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="/about.php">About</a></li>
+                <?php
                 if (getRole () != "admins") {
                 ?>
-				<li><a href="#album">Find Album</a></li>
+                <li><a href="#album">Find Album</a></li>
                 <?php
                 }
                 ?>
-				<li><a href="/services.html">Services</a></li>
-				<li><a href="#">Reviews</a></li>
-				<li><a href="/contact.php">Contact</a></li>
-			</ul></li>
+                <li><a href="/services.html">Services</a></li>
+                <li><a href="#">Reviews</a></li>
+                <li><a href="/contact.php">Contact</a></li>
+            </ul></li>

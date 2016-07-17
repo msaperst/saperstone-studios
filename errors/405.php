@@ -1,9 +1,9 @@
 <?php
 
-	$title = "405";
-	$subtitle = "Method Not Allowed";
+    $title = "405";
+    $subtitle = "Method Not Allowed";
 
-	$message = "The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.\n";
+    $message = "The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.\n";
 
-	require( 'template.php' );
+    require( 'template.php' );
 ?>
