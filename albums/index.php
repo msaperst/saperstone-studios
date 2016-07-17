@@ -8,9 +8,9 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
-if ( !isLoggedIn() ) {
+if ( !$user->isLoggedIn() ) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     include "../errors/401.php";
     exit ();
@@ -44,7 +44,7 @@ if ( !isLoggedIn() ) {
         <div class="row">
             <div class="col-lg-12">
                 <?php 
-                if( getRole() == "admin" ) {
+                if( $user->getRole() == "admin" ) {
                 ?>
                 <h1 class="page-header text-center">Manage Albums</h1>
                 <ol class="breadcrumb">
@@ -72,7 +72,7 @@ if ( !isLoggedIn() ) {
         <div class="row">
             <div class="col-lg-12">
                 <?php 
-                if( getRole() != "admin" ) {
+                if( $user->getRole() != "admin" ) {
                 ?>
                     <div id="add-album-div" class="form-group form-inline text-center">
                         <label for="album-code">Add Album:</label>
@@ -87,7 +87,7 @@ if ( !isLoggedIn() ) {
                     <thead>
                         <tr>
                             <?php
-                            if( getRole() == "admin" || getRole() == "uploader" ) {
+                            if( $user->getRole() == "admin" || $user->getRole() == "uploader" ) {
                             ?>
                             <th>
                                 <button id="add-album-btn" type="button"
@@ -103,7 +103,7 @@ if ( !isLoggedIn() ) {
                             <th>Album Date</th>
                             <th>Images</th>
                             <?php
-                            if( getRole() == "admin" ) {
+                            if( $user->getRole() == "admin" ) {
                             ?>
                             <th>Last Accessed</th>
                             <th>Access Code</th>
@@ -126,11 +126,11 @@ if ( !isLoggedIn() ) {
         src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>
     <?php
-    if( getRole() == "admin" ) {
+    if( $user->getRole() == "admin" ) {
     ?>
     <script src="/js/albums-admin.js"></script>
     <?php
-    } elseif ( getRole() == "uploader" ) {
+    } elseif ( $user->getRole() == "uploader" ) {
     ?>
     <script src="/js/albums-uploader.js"></script>
     <?php

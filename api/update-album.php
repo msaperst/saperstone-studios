@@ -10,7 +10,7 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
 $id = "";
 if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
@@ -34,7 +34,7 @@ if ($album_info ['id']) {
     exit ();
 }
 // only admin users and uploader users who own the album can make updates
-if (getRole () == "admin" || (getRole () == "uploader" && getUserId () == $album_info ['owner'])) {
+if ($user->getRole () == "admin" || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
 } else {
     header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
@@ -60,7 +60,7 @@ if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
 
 $sql = "UPDATE albums SET name='$name', description='$description', date='$date', code=NULL WHERE id='$id';";
 mysqli_query ( $db, $sql );
-if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && getRole () == "admin") {
+if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && $user->getRole () == "admin") {
     $code = mysqli_real_escape_string ( $db, $_POST ['code'] );
     $sql = "UPDATE albums SET code='$code' WHERE id='$id';";
     mysqli_query ( $db, $sql );

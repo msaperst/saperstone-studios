@@ -10,13 +10,13 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
 $user;
-if ( !isLoggedIn() ) {
+if ( !$user->isLoggedIn() ) {
     $user = $_SERVER['REMOTE_ADDR'];
 } else {
-    $user = getUserId();
+    $user = $user->getId();
 }
 
 $album = "";

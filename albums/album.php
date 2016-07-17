@@ -8,7 +8,7 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
 if (! isset ( $_GET ['album'] )) { // if no album is set, throw a 404 error
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
@@ -24,13 +24,13 @@ if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
     exit ();
 }
 
-if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin and no code exists for the album
-    if (! isLoggedIn ()) { // if not logged in, throw an error
+if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an admin and no code exists for the album
+    if (! $user->isLoggedIn ()) { // if not logged in, throw an error
         header ( 'HTTP/1.0 401 Unauthorized' );
         include "../errors/401.php";
         exit ();
     } else { // if logged in
-        $sql = "SELECT * FROM albums_for_users WHERE user = '" . getUserId () . "';";
+        $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";
         $result = mysqli_query ( $db, $sql );
         $albums = array ();
         while ( $r = mysqli_fetch_assoc ( $result ) ) {
@@ -87,7 +87,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <?php
-                    if (isLoggedIn ()) {
+                    if ($user->isLoggedIn ()) {
                         echo "<li><a href=\"/albums/index.php\">Albums</a></li>";
                     }
                     ?>
@@ -166,7 +166,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                 <div class="modal-footer">
                     <span class="pull-left">
                         <?php
-                        if (! isLoggedIn ()) {
+                        if (! $user->isLoggedIn ()) {
                         ?>
                         <div class="tooltip-wrapper disabled" data-toggle="tooltip"
                                 data-placement="top"
@@ -206,7 +206,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                         <button id="set-favorite-image-btn" type="button" class="btn btn-default btn-action"><i class="fa fa-heart"></i> Favorite</button>
                         <button id="unset-favorite-image-btn" type="button" class="btn btn-default btn-success btn-action hidden"><i class="fa fa-heart error"></i> Favorite</button>
                         <?php 
-                        if (getRole () == "admin") {
+                        if ($user->getRole () == "admin") {
                         ?>
                         <button id="access-image-btn" type="button"
                                 class="btn btn-default btn-info btn-action"><i class="fa fa-picture-o"></i> Access</button>
@@ -239,7 +239,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                 <div class="modal-footer">
                     <span class="pull-left">
                         <?php
-                        if (! isLoggedIn ()) {
+                        if (! $user->isLoggedIn ()) {
                         ?>
                         <div class="tooltip-wrapper disabled" data-toggle="tooltip"
                                 data-placement="top"
@@ -363,11 +363,11 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
                         <div class="row">
                             <div class="col-md-4 has-error">
                                 <label class="sr-only" for="cart-name">Name</label>
-                                <input id="cart-name" type="text" placeholder="Name" class="form-control" value="<?php echo getName(); ?>" required />
+                                <input id="cart-name" type="text" placeholder="Name" class="form-control" value="<?php echo $user->getName(); ?>" required />
                             </div>
                             <div class="col-md-4 has-error">
                                 <label class="sr-only" for="cart-email">Email</label>
-                                <input id="cart-email" type="email" placeholder="Email" class="form-control" value="<?php echo getEmail(); ?>" required />
+                                <input id="cart-email" type="email" placeholder="Email" class="form-control" value="<?php echo $user->getEmail(); ?>" required />
                             </div>
                             <div class="col-md-4 has-error">
                                 <label class="sr-only" for="cart-phone">Phone</label>
@@ -430,7 +430,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
         <div class="container text-center">
         
             <?php
-            if (! isLoggedIn ()) {
+            if (! $user->isLoggedIn ()) {
             ?>
             <span class="text-center"><div class="tooltip-wrapper disabled" data-toggle="tooltip"
                     data-placement="top"
@@ -457,7 +457,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
             <span class="text-center"><button type="button" class="btn btn-default"><i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i> Purcahse/Share 
                     All</button></span>
             <?php
-            $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '".getUserId()."';";
+            $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '".$user->getId()."';";
             $result = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
             if ( $result['total'] > 0 ) {
             ?>
@@ -472,7 +472,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
             ?>
             <span class="text-center"><button id="favorite-btn" type="button" class="btn btn-default btn-success"><i class="fa fa-heart error"></i> Favorites</button></span>
             <?php
-            if (getRole () == "admin") {
+            if ($user->getRole () == "admin") {
             ?>
             <span class="text-center"><button id="access-btn" type="button" class="btn btn-default btn-info"><i class="fa fa-picture-o"></i> Access</button></span>
             <?php
@@ -485,7 +485,7 @@ if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin an
     <!-- Gallery JavaScript -->
     <script src="/js/album.js"></script>
     <?php
-    if(getRole() == "admin") {
+    if($user->getRole() == "admin") {
     ?>
     <script src="/js/album-admin.js"></script>
     <?php

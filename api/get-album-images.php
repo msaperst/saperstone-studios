@@ -9,7 +9,7 @@ session_start ();
 // Start our session
 
 require_once "../php/sql.php";
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
 // Need to put in similar check that exists in album for appropriate user
 
@@ -39,13 +39,13 @@ if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
     exit ();
 }
 
-if (getRole () != "admin" && $album_info ['code'] == "") { // if not an admin and no exists for the album
-    if (! isLoggedIn ()) { // if not logged in, throw an error
+if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an admin and no exists for the album
+    if (! $user->isLoggedIn ()) { // if not logged in, throw an error
         $response ['err'] = "You are not authorized to view this album";
         echo json_encode ( $response );
         exit ();
     } else {
-        $sql = "SELECT * FROM albums_for_users WHERE user = '" . getUserId () . "';";
+        $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";
         $result = mysqli_query ( $db, $sql );
         $albums = array ();
         while ( $r = mysqli_fetch_assoc ( $result ) ) {

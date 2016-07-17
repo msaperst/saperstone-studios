@@ -2,8 +2,8 @@
 
 <!-- User Information For JS -->
 <div class="hidden">
-    <input id="my-user-id" value="<?php echo getUserId(); ?>" /> <input
-        id="my-user-role" value="<?php echo getRole(); ?>" />
+    <input id="my-user-id" value="<?php echo $user->getId(); ?>" /> <input
+        id="my-user-role" value="<?php echo $user->getRole(); ?>" />
 </div>
 
 <!-- Footer -->

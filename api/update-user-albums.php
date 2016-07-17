@@ -11,9 +11,9 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
-if (getRole () != "admin") {
+if ($user->getRole () != "admin") {
     header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }

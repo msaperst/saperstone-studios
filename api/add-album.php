@@ -10,10 +10,10 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
 // ensure we are logged in appropriately
-if (getRole () != "admin" && getRole () != "uploader") {
+if ($user->getRole () != "admin" && $user->getRole () != "uploader") {
     header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }
@@ -47,12 +47,12 @@ if (! mkdir ( "../albums/$location", 0755, true )) {
     exit ();
 }
 
-$sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', '$date', '$location', '" . getUserId () . "');";
+$sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', '$date', '$location', '" . $user->getId () . "');";
 mysqli_query ( $db, $sql );
 $last_id = mysqli_insert_id ( $db );
 
-if( getRole () == "uploader" ) {
-    $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" .getUserId(). "', '$last_id');";
+if( $user->getRole () == "uploader" ) {
+    $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" .$user->getId(). "', '$last_id');";
     mysqli_query ( $db, $sql );
 }
 

@@ -10,7 +10,7 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
 if (isset ( $_GET ['code'] )) {
     $code = $_GET ['code'];
@@ -29,11 +29,11 @@ if ($r ['id']) {
 }
 
 if (isset ( $_GET ['albumAdd'] ) && $_GET ['albumAdd'] == 1) {
-    $sql = "SELECT * FROM albums_for_users WHERE user = '" . getUserId () . "' AND album = '" . $r ['id'] . "';";
+    $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "' AND album = '" . $r ['id'] . "';";
     $s = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
     if ($s ['user']) {
     } else {
-    $sql = "INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . getUserId () . "', '" . $r ['id'] . "' );";
+    $sql = "INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . $user->getId () . "', '" . $r ['id'] . "' );";
     mysqli_query ( $db, $sql );
     }
 }

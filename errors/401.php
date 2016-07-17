@@ -10,13 +10,13 @@ if (session_status () != PHP_SESSION_ACTIVE) {
     // Start our session
 }
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
 $title = "401";
 $subtitle = "Unauthorized";
 
 $message = "Your request requires user authentication.<br/>\n";
-if (! isLoggedIn ()) {
+if (! $user->isLoggedIn ()) {
     $message .= "Please <a href='javascript:void(0);' data-toggle='modal' data-target='#login-modal'>Login</a> to access that page.<br/>\n";
 } else {
     $message .= "Despite being logged in, your credentials do not give you access to this section of the site.<br/>\n";

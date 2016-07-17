@@ -10,13 +10,13 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/user.php";
+include_once "../php/user.php"; $user = new user();
 
 $user;
-if (! isLoggedIn ()) {
+if (! $user->isLoggedIn ()) {
     $user = $_SERVER ['REMOTE_ADDR'];
 } else {
-    $user = getUserId ();
+    $user = $user->getId ();
 }
 
 $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user';";

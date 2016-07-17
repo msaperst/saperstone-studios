@@ -27,14 +27,14 @@
             ?>
             
                   <?php
-                    if (!isLoggedIn ()) {
+                    if (!$user->isLoggedIn ()) {
                 ?>
                 <li><a href="javascript:void(0);" data-toggle="modal" data-target="#login-modal"><i class="fa fa-sign-in"></i> Login</a></li>
                 <?php
-                    } elseif (getRole () == "admin") {
+                    } elseif ($user->getRole () == "admin") {
                 ?>
                 <li class="dropdown"><a href="javascript:void(0);"
-                    class="dropdown-toggle" data-toggle="dropdown"><?php echo getUser (); ?><b
+                    class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->getUser (); ?><b
                         class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="/albums/users.php">Manage Users</a></li>
@@ -49,7 +49,7 @@
                     } else {
                 ?>
                 <li class="dropdown"><a href="javascript:void(0);"
-                    class="dropdown-toggle" data-toggle="dropdown"><?php echo getUser (); ?><b
+                    class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->getUser (); ?><b
                         class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="/albums/index.php">View Albums</a></li>

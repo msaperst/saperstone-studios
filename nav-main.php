@@ -1,4 +1,3 @@
-
 <!-- Collect the nav links, forms, and other content for toggling -->
 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav navbar-right">
@@ -45,7 +44,7 @@
             <ul class="dropdown-menu">
                 <li><a href="/about.php">About</a></li>
                 <?php
-                if (getRole () != "admins") {
+                if ($user->getRole () != "admins") {
                 ?>
                 <li><a href="#album">Find Album</a></li>
                 <?php
