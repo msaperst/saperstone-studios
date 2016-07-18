@@ -1,5 +1,7 @@
 <?php
 require_once "../php/sql.php";
+$conn = new sql ();
+$conn->connect ();
 
 session_name ( 'ssLogin' );
 // Starting the session
@@ -10,7 +12,8 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-include_once "../php/user.php"; $user = new user();
+include_once "../php/user.php";
+$user = new user ();
 
 $user;
 if (! $user->isLoggedIn ()) {
@@ -20,7 +23,7 @@ if (! $user->isLoggedIn ()) {
 }
 
 $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user';";
-$result = mysqli_query ( $db, $sql );
+$result = mysqli_query ( $conn->db, $sql );
 
 $favorites = array ();
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
@@ -31,4 +34,6 @@ if (isset ( $_GET ['album'] )) {
     $favorites = $favorites [$_GET ['album']];
 }
 echo json_encode ( $favorites );
+
+$conn->disconnect ();
 exit ();

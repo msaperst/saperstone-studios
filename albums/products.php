@@ -51,9 +51,9 @@ if ($user->getRole () != "admin") {
         <!-- /.row -->
 
         <?php
-        require "../php/sql.php";
+        require "../php/sql.php"; $conn = new sql (); $conn->connect ();
         $sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';";
-        $row = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
         $categories = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
         
         foreach( $categories as $category ) {
@@ -63,7 +63,7 @@ if ($user->getRole () != "admin") {
                 <h2 class="text-center"><?php echo ucwords($category); ?> <button type="button" class="btn btn-xs btn-success add-product-button"><i class="fa fa-plus"></i></button></h2>
                 <?php 
                 $sql = "SELECT `id`,`name` FROM `product_types` WHERE `category` = '$category';";
-                $result = mysqli_query ( $db, $sql );
+                $result = mysqli_query ( $conn->db, $sql );
                 while ( $r = mysqli_fetch_assoc ( $result ) ) {
                 ?>
                 <div class="col-md-4 col-sm-6 bootstrap-dialog" product-type='<?php echo $r['id']; ?>'>
@@ -79,7 +79,7 @@ if ($user->getRole () != "admin") {
                         <tbody>
                             <?php 
                             $sql = "SELECT * FROM `products` WHERE `product_type` = '".$r['id']."';";
-                            $sesult = mysqli_query ( $db, $sql );
+                            $sesult = mysqli_query ( $conn->db, $sql );
                             while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
                             ?>
                             <tr product-id='<?php echo $s['id']; ?>'>
@@ -117,7 +117,10 @@ if ($user->getRole () != "admin") {
         }
         ?>
 
-        <?php require_once "../footer.php"; ?>
+        <?php
+        require_once "../footer.php";
+        $conn->disconnect ();
+        ?>
 
     </div>
     <!-- /.container -->

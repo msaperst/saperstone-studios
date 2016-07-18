@@ -1,5 +1,7 @@
 <?php
 require_once "../php/sql.php";
+$conn = new sql ();
+$conn->connect ();
 
 session_name ( 'ssLogin' );
 // Starting the session
@@ -10,7 +12,8 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-include_once "../php/user.php"; $user = new user();
+include_once "../php/user.php";
+$user = new user ();
 
 $id = "";
 if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
@@ -23,20 +26,23 @@ if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
     } else {
         echo "Some other Album id error occurred!";
     }
+    $conn->disconnect ();
     exit ();
 }
 
 $sql = "SELECT * FROM albums WHERE id = $id;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($album_info ['id']) {
 } else {
     echo "That ID doesn't match any albums";
+    $conn->disconnect ();
     exit ();
 }
 // only admin users and uploader users who own the album can make updates
 if ($user->getRole () == "admin" || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
 } else {
     header ( 'HTTP/1.0 401 Unauthorized' );
+    $conn->disconnect ();
     exit ();
 }
 
@@ -46,25 +52,24 @@ $date = "";
 $code = "";
 
 if (isset ( $_POST ['name'] )) {
-    $name = mysqli_real_escape_string ( $db, $_POST ['name'] );
+    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
 }
 if (isset ( $_POST ['description'] )) {
-    $description = mysqli_real_escape_string ( $db, $_POST ['description'] );
+    $description = mysqli_real_escape_string ( $conn->db, $_POST ['description'] );
 }
 if (isset ( $_POST ['date'] )) {
-    $date = mysqli_real_escape_string ( $db, $_POST ['date'] );
+    $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
 }
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
-    $code = mysqli_real_escape_string ( $db, $_POST ['code'] );
+    $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
 }
 
 $sql = "UPDATE albums SET name='$name', description='$description', date='$date', code=NULL WHERE id='$id';";
-mysqli_query ( $db, $sql );
+mysqli_query ( $conn->db, $sql );
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && $user->getRole () == "admin") {
-    $code = mysqli_real_escape_string ( $db, $_POST ['code'] );
+    $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
     $sql = "UPDATE albums SET code='$code' WHERE id='$id';";
-    mysqli_query ( $db, $sql );
+    mysqli_query ( $conn->db, $sql );
 }
+$conn->disconnect ();
 exit ();
-
-?>

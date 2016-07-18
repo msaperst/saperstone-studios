@@ -1,13 +1,13 @@
 <?php
 class user {
-    var $sql = "sql.php";
+    var $sql;
     var $db;
-    
     function user() {
-        require $this->sql;
-        $this->db = $db;
+        include_once "sql.php";
+        $sql = new sql ();
+        $sql->connect ();
+        $this->db = $sql->db;
     }
-    
     function isLoggedIn() {
         if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
             $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT usr FROM users WHERE hash='{$_SESSION['hash']}';" ) );

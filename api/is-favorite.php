@@ -1,5 +1,7 @@
 <?php
 require_once "../php/sql.php";
+$conn = new sql ();
+$conn->connect ();
 
 session_name ( 'ssLogin' );
 // Starting the session
@@ -10,7 +12,8 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-include_once "../php/user.php"; $user = new user();
+include_once "../php/user.php";
+$user = new user ();
 
 $user;
 if (! $user->isLoggedIn ()) {
@@ -30,14 +33,16 @@ if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
     } else {
         echo "Some other Album id error occurred!";
     }
+    $conn->disconnect ();
     exit ();
 }
 
 $sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($album_info ['id']) {
 } else {
     echo "That ID doesn't match any albums";
+    $conn->disconnect ();
     exit ();
 }
 
@@ -52,22 +57,27 @@ if (isset ( $_GET ['image'] ) && $_GET ['image'] != "") {
     } else {
         echo "Some other Image id error occurred!";
     }
+    $conn->disconnect ();
     exit ();
 }
 
 $sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($album_info ['title']) {
 } else {
     echo "That image doesn't match anything";
+    $conn->disconnect ();
     exit ();
 }
 
 $sql = "SELECT * FROM `favorites` WHERE `user` = '$user' AND `album` = '$album' AND `image` = '$sequence';";
-$favorite = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+$favorite = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($favorite ['user']) {
     echo 1;
+    $conn->disconnect ();
     exit ();
 }
 echo 0;
+
+$conn->disconnect ();
 exit ();

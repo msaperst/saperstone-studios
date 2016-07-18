@@ -9,7 +9,10 @@ session_start ();
 // Start our session
 
 require_once "../php/sql.php";
-include_once "../php/user.php"; $user = new user();
+$conn = new sql ();
+$conn->connect ();
+include_once "../php/user.php";
+$user = new user ();
 
 // Need to put in similar check that exists in album for appropriate user
 
@@ -18,10 +21,11 @@ $start = 0;
 $howMany = 999999999999999999;
 
 if (isset ( $_GET ['albumId'] )) {
-    $albumId = mysqli_real_escape_string ( $db, $_GET ['albumId'] );
+    $albumId = mysqli_real_escape_string ( $conn->db, $_GET ['albumId'] );
 } else {
     $response ['err'] = "Need to provide album";
     echo json_encode ( $response );
+    $conn->disconnect ();
     exit ();
 }
 if (isset ( $_GET ['start'] )) {
@@ -32,10 +36,11 @@ if (isset ( $_GET ['howMany'] )) {
 }
 
 $sql = "SELECT * FROM `albums` WHERE id = '$albumId';";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
     $response ['err'] = "Album doesn't exist!";
     echo json_encode ( $response );
+    $conn->disconnect ();
     exit ();
 }
 
@@ -43,10 +48,11 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
     if (! $user->isLoggedIn ()) { // if not logged in, throw an error
         $response ['err'] = "You are not authorized to view this album";
         echo json_encode ( $response );
+        $conn->disconnect ();
         exit ();
     } else {
         $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";
-        $result = mysqli_query ( $db, $sql );
+        $result = mysqli_query ( $conn->db, $sql );
         $albums = array ();
         while ( $r = mysqli_fetch_assoc ( $result ) ) {
             $albums [] = $r ['album'];
@@ -54,6 +60,7 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
         if (! in_array ( $albumId, $albums )) { // if not in album list
             $response ['err'] = "You are not authorized to view this album";
             echo json_encode ( $response );
+            $conn->disconnect ();
             exit ();
         }
     }
@@ -61,12 +68,12 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
 
 if (! array_key_exists ( "err", $response )) {
     $sql = "SELECT album_images.* FROM `album_images` JOIN `albums` ON album_images.album = albums.id WHERE albums.id = '$albumId' ORDER BY `sequence` LIMIT $start,$howMany;";
-    $result = mysqli_query ( $db, $sql );
+    $result = mysqli_query ( $conn->db, $sql );
     while ( $r = mysqli_fetch_assoc ( $result ) ) {
         $response [] = $r;
     }
 }
 echo json_encode ( $response );
-exit ();
 
-?>
+$conn->disconnect ();
+exit ();

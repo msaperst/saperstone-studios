@@ -15,23 +15,27 @@ if (! isset ( $_GET ['album'] )) { // if no album is set, throw a 404 error
     include "../errors/404.php";
     exit ();
 }
-require "../php/sql.php";
+
+include_once "../php/sql.php";
+$conn = new sql ();
+$conn->connect ();
+
 $sql = "SELECT * FROM `albums` WHERE id = '" . $_GET ['album'] . "';";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "../errors/404.php";
-    exit ();
+    $conn->disconnect (); exit ();
 }
 
 if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an admin and no code exists for the album
     if (! $user->isLoggedIn ()) { // if not logged in, throw an error
         header ( 'HTTP/1.0 401 Unauthorized' );
         include "../errors/401.php";
-        exit ();
+        $conn->disconnect (); exit ();
     } else { // if logged in
         $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";
-        $result = mysqli_query ( $db, $sql );
+        $result = mysqli_query ( $conn->db, $sql );
         $albums = array ();
         while ( $r = mysqli_fetch_assoc ( $result ) ) {
             $albums [] = $r ['album'];
@@ -39,7 +43,7 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
         if (! in_array ( $_GET ['album'], $albums )) { // and if not in album user list
             header ( 'HTTP/1.0 401 Unauthorized' );
             include "../errors/401.php";
-            exit ();
+            $conn->disconnect (); exit ();
         }
     }
 }
@@ -66,9 +70,8 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
     require_once "../nav.php";
     
     // get our gallery images
-    require "../php/sql.php";
     $sql = "SELECT album_images.*, albums.name, albums.description, albums.date FROM `album_images` JOIN `albums` ON album_images.album = albums.id WHERE albums.id = '" . $_GET ['album'] . "' ORDER BY `sequence`;";
-    $result = mysqli_query ( $db, $sql );
+    $result = mysqli_query ( $conn->db, $sql );
     $images = array ();
     while ( $row = mysqli_fetch_assoc ( $result ) ) {
         $images [] = $row;
@@ -282,9 +285,8 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
                 <div class="modal-body">
                     <ul class="nav nav-tabs">
                         <?php
-                        require "../php/sql.php";
                         $sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';";
-                        $row = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+                        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
                         $categories = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
                         $categories = array_diff($categories, ["other"]);
                         
@@ -305,7 +307,7 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
                            <div id="<?php echo $category; ?>" class="row tab-pane fade<?php if ($counter == 0) { echo " in active"; }?>">
                                <?php 
                             $sql = "SELECT `id`,`name` FROM `product_types` WHERE `category` = '$category';";
-                            $result = mysqli_query ( $db, $sql );
+                            $result = mysqli_query ( $conn->db, $sql );
                             while ( $r = mysqli_fetch_assoc ( $result ) ) {
                             ?>
                             <div class="col-md-4 col-sm-6" product-type='<?php echo $r['id']; ?>'>
@@ -313,7 +315,7 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
                                 <table class="table borderless">
                                 <?php 
                                 $sql = "SELECT * FROM `products` WHERE `product_type` = '".$r['id']."';";
-                                $sesult = mysqli_query ( $db, $sql );
+                                $sesult = mysqli_query ( $conn->db, $sql );
                                 while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
                                 ?>
                                 <tr product-id='<?php echo $s['id']; ?>'>
@@ -458,7 +460,7 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
                     All</button></span>
             <?php
             $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '".$user->getId()."';";
-            $result = mysqli_fetch_assoc ( mysqli_query ( $db, $sql ) );
+            $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
             if ( $result['total'] > 0 ) {
             ?>
             <span class="text-center"><button id="cart-btn" type="button" class="btn btn-default btn-warning"><i class="fa fa-shopping-cart"></i> Cart <b id="cart-count" class="error" style="padding-left: 10px;"><?php echo $result['total']; ?></b></button></span>
@@ -489,6 +491,7 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
     ?>
     <script src="/js/album-admin.js"></script>
     <?php
+    $conn->disconnect ();
     }
     ?>
 

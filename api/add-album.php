@@ -1,5 +1,7 @@
 <?php
 require_once "../php/sql.php";
+$conn = new sql ();
+$conn->connect ();
 
 session_name ( 'ssLogin' );
 // Starting the session
@@ -10,11 +12,13 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-include_once "../php/user.php"; $user = new user();
+include_once "../php/user.php";
+$user = new user ();
 
 // ensure we are logged in appropriately
 if ($user->getRole () != "admin" && $user->getRole () != "uploader") {
     header ( 'HTTP/1.0 401 Unauthorized' );
+    $conn->disconnect ();
     exit ();
 }
 
@@ -23,18 +27,19 @@ if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = $_POST ['name'];
 } else {
     echo "Album name is required!";
+    $conn->disconnect ();
     exit ();
 }
 
 // sanitize our inputs
 if (isset ( $_POST ['name'] )) {
-    $name = mysqli_real_escape_string ( $db, $_POST ['name'] );
+    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
 }
 if (isset ( $_POST ['description'] )) {
-    $description = mysqli_real_escape_string ( $db, $_POST ['description'] );
+    $description = mysqli_real_escape_string ( $conn->db, $_POST ['description'] );
 }
 if (isset ( $_POST ['date'] )) {
-    $date = mysqli_real_escape_string ( $db, $_POST ['date'] );
+    $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
 }
 
 // generate our location for the files
@@ -44,18 +49,20 @@ if (! mkdir ( "../albums/$location", 0755, true )) {
     $error = error_get_last ();
     echo $error ['message'] . "<br/>";
     echo "Unable to create album";
+    $conn->disconnect ();
     exit ();
 }
 
 $sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', '$date', '$location', '" . $user->getId () . "');";
-mysqli_query ( $db, $sql );
-$last_id = mysqli_insert_id ( $db );
+mysqli_query ( $conn->db, $sql );
+$last_id = mysqli_insert_id ( $conn->db );
 
-if( $user->getRole () == "uploader" ) {
-    $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" .$user->getId(). "', '$last_id');";
-    mysqli_query ( $db, $sql );
+if ($user->getRole () == "uploader") {
+    $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $user->getId () . "', '$last_id');";
+    mysqli_query ( $conn->db, $sql );
 }
 
 echo $last_id;
 
+$conn->disconnect ();
 exit ();

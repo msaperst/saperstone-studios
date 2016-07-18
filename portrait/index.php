@@ -15,9 +15,9 @@
     require_once "../nav.php";
     
     // get our gallery images
-    require "../php/sql.php";
+    require "../php/sql.php"; $conn = new sql (); $conn->connect ();
     $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-home';";
-    $result = mysqli_query($db, $sql);
+    $result = mysqli_query($conn->db, $sql);
     $images = array();
     while($row = mysqli_fetch_assoc($result)) {
         $images[] = $row;
@@ -172,7 +172,10 @@
         </div>
         <!-- /.row -->
 
-        <?php require_once "../footer.php"; ?>
+        <?php
+        require_once "../footer.php";
+        $conn->disconnect ();
+        ?>
 
     </div>
     <!-- /.container -->
