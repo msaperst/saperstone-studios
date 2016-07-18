@@ -52,7 +52,7 @@ class user {
                 $name += $row ['firstName'];
             }
             if ($row ['lastName']) {
-                $name += $row ['lastName'];
+                $name += " " . $row ['lastName'];
             }
             return $name;
         }

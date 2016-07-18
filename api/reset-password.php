@@ -43,6 +43,7 @@ $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT usr FROM users WHE
 if ($row ['usr']) {
     // If everything is OK login, so update our password
     mysqli_query ( $conn->db, "UPDATE users SET pass='" . md5 ( $_POST ['password'] ) . "' WHERE email='{$_POST ['email']}' AND resetKey='{$_POST ['code']}';" );
+    mysqli_query ( $conn->db, "UPDATE users SET resetKey='' WHERE email='{$_POST ['email']}';" );
 } else {
     $err [] = "Credentials do not match our records!";
 }

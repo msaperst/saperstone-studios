@@ -97,7 +97,7 @@ require ('../php/email.php');
 $subject = "Thank you for contacting Saperstone Studios";
 $text = "Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.";
 $html = "<html><body>$text</body></html>";
-$from = $to;
+$from = "noreply@saperstonestudios.com";
 $to = "$name <$email>";
 
 $mime = new Mail_mime ( $crlf );
