@@ -52,7 +52,7 @@ if ($user->getRole () != "admin") {
 		<!-- /.row -->
 
         <?php
-        require "../php/sql.php";
+        require_once"../php/sql.php";
         $conn = new sql ();
         $conn->connect ();
         $sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';";
