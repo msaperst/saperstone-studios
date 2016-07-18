@@ -4,16 +4,16 @@
             <ul class="nav navbar-nav navbar-right">
 <!--                 <li><a href="index.php">Home</a></li> -->
                 <li class="dropdown"><a href="javascript:void(0);"
-                    class="dropdown-toggle" data-toggle="dropdown">Details<b
-                        class="caret"></b></a>
+                    class="dropdown-toggle" data-toggle="dropdown">Details<strong
+                        class="caret"></strong></a>
                     <ul class="dropdown-menu">
                         <li><a href="what-to-wear.php">What to Wear</a></li>
                         <li><a href="#">Investment</a></li>
                         <li><a href="#">Products</a></li>
                     </ul></li>
                 <li class="dropdown"><a href="javascript:void(0);"
-                    class="dropdown-toggle" data-toggle="dropdown">Gallery<b
-                        class="caret"></b></a>
+                    class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
+                        class="caret"></strong></a>
                     <ul class="dropdown-menu">
                         <li><a href="gallery-maternity.php">Maternity</a></li>
                         <li><a href="#">Newborns</a></li>

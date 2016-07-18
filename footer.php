@@ -19,18 +19,18 @@
         <div class="col-md-4 text-center">
             <ul class="list-inline social-buttons">
                 <li><a target="_blank"
-                    href="https://www.facebook.com/SaperstoneStudios"><i
-                        class="fa fa-facebook"></i></a></li>
-                <li><a target="_blank" href="http://instagram.com/lasaperstone"><i
-                        class="fa fa-instagram"></i></a></li>
-                <li><a target="_blank" href="https://twitter.com/LaSaperstone"><i
-                        class="fa fa-twitter"></i></a></li>
+                    href="https://www.facebook.com/SaperstoneStudios"><em
+                        class="fa fa-facebook"></em></a></li>
+                <li><a target="_blank" href="http://instagram.com/lasaperstone"><em
+                        class="fa fa-instagram"></em></a></li>
+                <li><a target="_blank" href="https://twitter.com/LaSaperstone"><em
+                        class="fa fa-twitter"></em></a></li>
                 <li><a target="_blank"
-                    href="https://saperstonestudios.com/Blog/blogFeed.xml"><i
-                        class="fa fa-rss"></i></a></li>
+                    href="https://saperstonestudios.com/Blog/blogFeed.xml"><em
+                        class="fa fa-rss"></em></a></li>
                 <li><a target="_blank"
-                    href="https://plus.google.com/+SaperstoneStudios"><i
-                        class="fa fa-google-plus"></i></a></li>
+                    href="https://plus.google.com/+SaperstoneStudios"><em
+                        class="fa fa-google-plus"></em></a></li>
             </ul>
         </div>
         <div class="col-md-4 text-right">

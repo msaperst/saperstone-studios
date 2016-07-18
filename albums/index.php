@@ -80,7 +80,7 @@ if (! $user->isLoggedIn ()) {
 					<label for="album-code">Add Album:</label> <input type="text"
 						class="form-control" id="album-code" placeholder="Album Code" />
 					<button class="btn btn-success" id="album-code-add">
-						<i class="fa fa-plus-circle"></i>
+						<em class="fa fa-plus-circle"></em>
 				
 				</div>
 				<div id="add-album-error" class="error"></div>
@@ -97,7 +97,7 @@ if (! $user->isLoggedIn ()) {
                             <th>
 								<button id="add-album-btn" type="button"
 									class="btn btn-xs btn-success">
-									<i class="fa fa-plus"></i>
+									<em class="fa fa-plus"></em>
 								</button>
 							</th>
                             <?php

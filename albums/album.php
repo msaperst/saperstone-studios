@@ -181,14 +181,14 @@ footer {
 							data-toggle="tooltip" data-placement="top"
 							title="Login or create an account for this feature.">
 							<button type="button" class="btn btn-default" disabled>
-								<i class="fa fa-download"></i> Download
+								<em class="fa fa-download"></em> Download
 							</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 							data-placement="top"
 							title="Login or create an account for this feature.">
 							<button type="button" class="btn btn-default" disabled>
-								<i class="fa fa-share"></i> Share
+								<em class="fa fa-share"></em> Share
 							</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
@@ -196,7 +196,7 @@ footer {
 							title="Login or create an account for this feature.">
 							<button id="cart-image-btn" type="button"
 								class="btn btn-default btn-warning" disabled>
-								<i class="fa fa-shopping-cart"></i> Add to Cart
+								<em class="fa fa-shopping-cart"></em> Add to Cart
 							</button>
 						</div>
                         <?php
@@ -205,52 +205,52 @@ footer {
                         <button id="downloadable-image-btn"
 							type="button"
 							class="btn btn-default btn-action btn-success hidden">
-							<i class="fa fa-download"></i> Download
+							<em class="fa fa-download"></em> Download
 						</button>
 						<div id="not-downloadable-image-btn"
 							class="tooltip-wrapper disabled" data-toggle="tooltip"
 							data-placement="top"
 							title="Purchase full rights to this image in order to download it.">
 							<button type="button" class="btn btn-default btn-action">
-								<i class="fa fa-download"></i> Download
+								<em class="fa fa-download"></em> Download
 							</button>
 						</div>
 						<button id="shareable-image-btn" type="button"
 							class="btn btn-default btn-action btn-success hidden">
-							<i class="fa fa-share"></i> Share
+							<em class="fa fa-share"></em> Share
 						</button>
 						<div id="not-shareable-image-btn" class="tooltip-wrapper disabled"
 							data-toggle="tooltip" data-placement="top"
 							title="Purchase social media rights to this image in order to share it on social media.">
 							<button type="button" class="btn btn-default btn-action">
-								<i class="fa fa-share"></i> Share
+								<em class="fa fa-share"></em> Share
 							</button>
 						</div>
 						<button id="cart-image-btn" type="button"
 							class="btn btn-default btn-warning btn-action">
-							<i class="fa fa-shopping-cart"></i> Add to Cart
+							<em class="fa fa-shopping-cart"></em> Add to Cart
 						</button>
                         <?php
                         }
                         ?>
                         <button id="set-favorite-image-btn"
 							type="button" class="btn btn-default btn-action">
-							<i class="fa fa-heart"></i> Favorite
+							<em class="fa fa-heart"></em> Favorite
 						</button>
 						<button id="unset-favorite-image-btn" type="button"
 							class="btn btn-default btn-success btn-action hidden">
-							<i class="fa fa-heart error"></i> Favorite
+							<em class="fa fa-heart error"></em> Favorite
 						</button>
                         <?php
                         if ($user->getRole () == "admin") {
                             ?>
                         <button id="access-image-btn" type="button"
 							class="btn btn-default btn-info btn-action">
-							<i class="fa fa-picture-o"></i> Access
+							<em class="fa fa-picture-o"></em> Access
 						</button>
 						<button id="delete-image-btn" type="button"
 							class="btn btn-default btn-danger btn-action">
-							<i class="fa fa-trash"></i> Delete
+							<em class="fa fa-trash"></em> Delete
 						</button>
                         <?php
                         }
@@ -273,7 +273,7 @@ footer {
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
 					<h4 class="modal-title">
-						My Favorite Images for <b><?php echo $album_info['name']; ?></b>
+						My Favorite Images for <strong><?php echo $album_info['name']; ?></strong>
 					</h4>
 				</div>
 				<div class="modal-body">
@@ -288,14 +288,14 @@ footer {
 							data-toggle="tooltip" data-placement="top"
 							title="Login or create an account for this feature.">
 							<button type="button" class="btn btn-default" disabled>
-								<i class="fa fa-download"></i> Download Favorites
+								<em class="fa fa-download"></em> Download Favorites
 							</button>
 						</div>
 						<div class="tooltip-wrapper disabled" data-toggle="tooltip"
 							data-placement="top"
 							title="Login or create an account for this feature.">
 							<button type="button" class="btn btn-default" disabled>
-								<i class="fa fa-share"></i> Share Favorites
+								<em class="fa fa-share"></em> Share Favorites
 							</button>
 						</div>
                         <?php
@@ -303,17 +303,17 @@ footer {
                             ?>
                         <button type="button"
 							class="btn btn-default btn-action">
-							<i class="fa fa-download"></i> Download Images
+							<em class="fa fa-download"></em> Download Images
 						</button>
 						<button type="button" class="btn btn-default btn-action">
-							<i class="fa fa-share"></i> Share Images
+							<em class="fa fa-share"></em> Share Images
 						</button>
                         <?php
                         }
                         ?>
                         <button type="button"
 							class="btn btn-default btn-action btn-success">
-							<i class="fa fa-paper-plane"></i> Submit Images
+							<em class="fa fa-paper-plane"></em> Submit Images
 						</button>
 					</span>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -400,7 +400,7 @@ footer {
 				<div class="modal-footer">
 					<button id="reviewOrder" type="button"
 						class="btn btn-default btn-warning">
-						<i class="fa fa-shopping-cart"></i> Review Order & Checkout
+						<em class="fa fa-shopping-cart"></em> Review Order & Checkout
 					</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
@@ -509,7 +509,7 @@ footer {
 				<div class="modal-footer">
 					<button id="cart-submit" type="button"
 						class="btn btn-default btn-success" disabled>
-						<i class="fa fa-credit-card"></i> Place Order
+						<em class="fa fa-credit-card"></em> Place Order
 					</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
@@ -543,7 +543,7 @@ footer {
 					title="Login or create an account for this feature.">
 					<button id="cart-btn" type="button"
 						class="btn btn-default btn-warning" disabled>
-						Cart <b id="cart-count" class="error"></b>
+						Cart <strong id="cart-count" class="error"></strong>
 					</button>
 				</div></span>
             <?php
@@ -551,11 +551,11 @@ footer {
                 ?>
             <span class="text-center"><button type="button"
 					class="btn btn-default">
-					<i class="fa fa-credit-card"></i>/<i class="fa fa-download"></i>
+					<em class="fa fa-credit-card"></em>/<em class="fa fa-download"></em>
 					Purcahse/Download All
 				</button></span> <span class="text-center"><button type="button"
 					class="btn btn-default">
-					<i class="fa fa-credit-card"></i>/<i class="fa fa-share"></i>
+					<em class="fa fa-credit-card"></em>/<em class="fa fa-share"></em>
 					Purcahse/Share All
 				</button></span>
             <?php
@@ -565,16 +565,16 @@ footer {
                     ?>
             <span class="text-center"><button id="cart-btn"
 					type="button" class="btn btn-default btn-warning">
-					<i class="fa fa-shopping-cart"></i> Cart <b id="cart-count"
-						class="error" style="padding-left: 10px;"><?php echo $result['total']; ?></b>
+					<em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"
+						class="error" style="padding-left: 10px;"><?php echo $result['total']; ?></strong>
 				</button></span>
             <?php
                 } else {
                     ?>
             <span class="text-center"><button id="cart-btn"
 					type="button" class="btn btn-default btn-warning">
-					<i class="fa fa-shopping-cart"></i> Cart <b id="cart-count"
-						class="error"></b>
+					<em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"
+						class="error"></strong>
 				</button></span>
             <?php
                 }
@@ -582,14 +582,14 @@ footer {
             ?>
             <span class="text-center"><button id="favorite-btn"
 					type="button" class="btn btn-default btn-success">
-					<i class="fa fa-heart error"></i> Favorites
+					<em class="fa fa-heart error"></em> Favorites
 				</button></span>
             <?php
             if ($user->getRole () == "admin") {
                 ?>
             <span class="text-center"><button id="access-btn"
 					type="button" class="btn btn-default btn-info">
-					<i class="fa fa-picture-o"></i> Access
+					<em class="fa fa-picture-o"></em> Access
 				</button></span>
             <?php
             }

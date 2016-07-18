@@ -42,29 +42,29 @@
                 <p>
                     5012 Whisper Willow Dr<br>Fairfax, VA 22030<br>
                 </p>
-                <p><i class="fa fa-phone"></i> 
+                <p><em class="fa fa-phone"></em> 
                     <abbr title="Phone">P</abbr>: <a href="tel:571.266.0004">571.266.0004</a></p>
-                <p><i class="fa fa-envelope-o"></i> 
+                <p><em class="fa fa-envelope-o"></em> 
                     <abbr title="Email">E</abbr>: <a href="mailto:contact@saperstonestudios.com">Contact@SaperstoneStudios.com</a>
                 </p>
-                <p><i class="fa fa-clock-o"></i> 
+                <p><em class="fa fa-clock-o"></em> 
                     <abbr title="Hours">H</abbr>: Studio and session time by appointment only<br/>
                     <em style='padding-left:35px;'>Please no walk ins.</em></p>
                 <ul class="list-unstyled list-inline list-social-icons">
                     <li>
-                        <a target="_blank" href="https://www.facebook.com/SaperstoneStudios"><i class="fa fa-facebook-square fa-2x"></i></a>
+                        <a target="_blank" href="https://www.facebook.com/SaperstoneStudios"><em class="fa fa-facebook-square fa-2x"></em></a>
                     </li>
                     <li>
-                        <a target="_blank" href="http://instagram.com/lasaperstone"><i class="fa fa-instagram fa-2x"></i></a>
+                        <a target="_blank" href="http://instagram.com/lasaperstone"><em class="fa fa-instagram fa-2x"></em></a>
                     </li>
                     <li>
-                        <a target="_blank" href="https://twitter.com/LaSaperstone"><i class="fa fa-twitter-square fa-2x"></i></a>
+                        <a target="_blank" href="https://twitter.com/LaSaperstone"><em class="fa fa-twitter-square fa-2x"></em></a>
                     </li>
                     <li>
-                        <a target="_blank" href="https://saperstonestudios.com/Blog/blogFeed.xml"><i class="fa fa-rss-square fa-2x"></i></a>
+                        <a target="_blank" href="https://saperstonestudios.com/Blog/blogFeed.xml"><em class="fa fa-rss-square fa-2x"></em></a>
                     </li>
                     <li>
-                        <a target="_blank" href="https://plus.google.com/+SaperstoneStudios"><i class="fa fa-google-plus-square fa-2x"></i></a>
+                        <a target="_blank" href="https://plus.google.com/+SaperstoneStudios"><em class="fa fa-google-plus-square fa-2x"></em></a>
                     </li>
                 </ul>
             </div>

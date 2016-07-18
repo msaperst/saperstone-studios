@@ -31,28 +31,28 @@ $subject = "Saperstone Studios Contact Form:  $name"; // EDIT THE EMAIL SUBJECT 
 $html = "<html><body>";
 $html .= "This is an automatically generated message from Saperstone Studios<br/>";
 // $html .= "The below party contacted you about $topic<br/>";
-$html .= "<b>Name</b>: $name<br/>";
-$html .= "<b>Email</b>: <a href='mailto:$email'>$email</a><br/>";
+$html .= "<strong>Name</strong>: $name<br/>";
+$html .= "<strong>Email</strong>: <a href='mailto:$email'>$email</a><br/>";
 if (! isset ( $geo_info->city )) {
-    $html .= "<b>Location</b>: unknown (use $IP to manually lookup)<br/>";
+    $html .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
 } else {
     if (isset ( $geo_info->postal )) {
-        $html .= "<b>Location</b>: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
+        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
     } else {
-        $html .= "<b>Location</b>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
+        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
     }
-    $html .= "<b>Organization</b>: " . $geo_info->org . "<br/>";
-    $html .= "<b>Hostname</b>: " . $geo_info->hostname . "<br/>";
+    $html .= "<strong>Organization</strong>: " . $geo_info->org . "<br/>";
+    $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
 }
 if (isset ( $_POST ['position'] ) && isset ( $location )) {
-    $html .= "<b>Location</b>: $location (estimate based on geolocation $position)<br/>";
+    $html .= "<strong>Location</strong>: $location (estimate based on geolocation $position)<br/>";
 }
-$html .= "<b>Browser</b>: " . $browser ['parent'] . "<br/>";
-$html .= "<b>Resoluation</b>: $resolution<br/>";
-$html .= "<b>OS</b>: " . $browser ['platform'] . "<br/>";
-// $html .= "<b>IP</b>: $IP<br/>";
-$html .= "<b>Full UA</b>: " . $_SERVER ['HTTP_USER_AGENT'] . "<br/>";
-$html .= "<b>Submitted From</b>: <a href='$referrer'>$referrer</a><br/>";
+$html .= "<strong>Browser</strong>: " . $browser ['parent'] . "<br/>";
+$html .= "<strong>Resoluation</strong>: $resolution<br/>";
+$html .= "<strong>OS</strong>: " . $browser ['platform'] . "<br/>";
+// $html .= "<strong>IP</strong>: $IP<br/>";
+$html .= "<strong>Full UA</strong>: " . $_SERVER ['HTTP_USER_AGENT'] . "<br/>";
+$html .= "<strong>Submitted From</strong>: <a href='$referrer'>$referrer</a><br/>";
 $html .= "<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$message<br/><br/>";
 $html .= "</body></html>";
 
@@ -61,7 +61,7 @@ $text = "This is an automatically generated message from Saperstone Studios\n";
 $text .= "Name: $name\n";
 $text .= "Email: $email\n";
 if (! isset ( $geo_info->city )) {
-    $text .= "<b>Location</b>: unknown (use $IP to manually lookup)<br/>";
+    $text .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
 } else {
     if (isset ( $geo_info->postal )) {
         $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";

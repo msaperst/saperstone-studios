@@ -34,7 +34,7 @@
                     style='max-width: 350px; margin: 0px 0px 20px 20px;' />
                 <h2>What Makes Saperstone Studios Unique</h2>
                 <p>
-                    It's all in the name, Saperstone Studios Photography and <i>Retouch</i>.
+                    It's all in the name, Saperstone Studios Photography and <em>Retouch</em>.
                     It's a digital age and as such the art of photography has expanded
                     beyond being able to compose and take beautiful photographs. Much
                     of the work that goes into your photos is what happens after you
@@ -55,9 +55,9 @@
                     I've worked in the photography industry for over 10 years,
                     coordinating photo shoots and performing high level color
                     management and retouch for program books and billboards for
-                    Ringling Bros. Barnum & Bailey Circus <i>[[So many elephants!]]</i>
+                    Ringling Bros. Barnum & Bailey Circus <em>[[So many elephants!]]</em>
                     as well as a local DC fashion company managing the retouch workflow
-                    and consistent quality control. <i>That's</i> the expertise and
+                    and consistent quality control. <em>That's</em> the expertise and
                     knowledge I pass onto you.
                 </p>
             </div>

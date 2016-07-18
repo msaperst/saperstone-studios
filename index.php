@@ -63,8 +63,8 @@
                 <p>Allow me to introduce myself! I've worked in the photography
                     industry for over 10 years, coordinating photo shoots and
                     performing high level color management and retouch for program
-                    books and billboards for Ringling Bros. Barnum & Bailey Circus <i>[[So
-                    many elephants!]]</i> as well as a local DC fashion company managing
+                    books and billboards for Ringling Bros. Barnum & Bailey Circus <em>[[So
+                    many elephants!]]</em> as well as a local DC fashion company managing
                     the retouch workflow and consistent quality control.</p>
                 <p class="lead">I've started Saperstone Studios with the hope of
                     providing not just photography, but also an experience.</p>

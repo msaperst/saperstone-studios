@@ -65,7 +65,7 @@ if ($user->getRole () != "admin") {
 			<div class="col-lg-12">
 				<h2 class="text-center"><?php echo ucwords($category); ?> <button
 						type="button" class="btn btn-xs btn-success add-product-button">
-						<i class="fa fa-plus"></i>
+						<em class="fa fa-plus"></em>
 					</button>
 				</h2>
                 <?php
@@ -77,19 +77,19 @@ if ($user->getRole () != "admin") {
 					product-type='<?php echo $r['id']; ?>'>
 					<button type="button"
 						class="btn btn-xs btn-warning edit-product-button">
-						<i class="fa fa-pencil-square-o"></i>
+						<em class="fa fa-pencil-square-o"></em>
 					</button>
 					<button type="button"
 						class="btn btn-xs btn-danger delete-product-button">
-						<i class="fa fa-trash-o"></i>
+						<em class="fa fa-trash-o"></em>
 					</button>
 					<button type="button"
 						class="btn btn-xs btn-success save-product-button hidden">
-						<i class="fa fa-save"></i>
+						<em class="fa fa-save"></em>
 					</button>
 					<button type="button"
 						class="btn btn-xs btn-warning cancel-product-button hidden">
-						<i class="fa fa-ban"></i>
+						<em class="fa fa-ban"></em>
 					</button>
 					<h3 product-type='<?php echo $r['id']; ?>'
 						class="text-center editable-header"><?php echo ucwords($r['name']); ?></h3>
@@ -112,19 +112,19 @@ if ($user->getRole () != "admin") {
 								<td>
 									<button type="button"
 										class="btn btn-xs btn-warning edit-size-button">
-										<i class="fa fa-pencil-square-o"></i>
+										<em class="fa fa-pencil-square-o"></em>
 									</button>
 									<button type="button"
 										class="btn btn-xs btn-danger delete-size-button">
-										<i class="fa fa-trash-o"></i>
+										<em class="fa fa-trash-o"></em>
 									</button>
 									<button type="button"
 										class="btn btn-xs btn-success save-size-button hidden">
-										<i class="fa fa-save"></i>
+										<em class="fa fa-save"></em>
 									</button>
 									<button type="button"
 										class="btn btn-xs btn-warning cancel-size-button hidden">
-										<i class="fa fa-ban"></i>
+										<em class="fa fa-ban"></em>
 									</button>
 								</td>
 								<td class='product-size'><?php echo $s['size']; ?></td>
@@ -138,7 +138,7 @@ if ($user->getRole () != "admin") {
 								<td>
 									<button type="button"
 										class="btn btn-xs btn-success add-size-button">
-										<i class="fa fa-save"></i>
+										<em class="fa fa-save"></em>
 									</button>
 								</td>
 								<td class='product-size'><input class='form-control input-sm' /></td>

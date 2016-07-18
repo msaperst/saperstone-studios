@@ -63,7 +63,7 @@ if ($user->getRole () != "admin") {
 							<th>
 								<button id="add-user-btn" type="button"
 									class="btn btn-xs btn-success">
-									<i class="fa fa-plus"></i>
+									<em class="fa fa-plus"></em>
 								</button>
 							</th>
 							<th>ID</th>
