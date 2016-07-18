@@ -10,7 +10,8 @@ if (session_status () != PHP_SESSION_ACTIVE) {
     // Start our session
 }
 
-include_once "../php/user.php"; $user = new user();
+include_once "../php/user.php";
+$user = new user ();
 
 $title = "401";
 $subtitle = "Unauthorized";
