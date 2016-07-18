@@ -32,7 +32,7 @@ $(function() {
     $('#logout-button').click(function() {
         $.post("/api/login.php", {
             submit : "Logout"
-        }).done(function(data) {
+        }).done(function() {
             location.reload();
         });
     });
@@ -106,7 +106,7 @@ function findAlbum() {
     BootstrapDialog.show({
         draggable: true,
         title: 'Find An Album',
-        message: function(dialogItself){
+        message: function(){
             var inputs =  '<input placeholder="Album Code" id="find-album-code" type="text" class="form-control"/>';
             if( my_role == 'downloader' || my_role == 'uploader' ) {
                 inputs += '<div class="checkbox">' +

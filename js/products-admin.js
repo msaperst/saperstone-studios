@@ -94,7 +94,7 @@ function deleteSize() {
                     //send our update
                     $.post("/api/delete-product-size.php", {
                         id : row.attr('product-id'),
-                    }).done(function(data) {
+                    }).done(function() {
                         row.remove();
                         dialogInItself.close();
                     });                    
@@ -248,7 +248,7 @@ function deleteProduct() {
                     //send our update
                     $.post("/api/delete-product.php", {
                         id : div.attr('product-type'),
-                    }).done(function(data) {
+                    }).done(function() {
                         div.remove();
                         dialogInItself.close();
                     });                    

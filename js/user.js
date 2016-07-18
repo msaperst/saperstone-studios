@@ -9,7 +9,7 @@ $(document).ready(function() {
             {
                 "orderable" : false,
                 "searchable": false,
-                "data" : function(row, type, val, meta) {
+                "data" : function() {
                     var buttons = '<button type="button" class="btn btn-xs btn-warning edit-user-btn">' +
                         '<i class="fa fa-pencil-square-o"></i></button>';
                     return buttons;
@@ -26,7 +26,7 @@ $(document).ready(function() {
                 "className" : "user-username",
                 "targets" : 2
             }, {
-                "data" : function(row, type, val, meta) {
+                "data" : function(row) {
                     return row.firstName + " " + row.lastName;
                 },
                 "className" : "user-name",
@@ -49,7 +49,7 @@ $(document).ready(function() {
                 "targets" : 7
             }
         ],
-        "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+        "fnCreatedRow": function( nRow, aData ) {
             $(nRow).attr('user-id',aData.id);
         }
     });
@@ -80,14 +80,14 @@ function editUser(data) {
     BootstrapDialog.show({
         draggable: true,
         size: BootstrapDialog.SIZE_WIDE,
-        title: function(dialogItself){
+        title: function(){
             if( data !== null ) {
                 return 'Edit User <b>' + data.usr + '</b>';
             } else {
                 return 'Add new user';
             }
         },
-        message: function(dialogItself){
+        message: function(){
             var inputs = $('<div>');
             inputs.addClass('form-horizontal');
 
@@ -228,7 +228,7 @@ function editUser(data) {
                 BootstrapDialog.show({
                     draggable: true,
                     title: 'Albums for User <b>' + data.usr + '</b>',
-                    message: function(dialogInItself){
+                    message: function(){
                         var inputs = $('<div class="open">');
 
                         var searchInput = $('<input>');
@@ -266,7 +266,7 @@ function editUser(data) {
                                 "json"
                             );
                         });
-                        searchInput.focusout(function(event){
+                        searchInput.focusout(function(){
                             if( !resultsSelected ) {
                                 $('.search-results').remove();
                             }
@@ -339,7 +339,7 @@ function editUser(data) {
                 BootstrapDialog.show({
                     draggable: true,
                     title: 'Are You Sure?',
-                    message: function(dialogInItself){
+                    message: function(){
                         if( data !== null ) {
                             return 'Are you sure you want to delete the user <b>' + data.usr + '</b>';
                         } else {
@@ -392,7 +392,7 @@ function editUser(data) {
                 BootstrapDialog.show({
                     draggable: true,
                     title: 'Change User Password',
-                    message: function(dialogInItself){
+                    message: function(){
                         var inputs = $('<div>');
 
                         var passwordInput = $('<input>');
@@ -528,7 +528,7 @@ function editUser(data) {
                 dialogItself.$modalFooter.find('#user-update-btn').remove();
             }
         },
-        onshown: function(dialogItself) {
+        onshown: function() {
             $.get( 
                 "/api/get-roles.php",
                 function( roles ) {
@@ -547,7 +547,7 @@ function editUser(data) {
                 "json"
             );
         },
-        onhide: function(dialogRef){
+        onhide: function(){
             user_table.ajax.reload( null, false );
         },
     });

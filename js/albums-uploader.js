@@ -8,7 +8,7 @@ $(document).ready(function() {
             {
                 "orderable" : false,
                 "searchable": false,
-                "data" : function(row, type, val, meta) {
+                "data" : function(row) {
                     var buttons = "";
                     if( row.owner == my_id ) {
                         buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' +
@@ -18,7 +18,7 @@ $(document).ready(function() {
                 },
                 "targets" : 0
             }, {
-                "data" : function(row, type, val, meta) {
+                "data" : function(row) {
                     return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
                 },
                 "className" : "album-name",
@@ -37,7 +37,7 @@ $(document).ready(function() {
                 "targets" : 4
             }
         ],
-        "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+        "fnCreatedRow": function( nRow, aData ) {
             $(nRow).attr('album-id',aData.id);
         }
     });
@@ -49,7 +49,7 @@ $(document).ready(function() {
         BootstrapDialog.show({
             draggable: true,
             title: 'Add A New Album',
-            message: function(dialogItself){
+            message: function(){
                 var inputs =  '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control"/>' +
                    '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control"/>' +
                    '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>' +
@@ -121,7 +121,7 @@ function editAlbum(id) {
                 draggable: true,
                 size: BootstrapDialog.SIZE_WIDE,
                 title: 'Edit Album <b>' + data.name + '</b>',
-                message: function(dialogItself){
+                message: function(){
                     var inputs =  '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' +
                        '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' +
                        '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' +
@@ -159,7 +159,7 @@ function editAlbum(id) {
                                     //send our update
                                     $.post("/api/delete-album.php", {
                                         id : id,
-                                    }).done(function(data) {
+                                    }).done(function() {
                                         var table = $('#albums').DataTable();
                                         album_table.ajax.reload( null, false );
                                         dialogInItself.close();
@@ -189,7 +189,7 @@ function editAlbum(id) {
                         $.post("/api/make-thumbs.php", {
                             id : id,
                             markup: "watermark"
-                        }).done(function(data) {
+                        }).done(function() {
                             var myVar = setInterval( function(){ 
                                 $.get(
                                     "/scripts/status.txt",
@@ -225,7 +225,7 @@ function editAlbum(id) {
                             description : $('#new-album-description').val(),
                             date : $('#new-album-date').val(),
                             code : $('#new-album-code').val(),
-                        }).done(function(data) {
+                        }).done(function() {
                             dialogItself.close();
                             album_table.ajax.reload( null, false );
                         });
@@ -254,9 +254,7 @@ function editAlbum(id) {
                         acceptFiles: "image/*,.nef,.cr2",
                         uploadQueueOrder: "bottom",
                         formData: { "album" : id },
-                        onLoad: function(obj) {
-                        },
-                        onSubmit: function(files) {
+                        onSubmit: function() {
                             $('.ajax-file-upload-container').show();
                             dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-upload').addClass('glyphicon-asterisk icon-spin');
                             disableDialogButtons(dialogItself);
@@ -264,14 +262,14 @@ function editAlbum(id) {
                         onSuccess: function(files,data,xhr,pd) {
                             setTimeout(function() {pd.statusbar.remove();}, 5000);
                         },
-                        afterUploadAll: function(obj) {
+                        afterUploadAll: function() {
                             setTimeout(function() {$('.ajax-file-upload-container').hide();}, 5000);
                             dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-asterisk icon-spin').addClass('glyphicon-upload');
                             enableDialogButtons(dialogItself);
                         },
                     });
                 },
-                onhide: function(dialogRef){
+                onhide: function(){
                     album_table.ajax.reload( null, false );
                 },
             });

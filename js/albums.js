@@ -6,7 +6,7 @@ $(document).ready(function() {
         "order": [[ 0, "asc" ]],
         "columnDefs": [
             {
-                "data" : function(row, type, val, meta) {
+                "data" : function(row) {
                     return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
                 },
                 "className" : "album-name",
@@ -25,7 +25,7 @@ $(document).ready(function() {
                 "targets" : 3
             }
         ],
-        "fnCreatedRow": function( nRow, aData, iDataIndex ) {
+        "fnCreatedRow": function( nRow, aData ) {
             $(nRow).attr('album-id',aData.id);
         }
     });

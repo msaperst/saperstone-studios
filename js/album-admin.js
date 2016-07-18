@@ -20,7 +20,7 @@ $(document).ready(function() {
                     $.post("/api/delete-image.php", {
                         album : img.attr('album-id'),
                         image : img.attr('image-id')
-                    }).done(function(data) {
+                    }).done(function() {
                         dialogInItself.close();
                         //go to the next image
                         $('#album-carousel').carousel("next");
@@ -42,7 +42,7 @@ $(document).ready(function() {
         BootstrapDialog.show({
             draggable: true,
             title: 'Who Do You Want To Give Access To For Image <b>'+img.attr('alt')+'</b>?',
-            message: function(dialogInItself){
+            message: function(){
                 var inputs = $('<div>');
                 var albumDiv = $('<div id="albumDiv">');
                 albumDiv.append('<h4>Overall Album Access</h4>');
@@ -83,7 +83,7 @@ $(document).ready(function() {
                         "json"
                     );
                 });
-                searchAlbumInput.focusout(function(event){
+                searchAlbumInput.focusout(function(){
                     if( !resultsSelected ) {
                         $('.search-results').remove();
                     }
@@ -131,7 +131,7 @@ $(document).ready(function() {
                         "json"
                     );
                 });
-                searchDownloadInput.focusout(function(event){
+                searchDownloadInput.focusout(function(){
                     if( !resultsSelected ) {
                         $('.search-results').remove();
                     }
@@ -179,7 +179,7 @@ $(document).ready(function() {
                         "json"
                     );
                 });
-                searchUploadInput.focusout(function(event){
+                searchUploadInput.focusout(function(){
                     if( !resultsSelected ) {
                         $('.search-results').remove();
                     }
@@ -196,7 +196,7 @@ $(document).ready(function() {
                     dialogInItself.close();
                 }
             }],
-            onshown: function(dialogInItself){
+            onshown: function(){
                 var albumsDiv = $('<div>');
                 albumsDiv.attr('id','album-users');
                 albumsDiv.attr('url','update-album-users.php');
@@ -256,7 +256,7 @@ $(document).ready(function() {
         BootstrapDialog.show({
             draggable: true,
             title: 'Who Do You Want To Give Access To For Album <b>'+$('#album-title').html()+'</b>?',
-            message: function(dialogInItself){
+            message: function(){
                 var inputs = $('<div>');
                 var albumDiv = $('<div id="albumDiv">');
                 albumDiv.append('<h4>Album Access</h4>');
@@ -297,7 +297,7 @@ $(document).ready(function() {
                         "json"
                     );
                 });
-                searchAlbumInput.focusout(function(event){
+                searchAlbumInput.focusout(function(){
                     if( !resultsSelected ) {
                         $('.search-results').remove();
                     }
@@ -345,7 +345,7 @@ $(document).ready(function() {
                         "json"
                     );
                 });
-                searchDownloadInput.focusout(function(event){
+                searchDownloadInput.focusout(function(){
                     if( !resultsSelected ) {
                         $('.search-results').remove();
                     }
@@ -393,7 +393,7 @@ $(document).ready(function() {
                         "json"
                     );
                 });
-                searchUploadInput.focusout(function(event){
+                searchUploadInput.focusout(function(){
                     if( !resultsSelected ) {
                         $('.search-results').remove();
                     }
@@ -410,7 +410,7 @@ $(document).ready(function() {
                     dialogInItself.close();
                 }
             }],
-            onshown: function(dialogInItself){
+            onshown: function(){
                 var albumsDiv = $('<div>');
                 albumsDiv.attr('id','album-users');
                 albumsDiv.attr('url','update-album-users.php');

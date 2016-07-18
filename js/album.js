@@ -97,7 +97,7 @@ $(document).ready(function() {
         $.post("/api/set-favorite.php", {
             album : img.attr('album-id'),
             image : img.attr('image-id')
-        }).done(function(data) {
+        }).done(function() {
             setFavorite();
         });
     });
@@ -107,7 +107,7 @@ $(document).ready(function() {
         $.post("/api/unset-favorite.php", {
             album : img.attr('album-id'),
             image : img.attr('image-id')
-        }).done(function(data) {
+        }).done(function() {
             unsetFavorite();
         });
     });
