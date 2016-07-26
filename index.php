@@ -42,8 +42,8 @@
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div class="hovereffect img-portfolio">
-                    <img class="img-responsive" src="http://placehold.it/700x450"
-                        alt="">
+                    <img class="img-responsive" src="/img/commercial.jpg"
+                        width="100%" alt="Commercial">
                     <div class="overlay">
                         <h2>Commercial</h2>
                         <a class="info" href="#">See More</a>

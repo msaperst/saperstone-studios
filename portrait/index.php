@@ -46,7 +46,7 @@
 			<!-- Content Column -->
 			<div class="col-md-9">
 				<!-- Carousel -->
-				<div id="portraitCarousel" class="carousel slide">
+				<div id="portraitCarousel" class="carousel slide carousel-three-by-two">
 					<!-- Indicators -->
 					<ol class="carousel-indicators">
                         <?php
@@ -100,7 +100,7 @@
 		<div class="row">
 			<div class="col-md-6 col-sm-6 col-xs-12">
 				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="http://placehold.it/700x450"
+					<img class="img-responsive" src="/img/portrait/maternity/VanderhoofMaternity_20160612_0032.jpg"
 						alt="">
 					<div class="overlay">
 						<h2>Details</h2>
@@ -110,7 +110,7 @@
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
 				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="http://placehold.it/700x450"
+					<img class="img-responsive" src="/img/portrait/family/AlipuiFamily_20151007_0095.jpg"
 						alt="">
 					<div class="overlay">
 						<h2>Gallery</h2>
@@ -130,7 +130,7 @@
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
 				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="http://placehold.it/700x450"
+					<img class="img-responsive" src="/img/portrait/senior/Rose_20150425_0170.jpg"
 						alt="">
 					<div class="overlay">
 						<h2>About</h2>
@@ -140,7 +140,7 @@
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
 				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="http://placehold.it/700x450"
+					<img class="img-responsive" src="/img/portrait/family/Przybysz_20150530_0072.jpg"
 						alt="">
 					<div class="overlay">
 						<h2>Reviews</h2>
@@ -150,7 +150,7 @@
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12">
 				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="http://placehold.it/1200x650"
+					<img class="img-responsive" src="/img/portrait/newborn/Emilia_20160622_0014.jpg"
 						alt="">
 					<div class="overlay">
 						<h2>Blog</h2>

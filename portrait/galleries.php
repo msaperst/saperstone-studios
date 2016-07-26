@@ -1,3 +1,14 @@
+<?php
+$what;
+if (! isset ( $_GET ['w'] )) { // if no album is set, throw a 404 error
+    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
+    include "../errors/404.php";
+    exit ();
+} else {
+    $what = $_GET ['w'];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,7 +29,9 @@
     require_once "../php/sql.php";
     $conn = new sql ();
     $conn->connect ();
-    $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-maternity' ORDER BY `sequence`;";
+    $sql = "SELECT * FROM `galleries` WHERE id = '$what';";
+    $details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $sql = "SELECT * FROM `gallery_images` WHERE gallery = '$what' ORDER BY `sequence`;";
     $result = mysqli_query ( $conn->db, $sql );
     $images = array ();
     while ( $row = mysqli_fetch_assoc ( $result ) ) {
@@ -33,12 +46,12 @@
 		<!-- Page Heading/Breadcrumbs -->
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header text-center">Maternity Gallery</h1>
+				<h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
 				<ol class="breadcrumb">
 					<li><a href="/">Home</a></li>
 					<li><a href="index.php">Portraits</a></li>
 					<li><a href="gallery.php">Gallery</a></li>
-					<li class="active">Maternity</li>
+					<li class="active"><?php echo $details['title']; ?></li>
 				</ol>
 			</div>
 		</div>
@@ -59,18 +72,18 @@
 	<!-- /.container -->
 
 	<!-- Slideshow Modal -->
-	<div id="portrait-maternity" class="modal fade modal-carousel"
+	<div id="<?php echo $details['name']; ?>" class="modal fade modal-carousel"
 		role="dialog">
 		<div class="modal-dialog modal-lg">
 			<!-- Modal content-->
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Maternity Gallery</h4>
+					<h4 class="modal-title"><?php echo $details['title']; ?> Gallery</h4>
 				</div>
 				<div class="modal-body">
 					<!-- Carousel -->
-					<div id="portrait-maternity-carousel"
+					<div id="<?php echo $details['name']; ?>-carousel"
 						class="carousel slide carousel-three-by-two">
 						<!-- Indicators -->
 						<ol class="carousel-indicators">
@@ -80,7 +93,7 @@
                             if ($num == 0) {
                                 $class = " class='active'";
                             }
-                            echo "<li data-target='#portrait-maternity-carousel' data-slide-to='$num'$class></li>";
+                            echo "<li data-target='#${details['name']}-carousel' data-slide-to='$num'$class></li>";
                         }
                         ?>
                     </ol>
@@ -106,10 +119,10 @@
 
 						<!-- Controls -->
 						<a class="left carousel-control"
-							href="#portrait-maternity-carousel" data-slide="prev"> <span
+							href="#<?php echo $details['name']; ?>-carousel" data-slide="prev"> <span
 							class="icon-prev"></span>
 						</a> <a class="right carousel-control"
-							href="#portrait-maternity-carousel" data-slide="next"> <span
+							href="#<?php echo $details['name']; ?>-carousel" data-slide="next"> <span
 							class="icon-next"></span>
 						</a>
 					</div>
@@ -128,9 +141,9 @@
 
 	<!-- Script to Activate the Gallery -->
 	<script>
-        var gallery = new Gallery( "portrait-maternity", 4, <?php echo count($images); ?> );
+        var gallery = new Gallery( "<?php echo $details['name']; ?>", 4, <?php echo count($images); ?> );
         
-         var loaded = 0;
+        var loaded = 0;
         $(window,document).on("scroll resize", function(){
             if( $('footer').isOnScreen() && loaded < <?php echo count($images); ?> ) {
                 loaded = gallery.loadImages();
