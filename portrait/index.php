@@ -5,6 +5,17 @@
 
     <?php require_once "../header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
+    
+	<?php 
+	if ($user->isLoggedIn()) {
+    ?>
+    <link
+		href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+		rel="stylesheet">
+    <?php 
+	}
+	?>
+    
 
 </head>
 
@@ -15,7 +26,7 @@
     require_once "../nav.php";
     
     // get our gallery images
-    require_once"../php/sql.php";
+    require_once "../php/sql.php";
     $conn = new sql ();
     $conn->connect ();
     $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-home';";
@@ -46,7 +57,8 @@
 			<!-- Content Column -->
 			<div class="col-md-9">
 				<!-- Carousel -->
-				<div id="portraitCarousel" class="carousel slide carousel-three-by-two">
+				<div id="portraitCarousel"
+					class="carousel slide carousel-three-by-two">
 					<!-- Indicators -->
 					<ol class="carousel-indicators">
                         <?php
@@ -99,60 +111,61 @@
 		<!-- Portrait Services Section -->
 		<div class="row">
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="/img/portrait/maternity/VanderhoofMaternity_20160612_0032.jpg"
-						alt="">
-					<div class="overlay">
+				<div section='Details' class="hovereffect img-portfolio <?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+					<img class="img-responsive" src="img/details.jpg" alt="">
+					<div
+						class="overlay">
 						<h2>Details</h2>
 						<a class="info" href="details.php">See More</a>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="/img/portrait/family/AlipuiFamily_20151007_0095.jpg"
-						alt="">
-					<div class="overlay">
+				<div section='Gallery' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+					<img class="img-responsive" src="img/gallery.jpg" alt="">
+					<div
+						class="overlay">
 						<h2>Gallery</h2>
 						<a class="info" href="gallery.php">See More</a>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12">
-				<div class="hovereffect img-portfolio">
+				<div section='Retouch' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
 					<img class="img-responsive" src="http://placehold.it/1200x250"
 						alt="">
-					<div class="overlay">
+					<div
+						class="overlay">
 						<h2>Retouch</h2>
 						<a class="info" href="#">See More</a>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="/img/portrait/senior/Rose_20150425_0170.jpg"
-						alt="">
-					<div class="overlay">
+				<div section='About' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+					<img class="img-responsive" src="img/about.jpg" alt="">
+					<div
+						class="overlay">
 						<h2>About</h2>
 						<a class="info" href="/about.php">See More</a>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="/img/portrait/family/Przybysz_20150530_0072.jpg"
-						alt="">
-					<div class="overlay">
+				<div section='Reviews' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+					<img class="img-responsive" src="img/reviews.jpg" alt="">
+					<div
+						class="overlay">
 						<h2>Reviews</h2>
 						<a class="info" href="#">See More</a>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12">
-				<div class="hovereffect img-portfolio">
-					<img class="img-responsive" src="/img/portrait/newborn/Emilia_20160622_0014.jpg"
-						alt="">
-					<div class="overlay">
+				<div section='Blog' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+					<img class="img-responsive" src="img/blog.jpg" alt="">
+					<div
+						class="overlay">
 						<h2>Blog</h2>
 						<a class="info" href="#">See More</a>
 					</div>
@@ -168,6 +181,17 @@
 
     </div>
 	<!-- /.container -->
+	
+	<?php 
+	if ($user->isLoggedIn()) {
+    ?>
+    <script src="/js/edit-image.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <?php 
+	}
+	?>
 
 </body>
 

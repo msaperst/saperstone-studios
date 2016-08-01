@@ -601,7 +601,7 @@
                 uploadLabel.css({
                     position: 'relative',
                     overflow: 'hidden',
-                    cursor: 'default'
+                    cursor: 'pointer'
                 });
                 fileInput.css({
                     position: 'absolute',

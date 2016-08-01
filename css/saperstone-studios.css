@@ -24,11 +24,11 @@ header.carousel {
 
 .editable-header {
 	width: 80%;
-    display: inline-block;
+	display: inline-block;
 }
 
-.table.borderless th, .table.borderless td { 
-     border-top: none !important; 
+.table.borderless th, .table.borderless td {
+	border-top: none !important;
 }
 
 table td {
@@ -43,20 +43,22 @@ input[type=number] {
 .modal-header {
 	background-color: #428bca;
 	color: #fff;
-    font-size: 16px;
+	font-size: 16px;
 }
+
 .modal-header small {
-    color: #ddd;
+	color: #ddd;
 }
 
 /* Nav Styles */
 .navbar-actions {
 	margin-bottom: -1px;
 }
-.navbar-actions span{
-    display: inline-block;
-    width: 19%;
-    min-width: 100px;
+
+.navbar-actions span {
+	display: inline-block;
+	width: 19%;
+	min-width: 100px;
 }
 
 .navbar-inverse {
@@ -306,22 +308,24 @@ footer {
 #col-0 {
 	padding: 0px 0px 0px 15px;
 }
+
 #col-1 {
 	padding: 0px 5px 0px 10px
 }
+
 #col-2 {
 	padding: 0px 10px 0px 5px
 }
+
 #col-3 {
 	padding: 0px 15px 0px 0px;
 }
+
 @media ( max-width :767px) {
 	.col-gallery {
-	   padding: 0px 15px 0px 15px !important;
+		padding: 0px 15px 0px 15px !important;
 	}
 }
-
-
 
 .tooltip-wrapper {
 	display: inline-block;
@@ -339,13 +343,14 @@ footer {
 .open {
 	position: relative;
 }
+
 ul.search-results {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	right: auto;
 }
 
-.selected-album,.selected-user {
+.selected-album, .selected-user {
 	display: inline-block;
 	border: 1px solid lightgrey;
 	padding: 3px 0px 3px 5px;
@@ -354,7 +359,7 @@ ul.search-results {
 	pointer-events: none;
 }
 
-.selected-album:after,.selected-user:after {
+.selected-album:after, .selected-user:after {
 	content: '\f014';
 	font-family: FontAwesome;
 	font-weight: normal;
@@ -413,15 +418,31 @@ ul.search-results {
 }
 
 #favorites-list li {
-    pointer-events: none;
+	pointer-events: none;
 }
+
 #favorites-list li:after {
 	content: '\f1f8';
-    font-family: FontAwesome;
-    color: red;
-    cursor: pointer;
-    pointer-events: all;
-    position: relative;
-    left: 93px;
-    font-size: 20px;
+	font-family: FontAwesome;
+	color: red;
+	cursor: pointer;
+	pointer-events: all;
+	position: relative;
+	left: 93px;
+	font-size: 20px;
 }
+
+/* editable images
+.editable:after {
+	content: '\f044 Edit';
+	font-family: FontAwesome;
+	background-color: purple;
+	color: yellow;
+	cursor: pointer;
+	pointer-events: all;
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	padding: 5px;
+	font-size: 20px;
+} */
