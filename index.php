@@ -5,7 +5,20 @@
 
     <?php require_once "header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
-
+    
+	<?php 
+	if ($user->isLoggedIn()) {
+    ?>
+    <link
+		href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+		rel="stylesheet">
+    <link
+		href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
+		rel="stylesheet">
+    <?php 
+	}
+	?>
+	
 </head>
 
 <body>
@@ -21,7 +34,7 @@
                 <h2 class="page-header text-center">Photography Services</h2>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
+                <div section='Portraits' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
                     <img class="img-responsive" src="/img/portraits.jpg" width="100%"
                         alt="Portraits">
                     <div class="overlay">
@@ -31,7 +44,7 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
+                <div section='Weddings' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
                     <img class="img-responsive" src="/img/weddings.jpg" width="100%"
                         alt="Weddings">
                     <div class="overlay">
@@ -41,7 +54,7 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
+                <div section='Commercial' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
                     <img class="img-responsive" src="/img/commercial.jpg"
                         width="100%" alt="Commercial">
                     <div class="overlay">
@@ -102,6 +115,17 @@
 
     </div>
     <!-- /.container -->
+    
+    	<?php 
+	if ($user->isLoggedIn()) {
+    ?>
+    <script src="/js/edit-image.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <?php 
+	}
+	?>
 
 </body>
 

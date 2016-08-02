@@ -1,3 +1,9 @@
+var currentLocation = window.location;
+var folder = "/" + currentLocation.pathname.split("/")[1];
+if (folder.endsWith(".php") || folder == "/") {
+    folder = "";
+}
+
 $(document)
         .ready(
                 function() {
@@ -14,6 +20,7 @@ $(document)
                                                 .match(/col-md-(\d+)/);
                                         count = count[0].match(/(\d+)/)[0];
                                         var min_width = 1200 / 12 * count;
+                                        var min_height = 1200 / 12 * count * 2 / 3;
                                         $(this)
                                                 .uploadFile(
                                                         {
@@ -24,10 +31,9 @@ $(document)
                                                             fileName : "myfile",
                                                             acceptFiles : "image/*",
                                                             formData : {
-                                                                "location" : "../portrait/"
-                                                                        + img
-                                                                                .attr('src'),
-                                                                "min-width" : min_width
+                                                                "location" : ".." + folder + "/" + img.attr('src'),
+                                                                "min-width" : min_width,
+                                                                "min-height" : min_height
                                                             },
                                                             onSubmit : function() {
                                                                 $
@@ -74,18 +80,17 @@ $(document)
 
 function arrangeImage(img) {
     cleanImage(img);
+    var forcedHeight = parseInt(img.parent().width()) * 2 / 3;
     img.parent().css({
-        'height' : '370px',
-        'cursor' : 'n-resize',
-    });
-    img.draggable({
-        axis : "y",
-    // containment : ".editable"
+        'height' : forcedHeight + 'px',
     });
 }
 
 function cropImage(img) {
     cleanImage(img);
+    img.parent().resizable({
+        handles : "s"
+    });
 }
 
 function cleanImage(img) {
@@ -102,14 +107,16 @@ function cleanImage(img) {
     img.parent().css({
         'overflow' : 'hidden',
         'position' : 'relative',
-        'background-color' : 'red'
+        'background-color' : 'red',
+        'cursor' : 'ns-resize',
     });
     img.css({
+        'top' : '0px',
         'height' : '',
     });
     img.parent().find('.overlay').remove();
-    var new_img = img.attr('src').replace(/^img\/tmp_/, "img/").replace(
-            /^img\//, "img/tmp_").replace(/\?(\d+)$/, "");
+    var new_img = img.attr('src').replace(/img\/tmp_/, "img/").replace(/img\//,
+            "img/tmp_").replace(/\?(\d+)$/, "");
     img.attr('src', new_img + "?" + randomImgNumber());
 
     // add our watermark
@@ -151,6 +158,11 @@ function cleanImage(img) {
     span.append(button);
     img.parent().append(span);
 
+    // make the image draggablr
+    img.draggable({
+        axis : "y",
+    // containment : ".editable"
+    });
     // all done
     $.unblockUI();
 }
@@ -160,7 +172,7 @@ function saveImg(img) {
     $.post(
             "/api/crop-image.php",
             {
-                "image" : "../portrait/" + img.attr('src').split("?")[0],
+                "image" : ".." + folder + "/" + img.attr('src').split("?")[0],
                 "top" : (parseInt(img.css('top')) * -1),
                 "bottom" : (parseInt(img.css('top')) * -1 + parseInt(img
                         .parent().css('height'))),
