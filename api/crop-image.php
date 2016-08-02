@@ -67,7 +67,7 @@ if (getimagesize ( $image ) [1] < $height) {
 system ( "mogrify -crop ${maxWidth}x${height}+0+${top} \"$image\"" );
 
 // add our watermark
-system ( "composite -gravity southwest -geometry 200x150+0+0 ../img/watermark.png \"$image\" \"$image\"" );
+// system ( "composite -gravity southwest -geometry 200x150+0+0 ../img/watermark.png \"$image\" \"$image\"" );
 
 // rename the image
 $filePath = dirname ( $image );

@@ -95,7 +95,7 @@ function cropImage(img) {
 
 function cleanImage(img) {
     // remove our old info
-    img.parent().find('.watermark').remove();
+//    img.parent().find('.watermark').remove();
     img.parent().find('.saveme').remove();
 
     // save off some info
@@ -120,17 +120,17 @@ function cleanImage(img) {
     img.attr('src', new_img + "?" + randomImgNumber());
 
     // add our watermark
-    var watermark = $("<img>");
-    watermark.addClass("watermark");
-    watermark.attr("src", "/img/watermark.png");
-    watermark.css({
-        'position' : 'absolute',
-        'width' : '200px',
-        'bottom' : '0px',
-        'left' : '0px',
-        'padding' : '5px',
-    });
-    img.parent().append(watermark);
+//    var watermark = $("<img>");
+//    watermark.addClass("watermark");
+//    watermark.attr("src", "/img/watermark.png");
+//    watermark.css({
+//        'position' : 'absolute',
+//        'width' : '200px',
+//        'bottom' : '0px',
+//        'left' : '0px',
+//        'padding' : '5px',
+//    });
+//    img.parent().append(watermark);
 
     // add our save button
     var span = $("<span>");
