@@ -22,7 +22,7 @@ Album.prototype.loadImages = function() {
     }, function(data) {
         // load each of our 4 images on the screen
         $.each(data, function(k, v) {
-            shortest = {};
+            var shortest = {};
             shortest.height = 9999;
             $('.col-gallery').each(function() {
                 if ($(this).height() < shortest.height) {
@@ -214,7 +214,7 @@ $(document).ready(function() {
                     row.attr('image-title', data[i].title);
                     var remove = $("<td>");
                     remove.addClass("text-center");
-                    removeIcon = $("<i>");
+                    var removeIcon = $("<i>");
                     removeIcon.addClass("fa fa-trash error");
                     removeIcon.css({
                         "cursor" : "pointer"

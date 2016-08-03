@@ -131,13 +131,13 @@ function saveSize() {
                 $('.cancel-size-button', row).addClass('hidden');
                 $('#product-size-error').html("");
 
-                size = $('.product-size input', row);
+                var size = $('.product-size input', row);
                 size.closest('td').html(size.val());
 
-                cost = $('.product-cost input', row);
+                var cost = $('.product-cost input', row);
                 cost.closest('td').html("$" + cost.val());
 
-                price = $('.product-price input', row);
+                var price = $('.product-price input', row);
                 price.closest('td').html("$" + price.val());
             } else {
                 $('#product-size-error').html(data);
