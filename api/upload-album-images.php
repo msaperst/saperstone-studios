@@ -32,14 +32,13 @@ if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
 
 $sql = "SELECT * FROM albums WHERE id = $id;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (!$album_info ['id']) {
+if (! $album_info ['id']) {
     echo "That ID doesn't match any albums";
     $conn->disconnect ();
     exit ();
 }
 // only admin users and uploader users who own the album can make updates
-if ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
-} else {
+if (! ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner']))) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();

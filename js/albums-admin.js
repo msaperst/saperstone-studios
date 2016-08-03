@@ -173,8 +173,7 @@ function editAlbum(id) {
                                             $('.search-results').remove();
                                             var results_ul = $('<ul class="dropdown-menu search-results">');
                                             $.each(data, function(key, user) {
-                                                if( $(".selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
-                                                } else {
+                                                if( !($(".selected-user[user-id='" + user.id + "']").length || user.role == "admin") ) {
                                                     var result_li = $('<li>');
                                                     var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                                     result_a.click(function(){

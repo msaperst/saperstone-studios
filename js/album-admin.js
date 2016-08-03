@@ -63,8 +63,7 @@ $(document).ready(function() {
                             $('.search-results').remove();
                             var results_ul = $('<ul class="dropdown-menu search-results">');
                             $.each(data, function(key, user) {
-                                if( $("#album-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
-                                } else {
+                                if( !($("#album-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") ) {
                                     var result_li = $('<li>');
                                     var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                     result_a.click(function(){
@@ -111,8 +110,7 @@ $(document).ready(function() {
                             $('.search-results').remove();
                             var results_ul = $('<ul class="dropdown-menu search-results">');
                             $.each(data, function(key, user) {
-                                if( $("#download-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
-                                } else {
+                                if( !($("#download-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") ) {
                                     var result_li = $('<li>');
                                     var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                     result_a.click(function(){
@@ -159,8 +157,7 @@ $(document).ready(function() {
                             $('.search-results').remove();
                             var results_ul = $('<ul class="dropdown-menu search-results">');
                             $.each(data, function(key, user) {
-                                if( $("#share-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
-                                } else {
+                                if( !($("#share-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") ) {
                                     var result_li = $('<li>');
                                     var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                     result_a.click(function(){
@@ -277,8 +274,7 @@ $(document).ready(function() {
                             $('.search-results').remove();
                             var results_ul = $('<ul class="dropdown-menu search-results">');
                             $.each(data, function(key, user) {
-                                if( $("#album-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
-                                } else {
+                                if( !($("#album-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") ) {
                                     var result_li = $('<li>');
                                     var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                     result_a.click(function(){
@@ -325,7 +321,7 @@ $(document).ready(function() {
                             $('.search-results').remove();
                             var results_ul = $('<ul class="dropdown-menu search-results">');
                             $.each(data, function(key, user) {
-                                if( $("#download-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
+                                if( !($("#download-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") ) {
                                 } else {
                                     var result_li = $('<li>');
                                     var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
@@ -373,8 +369,7 @@ $(document).ready(function() {
                             $('.search-results').remove();
                             var results_ul = $('<ul class="dropdown-menu search-results">');
                             $.each(data, function(key, user) {
-                                if( $("#share-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") {
-                                } else {
+                                if( !($("#share-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") ) {
                                     var result_li = $('<li>');
                                     var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                     result_a.click(function(){

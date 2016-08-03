@@ -63,7 +63,6 @@ Gallery.prototype.loadImages = function() {
                 // when we done, see if we need to load more
                 if( $('footer').isOnScreen() ) {
                     Gallery.loadImages();
-                } else {
                 }
             },
             "json"

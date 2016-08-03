@@ -69,7 +69,6 @@ Album.prototype.loadImages = function() {
                 // when we done, see if we need to load more
                 if( $('footer').isOnScreen() && Album.totalImages > Album.loaded) {
                     Album.loadImages();
-                } else {
                 }
             },
             "json"
