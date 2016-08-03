@@ -17,7 +17,7 @@ $(document).ready(function() {
                     dialogInItself.enableButtons(false);
                     dialogInItself.setClosable(false);
                     //send our update
-                    $.post("/api/delete-image.php", {
+                    $.post("/api/delete-album-image.php", {
                         album : img.attr('album-id'),
                         image : img.attr('image-id')
                     }).done(function() {

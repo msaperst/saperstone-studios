@@ -107,8 +107,8 @@ if (! isset ( $_GET ['w'] )) { // if no album is set, throw a 404 error
                                 $active_class = " active";
                             }
                             echo "<div class='item$active_class'>";
-                            echo "    <div class='contain'";
-                            echo "        style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                            echo "    <div class='contain' gallery-id='$what' image-id='" . $image ['sequence'] . "'";
+                            echo "        alt='" . $image ['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
                             echo "    <div class='carousel-caption'>";
                             echo "        <h2>" . $image ['caption'] . "</h2>";
                             echo "    </div>";
@@ -128,6 +128,18 @@ if (! isset ( $_GET ['w'] )) { // if no album is set, throw a 404 error
 					</div>
 				</div>
 				<div class="modal-footer">
+					<span class="pull-left">
+						<?php
+                        if ($user->isAdmin ()) {
+                        ?>
+						<button id="delete-image-btn" type="button"
+							class="btn btn-default btn-danger btn-action">
+							<em class="fa fa-trash"></em> Delete
+						</button>
+                        <?php
+                        }
+                        ?>
+                    </span>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
@@ -138,6 +150,14 @@ if (! isset ( $_GET ['w'] )) { // if no album is set, throw a 404 error
 
 	<!-- Gallery JavaScript -->
 	<script src="/js/gallery.js"></script>
+	
+	<?php
+	if ($user->isAdmin ()) {
+	?>
+	<script src="/js/gallery-admin.js"></script>
+	<?php
+    }
+    ?>
 
 	<!-- Script to Activate the Gallery -->
 	<script>
