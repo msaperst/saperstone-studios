@@ -26,11 +26,11 @@ if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
     $gallery = ( int ) $_POST ['gallery'];
 } else {
     if (! isset ( $_POST ['gallery'] )) {
-        echo "Album id is required!";
+        echo "Gallery id is required!";
     } elseif ($_POST ['gallery'] != "") {
-        echo "Album id cannot be blank!";
+        echo "Gallery id cannot be blank!";
     } else {
-        echo "Some other Album id error occurred!";
+        echo "Some other Gallery id error occurred!";
     }
     $conn->disconnect ();
     exit ();

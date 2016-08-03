@@ -39,6 +39,13 @@ input[type=number] {
 	padding-right: 0px;
 }
 
+.no-before:before {
+   content: none !important;
+}
+.no-after:after {
+   content: none !important;
+}
+
 /* Modal Stylizing */
 .modal-header {
 	background-color: #428bca;

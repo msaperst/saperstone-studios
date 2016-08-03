@@ -23,7 +23,7 @@ if (isset ( $_GET ['howMany'] )) {
 }
 
 if (! array_key_exists ( "err", $response )) {
-    $sql = "SELECT * FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;";
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;";
     $result = mysqli_query ( $conn->db, $sql );
     while ( $r = mysqli_fetch_assoc ( $result ) ) {
         $response [] = $r;

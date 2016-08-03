@@ -239,7 +239,7 @@ function editAlbum(id) {
                 }],
                 onshown: function(dialogItself) {
                     $('#upload-container').uploadFile({
-                        url: "/api/upload-images.php",
+                        url: "/api/upload-album-images.php",
                         uploadStr: "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
                         multiple: true,
                         dragDrop: true,

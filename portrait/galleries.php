@@ -17,6 +17,15 @@ if (! isset ( $_GET ['w'] )) { // if no album is set, throw a 404 error
     <?php require_once "../header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
 
+	<?php 
+	if ($user->isAdmin ()) {
+    ?>
+    <link
+		href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+		rel="stylesheet">
+    <?php 
+	}
+	?>
 </head>
 
 <body>
@@ -52,6 +61,13 @@ if (! isset ( $_GET ['w'] )) { // if no album is set, throw a 404 error
 					<li><a href="index.php">Portraits</a></li>
 					<li><a href="gallery.php">Gallery</a></li>
 					<li class="active"><?php echo $details['title']; ?></li>
+					<?php
+                    if ($user->isAdmin ()) {
+                    ?>
+					<li class="no-before pull-right"><button type="button" id="edit-gallery-btn" class="btn btn-xs btn-warning"><i class="fa fa-pencil-square-o"></i></button></li>
+					<?php 
+                    }
+                    ?>
 				</ol>
 			</div>
 		</div>
@@ -155,6 +171,7 @@ if (! isset ( $_GET ['w'] )) { // if no album is set, throw a 404 error
 	if ($user->isAdmin ()) {
 	?>
 	<script src="/js/gallery-admin.js"></script>
+	<script src="/js/jquery.uploadfile.js"></script>
 	<?php
     }
     ?>
