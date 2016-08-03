@@ -44,6 +44,9 @@ class user {
         }
         return "";
     }
+    function isAdmin() {
+        return ($this->getRole () === "admin");
+    }
     function getName() {
         if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
             $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT firstName, lastName FROM users WHERE hash='{$_SESSION['hash']}';" ) );

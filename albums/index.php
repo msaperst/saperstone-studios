@@ -45,7 +45,7 @@ if (! $user->isLoggedIn ()) {
 		<div class="row">
 			<div class="col-lg-12">
                 <?php
-                if ($user->getRole () == "admin") {
+                if ($user->isAdmin ()) {
                     ?>
                 <h1 class="page-header text-center">Manage Albums</h1>
 				<ol class="breadcrumb">
@@ -92,7 +92,7 @@ if (! $user->isLoggedIn ()) {
 					<thead>
 						<tr>
                             <?php
-                            if ($user->getRole () == "admin" || $user->getRole () == "uploader") {
+                            if ($user->isAdmin () || $user->getRole () == "uploader") {
                                 ?>
                             <th>
 								<button id="add-album-btn" type="button"
@@ -108,7 +108,7 @@ if (! $user->isLoggedIn ()) {
 							<th>Album Date</th>
 							<th>Images</th>
                             <?php
-                            if ($user->getRole () == "admin") {
+                            if ($user->isAdmin ()) {
                                 ?>
                             <th>Last Accessed</th>
 							<th>Access Code</th>
@@ -131,7 +131,7 @@ if (! $user->isLoggedIn ()) {
 		src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 	<script src="/js/jquery.uploadfile.js"></script>
     <?php
-    if ($user->getRole () == "admin") {
+    if ($user->isAdmin ()) {
         ?>
     <script src="/js/albums-admin.js"></script>
     <?php

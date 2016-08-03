@@ -31,7 +31,7 @@
                 ?>
                 <li><a href="javascript:void(0);" data-toggle="modal" data-target="#login-modal"><em class="fa fa-sign-in"></em> Login</a></li>
                 <?php
-                    } elseif ($user->getRole () == "admin") {
+                    } elseif ($user->isAdmin ()) {
                 ?>
                 <li class="dropdown"><a href="javascript:void(0);"
                     class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->getUser (); ?><strong

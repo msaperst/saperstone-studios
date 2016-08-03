@@ -58,8 +58,8 @@ system ( "mogrify -resize ${maxWidth}x \"$image\"" );
 system ( "mogrify -density 72 \"$image\"" );
 
 // verify that our image can fit in the specified crop
-if (getimagesize ( $image ) [1] < $height) {
-    echo "Image crop is smaller than the image";
+if (getimagesize ( $image ) [1] < ($height-1)) {
+    echo "Cropped image is smaller than the required image";
     exit ();
 }
 

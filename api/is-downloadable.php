@@ -15,7 +15,7 @@ session_start ();
 include_once "../php/user.php";
 $user = new user ();
 
-if ($user->getRole () == "admin") {
+if ($user->isAdmin ()) {
     echo 1;
     $conn->disconnect ();
     exit ();

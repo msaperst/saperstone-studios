@@ -39,7 +39,7 @@ if ($album_info ['id']) {
     exit ();
 }
 // only admin users and uploader users who own the album can make updates
-if ($user->getRole () == "admin" || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
+if ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
 } else {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();

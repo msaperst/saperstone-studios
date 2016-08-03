@@ -242,7 +242,7 @@ footer {
 							<em class="fa fa-heart error"></em> Favorite
 						</button>
                         <?php
-                        if ($user->getRole () == "admin") {
+                        if ($user->isAdmin ()) {
                             ?>
                         <button id="access-image-btn" type="button"
 							class="btn btn-default btn-info btn-action">
@@ -585,7 +585,7 @@ footer {
 					<em class="fa fa-heart error"></em> Favorites
 				</button></span>
             <?php
-            if ($user->getRole () == "admin") {
+            if ($user->isAdmin ()) {
                 ?>
             <span class="text-center"><button id="access-btn"
 					type="button" class="btn btn-default btn-info">
@@ -601,7 +601,7 @@ footer {
 	<!-- Gallery JavaScript -->
 	<script src="/js/album.js"></script>
     <?php
-    if ($user->getRole () == "admin") {
+    if ($user->isAdmin ()) {
         ?>
     <script src="/js/album-admin.js"></script>
     <?php

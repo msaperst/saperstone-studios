@@ -20,7 +20,8 @@ $(document)
                                                 .match(/col-md-(\d+)/);
                                         count = count[0].match(/(\d+)/)[0];
                                         var min_width = 1200 / 12 * count;
-                                        var min_height = 1200 / 12 * count * 2 / 3;
+                                        var min_height = 1200 / 12 * count * 2
+                                                / 3;
                                         $(this)
                                                 .uploadFile(
                                                         {
@@ -31,7 +32,11 @@ $(document)
                                                             fileName : "myfile",
                                                             acceptFiles : "image/*",
                                                             formData : {
-                                                                "location" : ".." + folder + "/" + img.attr('src'),
+                                                                "location" : ".."
+                                                                        + folder
+                                                                        + "/"
+                                                                        + img
+                                                                                .attr('src'),
                                                                 "min-width" : min_width,
                                                                 "min-height" : min_height
                                                             },
@@ -95,7 +100,7 @@ function cropImage(img) {
 
 function cleanImage(img) {
     // remove our old info
-//    img.parent().find('.watermark').remove();
+    // img.parent().find('.watermark').remove();
     img.parent().find('.saveme').remove();
 
     // save off some info
@@ -120,17 +125,17 @@ function cleanImage(img) {
     img.attr('src', new_img + "?" + randomImgNumber());
 
     // add our watermark
-//    var watermark = $("<img>");
-//    watermark.addClass("watermark");
-//    watermark.attr("src", "/img/watermark.png");
-//    watermark.css({
-//        'position' : 'absolute',
-//        'width' : '200px',
-//        'bottom' : '0px',
-//        'left' : '0px',
-//        'padding' : '5px',
-//    });
-//    img.parent().append(watermark);
+    // var watermark = $("<img>");
+    // watermark.addClass("watermark");
+    // watermark.attr("src", "/img/watermark.png");
+    // watermark.css({
+    // 'position' : 'absolute',
+    // 'width' : '200px',
+    // 'bottom' : '0px',
+    // 'left' : '0px',
+    // 'padding' : '5px',
+    // });
+    // img.parent().append(watermark);
 
     // add our save button
     var span = $("<span>");
@@ -178,40 +183,57 @@ function saveImg(img) {
                         .parent().css('height'))),
                 "max-width" : parseInt(img.width())
             }).done(
-            function() {
-                // setup the new image
-                var new_img = img.attr('src').replace(/^img\/tmp_/, "img/")
-                        .replace(/\?(\d+)$/, "");
-                img.attr('src', new_img + "?" + randomImgNumber());
-                // remove our old info
-                img.parent().find('.watermark').remove();
-                img.parent().find('.saveme').remove();
-                img.draggable("destroy");
-                img.parent().addClass('hovereffect');
-                img.parent().css({
-                    'height' : '',
-                    'cursor' : '',
-                    'overflow' : '',
-                    'position' : '',
-                    'background-color' : ''
-                });
-                img.css({
-                    'position' : '',
-                    'left' : '',
-                    'top' : '',
-                });
-                // add back the overlay
-                var div = $("<div>");
-                div.addClass("overlay");
-                var header = $("<h2>");
-                header.append(img.parent().attr('section'));
-                div.append(header);
-                var link = $("<a>");
-                link.addClass("info");
-                link.attr("href", img.parent().attr("link"));
-                link.append("See More");
-                div.append(link);
-                img.parent().append(div);
+            function(data) {
+                if (data !== "") {
+                    BootstrapDialog
+                            .show({
+                                draggable : true,
+                                title : 'Whoops, Something Went Wrong',
+                                message : data,
+                                buttons : [ {
+                                    label : 'Close',
+                                    action : function(
+                                            dialog) {
+                                        dialog
+                                                .close();
+                                    }
+                                } ]
+                            });
+                } else {
+                 // setup the new image
+                    var new_img = img.attr('src').replace(/^img\/tmp_/, "img/")
+                            .replace(/\?(\d+)$/, "");
+                    img.attr('src', new_img + "?" + randomImgNumber());
+                    // remove our old info
+                    img.parent().find('.watermark').remove();
+                    img.parent().find('.saveme').remove();
+                    img.draggable("destroy");
+                    img.parent().addClass('hovereffect');
+                    img.parent().css({
+                        'height' : '',
+                        'cursor' : '',
+                        'overflow' : '',
+                        'position' : '',
+                        'background-color' : ''
+                    });
+                    img.css({
+                        'position' : '',
+                        'left' : '',
+                        'top' : '',
+                    });
+                    // add back the overlay
+                    var div = $("<div>");
+                    div.addClass("overlay");
+                    var header = $("<h2>");
+                    header.append(img.parent().attr('section'));
+                    div.append(header);
+                    var link = $("<a>");
+                    link.addClass("info");
+                    link.attr("href", img.parent().attr("link"));
+                    link.append("See More");
+                    div.append(link);
+                    img.parent().append(div);
+                }
             });
 }
 

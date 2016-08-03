@@ -23,7 +23,7 @@ if (! $user->isLoggedIn ()) {
 
 $sql;
 
-if ($user->getRole () == "admin") {
+if ($user->isAdmin ()) {
     $sql = "SELECT albums.*, COUNT(album_images.album) AS 'images' FROM albums LEFT JOIN album_images ON albums.id = album_images.album GROUP BY albums.id;";
 } else {
     $id = $user->getId ();

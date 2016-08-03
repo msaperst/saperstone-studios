@@ -39,7 +39,7 @@ if ($album_info ['id']) {
     exit ();
 }
 // only admin users and uploader users who own the album can make updates
-if ($user->getRole () == "admin" || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
+if ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
 } else {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
@@ -66,7 +66,7 @@ if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
 
 $sql = "UPDATE albums SET name='$name', description='$description', date='$date', code=NULL WHERE id='$id';";
 mysqli_query ( $conn->db, $sql );
-if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && $user->getRole () == "admin") {
+if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && $user->isAdmin ()) {
     $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
     $sql = "UPDATE albums SET code='$code' WHERE id='$id';";
     mysqli_query ( $conn->db, $sql );

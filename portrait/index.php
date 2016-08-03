@@ -7,7 +7,7 @@
     <link href="/css/hover-effect.css" rel="stylesheet">
     
 	<?php 
-	if ($user->isLoggedIn()) {
+	if ($user->isAdmin ()) {
     ?>
     <link
 		href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
@@ -113,7 +113,7 @@
 		<!-- Portrait Services Section -->
 		<div class="row">
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div section='Details' class="hovereffect img-portfolio <?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+				<div section='Details' class="hovereffect img-portfolio <?php if ($user->isAdmin ()) { echo " editable"; } ?>">
 					<img class="img-responsive" src="img/details.jpg" alt="">
 					<div
 						class="overlay">
@@ -123,7 +123,7 @@
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div section='Gallery' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+				<div section='Gallery' class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
 					<img class="img-responsive" src="img/gallery.jpg" alt="">
 					<div
 						class="overlay">
@@ -133,7 +133,7 @@
 				</div>
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12">
-				<div section='Retouch' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+				<div section='Retouch' class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
 					<img class="img-responsive" src="http://placehold.it/1200x250"
 						alt="">
 					<div
@@ -144,7 +144,7 @@
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div section='About' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+				<div section='About' class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
 					<img class="img-responsive" src="img/about.jpg" alt="">
 					<div
 						class="overlay">
@@ -154,7 +154,7 @@
 				</div>
 			</div>
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div section='Reviews' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+				<div section='Reviews' class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
 					<img class="img-responsive" src="img/reviews.jpg" alt="">
 					<div
 						class="overlay">
@@ -164,7 +164,7 @@
 				</div>
 			</div>
 			<div class="col-md-12 col-sm-12 col-xs-12">
-				<div section='Blog' class="hovereffect img-portfolio<?php if ($user->isLoggedIn()) { echo " editable"; } ?>">
+				<div section='Blog' class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
 					<img class="img-responsive" src="img/blog.jpg" alt="">
 					<div
 						class="overlay">
@@ -185,7 +185,7 @@
 	<!-- /.container -->
 	
 	<?php 
-	if ($user->isLoggedIn()) {
+	if ($user->isAdmin ()) {
     ?>
     <script src="/js/edit-image.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>
