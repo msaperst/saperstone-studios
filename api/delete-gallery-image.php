@@ -38,8 +38,7 @@ if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
 
 $sql = "SELECT * FROM galleries WHERE id = $gallery;";
 $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($gallery_info ['id']) {
-} else {
+if (!$gallery_info ['id']) {
     echo "That ID doesn't match any gallerys";
     $conn->disconnect ();
     exit ();

@@ -19,7 +19,6 @@ $user;
 if (! $user->isLoggedIn ()) {
     echo "User must be logged in to create an account";
     $conn->disconnect ();
-    $conn->disconnect ();
     exit ();
 } else {
     $user = $user->getId ();
@@ -42,10 +41,8 @@ if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
 
 $sql = "SELECT * FROM albums WHERE id = $album;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($album_info ['id']) {
-} else {
+if (!$album_info ['id']) {
     echo "That ID doesn't match any albums";
-    $conn->disconnect ();
     $conn->disconnect ();
     exit ();
 }
@@ -62,16 +59,13 @@ if (isset ( $_GET ['image'] ) && $_GET ['image'] != "") {
         echo "Some other Image id error occurred!";
     }
     $conn->disconnect ();
-    $conn->disconnect ();
     exit ();
 }
 
 $sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($album_info ['title']) {
-} else {
+if (!$album_info ['title']) {
     echo "That image doesn't match anything";
-    $conn->disconnect ();
     $conn->disconnect ();
     exit ();
 }

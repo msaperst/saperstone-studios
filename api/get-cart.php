@@ -41,8 +41,7 @@ if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
 
 $sql = "SELECT * FROM albums WHERE id = $album;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($album_info ['id']) {
-} else {
+if (!$album_info ['id']) {
     echo "That ID doesn't match any albums";
     $conn->disconnect ();
     exit ();

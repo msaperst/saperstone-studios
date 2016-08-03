@@ -39,8 +39,7 @@ if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
 
 $sql = "SELECT * FROM albums WHERE id = $album;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($album_info ['id']) {
-} else {
+if (!$album_info ['id']) {
     echo "That ID doesn't match any albums";
     $conn->disconnect ();
     exit ();
@@ -63,8 +62,7 @@ if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
 
 $sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($album_info ['title']) {
-} else {
+if (!$album_info ['title']) {
     echo "That image doesn't match anything";
     $conn->disconnect ();
     exit ();
