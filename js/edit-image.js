@@ -1,6 +1,6 @@
 var currentLocation = window.location;
 var folder = "/" + currentLocation.pathname.split("/")[1];
-if (folder.endsWith(".php") || folder == "/") {
+if (folder.endsWith(".php") || folder === "/") {
     folder = "";
 }
 

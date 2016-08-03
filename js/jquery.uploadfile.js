@@ -470,7 +470,7 @@
             var duplicate = false;
             if (obj.existingFileNames.length) {
                 for (var x = 0; x < obj.existingFileNames.length; x++) {
-                    if (obj.existingFileNames[x] == filename || s.duplicateStrict && obj.existingFileNames[x].toLowerCase() == filename.toLowerCase()) {
+                    if (obj.existingFileNames[x] === filename || s.duplicateStrict && obj.existingFileNames[x].toLowerCase() === filename.toLowerCase()) {
                         duplicate = true;
                     }
                 }
@@ -687,7 +687,7 @@
             if (s.extraHTML)
                 bar.extraHTML = $("<div class='extrahtml'>" + s.extraHTML() + "</div>").insertAfter(bar.filename);
 
-            if (s.uploadQueueOrder == 'bottom')
+            if (s.uploadQueueOrder === 'bottom')
                 $(obj.container).append(bar.statusbar);
             else
                 $(obj.container).prepend(bar.statusbar);
@@ -787,7 +787,7 @@
                     pd.cancel.remove();
                     progressQ.pop();
                     // For custom errors.
-                    if (s.returnType == "json" && $.type(data) == "object" && data.hasOwnProperty(s.customErrorKeyStr)) {
+                    if (s.returnType === "json" && $.type(data) == "object" && data.hasOwnProperty(s.customErrorKeyStr)) {
                         pd.abort.hide();
                         var msg = data[s.customErrorKeyStr];
                         s.onError.call(this, fileArray, 200, msg, pd);
@@ -858,7 +858,7 @@
                     pd.cancel.remove();
                     progressQ.pop();
                     pd.abort.hide();
-                    if (xhr.statusText == "abort") // we aborted it
+                    if (xhr.statusText === "abort") // we aborted it
                     {
                         pd.statusbar.hide("slow").remove();
                         updateFileCounter(s, obj);
@@ -882,7 +882,7 @@
             };
 
             if (s.showPreview && file !== null) {
-                if (file.type.toLowerCase().split("/").shift() == "image")
+                if (file.type.toLowerCase().split("/").shift() === "image")
                     getSrcToPreview(file, pd.preview);
             }
 
