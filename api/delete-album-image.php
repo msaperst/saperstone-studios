@@ -65,6 +65,12 @@ $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 $sql = "DELETE FROM album_images WHERE album='$album' AND sequence='$sequence';";
 mysqli_query ( $conn->db, $sql );
 
+// need to re-sequence images in mysql table
+$sql = "SET @seq:=-1;";
+mysqli_query ( $conn->db, $sql );
+$sql = " UPDATE album_images SET sequence=(@seq:=@seq+1) WHERE album='$album';";
+mysqli_query ( $conn->db, $sql );
+
 // delete our image from the file system
 if ($row ['location'] != "") {
     system ( "rm -f " . escapeshellarg ( "../" . $row ['location'] ) );
