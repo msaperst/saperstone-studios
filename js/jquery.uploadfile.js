@@ -197,7 +197,7 @@
             pd.progressDiv.show();
             pd.progressbar.width('100%');
 
-            var fileNameStr = "";
+            var fileNameStr;
             if (s.showFileCounter)
                 fileNameStr = obj.fileCounter + s.fileCounterStyle + filename;
             else
@@ -324,7 +324,7 @@
         }
 
         function getSizeStr(size) {
-            var sizeStr = "";
+            var sizeStr;
             var sizeKB = size / 1024;
             if (parseInt(sizeKB) > 1024) {
                 var sizeMB = sizeKB / 1024;
@@ -336,7 +336,7 @@
         }
 
         function serializeData(extraData) {
-            var serialized = [];
+            var serialized;
             if (jQuery.type(extraData) == "string") {
                 serialized = extraData.split('&');
             } else {
@@ -437,7 +437,7 @@
                 ts.fileData = fd;
 
                 var pd = new createProgressDiv(obj, s);
-                var fileNameStr = "";
+                var fileNameStr;
                 if (s.showFileCounter)
                     fileNameStr = obj.fileCounter + s.fileCounterStyle + files[i].name;
                 else
@@ -672,7 +672,7 @@
             return this;
         }
         function createProgressDiv(obj, s) {
-            var bar = null;
+            var bar;
             if (s.customProgressBar)
                 bar = new s.customProgressBar(obj, s);
             else

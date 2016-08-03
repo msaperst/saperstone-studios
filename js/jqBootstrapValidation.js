@@ -97,7 +97,7 @@
                     // *snort sniff snuffle*
 
                     if (settings.options.sniffHtml) {
-                        var message = "";
+                        var message;
                         // ---------------------------------------------------------
                         // PATTERN
                         // ---------------------------------------------------------
