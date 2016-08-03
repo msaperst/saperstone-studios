@@ -113,7 +113,7 @@
 		<!-- Portrait Services Section -->
 		<div class="row">
 			<div class="col-md-6 col-sm-6 col-xs-12">
-				<div section='Details' class="hovereffect img-portfolio <?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+				<div section='Details' class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
 					<img class="img-responsive" src="img/details.jpg" alt="">
 					<div
 						class="overlay">

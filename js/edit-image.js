@@ -20,8 +20,7 @@ $(document)
                                                 .match(/col-md-(\d+)/);
                                         count = count[0].match(/(\d+)/)[0];
                                         var min_width = 1200 / 12 * count;
-                                        var min_height = 1200 / 12 * count * 2
-                                                / 3;
+                                        var min_height = 1200 / 12 * count * 2 / 3;
                                         $(this)
                                                 .uploadFile(
                                                         {
@@ -32,11 +31,7 @@ $(document)
                                                             fileName : "myfile",
                                                             acceptFiles : "image/*",
                                                             formData : {
-                                                                "location" : ".."
-                                                                        + folder
-                                                                        + "/"
-                                                                        + img
-                                                                                .attr('src'),
+                                                                "location" : ".." + folder + "/" + img.attr('src'),
                                                                 "min-width" : min_width,
                                                                 "min-height" : min_height
                                                             },
@@ -185,22 +180,19 @@ function saveImg(img) {
             }).done(
             function(data) {
                 if (data !== "") {
-                    BootstrapDialog
-                            .show({
-                                draggable : true,
-                                title : 'Whoops, Something Went Wrong',
-                                message : data,
-                                buttons : [ {
-                                    label : 'Close',
-                                    action : function(
-                                            dialog) {
-                                        dialog
-                                                .close();
-                                    }
-                                } ]
-                            });
+                    BootstrapDialog.show({
+                        draggable : true,
+                        title : 'Whoops, Something Went Wrong',
+                        message : data,
+                        buttons : [ {
+                            label : 'Close',
+                            action : function(dialog) {
+                                dialog.close();
+                            }
+                        } ]
+                    });
                 } else {
-                 // setup the new image
+                    // setup the new image
                     var new_img = img.attr('src').replace(/^img\/tmp_/, "img/")
                             .replace(/\?(\d+)$/, "");
                     img.attr('src', new_img + "?" + randomImgNumber());

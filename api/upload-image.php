@@ -37,7 +37,7 @@ if (isset ( $_FILES ["myfile"] )) {
         move_uploaded_file ( $_FILES ["myfile"] ["tmp_name"], "$filePath/tmp_$fileName" );
         $ret [] = $fileName;
         
-        if( getimagesize( "$filePath/tmp_$fileName" )[0] < $_POST['min-width'] ) {
+        if( getimagesize( "$filePath/tmp_$fileName" )[0] < ($_POST['min-width']-1) ) {
             echo "Image size is too small, please upload one with a minimum width of ".$_POST['min-width'];
         }
     } else // Multiple files, file[]

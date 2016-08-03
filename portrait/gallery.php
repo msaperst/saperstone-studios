@@ -6,6 +6,19 @@
     <?php require_once "../header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
 
+	<?php 
+	if ($user->isAdmin ()) {
+    ?>
+    <link
+		href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+		rel="stylesheet">
+    <link
+		href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
+		rel="stylesheet">
+    <?php 
+	}
+	?>
+	
 </head>
 
 <body>
@@ -31,8 +44,8 @@
         <!-- Services Section -->
         <div class="row">
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
-                    <img class="img-responsive" src="/img/portrait/maternity/VanderhoofMaternity_20160612_0092.jpg"
+                <div section="Maternity" class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <img class="img-responsive" src="img/maternity.jpg"
                         alt="">
                     <div class="overlay">
                         <h2>Maternity</h2>
@@ -41,8 +54,8 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
-                    <img class="img-responsive" src="/img/portrait/newborn/DSC_5904-Edit.jpg"
+                <div section="Newborns" class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <img class="img-responsive" src="img/newborn.jpg"
                         alt="">
                     <div class="overlay">
                         <h2>Newborns</h2>
@@ -51,8 +64,8 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
-                    <img class="img-responsive" src="/img/portrait/6month/Tucker_20140719_0072-Edit.jpg"
+                <div section="6 Months" class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <img class="img-responsive" src="img/6month.jpg"
                         alt="">
                     <div class="overlay">
                         <h2>6 Months</h2>
@@ -61,8 +74,8 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
-                    <img class="img-responsive" src="/img/portrait/1year/0105ROBERTS_20120921_0056.jpg"
+                <div section="First Birthday" class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <img class="img-responsive" src="img/1year.jpg"
                         alt="">
                     <div class="overlay">
                         <h2>First Birthday</h2>
@@ -71,8 +84,8 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
-                    <img class="img-responsive" src="/img/portrait/family/GarcesFamily_20131228_0016.jpg"
+                <div section="Kids and Family" class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <img class="img-responsive" src="img/family.jpg"
                         alt="">
                     <div class="overlay">
                         <h2>Kids and Family</h2>
@@ -81,8 +94,8 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div class="hovereffect img-portfolio">
-                    <img class="img-responsive" src="/img/portrait/senior/Rose_20150425_0166.jpg"
+                <div section="Seniors" class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <img class="img-responsive" src="img/senior.jpg"
                         alt="">
                     <div class="overlay">
                         <h2>Seniors</h2>
@@ -97,6 +110,17 @@
 
     </div>
     <!-- /.container -->
+    
+	<?php 
+	if ($user->isAdmin ()) {
+    ?>
+    <script src="/js/edit-image.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <?php 
+	}
+	?>
 
 </body>
 
