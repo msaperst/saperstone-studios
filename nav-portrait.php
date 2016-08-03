@@ -15,14 +15,12 @@
                     class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
                         class="caret"></strong></a>
                     <ul class="dropdown-menu">
-                        <li><a href="gallery-maternity.php">Maternity</a></li>
-                        <li><a href="#">Newborns</a></li>
-                        <li><a href="#">3 Months</a></li>
-                        <li><a href="#">6 Months</a></li>
-                        <li><a href="#">Cake Smash</a></li>
-                        <li><a href="#">Kids and Family</a></li>
-                        <li><a href="#">Senior Sessions</a></li>
-                        <li><a href="#">Vacations</a></li>
+                        <li><a href="galleries.php?w=2">Maternity</a></li>
+                        <li><a href="galleries.php?w=3">Newborns</a></li>
+                        <li><a href="galleries.php?w=4">6 Months</a></li>
+                        <li><a href="galleries.php?w=5">First Birthday</a></li>
+                        <li><a href="galleries.php?w=6">Kids and Family</a></li>
+                        <li><a href="galleries.php?w=7">Seniors</a></li>
                     </ul></li>
                 <li><a href="#">Retouch</a></li>
                 <li><a href="/about.php">About</a></li>
