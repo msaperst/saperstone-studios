@@ -322,7 +322,6 @@ $(document).ready(function() {
                             var results_ul = $('<ul class="dropdown-menu search-results">');
                             $.each(data, function(key, user) {
                                 if( !($("#download-users .selected-user[user-id='" + user.id + "']").length || user.role == "admin") ) {
-                                } else {
                                     var result_li = $('<li>');
                                     var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                     result_a.click(function(){

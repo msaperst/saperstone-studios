@@ -247,7 +247,6 @@ function editUser(data) {
                                     var results_ul = $('<ul class="dropdown-menu search-results">');
                                     $.each(data, function(key, album) {
                                         if( !$(".selected-album[album-id='" + album.id + "']").length ) {
-                                        } else {
                                             var result_li = $('<li>');
                                             var result_a = $('<a album-id="' + album.id + '" >' + album.name + '</a>');
                                             result_a.click(function(){
