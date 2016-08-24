@@ -496,9 +496,9 @@ footer {
                                 </tr>
                                 <tr>
                                     <th></th>
-                                    <th colspan="3"><label class="sr-only" for="cart-coupon">Coupon</label>
+                                    <td colspan="3"><label class="sr-only" for="cart-coupon">Coupon</label>
                                         <input id="cart-coupon" type="text" placeholder="Coupon Code"
-                                        class="form-control" /></th>
+                                        class="form-control" /></td>
                                     <th id="cart-total"></th>
                                     <th></th>
                                 </tr>
@@ -580,11 +580,26 @@ footer {
                 }
             }
             ?>
+            <?php
+                $sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId () . "' AND `album` = '" . $_GET ['album'] . "';";
+                $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+                if ($result ['total'] > 0) {
+                    ?>
             <span class="text-center"><button id="favorite-btn"
                     type="button" class="btn btn-default btn-success">
-                    <em class="fa fa-heart error"></em> Favorites
+                    <em class="fa fa-heart error"></em> Favorites <strong id="favorite-count"
+                        class="error" style="padding-left: 10px;"><?php echo $result['total']; ?></strong>
                 </button></span>
             <?php
+                } else {
+                    ?>
+            <span class="text-center"><button id="favorite-btn"
+                    type="button" class="btn btn-default btn-success">
+                    <em class="fa fa-heart error"></em> Favorites <strong id="favorite-count"
+                        class="error"></strong>
+                </button></span>
+            <?php
+                }
             if ($user->isAdmin ()) {
                 ?>
             <span class="text-center"><button id="access-btn"

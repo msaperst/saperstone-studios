@@ -39,7 +39,7 @@ if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
 
 $sql = "SELECT * FROM albums WHERE id = $album;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (!$album_info ['id']) {
+if (! $album_info ['id']) {
     echo "That ID doesn't match any albums";
     $conn->disconnect ();
     exit ();
@@ -62,7 +62,7 @@ if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
 
 $sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (!$album_info ['title']) {
+if (! $album_info ['title']) {
     echo "That image doesn't match anything";
     $conn->disconnect ();
     exit ();
@@ -71,6 +71,10 @@ if (!$album_info ['title']) {
 // update our mysql database
 $sql = "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('$user', '$album', '$sequence');";
 mysqli_query ( $conn->db, $sql );
+// get our new favorite count for the album
+$sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '$user' AND `album` = '$album';";
+$result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+echo $result ['total'];
 
 $conn->disconnect ();
 exit ();

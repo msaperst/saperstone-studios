@@ -51,8 +51,7 @@ Album.prototype.loadImages = function() {
             link.attr('data-toggle', 'modal');
             link.attr('data-target', '#album');
             link.on('click', function() {
-                var carouselImage = $('#album-carousel .item').index(
-                        $('#album-carousel .contain[image-id="' + v.sequence + '"]').parent());
+                var carouselImage = $('#album-carousel .item').index($('#album-carousel .contain[image-id="' + v.sequence + '"]').parent());
                 $('#album-carousel').carousel(parseInt(carouselImage));
                 $('#album .btn-action').each(function() {
                     $(this).prop("disabled", true);
@@ -98,7 +97,17 @@ $(document).ready(function() {
         $.post("/api/set-favorite.php", {
             album : img.attr('album-id'),
             image : img.attr('image-id')
-        }).done(function() {
+        }).done(function(data) {
+            // update our count on the page
+            if (Math.round(data) == data && data > 0) {
+                $('#favorite-count').html(data).css({
+                    'padding-left' : '10px'
+                });
+            } else {
+                $('#favorite-count').html("").css({
+                    'padding-left' : ''
+                });
+            }
             setFavorite();
         });
     });
@@ -108,7 +117,17 @@ $(document).ready(function() {
         $.post("/api/unset-favorite.php", {
             album : img.attr('album-id'),
             image : img.attr('image-id')
-        }).done(function() {
+        }).done(function(data) {
+            // update our count on the page
+            if (Math.round(data) == data && data > 0) {
+                $('#favorite-count').html(data).css({
+                    'padding-left' : '10px'
+                });
+            } else {
+                $('#favorite-count').html("").css({
+                    'padding-left' : ''
+                });
+            }
             unsetFavorite();
         });
     });
@@ -126,6 +145,17 @@ $(document).ready(function() {
                     $.post("/api/unset-favorite.php", {
                         album : $('#album').attr('album-id'),
                         image : $(this).attr('image-id')
+                    }).done(function(data) {
+                        // update our count on the page
+                        if (Math.round(data) == data && data > 0) {
+                            $('#favorite-count').html(data).css({
+                                'padding-left' : '10px'
+                            });
+                        } else {
+                            $('#favorite-count').html("").css({
+                                'padding-left' : ''
+                            });
+                        }
                     });
                     $(this).remove();
                 });
@@ -183,8 +213,7 @@ $(document).ready(function() {
             image : img.attr('image-id'),
             products : products
         }).done(function(data) {
-            // update our count
-            // on the page
+            // update our count on the page
             if (Math.round(data) == data && data > 0) {
                 $('#cart-count').html(data).css({
                     'padding-left' : '10px'
@@ -222,9 +251,7 @@ $(document).ready(function() {
                     removeIcon.click(function() {
                         $(this).closest('tr').remove();
                         calculateCost();
-                        // update
-                        // our
-                        // database
+                        // update our database
                         var cart = [];
                         $('#cart-items tr').each(function() {
                             var product = $(this).attr('product-id');
@@ -243,12 +270,7 @@ $(document).ready(function() {
                             album : $('#album').attr('album-id'),
                             images : cart
                         }).done(function(data) {
-                            // update
-                            // our
-                            // count
-                            // on
-                            // the
-                            // page
+                            // update our count on the page
                             if (Math.round(data) == data && data > 0) {
                                 $('#cart-count').html(data).css({
                                     'padding-left' : '10px'
