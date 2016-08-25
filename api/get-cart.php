@@ -52,6 +52,13 @@ $result = mysqli_query ( $conn->db, $sql );
 $cart = array ();
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     unset ( $r ['cost'] );
+    $sql = "SELECT opt FROM product_options WHERE product_type = '" . $r ['product_type'] . "';";
+    $results = mysqli_query ( $conn->db, $sql );
+    $options = array(); 
+    while ( $s = mysqli_fetch_assoc ( $results ) ) {
+        $options [] = $s['opt'];
+    }
+    $r['options'] = $options;
     $cart [] = $r;
 }
 echo json_encode ( $cart );

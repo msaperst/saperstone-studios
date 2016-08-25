@@ -149,57 +149,58 @@ function saveSize() {
 }
 
 function addSize() {
-    $('.add-size-button').off().click(
-            function() {
-                var button = $(this);
-                var row = $(this).closest('tr');
-                $('em', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
-                button.prop("disabled", true);
-                $.post("/api/add-product-size.php", {
-                    type : row.closest('div').attr('product-type'),
-                    size : $('.product-size input', row).val(),
-                    cost : $('.product-cost input', row).val(),
-                    price : $('.product-price input', row).val(),
-                }).done(
-                        function(data) {
-                            $('em', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
-                            button.prop("disabled", false);
-                            if (Math.round(data) == data && data !== '0') {
-                                var tr = $('<tr>');
+    $('.add-size-button')
+            .off()
+            .click(
+                    function() {
+                        var button = $(this);
+                        var row = $(this).closest('tr');
+                        $('em', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
+                        button.prop("disabled", true);
+                        $
+                                .post("/api/add-product-size.php", {
+                                    type : row.closest('div').attr('product-type'),
+                                    size : $('.product-size input', row).val(),
+                                    cost : $('.product-cost input', row).val(),
+                                    price : $('.product-price input', row).val(),
+                                })
+                                .done(
+                                        function(data) {
+                                            $('em', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
+                                            button.prop("disabled", false);
+                                            if (Math.round(data) == data && data !== '0') {
+                                                var tr = $('<tr>');
 
-                                var buttons = $('<td>' + '<button type="button" class="btn btn-xs btn-warning edit-size-button"><i class="fa fa-pencil-square-o"></i></button>'
-                                        + ' <button type="button" class="btn btn-xs btn-danger delete-size-button"><i class="fa fa-trash-o"></i></button>'
-                                        + '<button type="button" class="btn btn-xs btn-success save-size-button hidden"><i class="fa fa-save"></i></button>'
-                                        + ' <button type="button" class="btn btn-xs btn-warning cancel-size-button hidden"><i class="fa fa-ban"></i></button></td>');
-                                tr.append(buttons);
+                                                var buttons = $('<td><button type="button" class="btn btn-xs btn-warning edit-size-button"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-danger delete-size-button"><i class="fa fa-trash-o"></i></button><button type="button" class="btn btn-xs btn-success save-size-button hidden"><i class="fa fa-save"></i></button> <button type="button" class="btn btn-xs btn-warning cancel-size-button hidden"><i class="fa fa-ban"></i></button></td>');
+                                                tr.append(buttons);
 
-                                var size = $('<td>');
-                                size.addClass('product-size');
-                                size.append($('.product-size input', row).val());
-                                tr.append(size);
+                                                var size = $('<td>');
+                                                size.addClass('product-size');
+                                                size.append($('.product-size input', row).val());
+                                                tr.append(size);
 
-                                var cost = $('<td>');
-                                cost.addClass('product-cost');
-                                cost.append("$" + $('.product-cost input', row).val());
-                                tr.append(cost);
+                                                var cost = $('<td>');
+                                                cost.addClass('product-cost');
+                                                cost.append("$" + $('.product-cost input', row).val());
+                                                tr.append(cost);
 
-                                var price = $('<td>');
-                                price.addClass('product-price');
-                                price.append("$" + $('.product-price input', row).val());
-                                tr.append(price);
+                                                var price = $('<td>');
+                                                price.addClass('product-price');
+                                                price.append("$" + $('.product-price input', row).val());
+                                                tr.append(price);
 
-                                row.before(tr);
-                                setupSize();
+                                                row.before(tr);
+                                                setupSize();
 
-                                $('.product-size input', row).val("");
-                                $('.product-cost input', row).val("");
-                                $('.product-price input', row).val("");
-                                $('.product-size-error', row.closest('div')).html("");
-                            } else {
-                                $('.product-size-error', row.closest('div')).html(data);
-                            }
-                        });
-            });
+                                                $('.product-size input', row).val("");
+                                                $('.product-cost input', row).val("");
+                                                $('.product-price input', row).val("");
+                                                $('.product-size-error', row.closest('div')).html("");
+                                            } else {
+                                                $('.product-size-error', row.closest('div')).html(data);
+                                            }
+                                        });
+                    });
 }
 
 function editProduct() {
