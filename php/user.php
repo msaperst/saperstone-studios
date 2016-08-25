@@ -52,10 +52,10 @@ class user {
             $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT firstName, lastName FROM users WHERE hash='{$_SESSION['hash']}';" ) );
             $name = "";
             if ($row ['firstName']) {
-                $name += $row ['firstName'];
+                $name .= $row ['firstName'];
             }
             if ($row ['lastName']) {
-                $name += " " . $row ['lastName'];
+                $name .= " " . $row ['lastName'];
             }
             return $name;
         }

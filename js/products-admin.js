@@ -17,6 +17,8 @@ function setupProduct() {
     cancelEditProduct();
     addProduct();
     setupSize();
+    addOption();
+    deleteOption();
 }
 
 function editSize() {
@@ -88,7 +90,7 @@ function deleteSize() {
                 cssClass : 'btn-danger',
                 action : function(dialogInItself) {
                     var $button = this; // 'this' here is a jQuery object that
-                                        // wrapping the <button> DOM element.
+                    // wrapping the <button> DOM element.
                     $button.spin();
                     dialogInItself.enableButtons(false);
                     dialogInItself.setClosable(false);
@@ -114,7 +116,7 @@ function saveSize() {
     $('.save-size-button').off().click(function() {
         var button = $(this);
         var row = $(this).closest('tr');
-        $('i', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
+        $('em', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
         button.prop("disabled", true);
         $.post("/api/update-product-size.php", {
             id : row.attr('product-id'),
@@ -122,14 +124,14 @@ function saveSize() {
             cost : $('.product-cost input', row).val(),
             price : $('.product-price input', row).val(),
         }).done(function(data) {
-            $('i', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
+            $('em', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
             button.prop("disabled", false);
             if (data === "") {
                 $('.edit-size-button', row).removeClass('hidden');
                 $('.delete-size-button', row).removeClass('hidden');
                 $('.save-size-button', row).addClass('hidden');
                 $('.cancel-size-button', row).addClass('hidden');
-                $('#product-size-error').html("");
+                $('.product-size-error', row.closest('div')).html("");
 
                 var size = $('.product-size input', row);
                 size.closest('td').html(size.val());
@@ -140,7 +142,7 @@ function saveSize() {
                 var price = $('.product-price input', row);
                 price.closest('td').html("$" + price.val());
             } else {
-                $('#product-size-error').html(data);
+                $('.product-size-error', row.closest('div')).html(data);
             }
         });
     });
@@ -151,7 +153,7 @@ function addSize() {
             function() {
                 var button = $(this);
                 var row = $(this).closest('tr');
-                $('i', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
+                $('em', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
                 button.prop("disabled", true);
                 $.post("/api/add-product-size.php", {
                     type : row.closest('div').attr('product-type'),
@@ -160,15 +162,15 @@ function addSize() {
                     price : $('.product-price input', row).val(),
                 }).done(
                         function(data) {
-                            $('i', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
+                            $('em', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
                             button.prop("disabled", false);
                             if (Math.round(data) == data && data !== '0') {
                                 var tr = $('<tr>');
 
-                                var buttons = $('<td>' + '<button type="button" class="btn btn-xs btn-warning edit-size-button"><i class="fa fa-pencil-square-o"></i></button>' + 
-                                        ' <button type="button" class="btn btn-xs btn-danger delete-size-button"><i class="fa fa-trash-o"></i></button>' + 
-                                        '<button type="button" class="btn btn-xs btn-success save-size-button hidden"><i class="fa fa-save"></i></button>' + 
-                                        ' <button type="button" class="btn btn-xs btn-warning cancel-size-button hidden"><i class="fa fa-ban"></i></button></td>');
+                                var buttons = $('<td>' + '<button type="button" class="btn btn-xs btn-warning edit-size-button"><i class="fa fa-pencil-square-o"></i></button>'
+                                        + ' <button type="button" class="btn btn-xs btn-danger delete-size-button"><i class="fa fa-trash-o"></i></button>'
+                                        + '<button type="button" class="btn btn-xs btn-success save-size-button hidden"><i class="fa fa-save"></i></button>'
+                                        + ' <button type="button" class="btn btn-xs btn-warning cancel-size-button hidden"><i class="fa fa-ban"></i></button></td>');
                                 tr.append(buttons);
 
                                 var size = $('<td>');
@@ -192,9 +194,9 @@ function addSize() {
                                 $('.product-size input', row).val("");
                                 $('.product-cost input', row).val("");
                                 $('.product-price input', row).val("");
-                                $('#product-size-error').html("");
+                                $('.product-size-error', row.closest('div')).html("");
                             } else {
-                                $('#product-size-error').html(data);
+                                $('.product-size-error', row.closest('div')).html(data);
                             }
                         });
             });
@@ -243,7 +245,7 @@ function deleteProduct() {
                 cssClass : 'btn-danger',
                 action : function(dialogInItself) {
                     var $button = this; // 'this' here is a jQuery object that
-                                        // wrapping the <button> DOM element.
+                    // wrapping the <button> DOM element.
                     $button.spin();
                     dialogInItself.enableButtons(false);
                     dialogInItself.setClosable(false);
@@ -269,25 +271,25 @@ function saveProduct() {
     $('.save-product-button').off().click(function() {
         var button = $(this);
         var div = $(this).closest('div');
-        $('i', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
+        $('em', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
         button.prop("disabled", true);
         $.post("/api/update-product.php", {
             id : div.attr('product-type'),
             name : $('h3 input', div).val(),
         }).done(function(data) {
-            $('i', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
+            $('em', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
             button.prop("disabled", false);
             if (data === "") {
                 $('.edit-product-button', div).removeClass('hidden');
                 $('.delete-product-button', div).removeClass('hidden');
                 $('.save-product-button', div).addClass('hidden');
                 $('.cancel-product-button', div).addClass('hidden');
-                $('#product-size-error').html("");
+                $('.product-size-error', row.closest('div')).html("");
 
                 var name = $('h3 input', div);
                 name.closest('h3').html(name.val());
             } else {
-                $('#product-size-error').html(data);
+                $('.product-size-error', row.closest('div')).html(data);
             }
         });
     });
@@ -309,9 +311,9 @@ function addProduct() {
                                 cssClass : 'btn-success',
                                 action : function(dialogInItself) {
                                     var $button = this; // 'this' here is a
-                                                        // jQuery object that
-                                                        // wrapping the <button>
-                                                        // DOM element.
+                                    // jQuery object that
+                                    // wrapping the <button>
+                                    // DOM element.
                                     $button.spin();
                                     dialogInItself.enableButtons(false);
                                     dialogInItself.setClosable(false);
@@ -352,4 +354,42 @@ function addProduct() {
                             } ]
                 });
             });
+}
+function addOption() {
+    $('.add-option-button').off().click(function() {
+        var button = $(this);
+        var input = $(button).next();
+        var product_type = $(this).closest('.bootstrap-dialog').attr('product-type');
+        $('em', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
+        button.prop("disabled", true);
+        $.post("/api/add-product-option.php", {
+            type : product_type,
+            option : input.val()
+        }).done(function(data) {
+            $('em', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
+            button.prop("disabled", false);
+            if (data === "") {
+                var option = $("<span>");
+                option.html(input.val());
+                option.addClass('selected-album');
+                button.closest('.bootstrap-dialog').find('.product-options').append(option);
+                input.val("");
+                deleteOption();
+            } else {
+                button.closest('.bootstrap-dialog').find('.product-size-error').html(data);
+            }
+        });
+    });
+
+}
+function deleteOption() {
+    $('.selected-album').off().click(function() {
+        var option = $(this).html();
+        var product_type = $(this).closest('.bootstrap-dialog').attr('product-type');
+        $(this).remove();
+        $.post("/api/delete-product-option.php", {
+            type : product_type,
+            option : option
+        });
+    });
 }
