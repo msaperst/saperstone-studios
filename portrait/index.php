@@ -99,13 +99,15 @@
 					</a> <a class="right carousel-control" href="#portraitCarousel"
 						data-slide="next"> <span class="icon-next"></span>
 					</a>
+					<?php if ($user->isAdmin ()) { ?>
     				<span
     					style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
     					<a class="ajax-file-upload" href="galleries.php?w=1"
     						style="position: relative; overflow: hidden; cursor: pointer;">
-    						<i class="fa fa-pencil-square-o"></i> Edit This Image
+    						<i class="fa fa-pencil-square-o"></i> Edit These Images
     					</a>
     				</span>
+    				<?php } ?>
 				</div>
 			</div>
 			<!-- Sidebar Column -->
