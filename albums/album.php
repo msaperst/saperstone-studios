@@ -30,7 +30,7 @@ if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
     exit ();
 }
 
-if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an admin and no code exists for the album
+if (!$user->isAdmin() && $album_info ['code'] == "") { // if not an admin and no code exists for the album
     if (! $user->isLoggedIn ()) { // if not logged in, throw an error
         header ( 'HTTP/1.0 401 Unauthorized' );
         include "../errors/401.php";
@@ -50,6 +50,12 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
             exit ();
         }
     }
+}
+
+#update our last accessed
+if (!$user->isAdmin()) {
+    $sql = "UPDATE `albums` SET `lastAccessed` = now() WHERE id = '" . $_GET ['album'] . "';";
+    mysqli_query ( $conn->db, $sql );
 }
 ?>
 
