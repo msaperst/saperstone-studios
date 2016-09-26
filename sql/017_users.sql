@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `hash` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `lastLogin` timestamp NULL DEFAULT NULL,
+  `lastLogin` timestamp DEFAULT NULL,
   `resetKey` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   UNIQUE KEY `id_2` (`id`),
   UNIQUE KEY `hash` (`hash`),
