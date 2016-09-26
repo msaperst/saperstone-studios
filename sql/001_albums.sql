@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `albums` (
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `lastAccessed` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `lastAccessed` timestamp DEFAULT NULL,
   `location` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `code` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `owner` int(11) NOT NULL,

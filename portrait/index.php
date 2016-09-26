@@ -102,10 +102,10 @@
 					<?php if ($user->isAdmin ()) { ?>
     				<span
     					style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
-    					<a class="ajax-file-upload" href="galleries.php?w=1"
+    					<button class="ajax-file-upload" onclick="location.href='galleries.php?w=1'"
     						style="position: relative; overflow: hidden; cursor: pointer;">
     						<i class="fa fa-pencil-square-o"></i> Edit These Images
-    					</a>
+    					</button>
     				</span>
     				<?php } ?>
 				</div>

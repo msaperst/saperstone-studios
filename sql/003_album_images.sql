@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `album_images` (
   `album` int(11) NOT NULL,
   `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `sequence` int(11) NOT NULL,
-  `caption` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `caption` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `location` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `width` int(11) NOT NULL,
   `height` int(11) NOT NULL,

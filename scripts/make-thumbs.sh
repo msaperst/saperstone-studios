@@ -24,7 +24,7 @@ if [ ! -d "$location/full" ]; then
     mkdir "$location/full";
 fi
 
-for file in $location/{.,}*; do
+for file in $location/*.*; do
     if [ -f "$file" ]; then	#if it is a file
         filename=$(basename "$file")
         file_info=`identify $file`;
