@@ -23,8 +23,8 @@ if (isset ( $_SERVER ['HTTP_REFERER'] )) {
 }
 
 // create email body and send it
-// $to = "Contact <contact@saperstonestudios.com>"; // PUT YOUR EMAIL ADDRESS HERE
-$to = "Mr Max <msaperst@gmail.com>"; // PUT YOUR EMAIL ADDRESS HERE
+$to = "Contact <contact@saperstonestudios.com>"; // PUT YOUR EMAIL ADDRESS HERE
+// $to = "Mr Max <msaperst@gmail.com>"; // PUT YOUR EMAIL ADDRESS HERE
 $from = "$name <$email>";
 $subject = "Saperstone Studios Contact Form:  $name"; // EDIT THE EMAIL SUBJECT LINE HERE
 

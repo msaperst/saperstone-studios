@@ -352,7 +352,6 @@ $(document).ready(function() {
             coupon: coupon
         }, "json").done(function(data) {
         	data = jQuery.parseJSON(data);
-        	console.log( data );
         	if( data.hasOwnProperty('response') && data.response.Ack === "Success" ) {
     			var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
     			$('#cart-order-message').html("Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='" + link + "'>this link</a>.");
