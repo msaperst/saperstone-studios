@@ -224,14 +224,13 @@ $(document).ready(function() {
         $('#album').modal('hide');
         $('#cart').modal();
         $('#cart-items').empty();
-        $.get("/api/get-cart.php", {
-            album : $('#album').attr('album-id'),
-        }, function(data) {
+        $.get("/api/get-cart.php", function(data) {
             for (var i = 0, len = data.length; i < len; i++) {
                 for (var c = 0, zen = data[i].count; c < zen; c++) {
                     var row = $("<tr>");
                     row.attr('product-id', data[i].product);
                     row.attr('product-type', data[i].product_type);
+                    row.attr('album-id', data[i].album);
                     row.attr('image-id', data[i].image);
                     row.attr('image-title', data[i].title);
                     var remove = $("<td>");
@@ -308,6 +307,74 @@ $(document).ready(function() {
     // re-enable
     $('#album-carousel').on('slid.bs.carousel', function() {
         getDetails();
+    });
+    
+    $('#cart-submit').click(function(){
+    	$(this).prop("disabled", true);
+    	$(this).next().prop("disabled", true);
+        $('em', this).removeClass('fa fa-credit-card').addClass('glyphicon glyphicon-asterisk icon-spin');
+        $('#cart-order-message').remove();
+    	var message = $("<div id='cart-order-message'></div>");
+    	message.css('padding', '20px');
+    	message.html("Thank you for submitting your request. Your request is being processed, " +
+    			"and you should be forwarded to paypal's payment screen within a few seconds. " +
+    			"If you are not, please <a class='gen' target='_blank' " +
+    			"href='mailto:billingerror@saperstonestudios.com'>contact us</a> and we'll try to resolve " +
+    			"your issue as soon as we can.");
+    	$('#cart .modal-body').append(message);
+
+    	var coupon;
+    	if( $('#cart-coupon').val() != "" ) {
+    		coupon = md5($('#cart-coupon').val());
+    	}
+    	var order = [];
+    	$('#cart-items tr').each(function () {
+    		order.push({
+    			product: $(this).attr('product-id'),
+    			type: $(this).attr('product-type'),
+    			img: $(this).attr('image-id'),
+    			title: $(this).attr('image-title'),
+    			option: $(this).find('td.item-option select').val()
+    		});
+    	});
+    	var user = {
+    			name: $('#cart-name').val(),
+    			email: $('#cart-email').val(),
+    			phone: $('#cart-phone').val(),
+    			address: $('#cart-address').val(),
+    			city: $('#cart-city').val(),
+    			state: $('#cart-state').val(),
+    			zip: $('#cart-zip').val(),
+    		};
+    	$.post("/api/checkout.php", {
+            user : user,
+            order : order,
+            coupon: coupon
+        }, "json").done(function(data) {
+        	data = jQuery.parseJSON(data);
+        	console.log( data );
+        	if( data.hasOwnProperty('response') && data.response.Ack === "Success" ) {
+    			var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
+    			$('#cart-order-message').html("Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='" + link + "'>this link</a>.");
+    			window.location = link;
+    		} else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.Errors.LongMessage === "This transaction cannot be processed. The amount to be charged is zero." ) {
+    			$('#cart-order-message').html("Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.");
+    			//TODO - do stuff
+    		} else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.hasOwnProperty('Errors') ) {
+    			$('#cart-order-message').html("There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.");
+    		} else if ( data.hasOwnProperty('error') ) {
+    			$('#cart-order-message').html("There was a problem with submitting your order.<br/>" + data.error + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.");
+    		} else {
+    			$('#cart-order-message').html("There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.");
+    		}
+        }).fail(function(){
+			$('#cart-order-message').html("There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.");
+        }).always(function(){
+        	$('#cart-submit').prop("disabled", false);
+        	$('#cart-submit').next().prop("disabled", false);
+            $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
+            setTimeout(function(){ $('#cart-order-message').remove(); }, 15000);
+        });
     });
 });
 
@@ -433,19 +500,19 @@ function unsetShareable() {
 }
 
 // functions for dealing with the cart
-function arrayHasJSON(myArray, product, image) {
+function arrayHasJSON(myArray, product, album, image) {
     var hasJSON = false;
     for (var i = 0, len = myArray.length; i < len; i++) {
-        if (myArray[i].product === product && myArray[i].image === image) {
+        if (myArray[i].product === product && myArray[i].album === album && myArray[i].image === image) {
             hasJSON = true;
             break;
         }
     }
     return hasJSON;
 }
-function incrementProduct(myArray, product, image) {
+function incrementProduct(myArray, product, album, image) {
     $.each(myArray, function(i, obj) {
-        if (obj.product === product && obj.image === image) {
+        if (obj.product === product && obj.album === album && obj.image === image) {
             obj.count++;
         }
     });
@@ -454,6 +521,7 @@ function incrementProduct(myArray, product, image) {
 
 function removeFromCart(removeIcon) {
     removeIcon.click(function() {
+    	//TODO - we should really put in a confirm here
         $(this).closest('tr').remove();
         calculateCost();
         // update our database
@@ -461,18 +529,19 @@ function removeFromCart(removeIcon) {
         $('#cart-items tr').each(function() {
             var product = $(this).attr('product-id');
             var image = $(this).attr('image-id');
-            if (arrayHasJSON(cart, product, image)) {
-                cart = incrementProduct(cart, product, image);
+            var album = $(this).attr('album-id');
+            if (arrayHasJSON(cart, product, album, image)) {
+                cart = incrementProduct(cart, product, album, image);
             } else {
                 var item = {};
                 item.product = $(this).attr('product-id');
+                item.album = $(this).attr('album-id');
                 item.image = $(this).attr('image-id');
                 item.count = 1;
                 cart.push(item);
             }
         });
         $.post("/api/update-cart.php", {
-            album : $('#album').attr('album-id'),
             images : cart
         }).done(function(data) {
             // update our count on the page

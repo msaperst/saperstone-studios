@@ -24,37 +24,14 @@ if (! $user->isLoggedIn ()) {
     $user = $user->getId ();
 }
 
-$album = "";
-if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
-    $album = ( int ) $_POST ['album'];
-} else {
-    if (! isset ( $_POST ['album'] )) {
-        echo "Album id is required!";
-    } elseif ($_POST ['album'] != "") {
-        echo "Album id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
-}
-
-$sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (!$album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect ();
-    exit ();
-}
-
 // empty out our old cart for this image
-$sql = "DELETE FROM `cart` WHERE `user` = '$user' AND `album` = '$album';";
+$sql = "DELETE FROM `cart` WHERE `user` = '$user';";
 mysqli_query ( $conn->db, $sql );
 
 // for each product, add it back in
 if (isset ( $_POST ['images'] ) && is_array ( $_POST ['images'] )) {
     foreach ( $_POST ['images'] as $image ) {
-        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '$user', '$album', '" . $image ['image'] . "', '" . $image ['product'] . "', '" . $image ['count'] . "');";
+        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '$user', " . $image ['album'] . ", '" . $image ['image'] . "', '" . $image ['product'] . "', '" . $image ['count'] . "');";
         mysqli_query ( $conn->db, $sql );
     }
 }

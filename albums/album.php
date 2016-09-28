@@ -502,9 +502,10 @@ footer {
                                 </tr>
                                 <tr>
                                     <th></th>
-                                    <td colspan="3"><label class="sr-only" for="cart-coupon">Coupon</label>
-                                        <input id="cart-coupon" type="text" placeholder="Coupon Code"
-                                        class="form-control" /></td>
+                                	<td colspan="3"></td>
+<!--                                     <td colspan="3"><label class="sr-only" for="cart-coupon">Coupon</label> -->
+<!--                                         <input id="cart-coupon" type="text" placeholder="Coupon Code" -->
+<!--                                         class="form-control" /></td> -->
                                     <th id="cart-total"></th>
                                     <th></th>
                                 </tr>
@@ -512,7 +513,7 @@ footer {
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer bootstrap-dialog">
                     <button id="cart-submit" type="button"
                         class="btn btn-default btn-success" disabled>
                         <em class="fa fa-credit-card"></em> Place Order
@@ -621,6 +622,7 @@ footer {
 
     <!-- Gallery JavaScript -->
     <script src="/js/album.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.3.1/js/md5.min.js"></script>
     <?php
     if ($user->isAdmin ()) {
         ?>

@@ -27,3 +27,6 @@ phpmyadmin
 
 # Users Environment Variables
 .lock-wscript
+
+# Some third party tools
+plugins/merchant-sdk-php-3.9.1
