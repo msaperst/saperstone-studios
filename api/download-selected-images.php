@@ -98,7 +98,18 @@ if( empty( $available ) ) {
 // for each available file, zip it, and then download it
 $images = "";
 foreach( $available as $image ) {
-    $images .= "..".$image['location']." ";
+    $file = $image['location'];
+    if( file_exists( dirname( "..".$file )."/full/".basename($file) ) ) {
+        $images .= dirname( "..".$file )."/full/".basename($file). " ";
+    } elseif ( file_exists( "..".$file ) ) {
+        $image .= "..".$file. " ";
+    }
+}
+if( $images == "" ) {
+    $response ['err'] = "No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.";
+    echo json_encode ( $response );
+    $conn->disconnect ();
+    exit ();
 }
 if( !is_dir( "../tmp/" ) ) {
     mkdir( "../tmp/" );
@@ -113,7 +124,6 @@ exit ();
 
 //TODO
 // send email
-// download full size, not small
 
 // our function to see if an array of files contains the expected file
 function doesArrayContainFile($array, $file) {

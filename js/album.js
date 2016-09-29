@@ -371,7 +371,7 @@ $(document).ready(function() {
     			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.</div>");
     			//TODO - do stuff
     		} else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.hasOwnProperty('Errors') ) {
-    			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+    			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a> for more details, or try resubmitting.</div>");
     		} else if ( data.hasOwnProperty('error') ) {
     			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.error + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
     		} else {
@@ -597,6 +597,7 @@ function downloadImages(album,what) {
                 var $button = this; // 'this' here is a jQuery object that
                                     // wrapping the <button> DOM element.
                 var modal = $button.closest('.modal-content');
+                modal.find('.bootstrap-dialog-body').append('<div id="compressing-download" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>We are compressing your images for download. They should automatically start downloading shortly.</div>');
                 $button.spin();
                 dialogInItself.enableButtons(false);
                 dialogInItself.setClosable(false);
@@ -618,6 +619,7 @@ function downloadImages(album,what) {
                 }).fail(function(){
                 	modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
                 }).always(function(){
+                	$('#compressing-download').remove();
                 	$button.stopSpin();
                 	dialogInItself.enableButtons(true);
                     dialogInItself.setClosable(true);
