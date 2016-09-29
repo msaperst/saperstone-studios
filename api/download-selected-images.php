@@ -97,12 +97,15 @@ if( empty( $available ) ) {
 
 // for each available file, zip it, and then download it
 $images = "";
+$image_array = array();
 foreach( $available as $image ) {
     $file = $image['location'];
     if( file_exists( dirname( "..".$file )."/full/".basename($file) ) ) {
         $images .= dirname( "..".$file )."/full/".basename($file). " ";
+        $image_array[] = basename($file);
     } elseif ( file_exists( "..".$file ) ) {
         $image .= "..".$file. " ";
+        $image_array[] = basename($file);
     }
 }
 if( $images == "" ) {
@@ -122,8 +125,91 @@ echo json_encode( $response );
 $conn->disconnect ();
 exit ();
 
-//TODO
 // send email
+$user = new user ();
+$IP = $_SERVER ['REMOTE_ADDR'];
+$geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
+$browser = get_browser ( null, true );
+$from = "Actions <actions@saperstonestudios.com>";
+$to = "Actions <actions@saperstonestudios.com>";
+// $to = "Mr Max <msaperst@gmail.com>"; // PUT YOUR EMAIL ADDRESS HERE
+$subject = "Downloads";
+
+$html = "<html><body>";
+$html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
+$html .= "<p>Downloads have been made from the <a href='".$_SERVER ['HTTP_REFERER']."' target='_blank'>".$album_info ['name']."</a> album</p>";
+$html .= "<p><ul><li>".implode("</li><li>",$image_array)."<li></ul></p><br/>";
+$html .= "<p><strong>Name</strong>: ".$user->getName()."<br/>";
+$html .= "<strong>Email</strong>: <a href='mailto:".$user->getEmail()."'>".$user->getEmail()."</a><br/>";
+if (! isset ( $geo_info->city )) {
+    $html .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
+} else {
+    if (isset ( $geo_info->postal )) {
+        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
+    } else {
+        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
+    }
+    $html .= "<strong>Organization</strong>: " . $geo_info->org . "<br/>";
+    $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
+}
+if (isset ( $_POST ['position'] ) && isset ( $location )) {
+    $html .= "<strong>Location</strong>: $location (estimate based on geolocation $position)<br/>";
+}
+$html .= "<strong>Browser</strong>: " . $browser ['parent'] . "<br/>";
+$html .= "<strong>Resoluation</strong>: $resolution<br/>";
+$html .= "<strong>OS</strong>: " . $browser ['platform'] . "<br/>";
+// $html .= "<strong>IP</strong>: $IP<br/>";
+$html .= "<strong>Full UA</strong>: " . $_SERVER ['HTTP_USER_AGENT'] ."</p>";
+$html .= "</body></html>";
+
+$html = "<html><body>";
+$html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
+$text = "This is an automatically generated message from Saperstone Studios\n\n";
+$html .= "<p>Downloads have been made from the <a href='".$_SERVER ['HTTP_REFERER']."' target='_blank'>".$album_info ['name']."</a> album</p>";
+$text .= "Downloads have been made from the ".$album_info ['name']." album at ".$_SERVER ['HTTP_REFERER'] . "\n\n";
+$html .= "<p><ul><li>".implode("</li><li>",$image_array)."<li></ul></p><br/>";
+$text .= implode("\n",$image_array)."\n\n";
+$html .= "<p><strong>Name</strong>: ".$user->getName()."<br/>";
+$text .= "Name: ".$user->getName()."\n";
+$html .= "<strong>Email</strong>: <a href='mailto:".$user->getEmail()."'>".$user->getEmail()."</a><br/>";
+$text .= "Email: ".$user->getEmail()."\n";
+if (! isset ( $geo_info->city )) {
+    $html .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
+    $text .= "Location: unknown (use $IP to manually lookup)\n";
+} else {
+    if (isset ( $geo_info->postal )) {
+        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
+        $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
+    } else {
+        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
+        $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
+    }
+    $html .= "<strong>Organization</strong>: " . $geo_info->org . "<br/>";
+    $text .= "Organization: " . $geo_info->org . "\n";
+    $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
+    $text .= "Hostname: " . $geo_info->hostname . "\n";
+}
+if (isset ( $_POST ['position'] ) && isset ( $location )) {
+    $html .= "<strong>Location</strong>: $location (estimate based on geolocation $position)<br/>";
+    $text .= "Location: $location (estimate based on geolocation $position)\n";
+}
+$html .= "<strong>Browser</strong>: " . $browser ['parent'] . "<br/>";
+$text .= "Browser: " . $browser ['parent'] . "\n";
+$html .= "<strong>OS</strong>: " . $browser ['platform'] . "<br/>";
+$text .= "OS: " . $browser ['platform'] . "\n";
+$html .= "<strong>Full UA</strong>: " . $_SERVER ['HTTP_USER_AGENT'] ."</p>";
+$text .= "Full UA: " . $_SERVER ['HTTP_USER_AGENT'];
+$html .= "</body></html>";
+
+
+require_once "Mail.php";
+require_once "Mail/mime.php";
+$crlf = "\n";
+$mime = new Mail_mime ( $crlf );
+$mime->setTXTBody ( $text );
+$mime->setHTMLBody ( $html );
+$body = $mime->get ();
+require ('../php/email.php');
 
 // our function to see if an array of files contains the expected file
 function doesArrayContainFile($array, $file) {
