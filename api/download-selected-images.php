@@ -130,14 +130,14 @@ require_once ($path = '../plugins/Browser.php-master/lib/Browser.php');
 $browser = new Browser ();
 $from = "Actions <actions@saperstonestudios.com>";
 $to = "Actions <actions@saperstonestudios.com>";
-$subject = "Downloads";
+$subject = "Someone Downloaded Something";
 
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
 $text = "This is an automatically generated message from Saperstone Studios\n\n";
 $html .= "<p>Downloads have been made from the <a href='" . $_SERVER ['HTTP_REFERER'] . "' target='_blank'>" . $album_info ['name'] . "</a> album</p>";
 $text .= "Downloads have been made from the " . $album_info ['name'] . " album at " . $_SERVER ['HTTP_REFERER'] . "\n\n";
-$html .= "<p><ul><li>" . implode ( "</li><li>", $image_array ) . "<li></ul></p><br/>";
+$html .= "<p><ul><li>" . implode ( "</li><li>", $image_array ) . "</li></ul></p><br/>";
 $text .= implode ( "\n", $image_array ) . "\n\n";
 $html .= "<p><strong>Name</strong>: " . $user->getName () . "<br/>";
 $text .= "Name: " . $user->getName () . "\n";

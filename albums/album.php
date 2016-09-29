@@ -545,6 +545,53 @@ footer {
         </div>
     </div>
     <!-- End of Modal -->
+    
+    <!-- Submit Selections Modal -->
+    <div id="submit" album-id="<?php echo $_GET ['album']; ?>" what=""
+        class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Submit My Selection</h4>
+                </div>
+                <div class="modal-body">
+                	<p><em class="fa fa-exclamation-triangle"></em> Have you finished making your selections?</p>
+                	<p>Submit your selections to us, along with any comments you may have. We will receive your request and start processing your order as soon as possible.</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="sr-only" for="submit-name">Name</label> <input
+                                id="submit-name" type="text" placeholder="Name"
+                                class="form-control" value="<?php echo $user->getName(); ?>"
+                                required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="sr-only" for="submit-email">Email</label> <input
+                                id="submit-email" type="email" placeholder="Email"
+                                class="form-control" value="<?php echo $user->getEmail(); ?>"
+                                required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="sr-only" for="submit-comment">Comment</label> <textarea
+                                id="submit-comment" type="text" placeholder="Comment"
+                                class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bootstrap-dialog">
+                    <button id="submit-send" type="button"
+                        class="btn btn-default btn-success">
+                        <em class="fa fa-paper-plane"></em> Submit Selection
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Modal -->
 
     <!-- Actions For the Page -->
     <nav class="navbar navbar-actions navbar-fixed-bottom breadcrumb">
