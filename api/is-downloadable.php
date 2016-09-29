@@ -81,7 +81,21 @@ if ($downloadable ['user']) {
     $conn->disconnect ();
     exit ();
 }
-echo 0;
+$sql = "SELECT * FROM `download_rights` WHERE `user` = '$user' AND `album` = '$album' AND `image` = '*';";
+$downloadable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+if ($downloadable ['user']) {
+    echo 1;
+    $conn->disconnect ();
+    exit ();
+}
+$sql = "SELECT * FROM `download_rights` WHERE `user` = '$user' AND `album` = '*';";
+$downloadable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+if ($downloadable ['user']) {
+    echo 1;
+    $conn->disconnect ();
+    exit ();
+}
 
+echo 0;
 $conn->disconnect ();
 exit ();

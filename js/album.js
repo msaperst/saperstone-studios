@@ -82,7 +82,37 @@ $(document).ready(function() {
         interval : false,
         pause : "false",
     });
+    
+    // download an image
+    $('#downloadable-image-btn').click(function() {
+        var img = $('#album-carousel div.active div');
+        downloadImages(img.attr('album-id'),img.attr('image-id'));
+    });
+    // share an image
+    $('#shareable-image-btn').click(function() {
+        var img = $('#album-carousel div.active div');
+        shareImages(img.attr('album-id'),img.attr('image-id'));
+    });
+    
+    // download favorite images
+    $('#downloadable-favorites-btn').click(function() {
+    	downloadImages($('#favorites').attr('album-id'),'favorites');
+    });
+    // share favorite images
+    $('#shareable-favorites-btn').click(function() {
+    	shareImages($('#favorites').attr('album-id'),'favorites');
+    });
+    
+    // download all images
+    $('#downloadable-all-btn').click(function() {
+    	downloadImages($('#favorites').attr('album-id'),'all');
+    });
+    // share all images
+    $('#shareable-all-btn').click(function() {
+    	shareImages($('#favorites').attr('album-id'),'all');
+    });
 
+    // set a favorite
     $('#set-favorite-image-btn').click(function() {
         var img = $('#album-carousel div.active div');
         // send our update
@@ -103,6 +133,7 @@ $(document).ready(function() {
             setFavorite();
         });
     });
+    // unset a favorite
     $('#unset-favorite-image-btn').click(function() {
         var img = $('#album-carousel div.active div');
         // send our update
@@ -124,6 +155,7 @@ $(document).ready(function() {
         });
     });
 
+    // show our favorites
     $('#favorite-btn').click(function() {
         $('#favorites-list').empty();
         $('#favorites').modal();
@@ -217,7 +249,6 @@ $(document).ready(function() {
             }
         });
     });
-
     // show our cart review
     $('#cart-btn,#reviewOrder').click(function() {
         $('#cart-image').modal('hide');
@@ -292,36 +323,16 @@ $(document).ready(function() {
             });
         }, "json");
     });
-
-    $('#cart-shipping input').bind("change keyup input", function() {
-        validateCartInput($(this));
-    });
-
-    // on start of slide, disable all buttons
-    $('#album-carousel').on('slide.bs.carousel', function() {
-        $('#album .btn-action').each(function() {
-            $(this).prop("disabled", true);
-        });
-    });
-    // once slide completes, check for a favorite, which will
-    // re-enable
-    $('#album-carousel').on('slid.bs.carousel', function() {
-        getDetails();
-    });
-    
+    // cart purchase options
     $('#cart-submit').click(function(){
     	$(this).prop("disabled", true);
     	$(this).next().prop("disabled", true);
         $('em', this).removeClass('fa fa-credit-card').addClass('glyphicon glyphicon-asterisk icon-spin');
-        $('#cart-order-message').remove();
-    	var message = $("<div id='cart-order-message'></div>");
-    	message.css('padding', '20px');
-    	message.html("Thank you for submitting your request. Your request is being processed, " +
+    	$('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for submitting your request. Your request is being processed, " +
     			"and you should be forwarded to paypal's payment screen within a few seconds. " +
     			"If you are not, please <a class='gen' target='_blank' " +
     			"href='mailto:billingerror@saperstonestudios.com'>contact us</a> and we'll try to resolve " +
-    			"your issue as soon as we can.");
-    	$('#cart .modal-body').append(message);
+    			"your issue as soon as we can.</div>");
 
     	var coupon;
     	if( $('#cart-coupon').val() != "" ) {
@@ -354,26 +365,41 @@ $(document).ready(function() {
         	data = jQuery.parseJSON(data);
         	if( data.hasOwnProperty('response') && data.response.Ack === "Success" ) {
     			var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
-    			$('#cart-order-message').html("Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='" + link + "'>this link</a>.");
+    			$('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='" + link + "'>this link</a></div>.");
     			window.location = link;
     		} else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.Errors.LongMessage === "This transaction cannot be processed. The amount to be charged is zero." ) {
-    			$('#cart-order-message').html("Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.");
+    			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.</div>");
     			//TODO - do stuff
     		} else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.hasOwnProperty('Errors') ) {
-    			$('#cart-order-message').html("There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.");
+    			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
     		} else if ( data.hasOwnProperty('error') ) {
-    			$('#cart-order-message').html("There was a problem with submitting your order.<br/>" + data.error + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.");
+    			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.error + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
     		} else {
-    			$('#cart-order-message').html("There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.");
+    			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
     		}
         }).fail(function(){
-			$('#cart-order-message').html("There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.");
+        	$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }).always(function(){
         	$('#cart-submit').prop("disabled", false);
         	$('#cart-submit').next().prop("disabled", false);
             $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
-            setTimeout(function(){ $('#cart-order-message').remove(); }, 15000);
         });
+    });
+
+    $('#cart-shipping input').bind("change keyup input", function() {
+        validateCartInput($(this));
+    });
+
+    // on start of slide, disable all buttons
+    $('#album-carousel').on('slide.bs.carousel', function() {
+        $('#album .btn-action').each(function() {
+            $(this).prop("disabled", true);
+        });
+    });
+    // once slide completes, check for a favorite, which will
+    // re-enable
+    $('#album-carousel').on('slid.bs.carousel', function() {
+        getDetails();
     });
 });
 
@@ -556,4 +582,66 @@ function removeFromCart(removeIcon) {
         });
     });
     return removeIcon;
+}
+
+function downloadImages(album,what) {
+    BootstrapDialog.show({
+        draggable : true,
+        title : 'Terms Of Service',
+        message : '<em class="fa fa-exclamation-triangle"> By downloading the selected files, you are agreeing to the right to copy, display, reproduce, enlarge and distribute said photographs taken by the Photographer in connection with the Services and in connection with the publication known as Saperstone Studios for personal use, and any reprints or reproductions, or excerpts thereof; all other rights are expressly reserved by and to Photographer.<br/><br/>While usage in accordance with above policies of selected files on public social media sites and personal websites for non-profit purposes is acceptable, any use of selected files in any publication, display, exhibit or paid medium are not permitted without express consent from Photographer.<br/><br/>Please note that only images you have expressly purchased rights to will be downloaded, even if additional images were selected for this download.',
+        buttons : [ {
+            icon : 'glyphicon glyphicon-download-alt',
+            label : ' Download',
+            cssClass : 'btn-success',
+            action : function(dialogInItself) {
+                var $button = this; // 'this' here is a jQuery object that
+                                    // wrapping the <button> DOM element.
+                var modal = $button.closest('.modal-content');
+                $button.spin();
+                dialogInItself.enableButtons(false);
+                dialogInItself.setClosable(false);
+                // send our update
+                $.post("/api/download-selected-images.php", {
+                    album : album,
+                    what : what
+                }, "json" ).done(function(data) {
+                	data = jQuery.parseJSON(data);
+                	console.log( data );
+                	if( data.hasOwnProperty('file') ) {
+                		window.location = data.file;
+                		dialogInItself.close();
+                	} else if ( data.hasOwnProperty('err') ) {
+                		modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.err + '</div>');
+                	} else {
+                		modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                	}
+                }).fail(function(){
+                	modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                }).always(function(){
+                	$button.stopSpin();
+                	dialogInItself.enableButtons(true);
+                    dialogInItself.setClosable(true);
+                });
+            }
+        }, {
+            label : 'Close',
+            action : function(dialogInItself) {
+                dialogInItself.close();
+            }
+        } ]
+    });
+}
+
+function shareImages(album,what) {
+    BootstrapDialog.show({
+        draggable : true,
+        title : '<em class="fa fa-frown-o"></em> Sorry',
+        message : '<em class="fa fa-exclamation-triangle"> This functionality isn\'t available yet. Please check back soon.',
+        buttons : [ {
+            label : 'Close',
+            action : function(dialogInItself) {
+                dialogInItself.close();
+            }
+        } ]
+    });
 }

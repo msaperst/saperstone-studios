@@ -232,6 +232,10 @@ footer {
                                 <em class="fa fa-share"></em> Share
                             </button>
                         </div>
+                        <button id="submit-image-btn" type="button"
+                            class="btn btn-default btn-action btn-success">
+                            <em class="fa fa-paper-plane"></em> Submit
+                        </button>
                         <button id="cart-image-btn" type="button"
                             class="btn btn-default btn-warning btn-action">
                             <em class="fa fa-shopping-cart"></em> Add to Cart
@@ -307,19 +311,36 @@ footer {
                         <?php
                         } else {
                             ?>
-                        <button type="button"
-                            class="btn btn-default btn-action">
-                            <em class="fa fa-download"></em> Download Images
+                        <button id="downloadable-favorites-btn" type="button"
+                            class="btn btn-default btn-action btn-success">
+                            <em class="fa fa-download"></em> Download Favorites
                         </button>
-                        <button type="button" class="btn btn-default btn-action">
-                            <em class="fa fa-share"></em> Share Images
+<!--                         <div id="not-downloadable-favorites-btn" -->
+<!--                             class="tooltip-wrapper disabled" data-toggle="tooltip" -->
+<!--                             data-placement="top" -->
+<!--                             title="Purchase full rights to these images in order to download them."> -->
+<!--                             <button type="button" class="btn btn-default btn-action"> -->
+<!--                                 <em class="fa fa-download"></em> Download Favorites -->
+<!--                             </button> -->
+<!--                         </div> -->
+                        <button id="shareable-favorites-btn" type="button" 
+                        	class="btn btn-default btn-action btn-success">
+                            <em class="fa fa-share"></em> Share Favorites
                         </button>
+<!--                         <div id="not-downloadable-favorites-btn" -->
+<!--                             class="tooltip-wrapper disabled" data-toggle="tooltip" -->
+<!--                             data-placement="top" -->
+<!--                             title="Purchase social media rights to these images in order to share them on social media."> -->
+<!--                             <button type="button" class="btn btn-default btn-action"> -->
+<!--                                 <em class="fa fa-share"></em> Share Favorites -->
+<!--                             </button> -->
+<!--                         </div> -->
                         <?php
                         }
                         ?>
-                        <button type="button"
+                        <button id="submit-favorites-btn" type="button"
                             class="btn btn-default btn-action btn-success">
-                            <em class="fa fa-paper-plane"></em> Submit Images
+                            <em class="fa fa-paper-plane"></em> Submit Favorites
                         </button>
                     </span>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -556,14 +577,13 @@ footer {
             <?php
             } else {
                 ?>
-            <span class="text-center"><button type="button"
-                    class="btn btn-default">
-                    <em class="fa fa-credit-card"></em>/<em class="fa fa-download"></em>
-                    Purcahse/Download All
-                </button></span> <span class="text-center"><button type="button"
-                    class="btn btn-default">
-                    <em class="fa fa-credit-card"></em>/<em class="fa fa-share"></em>
-                    Purcahse/Share All
+            <span class="text-center"><button id="downloadable-all-btn" type="button"
+                    class="btn btn-default btn-action btn-success">
+                    <em class="fa fa-download"></em> Download All
+                </button></span>
+            <span class="text-center"><button id="shareable-all-btn" type="button"
+                    class="btn btn-default btn-action btn-success">
+                    <em class="fa fa-share"></em> Share All
                 </button></span>
             <?php
                 $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '" . $user->getId () . "';";

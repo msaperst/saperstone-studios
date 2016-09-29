@@ -137,8 +137,8 @@ $conn->disconnect ();
 // finish the order details with the tax and item total
 $order_text .= "\t\tTax\t\t\t\t\t\t\t\t\t$" . number_format ( $taxTotalValue, 2 ) . "\n";
 $order_text .= "\t\t\t\t\t\t\tTotal Amount: $" . number_format ( $itemTotalValue, 2 ) . "\n";
-$order_HTML .= "<tr><td></td><td></td><td></td><td></td><td></td><td></td><td>Tax:</td><td>$" . number_format ( $taxTotalValue, 2 ) . "</td></tr>";
-$order_HTML .= "<tr><td></td><td></td><td></td><td></td><td></td><td></td><th>Total:</th><td><b>$" . number_format ( $itemTotalValue, 2 ) . "</b></td></tr></table>";
+$order_HTML .= "<tr><td></td><td></td><td></td><td></td><td></td><td>Tax:</td><td>$" . number_format ( $taxTotalValue, 2 ) . "</td></tr>";
+$order_HTML .= "<tr><td></td><td></td><td></td><td></td><td></td><th>Total:</th><td><b>$" . number_format ( $itemTotalValue, 2 ) . "</b></td></tr></table>";
 
 // group our item orders based on product ID to simplify PayPal invoice
 // TODO
