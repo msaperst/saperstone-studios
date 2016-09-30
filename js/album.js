@@ -329,7 +329,7 @@ function showFavorites() {
                     image : $(this).attr('image-id')
                 }).done(function(data) {
                     // update our count on the page
-                    if (Math.round(data) == data && data > 0) {
+                    if (parseInt(data) > 0) {
                         $('#favorite-count').html(data).css({
                             'padding-left' : '10px'
                         });
