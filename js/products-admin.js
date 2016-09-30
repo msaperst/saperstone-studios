@@ -158,7 +158,7 @@ function addSize() {
                         $('em', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
                         button.prop("disabled", true);
                         $
-                                .post("/api/add-product-size.php", {
+                                .post("/api/create-product-size.php", {
                                     type : row.closest('div').attr('product-type'),
                                     size : $('.product-size input', row).val(),
                                     cost : $('.product-cost input', row).val(),
@@ -319,7 +319,7 @@ function addProduct() {
                                     dialogInItself.enableButtons(false);
                                     dialogInItself.setClosable(false);
                                     // send our update
-                                    $.post("/api/add-product.php", {
+                                    $.post("/api/create-product.php", {
                                         category : header.text().toLowerCase(),
                                         name : $('#product-name').val(),
                                     }).done(
@@ -363,7 +363,7 @@ function addOption() {
         var product_type = $(this).closest('.bootstrap-dialog').attr('product-type');
         $('em', button).removeClass('fa-save').addClass('fa-asterisk icon-spin');
         button.prop("disabled", true);
-        $.post("/api/add-product-option.php", {
+        $.post("/api/create-product-option.php", {
             type : product_type,
             option : input.val()
         }).done(function(data) {

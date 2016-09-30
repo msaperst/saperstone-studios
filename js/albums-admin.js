@@ -74,7 +74,7 @@ $(document).ready(
                                     dialogItself.enableButtons(false);
                                     dialogItself.setClosable(false);
                                     // send our update
-                                    $.post("/api/add-album.php", {
+                                    $.post("/api/create-album.php", {
                                         name : $('#new-album-name').val(),
                                         description : $('#new-album-description').val(),
                                         date : $('#new-album-date').val()

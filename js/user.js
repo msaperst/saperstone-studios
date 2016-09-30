@@ -503,7 +503,7 @@ function editUser(data) {
                 var modal = $button.closest('.modal-content');
                 $button.spin();
                 disableDialogButtons(dialogItself);
-                $.post("/api/add-user.php", {
+                $.post("/api/create-user.php", {
                     username : $('#user-username').val(),
                     firstName : $('#user-first-name').val(),
                     lastName : $('#user-last-name').val(),
