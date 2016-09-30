@@ -643,8 +643,7 @@ footer {
             <?php
                 $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '" . $user->getId () . "';";
                 $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-                $total = $result ["total"];
-                if ($total > 0) {
+                if ($result ['total'] > 0) {
                     ?>
             <span class="text-center"><button id="cart-btn"
                     type="button" class="btn btn-default btn-warning">
@@ -666,7 +665,7 @@ footer {
             <?php
             $sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId () . "' AND `album` = '" . $album . "';";
             $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-            if ($total > 0) {
+            if ($result ['total'] > 0) {
                 ?>
             <span class="text-center"><button id="favorite-btn"
                     type="button" class="btn btn-default btn-success">
