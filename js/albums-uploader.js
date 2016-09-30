@@ -51,9 +51,7 @@ $(document).ready(
                             message : function() {
                                 var inputs = '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control"/>' + 
                                         '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control"/>' + 
-                                        '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>' + 
-                                        '<div id="new-album-error" class="error"></div>' + 
-                                        '<div id="new-album-message" class="success"></div>';
+                                        '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>';
                                 return inputs;
                             },
                             buttons : [ {
@@ -62,6 +60,7 @@ $(document).ready(
                                 cssClass : 'btn-success',
                                 action : function(dialogItself) {
                                     var $button = this;
+                                    var modal = $button.closest('.modal-content');
                                     $button.spin();
                                     dialogItself.enableButtons(false);
                                     dialogItself.setClosable(false);
@@ -86,13 +85,15 @@ $(document).ready(
                                             dialogItself.close();
                                             editAlbum(data);
                                         } else if (data === '0') {
-                                            $('#new-album-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
+                                        	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                                         } else {
-                                            $('#new-album-error').html(data);
+                                        	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                                         }
                                         $button.stopSpin();
                                         dialogItself.enableButtons(true);
                                         dialogItself.setClosable(true);
+                                    }).fail(function(){
+                                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                                     });
                                 }
                             }, {
@@ -124,8 +125,7 @@ function editAlbum(id) {
                 var inputs = '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' +
                         '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' +
                         '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' +
-                        '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div>' + '</div>' +
-                        '<div id="new-album-error" class="error"></div>' + '<div id="new-album-message" class="success"></div>';
+                        '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div></div>';
                 return inputs;
             },
             buttons : [ {
@@ -133,17 +133,7 @@ function editAlbum(id) {
                 label : ' Delete Album',
                 cssClass : 'btn-danger',
                 action : function(dialogItself) {
-                    var $button = this; // 'this'
-                    // here
-                    // is a
-                    // jQuery
-                    // object
-                    // that
-                    // wrapping
-                    // the
-                    // <button>
-                    // DOM
-                    // element.
+                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
                     $button.spin();
                     disableDialogButtons(dialogItself);
                     // send our update
@@ -156,22 +146,11 @@ function editAlbum(id) {
                             label : ' Delete',
                             cssClass : 'btn-danger',
                             action : function(dialogInItself) {
-                                var $button = this; // 'this'
-                                // here
-                                // is a
-                                // jQuery
-                                // object
-                                // that
-                                // wrapping
-                                // the
-                                // <button>
-                                // DOM
-                                // element.
+                                var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
                                 $button.spin();
                                 dialogInItself.enableButtons(false);
                                 dialogInItself.setClosable(false);
-                                // send our
-                                // update
+                                // send our update
                                 $.post("/api/delete-album.php", {
                                     id : id,
                                 }).done(function() {
@@ -195,17 +174,7 @@ function editAlbum(id) {
                 label : ' Make Thumbnails',
                 cssClass : 'btn-warning',
                 action : function(dialogItself) {
-                    var $button = this; // 'this'
-                    // here
-                    // is a
-                    // jQuery
-                    // object
-                    // that
-                    // wrapping
-                    // the
-                    // <button>
-                    // DOM
-                    // element.
+                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
                     $button.spin();
                     disableDialogButtons(dialogItself);
                     // send our update
@@ -239,17 +208,7 @@ function editAlbum(id) {
                 label : ' Save Details',
                 cssClass : 'btn-success',
                 action : function(dialogItself) {
-                    var $button = this; // 'this'
-                    // here
-                    // is a
-                    // jQuery
-                    // object
-                    // that
-                    // wrapping
-                    // the
-                    // <button>
-                    // DOM
-                    // element.
+                	var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
                     $button.spin();
                     disableDialogButtons(dialogItself);
                     $.post("/api/update-album.php", {

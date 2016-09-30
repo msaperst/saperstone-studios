@@ -204,7 +204,6 @@ function editUser(data) {
                 }
             }
             inputs.append(activeDiv.append(activeInputDiv.append(activeInputDivDiv.append(activeLabel.append(activeInput).append(" Active User")))));
-            inputs.append('<div id="user-error" class="error"></div>' + '<div id="user-message" class="success"></div>');
 
             return inputs;
         },
@@ -274,6 +273,7 @@ function editUser(data) {
                             var $buttonIn = this; // 'this' here is a jQuery
                                                     // object that wrapping the
                                                     // <button> DOM element.
+                            var modal = $button.closest('.modal-content');
                             $buttonIn.spin();
                             dialogInItself.enableButtons(false);
                             dialogInItself.setClosable(false);
@@ -286,11 +286,15 @@ function editUser(data) {
                                 user : data.id,
                                 albums : albums
                             }).done(function(data) {
-                                $('#user-error').html(data);
+                            	if( data !== "" ) {
+                            		modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                            	}
                                 $buttonIn.stopSpin();
                                 $button.stopSpin();
                                 dialogInItself.close();
                                 enableDialogButtons(dialogItself);
+                            }).fail(function(){
+                            	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user's albums.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                             });
                         }
                     }, {
@@ -347,6 +351,7 @@ function editUser(data) {
                             var $button = this; // 'this' here is a jQuery
                                                 // object that wrapping the
                                                 // <button> DOM element.
+                            var modal = $button.closest('.modal-content');
                             $button.spin();
                             dialogInItself.enableButtons(false);
                             dialogInItself.setClosable(false);
@@ -354,14 +359,18 @@ function editUser(data) {
                             $.post("/api/delete-user.php", {
                                 id : data.id,
                             }).done(function(data) {
-                                $('#user-error').html(data);
                                 if (data === "") {
                                     user_table.ajax.reload(null, false);
                                     dialogItself.close();
+                                } else {
+                                	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");                                	
                                 }
-                                $button.stopSpin();
-                                dialogInItself.close();
-                                enableDialogButtons(dialogItself);
+                            }).fail(function(){
+                            	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while deleting your user.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                            }).always(function(){
+                            	$button.stopSpin();
+                            	dialogInItself.close();
+                            	enableDialogButtons(dialogItself);
                             });
                         }
                     }, {
@@ -415,6 +424,7 @@ function editUser(data) {
                             var $buttonIn = this; // 'this' here is a jQuery
                                                     // object that wrapping the
                                                     // <button> DOM element.
+                            var modal = $buttonIn.closest('.modal-content');
                             $buttonIn.spin();
                             dialogInItself.enableButtons(false);
                             dialogInItself.setClosable(false);
@@ -424,11 +434,18 @@ function editUser(data) {
                                 password : $('#user-password').val(),
                                 passwordConfirm : $('#user-password-confirm').val(),
                             }).done(function(data) {
-                                $('#user-error').html(data);
-                                $buttonIn.stopSpin();
-                                $button.stopSpin();
-                                dialogInItself.close();
-                                enableDialogButtons(dialogItself);
+                                if (data === "") {
+                                    $button.stopSpin();
+                                    dialogInItself.close();
+                                    enableDialogButtons(dialogItself);
+                                } else {
+                                	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");                                	
+                                }
+                            }).fail(function(){
+                            	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user's password.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                            }).always(function(){
+                            	$buttonIn.stopSpin();
+                                enableDialogButtons(dialogInItself);                            	
                             });
                         }
                     }, {
@@ -449,6 +466,7 @@ function editUser(data) {
             action : function(dialogItself) {
                 var $button = this; // 'this' here is a jQuery object that
                                     // wrapping the <button> DOM element.
+                var modal = $button.closest('.modal-content');
                 $button.spin();
                 disableDialogButtons(dialogItself);
                 $.post("/api/update-user.php", {
@@ -460,12 +478,17 @@ function editUser(data) {
                     role : $('#user-role').val(),
                     active : $('#user-active').is(':checked') ? 1 : 0,
                 }).done(function(data) {
-                    $('#user-error').html(data);
                     if (data === "") {
                         dialogItself.close();
                         user_table.ajax.reload(null, false);
+                    } else {
+                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
-                    $button.stopSpin();
+                    
+                }).fail(function(){
+                	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                }).always(function(){
+                	$button.stopSpin();
                     enableDialogButtons(dialogItself);
                 });
             }
@@ -477,6 +500,7 @@ function editUser(data) {
             action : function(dialogItself) {
                 var $button = this; // 'this' here is a jQuery object that
                                     // wrapping the <button> DOM element.
+                var modal = $button.closest('.modal-content');
                 $button.spin();
                 disableDialogButtons(dialogItself);
                 $.post("/api/add-user.php", {
@@ -497,11 +521,14 @@ function editUser(data) {
                             editUser(data);
                         }, "json");
                     } else if (data === '0') {
-                        $('#user-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
+                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while adding your user.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     } else {
-                        $('#user-error').html(data);
+                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
-                    $button.stopSpin();
+                }).fail(function(){
+                	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                }).always(function(){
+                	$button.stopSpin();
                     enableDialogButtons(dialogItself);
                 });
             }

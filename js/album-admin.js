@@ -14,6 +14,7 @@ $(document).ready(function() {
                 action : function(dialogInItself) {
                     var $button = this; // 'this' here is a jQuery object that
                                         // wrapping the <button> DOM element.
+                    var modal = $button.closest('.modal-content');
                     $button.spin();
                     dialogInItself.enableButtons(false);
                     dialogInItself.setClosable(false);
@@ -28,6 +29,8 @@ $(document).ready(function() {
                         // cleanup the dom
                         $('.gallery img[alt="' + img.attr('alt') + '"]').parent().remove();
                         img.parent().remove();
+                    }).fail(function(){
+                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while deleting your image.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     });
                 }
             }, {

@@ -75,8 +75,6 @@
             <h2>Login to Your Account</h2><br>
             <input id="login-user" type="text" name="user" placeholder="Username" />
             <input id="login-pass" type="password" name="pass" placeholder="Password" />
-            <div id="login-error" class="error"></div>
-            <div id="login-message" class="success"></div>
             <span>
                 <div class="checkbox">
                     <label><input type="checkbox"> Remember me</label>
@@ -97,8 +95,6 @@
             <h2>Forgotten Credentials</h2><br>
             <input id="forgot-password-email" type="email" name="email" placeholder="Email" />
             <div id="forgot-password-instructions">A reset code will be sent to your email address. If you already have one, <a id="forgot-password-prev-code" href="javascript:void(0);">click here</a></div>
-            <div id="forgot-password-error" class="error"></div>
-            <div id="forgot-password-message" class="success"></div>
             <input id="forgot-password-code" type="text" name="code" placeholder="Reset Code" style="display:none;" />
             <input id="forgot-password-new-password" type="password" name="pass" placeholder="Password" style="display:none;" />
             <input id="forgot-password-new-password-confirm" type="password" name="pass-conf" placeholder="Re-type Password" style="display:none;" />
