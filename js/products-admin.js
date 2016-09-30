@@ -168,7 +168,7 @@ function addSize() {
                                         function(data) {
                                             $('em', button).addClass('fa-save').removeClass('fa-asterisk icon-spin');
                                             button.prop("disabled", false);
-                                            if (Math.round(data) == data && data !== '0') {
+                                            if ($.isNumeric(data) && data !== '0') {
                                                 var tr = $('<tr>');
 
                                                 var buttons = $('<td><button type="button" class="btn btn-xs btn-warning edit-size-button"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-danger delete-size-button"><i class="fa fa-trash-o"></i></button><button type="button" class="btn btn-xs btn-success save-size-button hidden"><i class="fa fa-save"></i></button> <button type="button" class="btn btn-xs btn-warning cancel-size-button hidden"><i class="fa fa-ban"></i></button></td>');
@@ -324,7 +324,7 @@ function addProduct() {
                                         name : $('#product-name').val(),
                                     }).done(
                                             function(data) {
-                                                if (Math.round(data) == data && data !== '0') {
+                                                if ($.isNumeric(data) && data !== '0') {
 
                                                     header.after('<div class="col-md-4 col-sm-6 bootstrap-dialog" product-type="' + data + '">' +
                                                             '<button type="button" class="btn btn-xs btn-warning edit-product-button"><i class="fa fa-pencil-square-o"></i></button> ' +

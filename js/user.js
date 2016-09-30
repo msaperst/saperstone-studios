@@ -199,7 +199,7 @@ function editUser(data) {
             activeInput.attr('type', 'checkbox');
             activeInput.prop('checked', true);
             if (data !== null) {
-                if (data.active != "1") {
+                if (data.active !== "1") {
                     activeInput.prop('checked', false);
                 }
             }
@@ -487,7 +487,7 @@ function editUser(data) {
                     role : $('#user-role').val(),
                     active : $('#user-active').is(':checked') ? 1 : 0,
                 }).done(function(data) {
-                    if (Math.round(data) == data && data !== '0') {
+                    if ($.isNumeric(data) && data !== '0') {
                         user_table.ajax.reload(null, false);
                         dialogItself.close();
                         // reload the modal
@@ -513,7 +513,7 @@ function editUser(data) {
             }
         } ],
         onshow : function(dialogItself) {
-            if (data !== null && data.role == "admin") {
+            if (data !== null && data.role === "admin") {
                 dialogItself.$modalFooter.find('#user-albums-btn').remove();
                 dialogItself.$modalFooter.find('#user-save-btn').remove();
             } else if (data !== null) {

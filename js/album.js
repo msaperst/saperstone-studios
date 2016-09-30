@@ -187,7 +187,7 @@ function getDetails() {
         album : img.attr('album-id'),
         image : img.attr('image-id')
     }).done(function(data) {
-        if (Math.round(data) == data && data == 1) {
+        if (data === '1') {
             setFavorite();
         } else {
             unsetFavorite();
@@ -196,7 +196,7 @@ function getDetails() {
             album : img.attr('album-id'),
             image : img.attr('image-id')
         }).done(function(data) {
-            if (Math.round(data) == data && data == 1) {
+            if (data === '1') {
                 setDownloadable();
             } else {
                 unsetDownloadable();
@@ -205,7 +205,7 @@ function getDetails() {
                 album : img.attr('album-id'),
                 image : img.attr('image-id')
             }).done(function(data) {
-                if (Math.round(data) == data && data == 1) {
+                if (data === '1') {
                     setShareable();
                 } else {
                     unsetShareable();
@@ -280,7 +280,7 @@ function setFavoriteImage() {
         image : img.attr('image-id')
     }).done(function(data) {
         // update our count on the page
-        if (Math.round(data) == data && data > 0) {
+        if (parseInt(data) > 0) {
             $('#favorite-count').html(data).css({
                 'padding-left' : '10px'
             });
@@ -301,7 +301,7 @@ function unsetFavoriteImage() {
         image : img.attr('image-id')
     }).done(function(data) {
         // update our count on the page
-        if (Math.round(data) == data && data > 0) {
+        if (parseInt(data) > 0) {
             $('#favorite-count').html(data).css({
                 'padding-left' : '10px'
             });
@@ -373,7 +373,7 @@ function updateCart() {
     var row = $('.product-count input').closest('tr');
     var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
     $('.product-total', row).html("$" + price * $('.product-count input').val());
-    if ($('.product-total', row).html() == "$0") {
+    if ($('.product-total', row).html() === "$0") {
         $('.product-total', row).html("--");
     }
     // update our database
@@ -391,7 +391,7 @@ function updateCart() {
         products : products
     }).done(function(data) {
         // update our count on the page
-        if (Math.round(data) == data && data > 0) {
+        if (parseInt(data) > 0) {
             $('#cart-count').html(data).css({
                 'padding-left' : '10px'
             });
@@ -550,7 +550,7 @@ function removeFromCart(removeIcon) {
             images : cart
         }).done(function(data) {
             // update our count on the page
-            if (Math.round(data) == data && data > 0) {
+            if (parseInt(data) > 0) {
                 $('#cart-count').html(data).css({
                     'padding-left' : '10px'
                 });
@@ -663,7 +663,7 @@ function submitCart() {
 			"your issue as soon as we can.</div>");
 	
 	var coupon;
-	if( $('#cart-coupon').val() != "" ) {
+	if( $('#cart-coupon').val() !== "" ) {
 		coupon = md5($('#cart-coupon').val());
 	}
 	var order = [];

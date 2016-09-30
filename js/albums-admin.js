@@ -80,7 +80,7 @@ $(document).ready(
                                         description : $('#new-album-description').val(),
                                         date : $('#new-album-date').val()
                                     }).done(function(data) {
-                                        if (Math.round(data) == data && data !== '0') {
+                                        if ($.isNumeric(data) && data !== '0') {
                                             var table = $('#albums').DataTable();
                                             table.row.add({
                                                 "id" : data,
@@ -94,7 +94,7 @@ $(document).ready(
                                             dialogItself.close();
                                             editAlbum(data);
                                         } else if (data === '0') {
-                                            $('#new-album-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
+                                        	$('#new-album-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
                                         } else {
                                             $('#new-album-error').html(data);
                                         }
@@ -168,7 +168,7 @@ function editAlbum(id) {
                                     $('.search-results').remove();
                                     var results_ul = $('<ul class="dropdown-menu search-results">');
                                     $.each(data, function(key, user) {
-                                        if (!($(".selected-user[user-id='" + user.id + "']").length || user.role == "admin")) {
+                                        if (!($(".selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
                                             var result_li = $('<li>');
                                             var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                             result_a.click(function() {

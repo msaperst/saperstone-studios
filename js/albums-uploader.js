@@ -10,7 +10,7 @@ $(document).ready(
                     "searchable" : false,
                     "data" : function(row) {
                         var buttons = "";
-                        if (row.owner == my_id) {
+                        if (row.owner === my_id) {
                             buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
                         }
                         return buttons;
@@ -61,17 +61,7 @@ $(document).ready(
                                 label : ' Create Album',
                                 cssClass : 'btn-success',
                                 action : function(dialogItself) {
-                                    var $button = this; // 'this'
-                                    // here
-                                    // is a
-                                    // jQuery
-                                    // object
-                                    // that
-                                    // wrapping
-                                    // the
-                                    // <button>
-                                    // DOM
-                                    // element.
+                                    var $button = this;
                                     $button.spin();
                                     dialogItself.enableButtons(false);
                                     dialogItself.setClosable(false);
@@ -82,7 +72,7 @@ $(document).ready(
                                         description : $('#new-album-description').val(),
                                         date : $('#new-album-date').val()
                                     }).done(function(data) {
-                                        if (Math.round(data) == data && data !== '0') {
+                                        if ($.isNumeric(data) && data !== '0') {
                                             var table = $('#albums').DataTable();
                                             table.row.add({
                                                 "id" : data,

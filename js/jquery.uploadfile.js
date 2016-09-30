@@ -7,7 +7,7 @@
  */
 (function($) {
     if ($.fn.ajaxForm === undefined) {
-        $.getScript(("https:" == document.location.protocol ? "https://" : "http://") + "malsup.github.io/jquery.form.js");
+        $.getScript(("https:" === document.location.protocol ? "https://" : "http://") + "malsup.github.io/jquery.form.js");
     }
     var feature = {};
     feature.fileapi = $("<input type='file'/>").get(0).files !== undefined;
@@ -337,7 +337,7 @@
 
         function serializeData(extraData) {
             var serialized;
-            if (jQuery.type(extraData) == "string") {
+            if (jQuery.type(extraData) === "string") {
                 serialized = extraData.split('&');
             } else {
                 serialized = $.param(extraData).split('&');
@@ -365,7 +365,7 @@
                         $("<div><font color='red'><b>" + files[i].name + "</b> " + s.extErrorStr + s.allowedTypes + "</font></div>").appendTo(obj.errorLog);
                     continue;
                 }
-                if (s.maxFileSize != -1 && files[i].size > s.maxFileSize) {
+                if (parseInt(s.maxFileSize) !== -1 && files[i].size > s.maxFileSize) {
                     if (s.showError)
                         $("<div><font color='red'><b>" + files[i].name + "</b> " + s.sizeErrorStr + getSizeStr(s.maxFileSize) + "</font></div>").appendTo(obj.errorLog);
                     continue;
@@ -409,12 +409,12 @@
                         $("<div class='" + s.errorClass + "'><b>" + files[i].name + "</b> " + s.duplicateErrorStr + "</div>").appendTo(obj.errorLog);
                     continue;
                 }
-                if (s.maxFileSize != -1 && files[i].size > s.maxFileSize) {
+                if (parseInt(s.maxFileSize) !== -1 && files[i].size > s.maxFileSize) {
                     if (s.showError)
                         $("<div class='" + s.errorClass + "'><b>" + files[i].name + "</b> " + s.sizeErrorStr + getSizeStr(s.maxFileSize) + "</div>").appendTo(obj.errorLog);
                     continue;
                 }
-                if (s.maxFileCount != -1 && obj.selectedFiles >= s.maxFileCount) {
+                if (parseInt(s.maxFileCount) !== -1 && obj.selectedFiles >= s.maxFileCount) {
                     if (s.showError)
                         $("<div class='" + s.errorClass + "'><b>" + files[i].name + "</b> " + s.maxFileCountErrorStr + s.maxFileCount + "</div>").appendTo(obj.errorLog);
                     continue;
@@ -460,7 +460,7 @@
         function isFileTypeAllowed(obj, s, fileName) {
             var fileExtensions = s.allowedTypes.toLowerCase().split(/[\s,]+/g);
             var ext = fileName.split('.').pop().toLowerCase();
-            if (s.allowedTypes != "*" && jQuery.inArray(ext, fileExtensions) < 0) {
+            if (s.allowedTypes !== "*" && jQuery.inArray(ext, fileExtensions) < 0) {
                 return false;
             }
             return true;
@@ -482,7 +482,7 @@
             if (obj.existingFileNames.length) {
                 for (var x = 0; x < fileArr.length; x++) {
                     var pos = obj.existingFileNames.indexOf(fileArr[x]);
-                    if (pos != -1) {
+                    if (parseInt(pos) !== -1) {
                         obj.existingFileNames.splice(pos, 1);
                     }
                 }
@@ -520,10 +520,7 @@
             var form = $("<form method='" + s.method + "' action='" + s.url + "' enctype='" + s.enctype + "'></form>");
             var fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' accept='" + s.acceptFiles + "'/>";
             if (s.multiple) {
-                if (s.fileName.indexOf("[]") != s.fileName.length - 2) // if it
-                // does
-                // not
-                // endwith
+                if (s.fileName.indexOf("[]") !== s.fileName.length - 2) // if it does not endwith
                 {
                     s.fileName += "[]";
                 }
@@ -589,7 +586,7 @@
                         obj.fileCounter++;
 
                     }
-                    if (s.maxFileCount != -1 && (obj.selectedFiles + fileArray.length) > s.maxFileCount) {
+                    if (parseInt(s.maxFileCount) !== -1 && (obj.selectedFiles + fileArray.length) > s.maxFileCount) {
                         if (s.showError)
                             $("<div class='" + s.errorClass + "'><b>" + fileList + "</b> " + s.maxFileCountErrorStr + s.maxFileCount + "</div>").appendTo(obj.errorLog);
                         return;
@@ -638,7 +635,7 @@
                     position : 'absolute',
                     left : '-250px'
                 });
-                if (navigator.appVersion.indexOf("MSIE ") != -1) // IE
+                if (navigator.appVersion.indexOf("MSIE ") !== -1) // IE
                 // Browser
                 {
                     uploadLabel.attr('for', fileUploadId);
@@ -787,7 +784,7 @@
                     pd.cancel.remove();
                     progressQ.pop();
                     // For custom errors.
-                    if (s.returnType === "json" && $.type(data) == "object" && data.hasOwnProperty(s.customErrorKeyStr)) {
+                    if (s.returnType === "json" && $.type(data) === "object" && data.hasOwnProperty(s.customErrorKeyStr)) {
                         pd.abort.hide();
                         var msg = data[s.customErrorKeyStr];
                         s.onError.call(this, fileArray, 200, msg, pd);

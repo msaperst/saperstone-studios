@@ -23,7 +23,7 @@ $(function() {
     });
 
     $('.loginmodal-container').keypress(function(e) {
-        if (e.which == 13) {
+        if (e.which === 13) {
             $("#login-submit").trigger("click");
         }
     });
@@ -83,13 +83,13 @@ $(function() {
     });
 
     if (window.location.hash) {
-        if (window.location.hash == "#album") {
+        if (window.location.hash === "#album") {
             findAlbum();
         }
     }
 });
 window.onhashchange = function() {
-    if (window.location.hash == "#album") {
+    if (window.location.hash === "#album") {
         findAlbum();
     }
 };
@@ -109,7 +109,7 @@ function findAlbum() {
         title : 'Find An Album',
         message : function() {
             var inputs = '<input placeholder="Album Code" id="find-album-code" type="text" class="form-control"/>';
-            if (my_role == 'downloader' || my_role == 'uploader') {
+            if (my_role === 'downloader' || my_role === 'uploader') {
                 inputs += '<div class="checkbox">' + '<label><input id="find-album-add" type="checkbox" value="" checked>Add to my albums</label>' + '</div>';
             }
             inputs += '<div id="find-album-error" class="error"></div>' + '<div id="find-album-message" class="success"></div>';
@@ -135,7 +135,7 @@ function findAlbum() {
                     dialogItself.enableButtons(true);
                     dialogItself.setClosable(true);
                     // goto album url if it exists
-                    if (Math.round(data) == data && data !== '0') {
+                    if ($.isNumeric(data) && data !== '0') {
                         $('#find-album-message').html("Navigating to album");
                         window.location.href = '/albums/album.php?album=' + data;
                     } else if (data === '0') {

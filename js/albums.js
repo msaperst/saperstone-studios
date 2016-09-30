@@ -29,7 +29,7 @@ $(document).ready(function() {
     });
 
     $('#add-album-div').keypress(function(e) {
-        if (e.which == 13) {
+        if (e.which === 13) {
             addAlbum();
         }
     });
@@ -39,5 +39,6 @@ $(document).ready(function() {
 });
 
 function addAlbum() {
-
+	//TODO
+    BootstrapDialog.alert("Sorry, this functionality doesn't yet exist");
 }
