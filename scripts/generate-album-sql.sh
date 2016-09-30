@@ -21,15 +21,15 @@ for directory in "../albums/"*; do
     fi
     echo "INSERT INTO \`albums\` (\`id\`, \`name\`, \`description\`, \`date\`, \`location\`) VALUES (NULL, '$name', '$description', '$year-$month-$day', '$location');"
 
-    if [ ! -d "$directory/full" ]; then		#if no full directory, move our files
+    if [ ! -d "$directory/full" ]; then        #if no full directory, move our files
         mkdir "$directory/full"
 
         for file in $directory/{.,}*; do
-            if [ -f $file ]; then	#if it is a file
+            if [ -f $file ]; then    #if it is a file
                 file_info=`identify $file`
                 file_type=`echo $file_info | cut -d ' ' -f 2`
                 if [ "$file_type" != "TXT" ]; then
-                    mv $file $directory/full/	#move our large file into the full folder
+                    mv $file $directory/full/    #move our large file into the full folder
                 fi
             fi
         done
@@ -42,7 +42,7 @@ for directory in "../albums/"*; do
 
     count=0;
     for file in $directory/{.,}*; do
-        if [ -f $file ]; then	#if it is a file
+        if [ -f $file ]; then    #if it is a file
             file_info=`identify $file`
             file_type=`echo $file_info | cut -d ' ' -f 2`
             size=`echo $file_info | cut -d ' ' -f 3`

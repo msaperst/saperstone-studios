@@ -96,34 +96,34 @@ $(document).ready(function() {
     //submit an image
     $('#submit-image-btn').click(function() {
         var img = $('#album-carousel div.active div');
-    	$('#submit').attr('what',img.attr('image-id')).modal();
+        $('#submit').attr('what',img.attr('image-id')).modal();
     });
     
     // download favorite images
     $('#downloadable-favorites-btn').click(function() {
-    	downloadImages($('#favorites').attr('album-id'),'favorites');
+        downloadImages($('#favorites').attr('album-id'),'favorites');
     });
     // share favorite images
     $('#shareable-favorites-btn').click(function() {
-    	shareImages($('#favorites').attr('album-id'),'favorites');
+        shareImages($('#favorites').attr('album-id'),'favorites');
     });
     //submit favorite images
     $('#submit-favorites-btn').click(function() {
-    	$('#submit').attr('what','favorites').modal();
+        $('#submit').attr('what','favorites').modal();
     });
     
     // download all images
     $('#downloadable-all-btn').click(function() {
-    	downloadImages($('#favorites').attr('album-id'),'all');
+        downloadImages($('#favorites').attr('album-id'),'all');
     });
     // share all images
     $('#shareable-all-btn').click(function() {
-    	shareImages($('#favorites').attr('album-id'),'all');
+        shareImages($('#favorites').attr('album-id'),'all');
     });
     
     //our actual submit button
     $('#submit-send').click(function() {
-    	submitImages();
+        submitImages();
     });
 
     // set a favorite
@@ -158,7 +158,7 @@ $(document).ready(function() {
     });
     // cart purchase options
     $('#cart-submit').click(function(){
-    	submitCart();
+        submitCart();
     });
 
     $('#cart-shipping input').bind("change keyup input", function() {
@@ -273,7 +273,7 @@ function validateCartInput(ele) {
 }
 
 function setFavoriteImage() {
-	var img = $('#album-carousel div.active div');
+    var img = $('#album-carousel div.active div');
     // send our update
     $.post("/api/set-favorite.php", {
         album : img.attr('album-id'),
@@ -294,7 +294,7 @@ function setFavoriteImage() {
 }
 
 function unsetFavoriteImage() {
-	var img = $('#album-carousel div.active div');
+    var img = $('#album-carousel div.active div');
     // send our update
     $.post("/api/unset-favorite.php", {
         album : img.attr('album-id'),
@@ -315,7 +315,7 @@ function unsetFavoriteImage() {
 }
 
 function showFavorites() {
-	$('#favorites-list').empty();
+    $('#favorites-list').empty();
     $('#favorites').modal();
     $.get("/api/get-favorites.php", {
         album : $('#album').attr('album-id'),
@@ -347,7 +347,7 @@ function showFavorites() {
 }
 
 function showCart() {
-	var img = $('#album-carousel div.active div');
+    var img = $('#album-carousel div.active div');
     $('#cart-image').modal();
     $('.product-count input').each(function() {
         $(this).val("");
@@ -369,7 +369,7 @@ function showCart() {
 }
 
 function updateCart() {
-	var img = $('#album-carousel div.active div');
+    var img = $('#album-carousel div.active div');
     var row = $('.product-count input').closest('tr');
     var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
     $('.product-total', row).html("$" + price * $('.product-count input').val());
@@ -404,7 +404,7 @@ function updateCart() {
 }
 
 function reviewCart() {
-	$('#cart-image').modal('hide');
+    $('#cart-image').modal('hide');
     $('#album').modal('hide');
     $('#cart').modal();
     $('#cart-items').empty();
@@ -526,7 +526,7 @@ function incrementProduct(myArray, product, album, image) {
 
 function removeFromCart(removeIcon) {
     removeIcon.click(function() {
-    	//TODO - we should really put in a confirm here
+        //TODO - we should really put in a confirm here
         $(this).closest('tr').remove();
         calculateCost();
         // update our database
@@ -586,21 +586,21 @@ function downloadImages(album,what) {
                     album : album,
                     what : what
                 }, "json" ).done(function(data) {
-                	data = jQuery.parseJSON(data);
-                	if( data.hasOwnProperty('file') ) {
-                		window.location = data.file;
-                		dialogInItself.close();
-                	} else if ( data.hasOwnProperty('err') ) {
-                		modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.err + '</div>');
-                	} else {
-                		modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
-                	}
+                    data = jQuery.parseJSON(data);
+                    if( data.hasOwnProperty('file') ) {
+                        window.location = data.file;
+                        dialogInItself.close();
+                    } else if ( data.hasOwnProperty('err') ) {
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.err + '</div>');
+                    } else {
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                    }
                 }).fail(function(){
-                	modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                    modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
                 }).always(function(){
-                	$('#compressing-download').remove();
-                	$button.stopSpin();
-                	dialogInItself.enableButtons(true);
+                    $('#compressing-download').remove();
+                    $button.stopSpin();
+                    dialogInItself.enableButtons(true);
                     dialogInItself.setClosable(true);
                 });
             }
@@ -628,88 +628,88 @@ function shareImages(album,what) {
 }
 
 function submitImages() {
-	$("#submit-send").prop("disabled", true);
-	$("#submit-send").next().prop("disabled", true);
-	$("#submit-send em").removeClass('fa fa-paper-plane').addClass('glyphicon glyphicon-asterisk icon-spin');
-	$.post("/api/send-selected-images.php", {
+    $("#submit-send").prop("disabled", true);
+    $("#submit-send").next().prop("disabled", true);
+    $("#submit-send em").removeClass('fa fa-paper-plane').addClass('glyphicon glyphicon-asterisk icon-spin');
+    $.post("/api/send-selected-images.php", {
         album : $('#submit').attr('album-id'),
         what : $('#submit').attr('what'),
         name : $('#submit-name').val(),
         email : $('#submit-email').val(),
         comment : $('#submit-comment').val()
     }).done(function(data) {
-    	if ( data !== "" ) {
-    		$("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
-    	} else {
-    		$("#submit").modal('hide')
-    	}
+        if ( data !== "" ) {
+            $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
+        } else {
+            $("#submit").modal('hide')
+        }
     }).fail(function(){
-    	$("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+        $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
     }).always(function(){
-    	$('#submit-send').prop("disabled", false);
-		$('#submit-send').next().prop("disabled", false);
-	    $('#submit-send em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
+        $('#submit-send').prop("disabled", false);
+        $('#submit-send').next().prop("disabled", false);
+        $('#submit-send em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
     });
 }
 
 function submitCart() {
-	$('#cart-submit').prop("disabled", true);
-	$('#cart-submit').next().prop("disabled", true);
-	$('#cart-submit em').removeClass('fa fa-credit-card').addClass('glyphicon glyphicon-asterisk icon-spin');
-	$('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for submitting your request. Your request is being processed, " +
-			"and you should be forwarded to paypal's payment screen within a few seconds. " +
-			"If you are not, please <a class='gen' target='_blank' " +
-			"href='mailto:billingerror@saperstonestudios.com'>contact us</a> and we'll try to resolve " +
-			"your issue as soon as we can.</div>");
-	
-	var coupon;
-	if( $('#cart-coupon').val() !== "" ) {
-		coupon = md5($('#cart-coupon').val());
-	}
-	var order = [];
-	$('#cart-items tr').each(function () {
-		order.push({
-			product: $(this).attr('product-id'),
-			type: $(this).attr('product-type'),
-			img: $(this).attr('image-id'),
-			title: $(this).attr('image-title'),
-			option: $(this).find('td.item-option select').val()
-		});
-	});
-	var user = {
-			name: $('#cart-name').val(),
-			email: $('#cart-email').val(),
-			phone: $('#cart-phone').val(),
-			address: $('#cart-address').val(),
-			city: $('#cart-city').val(),
-			state: $('#cart-state').val(),
-			zip: $('#cart-zip').val(),
-		};
-	$.post("/api/checkout.php", {
-	    user : user,
-	    order : order,
-	    coupon: coupon
-	}, "json").done(function(data) {
-		data = jQuery.parseJSON(data);
-		if( data.hasOwnProperty('response') && data.response.Ack === "Success" ) {
-			var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
-			$('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='" + link + "'>this link</a></div>.");
-			window.location = link;
-		} else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.Errors.LongMessage === "This transaction cannot be processed. The amount to be charged is zero." ) {
-			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.</div>");
-			//TODO - do stuff
-		} else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.hasOwnProperty('Errors') ) {
-			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a> for more details, or try resubmitting.</div>");
-		} else if ( data.hasOwnProperty('error') ) {
-			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.error + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-		} else {
-			$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-		}
-	}).fail(function(){
-		$('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-	}).always(function(){
-		$('#cart-submit').prop("disabled", false);
-		$('#cart-submit').next().prop("disabled", false);
-	    $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
-	});
+    $('#cart-submit').prop("disabled", true);
+    $('#cart-submit').next().prop("disabled", true);
+    $('#cart-submit em').removeClass('fa fa-credit-card').addClass('glyphicon glyphicon-asterisk icon-spin');
+    $('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for submitting your request. Your request is being processed, " +
+            "and you should be forwarded to paypal's payment screen within a few seconds. " +
+            "If you are not, please <a class='gen' target='_blank' " +
+            "href='mailto:billingerror@saperstonestudios.com'>contact us</a> and we'll try to resolve " +
+            "your issue as soon as we can.</div>");
+    
+    var coupon;
+    if( $('#cart-coupon').val() !== "" ) {
+        coupon = md5($('#cart-coupon').val());
+    }
+    var order = [];
+    $('#cart-items tr').each(function () {
+        order.push({
+            product: $(this).attr('product-id'),
+            type: $(this).attr('product-type'),
+            img: $(this).attr('image-id'),
+            title: $(this).attr('image-title'),
+            option: $(this).find('td.item-option select').val()
+        });
+    });
+    var user = {
+            name: $('#cart-name').val(),
+            email: $('#cart-email').val(),
+            phone: $('#cart-phone').val(),
+            address: $('#cart-address').val(),
+            city: $('#cart-city').val(),
+            state: $('#cart-state').val(),
+            zip: $('#cart-zip').val(),
+        };
+    $.post("/api/checkout.php", {
+        user : user,
+        order : order,
+        coupon: coupon
+    }, "json").done(function(data) {
+        data = jQuery.parseJSON(data);
+        if( data.hasOwnProperty('response') && data.response.Ack === "Success" ) {
+            var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
+            $('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='" + link + "'>this link</a></div>.");
+            window.location = link;
+        } else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.Errors.LongMessage === "This transaction cannot be processed. The amount to be charged is zero." ) {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.</div>");
+            //TODO - do stuff
+        } else if ( data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.hasOwnProperty('Errors') ) {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        } else if ( data.hasOwnProperty('error') ) {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.error + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        } else {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
+    }).fail(function(){
+        $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+    }).always(function(){
+        $('#cart-submit').prop("disabled", false);
+        $('#cart-submit').next().prop("disabled", false);
+        $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
+    });
 }

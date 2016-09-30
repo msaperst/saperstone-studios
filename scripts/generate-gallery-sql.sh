@@ -11,7 +11,7 @@ for directory in "../img/portrait/"*; do
 
     count=0;
     for file in $directory/{.,}*; do
-        if [ -f $file ]; then	#if it is a file
+        if [ -f $file ]; then    #if it is a file
             #resize image
             mogrify -resize 900x600 $file
             mogrify -density 72 $file

@@ -25,7 +25,7 @@ if [ ! -d "$location/full" ]; then
 fi
 
 for file in $location/*.*; do
-    if [ -f "$file" ]; then	#if it is a file
+    if [ -f "$file" ]; then    #if it is a file
         filename=$(basename "$file")
         file_info=`identify $file`;
         file_type=`echo $file_info | cut -d ' ' -f 2`;

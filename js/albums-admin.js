@@ -94,7 +94,7 @@ $(document).ready(
                                             dialogItself.close();
                                             editAlbum(data);
                                         } else if (data === '0') {
-                                        	$('#new-album-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
+                                            $('#new-album-error').html("There was some error with your request. Please contact our <a target='_blank' href='mailto:webmaster@saperstonestudios.com'>webmaster</a>");
                                         } else {
                                             $('#new-album-error').html(data);
                                         }

@@ -39,6 +39,6 @@ $(document).ready(function() {
 });
 
 function addAlbum() {
-	//TODO
+    //TODO
     BootstrapDialog.alert("Sorry, this functionality doesn't yet exist");
 }
