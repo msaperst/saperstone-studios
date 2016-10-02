@@ -24,7 +24,7 @@ if ($user->getRole () != "admin" && $user->getRole () != "uploader") {
 
 // confirm we have an album name
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = $_POST ['name'];
+    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
 } else {
     echo "Album name is required!";
     $conn->disconnect ();
@@ -32,14 +32,13 @@ if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
 }
 
 // sanitize our inputs
-if (isset ( $_POST ['name'] )) {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
-}
 if (isset ( $_POST ['description'] )) {
     $description = mysqli_real_escape_string ( $conn->db, $_POST ['description'] );
 }
 if (isset ( $_POST ['date'] )) {
     $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
+} else {
+    $date = null;
 }
 
 // generate our location for the files
@@ -57,9 +56,12 @@ $sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`
 mysqli_query ( $conn->db, $sql );
 $last_id = mysqli_insert_id ( $conn->db );
 
-if ($user->getRole () == "uploader") {
+if ($user->getRole () == "uploader" && $last_id != 0) {
     $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $user->getId () . "', '$last_id');";
     mysqli_query ( $conn->db, $sql );
+}
+if ($last_id == 0) {
+    rmdir ( $location );
 }
 
 echo $last_id;

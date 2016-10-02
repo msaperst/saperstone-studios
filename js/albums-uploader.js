@@ -2,46 +2,53 @@ var album_table;
 
 $(document).ready(
         function() {
-            album_table = $('#albums').DataTable({
-                "ajax" : "/api/get-albums.php",
-                "order" : [ [ 1, "asc" ] ],
-                "columnDefs" : [ {
-                    "orderable" : false,
-                    "searchable" : false,
-                    "data" : function(row) {
-                        var buttons = "";
-                        if (row.owner === my_id) {
-                            buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
-                        }
-                        return buttons;
-                    },
-                    "targets" : 0
-                }, {
-                    "data" : function(row) {
-                        return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
-                    },
-                    "className" : "album-name",
-                    "targets" : 1
-                }, {
-                    "data" : "description",
-                    "className" : "album-description",
-                    "targets" : 2
-                }, {
-                    "data" : "date",
-                    "className" : "album-date",
-                    "targets" : 3
-                }, {
-                    "data" : "images",
-                    "className" : "album-images",
-                    "targets" : 4
-                } ],
-                "fnCreatedRow" : function(nRow, aData) {
-                    $(nRow).attr('album-id', aData.id);
-                }
-            });
+        	if( $('#albums').length ) {
+        		album_table = $('#albums').DataTable({
+        			"ajax" : "/api/get-albums.php",
+        			"order" : [ [ 1, "asc" ] ],
+        			"columnDefs" : [ {
+        				"orderable" : false,
+        				"searchable" : false,
+        				"data" : function(row) {
+        					var buttons = "";
+        					if (row.owner === my_id) {
+        						buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
+        					}
+        					return buttons;
+        				},
+        				"targets" : 0
+        			}, {
+        				"data" : function(row) {
+        					return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
+        				},
+        				"className" : "album-name",
+        				"targets" : 1
+        			}, {
+        				"data" : "description",
+        				"className" : "album-description",
+        				"targets" : 2
+        			}, {
+        				"data" : "date",
+        				"className" : "album-date",
+        				"targets" : 3
+        			}, {
+        				"data" : "images",
+        				"className" : "album-images",
+        				"targets" : 4
+        			} ],
+        			"fnCreatedRow" : function(nRow, aData) {
+        				$(nRow).attr('album-id', aData.id);
+        			}
+        		});
+        	}
             $('#albums').on('draw.dt search.dt', function() {
                 setupEdit();
             });
+            
+			$('#edit-album-btn').click(function() {
+				editAlbum($('#favorites').attr('album-id'));
+			})
+
 
             $('#add-album-btn').click(
                     function() {
@@ -154,7 +161,9 @@ function editAlbum(id) {
                                 $.post("/api/delete-album.php", {
                                     id : id,
                                 }).done(function() {
-                                    album_table.ajax.reload(null, false);
+                                	if( $('#albums').length ) {
+                                		album_table.ajax.reload(null, false);
+                                	}
                                     dialogInItself.close();
                                     dialogItself.close();
                                 });
@@ -219,14 +228,18 @@ function editAlbum(id) {
                         code : $('#new-album-code').val(),
                     }).done(function() {
                         dialogItself.close();
-                        album_table.ajax.reload(null, false);
+                    	if( $('#albums').length ) {
+                    		album_table.ajax.reload(null, false);
+                    	}
                     });
                 }
             }, {
                 label : 'Close',
                 action : function(dialogItself) {
                     dialogItself.close();
-                    album_table.ajax.reload(null, false);
+                	if( $('#albums').length ) {
+                		album_table.ajax.reload(null, false);
+                	}
                 }
             } ],
             onshown : function(dialogItself) {
@@ -268,7 +281,9 @@ function editAlbum(id) {
                 });
             },
             onhide : function() {
-                album_table.ajax.reload(null, false);
+            	if( $('#albums').length ) {
+            		album_table.ajax.reload(null, false);
+            	}
             },
         });
     }, "json");

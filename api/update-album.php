@@ -57,6 +57,8 @@ if (isset ( $_POST ['description'] )) {
 }
 if (isset ( $_POST ['date'] )) {
     $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
+} else {
+    $date = null;
 }
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
     $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );

@@ -31,7 +31,9 @@ if ($user->isAdmin ()) {
 }
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $r ['date'] = substr ( $r ['date'], 0, 10 );
+    if ($r ['date'] != null) {
+        $r ['date'] = substr ( $r ['date'], 0, 10 );
+    }
     $response [] = $r;
 }
 echo "{\"data\":" . json_encode ( $response ) . "}";

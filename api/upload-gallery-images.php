@@ -37,8 +37,8 @@ if (! $gallery_info ['id']) {
     $conn->disconnect ();
     exit ();
 }
-// only admin users and uploader users who own the gallery can make updates
-if (! ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $gallery_info ['owner']))) {
+// only admin users can make updates
+if (! $user->isAdmin () ) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();

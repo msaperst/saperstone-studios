@@ -75,6 +75,9 @@ if (! $user->isAdmin ()) {
 
     <?php require_once "../header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
+    <link
+    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    rel="stylesheet">
 <style>
 footer {
     margin-bottom: 55px;
@@ -114,6 +117,13 @@ footer {
                     }
                     ?>
                     <li class="active"><?php echo $album_info['name']; ?></li>
+                    <?php
+                    if ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
+                    ?>
+                    <li class="no-before pull-right"><button type="button" id="edit-album-btn" class="btn btn-xs btn-warning"><i class="fa fa-pencil-square-o"></i></button></li>
+                    <?php 
+                    }
+                    ?>
                 </ol>
             </div>
         </div>
@@ -241,10 +251,6 @@ footer {
                                 <em class="fa fa-share"></em> Share
                             </button>
                         </div>
-                        <button id="submit-image-btn" type="button"
-                            class="btn btn-default btn-action btn-success">
-                            <em class="fa fa-paper-plane"></em> Submit
-                        </button>
                         <button id="cart-image-btn" type="button"
                             class="btn btn-default btn-warning btn-action">
                             <em class="fa fa-shopping-cart"></em> Add to Cart
@@ -252,6 +258,10 @@ footer {
                         <?php
                         }
                         ?>
+                        <button id="submit-image-btn" type="button"
+                            class="btn btn-default btn-action btn-success">
+                            <em class="fa fa-paper-plane"></em> Submit
+                        </button>
                         <button id="set-favorite-image-btn"
                             type="button" class="btn btn-default btn-action">
                             <em class="fa fa-heart"></em> Favorite
@@ -703,6 +713,14 @@ footer {
     if ($user->isAdmin ()) {
         ?>
     <script src="/js/album-admin.js"></script>
+    <script src="/js/albums-admin.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <?php 
+    }
+    if ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner']) {
+    ?>
+        <script src="/js/albums-uploader.js"></script>
+        <script src="/js/jquery.uploadfile.js"></script>
     <?php
         $conn->disconnect ();
     }
