@@ -232,14 +232,19 @@ footer {
                             class="btn btn-default btn-action btn-success hidden">
                             <em class="fa fa-download"></em> Download
                         </button>
-                        <div id="not-downloadable-image-btn"
-                            class="tooltip-wrapper disabled" data-toggle="tooltip"
-                            data-placement="top"
-                            title="Purchase full rights to this image in order to download it.">
-                            <button type="button" class="btn btn-default btn-action">
-                                <em class="fa fa-download"></em> Download
-                            </button>
-                        </div>
+<!--                         <div id="not-downloadable-image-btn" -->
+<!--                             class="tooltip-wrapper disabled" data-toggle="tooltip" -->
+<!--                             data-placement="top" -->
+<!--                             title="Purchase full rights to this image in order to download it."> -->
+<!--                             <button type="button" class="btn btn-default btn-action"> -->
+<!--                                 <em class="fa fa-download"></em> Download -->
+<!--                             </button> -->
+<!--                         </div> -->
+						<button id="not-downloadable-image-btn"
+                            type="button"
+                            class="btn btn-default btn-action btn-warning hidden">
+                            <em class="fa fa-credit-card"></em> Purchase
+                        </button>
                         <button id="shareable-image-btn" type="button"
                             class="btn btn-default btn-action btn-success hidden">
                             <em class="fa fa-share"></em> Share
@@ -414,11 +419,15 @@ footer {
                                 $sql = "SELECT * FROM `products` WHERE `product_type` = '" . $r ['id'] . "';";
                                 $sesult = mysqli_query ( $conn->db, $sql );
                                 while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+                                    $max = "";
+                                    if( $r ['id'] == "10" ) {
+                                        $max = " max='1'";
+                                    }
                                     ?>
                                 <tr product-id='<?php echo $s['id']; ?>'>
                                         <td class="product-size"><?php echo $s['size']; ?></td>
                                         <td class="product-count"><input class="form-control input-sm"
-                                            type="number" min="0" /></td>
+                                            type="number" min="0"<?php echo $max; ?> /></td>
                                         <td class="product-price">$<?php echo $s['price']; ?></td>
                                         <td class="product-total" style="width: 25%">--</td>
                                     </tr>
@@ -622,21 +631,21 @@ footer {
                     class="tooltip-wrapper disabled" data-toggle="tooltip"
                     data-placement="top"
                     title="Login or create an account for this feature.">
-                    <button type="button" class="btn btn-default" disabled>Purcahse/Download
-                        All</button>
+                    <button type="button" class="btn btn-default" disabled>
+                    <em class="fa fa-download"></em> Download All</button>
                 </div></span> <span class="text-center"><div
                     class="tooltip-wrapper disabled" data-toggle="tooltip"
                     data-placement="top"
                     title="Login or create an account for this feature.">
-                    <button type="button" class="btn btn-default" disabled>Purcahse/Share
-                        All</button>
+                    <button type="button" class="btn btn-default" disabled>
+                    <em class="fa fa-share"></em> Share All</button>
                 </div></span> <span class="text-center"><div
                     class="tooltip-wrapper disabled" data-toggle="tooltip"
                     data-placement="top"
                     title="Login or create an account for this feature.">
                     <button id="cart-btn" type="button"
                         class="btn btn-default btn-warning" disabled>
-                        Cart <strong id="cart-count" class="error"></strong>
+                        <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count" class="error"></strong>
                     </button>
                 </div></span>
             <?php

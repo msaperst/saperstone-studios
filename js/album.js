@@ -98,6 +98,23 @@ $(document).ready(function() {
         var img = $('#album-carousel div.active div');
         $('#submit').attr('what',img.attr('image-id')).modal();
     });
+    //quick purchase an image
+    $('#not-downloadable-image-btn').click(function(){
+        var img = $('#album-carousel div.active div');
+        var products = {};
+        products['31'] = 1;
+    	$.post("/api/update-cart-image.php", {
+            album : img.attr('album-id'),
+            image : img.attr('image-id'),
+            products : products
+        }).done(function(data) {
+            // update our count on the page
+            $('#cart-count').html(data).css({
+                'padding-left' : '10px'
+            });
+            reviewCart();
+        });
+    })
     
     // download favorite images
     $('#downloadable-favorites-btn').click(function() {
@@ -430,7 +447,7 @@ function reviewCart() {
                 var preview = $("<td>");
                 var previewDiv = $("<div>");
                 previewDiv.css({
-                    "background-image" : "url(" + data[i].location + ")",
+                    "background-image" : "url('" + data[i].location + "')",
                     "background-size" : "cover",
                     "background-position" : "50%",
                     "width" : "50px",
