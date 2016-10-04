@@ -27,9 +27,9 @@
     ?>
     
     <!-- Page Content -->
-    <div class="page-content container">
+	<div class="page-content container">
 
-        <!-- Page Heading/Breadcrumbs -->
+		<!-- Page Heading/Breadcrumbs -->
 		<div class="row">
 			<div class="col-lg-12">
 				<h1 class="page-header text-center">Recent Blog Posts</h1>
@@ -42,24 +42,24 @@
 		</div>
 		<!-- /.row -->
 
-        <!-- Services Section -->
-        <div class="row">
-            <div id="col-0" class="col-md-4 col-sm-6 col-gallery"></div>
-            <div id="col-1" class="col-md-4 col-sm-6 col-gallery"></div>
-            <div id="col-2" class="col-md-4 col-sm-6 col-gallery"></div>
-        </div>
-        <!-- /.row -->
+		<!-- Services Section -->
+		<div class="row">
+			<div id="col-0" class="col-md-4 col-sm-6 col-gallery"></div>
+			<div id="col-1" class="col-md-4 col-sm-6 col-gallery"></div>
+			<div id="col-2" class="col-md-4 col-sm-6 col-gallery"></div>
+		</div>
+		<!-- /.row -->
 
         <?php require_once "../footer.php"; ?>
 
     </div>
-    <!-- /.container -->
+	<!-- /.container -->
 
-    <!-- Gallery JavaScript -->
-    <script src="/js/posts.js"></script>
-    
-    <!-- Script to Activate the Gallery -->
-    <script>
+	<!-- Gallery JavaScript -->
+	<script src="/js/posts.js"></script>
+
+	<!-- Script to Activate the Gallery -->
+	<script>
         var posts = new Posts( 3, <?php echo count($posts); ?> );
         
         var loaded = 0;

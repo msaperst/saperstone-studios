@@ -14,7 +14,7 @@ function Posts(columns, totalImages) {
 
 Posts.prototype.loadImages = function() {
 	var Posts = this;
-	$.get("/api/get-blogs.php", {
+	$.get("/api/get-blogs-details.php", {
 		start : Posts.loaded,
 		howMany : Posts.columns
 	}, function(data) {

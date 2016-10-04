@@ -7,7 +7,6 @@ $response = array ();
 $start = 0;
 $howMany = 999999999999999999;
 
-
 if (isset ( $_GET ['start'] )) {
     $start = ( int ) $_GET ['start'];
 }
