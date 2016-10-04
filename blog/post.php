@@ -7,8 +7,19 @@ if (! isset ( $_GET ['p'] )) { // if no album is set, throw a 404 error
 } else {
     $post = $_GET ['p'];
 }
-?>
 
+require_once "../php/sql.php";
+$conn = new sql ();
+$conn->connect ();
+$sql = "SELECT * FROM `blog_details` WHERE id = '$post';";
+$details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+if (! $details ['title']) {
+    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
+    include "../errors/404.php";
+    $conn->disconnect ();
+    exit ();
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +54,7 @@ if (! isset ( $_GET ['p'] )) { // if no album is set, throw a 404 error
 		<!-- Post Section -->
 		<div class="row">
 			<div id="post-tags" class="col-md-4 text-left"></div>
-			<h4 id="post-date" class="col-md-4 text-center"></h4>
+			<div class="col-md-4 text-center"><strong id="post-date"></strong></div>
 			<div id="post-likes" class="col-md-4 text-right"></div>
 		</div>
 		<!-- /.row -->

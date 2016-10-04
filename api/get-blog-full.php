@@ -15,6 +15,7 @@ if (isset ( $_GET ['post'] )) {
 
 $sql = "SELECT * FROM `blog_details` WHERE id = $post;";
 $r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$r['date'] = date( 'F jS, Y', strtotime( $r['date'] ) );
 $sql = "SELECT * FROM `blog_images` WHERE blog = " . $r ['id'] . ";";
 $images = mysqli_query ( $conn->db, $sql );
 $contents = array ();
