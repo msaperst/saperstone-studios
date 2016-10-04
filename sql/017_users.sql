@@ -21,5 +21,5 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `hash` (`hash`),
   UNIQUE KEY `usr` (`usr`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
