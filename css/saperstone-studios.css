@@ -458,3 +458,9 @@ ul.search-results {
     padding: 5px;
     font-size: 20px;
 } */
+
+/* Some Blog Stylizations */
+.post {
+	background-repeat: no-repeat;;
+	margin-bottom: 10px;
+}

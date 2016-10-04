@@ -23,6 +23,9 @@ for f in $(find ../blog -name '*.php'); do
 		if [ -z $offset ]; then
 			offset=0;
 		fi
+		if [ "$offset" -gt 0 ]; then
+			offset=0;
+		fi
 	else
 		offset=0;
 	fi
