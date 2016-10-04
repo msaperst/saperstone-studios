@@ -20,8 +20,6 @@ Posts.prototype.loadImages = function() {
 	}, function(data) {
 		// load each of our 4 images on the screen
 		$.each(data, function(k, v) {
-			console.log(k);
-			console.log(v);
 			// create our holding div
 			var holder = $('<div>');
 			holder.addClass('post hovereffect');

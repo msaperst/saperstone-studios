@@ -11,6 +11,6 @@ CREATE TABLE IF NOT EXISTS `blog_images` (
   `width` int(11) NOT NULL,
   `height` int(11) NOT NULL,
   `left` int(11) NOT NULL,
-  `top` int(11) NOT NULL,
+  `top` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
