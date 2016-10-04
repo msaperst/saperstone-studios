@@ -68,10 +68,18 @@ for f in $(find ../blog -name '*.php'); do
 		
 		if [[ "$line" == *'class="blogImage"'* ]]; then
 			location=`echo "$line" | cut -d '"' -f 4`;
+			location="/blog${location:5}";
 			height=`echo "$line" | sed -n 's/.*height:\s*\([0-9\.]\+\)px.*/\1/p'`;
 			width=`echo "$line" | sed -n 's/.*width:\s*\([0-9\.]\+\)px.*/\1/p'`;
 			left=`echo "$line" | sed -n 's/.*left:\s*\([0-9\.]\+\)px.*/\1/p'`;
 			top=`echo "$line" | sed -n 's/.*top:\s*\([0-9\.]\+\)px.*/\1/p'`;
+			#old max-width was 960, we need to change that to 1140
+			multiplier=`bc -l <<< 1140/960`;
+			height=`bc -l <<< $height*$multiplier`
+			width=`bc -l <<< $width*$multiplier`
+			left=`bc -l <<< $left*$multiplier`
+			top=`bc -l <<< $top*$multiplier`
+			#generate our statement
 			echo "INSERT INTO \`blog_images\` (\`blog\`, \`contentGroup\`, \`location\`, \`width\`, \`height\`, \`left\`, \`top\`) SELECT id, '$contentGroup', '$location', '$width', '$height', '$left', '$top' FROM blog_details WHERE title=\"$title\" and date='$date';";
 		fi
 	

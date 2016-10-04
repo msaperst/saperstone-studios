@@ -63,7 +63,7 @@ $conn->disconnect ();
         var tag_array = [
              <?php
             foreach ( $tags as $tag ) {
-                echo "{text: \"" . $tag ['tag'] . "\", weight: " . $tag ['count'] . ", link: '/blog/category.php?tag=" . $tag ['id'] . "'},\n";
+                echo "{text: \"" . $tag ['tag'] . "\", weight: " . $tag ['count'] . ", link: '/blog/category.php?t=" . $tag ['id'] . "'},\n";
             }
             ?>
         ];
