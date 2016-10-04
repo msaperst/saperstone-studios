@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS `product_options` (
   `product_type` int(11) NOT NULL,
   `opt` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   UNIQUE KEY `unique_index` (`product_type`,`opt`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `albums` (
   `code` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `owner` int(11) NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

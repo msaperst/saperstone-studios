@@ -2,6 +2,8 @@
 -- Dumping data for table `tags`
 --
 
+LOCK TABLES `tags` WRITE;
+/*!40000 ALTER TABLE `tags` DISABLE KEYS */;
 INSERT IGNORE INTO `tags` VALUES (1, '3 Month Session');
 INSERT IGNORE INTO `tags` VALUES (2, '6 Month Session');
 INSERT IGNORE INTO `tags` VALUES (3, 'Babies');
@@ -35,3 +37,5 @@ INSERT IGNORE INTO `tags` VALUES (30, 'Trash the Dress');
 INSERT IGNORE INTO `tags` VALUES (31, 'Travel');
 INSERT IGNORE INTO `tags` VALUES (32, 'Vow Renewal');
 INSERT IGNORE INTO `tags` VALUES (33, 'Wedding');
+/*!40000 ALTER TABLE `tags` ENABLE KEYS */;
+UNLOCK TABLES;
