@@ -15,11 +15,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   `hash` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `lastLogin` timestamp DEFAULT NULL,
+  `lastLogin` timestamp NULL DEFAULT NULL,
   `resetKey` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  UNIQUE KEY `id_2` (`id`),
+  UNIQUE KEY `id` (`id`),
   UNIQUE KEY `hash` (`hash`),
   UNIQUE KEY `usr` (`usr`),
-  KEY `id` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

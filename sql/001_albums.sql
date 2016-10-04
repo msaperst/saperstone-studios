@@ -9,12 +9,12 @@ CREATE TABLE IF NOT EXISTS `albums` (
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   `date` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `lastAccessed` timestamp DEFAULT NULL,
+  `lastAccessed` timestamp NULL DEFAULT NULL,
   `location` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `code` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `owner` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
   UNIQUE KEY `code` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
