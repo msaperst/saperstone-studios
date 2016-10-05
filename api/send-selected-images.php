@@ -39,7 +39,8 @@ if (isset ( $_POST ['album'] )) {
 }
 $sql = "SELECT * FROM `albums` WHERE id = '$album';";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
+// if the album doesn't exist, throw a 404 error
+if (! $album_info ['name']) {
     echo "The provided album does not exist. Please refresh this page and resubmit this request.";
     $conn->disconnect ();
     exit ();
@@ -50,14 +51,14 @@ if ($what == "favorites") {
     $result = mysqli_query ( $conn->db, $sql );
     $desired = array ();
     while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $selected [] = $r['title'];
+        $selected [] = $r ['title'];
     }
 } else {
     $sql = "SELECT * FROM album_images WHERE album = '$album' AND sequence = '$what';";
     $result = mysqli_query ( $conn->db, $sql );
     $desired = array ();
     while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $selected [] = $r['title'];
+        $selected [] = $r ['title'];
     }
 }
 
@@ -69,8 +70,8 @@ require_once ($path = '../plugins/Browser.php-master/lib/Browser.php');
 $browser = new Browser ();
 $from = "Selects <selects@saperstonestudios.com>";
 $to = "Selects <selects@saperstonestudios.com>";
-if( isset( $_POST['email'] ) ) {
-    $to .= ", ".$_POST['name']." <".$_POST['email'].">";
+if (isset ( $_POST ['email'] )) {
+    $to .= ", " . $_POST ['name'] . " <" . $_POST ['email'] . ">";
 }
 $subject = "Selects Have Been Made";
 
@@ -81,9 +82,9 @@ $html .= "<p>A selection has been made from the <a href='" . $_SERVER ['HTTP_REF
 $text .= "A selection has been made from the " . $album_info ['name'] . " album at " . $_SERVER ['HTTP_REFERER'] . "\n\n";
 $html .= "<p><ul><li>" . implode ( "</li><li>", $selected ) . "</li></ul></p><br/>";
 $text .= implode ( "\n", $selected ) . "\n\n";
-if( isset( $_POST['comment']) ) {
-    $html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$_POST['comment']."</p>";
-    $text .= "\t\t".$_POST['comment'];
+if (isset ( $_POST ['comment'] )) {
+    $html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $_POST ['comment'] . "</p>";
+    $text .= "\t\t" . $_POST ['comment'];
 }
 $html .= "</body></html>";
 

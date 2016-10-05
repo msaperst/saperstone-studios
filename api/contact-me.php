@@ -23,9 +23,9 @@ if (isset ( $_SERVER ['HTTP_REFERER'] )) {
 }
 
 // create email body and send it
-$to = "Contact <contact@saperstonestudios.com>"; // PUT YOUR EMAIL ADDRESS HERE
+$to = "Contact <contact@saperstonestudios.com>";
 $from = "$name <$email>";
-$subject = "Saperstone Studios Contact Form:  $name"; // EDIT THE EMAIL SUBJECT LINE HERE
+$subject = "Saperstone Studios Contact Form:  $name";
 
 $html = "<html><body>";
 $html .= "This is an automatically generated message from Saperstone Studios<br/>";

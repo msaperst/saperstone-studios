@@ -37,15 +37,18 @@ if (isset ( $_GET ['howMany'] )) {
 
 $sql = "SELECT * FROM `albums` WHERE id = '$albumId';";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
+// if the album doesn't exist, throw a 404 error
+if (! $album_info ['name']) {
     $response ['err'] = "Album doesn't exist!";
     echo json_encode ( $response );
     $conn->disconnect ();
     exit ();
 }
 
-if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an admin and no exists for the album
-    if (! $user->isLoggedIn ()) { // if not logged in, throw an error
+// if not an admin and no exists for the album
+if ($user->getRole () != "admin" && $album_info ['code'] == "") {
+    // if not logged in, throw an error
+    if (! $user->isLoggedIn ()) {
         $response ['err'] = "You are not authorized to view this album";
         echo json_encode ( $response );
         $conn->disconnect ();
@@ -57,7 +60,8 @@ if ($user->getRole () != "admin" && $album_info ['code'] == "") { // if not an a
         while ( $r = mysqli_fetch_assoc ( $result ) ) {
             $albums [] = $r ['album'];
         }
-        if (! in_array ( $albumId, $albums )) { // if not in album list
+        // if not in album list
+        if (! in_array ( $albumId, $albums )) {
             $response ['err'] = "You are not authorized to view this album";
             echo json_encode ( $response );
             $conn->disconnect ();

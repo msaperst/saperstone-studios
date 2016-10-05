@@ -42,7 +42,8 @@ if (isset ( $_POST ['album'] )) {
 }
 $sql = "SELECT * FROM `albums` WHERE id = '$album';";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $album_info ['name']) { // if the album doesn't exist, throw a 404 error
+// if the album doesn't exist, throw a 404 error
+if (! $album_info ['name']) {
     $response ['err'] = "Album doesn't exist!";
     echo json_encode ( $response );
     $conn->disconnect ();

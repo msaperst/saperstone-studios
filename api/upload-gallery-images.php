@@ -38,7 +38,7 @@ if (! $gallery_info ['id']) {
     exit ();
 }
 // only admin users can make updates
-if (! $user->isAdmin () ) {
+if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();
@@ -58,23 +58,16 @@ $output_dir = "../img/" . $gallery_info ['location'] . "/";
 if (isset ( $_FILES ["myfile"] )) {
     $ret = array ();
     
-    // This is for custom errors;
-    /*
-     * $custom_error= array();
-     * $custom_error['jquery-upload-file-error']="File already exists";
-     * echo json_encode($custom_error);
-     * die();
-     */
     $error = $_FILES ["myfile"] ["error"];
     // You need to handle both cases
     // If Any browser does not support serializing of multiple files using FormData()
-    if (! is_array ( $_FILES ["myfile"] ["name"] )) // single file
-{
+    // single file
+    if (! is_array ( $_FILES ["myfile"] ["name"] )) {
         $fileName = $_FILES ["myfile"] ["name"];
         move_uploaded_file ( $_FILES ["myfile"] ["tmp_name"], $output_dir . $fileName );
         $ret [] = $fileName;
-    } else // Multiple files, file[]
-{
+    // Multiple files, file[]
+    } else {
         $fileCount = count ( $_FILES ["myfile"] ["name"] );
         for($i = 0; $i < $fileCount; $i ++) {
             $fileName = $_FILES ["myfile"] ["name"] [$i];
