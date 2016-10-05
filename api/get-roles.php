@@ -21,7 +21,6 @@ if ($user->getRole () != "admin") {
     exit ();
 }
 
-// $sql = "SHOW COLUMNS FROM users WHERE Field = 'role';";
 $sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'role';";
 $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
