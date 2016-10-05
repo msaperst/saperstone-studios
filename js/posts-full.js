@@ -108,34 +108,6 @@ PostsFull.prototype.loadPosts = function() {
 		
 		$('#post-content').append(holder);
 		
-//		holder.addClass('post hovereffect');
-//		holder.height($('.col-gallery').width() / 1.7);
-//		// create our image
-//		holder.css({
-//			'background-image' : 'url("' + v.preview + '")',
-//			'background-position' : '0px ' + v.offset + 'px',
-//			'background-size' : $('.col-gallery').width() + 'px',
-//		});
-//		// create our overlay
-//		var overlay = $('<div>');
-//		overlay.addClass('overlay');
-//		// our post title
-//		var title = $('<h2>');
-//		title.html(v.title);
-//		// our view link
-//		var link = $('<a>');
-//		link.addClass('info no-border');
-//		link.attr('href', '/blog/post.php?p=' + v.id);
-//		// add our image icon
-//		var view = $('<i>');
-//		view.addClass('fa fa-search fa-2x');
-//		// put them all together
-//		link.append(view);
-//		overlay.append(title);
-//		overlay.append("<br/>");
-//		overlay.append(link);
-//		holder.append(overlay);
-//		$('#col-' + k).append(holder);
 		// when we done, see if we need to load more
 		if ($('footer').isOnScreen()) {
 			PostsFull.loadPosts();

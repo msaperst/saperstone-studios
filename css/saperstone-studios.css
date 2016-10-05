@@ -36,7 +36,7 @@ table td {
 }
 
 input[type=number] {
-	padding-right: 0px;
+	padding-right: 0;
 }
 
 .no-before:before {
@@ -113,8 +113,8 @@ input[type=number] {
 	content: '';
 	float: left;
 	background: transparent;
-	width: 0px;
-	height: 0px;
+	width: 0;
+	height: 0;
 	border-style: solid;
 	border-width: 20px 100px 0 0;
 	border-color: #eaeaea transparent transparent transparent;
@@ -133,8 +133,8 @@ input[type=number] {
 	content: '';
 	float: right;
 	background: transparent;
-	width: 0px;
-	height: 0px;
+	width: 0;
+	height: 0;
 	border-style: solid;
 	border-width: 0 100px 20px 0;
 	border-color: transparent #eaeaea transparent transparent;
@@ -173,7 +173,7 @@ input[type=number] {
 	background-color: #F7F7F7;
 	margin: 0 auto;
 	border-radius: 2px;
-	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
 	overflow: hidden;
 	font-family: roboto;
 }
@@ -226,18 +226,18 @@ input[type=number] {
 
 .loginmodal-submit {
 	/* border: 1px solid #3079ed; */
-	border: 0px;
+	border: 0;
 	color: #fff;
 	text-shadow: 0 1px rgba(0, 0, 0, 0.1);
 	background-color: #4d90fe;
-	padding: 17px 0px;
+	padding: 17px 0;
 	font-family: roboto;
 	font-size: 14px;
 }
 
 .loginmodal-submit:hover {
 	/* border: 1px solid #2f5bb7; */
-	border: 0px;
+	border: 0;
 	text-shadow: 0 1px rgba(0, 0, 0, 0.3);
 	background-color: #357ae8;
 }
@@ -319,24 +319,24 @@ footer {
 }
 
 #col-0 {
-	padding: 0px 0px 0px 15px;
+	padding: 0 0 0 15px;
 }
 
 #col-1 {
-	padding: 0px 5px 0px 10px
+	padding: 0 5px 0 10px
 }
 
 #col-2 {
-	padding: 0px 10px 0px 5px
+	padding: 0 10px 0 5px
 }
 
 #col-3 {
-	padding: 0px 15px 0px 0px;
+	padding: 0 15px 0 0;
 }
 
 @media ( max-width :767px) {
 	.col-gallery {
-		padding: 0px 15px 0px 15px !important;
+		padding: 0 15px 0 15px !important;
 	}
 }
 
@@ -366,8 +366,8 @@ ul.search-results {
 .selected-album, .selected-user {
 	display: inline-block;
 	border: 1px solid lightgrey;
-	padding: 3px 0px 3px 5px;
-	margin: 0px 5px 10px 5px;
+	padding: 3px 0 3px 5px;
+	margin: 0 5px 10px 5px;
 	border-radius: 5px;
 	pointer-events: none;
 }
@@ -454,8 +454,8 @@ ul.search-results {
     cursor: pointer;
     pointer-events: all;
     position: absolute;
-    right: 0px;
-    bottom: 0px;
+    right: 0;
+    bottom: 0;
     padding: 5px;
     font-size: 20px;
 } */

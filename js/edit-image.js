@@ -5,7 +5,7 @@ if (folder.endsWith(".php") || folder === "/") {
 }
 
 $(document).ready(function() {
-    $('.editable').append('<span class="editme" style="position:absolute; bottom:0px; right:0px; padding:5px;"></span>');
+    $('.editable').append('<span class="editme" style="position:absolute; bottom:0; right:0; padding:5px;"></span>');
     $('.editme').each(function() {
         var img = $(this).parent().find('img');
         var this_class = $(this).parent().parent().attr('class');
@@ -30,7 +30,7 @@ $(document).ready(function() {
                     message : '<h1>Uploading Image...</h1>'
                 });
             },
-            onSuccess : function(files, data, xhr, pd) {
+            onSuccess : function(files, data) {
                 if (data !== "") {
                     $.unblockUI();
                     BootstrapDialog.show({
@@ -92,7 +92,7 @@ function cleanImage(img) {
         'cursor' : 'ns-resize',
     });
     img.css({
-        'top' : '0px',
+        'top' : '0',
         'height' : '',
     });
     img.parent().find('.overlay').remove();
@@ -106,8 +106,8 @@ function cleanImage(img) {
     // watermark.css({
     // 'position' : 'absolute',
     // 'width' : '200px',
-    // 'bottom' : '0px',
-    // 'left' : '0px',
+    // 'bottom' : '0',
+    // 'left' : '0',
     // 'padding' : '5px',
     // });
     // img.parent().append(watermark);
@@ -117,8 +117,8 @@ function cleanImage(img) {
     span.addClass("saveme");
     span.css({
         'position' : 'absolute',
-        'bottom' : '0px',
-        'left' : '0px',
+        'bottom' : '0',
+        'left' : '0',
         'padding' : '5px'
     });
     var button = $("<button>");

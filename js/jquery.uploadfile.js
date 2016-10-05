@@ -613,10 +613,10 @@
                 fileInput.css({
                     position : 'absolute',
                     'cursor' : 'pointer',
-                    'top' : '0px',
+                    'top' : '0',
                     'width' : '100%',
                     'height' : '100%',
-                    'left' : '0px',
+                    'left' : '0',
                     'z-index' : '100',
                     'opacity' : '0.0',
                     'filter' : 'alpha(opacity=0)',

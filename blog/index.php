@@ -25,34 +25,34 @@
     ?>
     
     <!-- Page Content -->
-	<div class="page-content container">
+    <div class="page-content container">
 
-		<!-- Page Heading/Breadcrumbs -->
-		<div class="row">
-			<div class="col-lg-12">
-				<h1 class="page-header text-center">Blog Posts</h1>
-				<ol class="breadcrumb">
-					<li><a href="/">Home</a></li>
-					<li class="active">Blog</li>
-				</ol>
-			</div>
-		</div>
-		<!-- /.row -->
+        <!-- Page Heading/Breadcrumbs -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center">Blog Posts</h1>
+                <ol class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li class="active">Blog</li>
+                </ol>
+            </div>
+        </div>
+        <!-- /.row -->
 
-		<!-- Post Section -->
-		<div id="post-content"></div>
-		<!-- /.row -->
+        <!-- Post Section -->
+        <div id="post-content"></div>
+        <!-- /.row -->
 
         <?php require_once "../footer.php"; ?>
 
     </div>
-	<!-- /.container -->
+    <!-- /.container -->
 
-	<!-- Gallery JavaScript -->
-	<script src="/js/posts-full.js"></script>
+    <!-- Gallery JavaScript -->
+    <script src="/js/posts-full.js"></script>
 
-	<!-- Script to Activate the Gallery -->
-	<script>
+    <!-- Script to Activate the Gallery -->
+    <script>
         var postsFull = new PostsFull( <?php echo count($posts); ?> );
         
         var loaded = 0;

@@ -240,7 +240,7 @@ footer {
 <!--                                 <em class="fa fa-download"></em> Download -->
 <!--                             </button> -->
 <!--                         </div> -->
-						<button id="not-downloadable-image-btn"
+                        <button id="not-downloadable-image-btn"
                             type="button"
                             class="btn btn-default btn-action btn-warning hidden">
                             <em class="fa fa-credit-card"></em> Purchase

@@ -337,9 +337,9 @@ function showFavorites() {
     $.get("/api/get-favorites.php", {
         album : $('#album').attr('album-id'),
     }, function(data) {
-        $.each(data, function(i, image) {
+        $.each(data, function(i) {
             var li = $('<li image-id="' + data[i].sequence + '" class="img-favorite">');
-            li.css('background-image', 'url(' + data[i].location + ')');
+            li.css('background-image', 'url("' + data[i].location + '")');
             li.click(function() {
                 $.post("/api/unset-favorite.php", {
                     album : $('#album').attr('album-id'),

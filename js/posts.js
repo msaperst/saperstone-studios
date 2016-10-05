@@ -27,7 +27,7 @@ Posts.prototype.loadImages = function() {
 			// create our image
 			holder.css({
 				'background-image' : 'url("' + v.preview + '")',
-				'background-position' : '0px ' + v.offset + 'px',
+				'background-position' : '0 ' + v.offset + 'px',
 				'background-size' : $('.col-gallery').width() + 'px',
 			});
 			// create our overlay

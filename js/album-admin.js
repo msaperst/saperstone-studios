@@ -200,8 +200,8 @@ $(document).ready(function() {
                 albumsDiv.attr('image-id', img.attr('image-id'));
                 albumsDiv.attr('album-id', img.attr('album-id'));
                 albumsDiv.css({
-                    'padding' : '10px 0px 10px 0px',
-                    'margin' : '0px -5px 0px -5px'
+                    'padding' : '10px 0 10px 0',
+                    'margin' : '0 -5px 0 -5px'
                 });
                 $('#albumDiv').after(albumsDiv);
                 $.get("/api/get-album-users.php", {
@@ -217,8 +217,8 @@ $(document).ready(function() {
                 downloadsDiv.attr('image-id', img.attr('image-id'));
                 downloadsDiv.attr('album-id', img.attr('album-id'));
                 downloadsDiv.css({
-                    'padding' : '10px 0px 10px 0px',
-                    'margin' : '0px -5px 0px -5px'
+                    'padding' : '10px 0 10px 0',
+                    'margin' : '0 -5px 0 -5px'
                 });
                 $('#downloadDiv').after(downloadsDiv);
                 $.get("/api/get-image-downloaders.php", {
@@ -235,8 +235,8 @@ $(document).ready(function() {
                 sharesDiv.attr('image-id', img.attr('image-id'));
                 sharesDiv.attr('album-id', img.attr('album-id'));
                 sharesDiv.css({
-                    'padding' : '10px 0px 10px 0px',
-                    'margin' : '0px -5px 0px -5px'
+                    'padding' : '10px 0 10px 0',
+                    'margin' : '0 -5px 0 -5px'
                 });
                 $('#shareDiv').after(sharesDiv);
                 $.get("/api/get-image-sharers.php", {
@@ -409,8 +409,8 @@ $(document).ready(function() {
                 albumsDiv.attr('image-id', "*");
                 albumsDiv.attr('album-id', $('#album').attr('album-id'));
                 albumsDiv.css({
-                    'padding' : '10px 0px 10px 0px',
-                    'margin' : '0px -5px 0px -5px'
+                    'padding' : '10px 0 10px 0',
+                    'margin' : '0 -5px 0 -5px'
                 });
                 $('#albumDiv').after(albumsDiv);
                 $.get("/api/get-album-users.php", {
@@ -426,8 +426,8 @@ $(document).ready(function() {
                 downloadsDiv.attr('image-id', "*");
                 downloadsDiv.attr('album-id', $('#album').attr('album-id'));
                 downloadsDiv.css({
-                    'padding' : '10px 0px 10px 0px',
-                    'margin' : '0px -5px 0px -5px'
+                    'padding' : '10px 0 10px 0',
+                    'margin' : '0 -5px 0 -5px'
                 });
                 $('#downloadDiv').after(downloadsDiv);
                 $.get("/api/get-image-downloaders.php", {
@@ -444,8 +444,8 @@ $(document).ready(function() {
                 sharesDiv.attr('image-id', "*");
                 sharesDiv.attr('album-id', $('#album').attr('album-id'));
                 sharesDiv.css({
-                    'padding' : '10px 0px 10px 0px',
-                    'margin' : '0px -5px 0px -5px'
+                    'padding' : '10px 0 10px 0',
+                    'margin' : '0 -5px 0 -5px'
                 });
                 $('#shareDiv').after(sharesDiv);
                 $.get("/api/get-image-sharers.php", {

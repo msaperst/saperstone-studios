@@ -309,7 +309,7 @@ function editUser(data) {
                         var albumsDiv = $('<div>');
                         albumsDiv.attr('id', 'user-albums');
                         albumsDiv.css({
-                            'padding' : '0px 10px 5px 10px'
+                            'padding' : '0 10px 5px 10px'
                         });
                         dialogInItself.$modalBody.after(albumsDiv);
                         $.get("/api/get-user-albums.php", {

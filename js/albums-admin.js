@@ -247,7 +247,7 @@ function editAlbum(id) {
                             var albumsDiv = $('<div>');
                             albumsDiv.attr('id', 'album-users');
                             albumsDiv.css({
-                                'padding' : '0px 10px 5px 10px'
+                                'padding' : '0 10px 5px 10px'
                             });
                             dialogInItself.$modalBody.after(albumsDiv);
                             $.get("/api/get-album-users.php", {
