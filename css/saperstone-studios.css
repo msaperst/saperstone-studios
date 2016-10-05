@@ -88,9 +88,9 @@ input[type=number] {
 	border-bottom: 5px #980f7f solid;
 	height: 20px;
 	width: 100%;
-	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .navbar-inverse .navbar-toggle .icon-bar {
@@ -121,6 +121,8 @@ input[type=number] {
 	top: -21px;
 	position: relative;
 	-moz-transform: scale(.9999);
+	-webkit-transform: scale(.9999);
+	transform: scale(.9999);
 }
 
 #nav-logo-link-2 {
@@ -141,6 +143,8 @@ input[type=number] {
 	top: -11px;
 	position: relative;
 	-moz-transform: scale(.9999);
+	-webkit-transform: scale(.9999);
+	transform: scale(.9999);
 }
 
 .navbar-nav>li>a:hover, .navbar-nav>li>a:focus {
@@ -197,13 +201,16 @@ input[type=number] {
 	font-size: 16px;
 	width: 100%;
 	margin-bottom: 10px;
+	-moz-appearance: none;
 	-webkit-appearance: none;
+	appearance: none;
 	background: #fff;
 	border: 1px solid #d9d9d9;
 	border-top: 1px solid #c0c0c0;
 	padding: 0 8px;
-	box-sizing: border-box;
 	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .loginmodal-container input[type=text]:hover, .loginmodal-container input[type=password]:hover,
