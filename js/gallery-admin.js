@@ -67,7 +67,6 @@ function editGallery(id) {
                                         // wrapping the <button> DOM element.
                     $button.spin();
                     disableDialogButtons(dialogItself);
-                    var markup;
                     // need to determine how to make thumbs, with proof all
                     // over, watermark in corner, or no watermark
                     BootstrapDialog.show({

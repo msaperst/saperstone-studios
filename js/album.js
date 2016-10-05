@@ -33,7 +33,6 @@ Album.prototype.loadImages = function() {
             // create our holding div
             var holder = $('<div>');
             holder.addClass('gallery hovereffect');
-            // holder.width( shortest.obj.width() );
             holder.height(parseInt(v.height * shortest.obj.width() / v.width));
             // create our image
             var img = $('<img>');
@@ -47,7 +46,6 @@ Album.prototype.loadImages = function() {
             // our view link
             var link = $('<a>');
             link.addClass('info no-border');
-            // link.attr('href','javascript:void(0);');
             link.attr('data-toggle', 'modal');
             link.attr('data-target', '#album');
             link.on('click', function() {

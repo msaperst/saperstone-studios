@@ -22,7 +22,7 @@
     opacity: 0;
     background-color: rgba(0, 0, 0, 0.5);
     -webkit-transition: all .4s ease-in-out;
-    transition: all .4s ease-in-out
+    transition: all .4s ease-in-out;
 }
 
 .hovereffect img {
