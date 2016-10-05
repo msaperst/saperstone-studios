@@ -198,10 +198,8 @@ function editUser(data) {
             activeInput.attr('id', 'user-active');
             activeInput.attr('type', 'checkbox');
             activeInput.prop('checked', true);
-            if (data !== null) {
-                if (data.active !== "1") {
-                    activeInput.prop('checked', false);
-                }
+            if (data !== null && data.hasOwnProperty('active') && data.active !== "1") {
+                activeInput.prop('checked', false);
             }
             inputs.append(activeDiv.append(activeInputDiv.append(activeInputDivDiv.append(activeLabel.append(activeInput).append(" Active User")))));
 

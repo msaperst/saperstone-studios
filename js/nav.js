@@ -92,10 +92,8 @@ $(function() {
         });
     });
 
-    if (window.location.hash) {
-        if (window.location.hash === "#album") {
-            findAlbum();
-        }
+    if (window.location.hash && window.location.hash === "#album") {
+        findAlbum();
     }
 });
 window.onhashchange = function() {

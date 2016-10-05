@@ -878,9 +878,8 @@
                 }
             };
 
-            if (s.showPreview && file !== null) {
-                if (file.type.toLowerCase().split("/").shift() === "image")
-                    getSrcToPreview(file, pd.preview);
+            if (s.showPreview && file !== null && file.type.toLowerCase().split("/").shift() === "image") {
+                getSrcToPreview(file, pd.preview);
             }
 
             if (s.autoSubmit) {
