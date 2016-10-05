@@ -44,9 +44,9 @@
 
 		<!-- Services Section -->
 		<div class="row">
-			<div id="col-0" class="col-md-4 col-sm-6 col-gallery"></div>
-			<div id="col-1" class="col-md-4 col-sm-6 col-gallery"></div>
-			<div id="col-2" class="col-md-4 col-sm-6 col-gallery"></div>
+			<div id="col-0" class="col-md-4 col-gallery"></div>
+			<div id="col-1" class="col-md-4 col-gallery"></div>
+			<div id="col-2" class="col-md-4 col-gallery"></div>
 		</div>
 		<!-- /.row -->
 

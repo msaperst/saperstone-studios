@@ -49,6 +49,9 @@ Posts.prototype.loadImages = function() {
 			overlay.append("<br/>");
 			overlay.append(link);
 			holder.append(overlay);
+			if ($(window).width() < 767) {
+				k = 1;
+			}
 			$('#col-' + k).append(holder);
 		});
 		// when we done, see if we need to load more
