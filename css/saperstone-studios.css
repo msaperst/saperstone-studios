@@ -492,3 +492,16 @@ ul.search-results {
 .post-image {
 	position: absolute;
 }
+
+@media ( max-width :767px) {
+	.post-protects,.post-images {
+		height: 100% !important;
+	}
+	.post-image {
+		height: auto !important;
+		width: 100% !important;
+		left: auto !important;
+		top: auto !important;
+		position: relative !important;
+	}
+}
