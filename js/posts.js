@@ -52,7 +52,7 @@ Posts.prototype.loadImages = function() {
 			if ($(window).width() < 767) {
 				k = 1;
 			}
-			$('#col-' + k).append(holder);
+			$('#post-' + k).append(holder);
 		});
 		// when we done, see if we need to load more
 		if ($('footer').isOnScreen()) {
