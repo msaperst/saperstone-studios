@@ -4,6 +4,13 @@ var my_id;
 $(function() {
     my_role = $('#my-user-role').val();
     my_id = $('#my-user-id').val();
+    
+	$.ajax({ 
+		url: '/api/save-stats.php', 
+		data: { 
+			resolution: screen.width + "x" + screen.height
+		} 
+	});
 
     $('#nav-search-input').width($('#nav-search-input').parent().parent().width() - 50);
 

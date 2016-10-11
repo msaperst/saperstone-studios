@@ -15,7 +15,7 @@ session_start ();
 include_once "../php/user.php";
 $user = new user ();
 
-if ($user->getRole () != "admin") {
+if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();

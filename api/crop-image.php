@@ -11,7 +11,7 @@ session_start ();
 include_once "../php/user.php";
 $user = new user ();
 
-if ($user->getRole () != "admin") {
+if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }
@@ -58,7 +58,7 @@ system ( "mogrify -resize ${maxWidth}x \"$image\"" );
 system ( "mogrify -density 72 \"$image\"" );
 
 // verify that our image can fit in the specified crop
-if (getimagesize ( $image ) [1] < ($height-1)) {
+if (getimagesize ( $image ) [1] < ($height - 1)) {
     echo "Cropped image is smaller than the required image";
     exit ();
 }
