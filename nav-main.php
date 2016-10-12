@@ -33,7 +33,6 @@
             class="dropdown-toggle" data-toggle="dropdown">Blog<strong class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="/blog/posts.php">Recent Posts</a></li>
-                <li><a href="#">Most Popular</a></li>
                 <li><a href="/blog/categories.php">Categories</a></li>
                 <li><input id="nav-search-input" /> <em id="nav-search-icon"
                     class="fa fa-search"></em></li>

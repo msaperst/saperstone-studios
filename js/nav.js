@@ -12,7 +12,17 @@ $(function() {
 		} 
 	});
 
-    $('#nav-search-input').width($('#nav-search-input').parent().parent().width() - 50);
+    $('#nav-search-input').width($('#nav-search-input').parent().parent().width() - 55);
+    
+    $('#nav-search-icon').click(function(){
+    	searchBlog();
+    });
+    
+    $('#nav-search-input').keypress(function (e) {
+    	if (e.which === 13) {
+    		searchBlog();
+    	}
+	});
 
     $('#login-submit').click(function() {
         $.post("/api/login.php", {
@@ -103,6 +113,7 @@ $(function() {
         findAlbum();
     }
 });
+
 window.onhashchange = function() {
     if (window.location.hash === "#album") {
         findAlbum();
@@ -170,6 +181,10 @@ function findAlbum() {
             }
         } ],
     });
+}
+
+function searchBlog() {
+	window.location = "/blog/search.php?s=" + $('#nav-search-input').val();
 }
 
 function getQueryVariable(variable) {
