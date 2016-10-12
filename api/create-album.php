@@ -16,7 +16,7 @@ include_once "../php/user.php";
 $user = new user ();
 
 // ensure we are logged in appropriately
-if ($user->getRole () != "admin" && $user->getRole () != "uploader") {
+if (! $user->isAdmin () && $user->getRole () != "uploader") {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();

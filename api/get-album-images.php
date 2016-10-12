@@ -46,7 +46,7 @@ if (! $album_info ['name']) {
 }
 
 // if not an admin and no exists for the album
-if ($user->getRole () != "admin" && $album_info ['code'] == "") {
+if (! $user->isAdmin () && $album_info ['code'] == "") {
     // if not logged in, throw an error
     if (! $user->isLoggedIn ()) {
         $response ['err'] = "You are not authorized to view this album";

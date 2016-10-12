@@ -370,7 +370,7 @@ ul.search-results {
 	right: auto;
 }
 
-.selected-album, .selected-user {
+.selected-album, .selected-user, .selected-tag {
 	display: inline-block;
 	border: 1px solid lightgrey;
 	padding: 3px 0 3px 5px;
@@ -379,7 +379,7 @@ ul.search-results {
 	pointer-events: none;
 }
 
-.selected-album:after, .selected-user:after {
+.selected-album:after, .selected-user:after, .selected-tag:after {
 	content: '\f014';
 	font-family: FontAwesome;
 	font-weight: normal;

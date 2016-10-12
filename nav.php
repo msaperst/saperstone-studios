@@ -40,8 +40,7 @@
                         <li><a href="/albums/users.php">Manage Users</a></li>
                         <li><a href="/albums/index.php">Manage Albums</a></li>
                         <li><a href="/albums/products.php">Manage Products</a></li>
-                        <li><a href="#">Manage Posts</a></li>
-                        <li><a href="#">Write New Post</a></li>
+                        <li><a href="/blog/new.php">Write New Post</a></li>
                         <li><a href="#">Manage Profile</a></li>
                         <li><a id='logout-button' href="javascript:void(0);"><em class="fa fa-sign-out"></em> Logout</a></li>
                     </ul></li>

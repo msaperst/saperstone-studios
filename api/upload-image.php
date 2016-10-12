@@ -12,7 +12,7 @@ include_once "../php/user.php";
 $user = new user ();
 
 // only admin users and uploader users who own the album can make updates
-if ($user->getRole () != "admin") {
+if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     exit ();
 }

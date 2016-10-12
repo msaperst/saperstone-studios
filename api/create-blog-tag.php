@@ -21,23 +21,27 @@ if (! $user->isAdmin ()) {
     exit ();
 }
 
-if (isset ( $_POST ['album'] )) {
-    $album = $_POST ['album'];
+$tag = "";
+
+if (isset ( $_POST ['tag'] ) && $_POST ['tag'] != "") {
+    $tag = mysqli_real_escape_string ( $conn->db, $_POST ['tag'] );
 } else {
-    echo "Album is not provided";
-    $conn->disconnect ();
-    exit ();
+    echo "No category was provided";
+    exit;
 }
 
-$sql = "DELETE FROM albums_for_users WHERE album = $album";
+$sql = "SELECT * FROM `tags` WHERE `tag` = '$tag';";
+$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+if( $row['id'] ) {
+    echo "That category already exists";
+    exit;
+}
+
+$sql = "INSERT INTO tags ( tag ) VALUES ('$tag');";
 mysqli_query ( $conn->db, $sql );
+$last_id = mysqli_insert_id ( $conn->db );
 
-if (isset ( $_POST ['users'] )) {
-    foreach ( $_POST ['users'] as $user ) {
-        $sql = "INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '$user', '$album' );";
-        mysqli_query ( $conn->db, $sql );
-    }
-}
+echo $last_id;
 
 $conn->disconnect ();
 exit ();
