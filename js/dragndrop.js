@@ -246,7 +246,9 @@ function removeImage(ele) {
 		'left' : '',
 		'top' : '',
 		'width' : '',
-		'height' : '100px'
+		'height' : '',
+		'z-index' : '',
+		'cursor' : '',
 	});
 	resizeImages(arrayName);
 }

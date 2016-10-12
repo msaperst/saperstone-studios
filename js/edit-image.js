@@ -124,7 +124,7 @@ function cleanImage(img) {
     span.append(button);
     img.parent().append(span);
 
-    // make the image draggablr
+    // make the image draggable
     img.draggable({
         axis : "y",
     });

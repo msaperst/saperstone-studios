@@ -40,7 +40,7 @@ if (! $user->isAdmin ()) {
     
 	<!-- Post Control Bar -->
 	<div data-spy="affix"
-		style="margin-top: 35px; margin-left: 5px; max-width: 300px; z-index:100;"
+		style="margin-top: 35px; margin-left: 5px; max-width: 300px; z-index: 100;"
 		class="text-center">
 		<div id='post-button-holder'>
 			<br />
@@ -63,7 +63,19 @@ if (! $user->isAdmin ()) {
 			</button>
 		</div>
 
-		<div id='post-image-holder' style='z-index:100;'></div>
+		<div id='post-image-holder' style='z-index: 100; height: 300px;'></div>
+		<!-- overflow-y:auto;  -->
+	</div>
+
+	<!-- Preview Control Bar -->
+	<div data-spy="affix"
+		style="right: 0px; margin-top: 35px; margin-right: 5px; max-width: 300px; z-index: 100;"
+		class="text-center">
+		<div id='post-preview-holder' class='text-center'
+			style='width: 300px; height: 176px; background-color: red; overflow: hidden;'>
+			<select id='post-preview-image'
+				style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'><option></option></select>
+		</div>
 	</div>
 
 	<!-- Page Content -->
@@ -85,9 +97,9 @@ if (! $user->isAdmin ()) {
 		<!-- Post Section -->
 		<div class="row">
 			<div class="col-lg-12">
-				<input id='post-title-input'
+				<strong><input id='post-title-input'
 					class='form-control input-lg text-center' type='text'
-					placeholder='Blog Post Title' />
+					placeholder='Blog Post Title' /></strong>
 			</div>
 		</div>
 		<div class="row">
@@ -135,11 +147,13 @@ if (! $user->isAdmin ()) {
 
 	<script src="/js/post-admin.js"></script>
 	<script src="/js/dragndrop.js"></script>
-	<script src="/js/jquery.uploadfile.js"></script><script
+	<script src="/js/jquery.uploadfile.js"></script>
+	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js"></script>
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
 </body>
 

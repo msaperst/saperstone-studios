@@ -535,6 +535,11 @@ ul.search-results {
 #post-button-holder .btn {
 	margin-bottom: 5px;
 }
+
+#post-image-holder img {
+	width: 95px;
+}
+
 .blog-editable-text, .blog-editable-images, .note-editor {
 	margin-top: 20px;
 }
