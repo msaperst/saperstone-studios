@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `blog_details` (
   `date` date NOT NULL,
   `preview` varchar(255) NOT NULL,
   `offset` int(11) NOT NULL,
+  `active` boolean NOT NULL DEFAULT TRUE,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

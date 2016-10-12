@@ -47,6 +47,10 @@ input[type=number] {
 	content: none !important;
 }
 
+.ui-helper-hidden-accessible {
+	display: none !important;
+}
+
 /* Modal Stylizing */
 .modal-header {
 	background-color: #428bca;
@@ -501,7 +505,7 @@ ul.search-results {
 }
 
 @media ( max-width :767px) {
-	.post-protects,.post-images {
+	.post-protects, .post-images {
 		height: 100% !important;
 	}
 	.post-image {
@@ -511,4 +515,26 @@ ul.search-results {
 		top: auto !important;
 		position: relative !important;
 	}
+}
+
+/* For blog editing */
+.ui-sortable {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+.imageBuilder {
+	text-align: center;
+	overflow: hidden;
+	position: relative;
+	background: lightblue;
+}
+
+#post-button-holder .btn {
+	margin-bottom: 5px;
+}
+.blog-editable-text, .blog-editable-images, .note-editor {
+	margin-top: 20px;
 }

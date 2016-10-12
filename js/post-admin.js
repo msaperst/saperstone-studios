@@ -1,7 +1,67 @@
+var imageId = 0;
+
 $(document).ready(function() {
 	$('#post-tags-select').change(function() {
 		addTag($(this));
 	});
+	
+	$('#add-text-button').click(function(){
+		addTextArea();
+	});
+	
+	$('#add-image-button').click(function(){
+		addImageArea();
+	});
+	
+	$('#post-image-holder').uploadFile({
+        url : "/api/upload-blog-images.php",
+        uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
+        multiple : true,
+        dragDrop : true,
+        uploadButtonLocation : $('#post-button-holder'),
+        uploadContainer : $('#post-image-holder'),
+        uploadButtonClass : "btn btn-default btn-info",
+        statusBarWidth : "auto",
+        dragdropWidth : "100%",
+        fileName : "myfile",
+        sequential : true,
+        sequentialCount : 5,
+        acceptFiles : "image/*",
+        uploadQueueOrder : "bottom",
+        onSubmit : function() {
+            $('.ajax-file-upload-container').show();
+        },
+        onSuccess : function(files, data, xhr, pd) {
+        	data = JSON.parse(data);
+        	pd.statusbar.remove();
+        	if( $.isArray(data) ) {
+        		$.each(files, function(key, value){
+        			var img = $("<img>");
+        			img.attr({
+        				id: imageId++,
+        				src: "/tmp/" + value,
+        				width: "100px",
+        			});
+        			img.addClass('draggable');
+        			img.draggable();
+        			img.dblclick(function () {
+                        removeImage($(this));
+        			});
+        			$('#post-image-holder').append(img);
+        		});
+        	} else {
+        		$('#post-image-holder').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+
+        	}
+        },
+        afterUploadAll : function() {
+            setTimeout(function() {
+                $('.ajax-file-upload-container').hide();
+            }, 5000);
+        },
+    });
+	
+	addImageArea();
 });
 
 function newTag(ele) {

@@ -14,10 +14,10 @@ if (isset ( $_GET ['howMany'] )) {
     $howMany = ( int ) $_GET ['howMany'];
 }
 
-$sql = "SELECT * FROM `blog_details` ORDER BY `date` DESC LIMIT $start,$howMany;";
+$sql = "SELECT * FROM `blog_details` WHERE `active` ORDER BY `date` DESC LIMIT $start,$howMany;";
 if (isset ( $_GET ['tag'] )) {
     $tag = mysqli_real_escape_string ( $conn->db, $_GET ['tag'] );
-    $sql = "SELECT blog_details.* FROM `blog_tags` JOIN `blog_details` ON blog_tags.blog = blog_details.id WHERE blog_tags.tag = '$tag'  ORDER BY `date` DESC LIMIT $start,$howMany;";
+    $sql = "SELECT blog_details.* FROM `blog_tags` JOIN `blog_details` ON blog_tags.blog = blog_details.id WHERE blog_tags.tag = '$tag' AND blog_details.active ORDER BY `date` DESC LIMIT $start,$howMany;";
 }
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {

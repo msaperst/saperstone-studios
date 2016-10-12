@@ -10,10 +10,10 @@ if (isset ( $_GET ['start'] )) {
     $start = ( int ) $_GET ['start'];
 }
 
-$sql = "SELECT * FROM `blog_details` ORDER BY `date` DESC LIMIT $start,1;";
+$sql = "SELECT * FROM `blog_details` WHERE `active` ORDER BY `date` DESC LIMIT $start,1;";
 if (isset ( $_GET ['tag'] )) {
     $tag = mysqli_real_escape_string ( $conn->db, $_GET ['tag'] );
-    $sql = "SELECT blog_details.* FROM `blog_tags` JOIN `blog_details` ON blog_tags.blog = blog_details.id WHERE blog_tags.tag = '$tag'  ORDER BY `date` DESC LIMIT $start,1;";
+    $sql = "SELECT blog_details.* FROM `blog_tags` JOIN `blog_details` ON blog_tags.blog = blog_details.id WHERE blog_tags.tag = '$tag' AND blog_details.active ORDER BY `date` DESC LIMIT $start,1;";
 }
 $r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 $r['date'] = date( 'F jS, Y', strtotime( $r['date'] ) );

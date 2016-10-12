@@ -25,8 +25,11 @@ if (! $user->isAdmin ()) {
 <head>
 
     <?php require_once "../header.php"; ?>
-    <link
-	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
+	<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
+	rel="stylesheet">
+<link
+	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
 	rel="stylesheet">
 
 </head>
@@ -34,8 +37,36 @@ if (! $user->isAdmin ()) {
 <body>
 
     <?php require_once "../nav.php"; ?>
+    
+	<!-- Post Control Bar -->
+	<div data-spy="affix"
+		style="margin-top: 35px; margin-left: 5px; max-width: 300px; z-index:100;"
+		class="text-center">
+		<div id='post-button-holder'>
+			<br />
+			<button id="add-text-button" type="button" class="btn btn-info">
+				<em class="fa fa-file-text-o"></em> Add Text Area
+			</button>
+			<button id="add-image-button" type="button" class="btn btn-info">
+				<em class="fa fa-image"></em> Add Image Area
+			</button>
+			<br />
+			<button id="save-post" type="button" class="btn btn-warning">
+				<em class="fa fa-save"></em> Save Post
+			</button>
+			<br />
+			<button id="schedule-post" type="button" class="btn btn-success">
+				<em class="fa fa-clock-o"></em> Schedule Post
+			</button>
+			<button id="publish-post" type="button" class="btn btn-success">
+				<em class="fa fa-send"></em> Publish Post
+			</button>
+		</div>
 
-    <!-- Page Content -->
+		<div id='post-image-holder' style='z-index:100;'></div>
+	</div>
+
+	<!-- Page Content -->
 	<div class="page-content container">
 
 		<!-- Page Heading/Breadcrumbs -->
@@ -89,8 +120,10 @@ if (! $user->isAdmin ()) {
 		<!-- /.row -->
 
 		<!-- Post Content -->
-		<div id="post-content"></div>
-		<!-- /.row -->
+		<ul id="post-content" class="ui-sortable"></ul>
+
+	</div>
+	<!-- /.row -->
 
         <?php
         require_once "../footer.php";
@@ -99,7 +132,14 @@ if (! $user->isAdmin ()) {
     </div>
 	<!-- /.container -->
 
+
 	<script src="/js/post-admin.js"></script>
+	<script src="/js/dragndrop.js"></script>
+	<script src="/js/jquery.uploadfile.js"></script><script
+		src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
 </body>
 
