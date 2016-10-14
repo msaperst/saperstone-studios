@@ -32,13 +32,13 @@ if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
 
 $sql = "SELECT * FROM galleries WHERE id = $id;";
 $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (!$gallery_info ['id']) {
+if (! $gallery_info ['id']) {
     echo "That ID doesn't match any galleries";
     $conn->disconnect ();
     exit ();
 }
 // only admin users and uploader users who own the gallery can make updates
-if (!$user->isAdmin ()) {
+if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();

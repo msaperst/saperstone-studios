@@ -23,7 +23,7 @@ if (isset ( $_GET ['type'] ) && $_GET ['type'] != "") {
 $sql = "SELECT opt FROM product_options WHERE product_type = '$type';";
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $response [] = $r['opt'];
+    $response [] = $r ['opt'];
 }
 echo json_encode ( $response );
 

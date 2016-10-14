@@ -33,7 +33,7 @@ if (filter_var ( $email, FILTER_VALIDATE_EMAIL )) {
         $subject = "Reset Key For Saperstone Studios Account";
         $text = "You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.\n\n";
         $text .= "\t$resetCode";
-        $html = "<html><body>".$string->textToHTML($text)."</body></html>";
+        $html = "<html><body>" . $string->textToHTML ( $text ) . "</body></html>";
         $from = "noreply@saperstonestudios.com";
         $to = "$name <$email>";
         

@@ -11,6 +11,7 @@ var currentMousePos = {
 	x : -1,
 	y : -1
 };
+var moveTo = null;
 
 // a function to set all of our globals
 var isDragged = false;
@@ -40,20 +41,17 @@ function addTextArea(text) {
 	text.summernote();
 
 	// set our removal functionality
-	text
-			.dblclick(function() {
-				text = $(this).parent().find('textarea').val();
-				if (text !== "") {
-					var r = confirm("This input area has text in it, are you sure you want to delete it?");
-					if (r === false) {
-						return;
-					}
-				}
-				$(this).parent().remove();
-			});
-	$(elementBuilder).sortable({
-		handle : '.panel-heading'
+	text.dblclick(function() {
+		text = $(this).parent().find('textarea').val();
+		if (text !== "") {
+			var r = confirm("This input area has text in it, are you sure you want to delete it?");
+			if (r === false) {
+				return;
+			}
+		}
+		$(this).parent().remove();
 	});
+	makeSortable();
 }
 // add a new image area
 function addImageArea(images) {
@@ -141,7 +139,20 @@ function addImageArea(images) {
 				},
 			});
 	// setup our sortable images
-	$(elementBuilder).sortable();
+	makeSortable();
+}
+
+function makeSortable() {
+    $(elementBuilder).sortable({
+        handle : '.panel-heading',
+        start: function( event, ui ) {
+            moveTo = ui.item.prev();
+        },
+        update: function( event, ui ) {
+            console.log( moveTo );
+            moveTo.insertBefore( ui.item );
+        }
+    });
 }
 
 function placeImage(ele, arrayName) {

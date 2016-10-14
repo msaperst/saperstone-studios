@@ -36,7 +36,7 @@ if ($r ['id']) {
 if (isset ( $_GET ['albumAdd'] ) && $_GET ['albumAdd'] == 1) {
     $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "' AND album = '" . $r ['id'] . "';";
     $s = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-    if (!$s ['user']) {
+    if (! $s ['user']) {
         $sql = "INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . $user->getId () . "', '" . $r ['id'] . "' );";
         mysqli_query ( $conn->db, $sql );
     }

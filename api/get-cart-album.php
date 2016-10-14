@@ -41,7 +41,7 @@ if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
 
 $sql = "SELECT * FROM albums WHERE id = $album;";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (!$album_info ['id']) {
+if (! $album_info ['id']) {
     echo "That ID doesn't match any albums";
     $conn->disconnect ();
     exit ();
@@ -54,11 +54,11 @@ while ( $r = mysqli_fetch_assoc ( $result ) ) {
     unset ( $r ['cost'] );
     $sql = "SELECT opt FROM product_options WHERE product_type = '" . $r ['product_type'] . "';";
     $results = mysqli_query ( $conn->db, $sql );
-    $options = array(); 
+    $options = array ();
     while ( $s = mysqli_fetch_assoc ( $results ) ) {
-        $options [] = $s['opt'];
+        $options [] = $s ['opt'];
     }
-    $r['options'] = $options;
+    $r ['options'] = $options;
     $cart [] = $r;
 }
 echo json_encode ( $cart );

@@ -47,8 +47,8 @@ if (isset ( $_FILES ["myfile"] )) {
     foreach ( $ret as $file ) {
         $size = getimagesize ( $output_dir . $file );
         if ($size [0] < 1200) {
-            echo json_encode( "The image <b>$file</b> doesn't meet the minimum width requirements of 1200px" );
-            unlink( $output_dir . $file );
+            echo json_encode ( "The image <b>$file</b> doesn't meet the minimum width requirements of 1200px" );
+            unlink ( $output_dir . $file );
             exit ();
         }
     }

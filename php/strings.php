@@ -10,8 +10,8 @@ class strings {
         return $randomString;
     }
     function textToHTML($text) {
-        $text = str_replace("\n","<br/>",$text);
-        $text = str_replace("\t","&nbsp;&nbsp;&nbsp;&nbsp;",$text);
+        $text = str_replace ( "\n", "<br/>", $text );
+        $text = str_replace ( "\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $text );
         return $text;
     }
 }

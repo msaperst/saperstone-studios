@@ -18,7 +18,7 @@ $smtp = Mail::factory ( 'smtp', array (
 
 $mail = $smtp->send ( $to, $headers, $body );
 
-if (!file_exists('../logs')) {
+if (! file_exists ( '../logs' )) {
     mkdir ( "../logs", 0700 );
 }
 $myFile = "../logs/emails.txt";

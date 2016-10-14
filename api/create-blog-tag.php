@@ -27,14 +27,14 @@ if (isset ( $_POST ['tag'] ) && $_POST ['tag'] != "") {
     $tag = mysqli_real_escape_string ( $conn->db, $_POST ['tag'] );
 } else {
     echo "No category was provided";
-    exit;
+    exit ();
 }
 
 $sql = "SELECT * FROM `tags` WHERE `tag` = '$tag';";
 $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if( $row['id'] ) {
+if ($row ['id']) {
     echo "That category already exists";
-    exit;
+    exit ();
 }
 
 $sql = "INSERT INTO tags ( tag ) VALUES ('$tag');";

@@ -43,7 +43,7 @@ if ($_POST ['password'] != $_POST ['passwordConfirm']) {
     $err [] = "Password and Confirmation do not match!";
 }
 
-if ($_POST ['password'] == "" || $_POST ['passwordConfirm'] == "" ) {
+if ($_POST ['password'] == "" || $_POST ['passwordConfirm'] == "") {
     $err [] = "Password cannot be blank";
 }
 $err = array_unique ( $err );
