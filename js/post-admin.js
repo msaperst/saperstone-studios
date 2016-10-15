@@ -1,6 +1,8 @@
 var imageId = 0;
 
 $(document).ready(function() {
+    sortOptions();
+    
     $('#post-tags-select').change(function() {
         addTag($(this));
     });
@@ -29,59 +31,60 @@ $(document).ready(function() {
         setPreview();
     });
 
-    $('#post-image-holder').uploadFile({
-        url : "/api/upload-blog-images.php",
-        uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
-        multiple : true,
-        dragDrop : true,
-        uploadButtonLocation : $('#post-button-holder'),
-        uploadContainer : $('#post-button-holder'),
-        uploadButtonClass : "btn btn-default btn-info",
-        statusBarWidth : "auto",
-        dragdropWidth : "100%",
-        fileName : "myfile",
-        sequential : true,
-        sequentialCount : 5,
-        acceptFiles : "image/*",
-        uploadQueueOrder : "bottom",
-        onSubmit : function() {
-            $('.ajax-file-upload-container').show();
-        },
-        onSuccess : function(files, data, xhr, pd) {
-            data = JSON.parse(data);
-            pd.statusbar.remove();
-            if ($.isArray(data)) {
-                $.each(files, function(key, value) {
-                    var img = $("<img>");
-                    img.attr({
-                        id : "image-" + imageId++,
-                        src : "/tmp/" + value,
+    if( $('#post-image-holder').length ) {
+        $('#post-image-holder').uploadFile({
+            url : "/api/upload-blog-images.php",
+            uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
+            multiple : true,
+            dragDrop : true,
+            uploadButtonLocation : $('#post-button-holder'),
+            uploadContainer : $('#post-button-holder'),
+            uploadButtonClass : "btn btn-default btn-info",
+            statusBarWidth : "auto",
+            dragdropWidth : "100%",
+            fileName : "myfile",
+            sequential : true,
+            sequentialCount : 5,
+            acceptFiles : "image/*",
+            uploadQueueOrder : "bottom",
+            onSubmit : function() {
+                $('.ajax-file-upload-container').show();
+            },
+            onSuccess : function(files, data, xhr, pd) {
+                data = JSON.parse(data);
+                pd.statusbar.remove();
+                if ($.isArray(data)) {
+                    $.each(files, function(key, value) {
+                        var img = $("<img>");
+                        img.attr({
+                            id : "image-" + imageId++,
+                            src : "/tmp/" + value,
+                        });
+                        img.addClass('draggable');
+                        img.draggable();
+                        img.dblclick(function() {
+                            removeImage($(this));
+                        });
+                        $('#post-image-holder').append(img);
+                        var option = $('<option>');
+                        option.text(value)
+                        $('#post-preview-image').append(option);
                     });
-                    img.addClass('draggable');
-                    img.draggable();
-                    img.dblclick(function() {
-                        removeImage($(this));
-                    });
-                    $('#post-image-holder').append(img);
-                    var option = $('<option>');
-                    option.text(value)
-                    $('#post-preview-image').append(option);
-                });
-            } else {
-                $('#post-image-holder').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                } else {
+                    $('#post-image-holder').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                    
+                }
+            },
+            afterUploadAll : function() {
+                setTimeout(function() {
+                    $('.ajax-file-upload-container').hide();
+                }, 5000);
+            },
+        });
+        addImageArea();
 
-            }
-        },
-        afterUploadAll : function() {
-            setTimeout(function() {
-                $('.ajax-file-upload-container').hide();
-            }, 5000);
-        },
-    });
-
-    addImageArea();
-
-    $('#post-image-holder').height($(window).height() - $('#post-image-holder').offset().top - 70);
+        $('#post-image-holder').height($(window).height() - $('#post-image-holder').offset().top - 70);
+    }
 });
 
 function newTag(ele) {
@@ -180,7 +183,23 @@ function removeTag(ele) {
     option.html(ele.text());
     $('#post-tags-select').append(option);
     ele.remove();
+    
+    sortOptions();
+}
 
+function sortOptions() {
+    var my_options = $("#post-tags-select option");
+    var selected = $("#post-tags-select").val();
+
+    my_options.sort(function(a,b) {
+        if (a.text > b.text) return 1;
+        if (a.text < b.text) return -1;
+        return 0
+    });
+    
+    $("#post-tags-select").empty().append( my_options );
+    $("#post-tags-select option:nth-child(1)").after( $("#post-tags-select option[value=0]") );
+    $("#post-tags-select").val(selected);
 }
 
 function collectPost(callback) {

@@ -35,6 +35,10 @@
 			<ul class="dropdown-menu">
 				<li><a href="/blog/posts.php">Recent Posts</a></li>
 				<li><a href="/blog/categories.php">Categories</a></li>
+				<?php if ( $user->isAdmin () ) { ?>
+				<li><a href="/blog/new.php">Write New Post</a></li>
+				<li><a href="/blog/manage.php">Manage Posts</a></li>
+				<?php } ?>
 				<li><input id="nav-search-input" /> <em id="nav-search-icon"
 					class="fa fa-search"></em></li>
 			</ul></li>

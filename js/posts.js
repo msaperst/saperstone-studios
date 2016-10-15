@@ -18,6 +18,7 @@ Posts.prototype.loadImages = function() {
 		start : Posts.loaded,
 		howMany : Posts.columns
 	}, function(data) {
+	    data = data.data;
 		// load each of our 4 images on the screen
 		$.each(data, function(k, v) {
 			// create our holding div
