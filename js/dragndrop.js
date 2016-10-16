@@ -34,14 +34,14 @@ function addTextArea(text) {
 	}
 
 	// create our element
-	var text = $('<li>');
-	text.attr('id', "textArea-" + textAreas++);
-	text.addClass('blog-editable-text');
-	$(elementBuilder).append(text);
-	text.summernote();
+	var textHolder = $('<li>');
+	textHolder.attr('id', "textArea-" + textAreas++);
+	textHolder.addClass('blog-editable-text');
+	$(elementBuilder).append(textHolder);
+	textHolder.summernote();
 
 	// set our removal functionality
-	text.dblclick(function() {
+	textHolder.dblclick(function() {
 		text = $(this).parent().find('textarea').val();
 		if (text !== "") {
 			var r = confirm("This input area has text in it, are you sure you want to delete it?");
@@ -149,7 +149,6 @@ function makeSortable() {
             moveTo = ui.item.prev();
         },
         update: function( event, ui ) {
-            console.log( moveTo );
             moveTo.insertBefore( ui.item );
         }
     });
@@ -165,7 +164,7 @@ function placeImage(ele, arrayName) {
 		if (typeof imageOrder[arrayName][ndx].attr !== 'function') {
 			continue;
 		}
-		if (imageOrder[arrayName][ndx].attr('id') == ele.attr('id')) {
+		if (imageOrder[arrayName][ndx].attr('id') === ele.attr('id')) {
 			removeImage(ele);
 			break;
 		}
@@ -176,63 +175,57 @@ function placeImage(ele, arrayName) {
 	var eachImageRow = Array();
 	var lastStart = 0;
 	for (ndx in imageOrder[arrayName]) {
-		if (imageOrder[arrayName][ndx] == "BREAK") {
+		if (imageOrder[arrayName][ndx] === "BREAK") {
 			eachImageRow.push(imageOrder[arrayName].slice(lastStart, ndx));
 			ndx = ndx * 1 + 1;
 			lastStart = ndx;
-		} else if (ndx == (imageOrder[arrayName].length - 1)) {
+		} else if (parseInt(ndx) === parseInt(imageOrder[arrayName].length - 1)) {
 			eachImageRow.push(imageOrder[arrayName].slice(lastStart));
 		}
 	}
 	imageOrder[arrayName] = []; // clear out our array
 	for (ndx in eachImageRow) {
-		var thisRow = eachImageRow[ndx];
-		var rowHeight = thisRow[0].height();
-		var rowTop = thisRow[0].css('top');
-		rowTop = rowTop.substr(0, rowTop.length - 2);
-		if (yPos < rowTop || yPos > (rowTop * 1) + (rowHeight * 1)) { // if
-																		// this
-																		// is
-																		// not
-																		// in
-																		// our
-																		// row,
-																		// do
-																		// nothing
-		} else if (yPos < (rowHeight * 0.15) + (rowTop * 1)) { // if we are in
-																// the top 15%
-																// of the pixels
-																// of the row
-			// unshift an image and a break
-			thisRow.unshift(ele, "BREAK");
-		} else if (yPos > (rowHeight * 0.85) + (rowTop * 1)) { // if we are in
-																// the bottom
-																// 15% of the
-																// pixels of the
-																// row
-			// push a break and an image
-			thisRow.push("BREAK", ele);
-		} else { // search through each image to see where it fits
-			for (ndx in thisRow) {
-				var imgWidth = thisRow[ndx].width();
-				var imgLeft = thisRow[ndx].css('left');
-				imgLeft = imgLeft.substr(0, imgLeft.length - 2);
-				if (xPos < (imgLeft * 1) + (imgWidth / 2)) {
-					// insert the image
-					thisRow.splice(ndx, 0, ele);
-					break;
-				} else if (ndx == thisRow.length - 1) {
-					// push the image
-					thisRow.push(ele);
-				} else {
-				}
-			}
-		}
-		// combine our arrays with breaks in between
-		for (ndx in thisRow) {
-			imageOrder[arrayName].push(thisRow[ndx]);
-		}
-		imageOrder[arrayName].push("BREAK");
+	    if (eachImageRow.hasOwnProperty(ndx)) {
+    		var thisRow = eachImageRow[ndx];
+    		var rowHeight = thisRow[0].height();
+    		var rowTop = thisRow[0].css('top');
+    		rowTop = rowTop.substr(0, rowTop.length - 2);
+    		//if this is not in our row, do nothing
+    		if (yPos < rowTop || yPos > (rowTop * 1) + (rowHeight * 1)) {
+    		// if we are in the top %15 of the pixels of the row
+    	    // unshift an image and a break
+    		} else if (yPos < (rowHeight * 0.15) + (rowTop * 1)) {
+    			thisRow.unshift(ele, "BREAK");
+    		// if we are in the bottom 15% of the pixels of the row
+    		// push a break and an image
+    		} else if (yPos > (rowHeight * 0.85) + (rowTop * 1)) {
+    			thisRow.push("BREAK", ele);
+    		// search through each image to see where it fits
+    		} else {
+    			for (ndx in thisRow) {
+    			    if (thisRow.hasOwnProperty(ndx)) {
+        				var imgWidth = thisRow[ndx].width();
+        				var imgLeft = thisRow[ndx].css('left');
+        				imgLeft = imgLeft.substr(0, imgLeft.length - 2);
+        				if (xPos < (imgLeft * 1) + (imgWidth / 2)) {
+        					// insert the image
+        					thisRow.splice(ndx, 0, ele);
+        					break;
+        				} else if (parseInt(ndx) === parseInt(thisRow.length - 1)) {
+        					// push the image
+        					thisRow.push(ele);
+        				}
+    			    }
+    			}
+    		}
+    		// combine our arrays with breaks in between
+    		for (ndx in thisRow) {
+                if (thisRow.hasOwnProperty(ndx)) {
+                    imageOrder[arrayName].push(thisRow[ndx]);
+                }
+    		}
+    		imageOrder[arrayName].push("BREAK");
+    	}
 	}
 	if (imageOrder[arrayName].length === 0) {
 		imageOrder[arrayName].push(ele);
@@ -295,38 +288,42 @@ function resizeImages(arrayName) {
 			eachImageRow.push(imageOrder[arrayName].slice(lastStart, ndx));
 			ndx = ndx * 1 + 1;
 			lastStart = ndx;
-		} else if (ndx == (imageOrder[arrayName].length - 1)) {
+		} else if (parseInt(ndx) === parseInt(imageOrder[arrayName].length - 1)) {
 			eachImageRow.push(imageOrder[arrayName].slice(lastStart));
 		}
 	}
 	var startHeight = 0; // what top positioning each file will have
 	for (ndx in eachImageRow) {
-		var thisRow = eachImageRow[ndx];
-		// get our total width
-		var eleWidth = 0;
-		var eleHeight = 0;
-		var totalUnitWidth = 0;
-		for (ndx in thisRow) {
-			eleWidth = thisRow[ndx].width();
-			eleHeight = thisRow[ndx].height();
-			totalUnitWidth += eleWidth / eleHeight;
-		}
-		var widthScaling = $("div#" + arrayName).width() / totalUnitWidth;
-		var startWidth = 0; // what left positioning each file will have
-		for (ndx in thisRow) {
-			eleWidth = thisRow[ndx].width();
-			eleHeight = thisRow[ndx].height();
-			var newWidth = Math.round(eleWidth / eleHeight * widthScaling);
-			thisRow[ndx].css({
-				'position' : 'absolute',
-				'left' : startWidth,
-				'top' : startHeight,
-				'width' : newWidth,
-				'height' : widthScaling
-			});
-			startWidth += newWidth * 1;
-		}
-		startHeight += widthScaling * 1;
+	    if (eachImageRow.hasOwnProperty(ndx)) {
+    		var thisRow = eachImageRow[ndx];
+    		// get our total width
+    		var totalUnitWidth = 0;
+    		for (ndx in thisRow) {
+    		    if (thisRow.hasOwnProperty(ndx)) {
+        			eleWidth = thisRow[ndx].width();
+        			eleHeight = thisRow[ndx].height();
+        			totalUnitWidth += eleWidth / eleHeight;
+    		    }
+		    }
+    		var widthScaling = $("div#" + arrayName).width() / totalUnitWidth;
+    		var startWidth = 0; // what left positioning each file will have
+    		for (ndx in thisRow) {
+    		    if (thisRow.hasOwnProperty(ndx)) {
+        			eleWidth = thisRow[ndx].width();
+        			eleHeight = thisRow[ndx].height();
+        			var newWidth = Math.round(eleWidth / eleHeight * widthScaling);
+        			thisRow[ndx].css({
+        				'position' : 'absolute',
+        				'left' : startWidth,
+        				'top' : startHeight,
+        				'width' : newWidth,
+        				'height' : widthScaling
+        			});
+        			startWidth += newWidth * 1;
+    		    }
+    		}
+    		startHeight += widthScaling * 1;
+	    }
 	}
 	if (startHeight !== 0) {
 		$("div#" + arrayName).height(startHeight);

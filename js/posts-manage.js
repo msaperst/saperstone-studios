@@ -45,6 +45,14 @@ $(document).ready(
             $('#posts').on('draw.dt search.dt', function() {
                 setupEdit();
             });
+            
+            $('#post-delete-button').click(function(){
+                deletePost($('#post').attr('post-id'));
+            });
+            
+            $('#post-update-button').click(function(){
+                updatePost($('#post').attr('post-id'));
+            });
         });
 
 function setupEdit() {
@@ -84,23 +92,85 @@ function editPost(post) {
     }, function(data) {
         var location;
         for ( var i in data.content) {
-            for ( var j in data.content[i]) {
-                if (data.content[i][j].hasOwnProperty('location')) {
-                    var bits = data.content[i][j].location.split('/');
-                    var option = $('<option>');
-                    option.text(bits.pop());
-                    $('#post-preview-image').append(option);
-                    location = bits.join('/');
+            if (data.content.hasOwnProperty(i)) {
+                for ( var j in data.content[i]) {
+                    if (data.content[i][j].hasOwnProperty('location')) {
+                        var bits = data.content[i][j].location.split('/');
+                        var option = $('<option>');
+                        option.text(bits.pop());
+                        $('#post-preview-image').append(option);
+                        location = bits.join('/');
+                    }
                 }
             }
         }
         $('#post').attr('post-location', location);
-        for ( var i in data.tags) {
-            console.log(data.tags[i]);
-            $('#post-tags-select').val(data.tags[i].id);
-            addTag($('#post-tags-select'));
+        for ( var k in data.tags) {
+            if (data.tags.hasOwnProperty(k)) {
+                $('#post-tags-select').val(data.tags[k].id);
+                addTag($('#post-tags-select'));
+            }
         }
     }, "json");
+}
+
+function deletePost(post) {
+    $('#post-update-button').prop('disabled', true);
+    $('#post-delete-button').prop('disabled', true);
+    $('#post-update-close-button').prop('disabled', true);
+    BootstrapDialog.confirm("Are you sure you want to delete this post?", function(result) {
+        if (result) {
+            $.post("/api/delete-blog-post.php", {
+                post : post
+            }).done(function(data) {
+                if ( data !== "") {
+                    $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                }
+            }).fail(function() {
+                $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+            }).always(function() {
+                $('#post-update-button').prop('disabled', false);
+                $('#post-delete-button').prop('disabled', false);
+                $('#post-update-close-button').prop('disabled', false);
+            });
+        } else {
+            $('#post-update-button').prop('disabled', false);
+            $('#post-delete-button').prop('disabled', false);
+            $('#post-update-close-button').prop('disabled', false);
+        }
+    });
+}
+
+function updatePost(post) {
+    $('#post-update-button').prop('disabled', true);
+    $('#post-delete-button').prop('disabled', true);
+    $('#post-update-close-button').prop('disabled', true);
+    // get our updated content
+    var tags = [];
+    $('#post-tags span').each(function() {
+        tags.push($(this).attr('tag-id'));
+    });
+    var preview = {};
+    preview.img = $('#post-preview-image').val();
+    preview.offset = $('#post-preview-holder img').css('top');
+    //send the content
+    $.post("/api/update-blog-post.php", {
+        post : post,
+        title : $('#post-title-input').val(),
+        date : $('#post-date-input').val(),
+        tags: tags,
+        preview: preview
+    }).done(function(data) {
+        if ( data !== "") {
+            $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+        }
+    }).fail(function() {
+        $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+    }).always(function() {
+        $('#post-update-button').prop('disabled', false);
+        $('#post-delete-button').prop('disabled', false);
+        $('#post-update-close-button').prop('disabled', false);
+    });
 }
 
 function setPreview() {

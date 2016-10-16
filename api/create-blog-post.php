@@ -72,6 +72,11 @@ $sql = "INSERT INTO `blog_details` ( `title`, `date`, `preview`, `offset` ) VALU
 mysqli_query ( $conn->db, $sql );
 $blog_id = mysqli_insert_id ( $conn->db );
 
+// update our preview image with the blog post id
+rename ( "$storage_dir/preview_image.jpg", "$storage_dir/preview_image-$blog_id.jpg" );
+$sql = "UPDATE `blog_details` SET `preview` = '$storage_dir/preview_image-$blog_id.jpg' WHERE `id` = $blog_id;";
+mysqli_query ( $conn->db, $sql );
+
 // enter our tag information
 if (isset ( $_POST ['tags'] )) {
     foreach ( $_POST ['tags'] as $tag ) {

@@ -118,9 +118,11 @@ if (! $user->isAdmin ()) {
 							</div>
 						</div>
 					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="post-update-button" class="btn btn-default btn-success"><em class="fa fa-refresh"></em> Update</button>
+					<button type="button" id="post-delete-button" class="btn btn-default btn-danger"><em class="fa fa-trash"></em> Delete</button>
+					<button type="button" id="post-update-close-button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
