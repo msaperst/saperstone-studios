@@ -63,7 +63,7 @@ $storage_dir = "../blog/" . str_replace ( "-", "/", $date );
 if (! is_dir ( $storage_dir )) {
     mkdir ( $storage_dir, 0755, true );
 }
-copy ( "..$previewImage", "$storage_dir/preview_image.jpg" );
+copy ( "$previewImage", "$storage_dir/preview_image.jpg" );
 system ( "mogrify -resize 360x \"$storage_dir/preview_image.jpg\"" );
 system ( "mogrify -density 72 \"$storage_dir/preview_image.jpg\"" );
 
@@ -102,7 +102,7 @@ foreach ( $_POST ['content'] as $content ) {
             $width = ( int ) $img ['width'];
             $height = ( int ) $img ['height'];
             
-            rename ( "..$location", "$storage_dir/" . basename ( $location ) );
+            rename ( "$location", "$storage_dir/" . basename ( $location ) );
             system ( "mogrify -resize ${width}x \"$storage_dir/" . basename ( $location ) . "\"" );
             system ( "mogrify -density 72 \"$storage_dir/" . basename ( $location ) . "\"" );
             

@@ -26,9 +26,17 @@ $(document).ready(function() {
     $('#schedule-post').click(function() {
         collectPost(savePost,schedulePost);
     });
+    
+    $('#schedule-saved-post').click(function() {
+        collectPost(updatePost,schedulePost);
+    });
 
     $('#publish-post').click(function() {
         collectPost(savePost,publishPost);
+    });
+    
+    $('#publish-saved-post').click(function() {
+        collectPost(updatePost,publishPost);
     });
 
     $('#post-preview-image').change(function() {
@@ -62,7 +70,7 @@ $(document).ready(function() {
                         var img = $("<img>");
                         img.attr({
                             id : "image-" + imageId++,
-                            src : "/tmp/" + value,
+                            src : "../tmp/" + value,
                         });
                         img.addClass('draggable');
                         img.draggable();

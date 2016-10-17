@@ -28,7 +28,7 @@ $content = [];
 $images = [];
 $preview;
 $offset;
-$location = "/tmp";
+$location = "../tmp";
 // if no album is set, throw a 404 error
 if (isset ( $_GET ['p'] )) {
     $post = $_GET ['p'];

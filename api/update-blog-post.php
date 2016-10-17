@@ -80,14 +80,15 @@ if (isset ( $_POST ['tags'] )) {
     }
 }
 
+$storage_dir = "";
 // setup our preview image
 if (isset ( $_POST ['preview'] ['img'] ) && $_POST ['preview'] ['img'] != "") {
     $previewImage = mysqli_real_escape_string ( $conn->db, $_POST ['preview'] ['img'] );
-    $location = dirname( $blog_details ['preview'] );
-    copy ( "$previewImage", "$location/preview_image-$id.jpg" );
-    system ( "mogrify -resize 360x \"$location/preview_image-$id.jpg\"" );
-    system ( "mogrify -density 72 \"$location/preview_image-$id.jpg\"" );
-    $sql = "UPDATE `blog_details` SET `preview` = '$location/preview_image-$id.jpg' WHERE `id` = $id;";
+    $storage_dir = dirname( $blog_details ['preview'] );
+    copy ( "$previewImage", "$storage_dir/preview_image-$id.jpg" );
+    system ( "mogrify -resize 360x \"$storage_dir/preview_image-$id.jpg\"" );
+    system ( "mogrify -density 72 \"$storage_dir/preview_image-$id.jpg\"" );
+    $sql = "UPDATE `blog_details` SET `preview` = '$storage_dir/preview_image-$id.jpg' WHERE `id` = $id;";
     mysqli_query ( $conn->db, $sql );
 }
 
@@ -96,6 +97,43 @@ if (isset ( $_POST ['active'] )) {
     $active = ( int ) $_POST ['active'];
     $sql = "UPDATE `blog_details` SET `active` = '$active' WHERE `id` = $id;";
     mysqli_query ( $conn->db, $sql );
+}
+
+// if we're updating the content
+if( isset( $_POST ['content'] ) ) {
+    // delete any old content
+    $sql = "DELETE FROM blog_texts WHERE blog='$id';";
+    mysqli_query ( $conn->db, $sql );
+    $sql = "DELETE FROM blog_images WHERE blog='$id';";
+    mysqli_query ( $conn->db, $sql );
+    // add the new content
+    foreach ( $_POST ['content'] as $content ) {
+        if ($content ['type'] == "text") {
+            $text = mysqli_real_escape_string ( $conn->db, $content ['text'] );
+            $group = ( int ) $content ['group'];
+            $sql = "INSERT INTO `blog_texts` ( `blog`, `contentGroup`, `text` ) VALUES ('$id', '$group', '$text');";
+            mysqli_query ( $conn->db, $sql );
+        } elseif ($content ['type'] == "images") {
+            $group = ( int ) $content ['group'];
+            foreach ( $content ['imgs'] as $img ) {
+                $location = mysqli_real_escape_string ( $conn->db, $img ['location'] );
+                $top = ( int ) $img ['top'];
+                $left = ( int ) $img ['left'];
+                $width = ( int ) $img ['width'];
+                $height = ( int ) $img ['height'];
+    
+                rename ( "$location", "$storage_dir/" . basename ( $location ) );
+                system ( "mogrify -resize ${width}x \"$storage_dir/" . basename ( $location ) . "\"" );
+                system ( "mogrify -density 72 \"$storage_dir/" . basename ( $location ) . "\"" );
+    
+                $sql = "INSERT INTO `blog_images` ( `blog`, `contentGroup`, `location`, `top`, `left`, `width`, `height` ) VALUES ('$id', '$group', '$storage_dir/" . basename ( $location ) . "', '$top', '$left', '$width', '$height');";
+                mysqli_query ( $conn->db, $sql );
+            }
+        } else {
+            echo "You provided some bad content";
+            exit ();
+        }
+    }
 }
 
 $conn->disconnect ();
