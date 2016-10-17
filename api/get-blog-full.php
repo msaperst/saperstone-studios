@@ -34,8 +34,8 @@ foreach ( $contents as $content ) {
 }
 
 $sql = "SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = " . $r ['id'] . ";";
-$texts = mysqli_query ( $conn->db, $sql );
-while ( $s = mysqli_fetch_assoc ( $texts ) ) {
+$tags = mysqli_query ( $conn->db, $sql );
+while ( $s = mysqli_fetch_assoc ( $tags ) ) {
     $r ['tags'] [] = $s;
 }
 echo json_encode ( $r );

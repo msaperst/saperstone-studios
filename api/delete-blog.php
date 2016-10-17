@@ -45,7 +45,7 @@ if (! $blog_details ['id']) {
     exit ();
 }
 
-//delete everything
+// delete everything
 $sql = "DELETE FROM blog_details WHERE id='$id';";
 mysqli_query ( $conn->db, $sql );
 $sql = "DELETE FROM blog_images WHERE blog='$id';";
@@ -54,6 +54,9 @@ $sql = "DELETE FROM blog_tags WHERE blog='$id';";
 mysqli_query ( $conn->db, $sql );
 $sql = "DELETE FROM blog_texts WHERE blog='$id';";
 mysqli_query ( $conn->db, $sql );
+
+// TODO still need to delete images on disk
+// TODO check if folders are empty, and delete those as well
 
 $conn->disconnect ();
 exit ();

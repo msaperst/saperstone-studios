@@ -8,6 +8,9 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
+require_once "../php/sql.php";
+$conn = new sql ();
+$conn->connect ();
 include_once "../php/user.php";
 $user = new user ();
 
@@ -15,6 +18,55 @@ if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     include "../errors/401.php";
     exit ();
+}
+
+$post;
+$title = "";
+$date = date("Y-m-d");
+$tags = [];
+$content = [];
+$images = [];
+$preview;
+$offset;
+$location = "/tmp";
+// if no album is set, throw a 404 error
+if (isset ( $_GET ['p'] )) {
+    $post = $_GET ['p'];
+    $sql = "SELECT * FROM `blog_details` WHERE id = '$post';";
+    $details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    if (! $details ['title']) {
+        header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
+        include "../errors/404.php";
+        $conn->disconnect ();
+        exit ();
+    } else {
+        $title = $details ['title'];
+        $date = $details ['date'];
+        $preview = $details ['preview'];
+        $offset = $details ['offset'];
+        $location = dirname( $preview );
+        //determine our tags
+        $sql = "SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = $post;";
+        $result = mysqli_query ( $conn->db, $sql );
+        while ( $r = mysqli_fetch_assoc ( $result ) ) {
+            $tags [] = $r['id'];
+        }
+        //get our content
+        $contents = array ();
+        $sql = "SELECT * FROM `blog_images` WHERE blog = $post;";
+        $result = mysqli_query ( $conn->db, $sql );
+        while ( $s = mysqli_fetch_assoc ( $result ) ) {
+            $images [] = basename( $s['location'] );
+            $content [$s['contentGroup']]['type'] = 'images';
+            $content [$s['contentGroup']][] = $s;
+        }
+        $sql = "SELECT * FROM `blog_texts` WHERE blog = $post;";
+        $result = mysqli_query ( $conn->db, $sql );
+        while ( $s = mysqli_fetch_assoc ( $result ) ) {
+            $s['type'] = 'text';
+            $content [$s['contentGroup']] = $s;
+        }
+    }
 }
 
 ?>
@@ -51,16 +103,43 @@ if (! $user->isAdmin ()) {
 				<em class="fa fa-image"></em> Add Image Area
 			</button>
 			<br />
+			<?php 
+			if( isset( $post ) ) {
+			?>
+			<button id="update-post" type="button" class="btn btn-warning">
+				<em class="fa fa-refresh"></em> Update Post
+			</button>
+			<?php 
+			} else {
+			?>
 			<button id="save-post" type="button" class="btn btn-warning">
 				<em class="fa fa-save"></em> Save Post
 			</button>
+			<?php 
+			}
+			?>
 			<br />
+			<?php 
+			if( ! isset( $post ) ) {
+			?>
 			<button id="schedule-post" type="button" class="btn btn-success">
 				<em class="fa fa-clock-o"></em> Schedule Post
 			</button>
 			<button id="publish-post" type="button" class="btn btn-success">
 				<em class="fa fa-send"></em> Publish Post
 			</button>
+			<?php 
+			} elseif ( ! $details ['active'] ) {
+			?>
+			<button id="schedule-saved-post" type="button" class="btn btn-success">
+				<em class="fa fa-clock-o"></em> Schedule Post
+			</button>
+			<button id="publish-saved-post" type="button" class="btn btn-success">
+				<em class="fa fa-send"></em> Publish Post
+			</button>
+			<?php 
+			}
+			?>
 		</div>
 
 		<div id='post-image-holder' style='z-index: 100; height: 300px;'></div>
@@ -74,7 +153,21 @@ if (! $user->isAdmin ()) {
 		<div id='post-preview-holder' class='text-center'
 			style='width: 300px; height: 176px; background-color: red; overflow: hidden;'>
 			<select id='post-preview-image'
-				style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'><option></option></select>
+				style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'>
+				<option></option>
+				<?php
+				if( isset( $post ) ) {
+				    foreach( $images as $image ) {
+				        echo "<option>$image</option>";
+				    }
+				}
+				?>
+			</select>
+			<?php
+			if( isset( $post ) ) {
+			    echo "<img src='$preview' style='width:300px; top:${offset}px;'>";
+			}
+			?>
 		</div>
 	</div>
 
@@ -84,22 +177,42 @@ if (! $user->isAdmin ()) {
 		<!-- Page Heading/Breadcrumbs -->
 		<div class="row">
 			<div class="col-lg-12">
+				<?php
+				if( isset( $post ) ) {
+			    ?>
+				<h1 class="page-header text-center">Edit Your Blog Post</h1>
+				<?php 
+				} else {
+				?>
 				<h1 class="page-header text-center">Write A New Blog Post</h1>
+				<?php 
+				}
+				?>
 				<ol class="breadcrumb">
 					<li><a href="/">Home</a></li>
 					<li><a href="/blog/">Blog</a></li>
+					<?php
+    				if( isset( $post ) ) {
+    			    ?>
+					<li class="active">Edit Post</li>
+    				<?php 
+    				} else {
+    				?>
 					<li class="active">New Post</li>
+    				<?php 
+    				}
+    				?>
 				</ol>
 			</div>
 		</div>
 		<!-- /.row -->
 
 		<!-- Post Section -->
-		<div class="row">
+		<div class="row" id="post" post-location="<?php echo $location; ?>"<?php if( isset( $post ) ) echo " post-id='$post'"; ?>">
 			<div class="col-lg-12">
 				<strong><input id='post-title-input'
 					class='form-control input-lg text-center' type='text'
-					placeholder='Blog Post Title' /></strong>
+					placeholder='Blog Post Title' value='<?php echo $title; ?>'/></strong>
 			</div>
 		</div>
 		<div class="row">
@@ -124,7 +237,7 @@ if (! $user->isAdmin ()) {
 				<strong id="post-date"> <input id='post-date-input'
 					class='form-control input-sm' type='date'
 					style='width: auto; display: initial;'
-					value='<?php echo date("Y-m-d"); ?>' />
+					value='<?php echo $date; ?>' />
 				</strong>
 			</div>
 			<div id="post-likes" class="col-md-4 text-right"></div>
@@ -154,6 +267,40 @@ if (! $user->isAdmin ()) {
 		src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script>
+    	$(document).ready(function() {
+        	<?php 
+        	if( isset( $post ) ) {
+        	    foreach( $tags as $tag ) {
+	        ?>
+            $('#post-tags-select').val(<?php echo $tag; ?>);
+            addTag($('#post-tags-select'));
+            <?php 
+        	    }
+        	    ksort( $content );
+        	    foreach( $content as $block ) {
+        	        if( $block['type'] == "text" ) {
+            ?>
+        	addTextArea("<?php echo addcslashes($block['text'],'"'); ?>");
+        	<?php 
+        	        } elseif( $block['type'] == "images" ) {
+        	            unset($block['type']);
+        	?>
+        	addImageArea(<?php echo json_encode( $block ); ?>);
+        	<?php 
+        	        }
+        	    }
+        	} else {
+        	?>
+        	addImageArea();
+        	<?php 
+            }
+            ?>
+            $('#post-preview-holder img').draggable({
+                axis : "y",
+            });
+    	});
+	</script>
 
 </body>
 

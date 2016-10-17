@@ -65,6 +65,11 @@ function setupEdit() {
 function editPost(post) {
     // remove any old values
     $('#post-preview-holder img').remove();
+    $('#post-preview-image option').each(function(){
+        $(this).remove();
+    });
+    var option = $('<option>');
+    $('#post-preview-image').append(option);
     $('.selected-tag').each(function(){
         removeTag($(this));
     });
@@ -161,11 +166,15 @@ function updatePost(post) {
         post : post,
         title : $('#post-title-input').val(),
         date : $('#post-date-input').val(),
-        tags: tags,
-        preview: preview
+        tags : tags,
+        preview : preview,
+        active : $('#post-active-input').is(':checked') ? 1 : 0,
     }).done(function(data) {
         if ( data !== "") {
             $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+        } else {
+            $('#post').modal('hide');
+            post_table.ajax.reload(null, false);
         }
     }).fail(function() {
         $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
@@ -173,18 +182,5 @@ function updatePost(post) {
         $('#post-update-button').prop('disabled', false);
         $('#post-delete-button').prop('disabled', false);
         $('#post-update-close-button').prop('disabled', false);
-    });
-}
-
-function setPreview() {
-    $('#post-preview-holder img').remove();
-    var img = $('<img>');
-    img.attr('src', $('#post').attr('post-location') + '/' + $('#post-preview-image').val());
-    img.css({
-        width : '300px'
-    });
-    $('#post-preview-holder').append(img);
-    img.draggable({
-        axis : "y",
     });
 }

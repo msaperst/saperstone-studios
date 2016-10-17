@@ -37,6 +37,7 @@ function addTextArea(text) {
 	var textHolder = $('<li>');
 	textHolder.attr('id', "textArea-" + textAreas++);
 	textHolder.addClass('blog-editable-text');
+	textHolder.html(text);
 	$(elementBuilder).append(textHolder);
 	textHolder.summernote();
 
@@ -75,8 +76,8 @@ function addImageArea(images) {
 	var curTop = 0; // for keeping track of when we need breaks
 	for (ndx = 0; ndx < images.length; ndx++) {
 		// setup our image element
-		var ele = $("<img id='" + Math.floor((Math.random() * 10000000) + 1)
-				+ "' class='draggable' src='" + images[ndx].src
+		var ele = $("<img id='image-" + imageId++
+				+ "' class='draggable' src='" + images[ndx].location
 				+ "' style='position:absolute;z-index:90;width:"
 				+ images[ndx].width + "px;height:" + images[ndx].height
 				+ "px;left:" + images[ndx].left + "px;top:" + images[ndx].top
