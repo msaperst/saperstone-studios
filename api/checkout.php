@@ -26,7 +26,7 @@ $response = array ();
 
 // get our user information
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 if (! $user->isLoggedIn ()) {
     $response ['error'] = "User must be logged in to submit their order.";
     echo json_encode ( $response );
@@ -97,7 +97,7 @@ $order_HTML = "<table><tr><th>Name</th><th>Album</th><th>Preview</th><th>Product
 
 // generate our items to order
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 $sql = "SELECT `cart`.*,`album_images`.*,`products`.*,`product_types`.*,`albums`.`name` AS album_title FROM `cart` JOIN `album_images` ON `cart`.`image` = `album_images`.`sequence` AND `cart`.`album` = `album_images`.`album` JOIN `products` ON `cart`.`product` = `products`.`id` JOIN `product_types` ON `products`.`product_type` = `product_types`.`id` JOIN `albums` ON `cart`.`album` = `albums`.`id` WHERE `cart`.`user` = '$user';";
 $result = mysqli_query ( $conn->db, $sql );
@@ -225,7 +225,7 @@ if (isset ( $setECResponse )) {
         $token = $setECResponse->Token;
         
         // clear out our shopping cart
-        $conn = new sql ();
+        $conn = new Sql ();
         $conn->connect ();
         $sql = "DELETE FROM `cart` WHERE `user` = '$user';";
         mysqli_query ( $conn->db, $sql );

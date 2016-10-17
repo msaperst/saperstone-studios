@@ -1,6 +1,6 @@
 <?php
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 
 session_name ( 'ssLogin' );
@@ -13,7 +13,7 @@ session_start ();
 // Start our session
 
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 
 $id = "";
 if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {

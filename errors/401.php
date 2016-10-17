@@ -11,7 +11,7 @@ if (session_status () != PHP_SESSION_ACTIVE) {
 }
 
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 
 $title = "401";
 $subtitle = "Unauthorized";

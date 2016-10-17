@@ -9,7 +9,7 @@ session_start ();
 // Start our session
 
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 
 if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );

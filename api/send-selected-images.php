@@ -1,6 +1,6 @@
 <?php
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 
 session_name ( 'ssLogin' );
@@ -13,7 +13,7 @@ session_start ();
 // Start our session
 
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 
 if (! $user->isLoggedIn ()) {
     $user = $_SERVER ['REMOTE_ADDR'];
@@ -63,7 +63,7 @@ if ($what == "favorites") {
 }
 
 // send email
-$user = new user ();
+$user = new User ();
 $IP = $_SERVER ['REMOTE_ADDR'];
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = '../plugins/Browser.php-master/lib/Browser.php');

@@ -1,6 +1,6 @@
 <?php
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 
 session_name ( 'ssLogin' );
@@ -34,8 +34,9 @@ if ($_POST ['submit'] == 'Login') {
     $err = array ();
     // Will hold our errors
     
-    if (! $_POST ['username'] || ! $_POST ['password'])
+    if (! $_POST ['username'] || ! $_POST ['password']) {
         $err [] = 'All the fields must be filled in!';
+    }
     
     if (! count ( $err )) {
         $_POST ['username'] = mysqli_real_escape_string ( $conn->db, $_POST ['username'] );
@@ -58,8 +59,9 @@ if ($_POST ['submit'] == 'Login') {
             
             mysqli_query ( $conn->db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
             // Update last login in DB
-        } else
+        } else {
             $err [] = 'Credentials do not match our records!';
+        }
     }
     
     if ($err) {

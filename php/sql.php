@@ -1,8 +1,8 @@
 <?php
-class sql {
+class Sql {
     var $params;
     public $db;
-    function sql() {
+    function __construct() {
         $this->params = parse_ini_file ( "env.ini" );
     }
     function connect() {

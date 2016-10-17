@@ -23,7 +23,7 @@ if (! file_exists ( '../logs' )) {
 }
 $myFile = "../logs/emails.txt";
 
-$fh = fopen ( $myFile, 'a' ) or die ( "can't open file" );
+$fh = fopen ( $myFile, 'a' ) || die ( "can't open file" );
 fwrite ( $fh, "From: " . $from . "\n" );
 fwrite ( $fh, "To: " . $to . "\n" );
 fwrite ( $fh, "Subject: " . $subject . "\n" );

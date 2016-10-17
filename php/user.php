@@ -1,10 +1,10 @@
 <?php
-class user {
+class User {
     var $sql;
     var $db;
-    function user() {
+    function __construct() {
         include_once "sql.php";
-        $sql = new sql ();
+        $sql = new Sql ();
         $sql->connect ();
         $this->db = $sql->db;
     }

@@ -45,53 +45,53 @@ $header = "Whoops, something went wrong!";
     <?php require_once "../nav.php"; ?>
 
     <!-- Page Content -->
-	<div class="page-content container">
+    <div class="page-content container">
 
-		<!-- Page Heading/Breadcrumbs -->
-		<div class="row">
-			<div class="col-lg-12">
-				<h1 class="page-header text-center"><?php echo $title; ?>
+        <!-- Page Heading/Breadcrumbs -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center"><?php echo $title; ?>
                     <small><?php echo $subtitle; ?></small>
-				</h1>
-				<ol class="breadcrumb">
-					<li><a href="/">Home</a></li>
-					<li class="active"><?php echo $title; ?></li>
-				</ol>
-			</div>
-		</div>
-		<!-- /.row -->
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li class="active"><?php echo $title; ?></li>
+                </ol>
+            </div>
+        </div>
+        <!-- /.row -->
 
-		<!-- Services Section -->
-		<div class="row">
-			<div class="col-lg-12">
-				<img id='confused' src='/img/confused.png'
-					style='width: 150px; float: left; margin: 0px 20px 20px 0px;'
-					alt='Where am I?' />
-				<p class='lead'>Whoops, something went wrong!</p>
-				<p class='lead'><?php echo $message; ?></p>
-				<p class='lead'>
-					Try going <a href='javascript:window.history.back()'>back one page</a>
-					or going back to our <a href='http://$host'>homepage</a>
-				</p>
-				<p class='lead'>
-					We have been notifed of this error, however, feel free to <a
-						href='mailto:webmaster@saperstonestudios.com'>contact our
-						webmaster</a> for more information
-				</p>
-			</div>
-		</div>
-		<!-- /.row -->
+        <!-- Services Section -->
+        <div class="row">
+            <div class="col-lg-12">
+                <img id='confused' src='/img/confused.png'
+                    style='width: 150px; float: left; margin: 0px 20px 20px 0px;'
+                    alt='Where am I?' />
+                <p class='lead'>Whoops, something went wrong!</p>
+                <p class='lead'><?php echo $message; ?></p>
+                <p class='lead'>
+                    Try going <a href='javascript:window.history.back()'>back one page</a>
+                    or going back to our <a href='http://$host'>homepage</a>
+                </p>
+                <p class='lead'>
+                    We have been notifed of this error, however, feel free to <a
+                        href='mailto:webmaster@saperstonestudios.com'>contact our
+                        webmaster</a> for more information
+                </p>
+            </div>
+        </div>
+        <!-- /.row -->
 
         <?php require_once "../footer.php"; ?>
 
     </div>
-	<!-- /.container -->
+    <!-- /.container -->
 
-	<!-- Gallery JavaScript -->
-	<script src="/js/album.js"></script>
+    <!-- Gallery JavaScript -->
+    <script src="/js/album.js"></script>
 
-	<!-- Script to Activate the Gallery -->
-	<script>
+    <!-- Script to Activate the Gallery -->
+    <script>
         $('[data-toggle="tooltip"]').tooltip();
         var album = new Album( "<?php echo $album_info['id']; ?>", 4, <?php echo count($images); ?> );
         

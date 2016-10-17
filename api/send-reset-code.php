@@ -4,7 +4,7 @@ require_once "Mail/mime.php";
 $crlf = "\n";
 
 require_once "../php/strings.php";
-$string = new strings ();
+$string = new Strings ();
 
 $email = "";
 if (isset ( $_POST ['email'] )) {
@@ -15,7 +15,7 @@ if (isset ( $_POST ['email'] )) {
 }
 
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 if (filter_var ( $email, FILTER_VALIDATE_EMAIL )) {
     $resetCode = $string->randomString ( 8 );

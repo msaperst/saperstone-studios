@@ -1,6 +1,6 @@
 <?php
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 
 if (isset ( $_GET ['album'] )) {

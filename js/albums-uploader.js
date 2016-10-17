@@ -2,52 +2,52 @@ var album_table;
 
 $(document).ready(
         function() {
-        	if( $('#albums').length ) {
-        		album_table = $('#albums').DataTable({
-        			"ajax" : "/api/get-albums.php",
-        			"order" : [ [ 1, "asc" ] ],
-        			"columnDefs" : [ {
-        				"orderable" : false,
-        				"searchable" : false,
-        				"data" : function(row) {
-        					var buttons = "";
-        					if (row.owner === my_id) {
-        						buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
-        					}
-        					return buttons;
-        				},
-        				"targets" : 0
-        			}, {
-        				"data" : function(row) {
-        					return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
-        				},
-        				"className" : "album-name",
-        				"targets" : 1
-        			}, {
-        				"data" : "description",
-        				"className" : "album-description",
-        				"targets" : 2
-        			}, {
-        				"data" : "date",
-        				"className" : "album-date",
-        				"targets" : 3
-        			}, {
-        				"data" : "images",
-        				"className" : "album-images",
-        				"targets" : 4
-        			} ],
-        			"fnCreatedRow" : function(nRow, aData) {
-        				$(nRow).attr('album-id', aData.id);
-        			}
-        		});
-        	}
+            if( $('#albums').length ) {
+                album_table = $('#albums').DataTable({
+                    "ajax" : "/api/get-albums.php",
+                    "order" : [ [ 1, "asc" ] ],
+                    "columnDefs" : [ {
+                        "orderable" : false,
+                        "searchable" : false,
+                        "data" : function(row) {
+                            var buttons = "";
+                            if (row.owner === my_id) {
+                                buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
+                            }
+                            return buttons;
+                        },
+                        "targets" : 0
+                    }, {
+                        "data" : function(row) {
+                            return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
+                        },
+                        "className" : "album-name",
+                        "targets" : 1
+                    }, {
+                        "data" : "description",
+                        "className" : "album-description",
+                        "targets" : 2
+                    }, {
+                        "data" : "date",
+                        "className" : "album-date",
+                        "targets" : 3
+                    }, {
+                        "data" : "images",
+                        "className" : "album-images",
+                        "targets" : 4
+                    } ],
+                    "fnCreatedRow" : function(nRow, aData) {
+                        $(nRow).attr('album-id', aData.id);
+                    }
+                });
+            }
             $('#albums').on('draw.dt search.dt', function() {
                 setupEdit();
             });
             
-			$('#edit-album-btn').click(function() {
-				editAlbum($('#favorites').attr('album-id'));
-			})
+            $('#edit-album-btn').click(function() {
+                editAlbum($('#favorites').attr('album-id'));
+            })
 
 
             $('#add-album-btn').click(
@@ -92,15 +92,15 @@ $(document).ready(
                                             dialogItself.close();
                                             editAlbum(data);
                                         } else if (data === '0') {
-                                        	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                                         } else {
-                                        	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                                         }
                                         $button.stopSpin();
                                         dialogItself.enableButtons(true);
                                         dialogItself.setClosable(true);
                                     }).fail(function(){
-                                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                                     });
                                 }
                             }, {
@@ -161,9 +161,9 @@ function editAlbum(id) {
                                 $.post("/api/delete-album.php", {
                                     id : id,
                                 }).done(function() {
-                                	if( $('#albums').length ) {
-                                		album_table.ajax.reload(null, false);
-                                	}
+                                    if( $('#albums').length ) {
+                                        album_table.ajax.reload(null, false);
+                                    }
                                     dialogInItself.close();
                                     dialogItself.close();
                                 });
@@ -217,7 +217,7 @@ function editAlbum(id) {
                 label : ' Save Details',
                 cssClass : 'btn-success',
                 action : function(dialogItself) {
-                	var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
                     $button.spin();
                     disableDialogButtons(dialogItself);
                     $.post("/api/update-album.php", {
@@ -228,18 +228,18 @@ function editAlbum(id) {
                         code : $('#new-album-code').val(),
                     }).done(function() {
                         dialogItself.close();
-                    	if( $('#albums').length ) {
-                    		album_table.ajax.reload(null, false);
-                    	}
+                        if( $('#albums').length ) {
+                            album_table.ajax.reload(null, false);
+                        }
                     });
                 }
             }, {
                 label : 'Close',
                 action : function(dialogItself) {
                     dialogItself.close();
-                	if( $('#albums').length ) {
-                		album_table.ajax.reload(null, false);
-                	}
+                    if( $('#albums').length ) {
+                        album_table.ajax.reload(null, false);
+                    }
                 }
             } ],
             onshown : function(dialogItself) {
@@ -281,9 +281,9 @@ function editAlbum(id) {
                 });
             },
             onhide : function() {
-            	if( $('#albums').length ) {
-            		album_table.ajax.reload(null, false);
-            	}
+                if( $('#albums').length ) {
+                    album_table.ajax.reload(null, false);
+                }
             },
         });
     }, "json");

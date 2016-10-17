@@ -1,5 +1,5 @@
 <?php
-class strings {
+class Strings {
     function randomString($length = 10) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen ( $characters );
@@ -11,8 +11,7 @@ class strings {
     }
     function textToHTML($text) {
         $text = str_replace ( "\n", "<br/>", $text );
-        $text = str_replace ( "\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $text );
-        return $text;
+        return str_replace ( "\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $text );
     }
 }
 ?>

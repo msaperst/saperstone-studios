@@ -9,10 +9,10 @@ session_start ();
 // Start our session
 
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 
 $response = array ();

@@ -9,10 +9,10 @@ session_start ();
 // Start our session
 
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 
 // Need to put in similar check that exists in album for appropriate user
 

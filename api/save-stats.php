@@ -9,9 +9,9 @@ session_start ();
 // Start our session
 
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 
-// determine our user;
+// determine our user
 if ($user->isLoggedIn ()) {
     $user = $user->getId ();
 } else {
@@ -61,7 +61,7 @@ $isRobot = $browser->isRobot () ? "1" : "0";
 $isTablet = $browser->isTablet () ? "1" : "0";
 
 require_once "../php/sql.php";
-$conn = new sql ();
+$conn = new Sql ();
 $conn->connect ();
 if ($lat == "NULL" && $lon == "NULL") {
     $sql = "INSERT INTO `usage` (`user`, `ip`, `browser`, `version`, `width`, `height`, `os`, `url`, `isTablet`, `isMobile`, `isAOL`, `isFacebook`, `isRobot`, `ua`) VALUES ($user, '$ip', '" . $browser->getBrowser () . "', '" . $browser->getVersion () . "', $width, $height, '" . $browser->getPlatform () . "', '$referrer', '$isTablet', '$isMobile', '$isAol', '$isFacebook', '$isRobot', '" . $browser->getUserAgent () . "');";

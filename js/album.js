@@ -101,7 +101,7 @@ $(document).ready(function() {
         var img = $('#album-carousel div.active div');
         var products = {};
         products['31'] = 1;
-    	$.post("/api/update-cart-image.php", {
+        $.post("/api/update-cart-image.php", {
             album : img.attr('album-id'),
             image : img.attr('image-id'),
             products : products

@@ -5,24 +5,24 @@ $(function() {
     my_role = $('#my-user-role').val();
     my_id = $('#my-user-id').val();
     
-	$.ajax({ 
-		url: '/api/save-stats.php', 
-		data: { 
-			resolution: screen.width + "x" + screen.height
-		} 
-	});
+    $.ajax({ 
+        url: '/api/save-stats.php', 
+        data: { 
+            resolution: screen.width + "x" + screen.height
+        } 
+    });
 
     $('#nav-search-input').width($('#nav-search-input').parent().parent().width() - 55);
     
     $('#nav-search-icon').click(function(){
-    	searchBlog();
+        searchBlog();
     });
     
     $('#nav-search-input').keypress(function (e) {
-    	if (e.which === 13) {
-    		searchBlog();
-    	}
-	});
+        if (e.which === 13) {
+            searchBlog();
+        }
+    });
 
     $('#login-submit').click(function() {
         $.post("/api/login.php", {
@@ -32,13 +32,13 @@ $(function() {
             submit : "Login"
         }).done(function(data) {
             if (data === "") {
-            	$('#login-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Successfully Logged In. Please wait as you are redirected.</div>");
+                $('#login-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Successfully Logged In. Please wait as you are redirected.</div>");
                 location.reload();
             } else {
-            	$('#login-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                $('#login-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
             }
         }).fail(function(){
-        	$('#login-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+            $('#login-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         });
     });
 
@@ -76,17 +76,17 @@ $(function() {
         }).done(function(data) {
             $('#forgot-password-error').html(data);
             if (data === "") {
-            	$('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Reset code has been sent, please enter it below, along with a new password</div>");
+                $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Reset code has been sent, please enter it below, along with a new password</div>");
                 resetPasswordForm();
             } else {
-            	$('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
             }
         }).fail(function(){
-        	$('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+            $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         });
     });
     $("#forgot-password-prev-code").click(function() {
-    	$('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Enter your email address above, with your previous reset code and a new password below</div>");
+        $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Enter your email address above, with your previous reset code and a new password below</div>");
         resetPasswordForm();
     });
     $("#forgot-password-reset-password").click(function() {
@@ -97,15 +97,15 @@ $(function() {
             passwordConfirm : $('#forgot-password-new-password-confirm').val(),
         }).done(function(data) {
             if (data === "") {
-            	$('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your password has been successfully reset. You can now login with your new credentials.</div>");
+                $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your password has been successfully reset. You can now login with your new credentials.</div>");
                 setTimeout(function() {
                     $('#forgot-password-modal').modal('hide');
                 }, 10000);
             } else {
-            	$('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
             }
         }).fail(function(){
-        	$('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+            $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         });
     });
 
@@ -162,15 +162,15 @@ function findAlbum() {
                     dialogItself.setClosable(true);
                     // goto album url if it exists
                     if ($.isNumeric(data) && data !== '0') {
-                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Navigating to album</div>");                    	
+                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Navigating to album</div>");                        
                         window.location.href = '/albums/album.php?album=' + data;
                     } else if (data === '0') {
-                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     } else {
-                    	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
                 }).fail(function(){
-                	modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                    modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                 });
             }
         }, {
@@ -184,7 +184,7 @@ function findAlbum() {
 }
 
 function searchBlog() {
-	window.location = "/blog/search.php?s=" + $('#nav-search-input').val();
+    window.location = "/blog/search.php?s=" + $('#nav-search-input').val();
 }
 
 function getQueryVariable(variable) {

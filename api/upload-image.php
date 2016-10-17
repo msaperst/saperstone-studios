@@ -9,7 +9,7 @@ session_start ();
 // Start our session
 
 include_once "../php/user.php";
-$user = new user ();
+$user = new User ();
 
 // only admin users and uploader users who own the album can make updates
 if (! $user->isAdmin ()) {
