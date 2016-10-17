@@ -34,6 +34,7 @@ mysqli_query ( $conn->db, $sql );
 
 include_once "../php/social-media.php";
 $sm = new SocialMedia();
+$sm->generateRSS();
 $sm->publishBlogToTwitter($post);
 
 $conn->disconnect ();

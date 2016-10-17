@@ -24,6 +24,8 @@ $nav = "main";
 
 <title>Photography and Retouch for Virginia, DC, and Maryland by
 	Saperstone Studios</title>
+<link rel="alternate" type="application/rss+xml" 
+   href="/blog.rss" title="RSS feed for Saperstone Studios Blogs">
 
 <!-- Bootstrap Core CSS -->
 <link
