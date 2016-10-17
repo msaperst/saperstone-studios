@@ -78,11 +78,11 @@ if (isset ( $_GET ['p'] )) {
 
     <?php require_once "../header.php"; ?>
     <link
-	href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
-	rel="stylesheet">
+    href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
+    rel="stylesheet">
 <link
-	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
-	rel="stylesheet">
+    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    rel="stylesheet">
 
 </head>
 
@@ -91,31 +91,31 @@ if (isset ( $_GET ['p'] )) {
     <?php require_once "../nav.php"; ?>
     
     <!-- Post Control Bar -->
-	<div data-spy="affix"
-		style="margin-top: 35px; margin-left: 5px; max-width: 300px; z-index: 100;"
-		class="text-center">
-		<div id='post-button-holder'>
-			<br />
-			<button id="add-text-button" type="button" class="btn btn-info">
-				<em class="fa fa-file-text-o"></em> Add Text Area
-			</button>
-			<button id="add-image-button" type="button" class="btn btn-info">
-				<em class="fa fa-image"></em> Add Image Area
-			</button>
-			<br />
+    <div data-spy="affix"
+        style="margin-top: 35px; margin-left: 5px; max-width: 300px; z-index: 100;"
+        class="text-center">
+        <div id='post-button-holder'>
+            <br />
+            <button id="add-text-button" type="button" class="btn btn-info">
+                <em class="fa fa-file-text-o"></em> Add Text Area
+            </button>
+            <button id="add-image-button" type="button" class="btn btn-info">
+                <em class="fa fa-image"></em> Add Image Area
+            </button>
+            <br />
             <?php
             if (isset ( $post )) {
             ?>
             <button id="update-post" type="button"
-				class="btn btn-warning">
-				<em class="fa fa-refresh"></em> Update Post
-			</button>
+                class="btn btn-warning">
+                <em class="fa fa-refresh"></em> Update Post
+            </button>
             <?php
             } else {
             ?>
             <button id="save-post" type="button" class="btn btn-warning">
-				<em class="fa fa-save"></em> Save Post
-			</button>
+                <em class="fa fa-save"></em> Save Post
+            </button>
             <?php
             }
             ?>
@@ -124,40 +124,40 @@ if (isset ( $_GET ['p'] )) {
             if (! isset ( $post )) {
             ?>
             <button id="schedule-post" type="button"
-				class="btn btn-success">
-				<em class="fa fa-clock-o"></em> Schedule Post
-			</button>
-			<button id="publish-post" type="button" class="btn btn-success">
-				<em class="fa fa-send"></em> Publish Post
-			</button>
+                class="btn btn-success">
+                <em class="fa fa-clock-o"></em> Schedule Post
+            </button>
+            <button id="publish-post" type="button" class="btn btn-success">
+                <em class="fa fa-send"></em> Publish Post
+            </button>
             <?php
             } elseif (! $details ['active']) {
             ?>
             <button id="schedule-saved-post" type="button"
-				class="btn btn-success">
-				<em class="fa fa-clock-o"></em> Schedule Post
-			</button>
-			<button id="publish-saved-post" type="button" class="btn btn-success">
-				<em class="fa fa-send"></em> Publish Post
-			</button>
+                class="btn btn-success">
+                <em class="fa fa-clock-o"></em> Schedule Post
+            </button>
+            <button id="publish-saved-post" type="button" class="btn btn-success">
+                <em class="fa fa-send"></em> Publish Post
+            </button>
             <?php
             }
             ?>
         </div>
 
-		<div id='post-image-holder' style='z-index: 100; height: 300px;'></div>
-		<!-- overflow-y:auto;  -->
-	</div>
+        <div id='post-image-holder' style='z-index: 100; height: 300px;'></div>
+        <!-- overflow-y:auto;  -->
+    </div>
 
-	<!-- Preview Control Bar -->
-	<div data-spy="affix"
-		style="right: 0px; margin-top: 35px; margin-right: 5px; max-width: 300px; z-index: 100;"
-		class="text-center">
-		<div id='post-preview-holder' class='text-center'
-			style='width: 300px; height: 176px; background-color: red; overflow: hidden;'>
-			<select id='post-preview-image'
-				style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'>
-				<option></option>
+    <!-- Preview Control Bar -->
+    <div data-spy="affix"
+        style="right: 0px; margin-top: 35px; margin-right: 5px; max-width: 300px; z-index: 100;"
+        class="text-center">
+        <div id='post-preview-holder' class='text-center'
+            style='width: 300px; height: 176px; background-color: red; overflow: hidden;'>
+            <select id='post-preview-image'
+                style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'>
+                <option></option>
                 <?php
                 if (isset ( $post )) {
                     foreach ( $images as $image ) {
@@ -172,14 +172,14 @@ if (isset ( $_GET ['p'] )) {
             }
             ?>
         </div>
-	</div>
+    </div>
 
-	<!-- Page Content -->
-	<div class="page-content container">
+    <!-- Page Content -->
+    <div class="page-content container">
 
-		<!-- Page Heading/Breadcrumbs -->
-		<div class="row">
-			<div class="col-lg-12">
+        <!-- Page Heading/Breadcrumbs -->
+        <div class="row">
+            <div class="col-lg-12">
                 <?php
                 if (isset ( $post )) {
                 ?>
@@ -188,13 +188,13 @@ if (isset ( $_GET ['p'] )) {
                 } else {
                 ?>
                 <h1 class="page-header text-center">Write A New Blog
-					Post</h1>
+                    Post</h1>
                 <?php
                 }
                 ?>
                 <ol class="breadcrumb">
-					<li><a href="/">Home</a></li>
-					<li><a href="/blog/">Blog</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/blog/">Blog</a></li>
                     <?php
                     if (isset ( $post )) {
                     ?>
@@ -207,24 +207,24 @@ if (isset ( $_GET ['p'] )) {
                     }
                     ?>
                 </ol>
-			</div>
-		</div>
-		<!-- /.row -->
+            </div>
+        </div>
+        <!-- /.row -->
 
-		<!-- Post Section -->
-		<div class="row" id="post" post-location="<?php echo $location; ?>"<?php if( isset( $post ) ) { echo " post-id='$post'"; } ?>">
-			<div class="col-lg-12">
-				<strong><input id='post-title-input'
-					class='form-control input-lg text-center' type='text'
-					placeholder='Blog Post Title' value='<?php echo $title; ?>' /></strong>
-			</div>
-		</div>
-		<div class="row">
-			<div id="post-tags" class="col-md-4 text-left">
-				<select id='post-tags-select' class='form-control input-sm'
-					style='width: auto;'>
-					<option></option>
-					<option value='0' style='color: red;'>New Category</option>
+        <!-- Post Section -->
+        <div class="row" id="post" post-location="<?php echo $location; ?>"<?php if( isset( $post ) ) { echo " post-id='$post'"; } ?>">
+            <div class="col-lg-12">
+                <strong><input id='post-title-input'
+                    class='form-control input-lg text-center' type='text'
+                    placeholder='Blog Post Title' value='<?php echo $title; ?>' /></strong>
+            </div>
+        </div>
+        <div class="row">
+            <div id="post-tags" class="col-md-4 text-left">
+                <select id='post-tags-select' class='form-control input-sm'
+                    style='width: auto;'>
+                    <option></option>
+                    <option value='0' style='color: red;'>New Category</option>
                 <?php
                 $conn = new Sql ();
                 $conn->connect ();
@@ -236,41 +236,41 @@ if (isset ( $_GET ['p'] )) {
                 $conn->disconnect ();
                 ?>
                 </select>
-			</div>
-			<div class="col-md-4 text-center">
-				<strong id="post-date"> <input id='post-date-input'
-					class='form-control input-sm' type='date'
-					style='width: auto; display: initial;' value='<?php echo $date; ?>' />
-				</strong>
-			</div>
-			<div id="post-likes" class="col-md-4 text-right"></div>
-		</div>
-		<!-- /.row -->
+            </div>
+            <div class="col-md-4 text-center">
+                <strong id="post-date"> <input id='post-date-input'
+                    class='form-control input-sm' type='date'
+                    style='width: auto; display: initial;' value='<?php echo $date; ?>' />
+                </strong>
+            </div>
+            <div id="post-likes" class="col-md-4 text-right"></div>
+        </div>
+        <!-- /.row -->
 
-		<!-- Post Content -->
-		<ul id="post-content" class="ui-sortable"></ul>
+        <!-- Post Content -->
+        <ul id="post-content" class="ui-sortable"></ul>
 
-	</div>
-	<!-- /.row -->
+    </div>
+    <!-- /.row -->
 
         <?php
         require_once "../footer.php";
         ?>
 
     </div>
-	<!-- /.container -->
+    <!-- /.container -->
 
 
-	<script src="/js/post-admin.js"></script>
-	<script src="/js/dragndrop.js"></script>
-	<script src="/js/jquery.uploadfile.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-	<script>
+    <script src="/js/post-admin.js"></script>
+    <script src="/js/dragndrop.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
         $(document).ready(function() {
             <?php
             if (isset ( $post )) {

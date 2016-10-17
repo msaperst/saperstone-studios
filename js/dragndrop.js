@@ -2,7 +2,7 @@ var textAreas = 0;
 var imageAreas = 0;
 
 var elementBuilder = "#post-content";
-var imageBuilder = ".imageBuilder";
+var imageBuilder = ".image-builder";
 var imagePlace = "#post-image-holder";
 var showGhost = false;
 var imageOrder = {};
@@ -71,7 +71,7 @@ function addImageArea(images) {
                 (images[ndx].height * 1 + images[ndx].top * 1));
     }
     var imageBuilder = $("<div id='" + imageAreaID
-            + "' class='imageBuilder' style='height:" + maxHeight
+            + "' class='image-builder' style='height:" + maxHeight
             + "px;'></div>");
     var curTop = 0; // for keeping track of when we need breaks
     for (ndx = 0; ndx < images.length; ndx++) {
@@ -301,8 +301,8 @@ function resizeImages(arrayName) {
             var totalUnitWidth = 0;
             for (ndx in thisRow) {
                 if (thisRow.hasOwnProperty(ndx)) {
-                    eleWidth = thisRow[ndx].width();
-                    eleHeight = thisRow[ndx].height();
+                    var eleWidth = thisRow[ndx].width();
+                    var eleHeight = thisRow[ndx].height();
                     totalUnitWidth += eleWidth / eleHeight;
                 }
             }
