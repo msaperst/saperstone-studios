@@ -24,14 +24,14 @@
 <body>
 
     <?php
-    $nav = "portrait";
+    $nav = "wedding";
     require_once "../nav.php";
     
     // get our gallery images
     require_once "../php/sql.php";
     $conn = new Sql ();
     $conn->connect ();
-    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-home';";
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'wedding-home';";
     $result = mysqli_query ( $conn->db, $sql );
     $images = array ();
     while ( $row = mysqli_fetch_assoc ( $result ) ) {
@@ -45,10 +45,10 @@
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center">Portraits</h1>
+                <h1 class="page-header text-center">Weddings</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li class="active">Portraits</li>
+                    <li class="active">Weddings</li>
                 </ol>
             </div>
         </div>
@@ -59,7 +59,7 @@
             <!-- Content Column -->
             <div class="col-md-9">
                 <!-- Carousel -->
-                <div id="portraitCarousel"
+                <div id="weddingCarousel"
                     class="carousel slide carousel-three-by-two">
                     <!-- Indicators -->
                     <ol class="carousel-indicators">
@@ -69,7 +69,7 @@
                             if ($num == 0) {
                                 $class = " class='active'";
                             }
-                            echo "<li data-target='#portraitCarousel' data-slide-to='$num'$class></li>";
+                            echo "<li data-target='#weddingCarousel' data-slide-to='$num'$class></li>";
                         }
                         ?>
                     </ol>
@@ -94,9 +94,9 @@
                     </div>
 
                     <!-- Controls -->
-                    <a class="left carousel-control" href="#portraitCarousel"
+                    <a class="left carousel-control" href="#weddingCarousel"
                         data-slide="prev"> <span class="icon-prev"></span>
-                    </a> <a class="right carousel-control" href="#portraitCarousel"
+                    </a> <a class="right carousel-control" href="#weddingCarousel"
                         data-slide="next"> <span class="icon-next"></span>
                     </a>
                     <?php if ($user->isAdmin ()) { ?>
@@ -120,7 +120,7 @@
             </div>
         </div>
 
-        <!-- Portrait Services Section -->
+        <!-- Wedding Services Section -->
         <div class="row">
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section='Details'
@@ -169,7 +169,7 @@
                     <img class="img-responsive" src="img/reviews.jpg" alt="">
                     <div class="overlay">
                         <h2>Reviews</h2>
-                        <a class="info" href="/reviews.php?c=1">See More</a>
+                        <a class="info" href="/reviews.php?c=2">See More</a>
                     </div>
                 </div>
             </div>
@@ -179,7 +179,7 @@
                     <img class="img-responsive" src="img/blog.jpg" alt="">
                     <div class="overlay">
                         <h2>Blog</h2>
-                        <a class="info" href="/blog/category.php?t=20">See More</a>
+                        <a class="info" href="/blog/category.php?t=33">See More</a>
                     </div>
                 </div>
             </div>
