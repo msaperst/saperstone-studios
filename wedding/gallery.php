@@ -48,7 +48,7 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <img class="img-responsive" src="img/surprise.jpg" alt="">
                     <div class="overlay">
-                        <h2>Maternity</h2>
+                        <h2>Surprise Proposals</h2>
                         <a class="info" href="galleries.php?w=9">See More</a>
                     </div>
                 </div>

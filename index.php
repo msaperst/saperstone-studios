@@ -51,7 +51,7 @@
                         alt="Weddings">
                     <div class="overlay">
                         <h2>Weddings</h2>
-                        <a class="info" href="#">See More</a>
+                        <a class="info" href="/wedding/index.php">See More</a>
                     </div>
                 </div>
             </div>
