@@ -31,7 +31,7 @@
         <div class="row">
             <div class="col-md-12">
                 <img src='img/ringling.jpg' align='right'
-                    style='max-width: 350px; margin: 0px 0px 20px 20px;' />
+                    style='margin: 0px 0px 20px 20px;' />
                 <h2>What Makes Saperstone Studios Unique</h2>
                 <p>
                     It's all in the name, Saperstone Studios Photography and <em>Retouch</em>.

@@ -54,7 +54,7 @@
                 <?php
                 }
                 ?>
-                <li><a href="/services.html">Services</a></li>
-                <li><a href="#">Reviews</a></li>
+                <li><a href="/services.php">Services</a></li>
+                <li><a href="/reviews.php">Reviews</a></li>
                 <li><a href="/contact.php">Contact</a></li>
             </ul></li>
