@@ -29,20 +29,23 @@ $scripts .= "<script type='text/javascript'>
 $style = "<style>#confused { padding:50px; }</style>\n";
 
 $header = "Whoops, something went wrong!";
+$location = "";
+if (! is_file ( "${location}header.php" )) {
+    $location = "../";
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
-    <?php require_once "../header.php"; ?>
+    <?php require_once "${location}header.php"; ?>
 
 </head>
 
 <body>
 
-    <?php require_once "../nav.php"; ?>
+    <?php require_once "${location}nav.php"; ?>
 
     <!-- Page Content -->
     <div class="page-content container">
@@ -82,26 +85,10 @@ $header = "Whoops, something went wrong!";
         </div>
         <!-- /.row -->
 
-        <?php require_once "../footer.php"; ?>
+        <?php require_once "${location}footer.php"; ?>
 
     </div>
     <!-- /.container -->
-
-    <!-- Gallery JavaScript -->
-    <script src="/js/album.js"></script>
-
-    <!-- Script to Activate the Gallery -->
-    <script>
-        $('[data-toggle="tooltip"]').tooltip();
-        var album = new Album( "<?php echo $album_info['id']; ?>", 4, <?php echo count($images); ?> );
-        
-         var loaded = 0;
-        $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() && loaded < <?php echo count($images); ?> ) {
-                loaded = album.loadImages();
-            }
-        });
-    </script>
 
 </body>
 

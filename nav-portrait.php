@@ -24,6 +24,6 @@
             </ul></li>
         <li><a href="#">Retouch</a></li>
         <li><a href="/about.php">About</a></li>
-        <li><a href="#">Reviews</a></li>
-        <li><a href="#">Blog</a></li>
+        <li><a href="/reviews.php?c=1">Reviews</a></li>
+        <li><a href="/blog/category.php?t=20">Blog</a></li>
         <li><a href="/contact.php">Contact</a></li>
