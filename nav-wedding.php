@@ -7,9 +7,8 @@
             class="dropdown-toggle" data-toggle="dropdown">Details<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="#">TBD</a></li>
-                <li><a href="#">TBD</a></li>
-                <li><a href="#">TBD</a></li>
+                <li><a href="#">Investment</a></li>
+                <li><a href="#">Products</a></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
