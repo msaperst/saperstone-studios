@@ -11,7 +11,7 @@ class SocialMedia {
     function generateRSS() {
         $output = "../blog.rss";
         $url = $this->baseURL ();
-        $feed = fopen ( $output, 'w' ) || die ( "Unable to open file!" );
+        $feed = fopen ( $output, 'w' ) or die ( "Unable to open file!" );
         
         fwrite ( $feed, "<?xml version=\"1.0\"?>\n" );
         fwrite ( $feed, "<rss version=\"2.0\">\n" );

@@ -19,8 +19,8 @@ if (! $user->isLoggedIn ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();
-} else {
-    $user = $user->getId ();
+// } else {
+//     $user = $user->getId ();
 }
 
 if (isset ( $_POST ['what'] )) {
@@ -51,7 +51,7 @@ if (! $album_info ['name']) {
 }
 
 // determine what the user can download
-$sql = "SELECT album_images.* FROM download_rights LEFT JOIN album_images ON download_rights.album = album_images.album AND download_rights.image = album_images.sequence WHERE download_rights.user = '$user' AND download_rights.album = '$album';";
+$sql = "SELECT album_images.* FROM download_rights LEFT JOIN album_images ON download_rights.album = album_images.album AND download_rights.image = album_images.sequence WHERE download_rights.user = '".$user->getId()."' AND download_rights.album = '$album';";
 $result = mysqli_query ( $conn->db, $sql );
 $downloadable = array ();
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
@@ -67,7 +67,7 @@ if ($what == "all") {
         $desired [] = $r;
     }
 } elseif ($what == "favorites") {
-    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user' AND favorites.album = '$album';";
+    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '".$user->getId()."' AND favorites.album = '$album';";
     $result = mysqli_query ( $conn->db, $sql );
     $desired = array ();
     while ( $r = mysqli_fetch_assoc ( $result ) ) {
@@ -112,7 +112,7 @@ foreach ( $available as $image ) {
         $images .= dirname ( ".." . $file ) . "/full/" . basename ( $file ) . " ";
         $image_array [] = basename ( $file );
     } elseif (file_exists ( ".." . $file )) {
-        $image .= ".." . $file . " ";
+        $images .= ".." . $file . " ";
         $image_array [] = basename ( $file );
     }
 }
@@ -131,7 +131,6 @@ $response ['file'] = $myFile;
 echo json_encode ( $response );
 
 // send email
-$user = new User ();
 $IP = $_SERVER ['REMOTE_ADDR'];
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = '../plugins/Browser.php-master/lib/Browser.php');
