@@ -83,12 +83,19 @@ if ($what == "all") {
 }
 
 $available = array ();
-foreach ( $desired as $file ) {
-    $result = doesArrayContainFile ( $downloadable, $file );
-    if ($result) {
-        $available [] = $file;
+// if we're an admin, we can download all files
+if ($user->isAdmin ()) {
+    $available = $desired;
+    // check to see which files we want to download, we can download
+} else {
+    foreach ( $desired as $file ) {
+        $result = doesArrayContainFile ( $downloadable, $file );
+        if ($result) {
+            $available [] = $file;
+        }
     }
 }
+
 if (empty ( $available )) {
     $response ['err'] = "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.";
     echo json_encode ( $response );
