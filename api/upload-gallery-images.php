@@ -79,6 +79,15 @@ if (isset ( $_FILES ["myfile"] )) {
     // add our uploaded files to
     foreach ( $ret as $img ) {
         $size = getimagesize ( $output_dir . $fileName );
+        if ($size [0] < 1200) {
+            echo json_encode ( "The image <b>$file</b> doesn't meet the minimum width requirements of 1200px" );
+            unlink ( $output_dir . $fileName );
+            exit ();
+        } else {
+            system ( "mogrify -resize 1200x1200 \"$output_dir$fileName\"" );
+            system ( "mogrify -density 72 \"$output_dir$fileName\"" );
+            $size = getimagesize ( $output_dir . $fileName );
+        }
         $sql = "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `location`, `width`, `height`) VALUES ('$id', '$img', '$next_seq', '/img/" . $gallery_info ['location'] . "/$img', '" . $size [0] . "', '" . $size [1] . "');";
         mysqli_query ( $conn->db, $sql );
         $next_seq ++;
