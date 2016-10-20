@@ -145,7 +145,7 @@
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div section='Retouch'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img class="img-responsive" src="http://placehold.it/1200x250"
+                    <img class="img-responsive" src="img/retouch.jpg"
                         alt="">
                     <div class="overlay">
                         <h2>Retouch</h2>

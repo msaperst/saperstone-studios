@@ -203,5 +203,3 @@ function doesArrayContainFile($array, $file) {
     }
     return false;
 }
-
-

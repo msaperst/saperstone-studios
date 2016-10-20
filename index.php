@@ -75,7 +75,7 @@
                 <h2 class="page-header">Welcome to Saperstone Studios</h2>
             </div>
             <div class="col-md-12">
-                <img src='img/locationbox.png' align='right' />
+                <img style='max-width:100%;' src='img/locationbox.png' align='right' />
                 <p>
                     Allow me to introduce myself! I've worked in the photography
                     industry for over 10 years, coordinating photo shoots and
