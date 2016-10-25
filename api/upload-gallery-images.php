@@ -30,10 +30,10 @@ if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
     exit ();
 }
 
-$sql = "SELECT * FROM galleries WHERE id = $id;";
+$sql = "SELECT * FROM galleries WHERE id = '$id';";
 $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $gallery_info ['id']) {
-    echo "That ID doesn't match any galleries";
+if (! $gallery_info ['name']) {
+    echo "The ID '$id' doesn't match any galleries";
     $conn->disconnect ();
     exit ();
 }

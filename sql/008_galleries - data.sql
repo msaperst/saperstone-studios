@@ -4,6 +4,7 @@
 
 LOCK TABLES `galleries` WRITE;
 /*!40000 ALTER TABLE `galleries` DISABLE KEYS */;
+INSERT IGNORE INTO `galleries` VALUES (0,'leigh-ann','');
 INSERT IGNORE INTO `galleries` VALUES (1,'portrait-home','');
 INSERT IGNORE INTO `galleries` VALUES (2,'portrait-maternity','Maternity');
 INSERT IGNORE INTO `galleries` VALUES (3,'portrait-newborn','Newborn');
