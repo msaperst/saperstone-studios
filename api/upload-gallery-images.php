@@ -54,7 +54,11 @@ if (is_numeric ( $next_seq )) {
     $next_seq = 0;
 }
 
-$output_dir = "../img/" . $gallery_info ['location'] . "/";
+$location = str_replace ( "-", "/", $gallery_info ['name'] );
+$output_dir = "../img/$location/";
+if (! is_dir ( $output_dir )) {
+    mkdir ( $output_dir, 755, true );
+}
 if (isset ( $_FILES ["myfile"] )) {
     $ret = array ();
     
@@ -77,23 +81,25 @@ if (isset ( $_FILES ["myfile"] )) {
     }
     
     // add our uploaded files to
-    foreach ( $ret as $img ) {
+    $response = array ();
+    foreach ( $ret as $fileName ) {
         $size = getimagesize ( $output_dir . $fileName );
         if ($size [0] < 1200) {
             echo json_encode ( "The image <b>$file</b> doesn't meet the minimum width requirements of 1200px" );
             unlink ( $output_dir . $fileName );
             exit ();
         } else {
-            system ( "mogrify -resize 1200x1200 \"$output_dir$fileName\"" );
+            system ( "mogrify -resize 900x900 \"$output_dir$fileName\"" );
             system ( "mogrify -density 72 \"$output_dir$fileName\"" );
             $size = getimagesize ( $output_dir . $fileName );
         }
-        $sql = "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `location`, `width`, `height`) VALUES ('$id', '$img', '$next_seq', '/img/" . $gallery_info ['location'] . "/$img', '" . $size [0] . "', '" . $size [1] . "');";
+        $response [$next_seq] = $fileName;
+        $sql = "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`) VALUES ('$id', '$fileName', '$next_seq', '', '/img/$location/$fileName', '" . $size [0] . "', '" . $size [1] . "');";
         mysqli_query ( $conn->db, $sql );
         $next_seq ++;
     }
     
-    echo json_encode ( $ret );
+    echo json_encode ( $response );
 }
 
 $conn->disconnect ();

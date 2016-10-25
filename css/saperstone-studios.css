@@ -318,6 +318,13 @@ footer {
     background-repeat: no-repeat;
 }
 
+.carousel-inner > .item {
+	-webkit-transition: 1.2s ease-in-out left;
+    -moz-transition: 1.2s ease-in-out left;
+    -o-transition: 1.2s ease-in-out left;
+    transition: 1.2s ease-in-out left;
+}
+
 @media ( max-width :767px) {
     .carousel .carousel {
         height: 70%;

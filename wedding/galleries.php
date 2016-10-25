@@ -190,11 +190,12 @@ if (! $details ['name']) {
 
     <!-- Script to Activate the Gallery -->
     <script>
-        var gallery = new Gallery( "<?php echo $details['name']; ?>", 4, <?php echo count($images); ?> );
-        
         var loaded = 0;
+        var total = <?php echo count($images); ?>;
+        var gallery = new Gallery( "<?php echo $details['name']; ?>", total );
+        
         $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() && loaded < <?php echo count($images); ?> ) {
+            if( $('footer').isOnScreen() && loaded < total ) {
                 loaded = gallery.loadImages();
             }
         });

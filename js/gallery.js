@@ -4,21 +4,20 @@ $.fn.isOnScreen = function() {
     return bounds.top < window.innerHeight && bounds.bottom > 0;
 };
 
-function Gallery(gallery, columns, totalImages) {
+function Gallery(gallery, totalImages) {
     this.loaded = 0;
     this.gallery = gallery;
-    this.columns = columns;
     this.totalImages = totalImages;
 
     this.loadImages();
 }
 
-Gallery.prototype.loadImages = function() {
+Gallery.prototype.loadImages = function(howMany = 4) {
     var Gallery = this;
     $.get("/api/get-gallery-images.php", {
         gallery : Gallery.gallery,
         start : Gallery.loaded,
-        howMany : Gallery.columns
+        howMany : howMany
     }, function(data) {
         // load each of our 4 images on the screen
         $.each(data, function(k, v) {
@@ -61,10 +60,13 @@ Gallery.prototype.loadImages = function() {
             shortest.obj.append(holder);
         });
         // when we done, see if we need to load more
-        if ($('footer').isOnScreen()) {
+        if ($('footer').isOnScreen() && Gallery.loaded < Gallery.totalImages) {
             Gallery.loadImages();
         }
+        if( data.length < 4) {
+            Gallery.loaded = Gallery.loaded - howMany + data.length;
+        }
     }, "json");
-    Gallery.loaded += Gallery.columns;
+    Gallery.loaded += howMany;
     return Gallery.loaded;
 };

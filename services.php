@@ -28,7 +28,7 @@
         <!-- /.row -->
 
         <!-- Intro Content -->
-		<div class="row">
+        <div class="row">
             <div class="col-lg-12">
 
                 <ul id="myTab" class="nav nav-tabs nav-justified">

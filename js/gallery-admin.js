@@ -59,55 +59,6 @@ function editGallery(id) {
                 return inputs;
             },
             buttons : [ {
-                icon : 'glyphicon glyphicon-refresh',
-                label : ' Make Thumbnails',
-                cssClass : 'btn-warning',
-                action : function(dialogItself) {
-                    var $button = this; // 'this' here is a jQuery object that
-                                        // wrapping the <button> DOM element.
-                    $button.spin();
-                    disableDialogButtons(dialogItself);
-                    // need to determine how to make thumbs, with proof all
-                    // over, watermark in corner, or no watermark
-                    BootstrapDialog.show({
-                        draggable : true,
-                        title : 'Make Thumbnails How?',
-                        message : 'What do you want to put on your viewable thumbnails?',
-                        buttons : [ {
-                            icon : 'glyphicon glyphicon-eye-close',
-                            label : ' Proof',
-                            cssClass : 'btn-warning',
-                            action : function(dialogInItself) {
-                                dialogInItself.close();
-                                makeThumbs(id, $button, dialogItself, "proof");
-                            }
-                        }, {
-                            icon : 'glyphicon glyphicon-eye-open',
-                            label : ' Watermark',
-                            cssClass : 'btn-info',
-                            action : function(dialogInItself) {
-                                dialogInItself.close();
-                                makeThumbs(id, $button, dialogItself, "watermark");
-                            }
-                        }, {
-                            icon : 'glyphicon glyphicon-globe',
-                            label : ' Nothing',
-                            cssClass : 'btn-danger',
-                            action : function(dialogInItself) {
-                                dialogInItself.close();
-                                makeThumbs(id, $button, dialogItself, "none");
-                            }
-                        }, {
-                            label : 'Close',
-                            action : function(dialogInItself) {
-                                $button.stopSpin();
-                                enableDialogButtons(dialogItself);
-                                dialogInItself.close();
-                            }
-                        } ]
-                    });
-                }
-            }, {
                 icon : 'glyphicon glyphicon-save',
                 label : ' Save Details',
                 cssClass : 'btn-success',
@@ -157,6 +108,11 @@ function editGallery(id) {
                         setTimeout(function() {
                             pd.statusbar.remove();
                         }, 5000);
+                        $.each(files, function(i, val) {
+                            total++;
+                            loaded = gallery.loadImages(1);
+                        });
+
                     },
                     afterUploadAll : function() {
                         setTimeout(function() {
