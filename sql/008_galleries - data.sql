@@ -17,5 +17,8 @@ INSERT IGNORE INTO `galleries` VALUES (9,'wedding-proposal','Surprise Proposals'
 INSERT IGNORE INTO `galleries` VALUES (10,'wedding-engagement','Engagements');
 INSERT IGNORE INTO `galleries` VALUES (11,'wedding-wedding','Weddings');
 INSERT IGNORE INTO `galleries` VALUES (12,'wedding-night','Night Photography');
+INSERT IGNORE INTO `galleries` VALUES (13,'newborn-favorite','Favorites');
+INSERT IGNORE INTO `galleries` VALUES (14,'newborn-home','At Your Home');
+INSERT IGNORE INTO `galleries` VALUES (15,'newborn-studio','Studio');
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;

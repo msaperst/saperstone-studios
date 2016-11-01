@@ -35,7 +35,8 @@
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Portraits</a></li>
-                    <li class="active">Gallery</li>
+                    <li><a href="gallery.php">Gallery</a></li>
+                    <li class="active">Newborn</li>
                 </ol>
             </div>
         </div>
@@ -44,62 +45,32 @@
         <!-- Services Section -->
         <div class="row">
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Maternity"
+                <div section="Favorites"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <img class="img-responsive" src="img/maternity.jpg" alt="">
                     <div class="overlay">
-                        <h2>Maternity</h2>
-                        <a class="info" href="galleries.php?w=2">See More</a>
+                        <h2>Favorites</h2>
+                        <a class="info" href="galleries.php?w=13">See More</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Newborns"
+                <div section="At Your Home"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <img class="img-responsive" src="img/newborn.jpg" alt="">
                     <div class="overlay">
-                        <h2>Newborns</h2>
-                        <a class="info" href="newborns.php">See More</a>
+                        <h2>At Your Home</h2>
+                        <a class="info" href="galleries.php?w=14">See More</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="6 Months"
+                <div section="Studio"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <img class="img-responsive" src="img/6month.jpg" alt="">
                     <div class="overlay">
-                        <h2>6 Months</h2>
-                        <a class="info" href="galleries.php?w=4">See More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="First Birthday"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img class="img-responsive" src="img/1year.jpg" alt="">
-                    <div class="overlay">
-                        <h2>First Birthday</h2>
-                        <a class="info" href="galleries.php?w=5">See More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Kids and Family"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img class="img-responsive" src="img/family.jpg" alt="">
-                    <div class="overlay">
-                        <h2>Kids and Family</h2>
-                        <a class="info" href="galleries.php?w=6">See More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Seniors"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img class="img-responsive" src="img/senior.jpg" alt="">
-                    <div class="overlay">
-                        <h2>Seniors</h2>
-                        <a class="info" href="galleries.php?w=7">See More</a>
+                        <h2>Studio</h2>
+                        <a class="info" href="galleries.php?w=15">See More</a>
                     </div>
                 </div>
             </div>
