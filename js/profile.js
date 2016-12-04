@@ -9,6 +9,16 @@ $(document).ready(function() {
 
 function validateInput() {
     var allGood = true;
+    var re = /^[\w]{5,}$/;
+    if (!re.test($('#profile-username').val())) {
+        $('#update-profile-username-message').empty().append("Your username must be at least 5 characters, and contain only letters numbers and underscores");
+        setError($('#profile-username'));
+        allGood = false
+    } else {
+        setSuccess($('#profile-username'));
+        $('#update-profile-username-message').empty();
+    }
+
     if ($('#profile-firstname').val() === "") {
         $('#update-profile-firstname-message').empty().append("A first name is required");
         setError($('#profile-firstname'));
@@ -108,32 +118,36 @@ function updateProfile() {
     $("#update-profile").prop("disabled", true);
     $("#update-profile em").removeClass('fa fa-floppy-o').addClass('glyphicon glyphicon-asterisk icon-spin');
 
-    $
-            .post("/api/update-profile.php", {
-                firstName : $('#profile-firstname').val(),
-                lastName : $('#profile-lastname').val(),
-                curPass : md5($('#profile-current-password').val()),
-                password : md5($('#profile-password').val()),
-                email : $('#profile-email').val()
-            })
-            .done(
-                    function(data) {
-                        if (data !== "") {
-                            $('#update-profile-message').append(
-                                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-                        } else {
-                            $('#update-profile-message')
-                                    .append(
-                                            "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your profile information was successfully updated.</div>");
-                        }
-                    })
-            .fail(
-                    function() {
-                        $('#update-profile-message')
-                                .append(
-                                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your album users.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                    }).always(function() {
-                $("#update-profile").prop("disabled", false);
-                $("#update-profile em").addClass('fa fa-floppy-o').removeClass('glyphicon glyphicon-asterisk icon-spin');
-            });
+    var url = "/api/register-user.php";
+    if ($('#profile-current-password').length) {
+        url = "/api/update-profile.php";
+    }
+
+    $.post(url, {
+        username : $('#profile-username').val(),
+        firstName : $('#profile-firstname').val(),
+        lastName : $('#profile-lastname').val(),
+        curPass : md5($('#profile-current-password').val()),
+        password : md5($('#profile-password').val()),
+        email : $('#profile-email').val()
+    }).done(function(data) {
+        if (data !== "") {
+            $('#update-profile-message').append(
+                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+            if (!$('#profile-current-password').length) {
+                location.reload();
+            }
+        } else {
+            $('#update-profile-message')
+                    .append(
+                            "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your profile information was successfully updated.</div>");
+        }
+    }).fail(function() {
+        $('#update-profile-message')
+                .append(
+                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your album users.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+    }).always(function() {
+        $("#update-profile").prop("disabled", false);
+        $("#update-profile em").addClass('fa fa-floppy-o').removeClass('glyphicon glyphicon-asterisk icon-spin');
+    });
 }
