@@ -47,6 +47,24 @@ class User {
     function isAdmin() {
         return ($this->getRole () === "admin");
     }
+    function getFirstName() {
+        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
+            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT firstName FROM users WHERE hash='{$_SESSION['hash']}';" ) );
+            if ($row ['firstName']) {
+                return $row ['firstName'];
+            }
+        }
+        return "";
+    }
+    function getLastName() {
+        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
+            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT lastName FROM users WHERE hash='{$_SESSION['hash']}';" ) );
+            if ($row ['lastName']) {
+                return $row ['lastName'];
+            }
+        }
+        return "";
+    }
     function getName() {
         if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
             $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT firstName, lastName FROM users WHERE hash='{$_SESSION['hash']}';" ) );
