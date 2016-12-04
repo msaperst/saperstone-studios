@@ -54,7 +54,7 @@ if (count ( $err ) > 0) {
     exit ();
 }
 
-mysqli_query ( $conn->db, "UPDATE users SET pass='" . md5 ( $_POST ['password'] ) . "' WHERE id='$id';" );
+mysqli_query ( $conn->db, "UPDATE users SET pass='" . $_POST ['password'] . "' WHERE id='$id';" );
 
 $conn->disconnect ();
 exit ();
