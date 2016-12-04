@@ -24,7 +24,6 @@ if (! $user->isLoggedIn ()) {
 $firstName = "";
 $lastName = "";
 $curPass = "";
-$password = "";
 $email = "";
 
 if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL )) {

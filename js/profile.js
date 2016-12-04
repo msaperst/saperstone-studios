@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 function validateInput() {
     var allGood = true;
-    if ($('#profile-firstname').val() == "") {
+    if ($('#profile-firstname').val() === "") {
         $('#update-profile-firstname-message').empty().append("A first name is required");
         setError($('#profile-firstname'));
         allGood = false
@@ -17,7 +17,7 @@ function validateInput() {
         setSuccess($('#profile-firstname'));
         $('#update-profile-firstname-message').empty();
     }
-    if ($('#profile-lastname').val() == "") {
+    if ($('#profile-lastname').val() === "") {
         $('#update-profile-lastname-message').empty().append("A last name is required");
         setError($('#profile-lastname'));
         allGood = false
@@ -36,7 +36,7 @@ function validateInput() {
         $('#update-profile-email-message').empty();
     }
 
-    if ($('#profile-password').val() != "") {
+    if ($('#profile-password').val() !== "") {
         $('#update-profile-password-message').show();
         var length = $('#profile-password').val().length;
         if (length > 32) {
@@ -50,7 +50,6 @@ function validateInput() {
         if (length > 16) {
             color = '#' + parseInt(32 - length).toString(16) + '0FF00';
         }
-        console.log(color);
         $('#update-profile-password-strength').width(width);
         $('#update-profile-password-strength').css({
             'width' : width + '%',
@@ -60,7 +59,7 @@ function validateInput() {
     } else {
         $('#update-profile-password-message').hide();
     }
-    if ($('#profile-password').val() != $('#profile-confirm-password').val()) {
+    if ($('#profile-password').val() !== $('#profile-confirm-password').val()) {
         $('#update-profile-confirm-password-message').empty().append("Your passwords do not match");
         setError($('#profile-password'));
         setError($('#profile-confirm-password'));
@@ -70,12 +69,12 @@ function validateInput() {
         setSuccess($('#profile-confirm-password'));
         $('#update-profile-confirm-password-message').empty();
     }
-    if ($('#profile-password').val() == "" && $('#profile-confirm-password').val() == "") {
+    if ($('#profile-password').val() === "" && $('#profile-confirm-password').val() === "") {
         setBlank($('#profile-password'));
         setBlank($('#profile-confirm-password'));
         $('#update-profile-confirm-password-message').empty();
     }
-    if ($('#profile-password').val() != "" && $('#profile-current-password').val() == "") {
+    if ($('#profile-password').val() !== "" && $('#profile-current-password').val() === "") {
         $('#update-profile-current-password-message').empty().append("Please confirm old password to set new password");
         setError($('#profile-current-password'));
         allGood = false
@@ -119,7 +118,7 @@ function updateProfile() {
             })
             .done(
                     function(data) {
-                        if (data != "") {
+                        if (data !== "") {
                             $('#update-profile-message').append(
                                     "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                         } else {
