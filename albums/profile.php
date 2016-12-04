@@ -49,7 +49,7 @@ if (! $user->isLoggedIn ()) {
 		<!-- /.row -->
 
 		<!-- Services Section -->
-		<form class="form-horizontal">
+		<div class="form-horizontal">
 			<div class="row">
 				<div class="form-group">
 					<div class="col-md-2">
@@ -65,12 +65,25 @@ if (! $user->isLoggedIn ()) {
 			<div class="row">
 				<div class="form-group has-feedback">
 					<div class="col-md-2">
+						<label for="profile-current-password">Current Password:</label>
+					</div>
+					<div class="col-md-10">
+						<input type="password" class="form-control" id="profile-current-password"
+							placeholder="Current Password" /> <span
+							class="glyphicon form-control-feedback"></span>
+						<div class="error" id="update-profile-current-password-message"></div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group has-feedback">
+					<div class="col-md-2">
 						<label for="profile-password">New Password:</label>
 					</div>
 					<div class="col-md-10">
 						<input type="password" class="form-control" id="profile-password"
-							placeholder="New Password" />
-						<span class="glyphicon form-control-feedback"></span>
+							placeholder="New Password" /> <span
+							class="glyphicon form-control-feedback"></span>
 						<div id="update-profile-password-message">
 							<div id="update-profile-password-strength"></div>
 						</div>
@@ -98,8 +111,8 @@ if (! $user->isLoggedIn ()) {
 					<div class="col-md-10 ">
 						<input type="text" class="form-control" id="profile-firstname"
 							placeholder="First Name" required
-							value="<?php echo $user->getFirstName(); ?>" />
-						<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							value="<?php echo $user->getFirstName(); ?>" /> <span
+							class="glyphicon glyphicon-ok form-control-feedback"></span>
 						<div class="error" id="update-profile-firstname-message"></div>
 					</div>
 				</div>
@@ -112,8 +125,8 @@ if (! $user->isLoggedIn ()) {
 					<div class="col-md-10">
 						<input type="text" class="form-control" id="profile-lastname"
 							placeholder="Last Name" required
-							value="<?php echo $user->getLastName(); ?>" />
-						<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							value="<?php echo $user->getLastName(); ?>" /> <span
+							class="glyphicon glyphicon-ok form-control-feedback"></span>
 						<div class="error" id="update-profile-lastname-message"></div>
 					</div>
 				</div>
@@ -126,8 +139,8 @@ if (! $user->isLoggedIn ()) {
 					<div class="col-md-10">
 						<input type="email" class="form-control" id="profile-email"
 							placeholder="Email" required
-							value="<?php echo $user->getEmail(); ?>" />
-						<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							value="<?php echo $user->getEmail(); ?>" /> <span
+							class="glyphicon glyphicon-ok form-control-feedback"></span>
 						<div class="error" id="update-profile-email-message"></div>
 					</div>
 				</div>
@@ -145,7 +158,7 @@ if (! $user->isLoggedIn ()) {
 					</div>
 				</div>
 			</div>
-		</form>
+		</div>
 		<!-- /.row -->
 
         <?php require_once "../footer.php"; ?>

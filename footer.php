@@ -64,6 +64,8 @@
 <script src="/js/nav.js"></script>
 <script src="/js/carousel.js"></script>
 
+<!-- MD5 for login/password -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.6.0/js/md5.min.js"></script>
 
 <!-- Script to Activate the Carousel -->
 <script>
