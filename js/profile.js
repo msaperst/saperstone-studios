@@ -134,13 +134,13 @@ function updateProfile() {
         if (data !== "") {
             $('#update-profile-message').append(
                     "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-            if (!$('#profile-current-password').length) {
-                location.reload();
-            }
         } else {
             $('#update-profile-message')
                     .append(
                             "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your profile information was successfully updated.</div>");
+            if (!$('#profile-current-password').length) {
+                location.reload();
+            }
         }
     }).fail(function() {
         $('#update-profile-message')

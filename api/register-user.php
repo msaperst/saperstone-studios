@@ -56,7 +56,7 @@ if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
 }
 
 $hash = md5 ( "$username-$password" );
-$sql = "INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `hash`, `resetKey`) VALUES ('$username', '$password', '$firstName', '$lastName', '$email', '$hash', '');";
+$sql = "INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `hash`) VALUES ('$username', '$password', '$firstName', '$lastName', '$email', '$hash');";
 mysqli_query ( $conn->db, $sql );
 
 // need to auto-login
