@@ -44,7 +44,7 @@ if ($_POST ['submit'] == 'Login') {
         $_POST ['rememberMe'] = ( int ) $_POST ['rememberMe'];
         
         // Escaping all input data
-        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT hash,usr FROM users WHERE usr='{$_POST['username']}' AND pass='" . md5 ( $_POST ['password'] ) . "'" ) );
+        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT hash,usr FROM users WHERE usr='{$_POST['username']}' AND pass='{$_POST ['password']}'" ) );
         
         if ($row ['usr']) {
             // If everything is OK login
