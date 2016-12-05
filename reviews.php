@@ -70,6 +70,8 @@ if (isset ( $_GET ['c'] )) {
                     that you are left with fantastic images that you will love.</p>
             </div>
         </div>
+	<!-- /.row -->
+
         <div class="row">
             <?php
             $where = "";
@@ -101,6 +103,20 @@ if (isset ( $_GET ['c'] )) {
                 $counter ++;
             }
             ?>
+        </div>
+        <!-- /.row -->
+
+        <!-- Links to external sites -->
+        <div class="row">
+            <div class="col-lg-12">
+                <p>Think these reviews are great? See where else people are saying great things about Saperstone Studios.
+                    <ul>
+                        <li><a target="_blank" href="http://www.weddingwire.com/reviews/saperstone-studios-reston/cdbd87c3e3540e8e.html">Wedding Wire</a></li>
+                        <li><a target="_blank" href="http://www.yelp.com/biz/saperstone-studios-fairfax">Yelp</a></li>
+                        <li><a target="_blank" href="https://plus.google.com/104470541535522234804/about?hl=en">Google</a></li>
+                    </ul>
+                </p>
+            </div>
         </div>
         <!-- /.row -->
 
