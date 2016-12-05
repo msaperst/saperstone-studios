@@ -45,7 +45,7 @@ if (! $user->isAdmin ()) {
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li class="active">Administration</li>
-                    <li class="active">Manage Products</li>
+                    <li class="active">Products</li>
                 </ol>
             </div>
         </div>

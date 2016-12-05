@@ -51,7 +51,7 @@ if (! $user->isLoggedIn ()) {
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li class="active">Administration</li>
-                    <li class="active">Manage Albums</li>
+                    <li class="active">Albums</li>
                 </ol>
                 <?php
                 } else {
