@@ -173,7 +173,6 @@ function generateBrowserGraph(urlPlus) {
             data : [ {
                 type : "pie",
                 click : function(e) {
-                    console.log(e);
                     generateBrowserGraph("browser=" + e.dataPoint.indexLabel);
                 },
                 showInLegend : true,

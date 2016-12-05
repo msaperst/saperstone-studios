@@ -70,7 +70,7 @@ if (isset ( $_GET ['c'] )) {
                     that you are left with fantastic images that you will love.</p>
             </div>
         </div>
-	<!-- /.row -->
+        <!-- /.row -->
 
         <div class="row">
             <?php
