@@ -1,13 +1,28 @@
+var length = 7;
+var start = -1 * length;
+var ignoreAdmin = 0;
+
 $(document).ready(function() {
-    var length = 7;
-    var start = -1 * length;
+    $('#ignore-admins-input').change(function() {
+        ignoreAdmin = $(this).is(':checked') ? 1 : 0;
+        generatePageGraph();
+        generateHitGraph();
+        generateUniqueGraph();
+        generateDeviceGraph();
+        generateOSGraph();
+        generateBrowserGraph("");
+        generateScreenGraph();
+    });
+    
+    $('#page-usage').height($('#page-usage').width());
+    generatePageGraph();
 
     $('#hit-usage').height($('#hit-usage').width());
-    generateHitGraph(length, start);
+    generateHitGraph();
 
-    $('#page-usage').height($('#page-usage').width());
-    generatePageGraph(length, start);
-
+    $('#unique-usage').height($('#unique-usage').width());
+    generateUniqueGraph();
+    
     $('#device-usage').height($('#device-usage').width());
     generateDeviceGraph();
 
@@ -22,33 +37,39 @@ $(document).ready(function() {
 
     $('#over-time-usage-prev').click(function() {
         start -= length;
-        generateHitGraph(length, start);
-        generatePageGraph(length, start);
+        generatePageGraph();
+        generateHitGraph();
+        generateUniqueGraph();
     });
     $('#over-time-usage-now').click(function() {
-        start = -7;
-        generateHitGraph(length, start);
-        generatePageGraph(length, start);
+        start = length * -1;
+        generatePageGraph();
+        generateHitGraph();
+        generateUniqueGraph();
     });
     $('#over-time-usage-next').click(function() {
         start += length;
-        generateHitGraph(length, start);
-        generatePageGraph(length, start);
+        generatePageGraph();
+        generateHitGraph();
+        generateUniqueGraph();
     });
     $('#over-time-usage-year').click(function() {
         length = 365;
-        generateHitGraph(length, start);
-        generatePageGraph(length, start);
+        generatePageGraph();
+        generateHitGraph();
+        generateUniqueGraph();
     });
     $('#over-time-usage-month').click(function() {
         length = 31;
-        generateHitGraph(length, start);
-        generatePageGraph(length, start);
+        generatePageGraph();
+        generateHitGraph();
+        generateUniqueGraph();
     });
     $('#over-time-usage-week').click(function() {
         length += 7;
-        generateHitGraph(length, start);
-        generatePageGraph(length, start);
+        generatePageGraph();
+        generateHitGraph();
+        generateUniqueGraph();
     });
 
     $('#browser-usage-restart').click(function() {
@@ -56,31 +77,9 @@ $(document).ready(function() {
     });
 });
 
-function generateHitGraph(length, start) {
-    var dataPoints = [];
-    $.getJSON("/api/usage-hit.php?length=" + length + "&start=" + start, function(data) {
-        $.each(data, function(key, value) {
-            dataPoints.push({
-                x : new Date(key),
-                y : parseInt(value)
-            });
-        });
-        var chart = new CanvasJS.Chart("hit-usage", {
-            title : {
-                text : "Overall Site Hits"
-            },
-            data : [ {
-                type : "line",
-                dataPoints : dataPoints,
-            } ]
-        });
-        chart.render();
-    });
-}
-
-function generatePageGraph(length, start) {
+function generatePageGraph() {
     var dataP = [];
-    $.getJSON("/api/usage-page.php?length=" + length + "&start=" + start, function(data) {
+    $.getJSON("/api/usage-page.php?noadmin=" + ignoreAdmin + "&length=" + length + "&start=" + start, function(data) {
         $.each(data, function(key, value) {
             var dataPoints = [];
             $.each(value, function(k, v) {
@@ -107,9 +106,53 @@ function generatePageGraph(length, start) {
     });
 }
 
+function generateHitGraph() {
+    var dataPoints = [];
+    $.getJSON("/api/usage-hit.php?noadmin=" + ignoreAdmin + "&length=" + length + "&start=" + start, function(data) {
+        $.each(data, function(key, value) {
+            dataPoints.push({
+                x : new Date(key),
+                y : parseInt(value)
+            });
+        });
+        var chart = new CanvasJS.Chart("hit-usage", {
+            title : {
+                text : "Overall Site Hits"
+            },
+            data : [ {
+                type : "line",
+                dataPoints : dataPoints,
+            } ]
+        });
+        chart.render();
+    });
+}
+
+function generateUniqueGraph() {
+    var dataPoints = [];
+    $.getJSON("/api/usage-unique.php?noadmin=" + ignoreAdmin + "&length=" + length + "&start=" + start, function(data) {
+        $.each(data, function(key, value) {
+            dataPoints.push({
+                x : new Date(key),
+                y : parseInt(value)
+            });
+        });
+        var chart = new CanvasJS.Chart("unique-usage", {
+            title : {
+                text : "Unique Site Hits"
+            },
+            data : [ {
+                type : "line",
+                dataPoints : dataPoints,
+            } ]
+        });
+        chart.render();
+    });
+}
+
 function generateOSGraph() {
     var dataPoints = [];
-    $.getJSON("/api/usage-os.php", function(data) {
+    $.getJSON("/api/usage-os.php?noadmin=" + ignoreAdmin, function(data) {
         $.each(data, function(key, value) {
             dataPoints.push({
                 indexLabel : key,
@@ -134,7 +177,7 @@ function generateOSGraph() {
 
 function generateDeviceGraph() {
     var dataPoints = [];
-    $.getJSON("/api/usage-device.php", function(data) {
+    $.getJSON("/api/usage-device.php?noadmin=" + ignoreAdmin, function(data) {
         $.each(data, function(key, value) {
             dataPoints.push({
                 indexLabel : key,
@@ -159,7 +202,7 @@ function generateDeviceGraph() {
 
 function generateBrowserGraph(urlPlus) {
     var dataPoints = [];
-    $.getJSON("/api/usage-browser.php?" + urlPlus, function(data) {
+    $.getJSON("/api/usage-browser.php?noadmin=" + ignoreAdmin + "&" + urlPlus, function(data) {
         $.each(data, function(key, value) {
             dataPoints.push({
                 indexLabel : key,
@@ -187,7 +230,7 @@ function generateBrowserGraph(urlPlus) {
 
 function generateScreenGraph() {
     var dataPoints = [];
-    $.getJSON("/api/usage-screen.php", function(data) {
+    $.getJSON("/api/usage-screen.php?noadmin=" + ignoreAdmin, function(data) {
         $.each(data, function(key, value) {
             dataPoints.push({
                 indexLabel : key,

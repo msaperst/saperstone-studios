@@ -21,9 +21,14 @@ if (! $user->isAdmin ()) {
     exit ();
 }
 
-$sql = "SELECT browser,COUNT(browser) as count FROM `usage` WHERE `isRobot` = 0 GROUP BY `browser`;";
+$noAdmin="";
+if (isset ( $_GET ['noadmin'] ) && $_GET ['noadmin'] == "1") {
+    $noAdmin = " AND ( `users`.`role` != 'admin' OR `users`.`role` is NULL )";
+}
+
+$sql = "SELECT usage.browser,COUNT(usage.version) as count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE `usage`.`isRobot` = 0 $noAdmin GROUP BY `usage`.`browser`;";
 if (isset ( $_GET ['browser'] ) && $_GET ['browser'] != "") {
-    $sql = "SELECT version as browser,COUNT(version) as count FROM `usage` WHERE `browser` = '{$_GET['browser']}' AND `isRobot` = 0 GROUP BY `version`;";
+    $sql = "SELECT usage.version as browser,COUNT(usage.version) as count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE `usage`.`browser` = '{$_GET['browser']}' AND `usage`.`isRobot` = 0 $noAdmin GROUP BY `usage`.`version`;";
 }
 
 $result = mysqli_query ( $conn->db, $sql );

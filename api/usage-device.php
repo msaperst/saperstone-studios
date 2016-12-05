@@ -21,7 +21,12 @@ if (! $user->isAdmin ()) {
     exit ();
 }
 
-$sql = "SELECT SUM(isTablet) as tablet,SUM(isMobile) as mobile,COUNT(*)-SUM(isTablet)-SUM(isMobile) as desktop FROM `usage` WHERE `isRobot` = 0;";
+$noAdmin="";
+if (isset ( $_GET ['noadmin'] ) && $_GET ['noadmin'] == "1") {
+    $noAdmin = " AND ( `users`.`role` != 'admin' OR `users`.`role` is NULL )";
+}
+
+$sql = "SELECT SUM(usage.isTablet) as tablet,SUM(usage.isMobile) as mobile,COUNT(*)-SUM(usage.isTablet)-SUM(usage.isMobile) as desktop FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE `usage`.`isRobot` = 0 $noAdmin;";
 $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 echo json_encode ( $result );
 

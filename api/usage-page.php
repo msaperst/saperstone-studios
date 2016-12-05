@@ -30,7 +30,12 @@ if (isset ( $_GET ['start'] ) && $_GET ['start'] != "") {
     $start = ( int ) $_GET ['start'];
 }
 
-$sql = "SELECT DATE(time) as date,url,COUNT(DATE(time)) AS count FROM `usage` WHERE DATE(time) > (CURDATE() + INTERVAL $start DAY) AND DATE(time) <= (CURDATE() + INTERVAL ".($start + $length)." DAY) AND `isRobot` = 0 GROUP BY DATE(time),url;";
+$noAdmin="";
+if (isset ( $_GET ['noadmin'] ) && $_GET ['noadmin'] == "1") {
+    $noAdmin = " AND ( `users`.`role` != 'admin' OR `users`.`role` is NULL )";
+}
+
+$sql = "SELECT DATE(usage.time) as date,usage.url,COUNT(DATE(usage.time)) AS count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE DATE(usage.time) > (CURDATE() + INTERVAL $start DAY) AND DATE(usage.time) <= (CURDATE() + INTERVAL ".($start + $length)." DAY) AND `usage`.`isRobot` = 0 $noAdmin GROUP BY DATE(usage.time),usage.url;";
 $result = mysqli_query ( $conn->db, $sql );
 $response = array ();
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
