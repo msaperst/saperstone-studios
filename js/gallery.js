@@ -22,7 +22,7 @@ Gallery.prototype.loadImages = function(howMany = 4) {
         // load each of our 4 images on the screen
         $.each(data, function(k, v) {
             var shortest = {};
-            shortest.height = 9999;
+            shortest.height = 999999999;
             $('.col-gallery').each(function() {
                 if ($(this).height() < shortest.height) {
                     shortest.obj = $(this);
@@ -32,7 +32,18 @@ Gallery.prototype.loadImages = function(howMany = 4) {
             // create our holding div
             var holder = $('<div>');
             holder.addClass('gallery hovereffect');
-            holder.height(parseInt(v.height * shortest.obj.width() / v.width));
+            var rect = shortest.obj[0].getBoundingClientRect();
+            var width;
+            // `width` is available for IE9+
+            if (rect.width) {  
+                width = rect.width;
+            // Calculate width for IE8 and below
+            } else {
+                width = rect.right - rect.left;
+            }
+            //Remove the padding width
+            width -= (parseInt(shortest.obj.css("padding-left")) + parseInt(shortest.obj.css("padding-right")));
+            holder.height(parseInt(v.height * width / v.width));
             // create our image
             var img = $('<img>');
             img.attr('src', v.location);

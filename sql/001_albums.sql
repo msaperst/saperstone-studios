@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `albums` (
   `lastAccessed` timestamp NULL DEFAULT NULL,
   `location` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `code` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `owner` int(11) NOT NULL,
+  `owner` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `code` (`code`)
