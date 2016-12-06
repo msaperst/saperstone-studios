@@ -16,12 +16,12 @@ include_once "../php/user.php";
 $user = new User ();
 
 $id = "";
-if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
-    $id = ( int ) $_POST ['album'];
+if (isset ( $_GET ['id'] ) && $_GET ['id'] != "") {
+    $id = ( int ) $_GET ['id'];
 } else {
-    if (! isset ( $_POST ['album'] )) {
+    if (! isset ( $_GET ['id'] )) {
         echo "Album id is required!";
-    } elseif ($_POST ['album'] != "") {
+    } elseif ($_GET ['id'] != "") {
         echo "Album id cannot be blank!";
     } else {
         echo "Some other Album id error occurred!";
