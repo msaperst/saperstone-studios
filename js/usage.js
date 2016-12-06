@@ -92,7 +92,7 @@ function generatePageGraph() {
                 type : "stackedColumn",
                 legendText : key,
                 showInLegend : "true",
-                toolTipContent : "{legendText}",
+                toolTipContent : "<div class='text-center'>{y}<br/>{legendText}<br>{x}</div>",
                 dataPoints : dataPoints
             });
         });
