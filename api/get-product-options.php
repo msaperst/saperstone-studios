@@ -13,7 +13,7 @@ session_start ();
 // Start our session
 
 if (isset ( $_GET ['type'] ) && $_GET ['type'] != "") {
-    $type = $_GET ['type'];
+    $type = ( int ) $_GET ['type'];
 } else {
     echo "Product type is not provided";
     $conn->disconnect ();

@@ -25,7 +25,6 @@ $keyword = "";
 if (isset ( $_GET ['keyword'] )) {
     $keyword = mysqli_real_escape_string ( $conn->db, $_GET ['keyword'] );
 }
-$keyword = $_GET ['keyword'];
 
 $sql = "SELECT * FROM albums WHERE `name` COLLATE UTF8_GENERAL_CI LIKE '%$keyword%'";
 $result = mysqli_query ( $conn->db, $sql );

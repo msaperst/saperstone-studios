@@ -65,7 +65,7 @@ if (isset ( $_POST ['role'] )) {
     $role = mysqli_real_escape_string ( $conn->db, $_POST ['role'] );
 }
 if (isset ( $_POST ['active'] )) {
-    $active = $_POST ['active'];
+    $active ( int ) $_POST ['active'];
 }
 $sql = "INSERT INTO users ( usr, firstName, lastName, email, role, active, hash ) VALUES ('$username', '$firstName', '$lastName', '$email', '$role', '$active', '" . md5 ( $username . $role ) . "' );";
 mysqli_query ( $conn->db, $sql );

@@ -3,7 +3,7 @@ require_once "../php/sql.php";
 $conn = new Sql ();
 $conn->connect ();
 
-$response = array ();
+$response = [];
 $start = 0;
 $howMany = 999999999999999999;
 
@@ -14,7 +14,7 @@ if (isset ( $_GET ['howMany'] )) {
     $howMany = ( int ) $_GET ['howMany'];
 }
 if (isset ( $_GET ['searchTerm'] )) {
-    $search = $_GET ['searchTerm'];
+    $search = mysqli_real_escape_string ( $conn->db, $_GET ['searchTerm'] );
 } else {
     exit ();
 }

@@ -22,7 +22,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_POST ['album'] )) {
-    $album = $_POST ['album'];
+    $album = ( int ) $_POST ['album'];
 } else {
     echo "Album is not provided";
     $conn->disconnect ();

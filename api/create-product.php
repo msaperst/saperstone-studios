@@ -22,7 +22,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_POST ['category'] ) && $_POST ['category'] != "") {
-    $category = $_POST ['category'];
+    $category = mysqli_real_escape_string ( $conn->db, $_POST ['category'] );
 } else {
     echo "Category is not provided";
     $conn->disconnect ();
@@ -30,7 +30,7 @@ if (isset ( $_POST ['category'] ) && $_POST ['category'] != "") {
 }
 
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = $_POST ['name'];
+    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
 } else {
     echo "Name is not provided";
     $conn->disconnect ();

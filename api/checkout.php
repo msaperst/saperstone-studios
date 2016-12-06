@@ -39,22 +39,27 @@ if (! $user->isLoggedIn ()) {
 $IP = $_SERVER ['REMOTE_ADDR'];
 $user_details = $order_details = $coupon = "";
 if (isset ( $_POST ['user'] )) {
-    $user_details = $_POST ['user'];
+    $user_details = mysqli_real_escape_string ( $conn->db, $_POST ['user'] );
 } else {
     $response ['error'] = "User details not set";
     echo json_encode ( $response );
     exit ();
 }
 if (isset ( $_POST ['order'] )) {
-    $order_details = $_POST ['order'];
+    $order_details = mysqli_real_escape_string ( $conn->db, $_POST ['order'] );
 } else {
     $response ['error'] = "Order details not set";
     echo json_encode ( $response );
     exit ();
 }
 if (isset ( $_POST ['coupon'] )) {
-    $coupon = $_POST ['coupon'];
+    $coupon = mysqli_real_escape_string ( $conn->db, $_POST ['coupon'] );
 }
+
+// generate our items to order
+require_once "../php/sql.php";
+$conn = new Sql ();
+$conn->connect ();
 
 // setup our urls for success or failure
 $url = $_SERVER ['HTTP_REFERER'];
@@ -95,10 +100,6 @@ $taxTotalValue = 0;
 $order_text = "";
 $order_HTML = "<table><tr><th>Name</th><th>Album</th><th>Preview</th><th>Product</th><th>Size</th><th>Item Option</th><th>Price</th></tr>";
 
-// generate our items to order
-require_once "../php/sql.php";
-$conn = new Sql ();
-$conn->connect ();
 $sql = "SELECT `cart`.*,`album_images`.*,`products`.*,`product_types`.*,`albums`.`name` AS album_title FROM `cart` JOIN `album_images` ON `cart`.`image` = `album_images`.`sequence` AND `cart`.`album` = `album_images`.`album` JOIN `products` ON `cart`.`product` = `products`.`id` JOIN `product_types` ON `products`.`product_type` = `product_types`.`id` JOIN `albums` ON `cart`.`album` = `albums`.`id` WHERE `cart`.`user` = '$user';";
 $result = mysqli_query ( $conn->db, $sql );
 $counter = 0;

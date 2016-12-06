@@ -39,7 +39,7 @@ if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
 
 $previewImage = "";
 if (isset ( $_POST ['preview'] ['img'] ) && $_POST ['preview'] ['img'] != "") {
-    $previewImage = $_POST ['preview'] ['img'];
+    $previewImage = mysqli_real_escape_string ( $conn->db, $_POST ['preview'] ['img'] );
 } else {
     echo "No preview image provided";
     exit ();

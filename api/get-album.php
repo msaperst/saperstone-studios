@@ -3,10 +3,44 @@ require_once "../php/sql.php";
 $conn = new Sql ();
 $conn->connect ();
 
-if (isset ( $_GET ['id'] )) {
-    $id = $_GET ['id'];
+session_name ( 'ssLogin' );
+// Starting the session
+
+session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
+// Making the cookie live for 2 weeks
+
+session_start ();
+// Start our session
+
+include_once "../php/user.php";
+$user = new User ();
+
+$id = "";
+if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
+    $id = ( int ) $_POST ['album'];
 } else {
-    echo "ID is not provided";
+    if (! isset ( $_POST ['album'] )) {
+        echo "Album id is required!";
+    } elseif ($_POST ['album'] != "") {
+        echo "Album id cannot be blank!";
+    } else {
+        echo "Some other Album id error occurred!";
+    }
+    $conn->disconnect ();
+    exit ();
+}
+
+$sql = "SELECT * FROM albums WHERE id = $id;";
+$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+if (! $album_info ['id']) {
+    echo "That ID doesn't match any albums";
+    $conn->disconnect ();
+    exit ();
+}
+
+// only admin users and uploader users who own the album can make updates
+if (! ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner']))) {
+    header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();
 }

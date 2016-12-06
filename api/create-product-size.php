@@ -22,7 +22,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {
-    $type = $_POST ['type'];
+    $type = ( int ) $_POST ['type'];
 } else {
     echo "Type is not provided";
     $conn->disconnect ();
@@ -30,7 +30,7 @@ if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {
 }
 
 if (isset ( $_POST ['size'] ) && $_POST ['size'] != "") {
-    $size = $_POST ['size'];
+    $size = mysqli_real_escape_string ( $conn->db, $_POST ['size'] );
 } else {
     echo "Size is not provided";
     $conn->disconnect ();
@@ -38,7 +38,7 @@ if (isset ( $_POST ['size'] ) && $_POST ['size'] != "") {
 }
 
 if (isset ( $_POST ['cost'] ) && $_POST ['cost'] != "") {
-    $cost = $_POST ['cost'];
+    $cost = floatval ( $_POST ['cost'] );
 } else {
     echo "Cost is not provided";
     $conn->disconnect ();
@@ -46,7 +46,7 @@ if (isset ( $_POST ['cost'] ) && $_POST ['cost'] != "") {
 }
 
 if (isset ( $_POST ['price'] ) && $_POST ['price'] != "") {
-    $price = $_POST ['price'];
+    $price = floatval ( $_POST ['price'] );
 } else {
     echo "Price is not provided";
     $conn->disconnect ();

@@ -17,7 +17,7 @@ $user = new User ();
 
 $user;
 if (! $user->isLoggedIn ()) {
-    echo "User must be logged in to create an account";
+    echo "User must be logged in to add to their cart";
     $conn->disconnect ();
     exit ();
 } else {
@@ -31,7 +31,11 @@ mysqli_query ( $conn->db, $sql );
 // for each product, add it back in
 if (isset ( $_POST ['images'] ) && is_array ( $_POST ['images'] )) {
     foreach ( $_POST ['images'] as $image ) {
-        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '$user', " . $image ['album'] . ", '" . $image ['image'] . "', '" . $image ['product'] . "', '" . $image ['count'] . "');";
+        $album = ( int ) $image ['album'];
+        $image = ( int ) $image ['image'];
+        $product = ( int ) $image ['product'];
+        $count = ( int ) $image ['count'];
+        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '$user', '$album', '$image', '$product', '$count');";
         mysqli_query ( $conn->db, $sql );
     }
 }

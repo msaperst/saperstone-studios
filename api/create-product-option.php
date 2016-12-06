@@ -22,7 +22,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {
-    $type = $_POST ['type'];
+    $type = ( int ) $_POST ['type'];
 } else {
     echo "Product type is not provided";
     $conn->disconnect ();
@@ -30,7 +30,7 @@ if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {
 }
 
 if (isset ( $_POST ['option'] ) && $_POST ['option'] != "") {
-    $option = $_POST ['option'];
+    $option = mysqli_real_escape_string ( $conn->db, $_POST ['option'] );
 } else {
     echo "Option is not provided";
     $conn->disconnect ();

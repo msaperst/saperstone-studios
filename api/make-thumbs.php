@@ -52,7 +52,7 @@ if (isset ( $_POST ['markup'] )) {
     $conn->disconnect ();
     exit ();
 }
-if ($_POST ['markup'] != "proof" && $_POST ['markup'] != "watermark" && $_POST ['markup'] != "none") {
+if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
     echo "Markup is not a valid option!";
     $conn->disconnect ();
     exit ();

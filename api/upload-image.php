@@ -25,8 +25,9 @@ if (isset ( $_FILES ["myfile"] )) {
     // If Any browser does not support serializing of multiple files using FormData()
     // single file
     if (! is_array ( $_FILES ["myfile"] ["name"] )) {
-        $filePath = dirname ( $_POST ['location'] );
-        $fileName = basename ( $_POST ['location'] );
+        $location = mysqli_real_escape_string ( $conn->db, $_POST['location'] );
+        $filePath = dirname ( $location );
+        $fileName = basename ( $location );
         move_uploaded_file ( $_FILES ["myfile"] ["tmp_name"], "$filePath/tmp_$fileName" );
         $ret [] = $fileName;
         

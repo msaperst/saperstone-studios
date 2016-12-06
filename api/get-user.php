@@ -22,7 +22,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_GET ['id'] )) {
-    $id = $_GET ['id'];
+    $id = ( int ) $_GET ['id'];
 } else {
     echo "ID is not provided";
     $conn->disconnect ();

@@ -22,7 +22,7 @@ if (! $user->isLoggedIn ()) {
 }
 
 if (isset ( $_POST ['what'] )) {
-    $what = $_POST ['what'];
+    $what = mysqli_real_escape_string ( $conn->db, $_POST ['what'] );
 } else {
     $response ['err'] = "Need to provide what you desire to download";
     echo json_encode ( $response );
@@ -46,6 +46,7 @@ if (! $album_info ['name']) {
     exit ();
 }
 
+$selected = array ();
 if ($what == "favorites") {
     $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user' AND favorites.album = '$album';";
     $result = mysqli_query ( $conn->db, $sql );
@@ -62,6 +63,19 @@ if ($what == "favorites") {
     }
 }
 
+$name = "";
+if (isset ( $_POST ['name'] )) {
+    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+}
+$email = "";
+if (isset ( $_POST ['email'] )) {
+    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+}
+$comment = "";
+if (isset ( $_POST ['comment'] )) {
+    $comment = mysqli_real_escape_string ( $conn->db, $_POST ['comment'] );
+}
+
 // send email
 $user = new User ();
 $IP = $_SERVER ['REMOTE_ADDR'];
@@ -70,8 +84,8 @@ require_once ($path = '../plugins/Browser.php-master/lib/Browser.php');
 $browser = new Browser ();
 $from = "Selects <selects@saperstonestudios.com>";
 $to = "Selects <selects@saperstonestudios.com>";
-if (isset ( $_POST ['email'] )) {
-    $to .= ", " . $_POST ['name'] . " <" . $_POST ['email'] . ">";
+if ($email != "") {
+    $to .= ", $name <$email>";
 }
 $subject = "Selects Have Been Made";
 
@@ -82,10 +96,8 @@ $html .= "<p>A selection has been made from the <a href='" . $_SERVER ['HTTP_REF
 $text .= "A selection has been made from the " . $album_info ['name'] . " album at " . $_SERVER ['HTTP_REFERER'] . "\n\n";
 $html .= "<p><ul><li>" . implode ( "</li><li>", $selected ) . "</li></ul></p><br/>";
 $text .= implode ( "\n", $selected ) . "\n\n";
-if (isset ( $_POST ['comment'] )) {
-    $html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $_POST ['comment'] . "</p>";
-    $text .= "\t\t" . $_POST ['comment'];
-}
+$html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$comment</p>";
+$text .= "\t\t$comment";
 $html .= "</body></html>";
 
 require_once "Mail.php";

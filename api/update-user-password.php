@@ -24,7 +24,7 @@ if (! $user->isAdmin ()) {
 $err = array ();
 
 if (isset ( $_POST ['id'] )) {
-    $id = $_POST ['id'];
+    $id = (int) $_POST ['id'];
 } else {
     $err [] = "ID is not provided";
 }

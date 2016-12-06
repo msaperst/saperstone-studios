@@ -21,7 +21,7 @@ if (! isset ( $_POST ['image'] ) || $_POST ['image'] == "") {
     echo "Image to crop wasn't provided";
     exit ();
 } else {
-    $image = $_POST ['image'];
+    $image = mysqli_real_escape_string ( $conn->db, $_POST ['image'] );
 }
 if (! file_exists ( $image )) {
     echo "Image to crop doesn't exist";
@@ -31,19 +31,19 @@ if (! isset ( $_POST ['max-width'] ) || $_POST ['max-width'] == "") {
     echo "Max-width of image crop wasn't provided";
     exit ();
 } else {
-    $maxWidth = $_POST ['max-width'];
+    $maxWidth = ( int ) $_POST ['max-width'];
 }
 if (! isset ( $_POST ['top'] ) || $_POST ['top'] == "") {
     echo "Top of image crop wasn't provided";
     exit ();
 } else {
-    $top = $_POST ['top'];
+    $top = ( int ) $_POST ['top'];
 }
 if (! isset ( $_POST ['bottom'] ) || $_POST ['bottom'] == "") {
     echo "Bottom of image crop wasn't provided";
     exit ();
 } else {
-    $bottom = $_POST ['bottom'];
+    $bottom = ( int ) $_POST ['bottom'];
 }
 $height = $bottom - $top;
 

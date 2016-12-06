@@ -31,7 +31,8 @@ while ( $r = mysqli_fetch_assoc ( $result ) ) {
 }
 
 if (isset ( $_GET ['album'] )) {
-    $favorites = $favorites [$_GET ['album']];
+    $album = ( int ) $_GET ['album'];
+    $favorites = $favorites [$album];
 }
 echo json_encode ( $favorites );
 

@@ -77,6 +77,8 @@ mysqli_query ( $conn->db, $sql );
 // for each product, add it back in
 if (isset ( $_POST ['products'] ) && is_array ( $_POST ['products'] )) {
     foreach ( $_POST ['products'] as $product => $count ) {
+        $product = (int) $product;
+        $count = (int) $count;
         $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '$user', '$album', '$sequence', '$product', '$count');";
         mysqli_query ( $conn->db, $sql );
     }

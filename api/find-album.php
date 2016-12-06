@@ -16,7 +16,7 @@ include_once "../php/user.php";
 $user = new User ();
 
 if (isset ( $_GET ['code'] )) {
-    $code = $_GET ['code'];
+    $code = mysqli_real_escape_string ( $conn->db, $_GET ['code'] );
 } else {
     echo "Code is not provided!";
     $conn->disconnect ();

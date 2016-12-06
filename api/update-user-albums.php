@@ -22,7 +22,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_POST ['user'] )) {
-    $user = $_POST ['user'];
+    $user = (int) $_POST ['user'];
 } else {
     echo "User is not provided";
     $conn->disconnect ();

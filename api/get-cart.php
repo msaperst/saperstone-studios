@@ -16,7 +16,7 @@ include_once "../php/user.php";
 $user = new User ();
 
 if (! $user->isLoggedIn ()) {
-    echo "User must be logged in to create an account";
+    echo "User must be logged in to have a cart";
     $conn->disconnect ();
     exit ();
 } else {

@@ -1,4 +1,8 @@
 <?php
+require_once "../php/sql.php";
+$conn = new Sql ();
+$conn->connect ();
+
 session_name ( 'ssLogin' );
 // Starting the session
 
@@ -8,20 +12,15 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-require_once "../php/sql.php";
-$conn = new Sql ();
-$conn->connect ();
 include_once "../php/user.php";
 $user = new User ();
-
-// Need to put in similar check that exists in album for appropriate user
 
 $response = array ();
 $start = 0;
 $howMany = 999999999999999999;
 
 if (isset ( $_GET ['albumId'] )) {
-    $albumId = mysqli_real_escape_string ( $conn->db, $_GET ['albumId'] );
+    $albumId = (int) $_GET ['albumId'];
 } else {
     $response ['err'] = "Need to provide album";
     echo json_encode ( $response );

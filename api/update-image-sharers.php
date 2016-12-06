@@ -22,7 +22,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_POST ['album'] )) {
-    $album = $_POST ['album'];
+    $album = (int) $_POST ['album'];
 } else {
     echo "Album is not provided";
     $conn->disconnect ();
@@ -30,7 +30,7 @@ if (isset ( $_POST ['album'] )) {
 }
 
 if (isset ( $_POST ['image'] )) {
-    $image = $_POST ['image'];
+    $image = (int) $_POST ['image'];
 } else {
     echo "Image is not provided";
     $conn->disconnect ();
@@ -42,6 +42,7 @@ mysqli_query ( $conn->db, $sql );
 
 if (isset ( $_POST ['users'] )) {
     foreach ( $_POST ['users'] as $user ) {
+        $user = mysqli_real_escape_string( $conn->db, $user );
         $sql = "INSERT INTO `share_rights` ( `user`, `album`, `image` ) VALUES ( '$user', '$album', '$image' );";
         mysqli_query ( $conn->db, $sql );
     }

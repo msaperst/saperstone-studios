@@ -1,4 +1,8 @@
 <?php
+require_once "../php/sql.php";
+$conn = new Sql ();
+$conn->connect ();
+
 session_name ( 'ssLogin' );
 // Starting the session
 
@@ -10,10 +14,6 @@ session_start ();
 
 include_once "../php/user.php";
 $user = new User ();
-
-require_once "../php/sql.php";
-$conn = new Sql ();
-$conn->connect ();
 
 $response = array ();
 $start = 0;
