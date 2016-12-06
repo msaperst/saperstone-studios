@@ -37,3 +37,8 @@ phpmyadmin
 
 # Some third party tools
 plugins
+
+# our albums
+albums/*/*
+#our blog posts
+blog/*/*
