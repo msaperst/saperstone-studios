@@ -32,12 +32,14 @@ Posts.prototype.loadImages = function() {
                 'background-position' : '0 ' + v.offset + 'px',
                 'background-size' : $('.col-gallery').width() + 'px',
             });
+            // our post title
+            var title = $('<span>');
+            title.addClass('preview-title');
+            title.html(v.title);
+            holder.append(title);
             // create our overlay
             var overlay = $('<div>');
             overlay.addClass('overlay');
-            // our post title
-            var title = $('<h2>');
-            title.html(v.title);
             // our view link
             var link = $('<a>');
             link.addClass('info no-border');
@@ -47,8 +49,6 @@ Posts.prototype.loadImages = function() {
             view.addClass('fa fa-search fa-2x');
             // put them all together
             link.append(view);
-            overlay.append(title);
-            overlay.append("<br/>");
             overlay.append(link);
             holder.append(overlay);
             if ($(window).width() < 767) {
