@@ -69,6 +69,7 @@ if (! isset ( $_GET ['s'] )) {
     <!-- /.container -->
 
     <!-- Gallery JavaScript -->
+    <script src="/js/post.js"></script>
     <script src="/js/posts-search.js"></script>
 
     <!-- Script to Activate the Gallery -->

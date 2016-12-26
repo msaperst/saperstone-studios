@@ -56,6 +56,7 @@
     <!-- /.container -->
 
     <!-- Gallery JavaScript -->
+    <script src="/js/post.js"></script>
     <script src="/js/posts.js"></script>
 
     <!-- Script to Activate the Gallery -->

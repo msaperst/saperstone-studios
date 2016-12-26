@@ -21,40 +21,8 @@ Posts.prototype.loadImages = function() {
         data = data.data;
         // load each of our 4 images on the screen
         $.each(data, function(k, v) {
-            // create our holding div
-            var holder = $('<div>');
-            holder.addClass('post hovereffect');
-            holder.height($('.col-gallery').width() / 1.7);
-            // create our image
-            holder.css({
-                'background-image' : 'url("' + v.preview + '")',
-                'background-position' : '0 ' + v.offset + 'px',
-                'background-size' : $('.col-gallery').width() + 'px',
-            });
-            // our post title
-            var title = $('<span>');
-            title.addClass('preview-title');
-            title.html(v.title);
-            holder.append(title);
-            // create our overlay
-            var overlay = $('<div>');
-            overlay.addClass('overlay');
-            // our post title
-            // our view link
-            var link = $('<a>');
-            link.addClass('info no-border');
-            link.attr('href', '/blog/post.php?p=' + v.id);
-            // add our image icon
-            var view = $('<i>');
-            view.addClass('fa fa-search fa-2x');
-            // put them all together
-            link.append(view);
-            overlay.append(link);
-            holder.append(overlay);
-            if ($(window).width() < 767) {
-                k = 1;
-            }
-            $('#post-' + k).append(holder);
+            // from post.js
+            loadPostPreview(k, v);
         });
         // when we done, see if we need to load more
         if ($('footer').isOnScreen()) {

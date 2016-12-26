@@ -49,6 +49,7 @@
     <!-- /.container -->
 
     <!-- Gallery JavaScript -->
+    <script src="/js/post.js"></script>
     <script src="/js/posts-full.js"></script>
 
     <!-- Script to Activate the Gallery -->

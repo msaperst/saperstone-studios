@@ -72,15 +72,6 @@ if (! $user->isAdmin () && ! $details ['active']) {
         <!-- /.row -->
 
         <!-- Post Section -->
-        <div class="row">
-            <div id="post-tags" class="col-md-4 text-left"></div>
-            <div class="col-md-4 text-center">
-                <strong id="post-date"></strong>
-            </div>
-            <div id="post-likes" class="col-md-4 text-right"></div>
-        </div>
-        <!-- /.row -->
-
         <div id="post-content"></div>
         <!-- /.row -->
 
@@ -90,6 +81,7 @@ if (! $user->isAdmin () && ! $details ['active']) {
     <!-- /.container -->
 
     <!-- Gallery JavaScript -->
+    <script src="/js/post.js"></script>
     <script src="/js/post-full.js"></script>
 
     <!-- Script to Activate the Gallery -->

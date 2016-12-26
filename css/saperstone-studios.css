@@ -494,6 +494,10 @@ ul.search-results {
 } */
 
 /* Some Blog Stylizations */
+a.plain {
+	color: black;
+}
+
 .post {
     background-repeat: no-repeat;
     margin-bottom: 30px;
