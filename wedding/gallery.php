@@ -46,9 +46,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Surprise Proposals"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Surprise Proposals</span>
                     <img class="img-responsive" src="img/surprise.jpg" alt="">
                     <div class="overlay">
-                        <h2>Surprise Proposals</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=9">See More</a>
                     </div>
                 </div>
@@ -56,9 +57,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Engagements"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Engagements</span>
                     <img class="img-responsive" src="img/engagement.jpg" alt="">
                     <div class="overlay">
-                        <h2>Engagements</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=10">See More</a>
                     </div>
                 </div>
@@ -66,9 +68,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Weddings"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Weddings</span>
                     <img class="img-responsive" src="img/wedding.jpg" alt="">
                     <div class="overlay">
-                        <h2>Weddings</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=11">See More</a>
                     </div>
                 </div>
@@ -76,9 +79,10 @@
             <div class="col-md-offset-4 col-md-4 col-sm-6 col-xs-12">
                 <div section="Night Photography"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Night Photography</span>
                     <img class="img-responsive" src="img/night.jpg" alt="">
                     <div class="overlay">
-                        <h2>Night Photography</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=12">See More</a>
                     </div>
                 </div>

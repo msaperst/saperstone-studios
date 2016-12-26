@@ -47,9 +47,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Favorites"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Favorites</span>
                     <img class="img-responsive" src="img/favorite.jpg" alt="">
                     <div class="overlay">
-                        <h2>Favorites</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=13">See More</a>
                     </div>
                 </div>
@@ -57,9 +58,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="At Your Home"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>At Your Home</span>
                     <img class="img-responsive" src="img/home.jpg" alt="">
                     <div class="overlay">
-                        <h2>At Your Home</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=14">See More</a>
                     </div>
                 </div>
@@ -67,9 +69,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Studio"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Studio</span>
                     <img class="img-responsive" src="img/studio.jpg" alt="">
                     <div class="overlay">
-                        <h2>Studio</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=15">See More</a>
                     </div>
                 </div>

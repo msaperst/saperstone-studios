@@ -128,6 +128,7 @@
                     <span class='preview-title'>Details</span>
                     <img class="img-responsive" src="img/details.jpg" alt="">
                     <div class="overlay">
+                        <br/><br/><br/>
                         <a class="info" href="details.php">See More</a>
                     </div>
                 </div>
@@ -138,6 +139,7 @@
                     <span class='preview-title'>Gallery</span>
                     <img class="img-responsive" src="img/gallery.jpg" alt="">
                     <div class="overlay">
+                        <br/><br/><br/>
                         <a class="info" href="gallery.php">See More</a>
                     </div>
                 </div>
@@ -149,6 +151,7 @@
                     <img class="img-responsive" src="img/retouch.jpg"
                         alt="">
                     <div class="overlay">
+                        <br/><br/><br/>
                         <a class="info" href="#">See More</a>
                     </div>
                 </div>
@@ -159,6 +162,7 @@
                     <span class='preview-title'>About</span>
                     <img class="img-responsive" src="img/about.jpg" alt="">
                     <div class="overlay">
+                        <br/><br/><br/>
                         <a class="info" href="/about.php">See More</a>
                     </div>
                 </div>
@@ -169,6 +173,7 @@
                     <span>Reviews</span>
                     <img class="img-responsive" src="img/reviews.jpg" alt="">
                     <div class="overlay">
+                        <br/><br/><br/>
                         <a class="info" href="/reviews.php?c=2">See More</a>
                     </div>
                 </div>
@@ -179,6 +184,7 @@
                     <span class='preview-title'>Blog</span>
                     <img class="img-responsive" src="img/blog.jpg" alt="">
                     <div class="overlay">
+                        <br/><br/><br/>
                         <a class="info" href="/blog/category.php?t=33">See More</a>
                     </div>
                 </div>

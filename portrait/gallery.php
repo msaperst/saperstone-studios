@@ -46,9 +46,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Maternity"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Maternity</span>
                     <img class="img-responsive" src="img/maternity.jpg" alt="">
                     <div class="overlay">
-                        <h2>Maternity</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=2">See More</a>
                     </div>
                 </div>
@@ -56,9 +57,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Newborns"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Newborns</span>
                     <img class="img-responsive" src="img/newborn.jpg" alt="">
                     <div class="overlay">
-                        <h2>Newborns</h2>
+                        <br/><br/><br/>
                         <a class="info" href="newborns.php">See More</a>
                     </div>
                 </div>
@@ -66,9 +68,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="6 Months"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>6 Months</span>
                     <img class="img-responsive" src="img/6month.jpg" alt="">
                     <div class="overlay">
-                        <h2>6 Months</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=4">See More</a>
                     </div>
                 </div>
@@ -76,9 +79,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="First Birthday"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>First Birthday</span>
                     <img class="img-responsive" src="img/1year.jpg" alt="">
                     <div class="overlay">
-                        <h2>First Birthday</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=5">See More</a>
                     </div>
                 </div>
@@ -86,9 +90,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Kids and Family"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Kids and Family</span>
                     <img class="img-responsive" src="img/family.jpg" alt="">
                     <div class="overlay">
-                        <h2>Kids and Family</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=6">See More</a>
                     </div>
                 </div>
@@ -96,9 +101,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Seniors"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Seniors</span>
                     <img class="img-responsive" src="img/senior.jpg" alt="">
                     <div class="overlay">
-                        <h2>Seniors</h2>
+                        <br/><br/><br/>
                         <a class="info" href="galleries.php?w=7">See More</a>
                     </div>
                 </div>
