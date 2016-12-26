@@ -40,7 +40,7 @@
                     <img class="img-responsive" src="/img/portraits.jpg" width="100%"
                         alt="Portraits">
                     <div class="overlay">
-                    	<br/><br/><br/>
+                        <br/><br/><br/>
                         <a class="info" href="/portrait/index.php">See More</a>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                     <img class="img-responsive" src="/img/commercial.jpg" width="100%"
                         alt="Commercial">
                     <div class="overlay">
-                    	<br/><br/><br/>
+                        <br/><br/><br/>
                         <a class="info" href="#">See More</a>
                     </div>
                 </div>

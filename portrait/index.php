@@ -128,7 +128,7 @@
                     <span class='preview-title'>Details</span>
                     <img class="img-responsive" src="img/details.jpg" alt="">
                     <div class="overlay">
-                    	<br/><br/><br/>
+                        <br/><br/><br/>
                         <a class="info" href="details.php">See More</a>
                     </div>
                 </div>
@@ -139,7 +139,7 @@
                     <span class='preview-title'>Gallery</span>
                     <img class="img-responsive" src="img/gallery.jpg" alt="">
                     <div class="overlay">
-						<br/><br/><br/>
+                        <br/><br/><br/>
                         <a class="info" href="gallery.php">See More</a>
                     </div>
                 </div>
@@ -161,7 +161,7 @@
                     <span class='preview-title'>About</span>
                     <img class="img-responsive" src="img/about.jpg" alt="">
                     <div class="overlay">
-						<br/><br/><br/>
+                        <br/><br/><br/>
                         <a class="info" href="/about.php">See More</a>
                     </div>
                 </div>
@@ -172,7 +172,7 @@
                     <span class='preview-title'>Reviews</span>
                     <img class="img-responsive" src="img/reviews.jpg" alt="">
                     <div class="overlay">
-						<br/><br/><br/>
+                        <br/><br/><br/>
                         <a class="info" href="/reviews.php?c=1">See More</a>
                     </div>
                 </div>
@@ -183,7 +183,7 @@
                     <span class='preview-title'>Blog</span>
                     <img class="img-responsive" src="img/blog.jpg" alt="">
                     <div class="overlay">
-						<br/><br/><br/>
+                        <br/><br/><br/>
                         <a class="info" href="/blog/category.php?t=20">See More</a>
                     </div>
                 </div>

@@ -51,8 +51,8 @@ input[type=number] {
     display: none !important;
 }
 
-span.preview-title {
-	text-transform: uppercase;
+.preview-title {
+    text-transform: uppercase;
     color: #fff;
     text-align: center;
     font-size: 17px;
@@ -61,7 +61,7 @@ span.preview-title {
     width: 100%;
     position: absolute;
     z-index: 50;
-    left: 0px;
+    left: 0;
     top: 15px;
 }
 
