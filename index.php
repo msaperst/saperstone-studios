@@ -36,10 +36,11 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Portraits'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Portraits</span>
                     <img class="img-responsive" src="/img/portraits.jpg" width="100%"
                         alt="Portraits">
                     <div class="overlay">
-                        <h2>Portraits</h2>
+                    	<br/><br/><br/>
                         <a class="info" href="/portrait/index.php">See More</a>
                     </div>
                 </div>
@@ -47,10 +48,11 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Weddings'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Weddings</span>
                     <img class="img-responsive" src="/img/weddings.jpg" width="100%"
                         alt="Weddings">
                     <div class="overlay">
-                        <h2>Weddings</h2>
+                        <br/><br/><br/>
                         <a class="info" href="/wedding/index.php">See More</a>
                     </div>
                 </div>
@@ -58,10 +60,11 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Commercial'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Commercial</span>
                     <img class="img-responsive" src="/img/commercial.jpg" width="100%"
                         alt="Commercial">
                     <div class="overlay">
-                        <h2>Commercial</h2>
+                    	<br/><br/><br/>
                         <a class="info" href="#">See More</a>
                     </div>
                 </div>

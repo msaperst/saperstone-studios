@@ -109,7 +109,7 @@ if (isset ( $_GET ['c'] )) {
         <!-- Links to external sites -->
         <div class="row">
             <div class="col-lg-12">
-                <p>Think these reviews are great? See where else people are saying great things about Saperstone Studios.
+                <p>Think these reviews are great? See where else people are saying fantastic things about Saperstone Studios.
                     <ul>
                         <li><a target="_blank" href="http://www.weddingwire.com/reviews/saperstone-studios-reston/cdbd87c3e3540e8e.html">Wedding Wire</a></li>
                         <li><a target="_blank" href="http://www.yelp.com/biz/saperstone-studios-fairfax">Yelp</a></li>
@@ -130,4 +130,3 @@ if (isset ( $_GET ['c'] )) {
 </html>
 <?php
 $conn->disconnect ();
-?>
