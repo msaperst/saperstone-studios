@@ -37,13 +37,13 @@ class SocialMedia {
         
         fclose ( $feed );
     }
-    function publishBlogToTwitter($id) {
+    function publishBlogToTwitter($post_id) {
         // get our post information
-        $details = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT * FROM `blog_details` WHERE id=$id;" ) );
+        $details = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT * FROM `blog_details` WHERE id=$post_id;" ) );
         
         $title = $details ['title'];
         $image = $details ['preview'];
-        $link = $this->baseURL () . "/blog/post.php?p=$id";
+        $link = $this->baseURL () . "/blog/post.php?p=$post_id";
         
         // require codebird
         require_once ('../plugins/codebird-php-3.1.0/src/codebird.php');
@@ -52,21 +52,20 @@ class SocialMedia {
         $cb = \Codebird\Codebird::getInstance ();
         $cb->setToken ( "291879421-eRCel3CGfQWUgtxnYUdolozLiHGbmqJYVJAzUmVB", "1WjoGMCkoI47OHPEBTVEwXrk9V8N6kPa8pczMInka0fvm" );
         
-        /*
-         * TODO - actually enable the below
-         * // first, send the image to twitter
-         * $reply = $cb->media_upload ( array (
-         * 'media' => $image
-         * ) );
-         * // and collect their IDs
-         * $media_id = $reply->media_id_string;
-         *
-         * // next send our message and the image
-         * $reply = $cb->statuses_update ( array (
-         * 'status' => "$title\n$link",
-         * 'media_ids' => $media_id
-         * ) );
-         */
+        // TODO - actually enable the below
+        // first, send the image to twitter
+        $reply = $cb->media_upload ( array (
+                'media' => $image 
+        ) );
+        // and collect their IDs
+        $media_id = $reply->media_id_string;
+        // next send our message and the image
+        $reply = $cb->statuses_update ( array (
+                'status' => "$title\n$link",
+                'media_ids' => $media_id 
+        ) );
+        $sql = "UPDATE `blog_details` SET `twitter` = '" . $reply->id . "' WHERE id=$post_id;";
+        mysqli_query ( $this->db, $sql );
     }
     function baseURL() {
         $pageURL = 'http';

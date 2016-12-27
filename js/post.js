@@ -40,7 +40,7 @@ function loadPost(data, header) {
     // create our holding div
     var holder = $('<div>');
 
-    if (header == "<h1>") {
+    if (header === "<h1>") {
         $('h1').html(data.title);
         $('#breadcrumb-title').html(data.title);
     } else {
@@ -49,13 +49,13 @@ function loadPost(data, header) {
         title_row.addClass('row');
         var title = $('<div>');
         title.addClass('col-md-12 text-center');
-        var header = $(header);
+        var header_span = $(header);
         var link_a = $('<a>');
         link_a.attr('href', link);
         link_a.addClass('plain');
         link_a.append(data.title)
-        header.append(link_a);
-        title.append(header);
+        header_span.append(link_a);
+        title.append(header_span);
         title_row.append(title);
         holder.append(title_row);
     }
@@ -99,16 +99,30 @@ function loadPost(data, header) {
     var twitter = $('<div>');
     twitter.addClass('tweet col-md-4 text-center');
     var twitter_a = $('<a>');
-    twitter_a.addClass('twitter-share-button');
+//    twitter_a.addClass('twitter-share-button');
+//    twitter_a.attr({
+//        "href" : "https://twitter.com/share",
+//        "data-url" : link,
+//        "data-text" : data.title,
+//        "data-via" : "LASaperstone",
+//        "data-lang" : "en",
+//        "data-hashtags" : "SaperstoneStudios"
+//    });
+//    twitter_a.html("Tweet");
+    
+//    twitter_a.addClass('twitter-share-button');
     twitter_a.attr({
-        "href" : "https://twitter.com/share",
-        "data-url" : link,
-        "data-text" : link,
-        "data-via" : "LASaperstone",
-        "data-lang" : "en",
-        "data-hashtags" : "SaperstoneStudios"
+        "href": "https://twitter.com/intent/like?tweet_id=" + data.twitter
     });
-    twitter_a.html("Tweet");
+    twitter_a.css({
+        "background-image": "url('/img/TwitterLikeButton.png')",
+        "background-position": "center",
+//        "background-size": "20px",
+        "background-repeat": "no-repeat",
+        "color": "transparent",
+    });
+    twitter_a.html("LikeLike");
+    
     twitter.append(twitter_a);
     details_likes.append(twitter);
 
