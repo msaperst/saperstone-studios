@@ -65,6 +65,10 @@ input[type=number] {
     top: 15px;
 }
 
+.social-padding>li {
+	padding-top: 50px;
+}
+
 /* Modal Stylizing */
 .modal-header {
     background-color: #428bca;

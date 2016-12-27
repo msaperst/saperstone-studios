@@ -115,7 +115,7 @@ function loadPost(data, header) {
         "href": "https://twitter.com/intent/like?tweet_id=" + data.twitter
     });
     twitter_a.css({
-        "background-image": "url('/img/TwitterLikeButton.png')",
+        "background-image": "url('/img/twitter.png')",
         "background-position": "center",
 //        "background-size": "20px",
         "background-repeat": "no-repeat",
