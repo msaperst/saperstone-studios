@@ -507,6 +507,10 @@ a.plain {
     margin-bottom: 30px;
 }
 
+#post-content {
+	padding-bottom: 30px;
+}
+
 #post-content .row {
     padding-top: 30px;
     position: relative;

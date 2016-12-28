@@ -75,7 +75,7 @@ if (! $user->isAdmin () && ! $details ['active']) {
 		<div id="post-content"></div>
 		<!-- /.row -->
 
-		<!-- Comment Section
+		<!-- Comment Section -->
 		<div class="row">
 			<div class="col-md-12">
 				<h2 class='text-center'>Leave A Comment</h2>
@@ -112,7 +112,16 @@ if (! $user->isAdmin () && ! $details ['active']) {
 				</div>
 			</div>
 		</div>
-		<div id="post-comments"></div>
+		<!-- /.row -->
+		
+		<!-- View Comments -->
+		<div id="post-comments" style="padding-top:30px">
+		<div class="row">
+			<div class="col-md-12">
+				<h2 class='text-center'></h2>
+			</div>		
+		</div>
+		</div>
 		<!-- /.row -->
 
         <?php require_once "../footer.php"; ?>

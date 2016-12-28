@@ -38,6 +38,13 @@ $tags = mysqli_query ( $conn->db, $sql );
 while ( $s = mysqli_fetch_assoc ( $tags ) ) {
     $r ['tags'] [] = $s;
 }
+
+$sql = "SELECT `*` FROM `blog_comments` WHERE blog = " . $r ['id'] . " ORDER BY date desc;";
+$comments = mysqli_query ( $conn->db, $sql );
+while ( $s = mysqli_fetch_assoc ( $comments ) ) {
+    $r ['comments'] [] = $s;
+}
+
 echo json_encode ( $r );
 
 $conn->disconnect ();

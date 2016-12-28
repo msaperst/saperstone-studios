@@ -36,7 +36,7 @@ function loadPostPreview(k, v) {
 
 function loadPost(data, header) {
     var link = '/blog/post.php?p=' + data.id;
-    
+
     // create our holding div
     var holder = $('<div>');
 
@@ -99,30 +99,18 @@ function loadPost(data, header) {
     var twitter = $('<div>');
     twitter.addClass('tweet col-md-4 text-center');
     var twitter_a = $('<a>');
-//    twitter_a.addClass('twitter-share-button');
-//    twitter_a.attr({
-//        "href" : "https://twitter.com/share",
-//        "data-url" : link,
-//        "data-text" : data.title,
-//        "data-via" : "LASaperstone",
-//        "data-lang" : "en",
-//        "data-hashtags" : "SaperstoneStudios"
-//    });
-//    twitter_a.html("Tweet");
-    
-//    twitter_a.addClass('twitter-share-button');
+    twitter_a.addClass('btn btn-xs btn-info');
     twitter_a.attr({
-        "href": "https://twitter.com/intent/like?tweet_id=" + data.twitter
+        "href" : "https://twitter.com/intent/like?tweet_id=" + data.twitter
     });
-    twitter_a.css({
-        "background-image": "url('/img/twitter.png')",
-        "background-position": "center",
-//        "background-size": "20px",
-        "background-repeat": "no-repeat",
-        "color": "transparent",
-    });
-    twitter_a.html("LikeLike");
-    
+    var twitter_em = $('<em>');
+    twitter_em.addClass('fa fa-twitter');
+    var twitter_eml = $('<em>');
+    twitter_eml.addClass('fa fa-heart error');
+    twitter_a.append(twitter_em);
+    twitter_a.append(" Like ");
+    twitter_a.append(twitter_eml);
+
     twitter.append(twitter_a);
     details_likes.append(twitter);
 
@@ -188,8 +176,35 @@ function loadPost(data, header) {
         row.append(content);
         holder.append(row);
     });
-
     $('#post-content').append(holder);
+    $.each(data.comments, function(k, v) {
+        var comment_row = $('<div>');
+        comment_row.addClass('row');
+
+        var comment_set = $('<div>');
+        comment_set.addClass('col-lg-12');
+
+        var comment_block = $('<blockquote>');
+        var comment_comment = $('<p>');
+        comment_comment.append(v.comment);
+        var comment_break = $('<br>');
+        var comment_date = $('<em>');
+        comment_date.append(v.date);
+        var comment_footer = $('<footer>');
+        comment_footer.append(v.name);
+        comment_footer.append(comment_break);
+        comment_footer.append(comment_date);
+
+        comment_block.append(comment_comment);
+        comment_block.append(comment_footer);
+        comment_set.append(comment_block);
+        comment_row.append(comment_set);
+
+        $('#post-comments').append(comment_row);
+        $('#post-comments h2').html(data.comments.length + " Comments");
+    });
+    // load our comments
+
     loadSM();
 }
 
@@ -203,26 +218,32 @@ function loadSM() {
     }
 }
 
-//////////////////////////scripts to load it all/////////////////////////
+// ////////////////////////scripts to load it all/////////////////////////
 (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    var po = document.createElement('script');
+    po.type = 'text/javascript';
+    po.async = true;
     po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(po, s);
 })();
 
 (function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
+    if (d.getElementById(id))
+        return;
+    js = d.createElement(s);
+    js.id = id;
     js.src = '//connect.facebook.net/en_US/all.js#xfbml=1';
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
 !function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
-    if(!d.getElementById(id)) {
-        js=d.createElement(s);
-        js.id=id;js.src='//platform.twitter.com/widgets.js';
-        fjs.parentNode.insertBefore(js,fjs);
+    if (!d.getElementById(id)) {
+        js = d.createElement(s);
+        js.id = id;
+        js.src = '//platform.twitter.com/widgets.js';
+        fjs.parentNode.insertBefore(js, fjs);
     }
-}(document,'script','twitter-wjs');
+}(document, 'script', 'twitter-wjs');

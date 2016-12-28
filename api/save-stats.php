@@ -35,7 +35,7 @@ $browser = new Browser ();
 // get some additional screen information
 if (isset ( $_GET ['resolution'] )) {
     $resolution = urldecode ( $_GET ['resolution'] );
-    $temp = split ( "x", $resolution );
+    $temp = explode ( "x", $resolution );
     $width = $temp [0];
     $height = $temp [1];
 }
