@@ -1,3 +1,12 @@
+$(document).ready(function() {
+    $('#post-comment-message').keyup(function(){
+        checkPost();
+    });
+    $('#post-comment-submit').click(function(){
+        submitPost();
+    })
+});
+
 function loadPostPreview(k, v) {
     // create our holding div
     var holder = $('<div>');
@@ -177,35 +186,46 @@ function loadPost(data, header) {
         holder.append(row);
     });
     $('#post-content').append(holder);
-    $.each(data.comments, function(k, v) {
-        var comment_row = $('<div>');
-        comment_row.addClass('row');
 
-        var comment_set = $('<div>');
-        comment_set.addClass('col-lg-12');
-
-        var comment_block = $('<blockquote>');
-        var comment_comment = $('<p>');
-        comment_comment.append(v.comment);
-        var comment_break = $('<br>');
-        var comment_date = $('<em>');
-        comment_date.append(v.date);
-        var comment_footer = $('<footer>');
-        comment_footer.append(v.name);
-        comment_footer.append(comment_break);
-        comment_footer.append(comment_date);
-
-        comment_block.append(comment_comment);
-        comment_block.append(comment_footer);
-        comment_set.append(comment_block);
-        comment_row.append(comment_set);
-
-        $('#post-comments').append(comment_row);
-        $('#post-comments h2').html(data.comments.length + " Comments");
-    });
     // load our comments
-
+    $.each(data.comments, function(k, v) {
+        addComment(v);
+    });
+    if( data.comments ) {
+        var comments_header = (data.comments.length > 1) ? data.comments.length + " Comments" : data.comments.length + " Comment";
+        $('#post-comments h2').html(comments_header);
+    }
     loadSM();
+}
+
+function addComment(comment) {
+    var comment_row = $('<div>');
+    comment_row.addClass('row');
+
+    var comment_set = $('<div>');
+    comment_set.addClass('col-lg-12');
+
+    var comment_block = $('<blockquote>');
+    if( comment.delete ) {
+        comment_block.addClass('deletable');
+        comment_block.click(comment.id, deletePost);
+    }
+    var comment_comment = $('<p>');
+    comment_comment.append(comment.comment);
+    var comment_break = $('<br>');
+    var comment_date = $('<em>');
+    comment_date.append(comment.date);
+    var comment_footer = $('<footer>');
+    comment_footer.append(comment.name);
+    comment_footer.append(comment_break);
+    comment_footer.append(comment_date);
+
+    comment_block.append(comment_comment);
+    comment_block.append(comment_footer);
+    comment_set.append(comment_block);
+    comment_row.append(comment_set);
+    
+    $('#post-comments').append(comment_row);
 }
 
 function loadSM() {
@@ -215,7 +235,101 @@ function loadSM() {
         gapi.plusone.go();
     } catch (err) {
         setTimeout(loadSM, 100);
+    } finally {
+// setTimeout(function(){ console.log( "iFrame: " +
+// $("iframe").contents().find('._2tga._49ve')) }, 3000 );
     }
+}
+
+function deletePost(post) {
+    console.log( post);
+    BootstrapDialog.show({
+        draggable : true,
+        title : 'Are You Sure?',
+        message : 'Are you sure you want to delete this comment?',
+        buttons : [ {
+            icon : 'glyphicon glyphicon-trash',
+            label : ' Delete',
+            cssClass : 'btn-danger',
+            action : function(dialogInItself) {
+                var $button = this; // 'this' here is a jQuery object that
+                                    // wrapping the <button> DOM element.
+                var modal = $button.closest('.modal-content');
+                $button.spin();
+                dialogInItself.enableButtons(false);
+                dialogInItself.setClosable(false);
+                // send our update
+                $.post("/api/delete-blog-comment.php", {
+                    comment : post.data
+                }).done(function() {
+                    dialogInItself.close();
+                    // cleanup the dom
+                    post.currentTarget.remove();
+                }).fail(function(){
+                    modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while deleting your image.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                });
+            }
+        }, {
+            label : 'Close',
+            action : function(dialogInItself) {
+                dialogInItself.close();
+            }
+        } ]
+    });
+}
+
+function checkPost() {
+    var message = $('#post-comment-message').val();
+    var badStrings = [ "asshole", "bastard", "bitch", "cunt", "fuck", "nigger", "shit", "whore" ];
+    var goodMessage = true;
+    if( message.length === 0 ) {
+        goodMessage = false;
+    }
+    if (new RegExp(badStrings.join("|"),'i').test(message)) {
+        // At least one match
+        goodMessage = false;
+    }
+    if( goodMessage ) {
+        $('#post-comment-submit').prop("disabled", false);
+        $('#post-comment-submit').removeClass("disabled");
+    } else {
+        $('#post-comment-submit').prop("disabled", true);
+        $('#post-comment-submit').addClass("disabled");
+    }
+    return goodMessage;
+}
+
+function submitPost() {
+    if( !checkPost() ) {
+        return;
+    }
+    $('#post-comment-message-message').empty();
+    $.post("/api/create-blog-comment.php", {
+        post : $('#post-comment-submit').attr('post-id'),
+        name : $('#post-comment-name').val(),
+        email : $('#post-comment-email').val(),
+        message : $('#post-comment-message').val()
+    }).done(function(data) {
+        if ($.isNumeric(data) && data !== '0') {
+            var comment = {
+                    id: data,
+                    delete: true,
+                    date: '',
+                    name: $('#post-comment-name').val(),
+                    comment: $('#post-comment-message').val()
+            };
+            addComment(comment);
+            $('#post-comment-message').val("");
+        } else if (data === '0') {
+            $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while adding your comment.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        } else {
+            $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+        }
+        
+    }).fail(function(){
+        $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while adding your comment.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+    }).always(function(){
+    });
 }
 
 // ////////////////////////scripts to load it all/////////////////////////

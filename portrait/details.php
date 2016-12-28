@@ -71,9 +71,11 @@
 				<h2 class="page-header">What's Next?</h2>
 			</div>
 			<div class="col-md-12">
-				<p>When I'm close to completing your images I will reach out and
-					schedule a time for you to visit my <a class="error" href="#">home studio</a> in
-					Fairfax, VA.</p>
+				<p>
+					When I'm close to completing your images I will reach out and
+					schedule a time for you to visit my <a class="error" href="#">home
+					studio</a> in Fairfax, VA.
+				</p>
 				<p>A typical session will have approx 100 images of you and your
 					loved ones to go through. I've found through the years that my
 					clients were overwhelmed with just being sent a web gallery link
@@ -83,14 +85,16 @@
 					your favorite images in person. We're able to pull up multiple
 					similar poses side by side and zoom in on images to make your
 					selection process as smooth as possible.</p>
-				<p>You'll select your 5 images that come with your session at this
-					time and we'll go though each product choice (this will link to my
-					products page) in person. We take as much time as needed to answer
-					all of your questions, and make sure that when you leave, you feel
+				<p>
+					You'll select your 5 images that come with your session at this
+					time and we'll go though each <a class="error" href="#">product
+					choice</a> in person. We take as much time as needed to answer all
+					of your questions, and make sure that when you leave, you feel
 					completely confident in your order. While I recommend getting
 					prints for your walls that generations to come will enjoy, no
 					additional purchases are required. On average, my clients invest
-					$800-$1,200 on their custom portraits.</p>
+					$800-$1,200 on their custom portraits.
+				</p>
 			</div>
 			<div class="col-lg-12">
 				<h2 class="page-header">Come Prepared!</h2>

@@ -551,6 +551,25 @@ a.plain {
     }
 }
 
+.deletable {
+    pointer-events: none;
+}
+.deletable:after {
+    content: '\f014';
+    font-family: FontAwesome;
+    font-weight: normal;
+    font-style: normal;
+    padding: 3px 6px;
+    text-decoration: none;
+    background-color: red;
+    border-radius: 5px;
+    cursor: pointer;
+    pointer-events: all;
+    position:absolute;
+    right: 15px;
+    top: 0;
+}
+
 /* For blog editing */
 .ui-sortable {
     list-style-type: none;

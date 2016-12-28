@@ -3,6 +3,18 @@ require_once "../php/sql.php";
 $conn = new Sql ();
 $conn->connect ();
 
+session_name ( 'ssLogin' );
+// Starting the session
+
+session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
+// Making the cookie live for 2 weeks
+
+session_start ();
+// Start our session
+
+include_once "../php/user.php";
+$user = new User ();
+
 $response = array ();
 $post = 0;
 
@@ -42,6 +54,9 @@ while ( $s = mysqli_fetch_assoc ( $tags ) ) {
 $sql = "SELECT `*` FROM `blog_comments` WHERE blog = " . $r ['id'] . " ORDER BY date desc;";
 $comments = mysqli_query ( $conn->db, $sql );
 while ( $s = mysqli_fetch_assoc ( $comments ) ) {
+    if( ( $s['user'] != "" && $s['user'] == $user->getId() ) || $user->isAdmin() ) {
+        $s['delete'] = true;
+    }
     $r ['comments'] [] = $s;
 }
 

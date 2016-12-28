@@ -79,9 +79,11 @@ if (! $user->isAdmin () && ! $details ['active']) {
 		<div class="row">
 			<div class="col-md-12">
 				<h2 class='text-center'>Leave A Comment</h2>
-			</div>		
+			</div>
 		</div>
 		<div class="row">
+			<input type="text" class="hidden" id="post-comment-user"
+				value="<?php echo $user->getId(); ?>" />
 			<div class="col-md-1">
 				<label for="post-comment-name">Name:</label>
 			</div>
@@ -113,14 +115,18 @@ if (! $user->isAdmin () && ! $details ['active']) {
 			</div>
 		</div>
 		<!-- /.row -->
-		
+
 		<!-- View Comments -->
-		<div id="post-comments" style="padding-top:30px">
-		<div class="row">
-			<div class="col-md-12">
-				<h2 class='text-center'></h2>
-			</div>		
-		</div>
+		<div id="post-comments">
+			<div class="row">
+				<div class="col-md-6">
+					<h2 class='text-left'></h2>
+				</div>
+				<div class="col-md-6 text-right">
+					<button post-id="<?php echo $post; ?>" id="post-comment-submit" class="btn btn-success disabled"
+						style="margin-top: 20px;" disabled>Submit Comment</button>
+				</div>
+			</div>
 		</div>
 		<!-- /.row -->
 
