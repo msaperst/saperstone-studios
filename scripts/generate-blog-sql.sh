@@ -19,7 +19,7 @@ for f in $(find ../blog -name '*.php'); do
 
 	#general details of our blog	
 	title=`sed -n 's/<h2>\(.*\)<\/h2>/\1/p' "$f"`;
-#	title=`echo "$title" | sed -n 's/\"/\\\"/gp'`;
+	title=`echo "$title" | sed 's/\"/\\\"/g'`;
 	date=`sed -n 's/<div id="date">\(.*\)<\/div>/\1/p' "$f"`;
 	date=`date -d "$date" +%Y-%m-%d`
 	if [ -f "${location}/offset.o" ]; then
@@ -56,12 +56,12 @@ for f in $(find ../blog -name '*.php'); do
 	for c in $(find ${location} -name '*.txt'); do
 		cdate=${c:19:-4};
 		name=`sed -n 's/Name: \(.*\)/\1/p' "$c"`;
-		name=`echo "$name" | sed -n 's/\"/\\\"/gp'`;
+		name=`echo "$name" | sed 's/\"/\\\"/g'`;
 		email=`sed -n 's/Email: \(.*\)/\1/p' "$c"`;
 		ip=`sed -n 's/IP: \(.*\)/\1/p' "$c"`;
 		comment=`tail -n +4 "$c"`;
 		comment=${comment:9}
-		comment=`echo "$comment" | sed -n 's/\"/\\\"/gp'`;
+		comment=`echo "$comment" | sed 's/\"/\\\"/g'`;
 		echo "INSERT INTO \`blog_comments\` (\`blog\`, \`name\`, \`date\`, \`ip\`, \`email\`, \`comment\`) VALUES ( (SELECT id FROM blog_details WHERE title=\"$title\" and date='$date'),  \"$name\", FROM_UNIXTIME('$cdate'), '$ip', '$email', \"$comment\" );";
     done
 	
