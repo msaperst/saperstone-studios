@@ -242,7 +242,6 @@ function loadSM() {
 }
 
 function deletePost(post) {
-    console.log( post);
     BootstrapDialog.show({
         draggable : true,
         title : 'Are You Sure?',
