@@ -12,12 +12,17 @@ for f in $(find ../blog -name '*.php'); do
 	location=$(dirname $f);
 	filename=$(basename $f);
  	#echo "Parsing $filename";
+ 	
+ 	if [[ "$location" == "../blog" ]]; then
+ 		continue;
+	fi
 
 	#general details of our blog	
 	title=`sed -n 's/<h2>\(.*\)<\/h2>/\1/p' "$f"`;
+#	title=`echo "$title" | sed -n 's/\"/\\\"/gp'`;
 	date=`sed -n 's/<div id="date">\(.*\)<\/div>/\1/p' "$f"`;
 	date=`date -d "$date" +%Y-%m-%d`
-	if [ -f "${location}/offset.o" ]; then #if the file doesn't exist
+	if [ -f "${location}/offset.o" ]; then
 		offset=$(cat "${location}/offset.o");
 		offset="${offset//[^0-9\-]/}";
 		if [ -z $offset ]; then
@@ -30,12 +35,11 @@ for f in $(find ../blog -name '*.php'); do
 		offset=0;
 	fi
 	preview="${location}/preview_image.jpg";
-	if [ ! -f $preview ]; then #if the file doesn't exist
-		preview="";
-	else
-		preview=${preview:2}
+	if [ ! -f $preview ]; then
+		preview=`ls ${location}/*.jpg | sort -n | head -1`;
 	fi
-	echo "INSERT INTO \`blog_details\` (\`title\`, \`date\`, \`preview\`, \`offset\`) VALUES (\"$title\", '$date', '$preview', '$offset');"
+	preview=${preview:2}
+	echo "INSERT INTO \`blog_details\` (\`title\`, \`date\`, \`preview\`, \`offset\`, \`active\`) VALUES (\"$title\", '$date', '$preview', '$offset', '1');"
 
 	#tags details of our blog
 	tags=`grep 'id="tags"' "$f"`;
@@ -47,6 +51,19 @@ for f in $(find ../blog -name '*.php'); do
 			echo "INSERT INTO \`blog_tags\` (\`blog\`, \`tag\`) VALUES ( (SELECT id FROM blog_details WHERE title=\"$title\" and date='$date'), (SELECT id FROM tags WHERE tag=\"$tag\") );";
 		fi
 	done
+
+	#comments of our blog
+	for c in $(find ${location} -name '*.txt'); do
+		cdate=${c:19:-4};
+		name=`sed -n 's/Name: \(.*\)/\1/p' "$c"`;
+		name=`echo "$name" | sed -n 's/\"/\\\"/gp'`;
+		email=`sed -n 's/Email: \(.*\)/\1/p' "$c"`;
+		ip=`sed -n 's/IP: \(.*\)/\1/p' "$c"`;
+		comment=`tail -n +4 "$c"`;
+		comment=${comment:9}
+		comment=`echo "$comment" | sed -n 's/\"/\\\"/gp'`;
+		echo "INSERT INTO \`blog_comments\` (\`blog\`, \`name\`, \`date\`, \`ip\`, \`email\`, \`comment\`) VALUES ( (SELECT id FROM blog_details WHERE title=\"$title\" and date='$date'),  \"$name\", FROM_UNIXTIME('$cdate'), '$ip', '$email', \"$comment\" );";
+    done
 	
 	#details of our blog
 	contentGroup=0;
