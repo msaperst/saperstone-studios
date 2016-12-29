@@ -8,6 +8,8 @@
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="what-to-wear.php">What to Wear</a></li>
+                <li><a href="bellies-and-babies.php">Bellies and Babies</a></li>
+                <li><a href="studio.php">Studio</a></li>
                 <li><a href="#">Investment</a></li>
                 <li><a href="#">Products</a></li>
             </ul></li>
@@ -16,7 +18,7 @@
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="galleries.php?w=2">Maternity</a></li>
-                <li><a href="galleries.php?w=3">Newborns</a></li>
+                <li><a href="newborns.php">Newborns</a></li>
                 <li><a href="galleries.php?w=4">6 Months</a></li>
                 <li><a href="galleries.php?w=5">First Birthday</a></li>
                 <li><a href="galleries.php?w=6">Kids and Family</a></li>

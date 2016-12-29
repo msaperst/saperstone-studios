@@ -62,10 +62,12 @@
                 <h2 class="page-header">Turnaround time</h2>
             </div>
             <div class="col-md-12">
-                <p>Please allow 2-3 weeks after your portrait session for images to
-                    be completed. During this time I carefully make selects, color
-                    correct and retouch (link this to retouch portraits page) your
-                    images to be clean, consistent and vibrant.</p>
+                <p>
+                    Please allow 2-3 weeks after your portrait session for images to be
+                    completed. During this time I carefully <a class='error' href='#'>make
+                        selects, color correct and retouch</a> your images to be clean,
+                    consistent and vibrant.
+                </p>
             </div>
             <div class="col-lg-12">
                 <h2 class="page-header">What's Next?</h2>
@@ -73,7 +75,7 @@
             <div class="col-md-12">
                 <p>
                     When I'm close to completing your images I will reach out and
-                    schedule a time for you to visit my <a class="error" href="#">home
+                    schedule a time for you to visit my <a href="studio.php">home
                         studio</a> in Fairfax, VA.
                 </p>
                 <p>A typical session will have approx 100 images of you and your
@@ -112,7 +114,45 @@
                     exactly what your wall will look like.</p>
                 <p>Please click the below links to check out more details on your
                     specific photography session.</p>
-                <p class="error">SOME LINKS TBD</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div section="Bellies and Babies"
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Bellies and Babies</span> <img
+                        class="img-responsive" src="img/bandb.jpg" alt="">
+                    <div class="overlay">
+                        <br />
+                        <br />
+                        <br /> <a class="info" href="bellies-and-babies.php">See More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div section="Newborn FAQ"
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Newborn FAQ</span> <img
+                        class="img-responsive" src="img/newbornfaq.jpg" alt="">
+                    <div class="overlay">
+                        <br />
+                        <br />
+                        <br /> <a class="info" href="newborn-faq.php">See More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div section="Home Studio"
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Home Studio</span> <img
+                        class="img-responsive" src="img/studio.jpg" alt="">
+                    <div class="overlay">
+                        <br />
+                        <br />
+                        <br /> <a class="info" href="studio.php">See More</a>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- /.row -->
