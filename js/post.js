@@ -7,6 +7,10 @@ $(document).ready(function() {
     })
 });
 
+function getLink( data ) {
+    var link = window.location.protocol + '//' + window.location.hostname + '/blog/post.php?p=' + data.id;
+}
+
 function loadPostPreview(k, v) {
     // create our holding div
     var holder = $('<div>');
@@ -44,8 +48,6 @@ function loadPostPreview(k, v) {
 }
 
 function loadPost(data, header) {
-    var link = window.location.protocol + '//' + window.location.hostname + '/blog/post.php?p=' + data.id;
-
     // create our holding div
     var holder = $('<div>');
 
@@ -88,52 +90,10 @@ function loadPost(data, header) {
     details_date.addClass('col-md-4 text-center');
     details_date.append("<strong>" + data.date + "</strong>");
     details_row.append(details_date);
-    var details_likes = $('<div>');
-    details_likes.addClass('col-md-4 text-right');
 
-    // our facebook likes button
-    var facebook = $('<div>');
-    facebook.addClass('fbook');
-    var facebook_div = $('<div>');
-    facebook_div.addClass('fb-like col-md-4 text-left');
-    facebook_div.attr({
-        "data-href" : link,
-        "data-send" : "false",
-        "data-layout" : "button_count",
-        "data-show-faces" : "false"
-    });
-    facebook.append(facebook_div);
-    details_likes.append(facebook);
+    
 
-    var twitter = $('<div>');
-    twitter.addClass('tweet col-md-4 text-center');
-    var twitter_a = $('<a>');
-    twitter_a.addClass('btn btn-xs btn-info');
-    twitter_a.attr({
-        "href" : "https://twitter.com/intent/like?tweet_id=" + data.twitter
-    });
-    var twitter_em = $('<em>');
-    twitter_em.addClass('fa fa-twitter');
-    var twitter_eml = $('<em>');
-    twitter_eml.addClass('fa fa-heart error');
-    twitter_a.append(twitter_em);
-    twitter_a.append(" Like ");
-    twitter_a.append(twitter_eml);
-
-    twitter.append(twitter_a);
-    details_likes.append(twitter);
-
-    var gplus = $('<div>');
-    gplus.addClass('gplus col-md-4 text-right');
-    var gplus_div = $('<div>');
-    gplus_div.addClass('g-plusone');
-    gplus_div.attr({
-        "data-href" : link
-    });
-    gplus.append(gplus_div);
-    details_likes.append(gplus);
-
-    details_row.append(details_likes);
+    details_row.append( addSocialMedias( data ) );
     holder.append(details_row);
 
     // setup our post content
@@ -195,17 +155,70 @@ function loadPost(data, header) {
         $('#post-comments h2').html(comments_header);
     }
     loadSM();
-    addShares(link, data.title);
+    addShares(data);
 }
 
-function addShares(link, title) {
+function addSocialMedias(data) {
+    var link = getLink( data );
+
+    var details_likes = $('<div>');
+    details_likes.addClass('col-md-4 text-right');
+
+    // our facebook likes button
+    var facebook = $('<div>');
+    facebook.addClass('fbook');
+    var facebook_div = $('<div>');
+    facebook_div.addClass('fb-like col-md-4 text-left');
+    facebook_div.attr({
+        "data-href" : link,
+        "data-send" : "false",
+        "data-layout" : "button_count",
+        "data-show-faces" : "false"
+    });
+    facebook.append(facebook_div);
+    details_likes.append(facebook);
+
+    var twitter = $('<div>');
+    twitter.addClass('tweet col-md-4 text-center');
+    var twitter_a = $('<a>');
+    twitter_a.addClass('btn btn-xs btn-info');
+    twitter_a.attr({
+        "href" : "https://twitter.com/intent/like?tweet_id=" + data.twitter
+    });
+    var twitter_em = $('<em>');
+    twitter_em.addClass('fa fa-twitter');
+    var twitter_eml = $('<em>');
+    twitter_eml.addClass('fa fa-heart error');
+    twitter_a.append(twitter_em);
+    twitter_a.append(" Like ");
+    twitter_a.append(twitter_eml);
+
+    twitter.append(twitter_a);
+    details_likes.append(twitter);
+
+    var gplus = $('<div>');
+    gplus.addClass('gplus col-md-4 text-right');
+    var gplus_div = $('<div>');
+    gplus_div.addClass('g-plusone');
+    gplus_div.attr({
+        "data-href" : link
+    });
+    gplus.append(gplus_div);
+    details_likes.append(gplus);
+    
+    return details_likes;
+}
+
+function addShares(data) {
+    var link = getLink(data);
+    var title = data.title;
+    
     var row = $('<div>');
     row.addClass('row');
     
     var shares = $('<div>');
     shares.addClass("col-md-12 a2a_kit a2a_kit_size_48 a2a_default_style");
     
-    var addAny_col
     var addAny_a = $('<a>');
     addAny_a.addClass('a2a_dd col-md-1');
     addAny_a.attr('href','https://www.addtoany.com/share?linkurl='+link+'&amp;linkname='+title);

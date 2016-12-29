@@ -52,7 +52,6 @@ class SocialMedia {
         $cb = \Codebird\Codebird::getInstance ();
         $cb->setToken ( "291879421-eRCel3CGfQWUgtxnYUdolozLiHGbmqJYVJAzUmVB", "1WjoGMCkoI47OHPEBTVEwXrk9V8N6kPa8pczMInka0fvm" );
         
-        // TODO - actually enable the below
         // first, send the image to twitter
         $reply = $cb->media_upload ( array (
                 'media' => $image 
