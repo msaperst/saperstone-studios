@@ -8,7 +8,7 @@ $(document).ready(function() {
 });
 
 function getLink( data ) {
-    var link = window.location.protocol + '//' + window.location.hostname + '/blog/post.php?p=' + data.id;
+    return window.location.protocol + '//' + window.location.hostname + '/blog/post.php?p=' + data.id;
 }
 
 function loadPostPreview(k, v) {
@@ -48,6 +48,8 @@ function loadPostPreview(k, v) {
 }
 
 function loadPost(data, header) {
+    var link = getLink( data );
+    
     // create our holding div
     var holder = $('<div>');
 
