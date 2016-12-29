@@ -1,5 +1,3 @@
-
-
 $(document).ready(function() {
     $('#post-comment-message').keyup(function(){
         checkPost();

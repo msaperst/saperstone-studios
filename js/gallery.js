@@ -12,7 +12,9 @@ function Gallery(gallery, totalImages) {
     this.loadImages();
 }
 
-Gallery.prototype.loadImages = function(howMany = 4) {
+Gallery.prototype.loadImages = function(howMany) {
+    howMany = typeof howMany !== 'undefined' ? howMany : 4;
+
     var Gallery = this;
     $.get("/api/get-gallery-images.php", {
         gallery : Gallery.gallery,
@@ -35,13 +37,13 @@ Gallery.prototype.loadImages = function(howMany = 4) {
             var rect = shortest.obj[0].getBoundingClientRect();
             var width;
             // `width` is available for IE9+
-            if (rect.width) {  
+            if (rect.width) {
                 width = rect.width;
-            // Calculate width for IE8 and below
+                // Calculate width for IE8 and below
             } else {
                 width = rect.right - rect.left;
             }
-            //Remove the padding width
+            // Remove the padding width
             width -= (parseInt(shortest.obj.css("padding-left")) + parseInt(shortest.obj.css("padding-right")));
             holder.height(parseInt(v.height * width / v.width));
             // create our image
@@ -74,7 +76,7 @@ Gallery.prototype.loadImages = function(howMany = 4) {
         if ($('footer').isOnScreen() && Gallery.loaded < Gallery.totalImages) {
             Gallery.loadImages();
         }
-        if( data.length < 4) {
+        if (data.length < 4) {
             Gallery.loaded = Gallery.loaded - howMany + data.length;
         }
     }, "json");
