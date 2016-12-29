@@ -128,7 +128,6 @@ function loadPost(data, header) {
     var gplus_div = $('<div>');
     gplus_div.addClass('g-plusone');
     gplus_div.attr({
-        "data-size" : "small",
         "data-href" : link
     });
     gplus.append(gplus_div);
