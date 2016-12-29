@@ -206,7 +206,7 @@ function addShares(link, title) {
     row.addClass('row');
     
     var shares = $('<div>');
-    shares.addClass("col-md-12 a2a_kit a2a_kit_size_64 a2a_default_style");
+    shares.addClass("col-md-12 a2a_kit a2a_kit_size_48 a2a_default_style");
     
     var addAny_col
     var addAny_a = $('<a>');
