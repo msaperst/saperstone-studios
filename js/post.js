@@ -1,3 +1,5 @@
+
+
 $(document).ready(function() {
     $('#post-comment-message').keyup(function(){
         checkPost();
@@ -44,7 +46,7 @@ function loadPostPreview(k, v) {
 }
 
 function loadPost(data, header) {
-    var link = '/blog/post.php?p=' + data.id;
+    var link = window.location.protocol + '//' + window.location.hostname + '/blog/post.php?p=' + data.id;
 
     // create our holding div
     var holder = $('<div>');
@@ -196,6 +198,63 @@ function loadPost(data, header) {
         $('#post-comments h2').html(comments_header);
     }
     loadSM();
+    addShares(link, data.title);
+}
+
+function addShares(link, title) {
+    var row = $('<div>');
+    row.addClass('row');
+    
+    var shares = $('<div>');
+    shares.addClass("col-md-12 a2a_kit a2a_kit_size_64 a2a_default_style");
+    
+    var addAny_col
+    var addAny_a = $('<a>');
+    addAny_a.addClass('a2a_dd col-md-1');
+    addAny_a.attr('href','https://www.addtoany.com/share?linkurl='+link+'&amp;linkname='+title);
+    shares.append(addAny_a);
+    
+    var addEmail_a = $('<a>');
+    addEmail_a.addClass('a2a_button_email col-md-1');
+    shares.append(addEmail_a);
+    
+    var addFacebook_a = $('<a>');
+    addFacebook_a.addClass('a2a_button_facebook col-md-1');
+    shares.append(addFacebook_a);
+    
+    var addTwitter_a = $('<a>');
+    addTwitter_a.addClass('a2a_button_twitter col-md-1');
+    shares.append(addTwitter_a);
+    
+    var addGooglePlus_a = $('<a>');
+    addGooglePlus_a.addClass('a2a_button_google_plus col-md-1');
+    shares.append(addGooglePlus_a);
+    
+    var addPinterest_a = $('<a>');
+    addPinterest_a.addClass('a2a_button_pinterest col-md-1');
+    shares.append(addPinterest_a);
+    
+    var addLinkedIn_a = $('<a>');
+    addLinkedIn_a.addClass('a2a_button_linkedin col-md-1');
+    shares.append(addLinkedIn_a);
+    
+    var addReddit_a = $('<a>');
+    addReddit_a.addClass('a2a_button_reddit col-md-1');
+    shares.append(addReddit_a);
+    
+    var addTumblr_a = $('<a>');
+    addTumblr_a.addClass('a2a_button_tumblr col-md-1');
+    shares.append(addTumblr_a);
+    
+    row.append( shares );
+    $('#post-content').append( row );
+
+    var a2a_config = a2a_config || {};
+    a2a_config.linkname = title;
+    a2a_config.linkurl = link;
+    a2a_config.num_services = 10;
+    
+    $.getScript( "https://static.addtoany.com/menu/page.js" );
 }
 
 function addComment(comment) {
