@@ -68,6 +68,11 @@ if (! $details ['name']) {
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Weddings</a></li>
                     <li><a href="gallery.php">Gallery</a></li>
+                    <?php 
+                    if ($details['dir'] != NULL) {
+                        echo "<li><a href='".$details['dir_link']."'>".$details['dir']."</a></li>";
+                    }
+                    ?>
                     <li class="active"><?php echo $details['title']; ?></li>
                     <?php
                     if ($user->isAdmin ()) {

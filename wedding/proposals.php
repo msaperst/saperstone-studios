@@ -35,7 +35,8 @@
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Weddings</a></li>
-                    <li class="active">Gallery</li>
+                    <li><a href="gallery.php">Gallery</a></li>
+                    <li class="active">Surprise Proposal</li>
                 </ol>
             </div>
         </div>
@@ -44,46 +45,35 @@
         <!-- Services Section -->
         <div class="row">
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Surprise Proposals"
+                <div section="National Harbor"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Surprise Proposals</span>
-                    <img class="img-responsive" src="img/surprise.jpg" alt="">
+                    <span class='preview-title'>National Harbor</span>
+                    <img class="img-responsive" src="img/national-harbor.jpg" alt="">
                     <div class="overlay">
                         <br/><br/><br/>
-                        <a class="info" href="proposals.php">See More</a>
+                        <a class="info" href="galleries.php?w=17">See More</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Engagements"
+                <div section="DC Mall"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Engagements</span>
-                    <img class="img-responsive" src="img/engagement.jpg" alt="">
+                    <span class='preview-title'>DC Mall</span>
+                    <img class="img-responsive" src="img/dc.jpg" alt="">
                     <div class="overlay">
                         <br/><br/><br/>
-                        <a class="info" href="engagements.php">See More</a>
+                        <a class="info" href="galleries.php?w=18">See More</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Weddings"
+                <div section="Georgetown"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Weddings</span>
-                    <img class="img-responsive" src="img/wedding.jpg" alt="">
+                    <span class='preview-title'>Georgetown</span>
+                    <img class="img-responsive" src="img/georgetown.jpg" alt="">
                     <div class="overlay">
                         <br/><br/><br/>
-                        <a class="info" href="weddings.php">See More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-offset-4 col-md-4 col-sm-6 col-xs-12">
-                <div section="Night Photography"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Night Photography</span>
-                    <img class="img-responsive" src="img/night.jpg" alt="">
-                    <div class="overlay">
-                        <br/><br/><br/>
-                        <a class="info" href="galleries.php?w=12">See More</a>
+                        <a class="info" href="galleries.php?w=19">See More</a>
                     </div>
                 </div>
             </div>
