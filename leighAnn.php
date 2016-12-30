@@ -67,7 +67,7 @@
             <!-- Content Column -->
             <div class="col-md-12">
                 <!-- Carousel -->
-                <div id="weddingCarousel"
+                <div id="leighAnnCarousel"
                     class="carousel slide carousel-three-by-two">
                     <!-- Indicators -->
                     <ol class="carousel-indicators">

@@ -3,14 +3,37 @@
 
 <head>
 
-    <?php require_once "../header.php"; ?>
+    <?php
+    require_once "../header.php";
+    if ($user->isAdmin ()) {
+        ?>
+    <link
+    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    rel="stylesheet">
+    <?php
+    }
+    ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
 
 <body>
 
-    <?php $nav = "portrait"; require_once "../nav.php"; ?>
+    <?php
+    $nav = "portrait";
+    require_once "../nav.php";
+    
+    // get our gallery images
+    require_once "../php/sql.php";
+    $conn = new Sql ();
+    $conn->connect ();
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-studio';";
+    $result = mysqli_query ( $conn->db, $sql );
+    $images = array ();
+    while ( $row = mysqli_fetch_assoc ( $result ) ) {
+        $images [] = $row;
+    }
+    ?>
 
     <!-- Page Content -->
     <div class="page-content container">
@@ -45,6 +68,65 @@
             </div>
         </div>
         <!-- /.row -->
+
+        <!-- Studio Slideshow -->
+        <div class="row" style="margin-top: 30px;">
+            <!-- Content Column -->
+            <div class="col-md-12">
+                <!-- Carousel -->
+                <div id="studioCarousel"
+                    class="carousel slide carousel-three-by-two">
+                    <!-- Indicators -->
+                    <ol class="carousel-indicators">
+                        <?php
+                        foreach ( $images as $num => $image ) {
+                            $class = "";
+                            if ($num == 0) {
+                                $class = " class='active'";
+                            }
+                            echo "<li data-target='#studioCarousel' data-slide-to='$num'$class></li>";
+                        }
+                        ?>
+                    </ol>
+
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
+                        <?php
+                        foreach ( $images as $num => $image ) {
+                            $active_class = "";
+                            if ($num == 0) {
+                                $active_class = " active";
+                            }
+                            echo "<div class='item$active_class'>";
+                            echo "    <div class='contain'";
+                            echo "        style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                            echo "    <div class='carousel-caption'>";
+                            echo "        <h2>" . $image ['caption'] . "</h2>";
+                            echo "    </div>";
+                            echo "</div>";
+                        }
+                        ?>
+                    </div>
+
+                    <!-- Controls -->
+                    <a class="left carousel-control" href="#studioCarousel"
+                        data-slide="prev"> <span class="icon-prev"></span>
+                    </a> <a class="right carousel-control" href="#studioCarousel"
+                        data-slide="next"> <span class="icon-next"></span>
+                    </a>
+                    <?php if ($user->isAdmin ()) { ?>
+                    <span
+                        style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
+                        <button class="ajax-file-upload"
+                            onclick="location.href='/portrait/galleries.php?w=16'"
+                            style="position: relative; overflow: hidden; cursor: pointer;">
+                            <i class="fa fa-pencil-square-o"></i> Edit These Images
+                        </button>
+                    </span>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
 
         <?php require_once "../footer.php"; ?>
 
