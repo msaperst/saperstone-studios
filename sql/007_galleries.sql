@@ -6,9 +6,8 @@
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `galleries` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `dir` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `dir_link` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `parent` int(11) NULL DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `gallery_id` (`id`)

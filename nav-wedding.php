@@ -14,9 +14,9 @@
             class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="proposals.php">Surprise Proposals</a></li>
-                <li><a href="engagements.php">Engagements</a></li>
-                <li><a href="weddings.php">Weddings</a></li>
+                <li><a href="gallery.php?w=9">Surprise Proposals</a></li>
+                <li><a href="gallery.php?w=10">Engagements</a></li>
+                <li><a href="gallery.php?w=11">Weddings</a></li>
                 <li><a href="galleries.php?w=12">Night Photography</a></li>
             </ul></li>
         <li><a href="#">Retouch</a></li>

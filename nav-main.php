@@ -6,7 +6,7 @@
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="/portrait/details.php">Details</a></li>
-                <li><a href="/portrait/gallery.php">Gallery</a></li>
+                <li><a href="/portrait/gallery.php?w=1">Gallery</a></li>
                 <li><a href="#">Retouch</a></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"
@@ -14,7 +14,7 @@
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="/wedding/details.php">Details</a></li>
-                <li><a href="/wedding/gallery.php">Gallery</a></li>
+                <li><a href="/wedding/gallery.php?w=8">Gallery</a></li>
                 <li><a href="#">Retouch</a></li>
             </ul></li>
         <!--         <li class="dropdown"><a href="javascript:void(0);" -->

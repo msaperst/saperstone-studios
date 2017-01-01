@@ -8,7 +8,7 @@ $start = 0;
 $howMany = 999999999999999999;
 
 if (isset ( $_GET ['gallery'] )) {
-    $gallery = mysqli_real_escape_string ( $conn->db, $_GET ['gallery'] );
+    $gallery = mysqli_real_escape_string ( $conn->db, str_replace ( "-", " ", $_GET ['gallery'] ) );
 } else {
     $response ['err'] = "Need to provide gallery";
     echo json_encode ( $response );
@@ -23,7 +23,7 @@ if (isset ( $_GET ['howMany'] )) {
 }
 
 if (! array_key_exists ( "err", $response )) {
-    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;";
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.title = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;";
     $result = mysqli_query ( $conn->db, $sql );
     while ( $r = mysqli_fetch_assoc ( $result ) ) {
         $response [] = $r;
