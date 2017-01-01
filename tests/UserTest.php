@@ -9,6 +9,14 @@ class UserTest extends PHPUnit_Framework_TestCase {
     public function testNoUser() {
         $this->user = new User ();
         $this->assertFalse ( $this->user->isLoggedIn () );
+        $this->assertEquals ( '', $this->user->getId () );
+        $this->assertEquals ( '', $this->user->getUser () );
+        $this->assertEquals ( '', $this->user->getRole () );
+        $this->assertFalse ( $this->user->isAdmin () );
+        $this->assertEquals ( '', $this->user->getFirstName () );
+        $this->assertEquals ( '', $this->user->getLastName () );
+        $this->assertEquals ( '', $this->user->getName () );
+        $this->assertEquals ( '', $this->user->getEmail () );
         $this->user = NULL;
     }
     public function testBadUser() {
