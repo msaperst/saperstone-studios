@@ -13,5 +13,5 @@ mysql -h $host -u $username -p$password -e "CREATE DATABASE IF NOT EXISTS \`$dat
 for file in ../sql/*.sql; do
     filename=${file##*/}
     echo "Running ${filename%.sql}";
-    mysql -h $host -u $username -p$password $database < "$file" > /dev/null 2>&1
+    mysql -h $host -u $username -p$password $database < "$file" #> /dev/null 2>&1
 done
