@@ -32,7 +32,7 @@ if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
 
 $sql = "SELECT * FROM galleries WHERE id = '$id';";
 $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $gallery_info ['name']) {
+if (! $gallery_info ['title']) {
     echo "The ID '$id' doesn't match any galleries";
     $conn->disconnect ();
     exit ();
@@ -54,11 +54,18 @@ if (is_numeric ( $next_seq )) {
     $next_seq = 0;
 }
 
-$location = str_replace ( "-", "/", $gallery_info ['name'] );
+$location = "";
+while( $gallery_info ['parent'] != NULL ) {
+    $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
+    $sql = "SELECT * FROM galleries WHERE id = '".$gallery_info['parent']."';";
+    $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+}
+$location = str_replace ( " ", "-", $gallery_info ['title'] )."/$location/";
 $output_dir = "../img/$location/";
 if (! is_dir ( $output_dir )) {
     mkdir ( $output_dir, 755, true );
 }
+
 if (isset ( $_FILES ["myfile"] )) {
     $ret = array ();
     
