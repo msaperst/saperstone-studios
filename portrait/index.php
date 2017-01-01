@@ -164,7 +164,9 @@
                     <span class='preview-title'>Retouch</span> <img
                         class="img-responsive" src="img/retouch.jpg" alt="">
                     <div class="overlay">
-                        <a class="info" href="#">See More</a>
+                        <br />
+                        <br />
+                        <br /> <a class="info" href="#">See More</a>
                     </div>
                 </div>
             </div>
