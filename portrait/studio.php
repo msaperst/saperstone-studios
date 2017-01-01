@@ -27,7 +27,7 @@
     require_once "../php/sql.php";
     $conn = new Sql ();
     $conn->connect ();
-    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.name = 'portrait-studio';";
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.title = 'Home Studio';";
     $result = mysqli_query ( $conn->db, $sql );
     $images = array ();
     while ( $row = mysqli_fetch_assoc ( $result ) ) {
