@@ -1,46 +1,37 @@
 <?php
 class User {
-    var $sql;
-    var $db;
+    private $user_details = NULL;
     function __construct() {
         include_once "sql.php";
         $sql = new Sql ();
         $sql->connect ();
-        $this->db = $sql->db;
+        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
+            $this->user_details = mysqli_fetch_assoc ( mysqli_query ( $sql->db, "SELECT * FROM users WHERE hash='{$_SESSION['hash']}';" ) );
+        }
+        $sql->disconnect ();
     }
     function isLoggedIn() {
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT usr FROM users WHERE hash='{$_SESSION['hash']}';" ) );
-            if ($row ['usr']) {
-                return true;
-            }
+        if ($this->user_details == NULL) {
+            return false;
+        } else {
+            return true;
         }
-        return false;
     }
     function getId() {
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT id FROM users WHERE hash='{$_SESSION['hash']}';" ) );
-            if ($row ['id']) {
-                return $row ['id'];
-            }
+        if ($this->user_details ['id']) {
+            return $this->user_details ['id'];
         }
         return "";
     }
     function getUser() {
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT usr FROM users WHERE hash='{$_SESSION['hash']}';" ) );
-            if ($row ['usr']) {
-                return $row ['usr'];
-            }
+        if ($this->user_details ['usr']) {
+            return $this->user_details ['usr'];
         }
         return "";
     }
     function getRole() {
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT role FROM users WHERE hash='{$_SESSION['hash']}';" ) );
-            if ($row ['role']) {
-                return $row ['role'];
-            }
+        if ($this->user_details ['role']) {
+            return $this->user_details ['role'];
         }
         return "";
     }
@@ -48,43 +39,30 @@ class User {
         return ($this->getRole () === "admin");
     }
     function getFirstName() {
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT firstName FROM users WHERE hash='{$_SESSION['hash']}';" ) );
-            if ($row ['firstName']) {
-                return $row ['firstName'];
-            }
+        if ($this->user_details ['firstName']) {
+            return $this->user_details ['firstName'];
         }
         return "";
     }
     function getLastName() {
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT lastName FROM users WHERE hash='{$_SESSION['hash']}';" ) );
-            if ($row ['lastName']) {
-                return $row ['lastName'];
-            }
+        if ($this->user_details ['lastName']) {
+            return $this->user_details ['lastName'];
         }
         return "";
     }
     function getName() {
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT firstName, lastName FROM users WHERE hash='{$_SESSION['hash']}';" ) );
-            $name = "";
-            if ($row ['firstName']) {
-                $name .= $row ['firstName'];
-            }
-            if ($row ['lastName']) {
-                $name .= " " . $row ['lastName'];
-            }
-            return $name;
+        $name = "";
+        if ($this->user_details ['firstName']) {
+            $name .= $this->user_details ['firstName'];
         }
-        return "";
+        if ($this->user_details ['lastName']) {
+            $name .= " " . $this->user_details ['lastName'];
+        }
+        return $name;
     }
     function getEmail() {
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $row = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT email FROM users WHERE hash='{$_SESSION['hash']}';" ) );
-            if ($row ['email']) {
-                return $row ['email'];
-            }
+        if ($this->user_details ['email']) {
+            return $this->user_details ['email'];
         }
         return "";
     }
