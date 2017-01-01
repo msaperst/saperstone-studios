@@ -55,8 +55,8 @@ if ($parent ['parent'] != NULL) {
     if ($user->isAdmin ()) {
         ?>
     <link
-	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
-	rel="stylesheet">
+    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    rel="stylesheet">
     <?php
     }
     ?>
@@ -82,24 +82,24 @@ if ($parent ['parent'] != NULL) {
     ?>
     
     <!-- Page Content -->
-	<div class="page-content container">
+    <div class="page-content container">
 
-		<!-- Page Heading/Breadcrumbs -->
-		<div class="row">
-			<div class="col-lg-12">
-				<h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
-				<ol class="breadcrumb">
-					<li><a href="/">Home</a></li>
-					<li><a href="index.php"><?php echo ucfirst($nav); ?></a></li>
+        <!-- Page Heading/Breadcrumbs -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
+                <ol class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="index.php"><?php echo ucfirst($nav); ?></a></li>
                     <?php
                     if ($parent ['parent'] != NULL) {
                         ?>
-						<li><a href="gallery.php?w=<?php echo $parent ['parent']; ?>">Gallery</a></li>
-					<li><a href='gallery.php?w=<?php echo $parent ['id']; ?>'><?php echo $parent ['title']; ?></a></li>
+                        <li><a href="gallery.php?w=<?php echo $parent ['parent']; ?>">Gallery</a></li>
+                    <li><a href='gallery.php?w=<?php echo $parent ['id']; ?>'><?php echo $parent ['title']; ?></a></li>
                         <?php
                     } else {
                         ?>
-						<li><a href="gallery.php?w=<?php echo $parent ['id']; ?>">Gallery</a></li>
+                        <li><a href="gallery.php?w=<?php echo $parent ['id']; ?>">Gallery</a></li>
                         <?php
                     }
                     ?>
@@ -108,49 +108,49 @@ if ($parent ['parent'] != NULL) {
                     if ($user->isAdmin ()) {
                         ?>
                     <li class="no-before pull-right"><button
-							type="button" id="edit-gallery-btn"
-							class="btn btn-xs btn-warning">
-							<i class="fa fa-pencil-square-o"></i>
-						</button></li>
+                            type="button" id="edit-gallery-btn"
+                            class="btn btn-xs btn-warning">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </button></li>
                     <?php
                     }
                     ?>
                 </ol>
-			</div>
-		</div>
-		<!-- /.row -->
+            </div>
+        </div>
+        <!-- /.row -->
 
-		<!-- Services Section -->
-		<div class="row">
-			<div id="col-0" class="col-md-3 col-sm-6 col-gallery"></div>
-			<div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
-			<div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
-			<div id="col-3" class="col-md-3 col-sm-6 col-gallery"></div>
-		</div>
-		<!-- /.row -->
+        <!-- Services Section -->
+        <div class="row">
+            <div id="col-0" class="col-md-3 col-sm-6 col-gallery"></div>
+            <div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
+            <div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
+            <div id="col-3" class="col-md-3 col-sm-6 col-gallery"></div>
+        </div>
+        <!-- /.row -->
 
         <?php require_once "../footer.php"; ?>
 
     </div>
-	<!-- /.container -->
+    <!-- /.container -->
 
-	<!-- Slideshow Modal -->
-	<div id="<?php echo str_replace(" ","-",$details['title']); ?>"
-		class="modal fade modal-carousel" role="dialog">
-		<div class="modal-dialog modal-lg">
-			<!-- Modal content-->
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title"><?php echo $details['title']; ?> Gallery</h4>
-				</div>
-				<div class="modal-body">
-					<!-- Carousel -->
-					<div
-						id="<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
-						class="carousel slide carousel-three-by-two">
-						<!-- Indicators -->
-						<ol class="carousel-indicators">
+    <!-- Slideshow Modal -->
+    <div id="<?php echo str_replace(" ","-",$details['title']); ?>"
+        class="modal fade modal-carousel" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><?php echo $details['title']; ?> Gallery</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- Carousel -->
+                    <div
+                        id="<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
+                        class="carousel slide carousel-three-by-two">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
                         <?php
                         foreach ( $images as $num => $image ) {
                             $class = "";
@@ -162,8 +162,8 @@ if ($parent ['parent'] != NULL) {
                         ?>
                     </ol>
 
-						<!-- Wrapper for slides -->
-						<div class="carousel-inner">
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner">
                         <?php
                         foreach ( $images as $num => $image ) {
                             $active_class = "";
@@ -181,51 +181,51 @@ if ($parent ['parent'] != NULL) {
                         ?>
                     </div>
 
-						<!-- Controls -->
-						<a class="left carousel-control"
-							href="#<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
-							data-slide="prev"> <span class="icon-prev"></span>
-						</a> <a class="right carousel-control"
-							href="#<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
-							data-slide="next"> <span class="icon-next"></span>
-						</a>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<span class="pull-left">
+                        <!-- Controls -->
+                        <a class="left carousel-control"
+                            href="#<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
+                            data-slide="prev"> <span class="icon-prev"></span>
+                        </a> <a class="right carousel-control"
+                            href="#<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
+                            data-slide="next"> <span class="icon-next"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span class="pull-left">
                         <?php
                         if ($user->isAdmin ()) {
                             ?>
                         <button id="delete-image-btn" type="button"
-							class="btn btn-default btn-danger btn-action">
-							<em class="fa fa-trash"></em> Delete
-						</button>
+                            class="btn btn-default btn-danger btn-action">
+                            <em class="fa fa-trash"></em> Delete
+                        </button>
                         <?php
                         }
                         ?>
                     </span>
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				</div>
-			</div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
 
-		</div>
-	</div>
-	<!-- End of Modal -->
+        </div>
+    </div>
+    <!-- End of Modal -->
 
-	<!-- Gallery JavaScript -->
-	<script src="/js/gallery.js"></script>
+    <!-- Gallery JavaScript -->
+    <script src="/js/gallery.js"></script>
     
     <?php
     if ($user->isAdmin ()) {
         ?>
     <script src="/js/gallery-admin.js"></script>
-	<script src="/js/jquery.uploadfile.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
     <?php
     }
     ?>
 
     <!-- Script to Activate the Gallery -->
-	<script>
+    <script>
         var loaded = 0;
         var total = <?php echo count($images); ?>;
         var gallery = new Gallery( "<?php echo str_replace(" ","-",$details['title']); ?>", total );
