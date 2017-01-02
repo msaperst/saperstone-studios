@@ -103,7 +103,7 @@
                     <span
                         style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
                         <button class="ajax-file-upload"
-                            onclick="location.href='galleries.php?w=1'"
+                            onclick="location.href='galleries.php?w=8'"
                             style="position: relative; overflow: hidden; cursor: pointer;">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
@@ -140,7 +140,7 @@
                     <img class="img-responsive" src="img/gallery.jpg" alt="">
                     <div class="overlay">
                         <br/><br/><br/>
-                        <a class="info" href="gallery.php">See More</a>
+                        <a class="info" href="gallery.php?w=8">See More</a>
                     </div>
                 </div>
             </div>

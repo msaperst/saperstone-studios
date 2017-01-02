@@ -154,7 +154,7 @@
                     <div class="overlay">
                         <br />
                         <br />
-                        <br /> <a class="info" href="gallery.php">See More</a>
+                        <br /> <a class="info" href="gallery.php?w=1">See More</a>
                     </div>
                 </div>
             </div>
