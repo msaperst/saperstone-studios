@@ -1,4 +1,8 @@
 <?php
+require_once "../php/sql.php";
+$conn = new Sql ();
+$conn->connect ();
+
 // check if fields passed are empty
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );

@@ -1,4 +1,8 @@
 <?php
+require_once "../php/sql.php";
+$conn = new Sql ();
+$conn->connect ();
+
 require_once "Mail.php";
 require_once "Mail/mime.php";
 $crlf = "\n";
