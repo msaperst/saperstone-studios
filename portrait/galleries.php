@@ -27,12 +27,12 @@ $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     $children [] = $r;
 }
-if (sizeof ( $children ) != 0) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include "../errors/404.php";
-    $conn->disconnect ();
-    exit ();
-}
+// if (sizeof ( $children ) != 0) {
+//     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
+//     include "../errors/404.php";
+//     $conn->disconnect ();
+//     exit ();
+// }
 
 $sql = "SELECT * FROM `galleries` WHERE id = '" . $details ['parent'] . "';";
 $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
