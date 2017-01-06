@@ -186,6 +186,19 @@ if (isset ( $_GET ['c'] )) {
 
     </div>
 	<!-- /.container -->
+	
+	<?php
+    if ($user->isAdmin ()) {
+        ?>
+    <script src="/js/edit-image.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <?php
+    }
+    ?>
 
 </body>
 
