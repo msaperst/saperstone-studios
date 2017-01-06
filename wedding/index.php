@@ -168,9 +168,9 @@
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
-                <div section='Reviews'
+                <div section='Raves'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Reviews</span>
+                    <span class='preview-title'>Raves</span>
                     <img class="img-responsive" src="img/reviews.jpg" alt="">
                     <div class="overlay">
                         <br/><br/><br/>

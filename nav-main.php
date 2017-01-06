@@ -54,6 +54,6 @@
                 <li><a href="/about.php">About</a></li>
                 <li><a href="/leighAnn.php">Meet Leigh Ann</a></li>
                 <li><a href="/services.php">Services</a></li>
-                <li><a href="/reviews.php">Reviews</a></li>
+                <li><a href="/reviews.php">Raves</a></li>
                 <li><a href="/contact.php">Contact</a></li>
             </ul></li>

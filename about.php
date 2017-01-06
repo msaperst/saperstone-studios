@@ -27,14 +27,22 @@
         </div>
         <!-- /.row -->
 
+        <!-- Intro Images -->
+        <div class="row">
+        	<div class="col-md-6">
+        		<img width="100%" src="/img/about-1.jpg" />
+        	</div>
+        	<div class="col-md-6">
+        		<img width="100%" src="/img/about-2.jpg" />
+        	</div>
+        </div>
+        
         <!-- Intro Content -->
         <div class="row">
             <div class="col-md-12">
-                <img src='img/ringling.jpg' align='right'
-                    style='margin: 0px 0px 20px 20px;' />
                 <h2>What Makes Saperstone Studios Unique</h2>
                 <p>
-                    It's all in the name, Saperstone Studios Photography and <em>Retouch</em>.
+                    It's all in the name, Saperstone Studios Photography and <em><a href='#' class='error'>Retouch</a></em>.
                     It's a digital age and as such the art of photography has expanded
                     beyond being able to compose and take beautiful photographs. Much
                     of the work that goes into your photos is what happens after you
