@@ -323,6 +323,7 @@ footer {
 
 .carousel .item, .carousel .item.active, .carousel .carousel-inner {
     height: 100%;
+    background: #333;
 }
 
 .carousel .fill {
