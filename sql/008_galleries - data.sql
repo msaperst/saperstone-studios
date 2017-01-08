@@ -4,7 +4,7 @@
 
 LOCK TABLES `galleries` WRITE;
 /*!40000 ALTER TABLE `galleries` DISABLE KEYS */;
-INSERT IGNORE INTO `galleries` VALUES (0, NULL, NULL, 'Leigh Ann');
+-- INSERT IGNORE INTO `galleries` VALUES (0, NULL, NULL, 'Leigh Ann');
 INSERT IGNORE INTO `galleries` VALUES (1, NULL, NULL, 'Portrait');
 INSERT IGNORE INTO `galleries` VALUES (2, 1, 'maternity.jpg', 'Maternity');
 INSERT IGNORE INTO `galleries` VALUES (3, 1, 'newborn.jpg', 'Newborn');
@@ -32,5 +32,12 @@ INSERT IGNORE INTO `galleries` VALUES (24, 11, 'wedding-fav.jpg', 'Favorites');
 INSERT IGNORE INTO `galleries` VALUES (25, 11, 'wedding-1.jpg', 'Wedding 1');
 INSERT IGNORE INTO `galleries` VALUES (26, 11, 'wedding-2.jpg', 'Wedding 2');
 INSERT IGNORE INTO `galleries` VALUES (27, 11, 'wedding-3.jpg', 'Wedding 3');
+INSERT IGNORE INTO `galleries` VALUES (28, NULL, NULL, 'Products');
+INSERT IGNORE INTO `galleries` VALUES (29, 28, '', 'Story Grids');
+INSERT IGNORE INTO `galleries` VALUES (30, 28, '', 'Keepsake Albums');
+INSERT IGNORE INTO `galleries` VALUES (31, 28, '', 'Acrylic Prints');
+INSERT IGNORE INTO `galleries` VALUES (32, 28, '', 'Keepsake Boxes');
+INSERT IGNORE INTO `galleries` VALUES (33, 28, '', 'Bamboo Mounts');
+INSERT IGNORE INTO `galleries` VALUES (34, 28, '', 'Canvas Prints');
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
