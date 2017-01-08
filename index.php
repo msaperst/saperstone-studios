@@ -33,7 +33,7 @@
             <div class="col-lg-12">
                 <h2 class="page-header text-center">Photography Services</h2>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-6 col-xs-12">
                 <div section='Portraits'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Portraits</span>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-6 col-xs-12">
                 <div section='Weddings'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Weddings</span>
@@ -57,18 +57,18 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section='Commercial'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Commercial</span>
-                    <img class="img-responsive" src="/img/commercial.jpg" width="100%"
-                        alt="Commercial">
-                    <div class="overlay">
-                        <br/><br/><br/>
-                        <a class="info" href="#">See More</a>
-                    </div>
-                </div>
-            </div>
+<!--             <div class="col-md-4 col-sm-6 col-xs-12"> -->
+<!--                 <div section='Commercial' -->
+<!--                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>"> -->
+<!--                     <span class='preview-title'>Commercial</span> -->
+<!--                     <img class="img-responsive" src="/img/commercial.jpg" width="100%" -->
+<!--                         alt="Commercial"> -->
+<!--                     <div class="overlay"> -->
+<!--                         <br/><br/><br/> -->
+<!--                         <a class="info" href="#">See More</a> -->
+<!--                     </div> -->
+<!--                 </div> -->
+<!--             </div> -->
         </div>
         <!-- /.row -->
 
