@@ -28,7 +28,7 @@ if (isset ( $_GET ['c'] )) {
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        require_once '../php/strings.php';
+        require_once 'php/strings.php';
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>
