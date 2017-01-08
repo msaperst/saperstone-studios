@@ -106,7 +106,7 @@
 					selection process as smooth as possible.</p>
 				<p>
 					You'll select your 5 images that come with your session at this
-					time and we'll go though each <a class="error" href="#">product
+					time and we'll go though each <a href="products-investments.php">product
 						choice</a> in person. We take as much time as needed to answer all
 					of your questions, and make sure that when you leave, you feel
 					completely confident in your order. While I recommend getting
