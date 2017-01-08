@@ -6,6 +6,23 @@
     <?php require_once "../header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
 
+    <?php
+    $rand = "";
+    if ($user->isAdmin ()) {
+        require_once '../php/strings.php';
+        $string = new Strings ();
+        $rand = "?" . $string->randomString ();
+        ?>
+    <link
+	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+	rel="stylesheet">
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
+	rel="stylesheet">
+    <?php
+    }
+    ?>
+    
 </head>
 
 <body>
@@ -116,7 +133,7 @@
                 <div section="Surprise Proposal"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Bellies and Babies</span> <img
-                        class="img-responsive" src="img/surprise.jpg" alt="">
+                        class="img-responsive" src="img/surprise.jpg<?php echo $rand; ?>" alt="">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="surprise.php">See More</a>
                     </div>
@@ -126,7 +143,7 @@
                 <div section="Engagement"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Newborn FAQ</span> <img
-                        class="img-responsive" src="img/engagement.jpg" alt="">
+                        class="img-responsive" src="img/engagement.jpg<?php echo $rand; ?>" alt="">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="engagement.php">See
                             More</a>
@@ -137,7 +154,7 @@
                 <div section="Weddings"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Home Studio</span> <img
-                        class="img-responsive" src="img/wedding.jpg" alt="">
+                        class="img-responsive" src="img/wedding.jpg<?php echo $rand; ?>" alt="">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="weddings.php">See More</a>
                     </div>
@@ -150,6 +167,19 @@
 
     </div>
     <!-- /.container -->
+
+    <?php
+    if ($user->isAdmin ()) {
+        ?>
+    <script src="/js/edit-image.js"></script>
+	<script src="/js/jquery.uploadfile.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <?php
+    }
+    ?>
 
 </body>
 

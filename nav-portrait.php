@@ -7,11 +7,12 @@
             class="dropdown-toggle" data-toggle="dropdown">Details<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="what-to-wear.php">What to Wear</a></li>
-                <li><a href="bellies-and-babies.php">Bellies and Babies</a></li>
+                <li><a href="sessions.php">Session Information</a></li>
+                <li><a href="process.php">The Process</a></li>
                 <li><a href="studio.php">Studio</a></li>
-                <li><a href="#">Investment</a></li>
-                <li><a href="#">Products</a></li>
+                <li><a href="products-investments.php">Products and Investments</a></li>
+                <li><a href="what-to-wear.php">What to Wear</a></li>
+                <li><a href="faq.php">FAQs</a></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Gallery<strong

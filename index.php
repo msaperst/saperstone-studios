@@ -7,7 +7,11 @@
     <link href="/css/hover-effect.css" rel="stylesheet">
     
     <?php
+    $rand = "";
     if ($user->isAdmin ()) {
+        require_once '../php/strings.php';
+        $string = new Strings ();
+        $rand = "?" . $string->randomString ();
         ?>
     <link
     href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
@@ -36,39 +40,41 @@
             <div class="col-md-6 col-xs-12">
                 <div section='Portraits'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Portraits</span>
-                    <img class="img-responsive" src="/img/portraits.jpg" width="100%"
+                    <span class='preview-title'>Portraits</span> <img
+                        class="img-responsive" src="/img/portraits.jpg<?php echo $rand; ?>" width="100%"
                         alt="Portraits">
                     <div class="overlay">
-                        <br/><br/><br/>
-                        <a class="info" href="/portrait/index.php">See More</a>
+                        <br />
+                        <br />
+                        <br /> <a class="info" href="/portrait/index.php">See More</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 col-xs-12">
                 <div section='Weddings'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Weddings</span>
-                    <img class="img-responsive" src="/img/weddings.jpg" width="100%"
+                    <span class='preview-title'>Weddings</span> <img
+                        class="img-responsive" src="/img/weddings.jpg<?php echo $rand; ?>" width="100%"
                         alt="Weddings">
                     <div class="overlay">
-                        <br/><br/><br/>
-                        <a class="info" href="/wedding/index.php">See More</a>
+                        <br />
+                        <br />
+                        <br /> <a class="info" href="/wedding/index.php">See More</a>
                     </div>
                 </div>
             </div>
-<!--             <div class="col-md-4 col-sm-6 col-xs-12"> -->
-<!--                 <div section='Commercial' -->
-<!--                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>"> -->
-<!--                     <span class='preview-title'>Commercial</span> -->
-<!--                     <img class="img-responsive" src="/img/commercial.jpg" width="100%" -->
-<!--                         alt="Commercial"> -->
-<!--                     <div class="overlay"> -->
-<!--                         <br/><br/><br/> -->
-<!--                         <a class="info" href="#">See More</a> -->
-<!--                     </div> -->
-<!--                 </div> -->
-<!--             </div> -->
+            <!--             <div class="col-md-4 col-sm-6 col-xs-12"> -->
+            <!--                 <div section='Commercial' -->
+            <!--                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>"> -->
+            <!--                     <span class='preview-title'>Commercial</span> -->
+            <!--                     <img class="img-responsive" src="/img/commercial.jpg<?php echo $rand; ?>" width="100%" -->
+            <!--                         alt="Commercial"> -->
+            <!--                     <div class="overlay"> -->
+            <!--                         <br/><br/><br/> -->
+            <!--                         <a class="info" href="#">See More</a> -->
+            <!--                     </div> -->
+            <!--                 </div> -->
+            <!--             </div> -->
         </div>
         <!-- /.row -->
 
@@ -78,7 +84,8 @@
                 <h2 class="page-header">Welcome to Saperstone Studios</h2>
             </div>
             <div class="col-md-12">
-                <img style='max-width:100%;' src='img/locationbox.png' align='right' />
+                <img style='max-width: 100%;' src='img/locationbox.png'
+                    align='right' />
                 <p>
                     Allow me to introduce myself! I've worked in the photography
                     industry for over 10 years, coordinating photo shoots and

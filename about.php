@@ -29,12 +29,12 @@
 
         <!-- Intro Images -->
         <div class="row">
-        	<div class="col-md-6">
-        		<img width="100%" src="/img/about-1.jpg" />
-        	</div>
-        	<div class="col-md-6">
-        		<img width="100%" src="/img/about-2.jpg" />
-        	</div>
+         <div class="col-md-6">
+          <img width="100%" src="/img/about-1.jpg" />
+         </div>
+         <div class="col-md-6">
+          <img width="100%" src="/img/about-2.jpg" />
+         </div>
         </div>
         
         <!-- Intro Content -->
