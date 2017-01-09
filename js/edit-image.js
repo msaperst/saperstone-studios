@@ -13,6 +13,7 @@ $(document).ready(function() {
         count = count[0].match(/(\d+)/)[0];
         var min_width = 1200 / 12 * count;
         var min_height = 1200 / 12 * count * 2 / 3;
+        var location = img.attr('src').split('?')[0];
         $(this).uploadFile({
             url : "/api/upload-image.php",
             uploadStr : "<i class='fa fa-pencil-square-o'></i> Edit This Image",
@@ -21,7 +22,7 @@ $(document).ready(function() {
             fileName : "myfile",
             acceptFiles : "image/*",
             formData : {
-                "location" : ".." + folder + "/" + img.attr('src'),
+                "location" : ".." + folder + "/" + location,
                 "min-width" : min_width,
                 "min-height" : min_height
             },
@@ -154,7 +155,7 @@ function saveImg(img) {
             });
         } else {
             // setup the new image
-            var new_img = img.attr('src').replace(/^img\/tmp_/, "img/").replace(/\?(\d+)$/, "");
+            var new_img = img.attr('src').replace(/^\/?img\/tmp_/, "img/").replace(/\?(\d+)$/, "");
             img.attr('src', new_img + "?" + randomImgNumber());
             // remove our old info
             img.parent().find('.watermark').remove();
