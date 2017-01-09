@@ -81,7 +81,7 @@
             <div class="col-md-12">
                 <p>
                     Please allow 2-3 weeks after your portrait session for images to be
-                    completed. During this time I carefully <a class='error' href='#'>make
+                    completed. During this time I carefully <a href='retouch.php'>make
                         selects, color correct and retouch</a> your images to be clean,
                     consistent and vibrant.
                 </p>

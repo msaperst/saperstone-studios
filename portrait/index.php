@@ -168,7 +168,7 @@
                         class="img-responsive" src="img/retouch.jpg<?php echo $rand; ?>"
                         alt="Retouch">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="#">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="retouch.php">See More</a>
                     </div>
                 </div>
             </div>
