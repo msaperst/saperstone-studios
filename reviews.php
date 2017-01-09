@@ -91,13 +91,13 @@ if (isset ( $_GET ['c'] )) {
                     $style = " align='left' style='margin: 0px 20px 20px 0px;'";
                 }
                 ?>
-            <div class="col-md-6">
+            <div class="col-xs-6">
                 <img src='<?php echo $r['image']; ?>' style='width: 100%;' />
             </div>
-            <div class="col-md-6">
+            <div class="col-xs-6">
                 <img src='<?php echo $r['image']; ?>' style='width: 100%;' />
             </div>
-            <div class="col-md-12" style="padding-top: 20px;">
+            <div class="col-xs-12" style="padding-top: 20px;">
 
                 <blockquote>
                     <p>
