@@ -25,7 +25,7 @@
                 <li><a href="galleries.php?w=6">Kids and Family</a></li>
                 <li><a href="galleries.php?w=7">Seniors</a></li>
             </ul></li>
-        <li><a href="#">Retouch</a></li>
+        <li><a href="retouch.php">Retouch</a></li>
         <li><a href="/about.php">About</a></li>
         <li><a href="/reviews.php?c=1">Raves</a></li>
         <li><a href="/blog/category.php?t=20">Blog</a></li>
