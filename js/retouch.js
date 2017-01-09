@@ -106,13 +106,13 @@ function slider(ele, images) {
 function addSelector(ele, images) {
 
     var selector = $('<div>');
-    selector.addClass('span11');
+    selector.addClass('col-md-12');
     selector.css({
         'overflow' : 'auto'
     });
 
     var row = $('<div>');
-    row.addClass('row-fluid');
+    row.addClass('row-fluid text-center');
     row.css({
         'white-space' : 'nowrap'
     });
@@ -142,7 +142,7 @@ function addSelector(ele, images) {
     }
     
     selector.append( row );
-    ele.parent().append( selector );
+    ele.closest('[class^=col]').after( selector );
 }
 
 function slide(ele) {

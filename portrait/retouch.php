@@ -44,11 +44,12 @@
 		<!-- Studio Slideshow -->
 		<div class="row" style="margin-top: 30px;">
 			<!-- Content Column -->
-			<div class="col-md-12">
+			<div class="col-md-offset-2 col-md-8">
 				<div class='text-center'>
 					<div id='holder' class='holder'></div>
 				</div>
 			</div>
+		</div>
 
         <?php require_once "../footer.php"; ?>
 
