@@ -1,5 +1,3 @@
-var instruction_height = $('span#instructions').outerHeight();
-
 function createSlider(ele, instruct) {
     var protector = $('<img>');
     protector.addClass('protect');
@@ -15,8 +13,14 @@ function createSlider(ele, instruct) {
             'id' : 'instructions'
         });
         instructions.html('Select an Image then drag slider');
-        ele.append(instructions)
+        ele.before(instructions)
     }
+    
+    var heighter = $('<div>');
+    heighter.attr({'id':'heighter'});
+    heighter.css({'margin-top':'0%'});
+    ele.append(heighter);
+    
 
     var original = $('<div>');
     original.addClass('images original');
@@ -64,10 +68,6 @@ function sliderSim(ele, before, after) {
     height = height / width * ele.outerWidth();
     ele.height(height + $('span#instructions').outerHeight());
 
-    resizeSlider(ele);
-    $(window).bind("resize orientationchange", function() {
-        resizeSlider(ele);
-    });
     setInterval(function() {
         slide(ele);
     }, 50);
@@ -77,24 +77,22 @@ function slider(ele, images) {
 
     addSelector(ele, images);
 
-    resizeSlider(ele);
-    $(window).bind("resize orientationchange", function() {
-        resizeSlider(ele);
-    });
     setInterval(function() {
         slide(ele);
     }, 50);
 
     $('img.thumb').click(function() {
+        var imgWidth = $(this).attr('imgWidth');
+        var imgHeight = $(this).attr('imgHeight');
+        var height = imgHeight/imgWidth*100;
+        ele.find('#heighter').css({'margin-top':height + '%'});
+        
         var orig = $(this).attr('imgOrig');
         var edit = $(this).attr('imgEdit');
-        var width = $(this).attr('imgWidth');
-        var height = $(this).attr('imgHeight');
-        ele.find('#original img').attr('src', orig);
-        ele.find('#edit img').attr('src', edit);
-        ele.width(width);
-        ele.next().width(width);
+        ele.find('#original img').attr({'src':orig}).css({'width':ele.width()});
+        ele.find('#edit img').attr({'src':edit}).css({'width':ele.width()});
         ele.next().val(0);
+        
         $('img.thumb').css({
             'border' : '2px transparent solid'
         });
@@ -102,16 +100,6 @@ function slider(ele, images) {
             'border' : '2px #9dcb3b solid'
         });
         slide(ele);
-        resizeSlider(ele);
-        var max_height = height / width * ele.outerWidth();
-        instruction_height = $('span#instructions').outerHeight();
-        ele.animate({
-            height : max_height + instruction_height + 5
-        });
-        ele.css({
-            'height' : height + instruction_height + 5,
-            'max-height' : max_height + instruction_height + 5
-        });
     });
 }
 
@@ -159,24 +147,4 @@ function addSelector(ele, images) {
 
 function slide(ele) {
     $(ele).find('#edit').css('width', $(ele).next().val() + "%");
-}
-function resizeSlider(ele) {
-    // if (usableScreen.width <= contentWidth) { //if we have a small screen
-    // size
-    // if (ele === "" || ele === undefined || ele === null) {
-    // console.log('Need to resize all');
-    // ele = $(document);
-    // }
-    // $(ele).find('#original img').css({'max-width':usableScreen.width });
-    // $(ele).find('#edit img').css({'max-width':usableScreen.width });
-    // $(ele).css({'max-width':usableScreen.width });
-    // $(ele).next().css({'max-width':usableScreen.width });
-    // $(ele).next().next().css({'max-width':usableScreen.width });
-    //        
-    // var max_height = (parseInt($(ele).css('height'), 10) - insruction_height)
-    // / parseInt($(ele).css('width'), 10) *
-    // Math.min(parseInt($(ele).css('width'), 10),
-    // parseInt($(ele).css('max-width'), 10));
-    // $(ele).css({'max-height':max_height + insruction_height});
-    // }
 }
