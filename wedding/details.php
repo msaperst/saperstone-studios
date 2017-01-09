@@ -14,11 +14,11 @@
         $rand = "?" . $string->randomString ();
         ?>
     <link
-	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
-	rel="stylesheet">
+    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    rel="stylesheet">
 <link
-	href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
-	rel="stylesheet">
+    href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
+    rel="stylesheet">
     <?php
     }
     ?>
@@ -172,11 +172,11 @@
     if ($user->isAdmin ()) {
         ?>
     <script src="/js/edit-image.js"></script>
-	<script src="/js/jquery.uploadfile.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <?php
     }
     ?>
