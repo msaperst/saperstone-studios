@@ -105,7 +105,7 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section='Keepsake Albums'
+                <div section='Heirloom Albums'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Keepsake Albums</span> <img
                         class="img-responsive"
