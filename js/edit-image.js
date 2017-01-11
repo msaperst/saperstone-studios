@@ -155,7 +155,7 @@ function saveImg(img) {
             });
         } else {
             // setup the new image
-            var new_img = img.attr('src').replace(/^\/?img\/tmp_/, "img/").replace(/\?(\d+)$/, "");
+            var new_img = img.attr('src').replace(/\/tmp_([^\/]*)$/,"/"+'$1').replace(/\?(\d+)$/, "");
             img.attr('src', new_img + "?" + randomImgNumber());
             // remove our old info
             img.parent().find('.watermark').remove();
