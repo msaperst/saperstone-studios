@@ -45,7 +45,10 @@ if (isset ( $_GET ['c'] )) {
 
 <body>
 
-    <?php require_once "nav.php"; ?>
+    <?php
+    $nav = strtolower ( $details ['name'] );
+    require_once "nav.php";
+    ?>
 
     <!-- Page Content -->
 	<div class="page-content container">
@@ -62,13 +65,18 @@ if (isset ( $_GET ['c'] )) {
                 Raves</h1>
 				<ol class="breadcrumb">
 					<li><a href="/">Home</a></li>
-					<li class="active">Information</li>
                     <?php
                     if (isset ( $category )) {
-                        echo "<li><a href='/reviews.php'>Raves</a></li>";
-                        echo "<li class='active'>" . ucfirst ( $details ['name'] ) . "</li>";
+                        ?>
+					<li><a href='index.php'><?php  echo ucfirst ( $details ['name'] ); ?>s</a></li>
+					<li><a href='details.php'>Details</a></li>
+					<li class='active'>Raves</li>
+                    <?php
                     } else {
-                        echo "<li class='active'>Raves</li>";
+                        ?>
+					<li class="active">Information</li>
+					<li class='active'>Raves</li>
+                    <?php
                     }
                     ?>
                 </ol>

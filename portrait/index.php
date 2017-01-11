@@ -190,7 +190,7 @@
                         class="img-responsive" src="img/reviews.jpg<?php echo $rand; ?>"
                         alt="Raves">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="/reviews.php?c=1">See
+                        <br /> <br /> <br /> <a class="info" href="reviews.php?c=1">See
                             More</a>
                     </div>
                 </div>

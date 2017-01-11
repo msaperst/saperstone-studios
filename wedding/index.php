@@ -187,7 +187,7 @@
                     <div class="overlay">
                         <br />
                         <br />
-                        <br /> <a class="info" href="/reviews.php?c=2">See More</a>
+                        <br /> <a class="info" href="reviews.php?c=2">See More</a>
                     </div>
                 </div>
             </div>
