@@ -228,7 +228,7 @@ if ($parent ['parent'] != NULL) {
     <script>
         var loaded = 0;
         var total = <?php echo count($images); ?>;
-        var gallery = new Gallery( "<?php echo str_replace(" ","-",$details['title']); ?>", total );
+        var gallery = new Gallery( <?php echo $what; ?>, "<?php echo str_replace(" ","-",$details['title']); ?>", total );
 
         $(window,document).on("scroll resize", function(){
             if( $('footer').isOnScreen() && loaded < total ) {

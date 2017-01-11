@@ -4,8 +4,9 @@ $.fn.isOnScreen = function() {
     return bounds.top < window.innerHeight && bounds.bottom > 0;
 };
 
-function Gallery(gallery, totalImages) {
+function Gallery(gallery_id, gallery, totalImages) {
     this.loaded = 0;
+    this.gallery_id = gallery_id;
     this.gallery = gallery;
     this.totalImages = totalImages;
 
@@ -17,7 +18,7 @@ Gallery.prototype.loadImages = function(howMany) {
 
     var Gallery = this;
     $.get("/api/get-gallery-images.php", {
-        gallery : Gallery.gallery,
+        gallery : Gallery.gallery_id,
         start : Gallery.loaded,
         howMany : howMany
     }, function(data) {
