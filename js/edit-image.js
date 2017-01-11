@@ -9,7 +9,7 @@ $(document).ready(function() {
     $('.editme').each(function() {
         var img = $(this).parent().find('img');
         var this_class = $(this).parent().parent().attr('class');
-        var count = this_class.match(/col-md-(\d+)/);
+        var count = this_class.match(/col-([a-z]{2})-(\d+)/);
         count = count[0].match(/(\d+)/)[0];
         var min_width = 1200 / 12 * count;
         var min_height = 1200 / 12 * count * 2 / 3;
@@ -96,7 +96,7 @@ function cleanImage(img) {
         'height' : '',
     });
     img.parent().find('.overlay').remove();
-    var new_img = img.attr('src').replace(/img\/tmp_/, "img/").replace(/img\//, "img/tmp_").replace(/\?(\d+)$/, "");
+    var new_img = img.attr('src').replace(/\/([^\/]*)$/,"/tmp_"+'$1').replace(/\?(\d+)$/, "");
     img.attr('src', new_img + "?" + randomImgNumber());
 
     // add our save button
