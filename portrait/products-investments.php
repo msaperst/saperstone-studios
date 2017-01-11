@@ -95,7 +95,7 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Story Grids</span> <img
                         class="img-responsive"
-                        src="img/story-grid.jpg<?php echo $rand; ?>" width="100%"
+                        src="../products/img/portrait-story-grid.jpg<?php echo $rand; ?>" width="100%"
                         alt="Story Grids">
                     <div class="overlay">
                         <br />
@@ -109,8 +109,8 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Keepsake Albums</span> <img
                         class="img-responsive"
-                        src="img/keepsake-album.jpg<?php echo $rand; ?>" width="100%"
-                        alt="Keepsake Albums">
+                        src="../products/img/portrait-keepsake-album.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Heirloom Albums">
                     <div class="overlay">
                         <br />
                         <br />
@@ -123,7 +123,7 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Acrylic Prints</span> <img
                         class="img-responsive"
-                        src="img/acrylic-print.jpg<?php echo $rand; ?>" width="100%"
+                        src="../products/img/portrait-acrylic-print.jpg<?php echo $rand; ?>" width="100%"
                         alt="Acrylic Prints">
                     <div class="overlay">
                         <br />
@@ -137,7 +137,7 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Keepsake Box</span> <img
                         class="img-responsive"
-                        src="img/keepsake-box.jpg<?php echo $rand; ?>" width="100%"
+                        src="../products/img/portrait-keepsake-box.jpg<?php echo $rand; ?>" width="100%"
                         alt="Keepsake Box">
                     <div class="overlay">
                         <br />
@@ -151,7 +151,7 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Bamboo Mounts</span> <img
                         class="img-responsive"
-                        src="img/bamboo-mount.jpg<?php echo $rand; ?>" width="100%"
+                        src="../products/img/portrait-bamboo-mount.jpg<?php echo $rand; ?>" width="100%"
                         alt="Bamboo Mounts">
                     <div class="overlay">
                         <br />
@@ -165,7 +165,7 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Canvas Prints</span> <img
                         class="img-responsive"
-                        src="img/canvas-print.jpg<?php echo $rand; ?>" width="100%"
+                        src="../products/img/portrait-canvas-print.jpg<?php echo $rand; ?>" width="100%"
                         alt="Canvas Prints">
                     <div class="overlay">
                         <br />

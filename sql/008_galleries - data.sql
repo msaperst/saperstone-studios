@@ -33,12 +33,12 @@ INSERT IGNORE INTO `galleries` VALUES (25, 11, 'wedding-1.jpg', 'Wedding 1');
 INSERT IGNORE INTO `galleries` VALUES (26, 11, 'wedding-2.jpg', 'Wedding 2');
 INSERT IGNORE INTO `galleries` VALUES (27, 11, 'wedding-3.jpg', 'Wedding 3');
 INSERT IGNORE INTO `galleries` VALUES (28, NULL, NULL, 'Products');
-INSERT IGNORE INTO `galleries` VALUES (29, 28, '', 'Story Grids');
-INSERT IGNORE INTO `galleries` VALUES (30, 28, '', 'Heirloom Albums');
-INSERT IGNORE INTO `galleries` VALUES (31, 28, '', 'Acrylic Prints');
-INSERT IGNORE INTO `galleries` VALUES (32, 28, '', 'Keepsake Boxes');
-INSERT IGNORE INTO `galleries` VALUES (33, 28, '', 'Bamboo Mounts');
-INSERT IGNORE INTO `galleries` VALUES (34, 28, '', 'Canvas Prints');
+INSERT IGNORE INTO `galleries` VALUES (29, 28, 'portrait-story-grid.jpg', 'Story Grids');
+INSERT IGNORE INTO `galleries` VALUES (30, 28, 'portrait-keepsake-album.jpg', 'Heirloom Albums');
+INSERT IGNORE INTO `galleries` VALUES (31, 28, 'portrait-acrylic-print.jpg', 'Acrylic Prints');
+INSERT IGNORE INTO `galleries` VALUES (32, 28, 'portrait-keepsake-box.jpg', 'Keepsake Boxes');
+INSERT IGNORE INTO `galleries` VALUES (33, 28, 'portrait-bamboo-mount.jpg', 'Bamboo Mounts');
+INSERT IGNORE INTO `galleries` VALUES (34, 28, 'canvas-print.jpg', 'Canvas Prints');
 INSERT IGNORE INTO `galleries` VALUES (35, 4, '6-month-studio.jpg', 'In Studio');
 INSERT IGNORE INTO `galleries` VALUES (36, 4, '6-month-location.jpg', 'On Location');
 
