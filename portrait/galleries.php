@@ -99,6 +99,7 @@ if ($parent ['parent'] != NULL) {
                         <?php
                     } elseif ($parent ['parent'] != NULL && $parent ['title'] == 'Products' ) {
                         ?>
+                        <li><a href='details.php'>Details</a></li>
                         <li><a href='products.php'>Products</a></li>
                         <li><a href="gallery.php?w=<?php echo $details ['parent']; ?>">Gallery</a></li>
                         <?php
