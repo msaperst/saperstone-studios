@@ -92,10 +92,15 @@ if ($parent ['parent'] != NULL) {
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php"><?php echo ucfirst($nav); ?></a></li>
                     <?php
-                    if ($parent ['parent'] != NULL) {
+                    if ($parent ['parent'] != NULL && $parent ['title'] != 'Products' ) {
                         ?>
                         <li><a href="gallery.php?w=<?php echo $parent ['parent']; ?>">Gallery</a></li>
                     <li><a href='gallery.php?w=<?php echo $parent ['id']; ?>'><?php echo $parent ['title']; ?></a></li>
+                        <?php
+                    } elseif ($parent ['parent'] != NULL && $parent ['title'] == 'Products' ) {
+                        ?>
+                        <li><a href='products.php'>Products</a></li>
+                        <li><a href="gallery.php?w=<?php echo $details ['parent']; ?>">Gallery</a></li>
                         <?php
                     } else {
                         ?>

@@ -95,12 +95,12 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Story Grids</span> <img
                         class="img-responsive"
-                        src="../products/img/portrait-story-grid.jpg<?php echo $rand; ?>" width="100%"
+                        src="img/story-grid.jpg<?php echo $rand; ?>" width="100%"
                         alt="Story Grids">
                     <div class="overlay">
                         <br />
                         <br />
-                        <br /> <a class="info" href="/products/galleries.php?w=29">See More</a>
+                        <br /> <a class="info" href="galleries.php?w=29">See More</a>
                     </div>
                 </div>
             </div>
@@ -109,12 +109,12 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Keepsake Albums</span> <img
                         class="img-responsive"
-                        src="../products/img/portrait-keepsake-album.jpg<?php echo $rand; ?>" width="100%"
+                        src="img/keepsake-album.jpg<?php echo $rand; ?>" width="100%"
                         alt="Heirloom Albums">
                     <div class="overlay">
                         <br />
                         <br />
-                        <br /> <a class="info" href="/products/galleries.php?w=30">See More</a>
+                        <br /> <a class="info" href="galleries.php?w=30">See More</a>
                     </div>
                 </div>
             </div>
@@ -123,12 +123,12 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Acrylic Prints</span> <img
                         class="img-responsive"
-                        src="../products/img/portrait-acrylic-print.jpg<?php echo $rand; ?>" width="100%"
+                        src="img/acrylic-print.jpg<?php echo $rand; ?>" width="100%"
                         alt="Acrylic Prints">
                     <div class="overlay">
                         <br />
                         <br />
-                        <br /> <a class="info" href="/products/galleries.php?w=31">See More</a>
+                        <br /> <a class="info" href="galleries.php?w=31">See More</a>
                     </div>
                 </div>
             </div>
@@ -137,12 +137,12 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Keepsake Box</span> <img
                         class="img-responsive"
-                        src="../products/img/portrait-keepsake-box.jpg<?php echo $rand; ?>" width="100%"
+                        src="img/keepsake-box.jpg<?php echo $rand; ?>" width="100%"
                         alt="Keepsake Box">
                     <div class="overlay">
                         <br />
                         <br />
-                        <br /> <a class="info" href="/products/galleries.php?w=32">See More</a>
+                        <br /> <a class="info" href="galleries.php?w=32">See More</a>
                     </div>
                 </div>
             </div>
@@ -151,12 +151,12 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Bamboo Mounts</span> <img
                         class="img-responsive"
-                        src="../products/img/portrait-bamboo-mount.jpg<?php echo $rand; ?>" width="100%"
+                        src="img/bamboo-mount.jpg<?php echo $rand; ?>" width="100%"
                         alt="Bamboo Mounts">
                     <div class="overlay">
                         <br />
                         <br />
-                        <br /> <a class="info" href="/products/galleries.php?w=33">See More</a>
+                        <br /> <a class="info" href="galleries.php?w=33">See More</a>
                     </div>
                 </div>
             </div>
@@ -165,12 +165,12 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Canvas Prints</span> <img
                         class="img-responsive"
-                        src="../products/img/portrait-canvas-print.jpg<?php echo $rand; ?>" width="100%"
+                        src="img/canvas-print.jpg<?php echo $rand; ?>" width="100%"
                         alt="Canvas Prints">
                     <div class="overlay">
                         <br />
                         <br />
-                        <br /> <a class="info" href="/products/galleries.php?w=34">See More</a>
+                        <br /> <a class="info" href="galleries.php?w=34">See More</a>
                     </div>
                 </div>
             </div>

@@ -25,7 +25,9 @@ $sql = "SELECT * FROM `galleries` WHERE parent = '$what';";
 $children = array ();
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $children [] = $r;
+    if ($r ['title'] != 'Products') {
+        $children [] = $r;
+    }
 }
 if (sizeof ( $children ) == 0) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
@@ -57,11 +59,11 @@ if ($details ['parent'] != NULL) {
         $rand = "?" . $string->randomString ();
         ?>
     <link
-    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
-    rel="stylesheet">
+	href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+	rel="stylesheet">
 <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
-    rel="stylesheet">
+	href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
+	rel="stylesheet">
     <?php
     }
     ?>
@@ -73,21 +75,26 @@ if ($details ['parent'] != NULL) {
     <?php $nav = strtolower($parent); require_once "../nav.php"; ?>
     
     <!-- Page Content -->
-    <div class="page-content container">
+	<div class="page-content container">
 
-        <!-- Page Heading/Breadcrumbs -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
-                <ol class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="index.php"><?php echo $parent; ?></a></li>
+		<!-- Page Heading/Breadcrumbs -->
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
+				<ol class="breadcrumb">
+					<li><a href="/">Home</a></li>
+					<li><a href="index.php"><?php echo $parent; ?></a></li>
                     <?php
-                    if ($details ['parent'] != NULL) {
+                    if ($details ['parent'] != NULL && $details ['title'] != 'Products') {
                         ?>
                         <li><a
-                        href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
-                    <li class='active'><?php echo $details['title']; ?></li>
+						href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
+					<li class='active'><?php echo $details['title']; ?></li>
+                        <?php
+                    } elseif ($details ['parent'] != NULL && $details ['title'] == 'Products') {
+                        ?>
+                        <li><a href='products.php'>Products</a></li>
+					<li class='active'>Gallery</li>
                         <?php
                     } else {
                         ?>
@@ -96,12 +103,12 @@ if ($details ['parent'] != NULL) {
                     }
                     ?>
                 </ol>
-            </div>
-        </div>
-        <!-- /.row -->
+			</div>
+		</div>
+		<!-- /.row -->
 
-        <!-- Services Section -->
-        <div class="row">
+		<!-- Services Section -->
+		<div class="row">
             <?php
             foreach ( $children as $child ) {
                 $sql = "SELECT * FROM `galleries` WHERE parent = '" . $child ['id'] . "';";
@@ -112,17 +119,17 @@ if ($details ['parent'] != NULL) {
                 }
                 ?>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="<?php echo $child['title']; ?>"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'><?php echo $child['title']; ?></span> <img
-                        class="img-responsive" src="img/<?php echo $child['image']; echo $rand; ?>"
-                        alt="">
-                    <div class="overlay">
-                        <br /> <br /> <br /> <a class="info"
-                            <?php
+				<div section="<?php echo $child['title']; ?>"
+					class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+					<span class='preview-title'><?php echo $child['title']; ?></span> <img
+						class="img-responsive"
+						src="img/<?php echo $child['image']; echo $rand; ?>" alt="">
+					<div class="overlay">
+						<br /> <br /> <br /> <a class="info"
+							<?php
                 if (sizeof ( $grandchildren ) == 0) {
                     ?>
-                            href="galleries.php?w=<?php echo $child['id']; ?>">See More</a>
+							href="galleries.php?w=<?php echo $child['id']; ?>">See More</a>
                         <?php
                 } else {
                     ?>
@@ -131,28 +138,28 @@ if ($details ['parent'] != NULL) {
                 }
                 ?>                        
                     </div>
-                </div>
-            </div>
+				</div>
+			</div>
     <?php
             }
             ?>
         </div>
-        <!-- /.row -->
+		<!-- /.row -->
 
         <?php require_once "../footer.php"; ?>
 
     </div>
-    <!-- /.container -->
+	<!-- /.container -->
     
     <?php
     if ($user->isAdmin ()) {
         ?>
     <script src="/js/edit-image.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+	<script src="/js/jquery.uploadfile.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <?php
     }
     ?>
