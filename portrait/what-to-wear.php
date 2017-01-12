@@ -62,7 +62,7 @@
         </div>
         <!-- /.row -->
 
-        <div class="row">
+        <div class="row" style='padding-top: 30px'>
             <div class="col-lg-12">
                 <!-- Carousel -->
                 <div id="whatToWearCarousel"

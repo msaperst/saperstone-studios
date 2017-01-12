@@ -7,8 +7,12 @@
             class="dropdown-toggle" data-toggle="dropdown">Details<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="#">Investment</a></li>
-                <li><a href="#">Products</a></li>
+                <li><a href="experience.php">The Wedding Experience</a></li>
+                <li><a href="engagement.php">Engagements</a></li>
+                <li><a href="process.php">The Process</a></li>
+                <li><a href="products.php">Products and Investment</a></li>
+                <li><a href="night.php">Night Photography</a></li>
+                <li><a href="photobooth.php">Photobooth</a></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
