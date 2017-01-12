@@ -111,15 +111,24 @@ if ($details ['parent'] != NULL) {
 		<!-- Services Section -->
 		<div class="row">
             <?php
-            foreach ( $children as $child ) {
+            for($i = 0; $i < count($children); $i++) {
+                $child = $children[$i];
                 $sql = "SELECT * FROM `galleries` WHERE parent = '" . $child ['id'] . "';";
                 $grandchildren = array ();
                 $result = mysqli_query ( $conn->db, $sql );
                 while ( $r = mysqli_fetch_assoc ( $result ) ) {
                     $grandchildren [] = $r;
                 }
+                
+                $padding = "";
+                if( count($children)% 3 == 1 && $i == (count($children) - 1))  {
+                    $padding = "col-sm-offset-4 ";
+                }
+                if( count($children)% 3 == 2 && $i == (count($children) - 2))  {
+                    $padding = "col-sm-offset-2 ";
+                }
                 ?>
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="<?php echo $padding; ?>col-md-4 col-sm-6 col-xs-12">
 				<div section="<?php echo $child['title']; ?>"
 					class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
 					<span class='preview-title'><?php echo $child['title']; ?></span> <img

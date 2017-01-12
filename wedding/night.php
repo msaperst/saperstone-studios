@@ -10,7 +10,21 @@
 
 <body>
 
-    <?php $nav = "wedding"; require_once "../nav.php"; ?>
+    <?php
+    $nav = "wedding";
+    require_once "../nav.php";
+    
+    // get our gallery images
+    require_once "../php/sql.php";
+    $conn = new Sql ();
+    $conn->connect ();
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = 12;";
+    $result = mysqli_query ( $conn->db, $sql );
+    $images = array ();
+    while ( $row = mysqli_fetch_assoc ( $result ) ) {
+        $images [] = $row;
+    }
+    ?>
 
     <!-- Page Content -->
 	<div class="page-content container">
@@ -48,33 +62,34 @@
 					class="carousel slide carousel-three-by-two">
 					<!-- Indicators -->
 					<ol class="carousel-indicators">
-						<li data-target="#night-carousel" data-slide-to="0" class="active"></li>
-							<?php
-    for($i = 1; $i < 16; $i ++) {
-        ?>
-						<li data-target="#night-carousel"
-							data-slide-to="<?php echo $i; ?>"></li>
-        <?php
-    }
-    ?>
-					</ol>
+					<?php
+                    foreach ( $images as $num => $image ) {
+                        $class = "";
+                        if ($num == 0) {
+                            $class = " class='active'";
+                        }
+                        echo "<li data-target='#night-carousel' data-slide-to='$num'$class></li>";
+                    }
+                    ?>
+    				</ol>
 
 					<!-- Wrapper for slides -->
 					<div class="carousel-inner">
-						<div class="item active">
-							<div class="contain"
-								style="background-image: url('night/000.jpg');"></div>
-						</div>
 						<?php
-    for($i = 1; $i < 16; $i ++) {
-        ?>
-						<div class="item">
-							<div class="contain"
-								style="background-image: url('night/<?php echo str_pad($i, 3, "0", STR_PAD_LEFT); ?>.jpg');"></div>
-						</div>
-        <?php
-    }
-    ?>
+                        foreach ( $images as $num => $image ) {
+                            $active_class = "";
+                            if ($num == 0) {
+                                $active_class = " active";
+                            }
+                            echo "<div class='item$active_class'>";
+                            echo "    <div class='contain'";
+                            echo "        style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                            echo "    <div class='carousel-caption'>";
+                            echo "        <h2>" . $image ['caption'] . "</h2>";
+                            echo "    </div>";
+                            echo "</div>";
+                        }
+                        ?>
 					</div>
 
 					<!-- Controls -->
