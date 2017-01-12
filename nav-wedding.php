@@ -22,6 +22,7 @@
                 <li><a href="gallery.php?w=10">Engagements</a></li>
                 <li><a href="gallery.php?w=11">Weddings</a></li>
                 <li><a href="galleries.php?w=12">Night Photography</a></li>
+                <li><a href="galleries.php?w=37">Photobooth</a></li>
             </ul></li>
         <li><a href="#">Retouch</a></li>
         <li><a href="/about.php">About</a></li>
