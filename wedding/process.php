@@ -8,6 +8,23 @@
     ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
 
+    <?php
+    $rand = "";
+    if ($user->isAdmin ()) {
+        require_once '../php/strings.php';
+        $string = new Strings ();
+        $rand = "?" . $string->randomString ();
+        ?>
+    <link
+    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    rel="stylesheet">
+<link
+    href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
+    rel="stylesheet">
+    <?php
+    }
+    ?>
+    
 </head>
 
 <body>
@@ -36,7 +53,19 @@
 
 		<!-- Features Section -->
 		<div class="row">
-			<div class="col-lg-12">
+			<div class="col-xs-6">
+				<div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+					<img src="img/process-1.jpg<?php echo $rand; ?>" width="100%"
+						alt="Wedding Process">
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+					<img src="img/process-2.jpg<?php echo $rand; ?>" width="100%"
+						alt="Wedding Process">
+				</div>
+			</div>
+			<div class="col-lg-12" style="padding-top: 20px;">
 				<p>I would love the opportunity to work with you! I pride myself on
 					the customer service I provide to every single client. From your
 					first inquiry to product delivery, I will walk with you through the
@@ -95,6 +124,19 @@
     </div>
 	<!-- /.container -->
 
+    <?php
+    if ($user->isAdmin ()) {
+        ?>
+    <script src="/js/edit-image.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <?php
+    }
+    ?>
+    
 </body>
 
 </html>

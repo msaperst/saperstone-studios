@@ -147,12 +147,12 @@
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section='Bamboo Mounts'
+                <div section='Stand Out Frames'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Bamboo Mounts</span> <img
+                    <span class='preview-title'>Stand Out Frames</span> <img
                         class="img-responsive"
-                        src="img/bamboo-mount.jpg<?php echo $rand; ?>" width="100%"
-                        alt="Bamboo Mounts">
+                        src="img/stand-out-frames.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Stand Out Frames">
                     <div class="overlay">
                         <br />
                         <br />

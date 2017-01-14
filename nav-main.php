@@ -15,7 +15,7 @@
             <ul class="dropdown-menu">
                 <li><a href="/wedding/details.php">Details</a></li>
                 <li><a href="/wedding/gallery.php?w=8">Gallery</a></li>
-                <li><a href="#">Retouch</a></li>
+                <li><a href="/wedding/retouch.php">Retouch</a></li>
             </ul></li>
         <!--         <li class="dropdown"><a href="javascript:void(0);" -->
         <!--             class="dropdown-toggle" data-toggle="dropdown">Commercial<strong -->

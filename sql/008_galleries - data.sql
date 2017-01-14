@@ -37,7 +37,7 @@ INSERT IGNORE INTO `galleries` VALUES (29, 28, 'story-grid.jpg', 'Story Grids');
 INSERT IGNORE INTO `galleries` VALUES (30, 28, 'keepsake-album.jpg', 'Heirloom Albums');
 INSERT IGNORE INTO `galleries` VALUES (31, 28, 'acrylic-print.jpg', 'Acrylic Prints');
 INSERT IGNORE INTO `galleries` VALUES (32, 28, 'keepsake-box.jpg', 'Keepsake Boxes');
-INSERT IGNORE INTO `galleries` VALUES (33, 28, 'bamboo-mount.jpg', 'Bamboo Mounts');
+INSERT IGNORE INTO `galleries` VALUES (33, 28, 'stand-out-frame.jpg', 'Stand Out Frames');
 INSERT IGNORE INTO `galleries` VALUES (34, 28, 'canvas-print.jpg', 'Canvas Prints');
 INSERT IGNORE INTO `galleries` VALUES (35, 4, '6-month-studio.jpg', 'In Studio');
 INSERT IGNORE INTO `galleries` VALUES (36, 4, '6-month-location.jpg', 'On Location');

@@ -90,7 +90,7 @@
             <div class="col-lg-12">
                 <h2 class="page-header">Newborn</h2>
             </div>
-            <div class="col-xs-6 col-xs-12">
+            <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <img src="img/newborn-1.jpg<?php echo $rand; ?>" width="100%" alt="Newborn">
                 </div>
@@ -100,7 +100,7 @@
                     <img src="img/newborn-2.jpg<?php echo $rand; ?>" width="100%" alt="Newborn">
                 </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12" style="padding-top: 20px;">
                 <p>Newborns are best photographed during the first 10 days of life
                     to capture the sleepy stage. Be sure to schedule these sessions
                     well in advance as I only book a limited amount of newborns per
@@ -140,7 +140,7 @@
                     <img src="img/6-month-2.jpg<?php echo $rand; ?>" width="100%" alt="6 Month">
                 </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12" style="padding-top: 20px;">
                 <p>These sessions take place at 6-7 months, when your baby is able
                     to sit up unassisted. At this stage your baby will be smiling,
                     grabbing their toes, and showing off their sweet personality.</p>
@@ -176,7 +176,7 @@
                     <img src="img/1-year-2.jpg<?php echo $rand; ?>" width="100%" alt="1 Year">
                 </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12" style="padding-top: 20px;">
                 <p>So much fun! What better way to celebrate your little one’s first
                     birthday than letting them go to town on a sugary surprise? Your
                     baby will likely be crawling if not walking by this stage! Cake
@@ -207,7 +207,7 @@
                     <img src="img/family-2.jpg<?php echo $rand; ?>" width="100%" alt="Family">
                 </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12" style="padding-top: 20px;">
                 <p>When's the last time you updated your family portrait? Often the
                     answer I get goes something like this... 'My kids hate dressing up
                     and never smile for me so I just don't bother'. This makes me so
@@ -249,7 +249,7 @@
                     <img src="img/senior-1.jpg<?php echo $rand; ?>" width="100%" alt="Senior">
                 </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12" style="padding-top: 20px;">
                 <p>Congratulations on this new chapter in your life! Break out of
                     the typical senior portrait box and create a custom session that
                     fits you and your personality.</p>
