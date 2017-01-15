@@ -11,11 +11,10 @@ class User {
         $sql->disconnect ();
     }
     function isLoggedIn() {
-        if ($this->user_details == NULL) {
-            return false;
-        } else {
+        if ($this->user_details != NULL) {
             return true;
         }
+        return false;
     }
     function getId() {
         if ($this->user_details ['id']) {

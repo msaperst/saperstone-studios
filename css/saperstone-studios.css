@@ -627,7 +627,6 @@ a.plain {
 }
 
 img.thumb {
-    border: none;
     display: block;
     width: 90px;
     border: 2px transparent solid;
