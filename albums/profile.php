@@ -68,8 +68,8 @@ if (! $user->isLoggedIn ()) {
                         <label for="profile-current-password">Current Password:</label>
                     </div>
                     <div class="col-md-10">
-                        <input type="password" class="form-control" id="profile-current-password"
-                            placeholder="Current Password" /> <span
+                        <input type="password" class="form-control"
+                            id="profile-current-password" placeholder="Current Password" /> <span
                             class="glyphicon form-control-feedback"></span>
                         <div class="error" id="update-profile-current-password-message"></div>
                     </div>

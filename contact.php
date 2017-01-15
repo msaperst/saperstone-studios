@@ -1,3 +1,17 @@
+<?php
+session_name ( 'ssLogin' );
+// Starting the session
+
+session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
+// Making the cookie live for 2 weeks
+
+session_start ();
+// Start our session
+
+include_once "php/user.php";
+$user = new User ();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -83,7 +97,7 @@
                     <div class="control-group form-group">
                         <div class="controls">
                             <label>Full Name:</label> <input type="text" class="form-control"
-                                id="name" required
+                                id="name" required value="<?php echo $user->getName(); ?>"
                                 data-validation-required-message="Please enter your name.">
                             <p class="help-block"></p>
                         </div>
@@ -99,6 +113,7 @@
                         <div class="controls">
                             <label>Email Address:</label> <input type="email"
                                 class="form-control" id="email" required
+                                value="<?php echo $user->getEmail(); ?>"
                                 data-validation-required-message="Please enter your email address.">
                         </div>
                     </div>
