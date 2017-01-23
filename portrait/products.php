@@ -107,7 +107,7 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Heirloom Albums'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Keepsake Albums</span> <img
+                    <span class='preview-title'>Heirloom Albums</span> <img
                         class="img-responsive"
                         src="img/keepsake-album.jpg<?php echo $rand; ?>" width="100%"
                         alt="Heirloom Albums">

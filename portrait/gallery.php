@@ -41,6 +41,9 @@ if ($details ['parent'] != NULL) {
     $sql = "SELECT `title` FROM `galleries` WHERE id = " . $details ['parent'] . ";";
     $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
 }
+if ( $details ['title'] == 'Products' ) {
+    $parent = ucfirst( explode('/', $_SERVER['REQUEST_URI'])[0] );
+}
 ?>
 
 <!DOCTYPE html>

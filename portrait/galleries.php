@@ -33,6 +33,9 @@ $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($parent ['parent'] != NULL) {
     $sql = "SELECT * FROM `galleries` WHERE id = '" . $parent ['parent'] . "';";
     $grandparent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+} 
+if ( $parent ['title'] == 'Products' ) {
+    $grandparent = explode('/', $_SERVER['REQUEST_URI'])[0];
 }
 
 ?>
