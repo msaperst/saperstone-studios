@@ -35,7 +35,9 @@ if ($parent ['parent'] != NULL) {
     $grandparent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 } 
 if ( $parent ['title'] == 'Products' ) {
-    $grandparent = explode('/', $_SERVER['REQUEST_URI'])[1];
+    $urlParts = explode('/', $_SERVER['REQUEST_URI']);
+    echo $urlParts;
+    $grandparent = $urlParts[1];
 }
 
 ?>
