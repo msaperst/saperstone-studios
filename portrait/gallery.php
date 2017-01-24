@@ -42,7 +42,7 @@ if ($details ['parent'] != NULL) {
     $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
 }
 if ( $details ['title'] == 'Products' ) {
-    $parent = ucfirst( explode('/', $_SERVER['REQUEST_URI'])[0] );
+    $parent = ucfirst( explode('/', $_SERVER['REQUEST_URI'])[1] );
 }
 ?>
 
