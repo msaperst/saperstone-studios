@@ -36,7 +36,8 @@ if ($parent ['parent'] != NULL) {
 } 
 if ( $parent ['title'] == 'Products' ) {
     $urlParts = explode('/', $_SERVER['REQUEST_URI']);
-    echo $urlParts;
+    echo  $_SERVER['REQUEST_URI'];
+    print_r( $urlParts );
     $grandparent = $urlParts[1];
 }
 
