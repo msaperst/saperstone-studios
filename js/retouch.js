@@ -56,6 +56,10 @@ function createSlider(ele, instruct) {
         'max' : '100'
     });
     ele.after(slider);
+    
+    var comment = $('<p>');
+    comment.addClass('comment');
+    slider.after( comment );
 }
 
 function sliderSim(ele, before, after) {
@@ -91,7 +95,8 @@ function slider(ele, images) {
         var edit = $(this).attr('imgEdit');
         ele.find('#original img').attr({'src':orig}).css({'width':ele.width()});
         ele.find('#edit img').attr({'src':edit}).css({'width':ele.width()});
-        ele.next().val(0);
+        ele.parent().find('.slider').val(0);
+        ele.parent().find('.comment').html( $(this).attr('text') );
         
         $('img.thumb').css({
             'border' : '2px transparent solid'
@@ -133,6 +138,7 @@ function addSelector(ele, images) {
             'imgEdit' : images[i].edit,
             'imgWidth' : images[i].width,
             'imgHeight' : images[i].height,
+            'text' : images[i].text,
             'src' : images[i].thumb,
             'alt' : images[i].edit
         });
