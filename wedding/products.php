@@ -111,7 +111,7 @@
                         src="img/keepsake-album.jpg<?php echo $rand; ?>" width="100%"
                         alt="Heirloom Albums">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=40">See
+                        <br /> <br /> <br /> <a class="info" href="gallery.php?w=40">See
                             More</a>
                     </div>
                 </div>
