@@ -60,8 +60,8 @@ while( $gallery_info ['parent'] != NULL ) {
     $sql = "SELECT * FROM galleries WHERE id = '".$gallery_info['parent']."';";
     $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 }
-$location = str_replace ( " ", "-", $gallery_info ['title'] )."/$location/";
-$output_dir = "../img/$location/";
+$location = str_replace ( " ", "-", $gallery_info ['title'] )."/$location";
+$output_dir = "../img/$location";
 if (! is_dir ( $output_dir )) {
     mkdir ( $output_dir, 0755, true );
 }
@@ -101,7 +101,7 @@ if (isset ( $_FILES ["myfile"] )) {
             $size = getimagesize ( $output_dir . $fileName );
         }
         $response [$next_seq] = $fileName;
-        $sql = "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`) VALUES ('$id', '$fileName', '$next_seq', '', '/img/$location/$fileName', '" . $size [0] . "', '" . $size [1] . "');";
+        $sql = "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`) VALUES ('$id', '$fileName', '$next_seq', '', '/img/$location$fileName', '" . $size [0] . "', '" . $size [1] . "');";
         mysqli_query ( $conn->db, $sql );
         $next_seq ++;
     }
