@@ -92,18 +92,17 @@ if ($parent == 'Product') {
 					<li><a href="/">Home</a></li>
 					<li><a href="index.php"><?php echo $parent; ?>s</a></li>
                     <?php
-                    if ($details ['parent'] != NULL && $details ['title'] != 'Product' && $grandparent != 'Product') {
+                    if ($details ['parent'] != NULL && $details ['title'] != 'Product' && (! isset ( $grandparent ) || $grandparent != 'Product')) {
                         ?>
                         <li><a
 						href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
 					<li class='active'><?php echo $details['title']; ?></li>
                         <?php
-                    } elseif (isset( $grandparent ) && $grandparent == 'Product') {
+                    } elseif (isset ( $grandparent ) && $grandparent == 'Product') {
                         ?>
                     <li><a href='details.php'>Details</a></li>
 					<li><a href='products.php'>Products</a></li>
-					<li><a
-						href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
+					<li><a href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
 					<li class='active'><?php echo $details['title']; ?></li>
                         <?php
                     } elseif ($details ['parent'] != NULL && $details ['title'] == 'Product') {
