@@ -8,6 +8,7 @@
                 <li><a href="/portrait/details.php">Details</a></li>
                 <li><a href="/portrait/gallery.php?w=1">Gallery</a></li>
                 <li><a href="/portrait/retouch.php">Retouch</a></li>
+                <li><a href="/portrait/reviews.php?c=1">Raves</a></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Weddings<strong
@@ -16,6 +17,7 @@
                 <li><a href="/wedding/details.php">Details</a></li>
                 <li><a href="/wedding/gallery.php?w=8">Gallery</a></li>
                 <li><a href="/wedding/retouch.php">Retouch</a></li>
+                <li><a href="/wedding/reviews.php?c=2">Raves</a></li>
             </ul></li>
         <!--         <li class="dropdown"><a href="javascript:void(0);" -->
         <!--             class="dropdown-toggle" data-toggle="dropdown">Commercial<strong -->

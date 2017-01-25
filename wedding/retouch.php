@@ -34,7 +34,6 @@
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Weddings</a></li>
-                    <li><a href="details.php">Details</a></li>
                     <li class="active">Retouch</li>
                 </ol>
             </div>
