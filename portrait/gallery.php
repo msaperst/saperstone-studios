@@ -48,8 +48,6 @@ if ($parent == 'Product') {
     $sql = "SELECT `title` FROM `galleries` WHERE id =$parent;";
     $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
 }
-
-echo $grandparent;
 ?>
 
 <!DOCTYPE html>
