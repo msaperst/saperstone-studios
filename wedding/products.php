@@ -39,12 +39,12 @@
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center">Products & Investments</h1>
+                <h1 class="page-header text-center">Products & Investment</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Weddings</a></li>
                     <li><a href="details.php">Details</a></li>
-                    <li class="active">Products & Investments</li>
+                    <li class="active">Products & Investment</li>
                 </ol>
             </div>
         </div>

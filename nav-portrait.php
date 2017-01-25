@@ -9,7 +9,7 @@
             <ul class="dropdown-menu">
                 <li><a href="sessions.php">Session Information</a></li>
                 <li><a href="process.php">The Process</a></li>
-                <li><a href="products.php">Products and Investments</a></li>
+                <li><a href="products.php">Products and Investment</a></li>
                 <li><a href="what-to-wear.php">What to Wear</a></li>
                 <li><a href="studio.php">Home Studio</a></li>
                 <li><a href="faq.php">FAQs</a></li>
