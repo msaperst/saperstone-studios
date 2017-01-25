@@ -74,11 +74,11 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <script>
         var images = [];
-        images.push({ thumb:'/retouch/img/Avon_20141127_0092.jpg', orig:'/retouch/img/Avon_20141127_0092_o.jpg', edit:'/retouch/img/Avon_20141127_0092_e.jpg', width:'1140', height:'759', text:'When your adorable 2 year old isn\'t trusted with your 1 week old quite yet.' });
-        images.push({ thumb:'/retouch/img/Eliza_20160729_0008.jpg', orig:'/retouch/img/Eliza_20160729_0008_o.jpg', edit:'/retouch/img/Eliza_20160729_0008_e.jpg', width:'1140', height:'761', text:'Newborns are heavy!  Getting the right angle for both of these cuties required a bit of post retouch.' });
-        images.push({ thumb:'/retouch/img/Luke7mo_20160914_0055.jpg', orig:'/retouch/img/Luke7mo_20160914_0055_o.jpg', edit:'/retouch/img/Luke7mo_20160914_0055_e.jpg', width:'1140', height:'761', text:'Drool happens. Need I say more?' });
-        images.push({ thumb:'/retouch/img/VanderhoofMaternity_20160612_0117.jpg', orig:'/retouch/img/VanderhoofMaternity_20160612_0117_o.jpg', edit:'/retouch/img/VanderhoofMaternity_20160612_0117_e.jpg', width:'1140', height:'761', text:'When you have a gorgeous gown that needs to flow naturally but there\'s no breeze in sight.  Recruit the husband to fluff the dress and run!' });
-        slider($('#holder'),images);
+        images[0] = { thumb:'/retouch/img/Avon_20141127_0092.jpg', orig:'/retouch/img/Avon_20141127_0092_o.jpg', edit:'/retouch/img/Avon_20141127_0092_e.jpg', width:'1140', height:'759', text:'When your adorable 2 year old isn\'t trusted with your 1 week old quite yet.' };
+        images[1] = { thumb:'/retouch/img/Eliza_20160729_0008.jpg', orig:'/retouch/img/Eliza_20160729_0008_o.jpg', edit:'/retouch/img/Eliza_20160729_0008_e.jpg', width:'1140', height:'761', text:'Newborns are heavy!  Getting the right angle for both of these cuties required a bit of post retouch.' };
+        images[2] = { thumb:'/retouch/img/Luke7mo_20160914_0055.jpg', orig:'/retouch/img/Luke7mo_20160914_0055_o.jpg', edit:'/retouch/img/Luke7mo_20160914_0055_e.jpg', width:'1140', height:'761', text:'Drool happens. Need I say more?' };
+        images[3] = { thumb:'/retouch/img/VanderhoofMaternity_20160612_0117.jpg', orig:'/retouch/img/VanderhoofMaternity_20160612_0117_o.jpg', edit:'/retouch/img/VanderhoofMaternity_20160612_0117_e.jpg', width:'1140', height:'761', text:'When you have a gorgeous gown that needs to flow naturally but there\'s no breeze in sight.  Recruit the husband to fluff the dress and run!' };
+        var retouch = new Retouch( $('#holder'), images, true );
     </script>
 
 </body>

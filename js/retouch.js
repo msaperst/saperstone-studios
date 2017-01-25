@@ -1,26 +1,49 @@
-function createSlider(ele, instruct) {
+function Retouch(ele, images, instruct) {
+    var Retouch = this;
+
+    Retouch.ele = ele;
+    Retouch.images = images;
+    Retouch.instruct = instruct;
+
+    Retouch.createSlider();
+    Retouch.selector = Retouch.addSelector();
+
+    setInterval(function() {
+        Retouch.slide();
+    }, 50);
+
+    if (window.location.hash) {
+        var img = window.location.hash.substr(1);
+        Retouch.setSelect( Retouch.selector.find('img[hash='+img+']') );
+    }
+}
+
+Retouch.prototype.createSlider = function() {
     var protector = $('<img>');
     protector.addClass('protect');
     protector.attr({
         'src' : '/img/image.png',
         'alt' : 'placeholder'
     });
-    ele.append(protector);
+    this.ele.append(protector);
 
-    if (instruct) {
+    if (this.instruct) {
         var instructions = $('<span>');
         instructions.attr({
             'id' : 'instructions'
         });
         instructions.html('Select an Image then drag slider');
-        ele.before(instructions)
+        this.ele.before(instructions)
     }
-    
+
     var heighter = $('<div>');
-    heighter.attr({'id':'heighter'});
-    heighter.css({'margin-top':'0%'});
-    ele.append(heighter);
-    
+    heighter.attr({
+        'id' : 'heighter'
+    });
+    heighter.css({
+        'margin-top' : '0%'
+    });
+    this.ele.append(heighter);
 
     var original = $('<div>');
     original.addClass('images original');
@@ -32,7 +55,7 @@ function createSlider(ele, instruct) {
     });
     var origImg = $('<img>');
     original.append(origImg);
-    ele.append(original);
+    this.ele.append(original);
 
     var edit = $('<div>');
     edit.addClass('images edit');
@@ -44,7 +67,7 @@ function createSlider(ele, instruct) {
     });
     var editImg = $('<img>');
     edit.append(editImg);
-    ele.append(edit);
+    this.ele.append(edit);
 
     var slider = $('<input>');
     slider.addClass('slider');
@@ -55,60 +78,48 @@ function createSlider(ele, instruct) {
         'min' : '0',
         'max' : '100'
     });
-    ele.after(slider);
-    
+    this.ele.after(slider);
+
     var comment = $('<p>');
     comment.addClass('comment');
-    slider.after( comment );
+    slider.after(comment);
 }
 
-function sliderSim(ele, before, after) {
-    createSlider(ele, false);
+Retouch.prototype.setSelect = function(img) {
 
-    var width = after.width;
-    ele.width(width);
-    ele.next().width(width);
-    var height = after.height;
-    height = height / width * ele.outerWidth();
-    ele.height(height + $('span#instructions').outerHeight());
-
-    setInterval(function() {
-        slide(ele);
-    }, 50);
-}
-function slider(ele, images) {
-    createSlider(ele, true);
-
-    addSelector(ele, images);
-
-    setInterval(function() {
-        slide(ele);
-    }, 50);
-
-    $('img.thumb').click(function() {
-        var imgWidth = $(this).attr('imgWidth');
-        var imgHeight = $(this).attr('imgHeight');
-        var height = imgHeight/imgWidth*100;
-        ele.find('#heighter').css({'margin-top':height + '%'});
-        
-        var orig = $(this).attr('imgOrig');
-        var edit = $(this).attr('imgEdit');
-        ele.find('#original img').attr({'src':orig}).css({'width':ele.width()});
-        ele.find('#edit img').attr({'src':edit}).css({'width':ele.width()});
-        ele.parent().find('.slider').val(0);
-        ele.parent().find('.comment').html( $(this).attr('text') );
-        
-        $('img.thumb').css({
-            'border' : '2px transparent solid'
-        });
-        $(this).css({
-            'border' : '2px #9dcb3b solid'
-        });
-        slide(ele);
+    var imgWidth = img.attr('imgWidth');
+    var imgHeight = img.attr('imgHeight');
+    var height = imgHeight / imgWidth * 100;
+    this.ele.find('#heighter').css({
+        'margin-top' : height + '%'
     });
+
+    var orig = img.attr('imgOrig');
+    var edit = img.attr('imgEdit');
+    this.ele.find('#original img').attr({
+        'src' : orig
+    }).css({
+        'width' : this.ele.width()
+    });
+    this.ele.find('#edit img').attr({
+        'src' : edit
+    }).css({
+        'width' : this.ele.width()
+    });
+    this.ele.parent().find('.slider').val(0);
+    this.ele.parent().find('.comment').html(img.attr('text'));
+
+    this.selector.find('img.thumb').css({
+        'border' : '2px transparent solid'
+    });
+    img.css({
+        'border' : '2px #9dcb3b solid'
+    });
+    this.slide();
 }
 
-function addSelector(ele, images) {
+Retouch.prototype.addSelector = function() {
+    var Retouch = this;
 
     var selector = $('<div>');
     selector.addClass('col-md-12');
@@ -122,7 +133,9 @@ function addSelector(ele, images) {
         'white-space' : 'nowrap'
     });
 
-    for (var i = 0; i < images.length; i++) {
+    for (var i = 0; i < Retouch.images.length; i++) {
+        var image = Retouch.images[i];
+
         var cell = $('<div>');
         cell.addClass('col-lg-1');
         cell.css({
@@ -133,24 +146,29 @@ function addSelector(ele, images) {
         var cellImg = $('<img>');
         cellImg.addClass('thumb');
         cellImg.attr({
-            'id' : 'thumb' + i,
-            'imgOrig' : images[i].orig,
-            'imgEdit' : images[i].edit,
-            'imgWidth' : images[i].width,
-            'imgHeight' : images[i].height,
-            'text' : images[i].text,
-            'src' : images[i].thumb,
-            'alt' : images[i].edit
+            'hash' : i,
+            'imgOrig' : image.orig,
+            'imgEdit' : image.edit,
+            'imgWidth' : image.width,
+            'imgHeight' : image.height,
+            'text' : image.text,
+            'src' : image.thumb,
+            'alt' : image.edit
+        }).click(function(){
+            window.location.hash = $(this).attr('hash');
+            Retouch.setSelect($(this));
         });
-        
+
         cell.append(cellImg);
         row.append(cell);
     }
+
+    selector.append(row);
+    Retouch.ele.closest('[class^=col]').after(selector);
     
-    selector.append( row );
-    ele.closest('[class^=col]').after( selector );
+    return selector;
 }
 
-function slide(ele) {
-    $(ele).find('#edit').css('width', $(ele).next().val() + "%");
+Retouch.prototype.slide = function() {
+    this.ele.find('#edit').css('width', this.ele.next().val() + "%");
 }
