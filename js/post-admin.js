@@ -15,6 +15,10 @@ $(document).ready(function() {
         addImageArea();
     });
 
+    $('#preview-post').click(function() {
+        previewPost();
+    });
+    
     $('#save-post').click(function() {
         collectPost(savePost);
     });
@@ -215,6 +219,10 @@ function sortOptions() {
     $("#post-tags-select").empty().append( my_options );
     $("#post-tags-select option:nth-child(1)").after( $("#post-tags-select option[value=0]") );
     $("#post-tags-select").val(selected);
+}
+
+function previewPost() {
+    BootstrapDialog.alert('This functionality is coming soon!');
 }
 
 function collectPost(callback1,callback2) {

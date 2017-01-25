@@ -47,7 +47,7 @@
 
         <!-- Features Section -->
         <div class="row">
-        	<div class="col-xs-6">
+            <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <img src="img/details-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Details">

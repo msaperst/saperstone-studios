@@ -103,6 +103,9 @@ if (isset ( $_GET ['p'] )) {
                 <em class="fa fa-image"></em> Add Image Area
             </button>
             <br />
+            <button id="preview-post" type="button" class="btn btn-warning">
+                <em class="fa fa-search"></em> Preview Post
+            </button>
             <?php
             if (isset ( $post )) {
             ?>
