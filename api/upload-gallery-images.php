@@ -63,7 +63,7 @@ while( $gallery_info ['parent'] != NULL ) {
 $location = str_replace ( " ", "-", $gallery_info ['title'] )."/$location/";
 $output_dir = "../img/$location/";
 if (! is_dir ( $output_dir )) {
-    mkdir ( $output_dir, 755, true );
+    mkdir ( $output_dir, 0755, true );
 }
 
 if (isset ( $_FILES ["myfile"] )) {
@@ -92,9 +92,9 @@ if (isset ( $_FILES ["myfile"] )) {
     foreach ( $ret as $fileName ) {
         $size = getimagesize ( $output_dir . $fileName );
         if ($size [0] < 1200) {
-            echo json_encode ( "The image <b>$file</b> doesn't meet the minimum width requirements of 1200px" );
+            echo json_encode ( "The image <b>$fileName</b> doesn't meet the minimum width requirements of 1200px" );
             unlink ( $output_dir . $fileName );
-            exit ();
+            exit ( 1 );
         } else {
             system ( "mogrify -resize 900x900 \"$output_dir$fileName\"" );
             system ( "mogrify -density 72 \"$output_dir$fileName\"" );
