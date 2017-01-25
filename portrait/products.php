@@ -62,7 +62,7 @@
                     you with custom artwork of you and your family to cherish for
                     generations to come. I offer a variety of high quality,
                     professional products for you to choose from, including canvas,
-                    metal prints, keepsake albums, and yes – digital files.</p>
+                    metal prints, heirloom albums, and yes – digital files.</p>
                 <p>In today’s digital world, I know it is important for most people
                     to share and preserve images digitally via social media but I want
                     your images to have more longevity than the few days of 'likes' and

@@ -32,7 +32,7 @@ INSERT IGNORE INTO `galleries` VALUES (24, 11, 'wedding-fav.jpg', 'Favorites');
 INSERT IGNORE INTO `galleries` VALUES (25, 11, 'wedding-1.jpg', 'Wedding 1');
 INSERT IGNORE INTO `galleries` VALUES (26, 11, 'wedding-2.jpg', 'Wedding 2');
 INSERT IGNORE INTO `galleries` VALUES (27, 11, 'wedding-3.jpg', 'Wedding 3');
-INSERT IGNORE INTO `galleries` VALUES (28, NULL, NULL, 'Products');
+INSERT IGNORE INTO `galleries` VALUES (28, 1, NULL, 'Products');
 INSERT IGNORE INTO `galleries` VALUES (29, 28, 'story-grid.jpg', 'Story Grids');
 INSERT IGNORE INTO `galleries` VALUES (30, 28, 'keepsake-album.jpg', 'Heirloom Albums');
 INSERT IGNORE INTO `galleries` VALUES (31, 28, 'acrylic-print.jpg', 'Acrylic Prints');
@@ -42,7 +42,15 @@ INSERT IGNORE INTO `galleries` VALUES (34, 28, 'canvas-print.jpg', 'Canvas Print
 INSERT IGNORE INTO `galleries` VALUES (35, 4, '6-month-studio.jpg', 'In Studio');
 INSERT IGNORE INTO `galleries` VALUES (36, 4, '6-month-location.jpg', 'On Location');
 INSERT IGNORE INTO `galleries` VALUES (37, 8, 'photobooth.jpg', 'Photobooth');
-
+INSERT IGNORE INTO `galleries` VALUES (38, 8, NULL, 'Products'),
+INSERT IGNORE INTO `galleries` VALUES (39, 38, 'story-grid.jpg', 'Story Grids'),
+INSERT IGNORE INTO `galleries` VALUES (40, 38, 'keepsake-album.jpg', 'Heirloom Albums'),
+INSERT IGNORE INTO `galleries` VALUES (41, 38, 'acrylic-print.jpg', 'Acrylic Prints'),
+INSERT IGNORE INTO `galleries` VALUES (42, 38, 'keepsake-box.jpg', 'Keepsake Boxes'),
+INSERT IGNORE INTO `galleries` VALUES (43, 38, 'stand-out-frame.jpg', 'Stand Out Frames'),
+INSERT IGNORE INTO `galleries` VALUES (44, 38, 'canvas-print.jpg', 'Canvas Prints');
+INSERT IGNORE INTO `galleries` VALUES (45, 40, 'standard-albums.jpg', 'Standard Albums');
+INSERT IGNORE INTO `galleries` VALUES (46, 40, 'signature-albums.jpg', 'Signature Albums');
 
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;

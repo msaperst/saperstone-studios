@@ -68,7 +68,7 @@
                     you with options for custom artwork of you and your loved ones to
                     cherish for generations to come. I offer a variety of high quality,
                     professional products for you to choose from, including canvas,
-                    metal prints, keepsake albums, and yes – all digital files do come
+                    metal prints, heirloom albums, and yes – all digital files do come
                     on a USB for engagements and weddings.</p>
                 <p>In today’s digital world, I know it is important for most people
                     to share and preserve images digitally via social media but I want
@@ -98,7 +98,7 @@
                         src="img/story-grid.jpg<?php echo $rand; ?>" width="100%"
                         alt="Story Grids">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=29">See
+                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=39">See
                             More</a>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                         src="img/keepsake-album.jpg<?php echo $rand; ?>" width="100%"
                         alt="Heirloom Albums">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=30">See
+                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=40">See
                             More</a>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                         src="img/acrylic-print.jpg<?php echo $rand; ?>" width="100%"
                         alt="Acrylic Prints">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=31">See
+                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=41">See
                             More</a>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                         src="img/keepsake-box.jpg<?php echo $rand; ?>" width="100%"
                         alt="Keepsake Box">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=32">See
+                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=42">See
                             More</a>
                     </div>
                 </div>
@@ -150,7 +150,7 @@
                         src="img/stand-out-frames.jpg<?php echo $rand; ?>" width="100%"
                         alt="Stand Out Frames">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=33">See
+                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=43">See
                             More</a>
                     </div>
                 </div>
@@ -163,7 +163,7 @@
                         src="img/canvas-print.jpg<?php echo $rand; ?>" width="100%"
                         alt="Canvas Prints">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=34">See
+                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=44">See
                             More</a>
                     </div>
                 </div>
