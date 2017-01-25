@@ -46,7 +46,9 @@ if (isset ( $_GET ['c'] )) {
 <body>
 
     <?php
-    $nav = strtolower ( $details ['name'] );
+    if (isset ( $_GET ['c'] )) {
+        $nav = strtolower ( $details ['name'] );
+    }
     require_once "nav.php";
     ?>
 
