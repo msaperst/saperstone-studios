@@ -19,16 +19,6 @@
                 <li><a href="/wedding/retouch.php">Retouch</a></li>
                 <li><a href="/wedding/reviews.php?c=2">Raves</a></li>
             </ul></li>
-        <!--         <li class="dropdown"><a href="javascript:void(0);" -->
-        <!--             class="dropdown-toggle" data-toggle="dropdown">Commercial<strong -->
-        <!--                 class="caret"></strong></a> -->
-        <!--             <ul class="dropdown-menu"> -->
-        <!--                 <li><a href="portfolio-1-col.html">1 Column Portfolio</a></li> -->
-        <!--                 <li><a href="portfolio-2-col.html">2 Column Portfolio</a></li> -->
-        <!--                 <li><a href="portfolio-3-col.html">3 Column Portfolio</a></li> -->
-        <!--                 <li><a href="portfolio-4-col.html">4 Column Portfolio</a></li> -->
-        <!--                 <li><a href="portfolio-item.html">Single Portfolio Item</a></li> -->
-        <!--             </ul></li> -->
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Blog<strong
                 class="caret"></strong></a>
@@ -55,7 +45,6 @@
                 ?>
                 <li><a href="/about.php">About</a></li>
                 <li><a href="/leighAnn.php">Meet Leigh Ann</a></li>
-                <li><a href="/services.php">Services</a></li>
                 <li><a href="/reviews.php">Raves</a></li>
                 <li><a href="/contact.php">Contact</a></li>
             </ul></li>

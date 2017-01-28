@@ -97,7 +97,7 @@
                         class="img-responsive" src="img/session.jpg<?php echo $rand; ?>"
                         alt="Session Information">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="session.php">See
+                        <br /> <br /> <br /> <a class="info" href="sessions.php">See
                             More</a>
                     </div>
                 </div>

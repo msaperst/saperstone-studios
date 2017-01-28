@@ -6,8 +6,6 @@ API Tests
 Turn what to wear into a gallery?
 Test/Verify Gallery Migration
 Ordering of images in galleries
-Add images to Weddings Details Page
-Add images to Weddings Engagement Page
 Fix links in migrated blog posts
 Convert API calls into function calls - this can then be unit tests ;)
 Align two verticals as horizontal for slideshow
