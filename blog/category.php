@@ -6,7 +6,7 @@ if (! isset ( $_GET ['t'] )) {
     include "../errors/404.php";
     exit ();
 } else {
-    $category = $_GET ['t'];
+    $category = (int) $_GET ['t'];
 }
 
 require_once "../php/sql.php";
