@@ -6,7 +6,7 @@ $(document).ready(function() {
     });
 
     $("#sort-gallery-btn").click(function() {
-        sortGallery(getQueryVariable('w'));
+        sortGallery();
     });
 
     $("#save-gallery-btn").click(function() {
@@ -55,7 +55,7 @@ function deleteImage() {
     });
 }
 
-function sortGallery(id) {
+function sortGallery() {
     // fix the buttons
     $("#sort-gallery-btn").parent().hide();
     $("#save-gallery-btn").parent().show();
