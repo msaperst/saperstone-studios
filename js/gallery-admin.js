@@ -193,14 +193,20 @@ function editGallery(id) {
                                                 disableDialogButtons(dialogItself);
                                             },
                                             onSuccess : function(files, data, xhr, pd) {
-                                                setTimeout(function() {
+                                                data = JSON.parse(data);
+                                                if ($.isPlainObject(data)) {
                                                     pd.statusbar.remove();
-                                                }, 5000);
-                                                $.each(files, function(i, val) {
-                                                    total++;
-                                                    loaded = gallery.loadImages(1);
-                                                });
-
+                                                    $.each(files, function(i, val) {
+                                                        total++;
+                                                        loaded = gallery.loadImages(1);
+                                                    });
+                                                } else {
+                                                    pd.statusbar.parent().removeClass('ajax-file-upload-container');
+                                                    pd.statusbar.prepend("<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>");
+                                                    pd.statusbar.addClass('alert alert-danger');
+                                                    pd.progressDiv.hide();
+                                                    pd.filename.after( data );
+                                                }
                                             },
                                             afterUploadAll : function() {
                                                 setTimeout(function() {

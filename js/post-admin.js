@@ -68,8 +68,8 @@ $(document).ready(function() {
             },
             onSuccess : function(files, data, xhr, pd) {
                 data = JSON.parse(data);
-                pd.statusbar.remove();
                 if ($.isArray(data)) {
+                    pd.statusbar.remove();
                     $.each(files, function(key, value) {
                         var img = $("<img>");
                         img.attr({
@@ -87,8 +87,11 @@ $(document).ready(function() {
                         $('#post-preview-image').append(option);
                     });
                 } else {
-                    $('#post-image-holder').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-                    
+                    pd.statusbar.parent().removeClass('ajax-file-upload-container');
+                    pd.statusbar.prepend("<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>");
+                    pd.statusbar.addClass('alert alert-danger');
+                    pd.progressDiv.hide();
+                    pd.filename.after( data );
                 }
             },
             afterUploadAll : function() {
