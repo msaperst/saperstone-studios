@@ -117,8 +117,8 @@
             </div>
             <!-- Sidebar Column -->
             <div class="col-md-3">
-                <img src="/img/moment-to-memory.png"
-                    style="float: right; width: 150%;" />
+                <img class="sidebar-img" src="/img/moment-to-memory.png"
+                    style="float: right;" />
                 <ul class="list-inline social-buttons text-center social-padding">
                     <li><a target="_blank"
                         href="https://www.facebook.com/SaperstoneStudios"><em

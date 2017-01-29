@@ -117,10 +117,22 @@
             </div>
             <!-- Sidebar Column -->
             <div class="col-md-3">
-                Some content for smooshy! <br /> <br /> <br /> Some content for
-                smooshy! <br /> <br /> <br /> Some content for smooshy! <br /> <br />
-                <br /> Some content for smooshy! <br /> <br /> <br /> Some content
-                for smooshy!
+                <img class="sidebar-img" src="/img/moment-to-memory.png"
+                    style="float: right;" />
+                <ul class="list-inline social-buttons text-center social-padding">
+                    <li><a target="_blank"
+                        href="https://www.facebook.com/SaperstoneStudios"><em
+                            class="fa fa-facebook-square fa-2x"></em></a></li>
+                    <li><a target="_blank" href="http://instagram.com/lasaperstone"><em
+                            class="fa fa-instagram fa-2x"></em></a></li>
+                    <li><a target="_blank" href="https://twitter.com/LaSaperstone"><em
+                            class="fa fa-twitter-square fa-2x"></em></a></li>
+                    <li><a target="_blank" type="application/rss+xml" href="/blog.rss"><em
+                            class="fa fa-rss-square fa-2x"></em></a></li>
+                    <li><a target="_blank"
+                        href="https://plus.google.com/+SaperstoneStudios"><em
+                            class="fa fa-google-plus-square fa-2x"></em></a></li>
+                </ul>
             </div>
         </div>
 
