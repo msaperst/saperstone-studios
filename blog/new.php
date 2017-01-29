@@ -83,6 +83,7 @@ if (isset ( $_GET ['p'] )) {
 <link
     href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
     rel="stylesheet">
+	<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
 
@@ -105,6 +106,9 @@ if (isset ( $_GET ['p'] )) {
             <br />
             <button id="preview-post" type="button" class="btn btn-warning">
                 <em class="fa fa-search"></em> Preview Post
+            </button>
+            <button id="edit-post" type="button" class="btn btn-warning" style="display:none;">
+                <em class="fa fa-pencil-square-o"></em> Edit Post
             </button>
             <?php
             if (isset ( $post )) {

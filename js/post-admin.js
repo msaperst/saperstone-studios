@@ -15,6 +15,10 @@ $(document).ready(function() {
         addImageArea();
     });
 
+    $('#edit-post').click(function() {
+        editPost();
+    });
+
     $('#preview-post').click(function() {
         previewPost();
     });
@@ -48,62 +52,66 @@ $(document).ready(function() {
     });
 
     if ($('#post-image-holder').length) {
-        $('#post-image-holder').uploadFile({
-            url : "/api/upload-blog-images.php",
-            uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
-            multiple : true,
-            dragDrop : true,
-            uploadButtonLocation : $('#post-button-holder'),
-            uploadContainer : $('#post-button-holder'),
-            uploadButtonClass : "btn btn-default btn-info",
-            statusBarWidth : "auto",
-            dragdropWidth : "100%",
-            fileName : "myfile",
-            sequential : true,
-            sequentialCount : 5,
-            acceptFiles : "image/*",
-            uploadQueueOrder : "bottom",
-            onSubmit : function() {
-                $('.ajax-file-upload-container').show();
-            },
-            onSuccess : function(files, data, xhr, pd) {
-                data = JSON.parse(data);
-                if ($.isArray(data)) {
-                    pd.statusbar.remove();
-                    $.each(files, function(key, value) {
-                        var img = $("<img>");
-                        img.attr({
-                            id : "image-" + imageId++,
-                            src : "../tmp/" + value,
-                        });
-                        img.addClass('draggable');
-                        img.draggable();
-                        img.dblclick(function() {
-                            removeImage($(this));
-                        });
-                        $('#post-image-holder').append(img);
-                        var option = $('<option>');
-                        option.text(value)
-                        $('#post-preview-image').append(option);
-                    });
-                } else {
-                    pd.statusbar.parent().removeClass('ajax-file-upload-container');
-                    pd.statusbar.prepend("<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>");
-                    pd.statusbar.addClass('alert alert-danger');
-                    pd.progressDiv.hide();
-                    pd.filename.after(data);
-                }
-            },
-            afterUploadAll : function() {
-                setTimeout(function() {
-                    $('.ajax-file-upload-container').hide();
-                }, 5000);
-            },
-        });
-
-        $('#post-image-holder').height($(window).height() - $('#post-image-holder').offset().top - 70);
+        uploadForPost()
     }
 });
+
+function uploadForPost() {
+    $('#post-image-holder').uploadFile({
+        url : "/api/upload-blog-images.php",
+        uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
+        multiple : true,
+        dragDrop : true,
+        uploadButtonLocation : $('#post-button-holder'),
+        uploadContainer : $('#post-button-holder'),
+        uploadButtonClass : "btn btn-default btn-info",
+        statusBarWidth : "auto",
+        dragdropWidth : "100%",
+        fileName : "myfile",
+        sequential : true,
+        sequentialCount : 5,
+        acceptFiles : "image/*",
+        uploadQueueOrder : "bottom",
+        onSubmit : function() {
+            $('.ajax-file-upload-container').show();
+        },
+        onSuccess : function(files, data, xhr, pd) {
+            data = JSON.parse(data);
+            if ($.isArray(data)) {
+                pd.statusbar.remove();
+                $.each(files, function(key, value) {
+                    var img = $("<img>");
+                    img.attr({
+                        id : "image-" + imageId++,
+                        src : "../tmp/" + value,
+                    });
+                    img.addClass('draggable');
+                    img.draggable();
+                    img.dblclick(function() {
+                        removeImage($(this));
+                    });
+                    $('#post-image-holder').append(img);
+                    var option = $('<option>');
+                    option.text(value)
+                    $('#post-preview-image').append(option);
+                });
+            } else {
+                pd.statusbar.parent().removeClass('ajax-file-upload-container');
+                pd.statusbar.prepend("<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>");
+                pd.statusbar.addClass('alert alert-danger');
+                pd.progressDiv.hide();
+                pd.filename.after(data);
+            }
+        },
+        afterUploadAll : function() {
+            setTimeout(function() {
+                $('.ajax-file-upload-container').hide();
+            }, 5000);
+        },
+    });
+
+    $('#post-image-holder').height($(window).height() - $('#post-image-holder').offset().top - 70);
+}
 
 function newTag(ele) {
     BootstrapDialog
@@ -225,7 +233,143 @@ function sortOptions() {
 }
 
 function previewPost() {
-    BootstrapDialog.alert('This functionality is coming soon!');
+    // fix our buttons
+    $('#preview-post').hide();
+    $('#edit-post').show();
+
+    // setup preview for our preview image
+    $('#post-preview-image').hide();
+    $('#post-preview-holder').addClass('post hovereffect');
+    var titleSpan = $('<span>');
+    titleSpan.addClass('preview-title');
+    titleSpan.html($('#post-title-input').val());
+    titleSpan.css('z-index', '100');
+    $('#post-preview-holder').append(titleSpan);
+    var overlay = $('<div>');
+    overlay.addClass('overlay');
+    overlay.css('z-index', '95');
+    var link = $('<a>');
+    link.addClass('info no-border');
+    var icon = $('<em>');
+    icon.addClass('fa fa-search fa-2x');
+    link.append(icon);
+    overlay.append(link)
+    $('#post-preview-holder').append(overlay);
+
+    // setup our blog header information for preview
+    $('#post-title-input').hide();
+    var titleHeader = $('<h2>');
+    titleHeader.html($('#post-title-input').val());
+    titleHeader.addClass('text-center');
+    titleHeader.attr('id', 'post-title-preview');
+    $('#post-title-input').after(titleHeader);
+
+    $('#post-date-input').hide();
+    var dateSpan = $('<span>');
+    var date = new Date($('#post-date-input').val());
+    var options = {
+        year : "numeric",
+        month : "long",
+        day : "numeric"
+    };
+    dateSpan.html(date.toLocaleDateString("en-us", options));
+    dateSpan.attr('id', 'post-date-preview');
+    $('#post-date-input').after(dateSpan);
+
+    var facebookDiv = $('<div>');
+    facebookDiv.addClass('sm-preview col-md-4 text-center');
+    var facebookButton = $('<button>');
+    facebookButton.addClass('btn btn-xs btn-info');
+    facebookButton.css({
+        'background-color' : '#4267b2',
+        'border' : '#4267b2'
+    });
+    var facebookIcon = $('<em>');
+    facebookIcon.addClass('fa fa-thumbs-up');
+    facebookButton.append(facebookIcon).append(" Like <i>0</i>");
+    facebookDiv.append(facebookButton);
+    $('#post-likes').append(facebookDiv);
+
+    var twitterDiv = $('<div>');
+    twitterDiv.addClass('sm-preview col-md-4 text-center');
+    var twitterButton = $('<button>');
+    twitterButton.addClass('btn btn-xs btn-info');
+    var twitterIcon1 = $('<em>');
+    twitterIcon1.addClass('fa fa-twitter');
+    var twitterIcon2 = $('<em>');
+    twitterIcon2.addClass('fa fa-heart error');
+    twitterButton.append(twitterIcon1).append(" Like ").append(twitterIcon2);
+    twitterDiv.append(twitterButton);
+    $('#post-likes').append(twitterDiv);
+
+    var gplusDiv = $('<div>');
+    gplusDiv.addClass('sm-preview col-md-4 text-center');
+    var gplusButton = $('<button>');
+    gplusButton.addClass('btn btn-xs');
+    gplusButton.css({
+        'background-color' : 'transparent',
+        'border' : '1px grey solid'
+    });
+    var gplusIcon = $('<em>');
+    gplusIcon.addClass('fa fa-google-plus error');
+    gplusButton.append(gplusIcon).append("  <i>0</i>");
+    gplusDiv.append(gplusButton);
+    $('#post-likes').append(gplusDiv);
+
+    $('#post-tags-select').hide();
+    var tagsSpan = $('<span>');
+    tagsSpan.attr('id', 'post-tags-preview');
+    $('.selected-tag').each(function() {
+        $(this).hide();
+        var tagLink = $('<a>');
+        tagLink.html($(this).html());
+        tagsSpan.append(tagLink);
+        tagsSpan.append(", ");
+    });
+    $('#post-tags').append(tagsSpan);
+    
+    // setup our texts for previews
+    $('.blog-editable-text').each(function(){
+        $(this).show().html( $(this).summernote('code') );
+    });
+    $('.note-editor').each(function(){
+        $(this).hide();
+    });
+}
+
+function editPost() {
+    // fix our buttons
+    $('#preview-post').show();
+    $('#edit-post').hide();
+
+    // remove preview for our preview image
+    $('#post-preview-image').show();
+    $('#post-preview-holder').removeClass('post hovereffect');
+    $('#post-preview-holder .preview-title').remove();
+    $('#post-preview-holder .overlay').remove();
+
+    // cleanup our blog header information from preview
+    $('#post-title-input').show();
+    $('#post-title-preview').remove();
+
+    $('#post-date-input').show();
+    $('#post-date-preview').remove();
+
+    $('.sm-preview').remove();
+
+    $('#post-tags-select').show();
+    $('#post-tags-preview').remove();
+    $('.selected-tag').each(function() {
+        $(this).show();
+    });
+    
+    // fix our texts for editing
+    $('.blog-editable-text').each(function(){
+        $(this).hide();
+    });
+    $('.note-editor').each(function(){
+        $(this).show();
+    });
 }
 
 function collectPost(callback1, callback2) {
@@ -427,7 +571,7 @@ function schedulePost(post) {
                                         .append(
                                                 "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Scheduling your post.</div>");
                                 var $button = this; // 'this' here is a jQuery
-                                                    // object that
+                                // object that
                                 // wrapping the <button> DOM element.
                                 var modal = $button.closest('.modal-content');
                                 $button.spin();
