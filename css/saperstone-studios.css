@@ -393,6 +393,21 @@ footer {
     pointer-events: none;
 }
 
+.block-placeholder {
+  background: #DADADA;
+  position: relative;
+}
+
+.block-placeholder:after {
+  content: " ";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-bottom: 66%;
+  background-color: #FFF;
+}
+
 /* our query results formatting */
 .open {
     position: relative;

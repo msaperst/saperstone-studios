@@ -45,14 +45,22 @@ if (! $gallery_info ['id']) {
     exit ();
 }
 
-$title = "";
+$imgs;
 
-if (isset ( $_POST ['title'] )) {
-    $title = mysqli_real_escape_string ( $conn->db, $_POST ['title'] );
+if (isset ( $_POST ['imgs'] ) && is_array ( $_POST ['imgs'] )) {
+    $imgs = $_POST ['imgs'];
+} else {
+    echo "The images you passed in are in an invalid format";
+    $conn->disconnect ();
+    exit ();
 }
 
-$sql = "UPDATE galleries SET title='$title' WHERE id='$id';";
-mysqli_query ( $conn->db, $sql );
+for($x = 0; $x < sizeof ( $imgs ); $x ++) {
+    $img = $imgs [$x];
+    $sql = "UPDATE gallery_images SET sequence=" . $x . " WHERE id='" . $img ['id'] . "';";
+//     echo $sql;
+    mysqli_query ( $conn->db, $sql );
+}
 
 $conn->disconnect ();
 exit ();

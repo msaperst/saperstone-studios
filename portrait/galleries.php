@@ -112,6 +112,16 @@ if ($parent ['parent'] != NULL) {
                             class="btn btn-xs btn-warning">
                             <i class="fa fa-pencil-square-o"></i>
                         </button></li>
+                    <li class="no-before pull-right" style="padding-right:5px; display:none;" ><button
+                            type="button" id="save-gallery-btn"
+                            class="btn btn-xs btn-success">
+                            <i class="fa fa-floppy-o"></i>
+                        </button></li>
+                    <li class="no-before pull-right" style="padding-right:5px;" ><button
+                            type="button" id="sort-gallery-btn"
+                            class="btn btn-xs btn-info">
+                            <i class="fa fa-random"></i>
+                        </button></li>
                     <?php
                     }
                     ?>
@@ -121,7 +131,7 @@ if ($parent ['parent'] != NULL) {
         <!-- /.row -->
 
         <!-- Services Section -->
-        <div class="row">
+        <div class="row image-grid">
             <div id="col-0" class="col-md-3 col-sm-6 col-gallery"></div>
             <div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
             <div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
@@ -171,7 +181,7 @@ if ($parent ['parent'] != NULL) {
                                 $active_class = " active";
                             }
                             echo "<div class='item$active_class'>";
-                            echo "    <div class='contain' gallery-id='$what' image-id='" . $image ['sequence'] . "'";
+                            echo "    <div class='contain' gallery-id='$what' image-id='" . $image ['id'] . "' sequence='" . $image ['sequence'] . "'";
                             echo "        alt='" . $image ['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
                             echo "    <div class='carousel-caption'>";
                             echo "        <h2>" . $image ['caption'] . "</h2>";
@@ -220,7 +230,12 @@ if ($parent ['parent'] != NULL) {
         ?>
     <script src="/js/gallery-admin.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>
-    <?php
+	<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+		integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+		crossorigin="anonymous"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+	<?php
     }
     ?>
 

@@ -35,6 +35,10 @@ Gallery.prototype.loadImages = function(howMany) {
             // create our holding div
             var holder = $('<div>');
             holder.addClass('gallery hovereffect');
+            holder.attr({
+                'image-id' : v.id,
+                'sequence' : v.sequence
+            });
             var rect = shortest.obj[0].getBoundingClientRect();
             var width;
             // `width` is available for IE9+

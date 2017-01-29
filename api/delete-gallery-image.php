@@ -44,9 +44,9 @@ if (! $gallery_info ['id']) {
     exit ();
 }
 
-$sequence = "";
+$image = "";
 if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
-    $sequence = ( int ) $_POST ['image'];
+    $image = ( int ) $_POST ['image'];
 } else {
     if (! isset ( $_POST ['image'] )) {
         echo "Image id is required!";
@@ -60,15 +60,15 @@ if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
 }
 
 // delete our image from mysql table
-$sql = "SELECT location FROM gallery_images WHERE gallery='$gallery' AND sequence='$sequence';";
+$sql = "SELECT location FROM gallery_images WHERE id='$image';";
 $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-$sql = "DELETE FROM gallery_images WHERE gallery='$gallery' AND sequence='$sequence';";
+$sql = "DELETE FROM gallery_images WHERE id='$image';";
 mysqli_query ( $conn->db, $sql );
 
 // need to re-sequence images in mysql table
 $sql = "SET @seq:=-1;";
 mysqli_query ( $conn->db, $sql );
-$sql = " UPDATE gallery_images SET sequence=(@seq:=@seq+1) WHERE gallery='$gallery';";
+$sql = "UPDATE gallery_images SET sequence=(@seq:=@seq+1) WHERE gallery='$gallery' ORDER BY `sequence`;";
 mysqli_query ( $conn->db, $sql );
 
 // delete our image from the file system
