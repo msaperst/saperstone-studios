@@ -103,8 +103,8 @@
     <!-- /.container -->
 
     <?php
-if ($user->isAdmin ()) {
-    ?>
+    if ($user->isAdmin ()) {
+        ?>
         <script src="/js/edit-image.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>
     <script
@@ -112,8 +112,8 @@ if ($user->isAdmin ()) {
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <?php
-}
-?>
+    }
+    ?>
     
 </body>
 

@@ -205,7 +205,7 @@ function editGallery(id) {
                                                     pd.statusbar.prepend("<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>");
                                                     pd.statusbar.addClass('alert alert-danger');
                                                     pd.progressDiv.hide();
-                                                    pd.filename.after( data );
+                                                    pd.filename.after(data);
                                                 }
                                             },
                                             afterUploadAll : function() {

@@ -55,12 +55,12 @@ if (is_numeric ( $next_seq )) {
 }
 
 $location = "";
-while( $gallery_info ['parent'] != NULL ) {
+while ( $gallery_info ['parent'] != NULL ) {
     $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
-    $sql = "SELECT * FROM galleries WHERE id = '".$gallery_info['parent']."';";
+    $sql = "SELECT * FROM galleries WHERE id = '" . $gallery_info ['parent'] . "';";
     $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 }
-$location = str_replace ( " ", "-", $gallery_info ['title'] )."/$location";
+$location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
 $output_dir = "../img/$location";
 if (! is_dir ( $output_dir )) {
     mkdir ( $output_dir, 0755, true );

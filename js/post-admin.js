@@ -2,7 +2,7 @@ var imageId = 0;
 
 $(document).ready(function() {
     sortOptions();
-    
+
     $('#post-tags-select').change(function() {
         addTag($(this));
     });
@@ -18,36 +18,36 @@ $(document).ready(function() {
     $('#preview-post').click(function() {
         previewPost();
     });
-    
+
     $('#save-post').click(function() {
         collectPost(savePost);
     });
-    
+
     $('#update-post').click(function() {
         collectPost(updatePost);
     });
 
     $('#schedule-post').click(function() {
-        collectPost(savePost,schedulePost);
+        collectPost(savePost, schedulePost);
     });
-    
+
     $('#schedule-saved-post').click(function() {
-        collectPost(updatePost,schedulePost);
+        collectPost(updatePost, schedulePost);
     });
 
     $('#publish-post').click(function() {
-        collectPost(savePost,publishPost);
+        collectPost(savePost, publishPost);
     });
-    
+
     $('#publish-saved-post').click(function() {
-        collectPost(updatePost,publishPost);
+        collectPost(updatePost, publishPost);
     });
 
     $('#post-preview-image').change(function() {
         setPreview();
     });
 
-    if( $('#post-image-holder').length ) {
+    if ($('#post-image-holder').length) {
         $('#post-image-holder').uploadFile({
             url : "/api/upload-blog-images.php",
             uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
@@ -91,7 +91,7 @@ $(document).ready(function() {
                     pd.statusbar.prepend("<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>");
                     pd.statusbar.addClass('alert alert-danger');
                     pd.progressDiv.hide();
-                    pd.filename.after( data );
+                    pd.filename.after(data);
                 }
             },
             afterUploadAll : function() {
@@ -201,7 +201,7 @@ function removeTag(ele) {
     option.html(ele.text());
     $('#post-tags-select').append(option);
     ele.remove();
-    
+
     sortOptions();
 }
 
@@ -209,7 +209,7 @@ function sortOptions() {
     var my_options = $("#post-tags-select option");
     var selected = $("#post-tags-select").val();
 
-    my_options.sort(function(a,b) {
+    my_options.sort(function(a, b) {
         if (a.text > b.text) {
             return 1;
         }
@@ -218,9 +218,9 @@ function sortOptions() {
         }
         return 0
     });
-    
-    $("#post-tags-select").empty().append( my_options );
-    $("#post-tags-select option:nth-child(1)").after( $("#post-tags-select option[value=0]") );
+
+    $("#post-tags-select").empty().append(my_options);
+    $("#post-tags-select option:nth-child(1)").after($("#post-tags-select option[value=0]"));
     $("#post-tags-select").val(selected);
 }
 
@@ -228,17 +228,18 @@ function previewPost() {
     BootstrapDialog.alert('This functionality is coming soon!');
 }
 
-function collectPost(callback1,callback2) {
-    $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Saving your post.</div>");
-    $('.btn').each(function(){
+function collectPost(callback1, callback2) {
+    $('#post-title-input').closest('div').append(
+            "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Saving your post.</div>");
+    $('.btn').each(function() {
         $(this).prop("disabled", true);
     });
     if ($('#post-title-input').val() === "") {
         BootstrapDialog.alert("Please enter a title for your post");
-        $('.btn').each(function(){
+        $('.btn').each(function() {
             $(this).prop("disabled", false);
         });
-        $('#post-information-message').remove(); 
+        $('#post-information-message').remove();
         return;
     }
     var tags = [];
@@ -250,48 +251,52 @@ function collectPost(callback1,callback2) {
     preview.offset = $('#post-preview-holder img').css('top');
     if (!$('#post-preview-holder img').length) {
         BootstrapDialog.alert("Please select a preview image for your post");
-        $('.btn').each(function(){
+        $('.btn').each(function() {
             $(this).prop("disabled", false);
         });
-        $('#post-information-message').remove(); 
+        $('#post-information-message').remove();
         return;
     }
     var content = {};
     var group = 0;
-    $('#post-content>li').each(function() {
-        var elements = {};
-        elements.group = ++group;
-        if ($(this).hasClass('blog-editable-text')) {
-            elements.type = "text";
-            elements.text = $(this).summernote('code');
-        } else if ($(this).hasClass('blog-editable-images')) {
-            elements.type = "images";
-            elements.imgs = [];
-            $('img', this).each(function() {
-                var img = {};
-                img.location = $(this).attr('src');
-                img.top = $(this).css('top');
-                img.left = $(this).css('left');
-                img.width = $(this).css('width');
-                img.height = $(this).css('height');
-                elements.imgs.push(img);
-            });
-        } else {
-            $('#post-title-input').closest('div').append(
-                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your new blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-            $('#post-information-message').remove(); 
-        }
-        content[group] = elements;
-    });
+    $('#post-content>li')
+            .each(
+                    function() {
+                        var elements = {};
+                        elements.group = ++group;
+                        if ($(this).hasClass('blog-editable-text')) {
+                            elements.type = "text";
+                            elements.text = $(this).summernote('code');
+                        } else if ($(this).hasClass('blog-editable-images')) {
+                            elements.type = "images";
+                            elements.imgs = [];
+                            $('img', this).each(function() {
+                                var img = {};
+                                img.location = $(this).attr('src');
+                                img.top = $(this).css('top');
+                                img.left = $(this).css('left');
+                                img.width = $(this).css('width');
+                                img.height = $(this).css('height');
+                                elements.imgs.push(img);
+                            });
+                        } else {
+                            $('#post-title-input')
+                                    .closest('div')
+                                    .append(
+                                            "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your new blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                            $('#post-information-message').remove();
+                        }
+                        content[group] = elements;
+                    });
     if (tags.length === 0) {
         BootstrapDialog.confirm("You didn't enter any tags. Are you sure you want to save this post?", function(result) {
             if (result) {
                 callback1(tags, preview, content, callback2);
             } else {
-                $('.btn').each(function(){
+                $('.btn').each(function() {
                     $(this).prop("disabled", false);
                 });
-                $('#post-information-message').remove(); 
+                $('#post-information-message').remove();
             }
         });
     } else {
@@ -300,153 +305,217 @@ function collectPost(callback1,callback2) {
 }
 
 function savePost(tags, preview, content, callback) {
-    $.post("/api/create-blog-post.php", {
-        title : $('#post-title-input').val(),
-        date : $('#post-date-input').val(),
-        tags : tags,
-        preview : preview,
-        content : content,
-    }).done(function(data) {
-        if ($.isNumeric(data) && data !== '0') {
-            $('#post-information-message').remove();
-            $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been saved.</div>");
-            if ($.isFunction(callback)) {
-                $('#post-information-message').remove();
-                $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while your post is finished processing.</div>");
-                callback(data);
-            } else {
-                window.location.href = "/blog/post.php?p=" + data
-            }
-        } else if (data === '0') {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-            $('#post-information-message').remove();
-        } else {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-            $('#post-information-message').remove();
-        }
-    }).fail(function() {
-        $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        $('#post-information-message').remove();
-    }).always(function() {
-        $('.btn').each(function(){
-            $(this).prop("disabled", false);
-        });
-    });
+    $
+            .post("/api/create-blog-post.php", {
+                title : $('#post-title-input').val(),
+                date : $('#post-date-input').val(),
+                tags : tags,
+                preview : preview,
+                content : content,
+            })
+            .done(
+                    function(data) {
+                        if ($.isNumeric(data) && data !== '0') {
+                            $('#post-information-message').remove();
+                            $('#post-title-input')
+                                    .closest('div')
+                                    .append(
+                                            "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been saved.</div>");
+                            if ($.isFunction(callback)) {
+                                $('#post-information-message').remove();
+                                $('#post-title-input')
+                                        .closest('div')
+                                        .append(
+                                                "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while your post is finished processing.</div>");
+                                callback(data);
+                            } else {
+                                window.location.href = "/blog/post.php?p=" + data
+                            }
+                        } else if (data === '0') {
+                            $('#post-title-input')
+                                    .closest('div')
+                                    .append(
+                                            "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                            $('#post-information-message').remove();
+                        } else {
+                            $('#post-title-input').closest('div').append(
+                                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                            $('#post-information-message').remove();
+                        }
+                    })
+            .fail(
+                    function() {
+                        $('#post-title-input')
+                                .closest('div')
+                                .append(
+                                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                        $('#post-information-message').remove();
+                    }).always(function() {
+                $('.btn').each(function() {
+                    $(this).prop("disabled", false);
+                });
+            });
 }
 
 function updatePost(tags, preview, content, callback) {
-    $.post("/api/update-blog-post.php", {
-        post : $('#post').attr('post-id'),
-        title : $('#post-title-input').val(),
-        date : $('#post-date-input').val(),
-        tags : tags,
-        preview : preview,
-        content : content,
-    }).done(function(data) {
-        if (data === "") {
-            $('#post-information-message').remove();
-            $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been saved.</div>");
-            if ($.isFunction(callback)) {
-                $('#post-information-message').remove();
-                $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while your post is finished processing.</div>");
-                callback($('#post').attr('post-id'));
-            } else {
-                window.location.href = "/blog/post.php?p=" + $('#post').attr('post-id');
-            }
-        } else {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-            $('#post-information-message').remove();
-        }
-    }).fail(function() {
-        $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        $('#post-information-message').remove();
-    }).always(function() {
-        $('.btn').each(function(){
-            $(this).prop("disabled", false);
-        });
-    });
+    $
+            .post("/api/update-blog-post.php", {
+                post : $('#post').attr('post-id'),
+                title : $('#post-title-input').val(),
+                date : $('#post-date-input').val(),
+                tags : tags,
+                preview : preview,
+                content : content,
+            })
+            .done(
+                    function(data) {
+                        if (data === "") {
+                            $('#post-information-message').remove();
+                            $('#post-title-input')
+                                    .closest('div')
+                                    .append(
+                                            "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been saved.</div>");
+                            if ($.isFunction(callback)) {
+                                $('#post-information-message').remove();
+                                $('#post-title-input')
+                                        .closest('div')
+                                        .append(
+                                                "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while your post is finished processing.</div>");
+                                callback($('#post').attr('post-id'));
+                            } else {
+                                window.location.href = "/blog/post.php?p=" + $('#post').attr('post-id');
+                            }
+                        } else {
+                            $('#post-title-input').closest('div').append(
+                                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                            $('#post-information-message').remove();
+                        }
+                    })
+            .fail(
+                    function() {
+                        $('#post-title-input')
+                                .closest('div')
+                                .append(
+                                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                        $('#post-information-message').remove();
+                    }).always(function() {
+                $('.btn').each(function() {
+                    $(this).prop("disabled", false);
+                });
+            });
 }
 
 function schedulePost(post) {
-    $('.btn').each(function(){
+    $('.btn').each(function() {
         $(this).prop("disabled", true);
     });
-    BootstrapDialog.show({
-        draggable : true,
-        title : 'Select A Time',
-        message : 'When do you want to schedule this post to be published' +
-                '<input id="post-publish-date" class="form-control" type="date"/>' + 
-                '<input id="post-publish-time" class="form-control" type="time"/>',
-        buttons : [ {
-            icon : 'glyphicon glyphicon-time',
-            label : ' Schedule',
-            cssClass : 'btn-success',
-            action : function(dialogItself) {
-                $('#post-information-message').remove();
-                $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Scheduling your post.</div>");
-                var $button = this; // 'this' here is a jQuery object that
-                                    // wrapping the <button> DOM element.
-                var modal = $button.closest('.modal-content');
-                $button.spin();
-                dialogItself.enableButtons(false);
-                dialogItself.setClosable(false);
-                // send our update
-                $.post("/api/schedule-blog-post.php", {
-                    post : post,
-                    date : $('#post-publish-date').val(),
-                    time : $('#post-publish-time').val()
-                }).done(function(data) {
-                    if (data === "") {
-                        dialogItself.close();
-                        $('#post-information-message').remove();
-                        $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been scheduled.</div>");
-                        window.location.href = "/blog/post.php?p=" + post
-                    } else {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-                    }
-                }).fail(function() {
-                    modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while scheduling your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                }).always(function() {
-                    $('.btn').each(function(){
-                        $(this).prop("disabled", false);
-                    });
-                    $button.stopSpin();
-                    dialogItself.enableButtons(true);
-                    dialogItself.setClosable(true);
-                });
-            }
-        }, {
-            label : 'Close',
-            action : function(dialogItself) {
-                dialogItself.close();
-            }
-        } ]
-    });
+    BootstrapDialog
+            .show({
+                draggable : true,
+                title : 'Select A Time',
+                message : 'When do you want to schedule this post to be published' + '<input id="post-publish-date" class="form-control" type="date"/>'
+                        + '<input id="post-publish-time" class="form-control" type="time"/>',
+                buttons : [
+                        {
+                            icon : 'glyphicon glyphicon-time',
+                            label : ' Schedule',
+                            cssClass : 'btn-success',
+                            action : function(dialogItself) {
+                                $('#post-information-message').remove();
+                                $('#post-title-input')
+                                        .closest('div')
+                                        .append(
+                                                "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Scheduling your post.</div>");
+                                var $button = this; // 'this' here is a jQuery
+                                                    // object that
+                                // wrapping the <button> DOM element.
+                                var modal = $button.closest('.modal-content');
+                                $button.spin();
+                                dialogItself.enableButtons(false);
+                                dialogItself.setClosable(false);
+                                // send our update
+                                $
+                                        .post("/api/schedule-blog-post.php", {
+                                            post : post,
+                                            date : $('#post-publish-date').val(),
+                                            time : $('#post-publish-time').val()
+                                        })
+                                        .done(
+                                                function(data) {
+                                                    if (data === "") {
+                                                        dialogItself.close();
+                                                        $('#post-information-message').remove();
+                                                        $('#post-title-input')
+                                                                .closest('div')
+                                                                .append(
+                                                                        "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been scheduled.</div>");
+                                                        window.location.href = "/blog/post.php?p=" + post
+                                                    } else {
+                                                        modal.find('.bootstrap-dialog-body').append(
+                                                                "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data
+                                                                        + "</div>");
+                                                    }
+                                                })
+                                        .fail(
+                                                function() {
+                                                    modal
+                                                            .find('.bootstrap-dialog-body')
+                                                            .append(
+                                                                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while scheduling your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                                                }).always(function() {
+                                            $('.btn').each(function() {
+                                                $(this).prop("disabled", false);
+                                            });
+                                            $button.stopSpin();
+                                            dialogItself.enableButtons(true);
+                                            dialogItself.setClosable(true);
+                                        });
+                            }
+                        }, {
+                            label : 'Close',
+                            action : function(dialogItself) {
+                                dialogItself.close();
+                            }
+                        } ]
+            });
 }
 
 function publishPost(post) {
     $('#post-information-message').remove();
-    $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Publishing your post.</div>");
-    $('.btn').each(function(){
+    $('#post-title-input').closest('div').append(
+            "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Publishing your post.</div>");
+    $('.btn').each(function() {
         $(this).prop("disabled", true);
     });
-    $.post("/api/publish-blog-post.php", {
-        post : post
-    }).done(function(data) {
-        if (data === "") {
-            $('#post-information-message').remove();
-            $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been published.</div>");
-            window.location.href = "/blog/post.php?p=" + post
-        } else {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-        }
-    }).fail(function() {
-        $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while publishing your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-    }).always(function() {
-        $('.btn').each(function(){
-            $(this).prop("disabled", false);
-        });
-    });
+    $
+            .post("/api/publish-blog-post.php", {
+                post : post
+            })
+            .done(
+                    function(data) {
+                        if (data === "") {
+                            $('#post-information-message').remove();
+                            $('#post-title-input')
+                                    .closest('div')
+                                    .append(
+                                            "<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been published.</div>");
+                            window.location.href = "/blog/post.php?p=" + post
+                        } else {
+                            $('#post-title-input').closest('div').append(
+                                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                        }
+                    })
+            .fail(
+                    function() {
+                        $('#post-title-input')
+                                .closest('div')
+                                .append(
+                                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while publishing your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                    }).always(function() {
+                $('.btn').each(function() {
+                    $(this).prop("disabled", false);
+                });
+            });
 }
 
 function setPreview() {
