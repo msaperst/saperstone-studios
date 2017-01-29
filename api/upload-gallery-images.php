@@ -91,12 +91,16 @@ if (isset ( $_FILES ["myfile"] )) {
     $response = array ();
     foreach ( $ret as $fileName ) {
         $size = getimagesize ( $output_dir . $fileName );
-        if ($size [0] < 1200) {
-            echo json_encode ( "This image doesn't meet the minimum width requirements of 1200px" );
+        if ($size [0] < 900) {
+            echo json_encode ( "This image doesn't meet the minimum width requirements of 900px" );
+            unlink ( $output_dir . $fileName );
+            exit ( 1 );
+        } elseif ($size [1] < 600) {
+            echo json_encode ( "This image doesn't meet the minimum height requirements of 600px" );
             unlink ( $output_dir . $fileName );
             exit ( 1 );
         } else {
-            system ( "mogrify -resize 900x900 \"$output_dir$fileName\"" );
+            system ( "mogrify -resize 900x600 \"$output_dir$fileName\"" );
             system ( "mogrify -density 72 \"$output_dir$fileName\"" );
             $size = getimagesize ( $output_dir . $fileName );
         }
