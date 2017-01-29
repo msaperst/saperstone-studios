@@ -74,7 +74,7 @@ blockquote p {
 }
 
 .sidebar-img {
-	width: 150%;
+    width: 150%;
 }
 @media ( max-width :767px) {
     .sidebar-img {
