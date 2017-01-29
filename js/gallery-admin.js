@@ -181,7 +181,7 @@ function editGallery(id) {
                                             dragdropWidth : "100%",
                                             fileName : "myfile",
                                             sequential : true,
-                                            sequentialCount : 5,
+                                            sequentialCount : 1,
                                             acceptFiles : "image/*",
                                             uploadQueueOrder : "bottom",
                                             formData : {

@@ -34,7 +34,7 @@ if ($parent ['parent'] != NULL) {
     $sql = "SELECT * FROM `galleries` WHERE id = '" . $parent ['parent'] . "';";
     $grandparent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 }
-if ($grandparent ['title'] == "Product") {
+if (isset( $grandparent ) && $grandparent ['title'] == "Product") {
     $sql = "SELECT `title` FROM `galleries` WHERE id = " . $grandparent ['parent'] . ";";
     $greatgrandparent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
 }
