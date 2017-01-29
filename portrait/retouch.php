@@ -14,6 +14,9 @@
     <link
     href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
     rel="stylesheet">
+<link
+    href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
+    rel="stylesheet">
     <?php
     }
     ?>
@@ -50,8 +53,8 @@
                 <p class='error'>NEED SOME BASIC RETOUCH TEST.</p>
             </div>
         </div>
-        
-                <!-- Products Section -->
+
+        <!-- Products Section -->
         <div class="row" style='padding-top: 30px'>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Retouch'
@@ -61,9 +64,8 @@
                         src="img/portrait-retouch.jpg<?php echo $rand; ?>" width="100%"
                         alt="Retouch">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="portrait-retouch.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="portrait-retouch.php">See
+                            More</a>
                     </div>
                 </div>
             </div>
@@ -75,9 +77,8 @@
                         src="img/restoration.jpg<?php echo $rand; ?>" width="100%"
                         alt="Restoration">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="restoration.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="restoration.php">See
+                            More</a>
                     </div>
                 </div>
             </div>
@@ -89,9 +90,8 @@
                         src="img/manipulation.jpg<?php echo $rand; ?>" width="100%"
                         alt="Manipulation">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="manipulation.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="manipulation.php">See
+                            More</a>
                     </div>
                 </div>
             </div>
@@ -102,9 +102,19 @@
     </div>
     <!-- /.container -->
 
+    <?php
+if ($user->isAdmin ()) {
+    ?>
+        <script src="/js/edit-image.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
-
+    <?php
+}
+?>
+    
 </body>
 
 </html>
