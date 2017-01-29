@@ -81,7 +81,7 @@ function saveGallery(id) {
         img.height = $(this).position().top;
         imgs.push(img);
     });
-    imgs.sort(function sortGallery(a, b) {
+    imgs.sort(function(a, b) {
         if (a.height === b.height) {
             var x = a.col.toLowerCase(), y = b.col.toLowerCase();
 
@@ -94,23 +94,29 @@ function saveGallery(id) {
     }
 
     // save our updates
-    $.post("/api/update-gallery-order.php", {
-        id : id,
-        imgs : imgs,
-    }).done(function(data) {
-        if (data == "") {
-            $(".image-grid").sortable("destroy");
-            // fix the buttons
-            $("#sort-gallery-btn").parent().show();
-            $("#save-gallery-btn").parent().hide();
-        } else {
-            $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-        }
-    }).fail(function() {
-        $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while saving your new gallery order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-    }).always(function() {
-        $.unblockUI();
-    });
+    $
+            .post("/api/update-gallery-order.php", {
+                id : id,
+                imgs : imgs,
+            })
+            .done(function(data) {
+                if (data === "") {
+                    $(".image-grid").sortable("destroy");
+                    // fix the buttons
+                    $("#sort-gallery-btn").parent().show();
+                    $("#save-gallery-btn").parent().hide();
+                } else {
+                    $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                }
+            })
+            .fail(
+                    function() {
+                        $('.breadcrumb')
+                                .after(
+                                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while saving your new gallery order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                    }).always(function() {
+                $.unblockUI();
+            });
 }
 
 function editGallery(id) {
