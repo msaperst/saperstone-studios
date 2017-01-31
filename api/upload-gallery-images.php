@@ -75,7 +75,11 @@ if (isset ( $_FILES ["myfile"] )) {
     // single file
     if (! is_array ( $_FILES ["myfile"] ["name"] )) {
         $fileName = $_FILES ["myfile"] ["name"];
-        move_uploaded_file ( $_FILES ["myfile"] ["tmp_name"], $output_dir . $fileName );
+        $status = move_uploaded_file ( $_FILES ["myfile"] ["tmp_name"], $output_dir . $fileName );
+        if (! $status) {
+            echo json_encode ( "Some issue occurred saving the file" . print_r ( $_FILES ["myfile"] ) );
+            exit ( 1 );
+        }
         $ret [] = $fileName;
         // Multiple files, file[]
     } else {
@@ -92,11 +96,11 @@ if (isset ( $_FILES ["myfile"] )) {
     foreach ( $ret as $fileName ) {
         $size = getimagesize ( $output_dir . $fileName );
         if ($size [0] < 900) {
-            echo json_encode ( "This image doesn't meet the minimum width requirements of 900px" );
+            echo json_encode ( "This image doesn't meet the minimum width requirements of 900px<br/>The image is " . $size [0] . " x " . $size [1] );
             unlink ( $output_dir . $fileName );
             exit ( 1 );
         } elseif ($size [1] < 600) {
-            echo json_encode ( "This image doesn't meet the minimum height requirements of 600px" );
+            echo json_encode ( "This image doesn't meet the minimum height requirements of 600px<br/>The image is " . $size [0] . " x " . $size [1] );
             unlink ( $output_dir . $fileName );
             exit ( 1 );
         } else {
