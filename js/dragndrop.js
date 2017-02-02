@@ -23,10 +23,6 @@ function DragNDrop(elementBuilderString, imageBuilderString, imagePlaceString,
     showGhost = showGhostBool;
 }
 
-/*
- * TODO add in list/bullet features add in push left or right get icons here:
- * http://www.iconarchive.com/show/farm-fresh-icons-by-fatcow.37.html
- */
 // add a new textarea
 function addTextArea(text) {
     if (text === undefined) {
@@ -144,6 +140,7 @@ function addImageArea(images) {
 }
 
 function makeSortable() {
+    var moveTo;
     $(elementBuilder).sortable({
         handle : '.panel-heading',
         start: function( event, ui ) {
