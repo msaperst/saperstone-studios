@@ -52,5 +52,7 @@ INSERT IGNORE INTO `galleries` VALUES (44, 38, 'canvas-print.jpg', 'Canvas Print
 INSERT IGNORE INTO `galleries` VALUES (45, 40, 'standard-albums.jpg', 'Standard Albums');
 INSERT IGNORE INTO `galleries` VALUES (46, 40, 'signature-albums.jpg', 'Signature Albums');
 INSERT IGNORE INTO `galleries` VALUES (47, 40, 'engagement-book.jpg', 'Engagement Book');
+INSERT IGNORE INTO `galleries` VALUES (48, 5, '1year-studio.jpg', 'Studio Sessions');
+INSERT IGNORE INTO `galleries` VALUES (49, 5, '1year-locaion.jpg', 'On Location');
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
