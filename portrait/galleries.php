@@ -143,6 +143,18 @@ if (isset( $grandparent ) && $grandparent ['title'] == "Product") {
             </div>
         </div>
         <!-- /.row -->
+        
+        <?php
+        if( $details['comment'] != NULL ) {
+        ?>
+        <div class="row">
+            <div class="col-lg-12">
+            	<p><?php echo $details['comment']; ?></p>
+            </div>
+        </div>
+        <?php
+        }
+        ?>
 
         <!-- Services Section -->
         <div class="row image-grid">

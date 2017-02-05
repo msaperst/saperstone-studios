@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `galleries` (
   `parent` int(11) NULL DEFAULT NULL,
   `image` varchar(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `comment` TEXT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `gallery_id` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
