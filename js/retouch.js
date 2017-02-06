@@ -71,6 +71,7 @@ Retouch.prototype.createSlider = function() {
     edit.append(editImg);
     this.ele.append(edit);
 
+    var container = $('<div>');
     var slider = $('<input>');
     slider.addClass('slider');
     slider.attr({
@@ -80,11 +81,13 @@ Retouch.prototype.createSlider = function() {
         'min' : '0',
         'max' : '100'
     });
-    this.ele.after(slider);
+    container.append(slider);
 
     var comment = $('<p>');
     comment.addClass('comment');
-    slider.after(comment);
+    container.append(comment);
+    
+    this.ele.after(container);
 
     return slider;
 }
@@ -181,5 +184,5 @@ Retouch.prototype.addSelector = function() {
 }
 
 Retouch.prototype.slide = function() {
-    this.ele.find('#edit').css('width', this.ele.next().val() + "%");
+    this.ele.find('#edit').width(this.slider.val() + "%");
 }
