@@ -61,26 +61,34 @@
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/maternity-1.jpg<?php echo $rand; ?>" width="100%" alt="Maternity">
+                    <img src="img/maternity-1.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Maternity">
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/maternity-2.jpg<?php echo $rand; ?>" width="100%" alt="Maternity">
+                    <img src="img/maternity-2.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Maternity">
                 </div>
             </div>
             <div class="col-xs-12" style="padding-top: 20px;">
-                <p>Be sure to document your pregnancy with a maternity session.
-                    Every pregnancy is unique so the exact timing of your session will
-                    vary. Generally the best time is between 30 and 34 weeks. We want
-                    you to be showing but also comfortable. If you're expecting twins
-                    then schedule earlier!</p>
+                <p>Newborns are best photographed during the first 14 days of life
+                    to capture the sleepy stage. Be sure to schedule these sessions
+                    before your third trimester if possible as I only book a limited
+                    amount of newborns per week to allow for flexibility with your due
+                    date. Upon booking, we'll pencil in your newborns due date and
+                    schedule your session upon their arrival.</p>
+                <p>
+                    Newborn Sessions take place either at <a href='galleries.php?w=14'>your
+                        home</a> or <a href='galleries.php?w=15'>my studio</a> in Fairfax,
+                    VA. You'll have full access to an array of beautiful props,
+                    blankets and accessories to customize your newborns session. More
+                    information about newborn shoots can be found <a
+                        href='newborn-faq.php'>here</a>.
                 <ul>
-                    <li>Portraits of you and your significant other. Siblings welcome!</li>
-                    <li>1 hour session at your home or on site location in Northern
-                        VA/DC metro area</li>
-                    <li>50+ fully edited images for viewing at your image review
-                        session</li>
+                    <li>Portraits of you and your newborn</li>
+                    <li>2-3 hour session</li>
+                    <li>50+ fully edited images for viewing at your review session</li>
                 </ul>
                 <p>
                     <a href='galleries.php?w=2'>See More</a>
@@ -92,12 +100,14 @@
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/newborn-1.jpg<?php echo $rand; ?>" width="100%" alt="Newborn">
+                    <img src="img/newborn-1.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Newborn">
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/newborn-2.jpg<?php echo $rand; ?>" width="100%" alt="Newborn">
+                    <img src="img/newborn-2.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Newborn">
                 </div>
             </div>
             <div class="col-xs-12" style="padding-top: 20px;">
@@ -128,20 +138,22 @@
             </div>
 
             <div class="col-lg-12">
-                <h2 class="page-header">Sitting up - 6 Months</h2>
+                <h2 class="page-header">Sitting up - 6 to 8 Months</h2>
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/6-month-1.jpg<?php echo $rand; ?>" width="100%" alt="6 Month">
+                    <img src="img/6-month-1.jpg<?php echo $rand; ?>" width="100%"
+                        alt="6 Month">
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/6-month-2.jpg<?php echo $rand; ?>" width="100%" alt="6 Month">
+                    <img src="img/6-month-2.jpg<?php echo $rand; ?>" width="100%"
+                        alt="6 Month">
                 </div>
             </div>
             <div class="col-xs-12" style="padding-top: 20px;">
-                <p>These sessions take place at 6-7 months, when your baby is able
+                <p>These sessions take place at 6-8 months, when your baby is able
                     to sit up unassisted. At this stage your baby will be smiling,
                     grabbing their toes, and showing off their sweet personality.</p>
 
@@ -168,12 +180,14 @@
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/1-year-1.jpg<?php echo $rand; ?>" width="100%" alt="1 Year">
+                    <img src="img/1-year-1.jpg<?php echo $rand; ?>" width="100%"
+                        alt="1 Year">
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/1-year-2.jpg<?php echo $rand; ?>" width="100%" alt="1 Year">
+                    <img src="img/1-year-2.jpg<?php echo $rand; ?>" width="100%"
+                        alt="1 Year">
                 </div>
             </div>
             <div class="col-xs-12" style="padding-top: 20px;">
@@ -190,7 +204,7 @@
                         include 2-3 sibling/family portraits</li>
                 </ul>
                 <p>
-                    <a href='galleries.php?w=5'>See More</a>
+                    <a href='gallery.php?w=5'>See More</a>
                 </p>
             </div>
 
@@ -199,12 +213,14 @@
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/family-1.jpg<?php echo $rand; ?>" width="100%" alt="Family">
+                    <img src="img/family-1.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Family">
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/family-2.jpg<?php echo $rand; ?>" width="100%" alt="Family">
+                    <img src="img/family-2.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Family">
                 </div>
             </div>
             <div class="col-xs-12" style="padding-top: 20px;">
@@ -241,12 +257,14 @@
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/senior-2.jpg<?php echo $rand; ?>" width="100%" alt="Senior">
+                    <img src="img/senior-2.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Senior">
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img src="img/senior-1.jpg<?php echo $rand; ?>" width="100%" alt="Senior">
+                    <img src="img/senior-1.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Senior">
                 </div>
             </div>
             <div class="col-xs-12" style="padding-top: 20px;">

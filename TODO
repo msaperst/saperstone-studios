@@ -15,3 +15,8 @@ Convert old credentials into user accounts
 Migrate accounts
 Allow dragging and dropping of text area to breakup images in blog
 categories page allow multiple 't', and link weddings to engagement and weddings
+Create /Client/index page for logging in and forwarding to Albums page
+When logged in, create tabs for favorites of all users on albums, so that admins can see them all
+Fix color of LA's face
+Write ToS
+Write Privacy Policy 

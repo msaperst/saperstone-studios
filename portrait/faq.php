@@ -87,25 +87,23 @@
                 <p>
                     When I'm close to completing your images I will reach out and
                     schedule a time for you to visit my <a href="studio.php">home
-                        studio</a> in Fairfax, VA.
+                        studio</a> in Fairfax, VA (within 2-3 weeks of your session date).
                 </p>
-                <p>A typical session will have approx 100 images of you and your
+                <p>A typical session will have approx. 50-100 images of you and your
                     loved ones to go through. I've found through the years that my
                     clients were overwhelmed with just being sent a web gallery link
                     and would delay making any decisions, therefore not enjoying their
-                    images as soon as possible. I remove that stress factor by giving
+                    images to their full extent. I remove that stress factor by giving
                     you personalized service at your image review where I help you flag
                     your favorite images in person. We're able to pull up multiple
                     similar poses side by side and zoom in on images to make your
                     selection process as smooth as possible.</p>
                 <p>
-                    You'll select your 5 images that come with your session at this
-                    time and we'll go though each <a href="products.php">product
-                        choice</a> in person. We take as much time as needed to answer all
-                    of your questions, and make sure that when you leave, you feel
-                    completely confident in your order. While I recommend getting
-                    prints for your walls that generations to come will enjoy, no
-                    additional purchases are required. On average, my clients invest
+                    We'll review all the art <a href='products.php'>product</a> options
+                    to find what makes the most sense for your style and home. I'll
+                    answer any questions you may have and make sure that when you
+                    leave, you feel completely confident in your order. No minimum
+                    purchases are required but on average, my clients invest
                     $800-$1,200 on their custom portraits.
                 </p>
             </div>
@@ -123,7 +121,10 @@
                     wall helps the application resize the image accordingly. It makes
                     customizing a cluster of images a breeze and it's fun to visualize
                     exactly what your wall will look like.</p>
-                <p>Have questions about newborn sessions in particular?  Check out that FAQ <a href='newborn-faq.php'>here</a>.</p>
+                <p>
+                    Have questions about newborn sessions in particular? Check out that
+                    FAQ <a href='newborn-faq.php'>here</a>.
+                </p>
             </div>
         </div>
         <!-- /.row -->

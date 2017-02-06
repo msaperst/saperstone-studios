@@ -61,9 +61,10 @@
                 <p>
                     We're located in Fairfax, VA over by Fair Lakes Shopping Center.
                     While most of my sessions are photographed on location, I do
-                    accomodate <a class='error' href='#'>business headshot's</a> and <a
-                        href='newborn-faq.php'>newborn sessions</a> at my home studio
-                    location.
+                    accomodate business headshot's and <a href='gallery.php?w=1'>children
+                        1 and younger</a> at my home studio location. Come visit me but
+                    please be sure to <a href='/contact.php'>book an appointment</a>
+                    first!
                 </p>
             </div>
         </div>

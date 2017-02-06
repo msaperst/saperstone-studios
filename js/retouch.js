@@ -1,3 +1,5 @@
+var maxHeight = 550;
+
 function Retouch(ele, images, instruct) {
     var Retouch = this;
 
@@ -5,7 +7,7 @@ function Retouch(ele, images, instruct) {
     Retouch.images = images;
     Retouch.instruct = instruct;
 
-    Retouch.createSlider();
+    Retouch.slider = Retouch.createSlider();
     Retouch.selector = Retouch.addSelector();
 
     setInterval(function() {
@@ -14,7 +16,7 @@ function Retouch(ele, images, instruct) {
 
     if (window.location.hash) {
         var img = window.location.hash.substr(1);
-        Retouch.setSelect( Retouch.selector.find('img[hash='+img+']') );
+        Retouch.setSelect(Retouch.selector.find('img[hash=' + img + ']'));
     }
 }
 
@@ -28,7 +30,7 @@ Retouch.prototype.createSlider = function() {
     this.ele.append(protector);
 
     if (this.instruct) {
-        var instructions = $('<span>');
+        var instructions = $('<div>');
         instructions.attr({
             'id' : 'instructions'
         });
@@ -83,30 +85,39 @@ Retouch.prototype.createSlider = function() {
     var comment = $('<p>');
     comment.addClass('comment');
     slider.after(comment);
+
+    return slider;
 }
 
 Retouch.prototype.setSelect = function(img) {
 
     var imgWidth = img.attr('imgWidth');
     var imgHeight = img.attr('imgHeight');
-    var height = imgHeight / imgWidth * 100;
+    var heightP = imgHeight / imgWidth * 100;
+
     this.ele.find('#heighter').css({
-        'margin-top' : height + '%'
+        'margin-top' : heightP + '%'
     });
+
+    var width = this.ele.parent().width();
+    var height = width * imgHeight / imgWidth;
+    // if our height is too big to fit on the page
+    if (height > maxHeight) {
+        width = maxHeight * imgWidth / imgHeight;
+        console.log("Too Tall!");
+    }
+    this.ele.width(width);
+    this.slider.width(width);
 
     var orig = img.attr('imgOrig');
     var edit = img.attr('imgEdit');
     this.ele.find('#original img').attr({
         'src' : orig
-    }).css({
-        'width' : this.ele.width()
-    });
+    }).width(width);
     this.ele.find('#edit img').attr({
         'src' : edit
-    }).css({
-        'width' : this.ele.width()
-    });
-    this.ele.parent().find('.slider').val(0);
+    }).width(width);
+    this.slider.val(0);
     this.ele.parent().find('.comment').html(img.attr('text'));
 
     this.selector.find('img.thumb').css({
@@ -154,7 +165,7 @@ Retouch.prototype.addSelector = function() {
             'text' : image.text,
             'src' : image.thumb,
             'alt' : image.edit
-        }).click(function(){
+        }).click(function() {
             window.location.hash = $(this).attr('hash');
             Retouch.setSelect($(this));
         });
@@ -165,7 +176,7 @@ Retouch.prototype.addSelector = function() {
 
     selector.append(row);
     Retouch.ele.closest('[class^=col]').after(selector);
-    
+
     return selector;
 }
 

@@ -149,7 +149,7 @@ if (isset( $grandparent ) && $grandparent ['title'] == "Product") {
         ?>
         <div class="row">
             <div class="col-lg-12">
-            	<p><?php echo $details['comment']; ?></p>
+                <p><?php echo $details['comment']; ?></p>
             </div>
         </div>
         <?php

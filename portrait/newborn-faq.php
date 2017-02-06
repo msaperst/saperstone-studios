@@ -82,17 +82,17 @@
                 <h2 class="page-header">Where will the session be?</h2>
             </div>
             <div class="col-md-12">
-                <p>There are two options
-                
-                
-                <h4 class="page-header">Your Home</h4>
-                <p>I can include all of those personal elements into the photographs
-                    including the nursery. An additional $50 charge is applied for
-                    newborn session at your home vs my studio space.</p>
-                <h4 class="page-header">My Home Studio</h4>
-                <p>Ensures you have access to all my blankets and props instead of a
-                    selected amount. I do still encourage you to bring personal items
-                    from home to add a unique look to your session.</p>
+                <p>There are two options:
+                    <ul>
+                        <li><strong>Your Home</strong>: I can include all of those personal
+                            elements into the photographs including the nursery. An additional
+                            $50 charge is applied for newborn session at your home vs my
+                            studio space.</li>
+                        <li><strong>My Home Studio</strong>: Ensures you have access to all
+                            my blankets and props instead of a selected amount. I do still
+                            encourage you to bring personal items from home to add a unique
+                            look to your session.</li>
+                    </ul>
                 </p>
             </div>
         </div>
