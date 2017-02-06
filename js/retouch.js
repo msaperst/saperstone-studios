@@ -107,7 +107,6 @@ Retouch.prototype.setSelect = function(img) {
     // if our height is too big to fit on the page
     if (height > maxHeight) {
         width = maxHeight * imgWidth / imgHeight;
-        console.log("Too Tall!");
     }
     this.ele.width(width);
     this.slider.width(width);
