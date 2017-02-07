@@ -12,7 +12,7 @@ include_once "php/user.php";
 $user = new User ();
 
 if ($user->isLoggedIn ()) {
-    header ( "Location: /albums/profile.php" );
+    header ( "Location: /user/profile.php" );
     exit ();
 }
 

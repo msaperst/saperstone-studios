@@ -113,7 +113,7 @@ footer {
                     <li><a href="/">Home</a></li>
                     <?php
                     if ($user->isLoggedIn ()) {
-                        echo "<li><a href=\"/albums/index.php\">Albums</a></li>";
+                        echo "<li><a href=\"index.php\">Albums</a></li>";
                     }
                     ?>
                     <li class="active"><?php echo $album_info['name']; ?></li>

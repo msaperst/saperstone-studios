@@ -44,11 +44,11 @@
             class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->getUser (); ?><strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="/albums/users.php">Manage Users</a></li>
-                <li><a href="/albums/index.php">Manage Albums</a></li>
-                <li><a href="/albums/products.php">Manage Products</a></li>
-                <li><a href="/albums/usage.php">View Usage</a></li>
-                <li><a href="/albums/profile.php">Manage Profile</a></li>
+                <li><a href="/user/users.php">Manage Users</a></li>
+                <li><a href="/user/index.php">Manage Albums</a></li>
+                <li><a href="/user/products.php">Manage Products</a></li>
+                <li><a href="/user/usage.php">View Usage</a></li>
+                <li><a href="/user/profile.php">Manage Profile</a></li>
                 <li><a id='logout-button' href="javascript:void(0);"><em
                         class="fa fa-sign-out"></em> Logout</a></li>
             </ul></li>
@@ -59,8 +59,8 @@
             class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->getUser (); ?><strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="/albums/index.php">View Albums</a></li>
-                <li><a href="/albums/profile.php">Manage Profile</a></li>
+                <li><a href="/user/index.php">View Albums</a></li>
+                <li><a href="/user/profile.php">Manage Profile</a></li>
                 <li><a id='logout-button' href="javascript:void(0);"><em
                         class="fa fa-sign-out"></em> Logout</a></li>
             </ul></li>
