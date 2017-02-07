@@ -15,7 +15,6 @@ CREATE TABLE IF NOT EXISTS `album_images` (
   `height` int(11) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
---  UNIQUE KEY `unique_index` (`album`,`sequence`)
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
