@@ -81,7 +81,7 @@ if (isset ( $_GET ['p'] )) {
     href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
     rel="stylesheet">
 <link
-    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    href="/css/uploadfile.css"
     rel="stylesheet">
     <link href="/css/hover-effect.css" rel="stylesheet">
 

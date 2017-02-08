@@ -53,7 +53,7 @@ if (isset( $grandparent ) && $grandparent ['title'] == "Product") {
     if ($user->isAdmin ()) {
         ?>
     <link
-    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    href="/css/uploadfile.css"
     rel="stylesheet">
     <?php
     }

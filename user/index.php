@@ -29,7 +29,7 @@ if (! $user->isLoggedIn ()) {
     href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
     rel="stylesheet">
 <link
-    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    href="/css/uploadfile.css"
     rel="stylesheet">
 
 </head>

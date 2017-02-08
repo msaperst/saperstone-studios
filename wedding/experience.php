@@ -14,7 +14,7 @@
         $rand = "?" . $string->randomString ();
         ?>
     <link
-    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    href="/css/uploadfile.css"
     rel="stylesheet">
 <link
     href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"

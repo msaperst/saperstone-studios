@@ -76,7 +76,7 @@ if (! $user->isAdmin ()) {
     <?php require_once "../header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
 <link
-    href="http://hayageek.github.io/jQuery-Upload-File/4.0.10/uploadfile.css"
+    href="/css/uploadfile.css"
     rel="stylesheet">
 <style>
 footer {
