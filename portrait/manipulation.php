@@ -37,7 +37,7 @@
         <!-- Portraits Retouch -->
         <div class="row" style="margin-top: 30px;">
             <div class="col-lg-12">
-                <p class='error'>Below are some examples of when a little retouch TLC goes a long
+                <p class='error hidden'>Below are some examples of when a little retouch TLC goes a long
                     way when it comes to making your images perfect. Most of the time,
                     you won't even realize this behind the scenes magic has even
                     happened by the time you see your images. If you would like any
