@@ -49,12 +49,31 @@ if (! $album_info ['name']) {
 }
 
 // determine what the user can download
-$sql = "SELECT album_images.* FROM download_rights LEFT JOIN album_images ON download_rights.album = album_images.album AND download_rights.image = album_images.sequence WHERE download_rights.user = '" . $user->getId () . "' AND download_rights.album = '$album';";
-$result = mysqli_query ( $conn->db, $sql );
 $downloadable = array ();
+$sql = "SELECT * FROM `download_rights` WHERE `user` = '".$user->getId ()."';";
+$result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $downloadable [] = $r;
+    if ( $r ['album'] == "*" ) {
+        $sql = "SELECT * FROM album_images";
+        $sesult = mysqli_query ( $conn->db, $sql );
+        while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+            $downloadable [] = $s;
+        }
+    } elseif ( $r ['image'] == "*" ) {
+        $sql = "SELECT * FROM album_images WHERE album = ".$r['album'].";";
+        $sesult = mysqli_query ( $conn->db, $sql );
+        while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+            $downloadable [] = $s;
+        }
+    } else {
+        $sql = "SELECT * FROM album_images WHERE album = ".$r['album']." AND sequence = ".$r['image'].";";
+        $sesult = mysqli_query ( $conn->db, $sql );
+        while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+            $downloadable [] = $s;
+        }
+    }
 }
+$downloadable = array_unique( $downloadable, SORT_REGULAR );
 
 // determine what the user wants to download
 if ($what == "all") {
