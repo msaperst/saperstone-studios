@@ -67,7 +67,7 @@ if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
 $hash = md5 ( "$username-$password" );
 $sql = "INSERT INTO `users` (`id`, `usr`, `pass`, `firstName`, `lastName`, `email`, `hash`) VALUES ($id, '$username', '$password', '$firstName', '$lastName', '$email', '$hash');";
 mysqli_query ( $conn->db, $sql );
-$sql = "DELETE FROM `old_users` WHERE `id` = 5;";
+$sql = "DELETE FROM `old_users` WHERE `id` = $id;";
 mysqli_query ( $conn->db, $sql );
 
 // need to auto-login
