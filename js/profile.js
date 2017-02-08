@@ -123,31 +123,36 @@ function updateProfile() {
         url = "/api/update-profile.php";
     }
 
-    $.post(url, {
-        username : $('#profile-username').val(),
-        firstName : $('#profile-firstname').val(),
-        lastName : $('#profile-lastname').val(),
-        curPass : $('#profile-current-password').val().length ? md5($('#profile-current-password').val()) : "",
-        password : $('#profile-password').val().length ? md5($('#profile-password').val()) : "",
-        email : $('#profile-email').val()
-    }).done(function(data) {
-        if (data !== "") {
-            $('#update-profile-message').append(
-                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-        } else {
-            $('#update-profile-message')
-                    .append(
-                            "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your profile information was successfully updated.</div>");
-            if (!$('#profile-current-password').length) {
-                location.reload();
-            }
-        }
-    }).fail(function() {
-        $('#update-profile-message')
-                .append(
-                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your album users.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-    }).always(function() {
-        $("#update-profile").prop("disabled", false);
-        $("#update-profile em").addClass('fa fa-floppy-o').removeClass('glyphicon glyphicon-asterisk icon-spin');
-    });
+    $
+            .post(url, {
+                username : $('#profile-username').val(),
+                firstName : $('#profile-firstname').val(),
+                lastName : $('#profile-lastname').val(),
+                curPass : $('#profile-current-password').length ? md5($('#profile-current-password').val()) : "",
+                password : $('#profile-password').val().length ? md5($('#profile-password').val()) : "",
+                email : $('#profile-email').val()
+            })
+            .done(
+                    function(data) {
+                        if (data !== "") {
+                            $('#update-profile-message').append(
+                                    "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                        } else {
+                            $('#update-profile-message')
+                                    .append(
+                                            "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your profile information was successfully updated.</div>");
+                            if (!$('#profile-current-password').length) {
+                                location.reload();
+                            }
+                        }
+                    })
+            .fail(
+                    function() {
+                        $('#update-profile-message')
+                                .append(
+                                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your album users.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                    }).always(function() {
+                $("#update-profile").prop("disabled", false);
+                $("#update-profile em").addClass('fa fa-floppy-o').removeClass('glyphicon glyphicon-asterisk icon-spin');
+            });
 }
