@@ -9,7 +9,7 @@ Fix album delete to use ID
 Convert API calls into function calls - this can then be unit tests ;)
 Align two verticals as horizontal for slideshow
 Allow dragging and dropping of text area to breakup images in blog
-categories page allow multiple 't', and link weddings to engagement and weddings
+* categories page allow multiple 't', and link weddings to engagement and weddings
 * When logged in, create tabs for favorites of all users on albums, so that admins can see them all
 Fix color of LA's face
-* Write Privacy Policy 
+Setup view as user mode
