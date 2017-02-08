@@ -19,7 +19,7 @@ if (isset ( $_GET ['searchTerm'] )) {
     exit ();
 }
 
-$sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE `title` LIKE '%$search%' AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog` DESC LIMIT $start,$howMany;";
+$sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog` DESC LIMIT $start,$howMany;";
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     $sql = "SELECT * FROM `blog_details` WHERE `id` = '" . $r ['blog'] . "';";

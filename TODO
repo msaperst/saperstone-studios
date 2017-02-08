@@ -4,19 +4,14 @@ Unit Tests
 API Tests
 
 Turn what to wear into a gallery?
-Test/Verify Gallery Migration
 Unable to delete multiple images from gallery/album
 Fix album delete to use ID
-Fix links in migrated blog posts
+* Fix links in migrated blog posts
 Convert API calls into function calls - this can then be unit tests ;)
 Align two verticals as horizontal for slideshow
-Setup Apache2 settings
-Convert old credentials into user accounts
-Migrate accounts
 Allow dragging and dropping of text area to breakup images in blog
 categories page allow multiple 't', and link weddings to engagement and weddings
-When logged in, create tabs for favorites of all users on albums, so that admins can see them all
+* When logged in, create tabs for favorites of all users on albums, so that admins can see them all
 Fix color of LA's face
-Write ToS
-Write Privacy Policy 
-remove tests from packaged files
+* Write ToS
+* Write Privacy Policy 

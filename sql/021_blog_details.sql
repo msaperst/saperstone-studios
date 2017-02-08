@@ -7,6 +7,7 @@
 CREATE TABLE IF NOT EXISTS `blog_details` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
+  `safe_title` varchar(255) NULL,
   `date` date NOT NULL,
   `preview` varchar(255) NOT NULL,
   `offset` int(11) NOT NULL,

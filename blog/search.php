@@ -29,7 +29,7 @@ if (! isset ( $_GET ['s'] )) {
     require_once "../php/sql.php";
     $conn = new Sql ();
     $conn->connect ();
-    $sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE `title` LIKE '%$search%' UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog`;";
+    $sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog`;";
     $result = mysqli_query ( $conn->db, $sql );
     $posts = array ();
     while ( $row = mysqli_fetch_assoc ( $result ) ) {
