@@ -48,9 +48,9 @@ for directory in "../albums/"*; do
             size=`echo $file_info | cut -d ' ' -f 3`
             width=`echo $size | cut -d 'x' -f 1`
             height=`echo $size | cut -d 'x' -f 2`
-            location=${file:2}
+            fileLocation=${file:2}
             title=${file##*/}
-            echo "INSERT INTO \`album_images\` (\`album\`, \`title\`, \`sequence\`, \`caption\`, \`location\`, \`width\`, \`height\`, \`active\`) SELECT id, '$title', '$count', '', '$location', '$width', '$height', '1' FROM albums WHERE name='$name';"
+            echo "INSERT INTO \`album_images\` (\`album\`, \`title\`, \`sequence\`, \`caption\`, \`location\`, \`width\`, \`height\`, \`active\`) SELECT id, '$title', '$count', '', '$fileLocation', '$width', '$height', '1' FROM albums WHERE location='$location';"
             ((count++))
         fi
     done
