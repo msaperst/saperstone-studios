@@ -38,7 +38,7 @@ for file in $location/*.*; do
             mogrify -resize 1000x1000\> "$file";
             convert -units PixelsPerInch -density 72 "$file" "$file";
             if [ "$markup" == "proof" ]; then
-                composite -dissolve 40 -tile ../img/proof.png "$file" "$file";
+                composite -dissolve 30 -tile ../img/proof.png "$file" "$file";
             elif [ "$markup" == "watermark" ]; then
                 composite -dissolve 85 -gravity southwest -geometry 200x150+30+0 ../img/watermark.png "$file" "$file";
             elif [ "$markup" == "none" ]; then
