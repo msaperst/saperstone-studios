@@ -62,6 +62,7 @@ $subject = "Saperstone Studios Contact Form:  $name";
 $html = "<html><body>";
 $html .= "This is an automatically generated message from Saperstone Studios<br/>";
 $html .= "<strong>Name</strong>: $name<br/>";
+$html .= "<strong>Phone</strong>: $phone<br/>";
 $html .= "<strong>Email</strong>: <a href='mailto:$email'>$email</a><br/>";
 if (! isset ( $geo_info->city )) {
     $html .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
@@ -85,6 +86,7 @@ $html .= "</body></html>";
 
 $text = "This is an automatically generated message from Saperstone Studios\n";
 $text .= "Name: $name\n";
+$text .= "Phone: $phone\n";
 $text .= "Email: $email\n";
 if (! isset ( $geo_info->city )) {
     $text .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
