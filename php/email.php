@@ -26,7 +26,7 @@ $myFile = "../logs/emails.txt";
 $fh = fopen ( $myFile, 'a' ) or die ( "can't open file" );
 fwrite ( $fh, "From: " . $from . "\n" );
 fwrite ( $fh, "To: " . $to . "\n" );
-fwrite ( $fh, "Date: " . date('l jS \of F Y h:i:s A') . "\n" );
+fwrite ( $fh, "Date: " . date ( 'l jS \of F Y h:i:s A' ) . "\n" );
 fwrite ( $fh, "Subject: " . $subject . "\n" );
 fwrite ( $fh, $mime->getTXTBody () . "\n" );
 fwrite ( $fh, "=====================================================\n" );

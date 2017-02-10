@@ -4,8 +4,8 @@ $conn = new Sql ();
 $conn->connect ();
 
 $to = "Contact <contact@saperstonestudios.com>";
-if( isset( $_POST['to']) && $_POST['to'] != "" ) {
-    $to = $_POST['to'];
+if (isset ( $_POST ['to'] ) && $_POST ['to'] != "") {
+    $to = $_POST ['to'];
 }
 
 // check if fields passed are empty
@@ -41,7 +41,6 @@ $resolution = "";
 if (isset ( $_POST ['resolution'] ) && $_POST ['resolution'] != "") {
     $resolution = mysqli_real_escape_string ( $conn->db, $_POST ['resolution'] );
 }
-
 
 require_once "Mail.php";
 require_once "Mail/mime.php";
