@@ -3,6 +3,11 @@ require_once "../php/sql.php";
 $conn = new Sql ();
 $conn->connect ();
 
+$to = "Contact <contact@saperstonestudios.com>";
+if( isset( $_POST['to']) && $_POST['to'] != "" ) {
+    $to = $_POST['to'];
+}
+
 // check if fields passed are empty
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
@@ -51,7 +56,6 @@ if (isset ( $_SERVER ['HTTP_REFERER'] )) {
 }
 
 // create email body and send it
-$to = "Contact <contact@saperstonestudios.com>";
 $from = "$name <$email>";
 $subject = "Saperstone Studios Contact Form:  $name";
 
