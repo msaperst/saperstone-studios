@@ -45,8 +45,8 @@
 
 	require_once "Mail.php";
 	require_once "Mail/mime.php";
-	$from = "Walter <walter@saperstonestudios.com>";
 	$to = "Webmaster <msaperst@gmail.com>";
+    $from = "Error <error@saperstonestudios.com>";
 	$subject = "Apache Errors";
 
 	$html = "<html><body>";
