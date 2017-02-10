@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#get our connection information
+host=$(awk -F '"' '/db.host/ {print $2}' ../php/env.ini);
+username=$(awk -F '"' '/db.username/ {print $2}' ../php/env.ini);
+password=$(awk -F '"' '/db.password/ {print $2}' ../php/env.ini);
+database=$(awk -F '"' '/db.database/ {print $2}' ../php/env.ini);
+
 output="../scripts/status.txt";
 
 if [ "$#" -ne 3 ]; then
@@ -54,7 +60,7 @@ for file in $location/*.*; do
             file_size=`echo $file_info | cut -d ' ' -f 3`;
             width=`echo $file_size | cut -d 'x' -f 1`;
             height=`echo $file_size | cut -d 'x' -f 2`;
-            mysql -u root -psecret -e "UPDATE \`saperstone-studios\`.\`album_images\` SET width='$width', height='$height' WHERE album='$id' AND location='${file:2}';"
+            mysql -u $username -p$password -e "UPDATE \`$database\`.\`album_images\` SET width='$width', height='$height' WHERE album='$id' AND location='${file:2}';"
         fi
     fi
 done
