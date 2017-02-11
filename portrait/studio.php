@@ -4,6 +4,7 @@
 <head>
 
     <?php
+    
     require_once "../header.php";
     if ($user->isAdmin ()) {
         ?>
@@ -14,13 +15,14 @@
     }
     ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
+    
 
 </head>
 
 <body>
 
     <?php
-    $nav = "portrait";
+    $nav = explode( "/", $_SERVER['REQUEST_URI'])[1];
     require_once "../nav.php";
     
     // get our gallery images
@@ -44,7 +46,7 @@
                 <h1 class="page-header text-center">Home Studio</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php">Portraits</a></li>
+                    <li><a href="index.php"><?php echo ucfirst($nav); ?></a></li>
                     <li><a href="details.php">Details</a></li>
                     <li class="active">Studio</li>
                 </ol>
