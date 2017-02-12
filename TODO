@@ -14,3 +14,6 @@ Allow dragging and dropping of text area to breakup images in blog
 Fix color of LA's face
 Setup view as user mode
 Admins giving access to folders and images needs to be examined for albums
+* email notification of invalid login
+* logs of download user actions
+* indicate which albums don't have thumbnails made of them

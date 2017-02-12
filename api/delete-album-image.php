@@ -65,6 +65,10 @@ $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 $sql = "DELETE FROM album_images WHERE album='$album' AND sequence='$sequence';";
 mysqli_query ( $conn->db, $sql );
 
+// update the image count
+$sql = "UPDATE albums SET images = images - 1 WHERE id='$album';";
+mysqli_query ( $conn->db, $sql );
+
 // need to re-sequence images in mysql table, and make these updates in cart, download rights, favorites, and share rights to match
 $sql = "ALTER TABLE album_images ADD COLUMN new_sequence INT;";
 mysqli_query ( $conn->db, $sql );

@@ -24,10 +24,10 @@ if (! $user->isLoggedIn ()) {
 $sql;
 
 if ($user->isAdmin ()) {
-    $sql = "SELECT albums.*, COUNT(album_images.album) AS 'images' FROM albums LEFT JOIN album_images ON albums.id = album_images.album GROUP BY albums.id;";
+    $sql = "SELECT * FROM albums;";
 } else {
     $id = $user->getId ();
-    $sql = "SELECT albums.*, COUNT(album_images.album) AS 'images' FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id LEFT JOIN album_images ON albums.id = album_images.album WHERE albums_for_users.user = '$id' GROUP BY albums.id;";
+    $sql = "SELECT albums.* FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '$id' GROUP BY albums.id;";
 }
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {

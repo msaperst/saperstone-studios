@@ -82,6 +82,9 @@ if (isset ( $_FILES ["myfile"] )) {
         $sql = "INSERT INTO `album_images` (`album`, `title`, `sequence`, `location`, `width`, `height`) VALUES ('$id', '$img', '$next_seq', '/albums/" . $album_info ['location'] . "/$img', '" . $size [0] . "', '" . $size [1] . "');";
         mysqli_query ( $conn->db, $sql );
         $next_seq ++;
+        // update the image count
+        $sql = "UPDATE `albums` SET `images` = images + 1 WHERE id='$id';";
+        mysqli_query ( $conn->db, $sql );
     }
     
     echo json_encode ( $ret );
