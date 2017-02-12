@@ -83,6 +83,7 @@
     <div class="modal-dialog">
         <div class="loginmodal-container">
             <h2>Login to Your Account</h2>
+            <form>
             <br> <input id="login-user" type="text" name="user"
                 placeholder="Username" /> <input id="login-pass" type="password"
                 name="pass" placeholder="Password" /> <span>
@@ -90,8 +91,8 @@
                     <label><input type="checkbox"> Remember me</label>
                 </div>
             </span>
+            </form>
             <button id="login-submit" type="submit" class="btn btn-primary">Login</button>
-            <!--             <span>Remember Me <input id="login-remember" type="checkbox" name="remember" /></span> -->
             <div class="login-help">
                 <a href="/register.php">Register</a> - <a id="login-forgot-password"
                     href="javascript:void(0);">Forgot Username/Password</a>
