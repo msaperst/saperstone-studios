@@ -44,9 +44,9 @@ if ($_POST ['submit'] == 'Login') {
         $_POST ['rememberMe'] = ( int ) $_POST ['rememberMe'];
         
         // Escaping all input data
-        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT hash,usr FROM users WHERE usr='{$_POST['username']}' AND pass='{$_POST ['password']}'" ) );
+        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT hash,usr,active FROM users WHERE usr='{$_POST['username']}' AND pass='{$_POST ['password']}'" ) );
         
-        if ($row ['usr']) {
+        if ($row ['usr'] && $row ['active']) {
             // If everything is OK login
             
             $_SESSION ['usr'] = $row ['usr'];
@@ -59,6 +59,10 @@ if ($_POST ['submit'] == 'Login') {
             
             mysqli_query ( $conn->db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
             // Update last login in DB
+        } elseif ($row ['usr']) {
+            $err [] = 'Sorry, you account has been deactivated. Please 
+                    <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our
+                    webmaster</a> to get this resolved.';
         } else {
             $err [] = 'Credentials do not match our records!';
         }
