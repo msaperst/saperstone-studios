@@ -12,7 +12,6 @@ Allow dragging and dropping of text area to breakup images in blog
 * categories page allow multiple 't', and link weddings to engagement and weddings
 * When logged in, create tabs for favorites of all users on albums, so that admins can see them all
 Fix color of LA's face
-Setup view as user mode
 Admins giving access to folders and images needs to be examined for albums
 * email notification of invalid login
 * logs of download user actions
