@@ -36,7 +36,7 @@ if (! $album_info ['name']) {
 }
 
 // if not an admin and no code exists for the album
-if (! $user->isAdmin () && $album_info ['code'] == "") {
+if (! $user->isAdmin () && ( $album_info ['code'] == "" || ( $album_info ['code'] != "" && ( ! isset( $_SESSION['searched']) || ! isset( $_SESSION['searched'][$album] ) || ! $_SESSION['searched'][$album] ) ) ) ) {
     // if not logged in, throw an error
     if (! $user->isLoggedIn ()) {
         header ( 'HTTP/1.0 401 Unauthorized' );

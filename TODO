@@ -17,3 +17,4 @@ Admins giving access to folders and images needs to be examined for albums
 * email notification of invalid login
 * logs of download user actions
 * indicate which albums don't have thumbnails made of them
+* make album codes unique - OR - bring them to multiple albums
