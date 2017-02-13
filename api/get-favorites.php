@@ -32,7 +32,11 @@ while ( $r = mysqli_fetch_assoc ( $result ) ) {
 
 if (isset ( $_GET ['album'] )) {
     $album = ( int ) $_GET ['album'];
-    $favorites = $favorites [$album];
+    if (isset ( $favorites [$album] )) {
+        $favorites = $favorites [$album];
+    } else {
+        $favorites = array ();
+    }
 }
 echo json_encode ( $favorites );
 
