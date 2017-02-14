@@ -29,7 +29,7 @@ if (! $user->isLoggedIn ()) {
     href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
     rel="stylesheet">
 <link
-    href="/css/uploadfile.min.css"
+    href="/css/uploadfile.css"
     rel="stylesheet">
 
 </head>
@@ -133,15 +133,15 @@ if (! $user->isLoggedIn ()) {
     <?php
     if ($user->isAdmin ()) {
         ?>
-    <script src="/js/albums-admin.min.js"></script>
+    <script src="/js/albums-admin.js"></script>
     <?php
     } elseif ($user->getRole () == "uploader") {
         ?>
-    <script src="/js/albums-uploader.min.js"></script>
+    <script src="/js/albums-uploader.js"></script>
     <?php
     } else {
         ?>
-    <script src="/js/albums.min.js"></script>
+    <script src="/js/albums.js"></script>
     <?php
     }
     ?>

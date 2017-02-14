@@ -62,7 +62,7 @@ if (! $user->isAdmin ()) {
                         <tr>
                             <th>
                                 <button id="add-user-btn" type="button"
-                                    class="btn btn-xs btn-success">
+                                    class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="right" title="Add New User">
                                     <em class="fa fa-plus"></em>
                                 </button>
                             </th>
