@@ -37,12 +37,16 @@
         <!-- Portraits Retouch -->
         <div class="row" style="margin-top: 30px;">
             <div class="col-lg-12">
-                <p>Have an old photograph that needs a little TLC and restoration?
+                <p>
+                    Have an old photograph that needs a little TLC and restoration?
                     Whether it's in need of some color correction, its faded or worn,
                     has scratches, water damage, tears or even missing parts, I'll be
-                    able to restore your photo to it's original look. <a href='/contact.php'>Contact me</a> to make an appointment at my studio. We'll take
-                    a look at your photos and discuss what you'd like done. Quotes are
-                    based on how much time I estimate the restoration to take.</p>
+                    able to restore your photo to it's original look. <a
+                        href='/contact.php'>Contact me</a> to make an appointment at my
+                    studio. We'll take a look at your photos and discuss what you'd
+                    like done. Quotes are based on how much time I estimate the
+                    restoration to take.
+                </p>
             </div>
         </div>
         <div class="row" style="margin-top: 30px;">

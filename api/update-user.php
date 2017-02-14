@@ -29,7 +29,7 @@ $role = "";
 $active = "";
 
 if (isset ( $_POST ['id'] )) {
-    $id = (int) $_POST ['id'];
+    $id = ( int ) $_POST ['id'];
 } else {
     echo "ID is not provided";
     $conn->disconnect ();
@@ -68,7 +68,7 @@ if (isset ( $_POST ['role'] )) {
     $role = mysqli_real_escape_string ( $conn->db, $_POST ['role'] );
 }
 if (isset ( $_POST ['active'] )) {
-    $active = (int) $_POST ['active'];
+    $active = ( int ) $_POST ['active'];
 }
 
 $sql = "UPDATE users SET usr='$username', firstName='$firstName', lastName='$lastName', email='$email', role='$role', active='$active' WHERE id='$id';";

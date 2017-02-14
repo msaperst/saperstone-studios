@@ -12,7 +12,7 @@ $string = new Strings ();
 
 $email = "";
 if (isset ( $_POST ['email'] )) {
-    $email = mysqli_real_escape_string($conn->db, $_POST ['email'] );
+    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
 } else {
     echo "Enter an email address!";
     exit ();

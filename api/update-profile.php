@@ -60,7 +60,7 @@ if (isset ( $_POST ['password'] ) && $_POST ['password'] != "" && isset ( $_POST
 }
 
 if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
-    $curPass = mysqli_real_escape_string( $conn->db, $_POST['curPass'] );
+    $curPass = mysqli_real_escape_string ( $conn->db, $_POST ['curPass'] );
     $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT usr FROM users WHERE id='" . $user->getId () . "' AND pass='$curPass'" ) );
     if (! $row ['usr']) {
         echo "That password does not match what we have on record for you";

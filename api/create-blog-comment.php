@@ -56,13 +56,13 @@ if (isset ( $_POST ['message'] ) && $_POST ['message'] != "") {
     exit ();
 }
 
-if( $user->getId() != "" ) {
-    $user = "'".$user->getId()."'";
+if ($user->getId () != "") {
+    $user = "'" . $user->getId () . "'";
 } else {
     $user = 'NULL';
 }
 
-$sql = "INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ($post, $user, '$name', CURRENT_TIMESTAMP, '".$_SERVER['REMOTE_ADDR']."', '$email', '$message' );";
+$sql = "INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ($post, $user, '$name', CURRENT_TIMESTAMP, '" . $_SERVER ['REMOTE_ADDR'] . "', '$email', '$message' );";
 mysqli_query ( $conn->db, $sql );
 $last_id = mysqli_insert_id ( $conn->db );
 

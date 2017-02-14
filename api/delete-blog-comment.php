@@ -38,8 +38,8 @@ if (! $blog_comment_info ['id']) {
     exit ();
 }
 
-//check our user permissions
-if (! $user->isAdmin () && $user->getId() != $blog_comment_info['user'] ) {
+// check our user permissions
+if (! $user->isAdmin () && $user->getId () != $blog_comment_info ['user']) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();

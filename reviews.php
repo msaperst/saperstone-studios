@@ -32,9 +32,7 @@ if (isset ( $_GET ['c'] )) {
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>
-    <link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+    <link href="/css/uploadfile.css" rel="stylesheet">
 <link
     href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
     rel="stylesheet">

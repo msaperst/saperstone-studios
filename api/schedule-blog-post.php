@@ -46,15 +46,15 @@ if (isset ( $_POST ['time'] )) {
 }
 $today = new DateTime ();
 $scheduled = new DateTime ( "$date $time" );
-$howLong = $scheduled->getTimestamp() - $today->getTimestamp();
-if ( $howLong <= 0 ) {
+$howLong = $scheduled->getTimestamp () - $today->getTimestamp ();
+if ($howLong <= 0) {
     echo "This time is not in the future, please select a future time to schedule this post.";
-    exit();
+    exit ();
 }
 
-$command = "UPDATE \`".$conn->params ['db.database']."\`.\`blog_details\` SET \`active\` = '1' WHERE \`id\` = '$post';";
+$command = "UPDATE \`" . $conn->params ['db.database'] . "\`.\`blog_details\` SET \`active\` = '1' WHERE \`id\` = '$post';";
 $command = "mysql -h " . $conn->params ['db.host'] . " -u " . $conn->params ['db.username'] . " -p" . $conn->params ['db.password'] . " -e \"$command\"";
-system( "nohup bash -c 'sleep $howLong; $command' > /dev/null 2>&1 &" );
+system ( "nohup bash -c 'sleep $howLong; $command' > /dev/null 2>&1 &" );
 
 $conn->disconnect ();
 exit ();

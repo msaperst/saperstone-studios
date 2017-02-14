@@ -8,7 +8,7 @@ $start = 0;
 $howMany = 999999999999999999;
 
 if (isset ( $_GET ['gallery'] )) {
-    $gallery = (int) $_GET ['gallery'];
+    $gallery = ( int ) $_GET ['gallery'];
 } else {
     $response ['err'] = "Need to provide gallery";
     echo json_encode ( $response );

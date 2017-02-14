@@ -27,7 +27,7 @@ $sql = "SELECT * FROM albums WHERE code = '$code';";
 $r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($r ['id']) {
     echo $r ['id'];
-    $_SESSION["searched"][$r ['id']] = 1;
+    $_SESSION ["searched"] [$r ['id']] = 1;
 } else {
     echo "That code doesn't match any albums";
     $conn->disconnect ();

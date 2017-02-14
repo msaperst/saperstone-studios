@@ -36,7 +36,7 @@ if (! $album_info ['name']) {
 }
 
 // if not an admin and no code exists for the album
-if (! $user->isAdmin () && ( $album_info ['code'] == "" || ( $album_info ['code'] != "" && ( ! isset( $_SESSION['searched']) || ! isset( $_SESSION['searched'][$album] ) || ! $_SESSION['searched'][$album] ) ) ) ) {
+if (! $user->isAdmin () && ($album_info ['code'] == "" || ($album_info ['code'] != "" && (! isset ( $_SESSION ['searched'] ) || ! isset ( $_SESSION ['searched'] [$album] ) || ! $_SESSION ['searched'] [$album])))) {
     // if not logged in, throw an error
     if (! $user->isLoggedIn ()) {
         header ( 'HTTP/1.0 401 Unauthorized' );
@@ -75,9 +75,7 @@ if (! $user->isAdmin ()) {
 
     <?php require_once "../header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
-<link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+<link href="/css/uploadfile.css" rel="stylesheet">
 <style>
 footer {
     margin-bottom: 55px;
@@ -121,7 +119,9 @@ footer {
                     if ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
                         ?>
                     <li class="no-before pull-right"><button
-                            type="button" id="edit-album-btn" class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="left" title="Edit Album Details">
+                            type="button" id="edit-album-btn" class="btn btn-xs btn-warning"
+                            data-toggle="tooltip" data-placement="left"
+                            title="Edit Album Details">
                             <i class="fa fa-pencil-square-o"></i>
                         </button></li>
                     <?php

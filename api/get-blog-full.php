@@ -54,8 +54,8 @@ while ( $s = mysqli_fetch_assoc ( $tags ) ) {
 $sql = "SELECT * FROM `blog_comments` WHERE blog = " . $r ['id'] . " ORDER BY date desc;";
 $comments = mysqli_query ( $conn->db, $sql );
 while ( $s = mysqli_fetch_assoc ( $comments ) ) {
-    if( ( $s['user'] != "" && $s['user'] == $user->getId() ) || $user->isAdmin() ) {
-        $s['delete'] = true;
+    if (($s ['user'] != "" && $s ['user'] == $user->getId ()) || $user->isAdmin ()) {
+        $s ['delete'] = true;
     }
     $r ['comments'] [] = $s;
 }

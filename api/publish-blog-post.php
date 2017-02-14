@@ -33,9 +33,9 @@ $sql = "UPDATE `blog_details` SET `active` = '1' WHERE `id` = '$post';";
 mysqli_query ( $conn->db, $sql );
 
 include_once "../php/social-media.php";
-$sm = new SocialMedia();
-$sm->generateRSS();
-$sm->publishBlogToTwitter($post);
+$sm = new SocialMedia ();
+$sm->generateRSS ();
+$sm->publishBlogToTwitter ( $post );
 
 $conn->disconnect ();
 exit ();

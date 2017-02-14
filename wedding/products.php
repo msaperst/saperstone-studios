@@ -13,9 +13,7 @@
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>
-<link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+<link href="/css/uploadfile.css" rel="stylesheet">
 <link
     href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
     rel="stylesheet">
@@ -60,8 +58,11 @@
                     include an engagement session, 2nd photographer, an online web
                     gallery to share with family and friends and digital images on a
                     custom USB with a personal print release.</p>
-                <p><a href='/contact.php'>Drop me a line</a> for more of the details or
-                    head on over to see what the <a href='experience.php'>wedding experience</a> is all about.</p>
+                <p>
+                    <a href='/contact.php'>Drop me a line</a> for more of the details
+                    or head on over to see what the <a href='experience.php'>wedding
+                        experience</a> is all about.
+                </p>
                 <p>Saperstone Studios is a full-service studio, which means that I
                     go above and beyond simply providing you a USB of images that is
                     destined to get thrown into your junk drawer. My goal is to provide

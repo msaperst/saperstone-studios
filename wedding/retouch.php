@@ -7,9 +7,7 @@
     require_once "../header.php";
     if ($user->isAdmin ()) {
         ?>
-    <link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+    <link href="/css/uploadfile.css" rel="stylesheet">
     <?php
     }
     ?>

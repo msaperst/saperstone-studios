@@ -37,13 +37,13 @@
         <!-- Portraits Retouch -->
         <div class="row" style="margin-top: 30px;">
             <div class="col-lg-12">
-                <p class='error hidden'>Below are some examples of when a little retouch TLC goes a long
-                    way when it comes to making your images perfect. Most of the time,
-                    you won't even realize this behind the scenes magic has even
-                    happened by the time you see your images. If you would like any
-                    additional retouch after seeing your images I'm happy to
-                    accommodate if the requests are minimal/standard. Otherwise a small
-                    fee may be negotiated.</p>
+                <p class='error hidden'>Below are some examples of when a little
+                    retouch TLC goes a long way when it comes to making your images
+                    perfect. Most of the time, you won't even realize this behind the
+                    scenes magic has even happened by the time you see your images. If
+                    you would like any additional retouch after seeing your images I'm
+                    happy to accommodate if the requests are minimal/standard.
+                    Otherwise a small fee may be negotiated.</p>
                 <p>Click the thumbnails below and use the slider at the bottom of
                     the image to see the before/after transformation.</p>
             </div>

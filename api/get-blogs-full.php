@@ -28,7 +28,7 @@ if (isset ( $_GET ['tag'] )) {
     $sql = "SELECT blog_details.* FROM `blog_tags` JOIN `blog_details` ON blog_tags.blog = blog_details.id WHERE blog_tags.tag = '$tag' AND blog_details.active ORDER BY `date` DESC LIMIT $start,1;";
 }
 $r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if( ! $r['id'] ) {
+if (! $r ['id']) {
     $conn->disconnect ();
     exit ();
 }

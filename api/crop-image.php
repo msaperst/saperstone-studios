@@ -8,11 +8,11 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-if(file_exists("../php/user.php")) {
+if (file_exists ( "../php/user.php" )) {
     include_once "../php/user.php";
     include_once "../php/sql.php";
 }
-if(file_exists("../../php/user.php")) {
+if (file_exists ( "../../php/user.php" )) {
     include_once "../../php/sql.php";
     include_once "../../php/sql.php";
 }

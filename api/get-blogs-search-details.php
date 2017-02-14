@@ -3,7 +3,7 @@ require_once "../php/sql.php";
 $conn = new Sql ();
 $conn->connect ();
 
-$response = [];
+$response = [ ];
 $start = 0;
 $howMany = 999999999999999999;
 

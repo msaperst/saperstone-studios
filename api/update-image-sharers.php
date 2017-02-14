@@ -42,7 +42,7 @@ mysqli_query ( $conn->db, $sql );
 
 if (isset ( $_POST ['users'] )) {
     foreach ( $_POST ['users'] as $user ) {
-        $user = mysqli_real_escape_string( $conn->db, $user );
+        $user = mysqli_real_escape_string ( $conn->db, $user );
         $sql = "INSERT INTO `share_rights` ( `user`, `album`, `image` ) VALUES ( '$user', '$album', '$image' );";
         mysqli_query ( $conn->db, $sql );
     }

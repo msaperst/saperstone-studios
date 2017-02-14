@@ -84,13 +84,13 @@
         <div class="loginmodal-container">
             <h2>Login to Your Account</h2>
             <form>
-            <br> <input id="login-user" type="text" name="user"
-                placeholder="Username" /> <input id="login-pass" type="password"
-                name="pass" placeholder="Password" /> <span>
-                <div class="checkbox">
-                    <label><input type="checkbox"> Remember me</label>
-                </div>
-            </span>
+                <br> <input id="login-user" type="text" name="user"
+                    placeholder="Username" /> <input id="login-pass" type="password"
+                    name="pass" placeholder="Password" /> <span>
+                    <div class="checkbox">
+                        <label><input type="checkbox"> Remember me</label>
+                    </div>
+                </span>
             </form>
             <button id="login-submit" type="submit" class="btn btn-primary">Login</button>
             <div class="login-help">

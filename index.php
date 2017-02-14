@@ -13,9 +13,7 @@
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>
-    <link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+    <link href="/css/uploadfile.css" rel="stylesheet">
 <link
     href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
     rel="stylesheet">
@@ -41,12 +39,12 @@
                 <div section='Portraits'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Portraits</span> <img
-                        class="img-responsive" src="/img/portraits.jpg<?php echo $rand; ?>" width="100%"
+                        class="img-responsive"
+                        src="/img/portraits.jpg<?php echo $rand; ?>" width="100%"
                         alt="Portraits">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="/portrait/index.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="/portrait/index.php">See
+                            More</a>
                     </div>
                 </div>
             </div>
@@ -54,12 +52,11 @@
                 <div section='Weddings'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Weddings</span> <img
-                        class="img-responsive" src="/img/weddings.jpg<?php echo $rand; ?>" width="100%"
-                        alt="Weddings">
+                        class="img-responsive" src="/img/weddings.jpg<?php echo $rand; ?>"
+                        width="100%" alt="Weddings">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="/wedding/index.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="/wedding/index.php">See
+                            More</a>
                     </div>
                 </div>
             </div>

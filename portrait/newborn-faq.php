@@ -13,9 +13,7 @@
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>
-    <link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+    <link href="/css/uploadfile.css" rel="stylesheet">
 <link
     href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
     rel="stylesheet">
@@ -83,16 +81,18 @@
             </div>
             <div class="col-md-12">
                 <p>There are two options:
-                    <ul>
-                        <li><strong>Your Home</strong>: I can include all of those personal
-                            elements into the photographs including the nursery. An additional
-                            $50 charge is applied for newborn session at your home vs my
-                            studio space.</li>
-                        <li><strong>My Home Studio</strong>: Ensures you have access to all
-                            my blankets and props instead of a selected amount. I do still
-                            encourage you to bring personal items from home to add a unique
-                            look to your session.</li>
-                    </ul>
+                
+                
+                <ul>
+                    <li><strong>Your Home</strong>: I can include all of those personal
+                        elements into the photographs including the nursery. An additional
+                        $50 charge is applied for newborn session at your home vs my
+                        studio space.</li>
+                    <li><strong>My Home Studio</strong>: Ensures you have access to all
+                        my blankets and props instead of a selected amount. I do still
+                        encourage you to bring personal items from home to add a unique
+                        look to your session.</li>
+                </ul>
                 </p>
             </div>
         </div>

@@ -36,7 +36,7 @@ if (! count ( $err )) {
     } else {
         $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM `old_users` WHERE directory='{$_POST['username']}' AND password='{$_POST ['password']}'" ) );
         if ($row ['id']) {
-            echo $row['id'];
+            echo $row ['id'];
         } else {
             echo "Credentials do not match our records!";
         }

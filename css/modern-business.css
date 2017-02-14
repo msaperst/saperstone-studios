@@ -29,7 +29,8 @@ header.carousel {
     height: 50%;
 }
 
-header.carousel .item, header.carousel .item.active, header.carousel .carousel-inner {
+header.carousel .item, header.carousel .item.active, header.carousel .carousel-inner
+    {
     height: 100%;
 }
 

@@ -87,6 +87,7 @@ blockquote p {
 .sidebar-img {
     width: 150%;
 }
+
 @media ( max-width :767px) {
     .sidebar-img {
         width: 100%;
@@ -418,18 +419,18 @@ footer {
 }
 
 .block-placeholder {
-  background: #DADADA;
-  position: relative;
+    background: #DADADA;
+    position: relative;
 }
 
 .block-placeholder:after {
-  content: " ";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding-bottom: 66%;
-  background-color: #FFF;
+    content: " ";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-bottom: 66%;
+    background-color: #FFF;
 }
 
 /* our query results formatting */
@@ -650,7 +651,6 @@ a.plain {
     bottom: 0;
     left: 0;
     right: 0;
-    
 }
 
 .holder { /*height:750px;*/

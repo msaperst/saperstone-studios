@@ -30,7 +30,7 @@ if (isset ( $_GET ['start'] ) && $_GET ['start'] != "") {
     $start = ( int ) $_GET ['start'];
 }
 
-$noAdmin="";
+$noAdmin = "";
 if (isset ( $_GET ['noadmin'] ) && $_GET ['noadmin'] == "1") {
     $noAdmin = " AND ( `users`.`role` != 'admin' OR `users`.`role` is NULL )";
 }

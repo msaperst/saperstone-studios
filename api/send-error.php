@@ -52,7 +52,6 @@ if (isset ( $_POST ['resolution'] ) && $_POST ['resolution'] != "") {
     $resolution = mysqli_real_escape_string ( $conn->db, $_POST ['resolution'] );
 }
 
-
 require_once "Mail.php";
 require_once "Mail/mime.php";
 
@@ -74,7 +73,7 @@ $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take
 $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before.<br/><br/>";
 
 if ($user->isLoggedIn ()) {
-    $id = $user->getId();
+    $id = $user->getId ();
     $name = $user->getName ();
     $email = $user->getEmail ();
     $html .= "<strong>User Id</strong>: $id<br/>";
@@ -106,7 +105,7 @@ $text .= "\t\tThey came from page $referrer.\n";
 $text .= "\t\tYou might want to look into this or take action.\n";
 $text .= "\t\tUser information is collected before.\n\n";
 if ($user->isLoggedIn ()) {
-    $id = $user->getId();
+    $id = $user->getId ();
     $name = $user->getName ();
     $email = $user->getEmail ();
     $text .= "User Id: $id\n";

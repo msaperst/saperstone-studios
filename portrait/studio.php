@@ -4,25 +4,22 @@
 <head>
 
     <?php
-    
     require_once "../header.php";
     if ($user->isAdmin ()) {
         ?>
-    <link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+    <link href="/css/uploadfile.css" rel="stylesheet">
     <?php
     }
     ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
-    
+
 
 </head>
 
 <body>
 
     <?php
-    $nav = explode( "/", $_SERVER['REQUEST_URI'])[1];
+    $nav = explode ( "/", $_SERVER ['REQUEST_URI'] ) [1];
     require_once "../nav.php";
     
     // get our gallery images

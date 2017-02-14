@@ -80,10 +80,8 @@ if (isset ( $_GET ['p'] )) {
     <link
     href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
     rel="stylesheet">
-<link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
-    <link href="/css/hover-effect.css" rel="stylesheet">
+<link href="/css/uploadfile.css" rel="stylesheet">
+<link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
 
@@ -107,19 +105,20 @@ if (isset ( $_GET ['p'] )) {
             <button id="preview-post" type="button" class="btn btn-warning">
                 <em class="fa fa-search"></em> Preview Post
             </button>
-            <button id="edit-post" type="button" class="btn btn-warning" style="display:none;">
+            <button id="edit-post" type="button" class="btn btn-warning"
+                style="display: none;">
                 <em class="fa fa-pencil-square-o"></em> Edit Post
             </button>
             <?php
             if (isset ( $post )) {
-            ?>
+                ?>
             <button id="update-post" type="button"
                 class="btn btn-warning">
                 <em class="fa fa-refresh"></em> Update Post
             </button>
             <?php
             } else {
-            ?>
+                ?>
             <button id="save-post" type="button" class="btn btn-warning">
                 <em class="fa fa-save"></em> Save Post
             </button>
@@ -129,7 +128,7 @@ if (isset ( $_GET ['p'] )) {
             <br />
             <?php
             if (! isset ( $post )) {
-            ?>
+                ?>
             <button id="schedule-post" type="button"
                 class="btn btn-success">
                 <em class="fa fa-clock-o"></em> Schedule Post
@@ -139,7 +138,7 @@ if (isset ( $_GET ['p'] )) {
             </button>
             <?php
             } elseif (! $details ['active']) {
-            ?>
+                ?>
             <button id="schedule-saved-post" type="button"
                 class="btn btn-success">
                 <em class="fa fa-clock-o"></em> Schedule Post
@@ -189,11 +188,11 @@ if (isset ( $_GET ['p'] )) {
             <div class="col-lg-12">
                 <?php
                 if (isset ( $post )) {
-                ?>
+                    ?>
                 <h1 class="page-header text-center">Edit Your Blog Post</h1>
                 <?php
                 } else {
-                ?>
+                    ?>
                 <h1 class="page-header text-center">Write A New Blog
                     Post</h1>
                 <?php
@@ -204,11 +203,11 @@ if (isset ( $_GET ['p'] )) {
                     <li><a href="/blog/">Blog</a></li>
                     <?php
                     if (isset ( $post )) {
-                    ?>
+                        ?>
                     <li class="active">Edit Post</li>
                     <?php
                     } else {
-                    ?>
+                        ?>
                     <li class="active">New Post</li>
                     <?php
                     }

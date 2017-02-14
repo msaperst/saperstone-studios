@@ -1,64 +1,69 @@
 var user_table;
 var resultsSelected = false;
 
-$(document).ready(function() {
-    user_table = $('#users').DataTable({
-        "ajax" : "/api/get-users.php",
-        "order" : [ [ 2, "asc" ] ],
-        "columnDefs" : [ {
-            "orderable" : false,
-            "searchable" : false,
-            "data" : function() {
-                var buttons = '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit User Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As User"><i class="fa fa-user-secret"></i></button>';
-                return buttons;
-            },
-            "targets" : 0
-        }, {
-            "data" : "id",
-            "className" : "user-id",
-            "visible" : false,
-            "searchable" : false,
-            "targets" : 1
-        }, {
-            "data" : "usr",
-            "className" : "user-username",
-            "targets" : 2
-        }, {
-            "data" : function(row) {
-                return row.firstName + " " + row.lastName;
-            },
-            "className" : "user-name",
-            "targets" : 3
-        }, {
-            "data" : "email",
-            "className" : "user-email",
-            "targets" : 4
-        }, {
-            "data" : "role",
-            "className" : "user-role",
-            "targets" : 5
-        }, {
-            "data" : "active",
-            "className" : "user-active",
-            "targets" : 6
-        }, {
-            "data" : "lastLogin",
-            "className" : "user-last-login",
-            "targets" : 7
-        } ],
-        "fnCreatedRow" : function(nRow, aData) {
-            $(nRow).attr('user-id', aData.id);
-        }
-    });
-    $('#users').on('draw.dt search.dt', function() {
-        setupEdit();
-        $('[data-toggle="tooltip"]').tooltip();
-    });
+$(document)
+        .ready(
+                function() {
+                    user_table = $('#users')
+                            .DataTable(
+                                    {
+                                        "ajax" : "/api/get-users.php",
+                                        "order" : [ [ 2, "asc" ] ],
+                                        "columnDefs" : [
+                                                {
+                                                    "orderable" : false,
+                                                    "searchable" : false,
+                                                    "data" : function() {
+                                                        var buttons = '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit User Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As User"><i class="fa fa-user-secret"></i></button>';
+                                                        return buttons;
+                                                    },
+                                                    "targets" : 0
+                                                }, {
+                                                    "data" : "id",
+                                                    "className" : "user-id",
+                                                    "visible" : false,
+                                                    "searchable" : false,
+                                                    "targets" : 1
+                                                }, {
+                                                    "data" : "usr",
+                                                    "className" : "user-username",
+                                                    "targets" : 2
+                                                }, {
+                                                    "data" : function(row) {
+                                                        return row.firstName + " " + row.lastName;
+                                                    },
+                                                    "className" : "user-name",
+                                                    "targets" : 3
+                                                }, {
+                                                    "data" : "email",
+                                                    "className" : "user-email",
+                                                    "targets" : 4
+                                                }, {
+                                                    "data" : "role",
+                                                    "className" : "user-role",
+                                                    "targets" : 5
+                                                }, {
+                                                    "data" : "active",
+                                                    "className" : "user-active",
+                                                    "targets" : 6
+                                                }, {
+                                                    "data" : "lastLogin",
+                                                    "className" : "user-last-login",
+                                                    "targets" : 7
+                                                } ],
+                                        "fnCreatedRow" : function(nRow, aData) {
+                                            $(nRow).attr('user-id', aData.id);
+                                        }
+                                    });
+                    $('#users').on('draw.dt search.dt', function() {
+                        setupEdit();
+                        $('[data-toggle="tooltip"]').tooltip();
+                    });
 
-    $('#add-user-btn').click(function() {
-        editUser(null);
-    });
-});
+                    $('#add-user-btn').click(function() {
+                        editUser(null);
+                    });
+                });
 
 function setupEdit() {
     $('.edit-user-btn').off().click(function() {
@@ -69,7 +74,7 @@ function setupEdit() {
             editUser(data);
         }, "json");
     });
-    $('.view-as-user-btn').off().click(function(){
+    $('.view-as-user-btn').off().click(function() {
         var id = $(this).closest('tr').attr('user-id');
         $.post("/api/login-as-user.php", {
             id : id
@@ -224,7 +229,7 @@ function editUser(data) {
                             cssClass : 'btn-info',
                             action : function(dialogItself) {
                                 var $button = this; // 'this' here is a jQuery
-                                                    // object that
+                                // object that
                                 // wrapping the <button> DOM element.
                                 $button.spin();
                                 disableDialogButtons(dialogItself);
@@ -284,9 +289,9 @@ function editUser(data) {
                                                         cssClass : 'btn-success',
                                                         action : function(dialogInItself) {
                                                             var $buttonIn = this; // 'this'
-                                                                                    // here
-                                                                                    // is a
-                                                                                    // jQuery
+                                                            // here
+                                                            // is a
+                                                            // jQuery
                                                             // object that
                                                             // wrapping the
                                                             // <button> DOM
@@ -358,7 +363,7 @@ function editUser(data) {
                             cssClass : 'btn-danger',
                             action : function(dialogItself) {
                                 var $button = this; // 'this' here is a jQuery
-                                                    // object that
+                                // object that
                                 // wrapping the <button> DOM element.
                                 $button.spin();
                                 disableDialogButtons(dialogItself);
@@ -381,9 +386,9 @@ function editUser(data) {
                                                         cssClass : 'btn-danger',
                                                         action : function(dialogInItself) {
                                                             var $button = this; // 'this'
-                                                                                // here
-                                                                                // is a
-                                                                                // jQuery
+                                                            // here
+                                                            // is a
+                                                            // jQuery
                                                             // object that
                                                             // wrapping the
                                                             // <button> DOM
@@ -438,7 +443,7 @@ function editUser(data) {
                             cssClass : 'btn-warning',
                             action : function(dialogItself) {
                                 var $button = this; // 'this' here is a jQuery
-                                                    // object that
+                                // object that
                                 // wrapping the <button> DOM element.
                                 $button.spin();
                                 disableDialogButtons(dialogItself);
@@ -473,9 +478,9 @@ function editUser(data) {
                                                         cssClass : 'btn-success',
                                                         action : function(dialogInItself) {
                                                             var $buttonIn = this; // 'this'
-                                                                                    // here
-                                                                                    // is a
-                                                                                    // jQuery
+                                                            // here
+                                                            // is a
+                                                            // jQuery
                                                             // object that
                                                             // wrapping the
                                                             // <button> DOM
@@ -532,7 +537,7 @@ function editUser(data) {
                             cssClass : 'btn-success',
                             action : function(dialogItself) {
                                 var $button = this; // 'this' here is a jQuery
-                                                    // object that
+                                // object that
                                 // wrapping the <button> DOM element.
                                 var modal = $button.closest('.modal-content');
                                 $button.spin();
@@ -578,7 +583,7 @@ function editUser(data) {
                             cssClass : 'btn-success',
                             action : function(dialogItself) {
                                 var $button = this; // 'this' here is a jQuery
-                                                    // object that
+                                // object that
                                 // wrapping the <button> DOM element.
                                 var modal = $button.closest('.modal-content');
                                 $button.spin();
@@ -667,7 +672,7 @@ function editUser(data) {
 }
 
 function switchToUser() {
-    
+
 }
 
 function addAlbum(id) {

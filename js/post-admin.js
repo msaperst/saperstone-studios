@@ -327,12 +327,12 @@ function previewPost() {
         tagsSpan.append(", ");
     });
     $('#post-tags').append(tagsSpan);
-    
+
     // setup our texts for previews
-    $('.blog-editable-text').each(function(){
-        $(this).show().html( $(this).summernote('code') );
+    $('.blog-editable-text').each(function() {
+        $(this).show().html($(this).summernote('code'));
     });
-    $('.note-editor').each(function(){
+    $('.note-editor').each(function() {
         $(this).hide();
     });
 }
@@ -362,12 +362,12 @@ function editPost() {
     $('.selected-tag').each(function() {
         $(this).show();
     });
-    
+
     // fix our texts for editing
-    $('.blog-editable-text').each(function(){
+    $('.blog-editable-text').each(function() {
         $(this).hide();
     });
-    $('.note-editor').each(function(){
+    $('.note-editor').each(function() {
         $(this).show();
     });
 }

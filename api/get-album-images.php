@@ -20,7 +20,7 @@ $start = 0;
 $howMany = 999999999999999999;
 
 if (isset ( $_GET ['albumId'] )) {
-    $albumId = (int) $_GET ['albumId'];
+    $albumId = ( int ) $_GET ['albumId'];
 } else {
     $response ['err'] = "Need to provide album";
     echo json_encode ( $response );

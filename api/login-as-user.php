@@ -47,7 +47,7 @@ session_unset ();
 session_destroy ();
 
 session_name ( 'ssLogin' );
-session_set_cookie_params ( 60 * 60 );  // Making the cookie live for 1 hour
+session_set_cookie_params ( 60 * 60 ); // Making the cookie live for 1 hour
 session_start ();
 
 $_SESSION ['usr'] = $user_info ['usr'];

@@ -13,9 +13,7 @@
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>
-    <link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+    <link href="/css/uploadfile.css" rel="stylesheet">
 <link
     href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
     rel="stylesheet">
@@ -145,9 +143,7 @@
                         class="img-responsive" src="img/details.jpg<?php echo $rand; ?>"
                         alt="Details">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="details.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="details.php">See More</a>
                     </div>
                 </div>
             </div>
@@ -158,9 +154,8 @@
                         class="img-responsive" src="img/gallery.jpg<?php echo $rand; ?>"
                         alt="Gallery">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="gallery.php?w=8">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="gallery.php?w=8">See
+                            More</a>
                     </div>
                 </div>
             </div>
@@ -171,9 +166,7 @@
                         class="img-responsive" src="img/retouch.jpg<?php echo $rand; ?>"
                         alt="Retouch">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="retouch.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="retouch.php">See More</a>
                     </div>
                 </div>
             </div>
@@ -184,9 +177,7 @@
                         class="img-responsive" src="img/about.jpg<?php echo $rand; ?>"
                         alt="About">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="/about.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="/about.php">See More</a>
                     </div>
                 </div>
             </div>
@@ -197,9 +188,8 @@
                         class="img-responsive" src="img/reviews.jpg<?php echo $rand; ?>"
                         alt="Raves">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="reviews.php?c=2">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="reviews.php?c=2">See
+                            More</a>
                     </div>
                 </div>
             </div>
@@ -209,9 +199,8 @@
                     <span class='preview-title'>Blog</span> <img class="img-responsive"
                         src="img/blog.jpg<?php echo $rand; ?>" alt="Blog">
                     <div class="overlay">
-                        <br />
-                        <br />
-                        <br /> <a class="info" href="/blog/category.php?t=33">See More</a>
+                        <br /> <br /> <br /> <a class="info"
+                            href="/blog/category.php?t=33">See More</a>
                     </div>
                 </div>
             </div>

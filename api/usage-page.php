@@ -30,17 +30,17 @@ if (isset ( $_GET ['start'] ) && $_GET ['start'] != "") {
     $start = ( int ) $_GET ['start'];
 }
 
-$noAdmin="";
+$noAdmin = "";
 if (isset ( $_GET ['noadmin'] ) && $_GET ['noadmin'] == "1") {
     $noAdmin = " AND ( `users`.`role` != 'admin' OR `users`.`role` is NULL )";
 }
 
-$sql = "SELECT DATE(usage.time) as date,usage.url,COUNT(DATE(usage.time)) AS count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE DATE(usage.time) > (CURDATE() + INTERVAL $start DAY) AND DATE(usage.time) <= (CURDATE() + INTERVAL ".($start + $length)." DAY) AND `usage`.`isRobot` = 0 $noAdmin GROUP BY DATE(usage.time),usage.url;";
+$sql = "SELECT DATE(usage.time) as date,usage.url,COUNT(DATE(usage.time)) AS count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE DATE(usage.time) > (CURDATE() + INTERVAL $start DAY) AND DATE(usage.time) <= (CURDATE() + INTERVAL " . ($start + $length) . " DAY) AND `usage`.`isRobot` = 0 $noAdmin GROUP BY DATE(usage.time),usage.url;";
 $result = mysqli_query ( $conn->db, $sql );
 $response = array ();
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     $date = explode ( '-', $r ['date'] );
-    $response[ $r['url'] ][$date [0] . "," . $date [1] . "," . $date [2]] = $r ['count'];
+    $response [$r ['url']] [$date [0] . "," . $date [1] . "," . $date [2]] = $r ['count'];
 }
 echo json_encode ( $response );
 

@@ -84,7 +84,7 @@ $storage_dir = "";
 // setup our preview image
 if (isset ( $_POST ['preview'] ['img'] ) && $_POST ['preview'] ['img'] != "") {
     $previewImage = mysqli_real_escape_string ( $conn->db, $_POST ['preview'] ['img'] );
-    $storage_dir = dirname( $blog_details ['preview'] );
+    $storage_dir = dirname ( $blog_details ['preview'] );
     copy ( "$previewImage", "$storage_dir/preview_image-$id.jpg" );
     system ( "mogrify -resize 360x \"$storage_dir/preview_image-$id.jpg\"" );
     system ( "mogrify -density 72 \"$storage_dir/preview_image-$id.jpg\"" );
@@ -92,7 +92,7 @@ if (isset ( $_POST ['preview'] ['img'] ) && $_POST ['preview'] ['img'] != "") {
     mysqli_query ( $conn->db, $sql );
 }
 
-//if we're changing the post activation
+// if we're changing the post activation
 if (isset ( $_POST ['active'] )) {
     $active = ( int ) $_POST ['active'];
     $sql = "UPDATE `blog_details` SET `active` = '$active' WHERE `id` = $id;";
@@ -100,7 +100,7 @@ if (isset ( $_POST ['active'] )) {
 }
 
 // if we're updating the content
-if( isset( $_POST ['content'] ) ) {
+if (isset ( $_POST ['content'] )) {
     // delete any old content
     $sql = "DELETE FROM blog_texts WHERE blog='$id';";
     mysqli_query ( $conn->db, $sql );
@@ -121,11 +121,11 @@ if( isset( $_POST ['content'] ) ) {
                 $left = ( int ) $img ['left'];
                 $width = ( int ) $img ['width'];
                 $height = ( int ) $img ['height'];
-    
+                
                 rename ( "$location", "$storage_dir/" . basename ( $location ) );
                 system ( "mogrify -resize ${width}x \"$storage_dir/" . basename ( $location ) . "\"" );
                 system ( "mogrify -density 72 \"$storage_dir/" . basename ( $location ) . "\"" );
-    
+                
                 $sql = "INSERT INTO `blog_images` ( `blog`, `contentGroup`, `location`, `top`, `left`, `width`, `height` ) VALUES ('$id', '$group', '$storage_dir/" . basename ( $location ) . "', '$top', '$left', '$width', '$height');";
                 mysqli_query ( $conn->db, $sql );
             }

@@ -28,9 +28,7 @@ if (! $user->isLoggedIn ()) {
     <link
     href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
     rel="stylesheet">
-<link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+<link href="/css/uploadfile.css" rel="stylesheet">
 
 </head>
 
@@ -96,7 +94,8 @@ if (! $user->isLoggedIn ()) {
                                 ?>
                             <th>
                                 <button id="add-album-btn" type="button"
-                                    class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="right" title="Add New Album">
+                                    class="btn btn-xs btn-success" data-toggle="tooltip"
+                                    data-placement="right" title="Add New Album">
                                     <em class="fa fa-plus"></em>
                                 </button>
                             </th>

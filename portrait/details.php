@@ -13,9 +13,7 @@
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>
-    <link
-    href="/css/uploadfile.css"
-    rel="stylesheet">
+    <link href="/css/uploadfile.css" rel="stylesheet">
 <link
     href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css"
     rel="stylesheet">
@@ -63,7 +61,8 @@
 
         <div class="row" style='padding-top: 30px'>
             <div class="col-lg-12">
-                <p>No matter what stage of life you find yourself in, portraits are
+                <p>
+                    No matter what stage of life you find yourself in, portraits are
                     always special. Take the moment to document where you are as an
                     individual, couple or family by being in front of the lens AND
                     having fun. Each time I pull out my camera I strive to provide a
@@ -97,8 +96,7 @@
                         class="img-responsive" src="img/session.jpg<?php echo $rand; ?>"
                         alt="Session Information">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="sessions.php">See
-                            More</a>
+                        <br /> <br /> <br /> <a class="info" href="sessions.php">See More</a>
                     </div>
                 </div>
             </div>
@@ -150,12 +148,10 @@
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="FAQs"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>FAQs</span> <img
-                        class="img-responsive"
+                    <span class='preview-title'>FAQs</span> <img class="img-responsive"
                         src="img/faq.jpg<?php echo $rand; ?>" alt="FAQs">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="faq.php">See
-                            More</a>
+                        <br /> <br /> <br /> <a class="info" href="faq.php">See More</a>
                     </div>
                 </div>
             </div>

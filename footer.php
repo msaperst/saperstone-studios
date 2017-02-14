@@ -25,8 +25,7 @@
                         class="fa fa-instagram"></em></a></li>
                 <li><a target="_blank" href="https://twitter.com/LaSaperstone"><em
                         class="fa fa-twitter"></em></a></li>
-                <li><a target="_blank" type="application/rss+xml"
-                    href="/blog.rss"><em
+                <li><a target="_blank" type="application/rss+xml" href="/blog.rss"><em
                         class="fa fa-rss"></em></a></li>
                 <li><a target="_blank"
                     href="https://plus.google.com/+SaperstoneStudios"><em
@@ -65,7 +64,8 @@
 <script src="/js/carousel.js"></script>
 
 <!-- MD5 for login/password -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.6.0/js/md5.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.6.0/js/md5.min.js"></script>
 
 <!-- Script to Activate the Carousel -->
 <script>
@@ -77,9 +77,9 @@
 
 <!-- Google Analytics -->
 <?php
-if(isset($_SERVER['HTTPS'])) {
-    if ($_SERVER['HTTPS'] == "on") {
-?>
+if (isset ( $_SERVER ['HTTPS'] )) {
+    if ($_SERVER ['HTTPS'] == "on") {
+        ?>
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

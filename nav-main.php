@@ -38,7 +38,7 @@
             <ul class="dropdown-menu">
                 <?php
                 if (! $user->isAdmin ()) {
-                ?>
+                    ?>
                 <li><a href="#album">Find Album</a></li>
                 <?php
                 }

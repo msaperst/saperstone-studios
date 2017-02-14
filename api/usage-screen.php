@@ -21,7 +21,7 @@ if (! $user->isAdmin ()) {
     exit ();
 }
 
-$noAdmin="";
+$noAdmin = "";
 if (isset ( $_GET ['noadmin'] ) && $_GET ['noadmin'] == "1") {
     $noAdmin = " AND ( `users`.`role` != 'admin' OR `users`.`role` is NULL )";
 }
@@ -30,7 +30,7 @@ $sql = "SELECT usage.width, usage.height, count(*) AS count FROM `usage` LEFT JO
 $result = mysqli_query ( $conn->db, $sql );
 $response = array ();
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $response [$r['width']."x".$r['height']] = $r['count'];
+    $response [$r ['width'] . "x" . $r ['height']] = $r ['count'];
 }
 echo json_encode ( $response );
 
