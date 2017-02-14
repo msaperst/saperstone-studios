@@ -22,7 +22,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_POST ['album'] )) {
-    $album = (int) $_POST ['album'];
+    $album = mysqli_real_escape_string ( $conn->db, $_POST ['album'] );
 } else {
     echo "Album is not provided";
     $conn->disconnect ();
@@ -30,7 +30,7 @@ if (isset ( $_POST ['album'] )) {
 }
 
 if (isset ( $_POST ['image'] )) {
-    $image = (int) $_POST ['image'];
+    $image = mysqli_real_escape_string ( $conn->db, $_POST ['image'] );
 } else {
     echo "Image is not provided";
     $conn->disconnect ();
