@@ -1,6 +1,7 @@
 $(document).ready(function() {
     setupSize();
     setupProduct();
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 function setupSize() {
