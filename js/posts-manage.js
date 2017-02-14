@@ -13,8 +13,8 @@ $(document).ready(
                                         "orderable" : false,
                                         "searchable" : false,
                                         "data" : function(row) {
-                                            var buttons = '<button type="button" class="btn btn-xs btn-info quick-edit-post-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
-                                            buttons += ' <button type="button" class="btn btn-xs btn-warning edit-post-btn" onclick="window.location.href=\'/blog/new.php?p=' + row.id + '\'">'
+                                            var buttons = '<button type="button" class="btn btn-xs btn-info quick-edit-post-btn data-toggle="tooltip" data-placement="right" title="Edit Post Details""><i class="fa fa-pencil-square-o"></i></button>';
+                                            buttons += ' <button type="button" class="btn btn-xs btn-warning edit-post-btn" data-toggle="tooltip" data-placement="right" title="Edit Full Post" onclick="window.location.href=\'/blog/new.php?p=' + row.id + '\'">'
                                                     + '<i class="fa fa-pencil-square-o"></i></button>';
                                             return buttons;
                                         },
@@ -44,6 +44,7 @@ $(document).ready(
 
             $('#posts').on('draw.dt search.dt', function() {
                 setupEdit();
+                $('[data-toggle="tooltip"]').tooltip();
             });
             
             $('#post-delete-button').click(function(){
