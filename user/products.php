@@ -75,12 +75,12 @@ if (! $user->isAdmin ()) {
                 ?>
                 <div class="col-md-4 col-sm-6 bootstrap-dialog"
                     product-type='<?php echo $r['id']; ?>'>
-                    <button type="button" data-toggle="tooltip" data-placement="right" title="Edit <?php echo $r['id']; ?> Name"
+                    <button type="button" data-toggle="tooltip" data-placement="right" title="Edit <?php echo $r['name']; ?> Name"
                         class="btn btn-xs btn-warning edit-product-button">
                         <em class="fa fa-pencil-square-o"></em>
                     </button>
                     <button type="button"
-                        class="btn btn-xs btn-danger delete-product-button" data-toggle="tooltip" data-placement="right" title="Delete <?php echo $r['id']; ?>">
+                        class="btn btn-xs btn-danger delete-product-button" data-toggle="tooltip" data-placement="right" title="Delete <?php echo $r['name']; ?>">
                         <em class="fa fa-trash-o"></em>
                     </button>
                     <button type="button"
@@ -137,7 +137,7 @@ if (! $user->isAdmin ()) {
                             <tr>
                                 <td>
                                     <button type="button"
-                                        class="btn btn-xs btn-success add-size-button" data-toggle="tooltip" data-placement="right" title="Add Size to <?php echo $r['id']; ?>">
+                                        class="btn btn-xs btn-success add-size-button" data-toggle="tooltip" data-placement="right" title="Add Size to <?php echo $r['name']; ?>">
                                         <em class="fa fa-save"></em>
                                     </button>
                                 </td>
@@ -162,7 +162,7 @@ if (! $user->isAdmin ()) {
                     </div>
                     <div>
                         <button type="button"
-                            class="btn btn-xs btn-success add-option-button" data-toggle="tooltip" data-placement="right" title="Add Options for <?php echo $r['id']; ?>">
+                            class="btn btn-xs btn-success add-option-button" data-toggle="tooltip" data-placement="right" title="Add Options for <?php echo $r['name']; ?>">
                             <em class="fa fa-save"></em>
                         </button>
                         <input class='form-control input-sm'
