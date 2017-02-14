@@ -13,8 +13,11 @@ $(document)
                                                 {
                                                     "orderable" : false,
                                                     "searchable" : false,
-                                                    "data" : function() {
-                                                        var buttons = '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit User Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As User"><i class="fa fa-user-secret"></i></button>';
+                                                    "data" : function(row) {
+                                                        var buttons = '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit '
+                                                                + row.usr
+                                                                + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As '
+                                                                + row.usr + '"><i class="fa fa-user-secret"></i></button>';
                                                         return buttons;
                                                     },
                                                     "targets" : 0

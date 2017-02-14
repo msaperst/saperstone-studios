@@ -44,5 +44,12 @@ plugins
 
 # our albums
 albums/*/*
-#our blog posts
+# our blog posts
 blog/*/*
+# our base images
+wedding/img/*.jpg
+portrait/img/*.jpg
+
+img/*/*
+!img/favicon/*
+!img/reviews/*
