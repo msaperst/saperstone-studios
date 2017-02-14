@@ -29,7 +29,7 @@ if (! $user->isLoggedIn ()) {
     href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
     rel="stylesheet">
 <link
-    href="/css/uploadfile.css"
+    href="/css/uploadfile.min.css"
     rel="stylesheet">
 
 </head>
@@ -96,7 +96,7 @@ if (! $user->isLoggedIn ()) {
                                 ?>
                             <th>
                                 <button id="add-album-btn" type="button"
-                                    class="btn btn-xs btn-success">
+                                    class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="right" title="Add New Album">
                                     <em class="fa fa-plus"></em>
                                 </button>
                             </th>
@@ -129,19 +129,19 @@ if (! $user->isLoggedIn ()) {
 
     <script
         src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="/js/jquery.uploadfile.min.js"></script>
     <?php
     if ($user->isAdmin ()) {
         ?>
-    <script src="/js/albums-admin.js"></script>
+    <script src="/js/albums-admin.min.js"></script>
     <?php
     } elseif ($user->getRole () == "uploader") {
         ?>
-    <script src="/js/albums-uploader.js"></script>
+    <script src="/js/albums-uploader.min.js"></script>
     <?php
     } else {
         ?>
-    <script src="/js/albums.js"></script>
+    <script src="/js/albums.min.js"></script>
     <?php
     }
     ?>

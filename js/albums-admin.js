@@ -11,7 +11,7 @@ $(document).ready(
                         "orderable" : false,
                         "searchable" : false,
                         "data" : function() {
-                            var buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
+                            var buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn" data-toggle="tooltip" data-placement="right" title="Edit Album Details">' + '<i class="fa fa-pencil-square-o"></i></button>';
                             return buttons;
                         },
                         "targets" : 0
@@ -49,6 +49,7 @@ $(document).ready(
             }
             $('#albums').on('draw.dt search.dt', function() {
                 setupEdit();
+                $('[data-toggle="tooltip"]').tooltip();
             });
 
             $('#add-album-btn').click(
