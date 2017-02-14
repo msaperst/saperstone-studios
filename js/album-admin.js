@@ -75,7 +75,7 @@ $(document).ready(function() {
                                 var result_li = $('<li>');
                                 var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                 result_a.click(function() {
-                                    addUser($('#album-users'), user.id);
+                                    addAlbumUser($('#album-users'), user.id);
                                     $('.search-results').remove();
                                 });
                                 results_ul.append(result_li.append(result_a));
@@ -121,7 +121,7 @@ $(document).ready(function() {
                                 var result_li = $('<li>');
                                 var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                 result_a.click(function() {
-                                    addUser($('#download-users'), user.id);
+                                    addAlbumUser($('#download-users'), user.id);
                                     $('.search-results').remove();
                                 });
                                 results_ul.append(result_li.append(result_a));
@@ -167,7 +167,7 @@ $(document).ready(function() {
                                 var result_li = $('<li>');
                                 var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                 result_a.click(function() {
-                                    addUser($('#share-users'), user.id);
+                                    addAlbumUser($('#share-users'), user.id);
                                     $('.search-results').remove();
                                 });
                                 results_ul.append(result_li.append(result_a));
@@ -213,7 +213,7 @@ $(document).ready(function() {
                     album : $('#album').attr('album-id'),
                 }, function(album_users) {
                     for (var i = 0, len = album_users.length; i < len; i++) {
-                        addUser($('#album-users'), album_users[i].user);
+                        addAlbumUser($('#album-users'), album_users[i].user);
                     }
                 }, "json");
                 var downloadsDiv = $('<div>');
@@ -231,7 +231,7 @@ $(document).ready(function() {
                     image : img.attr('image-id')
                 }, function(album_users) {
                     for (var i = 0, len = album_users.length; i < len; i++) {
-                        addUser($('#download-users'), album_users[i].user);
+                        addAlbumUser($('#download-users'), album_users[i].user);
                     }
                 }, "json");
                 var sharesDiv = $('<div>');
@@ -249,7 +249,7 @@ $(document).ready(function() {
                     image : img.attr('image-id')
                 }, function(album_users) {
                     for (var i = 0, len = album_users.length; i < len; i++) {
-                        addUser($('#share-users'), album_users[i].user);
+                        addAlbumUser($('#share-users'), album_users[i].user);
                     }
                 }, "json");
             }
@@ -284,7 +284,7 @@ $(document).ready(function() {
                                 var result_li = $('<li>');
                                 var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                 result_a.click(function() {
-                                    addUser($('#album-users'), user.id);
+                                    addAlbumUser($('#album-users'), user.id);
                                     $('.search-results').remove();
                                 });
                                 results_ul.append(result_li.append(result_a));
@@ -330,7 +330,7 @@ $(document).ready(function() {
                                 var result_li = $('<li>');
                                 var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                 result_a.click(function() {
-                                    addUser($('#download-users'), user.id);
+                                    addAlbumUser($('#download-users'), user.id);
                                     $('.search-results').remove();
                                 });
                                 results_ul.append(result_li.append(result_a));
@@ -376,7 +376,7 @@ $(document).ready(function() {
                                 var result_li = $('<li>');
                                 var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                                 result_a.click(function() {
-                                    addUser($('#share-users'), user.id);
+                                    addAlbumUser($('#share-users'), user.id);
                                     $('.search-results').remove();
                                 });
                                 results_ul.append(result_li.append(result_a));
@@ -422,7 +422,7 @@ $(document).ready(function() {
                     album : $('#album').attr('album-id'),
                 }, function(album_users) {
                     for (var i = 0, len = album_users.length; i < len; i++) {
-                        addUser($('#album-users'), album_users[i].user);
+                        addAlbumUser($('#album-users'), album_users[i].user);
                     }
                 }, "json");
                 var downloadsDiv = $('<div>');
@@ -440,7 +440,7 @@ $(document).ready(function() {
                     image : "*"
                 }, function(album_users) {
                     for (var i = 0, len = album_users.length; i < len; i++) {
-                        addUser($('#download-users'), album_users[i].user);
+                        addAlbumUser($('#download-users'), album_users[i].user);
                     }
                 }, "json");
                 var sharesDiv = $('<div>');
@@ -458,7 +458,7 @@ $(document).ready(function() {
                     image : "*"
                 }, function(album_users) {
                     for (var i = 0, len = album_users.length; i < len; i++) {
-                        addUser($('#share-users'), album_users[i].user);
+                        addAlbumUser($('#share-users'), album_users[i].user);
                     }
                 }, "json");
             }
@@ -466,7 +466,7 @@ $(document).ready(function() {
     });
 });
 
-function addUser(ele, user_id) {
+function addAlbumUser(ele, user_id) {
     var userSpan = $('<span>');
     userSpan.addClass('selected-user');
     userSpan.attr('user-id', user_id);
