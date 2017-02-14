@@ -122,16 +122,16 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
                         ?>
                     <li class="no-before pull-right"><button
                             type="button" id="edit-gallery-btn"
-                            class="btn btn-xs btn-warning">
+                            class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="left" title="Edit Album Details">
                             <i class="fa fa-pencil-square-o"></i>
                         </button></li>
                     <li class="no-before pull-right"
                         style="padding-right: 5px; display: none;"><button type="button"
-                            id="save-gallery-btn" class="btn btn-xs btn-success">
+                            id="save-gallery-btn" class="btn btn-xs btn-success" data-toggle="tooltip" data-placement="left" title="Save Image Order">
                             <i class="fa fa-floppy-o"></i>
                         </button></li>
                     <li class="no-before pull-right" style="padding-right: 5px;"><button
-                            type="button" id="sort-gallery-btn" class="btn btn-xs btn-info">
+                            type="button" id="sort-gallery-btn" class="btn btn-xs btn-info" data-toggle="tooltip" data-placement="right" title="Rearrange Album Images">
                             <i class="fa fa-random"></i>
                         </button></li>
                     <?php

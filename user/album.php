@@ -121,7 +121,7 @@ footer {
                     if ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner'])) {
                         ?>
                     <li class="no-before pull-right"><button
-                            type="button" id="edit-album-btn" class="btn btn-xs btn-warning">
+                            type="button" id="edit-album-btn" class="btn btn-xs btn-warning" data-toggle="tooltip" data-placement="left" title="Edit Album Details">
                             <i class="fa fa-pencil-square-o"></i>
                         </button></li>
                     <?php
