@@ -64,7 +64,7 @@ if (! $user->isAdmin ()) {
         <div class="row">
             <div class="col-lg-12">
                 <h2 class="text-center"><?php echo ucwords($category); ?> <button
-                        type="button" class="btn btn-xs btn-success add-product-button" data-toggle="tooltip" data-placement="right" title="Add Product">
+                        type="button" class="btn btn-xs btn-success add-product-button" data-toggle="tooltip" data-placement="right" title="Add New Product to <?php echo ucwords($category); ?>">
                         <em class="fa fa-plus"></em>
                     </button>
                 </h2>
@@ -75,16 +75,16 @@ if (! $user->isAdmin ()) {
                 ?>
                 <div class="col-md-4 col-sm-6 bootstrap-dialog"
                     product-type='<?php echo $r['id']; ?>'>
-                    <button type="button" data-toggle="tooltip" data-placement="right" title="Edit Product Name"
+                    <button type="button" data-toggle="tooltip" data-placement="right" title="Edit <?php echo $r['id']; ?> Name"
                         class="btn btn-xs btn-warning edit-product-button">
                         <em class="fa fa-pencil-square-o"></em>
                     </button>
                     <button type="button"
-                        class="btn btn-xs btn-danger delete-product-button" data-toggle="tooltip" data-placement="right" title="Delete Product">
+                        class="btn btn-xs btn-danger delete-product-button" data-toggle="tooltip" data-placement="right" title="Delete <?php echo $r['id']; ?>">
                         <em class="fa fa-trash-o"></em>
                     </button>
                     <button type="button"
-                        class="btn btn-xs btn-success save-product-button hidden" data-toggle="tooltip" data-placement="right" title="Save Product Name">
+                        class="btn btn-xs btn-success save-product-button hidden" data-toggle="tooltip" data-placement="right" title="Save New Name">
                         <em class="fa fa-save"></em>
                     </button>
                     <button type="button"
@@ -111,15 +111,15 @@ if (! $user->isAdmin ()) {
                             <tr product-id='<?php echo $s['id']; ?>'>
                                 <td>
                                     <button type="button"
-                                        class="btn btn-xs btn-warning edit-size-button" data-toggle="tooltip" data-placement="right" title="Edit Size Details">
+                                        class="btn btn-xs btn-warning edit-size-button" data-toggle="tooltip" data-placement="right" title="Edit <?php echo $s['size']; ?> Details">
                                         <em class="fa fa-pencil-square-o"></em>
                                     </button>
                                     <button type="button"
-                                        class="btn btn-xs btn-danger delete-size-button" data-toggle="tooltip" data-placement="right" title="Delete Size">
+                                        class="btn btn-xs btn-danger delete-size-button" data-toggle="tooltip" data-placement="right" title="Delete <?php echo $s['size']; ?> Size">
                                         <em class="fa fa-trash-o"></em>
                                     </button>
                                     <button type="button"
-                                        class="btn btn-xs btn-success save-size-button hidden" data-toggle="tooltip" data-placement="right" title="Save Size Details">
+                                        class="btn btn-xs btn-success save-size-button hidden" data-toggle="tooltip" data-placement="right" title="Save Details">
                                         <em class="fa fa-save"></em>
                                     </button>
                                     <button type="button"
@@ -137,7 +137,7 @@ if (! $user->isAdmin ()) {
                             <tr>
                                 <td>
                                     <button type="button"
-                                        class="btn btn-xs btn-success add-size-button" data-toggle="tooltip" data-placement="right" title="Add Size">
+                                        class="btn btn-xs btn-success add-size-button" data-toggle="tooltip" data-placement="right" title="Add Size to <?php echo $r['id']; ?>">
                                         <em class="fa fa-save"></em>
                                     </button>
                                 </td>
@@ -162,7 +162,7 @@ if (! $user->isAdmin ()) {
                     </div>
                     <div>
                         <button type="button"
-                            class="btn btn-xs btn-success add-option-button" data-toggle="tooltip" data-placement="right" title="Add Product Options">
+                            class="btn btn-xs btn-success add-option-button" data-toggle="tooltip" data-placement="right" title="Add Options for <?php echo $r['id']; ?>">
                             <em class="fa fa-save"></em>
                         </button>
                         <input class='form-control input-sm'
