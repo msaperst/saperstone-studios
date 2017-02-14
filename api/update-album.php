@@ -46,7 +46,7 @@ if (! ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () 
 
 $name = "";
 $description = "";
-$date = "";
+$date = "NULL";
 $code = "";
 
 if (isset ( $_POST ['name'] )) {
@@ -55,16 +55,15 @@ if (isset ( $_POST ['name'] )) {
 if (isset ( $_POST ['description'] )) {
     $description = mysqli_real_escape_string ( $conn->db, $_POST ['description'] );
 }
-if (isset ( $_POST ['date'] )) {
-    $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
-} else {
-    $date = null;
+if (isset ( $_POST ['date'] ) && $_POST ['date'] != "" ) {
+    $date = "'".mysqli_real_escape_string ( $conn->db, $_POST ['date'] )."'";
 }
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
     $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
 }
 
-$sql = "UPDATE albums SET name='$name', description='$description', date='$date', code=NULL WHERE id='$id';";
+$sql = "UPDATE albums SET name='$name', description='$description', date=$date, code=NULL WHERE id='$id';";
+echo $sql;
 mysqli_query ( $conn->db, $sql );
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && $user->isAdmin ()) {
     $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );

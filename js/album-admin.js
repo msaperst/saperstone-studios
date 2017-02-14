@@ -1,6 +1,11 @@
 var resultsSelected = false;
 
 $(document).ready(function() {
+
+    $('#edit-album-btn').click(function() {
+        editAlbum($('#album').attr('album-id'));
+    });
+
     $('#delete-image-btn').click(function() {
         var img = $('#album-carousel div.active div');
         BootstrapDialog.show({
