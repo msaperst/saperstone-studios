@@ -15,7 +15,9 @@ $(document)
                                                 "searchable" : false,
                                                 "data" : function(row) {
                                                     var buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn" data-toggle="tooltip" data-placement="right" title="Edit '
-                                                            + row.name + ' Album Details"><i class="fa fa-pencil-square-o"></i></button>';
+                                                            + row.name + ' Album Details"><i class="fa fa-pencil-square-o"></i></button>  <button type="button" class="btn btn-xs btn-success view-album-log-btn" data-toggle="tooltip" data-placement="right" title="View '
+                                                            + row.name
+                                                            + ' Activities"><i class="fa fa-bars"></i></button>';
                                                     return buttons;
                                                 },
                                                 "targets" : 0
@@ -149,6 +151,9 @@ function setupEdit() {
     $('.edit-album-btn').off().click(function() {
         var id = $(this).closest('tr').attr('album-id');
         editAlbum(id);
+    });
+    $('.view-album-log-btn').off().click(function() {
+        viewLogs($(this).closest('tr').attr('album-id'));
     });
 }
 
@@ -561,6 +566,48 @@ function editAlbum(id) {
                                     },
                                 });
                     }, "json");
+}
+
+function viewLogs(id) {
+    var dialog = new BootstrapDialog({
+        title : 'Album Activity',
+        message : function(dialogRef) {
+            var $message = $('<div>Loading...</div>');
+            $.get("/api/get-album-log.php", {
+                id : id
+            }, function(data) {
+                var message = $('<div>');
+                message.addClass('row');
+                for (var i = 0, len = data.length; i < len; i++) {
+                    var log = data[i];
+
+                    var time = $('<div>');
+                    time.addClass('col-md-4');
+                    time.html(log.time);
+                    message.append(time);
+
+                    var activity = $('<div>');
+                    activity.addClass('col-md-8');
+                    var action = "User " + log.user + " " + log.action;
+                    if (log.what !== null) {
+                        action += " " + log.what;
+                    }
+                    console.log(action);
+                    activity.html(action);
+                    message.append(activity);
+                }
+                dialog.setMessage(message)
+            }, "json");
+            return $message;
+        },
+        buttons : [ {
+            label : 'Close',
+            action : function(dialogItself) {
+                dialogItself.close();
+            }
+        } ]
+    });
+    dialog.open();
 }
 
 function addUser(id) {
