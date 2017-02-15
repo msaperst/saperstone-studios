@@ -71,6 +71,8 @@ $(function() {
     });
 
     $("#forgot-password-submit").click(function() {
+        var button = $(this);
+        button.prop("disabled", true);
         $.post("/api/send-reset-code.php", {
             email : $('#forgot-password-email').val(),
         }).done(function(data) {
@@ -78,6 +80,7 @@ $(function() {
             if (data === "") {
                 $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Reset code has been sent, please enter it below, along with a new password</div>");
                 resetPasswordForm();
+                button.prop("disabled", false);
             } else {
                 $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
             }
@@ -90,17 +93,18 @@ $(function() {
         resetPasswordForm();
     });
     $("#forgot-password-reset-password").click(function() {
+        var button = $(this);
+        button.prop("disabled", true);
         $.post("/api/reset-password.php", {
             email : $('#forgot-password-email').val(),
             code : $('#forgot-password-code').val(),
             password : $('#forgot-password-new-password').val(),
             passwordConfirm : $('#forgot-password-new-password-confirm').val(),
         }).done(function(data) {
+            button.prop("disabled", false);
             if (data === "") {
-                $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your password has been successfully reset. You can now login with your new credentials.</div>");
-                setTimeout(function() {
-                    $('#forgot-password-modal').modal('hide');
-                }, 10000);
+                $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your password has been successfully reset. Logging you in now.</div>");
+                location.reload();
             } else {
                 $('#forgot-password-modal .loginmodal-container').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
             }
