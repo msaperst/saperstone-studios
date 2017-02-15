@@ -15,17 +15,14 @@ session_start ();
 include_once "../php/user.php";
 $user = new User ();
 
-$user;
 if (! $user->isLoggedIn ()) {
     echo "User must be logged in to add to their cart";
     $conn->disconnect ();
     exit ();
-} else {
-    $user = $user->getId ();
 }
 
 // empty out our old cart for this image
-$sql = "DELETE FROM `cart` WHERE `user` = '$user';";
+$sql = "DELETE FROM `cart` WHERE `user` = '{$user->getId()}';";
 mysqli_query ( $conn->db, $sql );
 
 // for each product, add it back in
@@ -35,12 +32,12 @@ if (isset ( $_POST ['images'] ) && is_array ( $_POST ['images'] )) {
         $image = ( int ) $image ['image'];
         $product = ( int ) $image ['product'];
         $count = ( int ) $image ['count'];
-        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '$user', '$album', '$image', '$product', '$count');";
+        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '{$user->getId()}', '$album', '$image', '$product', '$count');";
         mysqli_query ( $conn->db, $sql );
     }
 }
 
-$sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '$user';";
+$sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '{$user->getId()}';";
 $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 echo $result ['total'];
 

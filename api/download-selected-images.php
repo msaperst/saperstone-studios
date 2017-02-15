@@ -141,6 +141,9 @@ $command = `zip -j "$myFile" $images`;
 $response ['file'] = $myFile;
 echo json_encode ( $response );
 
+// update our user records table
+mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '".implode ( "\n", $image_array )."', $album );" );
+
 // send email
 $IP = $_SERVER ['REMOTE_ADDR'];
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );

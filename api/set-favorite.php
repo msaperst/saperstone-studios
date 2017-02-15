@@ -15,12 +15,13 @@ session_start ();
 include_once "../php/user.php";
 $user = new User ();
 
-$user;
+$user_id;
 if (! $user->isLoggedIn ()) {
-    $user = $_SERVER ['REMOTE_ADDR'];
+    $user_id = $_SERVER ['REMOTE_ADDR'];
 } else {
-    $user = $user->getId ();
+    $user_id = $user->getId ();
 }
+
 
 $album = "";
 if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
@@ -68,11 +69,16 @@ if (! $album_info ['title']) {
     exit ();
 }
 
+if( $user->isLoggedIn() ) {
+    // update our user records table
+    mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '$sequence', $album );" );
+}
+
 // update our mysql database
-$sql = "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('$user', '$album', '$sequence');";
+$sql = "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('$user_id', '$album', '$sequence');";
 mysqli_query ( $conn->db, $sql );
 // get our new favorite count for the album
-$sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '$user' AND `album` = '$album';";
+$sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '$user_id' AND `album` = '$album';";
 $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 echo $result ['total'];
 

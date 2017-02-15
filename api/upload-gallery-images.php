@@ -15,6 +15,13 @@ session_start ();
 include_once "../php/user.php";
 $user = new User ();
 
+// only admin users can make updates
+if (! $user->isAdmin ()) {
+    header ( 'HTTP/1.0 401 Unauthorized' );
+    $conn->disconnect ();
+    exit ();
+}
+
 $id = "";
 if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
     $id = ( int ) $_POST ['gallery'];
@@ -34,12 +41,6 @@ $sql = "SELECT * FROM galleries WHERE id = '$id';";
 $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if (! $gallery_info ['title']) {
     echo "The ID '$id' doesn't match any galleries";
-    $conn->disconnect ();
-    exit ();
-}
-// only admin users can make updates
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
     exit ();
 }

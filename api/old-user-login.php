@@ -23,15 +23,19 @@ if (! count ( $err )) {
     $_POST ['password'] = mysqli_real_escape_string ( $conn->db, $_POST ['password'] );
     
     // Escaping all input data
-    $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT hash,usr FROM users WHERE usr='{$_POST['username']}' AND pass='{$_POST ['password']}'" ) );
+    $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE usr='{$_POST['username']}' AND pass='{$_POST ['password']}'" ) );
     
     if ($row ['usr']) {
         // If everything is OK login
         
         $_SESSION ['usr'] = $row ['usr'];
         $_SESSION ['hash'] = $row ['hash'];
+        $_SESSION ['rememberMe'] = 1;
+        
+        setcookie ( 'ssRemember', 1 );
         
         mysqli_query ( $conn->db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
+        mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
         // Update last login in DB
     } else {
         $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM `old_users` WHERE directory='{$_POST['username']}' AND password='{$_POST ['password']}'" ) );

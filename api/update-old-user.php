@@ -69,14 +69,12 @@ $sql = "INSERT INTO `users` (`id`, `usr`, `pass`, `firstName`, `lastName`, `emai
 mysqli_query ( $conn->db, $sql );
 $sql = "DELETE FROM `old_users` WHERE `id` = $id;";
 mysqli_query ( $conn->db, $sql );
+mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( $id, CURRENT_TIMESTAMP, 'Converted User', NULL, NULL );" );
+
 
 // need to auto-login
 session_name ( 'ssLogin' );
-// Starting the session
-
 session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-// Making the cookie live for 2 weeks
-
 session_start ();
 
 $_SESSION ['usr'] = $username;
@@ -87,6 +85,9 @@ setcookie ( 'ssRemember', 1 );
 // We create the tzRemember cookie
 
 mysqli_query ( $conn->db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='$hash';" );
+sleep ( 1 );
+mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( $id, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
+
 
 $conn->disconnect ();
 exit ();

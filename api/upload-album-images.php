@@ -81,10 +81,13 @@ if (isset ( $_FILES ["myfile"] )) {
         $size = getimagesize ( $output_dir . $fileName );
         $sql = "INSERT INTO `album_images` (`album`, `title`, `sequence`, `location`, `width`, `height`) VALUES ('$id', '$img', '$next_seq', '/albums/" . $album_info ['location'] . "/$img', '" . $size [0] . "', '" . $size [1] . "');";
         mysqli_query ( $conn->db, $sql );
-        $next_seq ++;
+        if ( ! $user->isAdmin() ) {
+            mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Added Image', $next_seq, $id );" );
+        }
         // update the image count
         $sql = "UPDATE `albums` SET `images` = images + 1 WHERE id='$id';";
         mysqli_query ( $conn->db, $sql );
+        $next_seq ++;
     }
     
     echo json_encode ( $ret );

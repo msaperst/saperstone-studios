@@ -31,6 +31,13 @@ if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE
     exit ();
 }
 
+$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT email FROM users WHERE email='$email'" ) );
+if ($row ['email']) {
+    echo "We already have an account on file for that email address. Try resetting your password.";
+    $conn->disconnect ();
+    exit ();
+}
+
 if (isset ( $_POST ['firstName'] ) && $_POST ['firstName'] != "") {
     $firstName = mysqli_real_escape_string ( $conn->db, $_POST ['firstName'] );
 } else {
@@ -58,6 +65,9 @@ if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
 $hash = md5 ( "$username-$password" );
 $sql = "INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `hash`) VALUES ('$username', '$password', '$firstName', '$lastName', '$email', '$hash');";
 mysqli_query ( $conn->db, $sql );
+$last_id = mysqli_insert_id ( $conn->db );
+
+mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( $last_id, CURRENT_TIMESTAMP, 'Registered', NULL, NULL );" );
 
 // need to auto-login
 session_name ( 'ssLogin' );
@@ -75,7 +85,9 @@ $_SESSION ['rememberMe'] = 1;
 setcookie ( 'ssRemember', 1 );
 // We create the tzRemember cookie
 
-mysqli_query ( $conn->db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='$hash';" );
+mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='$hash';" );
+sleep ( 1 );
+mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( $last_id, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
 
 $conn->disconnect ();
 exit ();

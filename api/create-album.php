@@ -22,6 +22,9 @@ if (! $user->isAdmin () && $user->getRole () != "uploader") {
     exit ();
 }
 
+$name = "";
+$description = "";
+$date = "NULL";
 // confirm we have an album name
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
@@ -35,10 +38,8 @@ if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
 if (isset ( $_POST ['description'] )) {
     $description = mysqli_real_escape_string ( $conn->db, $_POST ['description'] );
 }
-if (isset ( $_POST ['date'] )) {
+if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
     $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
-} else {
-    $date = null;
 }
 
 // generate our location for the files
@@ -52,16 +53,21 @@ if (! mkdir ( "../albums/$location", 0755, true )) {
     exit ();
 }
 
-$sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', '$date', '$location', '" . $user->getId () . "');";
+$sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', $date, '$location', '" . $user->getId () . "');";
 mysqli_query ( $conn->db, $sql );
 $last_id = mysqli_insert_id ( $conn->db );
 
 if ($user->getRole () == "uploader" && $last_id != 0) {
     $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $user->getId () . "', '$last_id');";
     mysqli_query ( $conn->db, $sql );
+    
+    if( $user->isLoggedIn() ) {
+        // update our user records table
+        mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );" );
+    }
 }
 if ($last_id == 0) {
-    rmdir ( $location );
+    rmdir ( "../albums/$location" );
 }
 
 echo $last_id;
