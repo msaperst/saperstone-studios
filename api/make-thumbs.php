@@ -60,7 +60,7 @@ if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
 
 if( ! $user->isAdmin() ) {
     // update our user records table
-    mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, $id );" );
+    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, $id );" );
 }
 
 $sql = "SELECT * FROM albums WHERE id = $id;";

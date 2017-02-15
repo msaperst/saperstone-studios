@@ -44,7 +44,7 @@ if ($row ['usr']) {
     // If everything is OK login, so update our password
     mysqli_query ( $conn->db, "UPDATE users SET pass='" . md5 ( $_POST ['password'] ) . "' WHERE email='{$_POST ['email']}' AND resetKey='{$_POST ['code']}';" );
     mysqli_query ( $conn->db, "UPDATE users SET resetKey=NULL WHERE email='{$_POST ['email']}';" );
-    mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Reset Password', NULL, NULL );" );
+    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Reset Password', NULL, NULL );" );
 
     // If everything is OK login
     session_name ( 'ssLogin' );
@@ -58,7 +58,7 @@ if ($row ['usr']) {
     
     mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$row ['hash']}';" );
     sleep ( 1 );
-    mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
+    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
     
 
 } else {

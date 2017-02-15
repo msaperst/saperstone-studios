@@ -67,7 +67,7 @@ $sql = "INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `h
 mysqli_query ( $conn->db, $sql );
 $last_id = mysqli_insert_id ( $conn->db );
 
-mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( $last_id, CURRENT_TIMESTAMP, 'Registered', NULL, NULL );" );
+mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( $last_id, CURRENT_TIMESTAMP, 'Registered', NULL, NULL );" );
 
 // need to auto-login
 session_name ( 'ssLogin' );
@@ -87,7 +87,7 @@ setcookie ( 'ssRemember', 1 );
 
 mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='$hash';" );
 sleep ( 1 );
-mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( $last_id, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
+mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( $last_id, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
 
 $conn->disconnect ();
 exit ();

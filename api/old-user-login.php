@@ -35,7 +35,7 @@ if (! count ( $err )) {
         setcookie ( 'ssRemember', 1 );
         
         mysqli_query ( $conn->db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
-        mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
+        mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
         // Update last login in DB
     } else {
         $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM `old_users` WHERE directory='{$_POST['username']}' AND password='{$_POST ['password']}'" ) );

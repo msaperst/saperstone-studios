@@ -69,7 +69,7 @@ $sql = "INSERT INTO `users` (`id`, `usr`, `pass`, `firstName`, `lastName`, `emai
 mysqli_query ( $conn->db, $sql );
 $sql = "DELETE FROM `old_users` WHERE `id` = $id;";
 mysqli_query ( $conn->db, $sql );
-mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( $id, CURRENT_TIMESTAMP, 'Converted User', NULL, NULL );" );
+mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( $id, CURRENT_TIMESTAMP, 'Converted User', NULL, NULL );" );
 
 
 // need to auto-login
@@ -86,7 +86,7 @@ setcookie ( 'ssRemember', 1 );
 
 mysqli_query ( $conn->db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='$hash';" );
 sleep ( 1 );
-mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( $id, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
+mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( $id, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
 
 
 $conn->disconnect ();

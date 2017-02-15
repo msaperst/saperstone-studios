@@ -71,7 +71,7 @@ if (! $album_info ['title']) {
 
 if( $user->isLoggedIn() ) {
     // update our user records table
-    mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '$sequence', $album );" );
+    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '$sequence', $album );" );
 }
 
 // update our mysql database

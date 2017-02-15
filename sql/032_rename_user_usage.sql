@@ -1,0 +1,1 @@
+RENAME TABLE `saperstone-studios`.`user_usage` TO `saperstone-studios`.`user_logs`;

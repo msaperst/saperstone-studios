@@ -63,7 +63,7 @@ if ($user->getRole () == "uploader" && $last_id != 0) {
     
     if( $user->isLoggedIn() ) {
         // update our user records table
-        mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );" );
+        mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );" );
     }
 }
 if ($last_id == 0) {

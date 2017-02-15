@@ -71,7 +71,7 @@ if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
     $sql = "UPDATE users SET pass='$password' WHERE id='" . $user->getId () . "';";
     mysqli_query ( $conn->db, $sql );
 }
-mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$user->getId ()}, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL );" );
+mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId ()}, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL );" );
 
 $conn->disconnect ();
 exit ();

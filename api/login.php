@@ -23,7 +23,7 @@ if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['
 
 if ($_POST ['submit'] == 'Logout') {
     $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE hash='{$_SESSION['hash']}'" ) );
-    mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );" );
+    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );" );
     
     session_unset ();
     session_destroy ();
@@ -61,7 +61,7 @@ if ($_POST ['submit'] == 'Login') {
             // We create the tzRemember cookie
             
             mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
-            mysqli_query ( $conn->db, "INSERT INTO `user_usage` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
+            mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
             // Update last login in DB
         } elseif ($row ['usr']) {
             $err [] = 'Sorry, you account has been deactivated. Please 
