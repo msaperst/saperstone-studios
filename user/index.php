@@ -128,7 +128,7 @@ if (! $user->isLoggedIn ()) {
 
     <script
         src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-    <script src="/js/jquery.uploadfile.min.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
     <?php
     if ($user->isAdmin ()) {
         ?>
