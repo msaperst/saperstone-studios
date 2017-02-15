@@ -5,6 +5,7 @@ API Tests
 
 Turn what to wear into a gallery?
 Unable to delete multiple images from gallery/album
+Set albums to use id (static) instead of sequence
 Fix album delete to use ID
 Convert API calls into function calls - this can then be unit tests ;)
 Align two verticals as horizontal for slideshow
@@ -14,5 +15,9 @@ Allow dragging and dropping of text area to breakup images in blog
 Fix color of LA's face
 * email notification of invalid login
 * logs of download user actions
+	still need it for cart
+	make logs viewable
+	
 * indicate which albums don't have thumbnails made of them
 * make album codes unique - OR - bring them to multiple albums
+* make updating email address to unique

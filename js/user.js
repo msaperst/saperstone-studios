@@ -16,7 +16,9 @@ $(document)
                                                     "data" : function(row) {
                                                         var buttons = '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit '
                                                                 + row.usr
-                                                                + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As '
+                                                                + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-user-log-btn" data-toggle="tooltip" data-placement="right" title="View '
+                                                                + row.usr
+                                                                + ' Activities"><i class="fa fa-bars"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As '
                                                                 + row.usr + '"><i class="fa fa-user-secret"></i></button>';
                                                         return buttons;
                                                     },
@@ -84,7 +86,9 @@ function setupEdit() {
         }).done(function(data) {
             window.location.href = "index.php";
         });
-        switchToUser();
+    });
+    $('.view-user-log-btn').off().click(function() {
+        viewLogs($(this).closest('tr').attr('user-id'));
     });
 }
 
@@ -674,8 +678,49 @@ function editUser(data) {
             });
 }
 
-function switchToUser() {
+function viewLogs(id) {
+    var dialog = new BootstrapDialog({
+        title : 'User Activity',
+        message : function(dialogRef) {
+            var $message = $('<div>Loading...</div>');
+            $.get("/api/get-user-log.php", {
+                id : id
+            }, function(data) {
+                var message = $('<div>');
+                message.addClass('row');
+                for (var i = 0, len = data.length; i < len; i++) {
+                    var log = data[i];
 
+                    var time = $('<div>');
+                    time.addClass('col-md-4');
+                    time.html(log.time);
+                    message.append(time);
+
+                    var activity = $('<div>');
+                    activity.addClass('col-md-8');
+                    var action = log.action;
+                    if (log.what !== null) {
+                        action += " " + log.what;
+                    }
+                    if (log.album !== null) {
+                        action += " from album " + log.album;
+                    }
+                    console.log(action);
+                    activity.html(action);
+                    message.append(activity);
+                }
+                dialog.setMessage(message)
+            }, "json");
+            return $message;
+        },
+        buttons : [ {
+            label : 'Close',
+            action : function(dialogItself) {
+                dialogItself.close();
+            }
+        } ]
+    });
+    dialog.open();
 }
 
 function addAlbum(id) {
@@ -691,7 +736,6 @@ function addAlbum(id) {
         albumSpan.html(data.name);
         $('#user-albums').append(albumSpan);
     }, "json");
-
 }
 
 function disableDialogButtons(dialog) {
