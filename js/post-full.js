@@ -1,12 +1,10 @@
-$(document).ready(function() {
-    $('#edit-post-btn').click(function() {
-        window.location.href='manage.php';
-    });
-});
-
 function PostFull(post) {
     this.post = post;
     this.loadPosts();
+    
+    $('#edit-post-btn').click(function() {
+        window.location.href='new.php?p=' + post;
+    });
 }
 
 PostFull.prototype.loadPosts = function() {
