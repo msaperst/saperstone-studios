@@ -142,7 +142,7 @@ $response ['file'] = $myFile;
 echo json_encode ( $response );
 
 // update our user records table
-mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '".implode ( "\n", $image_array )."', $album );" );
+mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode ( "\n", $image_array ) . "', $album );" );
 
 // send email
 $IP = $_SERVER ['REMOTE_ADDR'];

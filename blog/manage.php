@@ -140,8 +140,6 @@ if (! $user->isAdmin ()) {
         <script src="/js/posts-manage.js"></script>
         <script
             src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
 </body>
 

@@ -66,6 +66,18 @@ if (! $user->isAdmin () && ! $details ['active']) {
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/blog/posts.php">Posts</a></li>
                     <li class="active" id="breadcrumb-title"></li>
+                    <?php
+                    if ($user->isAdmin ()) {
+                        ?>
+                    <li class="no-before pull-right"><button
+                            type="button" id="edit-post-btn" class="btn btn-xs btn-warning"
+                            data-toggle="tooltip" data-placement="left"
+                            title="Edit Blog Post">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </button></li>
+                    <?php
+                    }
+                    ?>
                 </ol>
             </div>
         </div>

@@ -71,7 +71,6 @@ $sql = "DELETE FROM `old_users` WHERE `id` = $id;";
 mysqli_query ( $conn->db, $sql );
 mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( $id, CURRENT_TIMESTAMP, 'Converted User', NULL, NULL );" );
 
-
 // need to auto-login
 session_name ( 'ssLogin' );
 session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
@@ -87,7 +86,6 @@ setcookie ( 'ssRemember', 1 );
 mysqli_query ( $conn->db, "UPDATE users SET lastLogin=CURRENT_TIMESTAMP WHERE hash='$hash';" );
 sleep ( 1 );
 mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( $id, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
-
 
 $conn->disconnect ();
 exit ();

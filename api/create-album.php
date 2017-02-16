@@ -61,7 +61,7 @@ if ($user->getRole () == "uploader" && $last_id != 0) {
     $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $user->getId () . "', '$last_id');";
     mysqli_query ( $conn->db, $sql );
     
-    if( $user->isLoggedIn() ) {
+    if ($user->isLoggedIn ()) {
         // update our user records table
         mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );" );
     }

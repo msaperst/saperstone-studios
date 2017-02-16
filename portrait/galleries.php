@@ -257,18 +257,8 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
     <?php
     if ($user->isAdmin ()) {
         ?>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-        crossorigin="anonymous"></script>
-    <script
-        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-        crossorigin="anonymous"></script>
     <script src="/js/gallery-admin.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
-        
     <?php
     }
     ?>

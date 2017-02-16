@@ -58,7 +58,7 @@ if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
     exit ();
 }
 
-if( ! $user->isAdmin() ) {
+if (! $user->isAdmin ()) {
     // update our user records table
     mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, $id );" );
 }

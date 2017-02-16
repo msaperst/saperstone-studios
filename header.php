@@ -59,6 +59,12 @@ $nav = "main";
 <link rel="alternate" type="application/rss+xml" href="/blog.rss"
     title="RSS feed for Saperstone Studios Blogs">
 
+<!-- JQuery UI CSS -->
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+    integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik="
+    crossorigin="anonymous" />
+
 <!-- Bootstrap Core CSS -->
 <link
     href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"

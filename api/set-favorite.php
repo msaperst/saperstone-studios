@@ -22,7 +22,6 @@ if (! $user->isLoggedIn ()) {
     $user_id = $user->getId ();
 }
 
-
 $album = "";
 if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
     $album = ( int ) $_POST ['album'];
@@ -69,7 +68,7 @@ if (! $album_info ['title']) {
     exit ();
 }
 
-if( $user->isLoggedIn() ) {
+if ($user->isLoggedIn ()) {
     // update our user records table
     mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '$sequence', $album );" );
 }

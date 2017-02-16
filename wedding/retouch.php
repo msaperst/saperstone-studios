@@ -67,8 +67,6 @@
     <!-- /.container -->
 
     <script src='/js/retouch.js'></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <script>
         var images = [];
         images[0] = { thumb:'/retouch/img/wedding/DSC_5338.jpg', orig:'/retouch/img/wedding/DSC_5338before.jpg', edit:'/retouch/img/wedding/DSC_5338after.jpg', width:'1140', height:'829', text:'The groomsmen at the bar is such a great shot!  I wanted to align everyone evenly under the purple lights but there was a column to my left that prevented that.  My symmetry OCD kicked in and I added the additional lights on the right in post production.' };

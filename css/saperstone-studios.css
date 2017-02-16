@@ -100,8 +100,8 @@ blockquote p {
 
 /* Our Forms */
 .form-horizontal .form-group {
-	margin-right: 0 !important;
-	margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
 }
 
 /* Modal Stylizing */
