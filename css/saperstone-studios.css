@@ -98,6 +98,12 @@ blockquote p {
     color: #980f7f;
 }
 
+/* Our Forms */
+.form-horizontal .form-group {
+	margin-right: 0 !important;
+	margin-left: 0 !important;
+}
+
 /* Modal Stylizing */
 .modal-header {
     background-color: #428bca;
