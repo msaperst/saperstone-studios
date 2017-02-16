@@ -33,6 +33,12 @@ if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE
     $conn->disconnect ();
     exit ();
 }
+$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT email FROM users WHERE email='$email' AND id!={$user->getId()}" ) );
+if ($row ['email']) {
+    echo "We already have another account on file for that email address. Try a different email address, or use the account associated with that email.";
+    $conn->disconnect ();
+    exit ();
+}
 
 if (isset ( $_POST ['firstName'] ) && $_POST ['firstName'] != "") {
     $firstName = mysqli_real_escape_string ( $conn->db, $_POST ['firstName'] );

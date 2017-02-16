@@ -37,6 +37,10 @@ if (isset ( $_POST ['username'] ) && $_POST ['username'] != "") {
 }
 if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL )) {
     $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT email FROM users WHERE email='$email'" ) );
+    if ($row ['email']) {
+        $err [] = "We already have an account on file for that email address.";
+    }
 } elseif ($_POST ['email'] == "") {
     $err [] = "Email is not provided!";
 } else {
