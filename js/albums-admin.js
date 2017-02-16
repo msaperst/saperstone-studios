@@ -588,7 +588,7 @@ function viewLogs(id) {
 
                     var activity = $('<div>');
                     activity.addClass('col-md-8');
-                    var action = "User " + log.user + " " + log.action;
+                    var action = "User <i>" + log.usr + "</i> " + log.action;
                     if (log.what !== null) {
                         action += " " + log.what;
                     }

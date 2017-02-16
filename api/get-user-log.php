@@ -29,7 +29,7 @@ if (isset ( $_GET ['id'] )) {
     exit ();
 }
 
-$sql = "SELECT * FROM user_logs WHERE user = $id";
+$sql = "SELECT user_logs.*, albums.name FROM user_logs LEFT JOIN albums ON user_logs.album = albums.id WHERE user = $id";
 $result = mysqli_query ( $conn->db, $sql );
 $actions = array ();
 while ( $row = mysqli_fetch_assoc ( $result ) ) {

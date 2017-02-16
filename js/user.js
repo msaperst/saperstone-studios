@@ -700,10 +700,10 @@ function viewLogs(id) {
                     activity.addClass('col-md-8');
                     var action = log.action;
                     if (log.what !== null) {
-                        action += " " + log.what;
+                        action += " <i>" + log.what + "</i>";
                     }
                     if (log.album !== null) {
-                        action += " from album " + log.album;
+                        action += " from album <i>" + log.name + "</i>";
                     }
                     console.log(action);
                     activity.html(action);
