@@ -77,8 +77,7 @@ $user = new User ();
                             class="fa fa-instagram fa-2x"></em></a></li>
                     <li><a target="_blank" href="https://twitter.com/LaSaperstone"><em
                             class="fa fa-twitter-square fa-2x"></em></a></li>
-                    <li><a target="_blank"
-                        href="https://saperstonestudios.com/Blog/blogFeed.xml"><em
+                    <li><a target="_blank" type="application/rss+xml" href="/blog.rss"><em
                             class="fa fa-rss-square fa-2x"></em></a></li>
                     <li><a target="_blank"
                         href="https://plus.google.com/+SaperstoneStudios"><em
