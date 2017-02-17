@@ -26,8 +26,9 @@ class SocialMedia {
         $result = mysqli_query ( $this->db, $sql );
         while ( $r = mysqli_fetch_assoc ( $result ) ) {
             fwrite ( $feed, "    <item>\n" );
-            fwrite ( $feed, "      <title>" . $r ['title'] . "</title>\n" );
+            fwrite ( $feed, "      <title>" . htmlspecialchars( $r ['title'] ) . "</title>\n" );
             fwrite ( $feed, "      <link>$url/blog/post.php?p=" . $r ['id'] . "</link>\n" );
+            fwrite ( $feed, "      <guid>$url/blog/post.php?p=" . $r ['id'] . "</guid>\n" );
             fwrite ( $feed, "    </item>\n" );
             fwrite ( $feed, "\n" );
         }
@@ -72,7 +73,7 @@ class SocialMedia {
             $pageURL .= "s";
         }
         $pageURL .= "://";
-        if ($_SERVER ["SERVER_PORT"] != "80") {
+        if ($_SERVER ["SERVER_PORT"] != "80" && $_SERVER ["SERVER_PORT"] != "443" ) {
             $pageURL .= $_SERVER ["SERVER_NAME"] . ":" . $_SERVER ["SERVER_PORT"];
         } else {
             $pageURL .= $_SERVER ["SERVER_NAME"];
