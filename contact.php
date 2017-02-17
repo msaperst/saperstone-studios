@@ -62,7 +62,7 @@ $user = new User ();
                 </p>
                 <p>
                     <em class="fa fa-envelope-o"></em> <abbr title="Email">E</abbr>: <a
-                        href="mailto:contact@saperstonestudios.com">Contact@SaperstoneStudios.com</a>
+                        target="_blank" href="mailto:contact@saperstonestudios.com">Contact@SaperstoneStudios.com</a>
                 </p>
                 <p>
                     <em class="fa fa-clock-o"></em> <abbr title="Hours">H</abbr>:
