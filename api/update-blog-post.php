@@ -101,6 +101,10 @@ if (isset ( $_POST ['active'] )) {
     mysqli_query ( $conn->db, $sql );
     if( ! $was_active && $active ) {
         echo "published";
+    } else {
+        include_once "../php/social-media.php";
+        $sm = new SocialMedia ();
+        $sm->generateRSS ();
     }
 }
 

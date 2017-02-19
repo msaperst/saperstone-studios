@@ -14,8 +14,9 @@ class SocialMedia {
         $feed = fopen ( $output, 'w' ) or die ( "Unable to open file!" );
         
         fwrite ( $feed, "<?xml version=\"1.0\"?>\n" );
-        fwrite ( $feed, "<rss version=\"2.0\">\n" );
+        fwrite ( $feed, "<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n" );
         fwrite ( $feed, "  <channel>\n" );
+        fwrite ( $feed, "    <atom:link href=\"$url/blog.rss\" rel=\"self\" type=\"application/rss+xml\" />\n" );
         fwrite ( $feed, "    <title>Saperstone Studios Photo Blog</title>\n" );
         fwrite ( $feed, "    <description>Blogging our way through engagements, weddings, babies, then families</description>\n" );
         fwrite ( $feed, "    <link>$url/blog/</link>\n" );
