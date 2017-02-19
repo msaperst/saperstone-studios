@@ -41,7 +41,7 @@ class SocialMedia {
     function publishBlogToTwitter($post_id) {
         // get our post information
         $details = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT * FROM `blog_details` WHERE id=$post_id;" ) );
-        
+
         $title = $details ['title'];
         $image = $details ['preview'];
         $link = $this->baseURL () . "/blog/post.php?p=$post_id";

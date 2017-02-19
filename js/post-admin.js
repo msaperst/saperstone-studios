@@ -513,7 +513,7 @@ function updatePost(tags, preview, content, callback) {
             })
             .done(
                     function(data) {
-                        if (data === "") {
+                        if (data === "" || data === "published") {
                             $('#post-information-message').remove();
                             $('#post-title-input')
                                     .closest('div')

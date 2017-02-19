@@ -171,7 +171,27 @@ function updatePost(post) {
         preview : preview,
         active : $('#post-active-input').is(':checked') ? 1 : 0,
     }).done(function(data) {
-        if ( data !== "") {
+        if ( data === "published") {
+            $('#post-update-button').prop('disabled', true);
+            $('#post-delete-button').prop('disabled', true);
+            $('#post-update-close-button').prop('disabled', true);
+            $.post("/api/publish-blog-post.php", {
+                post : post
+            }).done(function(data) {
+                if ( data !== "" ) {
+                    $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                } else {
+                    $('#post').modal('hide');
+                    post_table.ajax.reload(null, false);
+                }
+            }).fail(function() {
+                $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+            }).always(function() {
+                $('#post-update-button').prop('disabled', false);
+                $('#post-delete-button').prop('disabled', false);
+                $('#post-update-close-button').prop('disabled', false);
+            });;
+        } else if ( data !== "") {
             $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         } else {
             $('#post').modal('hide');

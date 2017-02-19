@@ -94,9 +94,14 @@ if (isset ( $_POST ['preview'] ['img'] ) && $_POST ['preview'] ['img'] != "") {
 
 // if we're changing the post activation
 if (isset ( $_POST ['active'] )) {
+    $sql = "SELECT active FROM `blog_details` WHERE `id` = $id;";
+    $was_active = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) )['active'];
     $active = ( int ) $_POST ['active'];
     $sql = "UPDATE `blog_details` SET `active` = '$active' WHERE `id` = $id;";
     mysqli_query ( $conn->db, $sql );
+    if( ! $was_active && $active ) {
+        echo "published";
+    }
 }
 
 // if we're updating the content
