@@ -18,3 +18,5 @@ Fix color of LA's face
 	still need it for cart
 * indicate which albums don't have thumbnails made of them
 * make album codes unique - OR - bring them to multiple albums
+run zap
+run openscap
