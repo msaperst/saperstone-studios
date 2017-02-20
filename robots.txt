@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /api/
+Disallow: /albums/
+Disallow: /php/
+Disallow: /logs/
+Disallow: /plugins/
+Disallow: /tmp/
+Disallow: /user/

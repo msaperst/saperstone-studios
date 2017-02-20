@@ -19,4 +19,7 @@ Fix color of LA's face
 * indicate which albums don't have thumbnails made of them
 * make album codes unique - OR - bring them to multiple albums
 run zap
+	set cookie to be secure
+	fix incomplete cache control
 run openscap
+move fonts into plugins
