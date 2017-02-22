@@ -85,7 +85,7 @@ $browser = new Browser ();
 $from = "Selects <selects@saperstonestudios.com>";
 $to = "Selects <selects@saperstonestudios.com>";
 if ($email != "") {
-    $to .= ", $name <$email>";
+    $to .= ", \"$name\" <$email>";
 }
 $subject = "Selects Have Been Made";
 
