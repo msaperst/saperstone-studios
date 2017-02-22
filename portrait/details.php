@@ -40,22 +40,6 @@
         </div>
         <!-- /.row -->
 
-        <!-- Features Section -->
-        <!--         <div class="row"> -->
-        <!--             <div class="col-xs-4"> -->
-        <!--                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>"> -->
-        <!--                    <img width="100%" src="img/portrait-main-1.jpg<?php echo $rand; ?>" -->
-        <!--                         alt="Portraits"> -->
-        <!--                 </div> -->
-        <!--             </div> -->
-        <!--             <div class="col-xs-8"> -->
-        <!--                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>"> -->
-        <!--                    <img width="100%" src="img/portrait-main-2.jpg<?php echo $rand; ?>" -->
-        <!--                         alt="Portraits"> -->
-        <!--                 </div> -->
-        <!--             </div> -->
-        <!--         </div> -->
-
         <div class="row" style='padding-top: 30px'>
             <div class="col-lg-12">
                 <p>
