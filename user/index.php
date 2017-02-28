@@ -92,7 +92,7 @@ if (! $user->isLoggedIn ()) {
                             <?php
                             if ($user->isAdmin () || $user->getRole () == "uploader") {
                                 ?>
-                            <th>
+                            <th style="width:55px;">
                                 <button id="add-album-btn" type="button"
                                     class="btn btn-xs btn-success" data-toggle="tooltip"
                                     data-placement="right" title="Add New Album">
