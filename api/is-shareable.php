@@ -74,28 +74,14 @@ if (! $album_info ['title']) {
     exit ();
 }
 
-$sql = "SELECT * FROM `share_rights` WHERE `user` = '$user' AND `album` = '$album' AND `image` = '$sequence';";
+$sql = "SELECT * FROM `share_rights` WHERE ( `user` = '$user' OR `user` = '*' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
 $shareable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($shareable ['user']) {
     echo 1;
     $conn->disconnect ();
     exit ();
 }
-$sql = "SELECT * FROM `share_rights` WHERE `user` = '$user' AND `album` = '$album' AND `image` = '*';";
-$shareable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($shareable ['user']) {
-    echo 1;
-    $conn->disconnect ();
-    exit ();
-}
-$sql = "SELECT * FROM `share_rights` WHERE `user` = '$user' AND `album` = '*';";
-$shareable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($shareable ['user']) {
-    echo 1;
-    $conn->disconnect ();
-    exit ();
-}
-echo 0;
 
+echo 0;
 $conn->disconnect ();
 exit ();

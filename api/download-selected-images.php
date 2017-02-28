@@ -15,12 +15,6 @@ session_start ();
 include_once "../php/user.php";
 $user = new User ();
 
-if (! $user->isLoggedIn ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    $conn->disconnect ();
-    exit ();
-}
-
 if (isset ( $_POST ['what'] )) {
     $what = mysqli_real_escape_string ( $conn->db, $_POST ['what'] );
 } else {
@@ -48,9 +42,21 @@ if (! $album_info ['name']) {
     exit ();
 }
 
+// check for album access
+$isAlbumDownloadable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `download_rights` WHERE user = '*' AND album = '" . $album . "';" ) );
+if (! $user->isLoggedIn () && ! $isAlbumDownloadable) {
+    header ( 'HTTP/1.0 401 Unauthorized' );
+    $conn->disconnect ();
+    exit ();
+}
+$userid = $_SERVER ['REMOTE_ADDR'];
+if ($user->isLoggedIn ()) {
+    $userid = $user->getId ();
+}
+
 // determine what the user can download
 $downloadable = array ();
-$sql = "SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId () . "';";
+$sql = "SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId () . "' OR `user` = '*';";
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     if ($r ['album'] == "*" || ($r ['album'] == $album && $r ['image'] == "*")) {
@@ -78,7 +84,7 @@ if ($what == "all") {
         $desired [] = $r;
     }
 } elseif ($what == "favorites") {
-    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '" . $user->getId () . "' AND favorites.album = '$album';";
+    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$userid' AND favorites.album = '$album';";
     $result = mysqli_query ( $conn->db, $sql );
     $desired = array ();
     while ( $r = mysqli_fetch_assoc ( $result ) ) {
