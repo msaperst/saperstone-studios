@@ -19,7 +19,7 @@ if (! $user->isLoggedIn ()) {
     echo "User must be logged in to create an account";
     $conn->disconnect ();
     exit ();
-} else {
+}
 
 $album = "";
 if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
