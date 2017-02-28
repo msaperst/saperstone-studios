@@ -705,7 +705,6 @@ function viewLogs(id) {
                     if (log.album !== null) {
                         action += " from album <i>" + log.name + "</i>";
                     }
-                    console.log(action);
                     activity.html(action);
                     message.append(activity);
                 }

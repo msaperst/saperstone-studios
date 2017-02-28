@@ -592,7 +592,6 @@ function viewLogs(id) {
                     if (log.what !== null) {
                         action += " " + log.what;
                     }
-                    console.log(action);
                     activity.html(action);
                     message.append(activity);
                 }
