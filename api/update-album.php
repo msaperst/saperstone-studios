@@ -63,12 +63,18 @@ if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
 }
 
 $sql = "UPDATE albums SET name='$name', description='$description', date=$date, code=NULL WHERE id='$id';";
-echo $sql;
 mysqli_query ( $conn->db, $sql );
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && $user->isAdmin ()) {
     $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
-    $sql = "UPDATE albums SET code='$code' WHERE id='$id';";
-    mysqli_query ( $conn->db, $sql );
+    $codeExist = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `albums` WHERE code = '$code';" ) );
+    if( ! $codeExist ) {
+        $sql = "UPDATE albums SET code='$code' WHERE id='$id';";
+        mysqli_query ( $conn->db, $sql );
+    } else {
+        echo "That Album Code already exists.";
+        $conn->disconnect ();
+        exit ();
+    }
 }
 $conn->disconnect ();
 exit ();
