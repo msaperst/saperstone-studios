@@ -22,5 +22,3 @@ run zap
 	set cookie to be secure
 	fix incomplete cache control
 run openscap
-move fonts into plugins
-fix missing alt text

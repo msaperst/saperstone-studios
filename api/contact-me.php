@@ -5,7 +5,7 @@ $conn->connect ();
 
 $to = "Contact <contact@saperstonestudios.com>";
 if (isset ( $_POST ['to'] ) && $_POST ['to'] != "") {
-    $to = $_POST ['to'];
+    $to = mysqli_real_escape_string ( $conn->db, $_POST ['to'] );
 }
 
 // check if fields passed are empty

@@ -57,7 +57,7 @@ if (isset ( $_POST ['imgs'] ) && is_array ( $_POST ['imgs'] )) {
 
 for($x = 0; $x < sizeof ( $imgs ); $x ++) {
     $img = $imgs [$x];
-    $sql = "UPDATE gallery_images SET sequence=" . $x . " WHERE id='" . $img ['id'] . "';";
+    $sql = "UPDATE gallery_images SET sequence=" . $x . " WHERE id='" . ( int ) $img ['id'] . "';";
     mysqli_query ( $conn->db, $sql );
 }
 

@@ -18,7 +18,7 @@ if (! isset ( $_GET ['album'] )) {
     include "../errors/404.php";
     exit ();
 } else {
-    $album = $_GET ['album'];
+    $album = ( int ) $_GET ['album'];
 }
 
 include_once "../php/sql.php";

@@ -31,7 +31,7 @@ $offset;
 $location = "../tmp";
 // if no album is set, throw a 404 error
 if (isset ( $_GET ['p'] )) {
-    $post = $_GET ['p'];
+    $post = ( int ) $_GET ['p'];
     $sql = "SELECT * FROM `blog_details` WHERE id = '$post';";
     $details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
     if (! $details ['title']) {

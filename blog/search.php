@@ -1,4 +1,8 @@
 <?php
+require_once "../php/sql.php";
+$conn = new Sql ();
+$conn->connect ();
+
 $search;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['s'] )) {
@@ -6,7 +10,7 @@ if (! isset ( $_GET ['s'] )) {
     include "../errors/404.php";
     exit ();
 } else {
-    $search = $_GET ['s'];
+    $search = mysqli_real_escape_string ( $conn->db, $_GET ['s'] );
 }
 ?>
 
@@ -26,9 +30,6 @@ if (! isset ( $_GET ['s'] )) {
     require_once "../nav.php";
     
     // get our gallery images
-    require_once "../php/sql.php";
-    $conn = new Sql ();
-    $conn->connect ();
     $sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog`;";
     $result = mysqli_query ( $conn->db, $sql );
     $posts = array ();
