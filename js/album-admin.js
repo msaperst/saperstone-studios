@@ -20,7 +20,7 @@ $(document).ready(function() {
     $('#view-all-favorites-btn').click(function() {
         viewAllFavorites();
     });
-    
+
     $('#view-my-favorites-btn').click(function() {
         viewMyFavorites();
     });
@@ -504,24 +504,27 @@ function viewAllFavorites() {
             var link = $('<a>');
             link.attr({
                 'data-toggle' : 'tab',
-                'href' : '#' + user.replace(/\./g,'-') + '-favs'
+                'href' : '#' + user.replace(/\./g, '-') + '-favs'
             });
             link.html(user);
-            title.append(link);
-            $('#favorites-all-title').append(title);
 
             var content = $('<div>');
-            content.attr('id', user.replace(/\./g,'-') + '-favs');
+            content.attr('id', user.replace(/\./g, '-') + '-favs');
             content.addClass('tab-pane fade');
             var list = $('<ul>');
-            list.addClass( 'list-inline' );
+            list.addClass('list-inline');
             $.each(favs, function(index, fav) {
-                console.log( fav );
                 var item = $('<li image-id="' + fav.sequence + '" class="img-favorite">');
                 item.css('background-image', 'url("' + fav.location + '")');
                 list.append(item);
+                if (fav.usr !== null) {
+                    link.html(fav.usr);
+                }
             });
             content.append(list);
+
+            title.append(link);
+            $('#favorites-all-title').append(title);
             $('#favorites-all-content').append(content);
         });
     }, "json");
