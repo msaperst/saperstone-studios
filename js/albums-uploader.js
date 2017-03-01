@@ -1,117 +1,112 @@
 var album_table;
 
-$(document).ready(
-        function() {
-            if( $('#albums').length ) {
-                album_table = $('#albums').DataTable({
-                    "ajax" : "/api/get-albums.php",
-                    "order" : [ [ 1, "asc" ] ],
-                    "columnDefs" : [ {
-                        "orderable" : false,
-                        "searchable" : false,
-                        "data" : function(row) {
-                            var buttons = "";
-                            if (row.owner === my_id) {
-                                buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
-                            }
-                            return buttons;
-                        },
-                        "targets" : 0
-                    }, {
-                        "data" : function(row) {
-                            return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
-                        },
-                        "className" : "album-name",
-                        "targets" : 1
-                    }, {
-                        "data" : "description",
-                        "className" : "album-description",
-                        "targets" : 2
-                    }, {
-                        "data" : "date",
-                        "className" : "album-date",
-                        "targets" : 3
-                    }, {
-                        "data" : "images",
-                        "className" : "album-images",
-                        "targets" : 4
-                    } ],
-                    "fnCreatedRow" : function(nRow, aData) {
-                        $(nRow).attr('album-id', aData.id);
+$(document).ready(function() {
+    if ($('#albums').length) {
+        album_table = $('#albums').DataTable({
+            "ajax" : "/api/get-albums.php",
+            "order" : [ [ 1, "asc" ] ],
+            "columnDefs" : [ {
+                "orderable" : false,
+                "searchable" : false,
+                "data" : function(row) {
+                    var buttons = "";
+                    if (row.owner === my_id) {
+                        buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
                     }
-                });
+                    return buttons;
+                },
+                "targets" : 0
+            }, {
+                "data" : function(row) {
+                    return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
+                },
+                "className" : "album-name",
+                "targets" : 1
+            }, {
+                "data" : "description",
+                "className" : "album-description",
+                "targets" : 2
+            }, {
+                "data" : "date",
+                "className" : "album-date",
+                "targets" : 3
+            }, {
+                "data" : "images",
+                "className" : "album-images",
+                "targets" : 4
+            } ],
+            "fnCreatedRow" : function(nRow, aData) {
+                $(nRow).attr('album-id', aData.id);
             }
-            $('#albums').on('draw.dt search.dt', function() {
-                setupEdit();
-            });
-            
-            $('#edit-album-btn').click(function() {
-                editAlbum($('#favorites').attr('album-id'));
-            })
-
-
-            $('#add-album-btn').click(
-                    function() {
-                        BootstrapDialog.show({
-                            draggable : true,
-                            title : 'Add A New Album',
-                            message : function() {
-                                var inputs = '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control"/>' + 
-                                        '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control"/>' + 
-                                        '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>';
-                                return inputs;
-                            },
-                            buttons : [ {
-                                icon : 'glyphicon glyphicon-folder-close',
-                                label : ' Create Album',
-                                cssClass : 'btn-success',
-                                action : function(dialogItself) {
-                                    var $button = this;
-                                    var modal = $button.closest('.modal-content');
-                                    $button.spin();
-                                    dialogItself.enableButtons(false);
-                                    dialogItself.setClosable(false);
-                                    // send our
-                                    // update
-                                    $.post("/api/create-album.php", {
-                                        name : $('#new-album-name').val(),
-                                        description : $('#new-album-description').val(),
-                                        date : $('#new-album-date').val()
-                                    }).done(function(data) {
-                                        if ($.isNumeric(data) && data !== '0') {
-                                            var table = $('#albums').DataTable();
-                                            table.row.add({
-                                                "id" : data,
-                                                "name" : $('#new-album-name').val(),
-                                                "description" : $('#new-album-description').val(),
-                                                "date" : $('#new-album-date').val(),
-                                                "images" : "0",
-                                                "lastAccessed" : "0000-00-00 00:00:00",
-                                                "location" : ""
-                                            }).draw(false);
-                                            dialogItself.close();
-                                            editAlbum(data);
-                                        } else if (data === '0') {
-                                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                                        } else {
-                                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-                                        }
-                                        $button.stopSpin();
-                                        dialogItself.enableButtons(true);
-                                        dialogItself.setClosable(true);
-                                    }).fail(function(){
-                                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                                    });
-                                }
-                            }, {
-                                label : 'Close',
-                                action : function(dialogItself) {
-                                    dialogItself.close();
-                                }
-                            } ],
-                        });
-                    });
         });
+    }
+    $('#albums').on('draw.dt search.dt', function() {
+        setupEdit();
+    });
+
+    $('#edit-album-btn').click(function() {
+        editAlbum($('#favorites').attr('album-id'));
+    })
+
+    $('#add-album-btn').click(function() {
+        BootstrapDialog.show({
+            draggable : true,
+            title : 'Add A New Album',
+            message : function() {
+                var inputs = '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control"/>' + '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control"/>' + '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>';
+                return inputs;
+            },
+            buttons : [ {
+                icon : 'glyphicon glyphicon-folder-close',
+                label : ' Create Album',
+                cssClass : 'btn-success',
+                action : function(dialogItself) {
+                    var $button = this;
+                    var modal = $button.closest('.modal-content');
+                    $button.spin();
+                    dialogItself.enableButtons(false);
+                    dialogItself.setClosable(false);
+                    // send our update
+                    $.post("/api/create-album.php", {
+                        name : $('#new-album-name').val(),
+                        description : $('#new-album-description').val(),
+                        date : $('#new-album-date').val()
+                    }).done(function(data) {
+                        if ($.isNumeric(data) && data !== '0') {
+                            var table = $('#albums').DataTable();
+                            table.row.add({
+                                "id" : data,
+                                "name" : $('#new-album-name').val(),
+                                "description" : $('#new-album-description').val(),
+                                "date" : $('#new-album-date').val(),
+                                "images" : "0",
+                                "lastAccessed" : "0000-00-00 00:00:00",
+                                "location" : "",
+                                "code" : ""
+                            }).draw(false);
+                            dialogItself.close();
+                            editAlbum(data);
+                        } else if (data === '0') {
+                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                        } else {
+                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                        }
+                        $button.stopSpin();
+                        dialogItself.enableButtons(true);
+                        dialogItself.setClosable(true);
+                    }).fail(function() {
+                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                    });
+                }
+            }, {
+                label : 'Close',
+                action : function(dialogItself) {
+                    dialogItself.close();
+                }
+            } ],
+        });
+    });
+});
 
 function setupEdit() {
     $('.edit-album-btn').off().click(function() {
@@ -129,10 +124,7 @@ function editAlbum(id) {
             size : BootstrapDialog.SIZE_WIDE,
             title : 'Edit Album <b>' + data.name + '</b>',
             message : function() {
-                var inputs = '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' +
-                        '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' +
-                        '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' +
-                        '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div></div>';
+                var inputs = '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' + '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' + '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div></div>';
                 return inputs;
             },
             buttons : [ {
@@ -140,7 +132,7 @@ function editAlbum(id) {
                 label : ' Delete Album',
                 cssClass : 'btn-danger',
                 action : function(dialogItself) {
-                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                    var $button = this;
                     $button.spin();
                     disableDialogButtons(dialogItself);
                     // send our update
@@ -153,7 +145,7 @@ function editAlbum(id) {
                             label : ' Delete',
                             cssClass : 'btn-danger',
                             action : function(dialogInItself) {
-                                var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                                var $button = this;
                                 $button.spin();
                                 dialogInItself.enableButtons(false);
                                 dialogInItself.setClosable(false);
@@ -161,7 +153,7 @@ function editAlbum(id) {
                                 $.post("/api/delete-album.php", {
                                     id : id,
                                 }).done(function() {
-                                    if( $('#albums').length ) {
+                                    if ($('#albums').length) {
                                         album_table.ajax.reload(null, false);
                                     }
                                     dialogInItself.close();
@@ -183,7 +175,7 @@ function editAlbum(id) {
                 label : ' Make Thumbnails',
                 cssClass : 'btn-warning',
                 action : function(dialogItself) {
-                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                    var $button = this;
                     $button.spin();
                     disableDialogButtons(dialogItself);
                     // send our update
@@ -217,7 +209,7 @@ function editAlbum(id) {
                 label : ' Save Details',
                 cssClass : 'btn-success',
                 action : function(dialogItself) {
-                    var $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                    var $button = this;
                     $button.spin();
                     disableDialogButtons(dialogItself);
                     $.post("/api/update-album.php", {
@@ -228,7 +220,7 @@ function editAlbum(id) {
                         code : $('#new-album-code').val(),
                     }).done(function() {
                         dialogItself.close();
-                        if( $('#albums').length ) {
+                        if ($('#albums').length) {
                             album_table.ajax.reload(null, false);
                         }
                     });
@@ -237,7 +229,7 @@ function editAlbum(id) {
                 label : 'Close',
                 action : function(dialogItself) {
                     dialogItself.close();
-                    if( $('#albums').length ) {
+                    if ($('#albums').length) {
                         album_table.ajax.reload(null, false);
                     }
                 }
@@ -281,7 +273,7 @@ function editAlbum(id) {
                 });
             },
             onhide : function() {
-                if( $('#albums').length ) {
+                if ($('#albums').length) {
                     album_table.ajax.reload(null, false);
                 }
             },

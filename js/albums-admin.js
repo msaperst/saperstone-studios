@@ -84,7 +84,8 @@ $(document).ready(function() {
                                 "date" : $('#new-album-date').val(),
                                 "images" : "0",
                                 "lastAccessed" : "0000-00-00 00:00:00",
-                                "location" : ""
+                                "location" : "",
+                                "code" : ""
                             }).draw(false);
                             dialogItself.close();
                             editAlbum(data);

@@ -39,7 +39,7 @@ if (isset ( $_POST ['description'] )) {
     $description = mysqli_real_escape_string ( $conn->db, $_POST ['description'] );
 }
 if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
-    $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
+    $date = "'" . mysqli_real_escape_string ( $conn->db, $_POST ['date'] ) . "'";
 }
 
 // generate our location for the files
