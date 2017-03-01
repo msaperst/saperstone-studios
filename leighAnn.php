@@ -32,76 +32,76 @@
     ?>
     
     <!-- Page Content -->
-	<div class="page-content container">
+    <div class="page-content container">
 
-		<!-- Page Heading/Breadcrumbs -->
-		<div class="row">
-			<div class="col-lg-12">
-				<h1 class="page-header text-center">Meet Leigh Ann</h1>
-				<ol class="breadcrumb">
-					<li><a href="/">Home</a></li>
-					<li class="active">Information</li>
-					<li class="active">Leigh Ann</li>
-				</ol>
-			</div>
-		</div>
-		<!-- /.row -->
+        <!-- Page Heading/Breadcrumbs -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center">Meet Leigh Ann</h1>
+                <ol class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li class="active">Information</li>
+                    <li class="active">Leigh Ann</li>
+                </ol>
+            </div>
+        </div>
+        <!-- /.row -->
 
-		<!-- About Leigh Ann Section -->
-		<div class="row">
-			<div class="col-md-12">
-				<img src='img/leigh-ann.jpg' alt="Leigh Ann" align='right'
-					style='margin: 0px 0px 20px 20px;' />
-				<p>I am a lifestyle photographer based in Northern Virginia and
-					specialize in wedding and family photography as well as retouch. I
-					am based in Fairfax, Virginia but available for travel anywhere.</p>
-				<p>
-					Travel is a personal favorite of mine and my photo albums include
-					images of me and my husband Max being complete goofballs together.
-					Our photos show us scuba-diving, white water rafting, rolling down
-					hills in hamster balls and cuddling koala's. This sense of
-					adventure carries over into my photography and I strive to provide
-					more than a photo session but an experience. Unique, out-of-the-box
-					creative thinking to create memories and a custom experience for
-					every client is what it's all about. I'm not your `old-school`
-					photographer. I'll ask you to play and I'll ask you to be silly and
-					I do my best to make you laugh (often at my own expense) <em
-						class='fa fa-smile-o'></em>. I'm always looking for something new
-					and completely different... the more quirky, the better. I want my
-					time with you to show a vibrancy, to be creative and fun! I know
-					I've done a job well done when you refer me to your friends and
-					family and it is oh-so-appreciated!
-				</p>
-				<p>
-					Not only do I have a degree in photography, but back in my
-					corporate days, I worked for Ringling Bros. circus! My life was
-					filled with clowns, elephants and acrobats (oh my?!) I was the lead
-					on color management and retouch in their photo services department
-					for many years making sure all their billboards, program books and
-					marketing needs were in tip top shape. That's the kind of
-					experience I pass on to my clients. It's a little known fact that a
-					lot of hours go on behind the scenes to make your images what they
-					are. Don't believe a single image you see in magazines <em
-						class='fa fa-smile-o'></em>
-				</p>
-				<p>
-					I accept a limited number of weddings and portrait sessions each
-					year so <a href='/contact.php'>contact me</a> today to reserve a
-					date!
-				</p>
-			</div>
-		</div>
-		<!-- /.row -->
+        <!-- About Leigh Ann Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <img src='img/leigh-ann.jpg' alt="Leigh Ann" align='right'
+                    style='margin: 0px 0px 20px 20px;' />
+                <p>I am a lifestyle photographer based in Northern Virginia and
+                    specialize in wedding and family photography as well as retouch. I
+                    am based in Fairfax, Virginia but available for travel anywhere.</p>
+                <p>
+                    Travel is a personal favorite of mine and my photo albums include
+                    images of me and my husband Max being complete goofballs together.
+                    Our photos show us scuba-diving, white water rafting, rolling down
+                    hills in hamster balls and cuddling koala's. This sense of
+                    adventure carries over into my photography and I strive to provide
+                    more than a photo session but an experience. Unique, out-of-the-box
+                    creative thinking to create memories and a custom experience for
+                    every client is what it's all about. I'm not your `old-school`
+                    photographer. I'll ask you to play and I'll ask you to be silly and
+                    I do my best to make you laugh (often at my own expense) <em
+                        class='fa fa-smile-o'></em>. I'm always looking for something new
+                    and completely different... the more quirky, the better. I want my
+                    time with you to show a vibrancy, to be creative and fun! I know
+                    I've done a job well done when you refer me to your friends and
+                    family and it is oh-so-appreciated!
+                </p>
+                <p>
+                    Not only do I have a degree in photography, but back in my
+                    corporate days, I worked for Ringling Bros. circus! My life was
+                    filled with clowns, elephants and acrobats (oh my?!) I was the lead
+                    on color management and retouch in their photo services department
+                    for many years making sure all their billboards, program books and
+                    marketing needs were in tip top shape. That's the kind of
+                    experience I pass on to my clients. It's a little known fact that a
+                    lot of hours go on behind the scenes to make your images what they
+                    are. Don't believe a single image you see in magazines <em
+                        class='fa fa-smile-o'></em>
+                </p>
+                <p>
+                    I accept a limited number of weddings and portrait sessions each
+                    year so <a href='/contact.php'>contact me</a> today to reserve a
+                    date!
+                </p>
+            </div>
+        </div>
+        <!-- /.row -->
 
-		<!-- Main Content -->
-		<div class="row" style="margin-bottom: 30px;">
-			<!-- Content Column -->
-			<div class="col-md-12">
-				<!-- Carousel -->
-				<div id="leighAnnCarousel"
-					class="carousel slide carousel-three-by-two">
-					<!-- Indicators -->
-					<ol class="carousel-indicators">
+        <!-- Main Content -->
+        <div class="row" style="margin-bottom: 30px;">
+            <!-- Content Column -->
+            <div class="col-md-12">
+                <!-- Carousel -->
+                <div id="leighAnnCarousel"
+                    class="carousel slide carousel-three-by-two">
+                    <!-- Indicators -->
+                    <ol class="carousel-indicators">
                         <?php
                         foreach ( $images as $num => $image ) {
                             $class = "";
@@ -113,8 +113,8 @@
                         ?>
                     </ol>
 
-					<!-- Wrapper for slides -->
-					<div class="carousel-inner">
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
                         <?php
                         foreach ( $images as $num => $image ) {
                             $active_class = "";
@@ -132,25 +132,25 @@
                         ?>
                     </div>
 
-					<!-- Controls -->
-					<a class="left carousel-control" href="#leighAnnCarousel"
-						data-slide="prev"> <span class="icon-prev"></span>
-					</a> <a class="right carousel-control" href="#leighAnnCarousel"
-						data-slide="next"> <span class="icon-next"></span>
-					</a>
+                    <!-- Controls -->
+                    <a class="left carousel-control" href="#leighAnnCarousel"
+                        data-slide="prev"> <span class="icon-prev"></span>
+                    </a> <a class="right carousel-control" href="#leighAnnCarousel"
+                        data-slide="next"> <span class="icon-next"></span>
+                    </a>
                     <?php if ($user->isAdmin ()) { ?>
                     <span
-						style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
-						<button class="ajax-file-upload"
-							onclick="location.href='/portrait/galleries.php?w=0'"
-							style="position: relative; overflow: hidden; cursor: pointer;">
-							<i class="fa fa-pencil-square-o"></i> Edit These Images
-						</button>
-					</span>
+                        style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
+                        <button class="ajax-file-upload"
+                            onclick="location.href='/portrait/galleries.php?w=0'"
+                            style="position: relative; overflow: hidden; cursor: pointer;">
+                            <i class="fa fa-pencil-square-o"></i> Edit These Images
+                        </button>
+                    </span>
                     <?php } ?>
                 </div>
-			</div>
-		</div>
+            </div>
+        </div>
 
         <?php
         require_once "footer.php";
@@ -158,7 +158,7 @@
         ?>
 
     </div>
-	<!-- /.container -->
+    <!-- /.container -->
 
 </body>
 

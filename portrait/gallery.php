@@ -77,34 +77,34 @@ if ($parent == 'Product') {
     <?php $nav = strtolower($parent); require_once "../nav.php"; ?>
     
     <!-- Page Content -->
-	<div class="page-content container">
+    <div class="page-content container">
 
-		<!-- Page Heading/Breadcrumbs -->
-		<div class="row">
-			<div class="col-lg-12">
-				<h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
-				<ol class="breadcrumb">
-					<li><a href="/">Home</a></li>
-					<li><a href="index.php"><?php echo $parent; ?>s</a></li>
+        <!-- Page Heading/Breadcrumbs -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
+                <ol class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="index.php"><?php echo $parent; ?>s</a></li>
                     <?php
                     if ($details ['parent'] != NULL && $details ['title'] != 'Product' && (! isset ( $grandparent ) || $grandparent != 'Product')) {
                         ?>
                         <li><a
-						href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
-					<li class='active'><?php echo $details['title']; ?></li>
+                        href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
+                    <li class='active'><?php echo $details['title']; ?></li>
                         <?php
                     } elseif (isset ( $grandparent ) && $grandparent == 'Product') {
                         ?>
                     <li><a href='details.php'>Details</a></li>
-					<li><a href='products.php'>Products</a></li>
-					<li><a href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
-					<li class='active'><?php echo $details['title']; ?></li>
+                    <li><a href='products.php'>Products</a></li>
+                    <li><a href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
+                    <li class='active'><?php echo $details['title']; ?></li>
                         <?php
                     } elseif ($details ['parent'] != NULL && $details ['title'] == 'Product') {
                         ?>
                     <li><a href='details.php'>Details</a></li>
-					<li><a href='products.php'>Products</a></li>
-					<li class='active'>Gallery</li>
+                    <li><a href='products.php'>Products</a></li>
+                    <li class='active'>Gallery</li>
                         <?php
                     } else {
                         ?>
@@ -113,12 +113,12 @@ if ($parent == 'Product') {
                     }
                     ?>
                 </ol>
-			</div>
-		</div>
-		<!-- /.row -->
+            </div>
+        </div>
+        <!-- /.row -->
 
-		<!-- Services Section -->
-		<div class="row">
+        <!-- Services Section -->
+        <div class="row">
             <?php
             for($i = 0; $i < count ( $children ); $i ++) {
                 $child = $children [$i];
@@ -138,18 +138,18 @@ if ($parent == 'Product') {
                 }
                 ?>
             <div
-				class="<?php echo $padding; ?>col-md-4 col-sm-6 col-xs-12">
-				<div section="<?php echo $child['title']; ?>"
-					class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-					<span class='preview-title'><?php echo $child['title']; ?></span> <img
-						class="img-responsive" alt="<?php echo $child['title']; ?>"
-						src="img/<?php echo $child['image']; echo $rand; ?>" />
-					<div class="overlay">
-						<br /> <br /> <br /> <a class="info"
-							<?php
+                class="<?php echo $padding; ?>col-md-4 col-sm-6 col-xs-12">
+                <div section="<?php echo $child['title']; ?>"
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'><?php echo $child['title']; ?></span> <img
+                        class="img-responsive" alt="<?php echo $child['title']; ?>"
+                        src="img/<?php echo $child['image']; echo $rand; ?>" />
+                    <div class="overlay">
+                        <br /> <br /> <br /> <a class="info"
+                            <?php
                 if (sizeof ( $grandchildren ) == 0) {
                     ?>
-							href="galleries.php?w=<?php echo $child['id']; ?>">See More</a>
+                            href="galleries.php?w=<?php echo $child['id']; ?>">See More</a>
                         <?php
                 } else {
                     ?>
@@ -158,24 +158,24 @@ if ($parent == 'Product') {
                 }
                 ?>                        
                     </div>
-				</div>
-			</div>
+                </div>
+            </div>
     <?php
             }
             ?>
         </div>
-		<!-- /.row -->
+        <!-- /.row -->
 
         <?php require_once "../footer.php"; ?>
 
     </div>
-	<!-- /.container -->
+    <!-- /.container -->
     
     <?php
     if ($user->isAdmin ()) {
         ?>
     <script src="/js/edit-image.js"></script>
-	<script src="/js/jquery.uploadfile.js"></script>
+    <script src="/js/jquery.uploadfile.js"></script>
     <?php
     }
     ?>
