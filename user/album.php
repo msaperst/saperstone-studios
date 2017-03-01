@@ -320,12 +320,22 @@ footer {
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
 					<h4 class="modal-title">
-						My Favorite Images for <strong><?php echo $album_info['name']; ?></strong>
+						<span>My Favorite Images for</span> <strong><?php echo $album_info['name']; ?></strong>
 					</h4>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body mine">
 					<ul id="favorites-list" class="list-inline"></ul>
 				</div>
+				<?php
+    if ($user->isAdmin ()) {
+        ?>
+				<div class="modal-body all hidden">
+					<ul id="favorites-all-title" class="nav nav-tabs"></ul>
+					<div id="favorites-all-content" class="tab-content"></div>
+				</div>
+				<?php
+    }
+    ?>
 				<div class="modal-footer">
 					<span class="pull-left">
                         <?php
@@ -371,6 +381,20 @@ footer {
 							<em class="fa fa-paper-plane"></em> Submit Favorites
 						</button>
 					</span>
+					<?php
+    if ($user->isAdmin ()) {
+        ?>
+                    <button id="view-all-favorites-btn" type="button"
+						class="btn btn-default btn-action btn-info">
+						<em class="fa fa-search"></em> View All Favorites
+					</button> 
+                    <button id="view-my-favorites-btn" type="button"
+						class="btn btn-default btn-action btn-info hidden">
+						<em class="fa fa-search"></em> View My Favorites
+					</button> 
+                        <?php
+    }
+    ?>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
