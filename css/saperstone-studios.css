@@ -98,6 +98,10 @@ blockquote p {
     color: #980f7f;
 }
 
+.row li {
+	padding-bottom: 10px;
+}
+
 /* Our Forms */
 .form-horizontal .form-group {
     margin-right: 0 !important;

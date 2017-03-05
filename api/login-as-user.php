@@ -3,12 +3,13 @@ require_once "../php/sql.php";
 $conn = new Sql ();
 $conn->connect ();
 
+// Setting up the session
 session_name ( 'ssLogin' );
-// Starting the session
 
-session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 // Making the cookie live for 2 weeks
+session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 
+// Starting the session
 session_start ();
 
 include_once "../php/user.php";
@@ -47,7 +48,8 @@ session_unset ();
 session_destroy ();
 
 session_name ( 'ssLogin' );
-session_set_cookie_params ( 60 * 60 ); // Making the cookie live for 1 hour
+// Making the cookie live for 1 hour
+session_set_cookie_params ( 60 * 60 );
 session_start ();
 
 $_SESSION ['usr'] = $user_info ['usr'];

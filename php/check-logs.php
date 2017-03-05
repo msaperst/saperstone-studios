@@ -10,9 +10,11 @@ if (file_exists ( $file )) {
 }
 $currently = time ();
 
-if (($currently - ($delta + 60)) > $updated) { // if the modified time is less than the 5 minutes ago (plus a buffer)
+// if the modified time is less than the 5 minutes ago (plus a buffer)
+if (($currently - ($delta + 60)) > $updated) {
+    // then we have nothing to do
     echo "Updated " . ($currently - $updated) . " seconds ago<br/>";
-    exit (); // then we have nothing to do
+    exit ();
 }
 
 echo "Last Updated: $updated";
