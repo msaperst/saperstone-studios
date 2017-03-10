@@ -21,8 +21,8 @@ if (! $user->isLoggedIn ()) {
     exit ();
 }
 
+$response = array ();
 $sql;
-
 if ($user->isAdmin ()) {
     $sql = "SELECT * FROM albums;";
 } else {
