@@ -30,7 +30,7 @@ $contract ['email'] = "";
 $contract ['session'] = "";
 $contract ['details'] = "";
 $contract ['amount'] = "";
-$contract ['deposit'] = "";
+$contract ['location'] = "";
 $contract ['invoice'] = "";
 // get the id if set, and pull these values
 if (isset ( $_GET ['id'] )) {
@@ -41,7 +41,7 @@ $conn->disconnect ();
 ?>
 
 <div>
-    <h2>Saperstone Studios LLC. Wedding Contract</h2>
+    <h2>Saperstone Studios LLC. Commercial Contract</h2>
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> and <u>&nbsp;<input class='form-control'
@@ -62,31 +62,48 @@ $conn->disconnect ();
         <li><strong>Compensation.</strong> In consideration of the Services,
             Client agrees to pay Photographer the following amounts as follows:
             <p>
-                <input class='form-control'
+                <span> <input class='form-control'
                     style='width: initial; display: initial;' type='text'
-                    placeholder='Wedding Package'
-                    value='<?php echo $contract ['session']; ?>' />: $<input
-                    class='form-control' style='width: initial; display: initial;'
-                    type='number' step='0.01' min='0' placeholder='Amount'
-                    value='<?php echo $contract ['amount']; ?>' /><br /> <input
-                    class='form-control' type='text' placeholder='Invoice Link'
-                    value='<?php echo $contract ['invoice']; ?>' />
-            </p>
-            <p>
-                Non refundable deposit of <input class='form-control'
+                    placeholder='Item' value='' />: $<input class='form-control'
                     style='width: initial; display: initial;' type='number' step='0.01'
-                    min='0' placeholder='Deposit'
-                    value='<?php echo $contract ['deposit']; ?>' /> and contract to
-                reserve the date - <input class='form-control'
-                    style='width: initial; display: initial;' type='date'
-                    placeholder='Date' value='<?php echo $contract ['date']; ?>' /> <br />
-                Checks should be made payable to <em>Saperstone Studios</em> and
-                mailed to <em>5012 Whisper Willow Dr, Fairfax VA 22030</em> <br />Remaining
-                balance due 3 weeks prior to wedding date.
+                    min='0' placeholder='Amount' value='' /> / <input
+                    class='form-control' style='width: initial; display: initial;'
+                    type='text' placeholder='Unit' value='' />
+                    <button type="button"
+                        class="btn btn-xs btn-danger remove-contract-line-item-btn"
+                        data-toggle="tooltip" data-placement="right"
+                        title="Remove Line Item">
+                        <em class="fa fa-minus"></em>
+                    </button>
+                </span>
+                <button id="add-contract-line-item-btn" type="button"
+                    class="btn btn-xs btn-success" data-toggle="tooltip"
+                    data-placement="right" title="Add New Line Item">
+                    <em class="fa fa-plus"></em>
+                </button>
+                <br /> <input class='form-control' type='text'
+                    placeholder='Invoice Link'
+                    value='<?php echo $contract ['invoice']; ?>' /> <br />Checks should
+                be made payable to <em>Saperstone Studios</em> and mailed to <em>5012
+                    Whisper Willow Dr, Fairfax VA 22030</em>. Final balance is due with
+                delivered invoice, paid no later than 30 days of delivery, in
+                compliance with Terms and Conditions.
             </p></li>
+        <li><strong>Session Details.</strong> The above session with take
+            place at the below location on <input class='form-control'
+            style='width: initial; display: initial;' type='date'
+            placeholder='Date' value='<?php echo $contract ['date']; ?>' /> <br />
+            <textarea class='form-control' type='text'
+                placeholder='Session Address'
+                value='<?php echo $contract ['location']; ?>'></textarea></li>
         <li><strong>Term.</strong> The initial term of this Contract shall
             commence on the date hereof and terminate upon completion of the
-            services.</li>
+            services. Client may terminate this Contract at any time upon 30 days
+            advance written notice. Client shall be liable for the expenses
+            enumerated upon termination. Photographer shall have the right to
+            terminate this Agreement upon 30 days advance written notice and upon
+            return of amounts paid for remaining Services not provided, less
+            expenses.</li>
         <li><strong>Standard Terms.</strong> Attached hereto is a statement of
             Standard Terms and Conditions which will apply to the relationship
             between Photographer and Client; such terms and conditions are
@@ -182,16 +199,23 @@ $conn->disconnect ();
             <strong>Project/Assignment:</strong>
         </div>
         <div class='col-md-9'>
-            Wedding Photography | <input class='form-control'
-                style='width: initial; display: initial;' type='text'
-                placeholder='Wedding Package'
-                value='<?php echo $contract ['session']; ?>' /> | photojournalistic
-            style documentation
+            <input class='form-control' type='text' placeholder='Session'
+                value='<?php echo $contract ['session']; ?>' />
         </div>
     </div>
     <textarea class='form-control' type='text'
-        placeholder='Wedding Package Details'
-        value='<?php echo $contract ['details']; ?>'></textarea>
+        placeholder='Session Details'
+        value='<?php echo $contract ['details']; ?>'>Up to one hour photo session to include:
+
+Business Headshots:
+- Web gallery for viewing/making selects
+- One file of your choice, color corrected/retouched per person
+- Additional files can be purchased for $80/file
+- Print release for marketing/web needs for purchased/included files
+
+Office Photos:
+- All images delivered via web gallery for download
+- Print release for marketing/web needs</textarea>
     <h3>Standard Terms and Conditions</h3>
     <p>
         <strong>Copyright.</strong> The photographs produced by Photographer
