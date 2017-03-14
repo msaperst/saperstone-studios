@@ -124,7 +124,7 @@ function addContract() {
                 select.addClass('form-control');
                 $.each( data, function( key, type ) {
                     var option = $('<option>');
-                    option.html( type.replace(/\b\w/g, l => l.toUpperCase()) );
+                    option.html( type.replace(/\b\w/g, function(l){ return l.toUpperCase() }) );
                     option.attr('type-id',key);
                     select.append(option);
                 });
