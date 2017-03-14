@@ -343,7 +343,6 @@ function compareTop(a, b) {
 }
 
 $(function() {
-    $.getScript("/Includes/autosize-master/jquery.autosize.min.js");
     isDragged = false;
     $("body").mousemove(function(e) {
         currentMousePos.x = e.pageX;
