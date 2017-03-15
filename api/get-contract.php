@@ -21,20 +21,26 @@ if (! $user->isAdmin ()) {
     exit ();
 }
 
+$id;
+if (isset ( $_GET ['id'] )) {
+    $id = ( int ) $_GET ['id'];
+} else {
+    echo "ID is not provided";
+    $conn->disconnect ();
+    exit ();
+}
+
 $response = array ();
-$sql = "SELECT * FROM contracts;";
+$sql = "SELECT * FROM contracts WHERE id = $id;";
+$response = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$response ['lineItems'] = array ();
+
+$sql = "SELECT * FROM contract_line_items WHERE contract = $id;";
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $r['lineItems'] = array();
-    
-    $sql = "SELECT * FROM contract_line_items WHERE contract = {$r['id']};";
-    $sesult = mysqli_query ( $conn->db, $sql );
-    while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
-        $r['lineItems'] [] = $s;
-    }
-    $response [] = $r;
+    $response ['lineItems'] [] = $r;
 }
-echo "{\"data\":" . json_encode ( $response ) . "}";
+echo json_encode ( $response );
 
 $conn->disconnect ();
 exit ();

@@ -68,13 +68,12 @@ if (! $user->isAdmin ()) {
                                 </button>
                             </th>
                             <th>ID</th>
-                            <th>Type</th>
-                            <th>Title</th>
                             <th>Name</th>
+                            <th>Type</th>
+                            <th>Session</th>
                             <th>Date</th>
-                            <th>Signature</th>
+                            <th>Signed</th>
                             <th>Amount</th>
-                            <th>Invoice</th>
                         </tr>
                     </thead>
                 </table>
