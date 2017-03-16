@@ -37,7 +37,7 @@ if (isset ( $_GET ['image'] )) {
     exit ();
 }
 
-$sql = "SELECT * FROM `download_rights` WHERE `album` = '$album' AND `image` = '$image';";
+$sql = "SELECT * FROM `albums_for_users` LEFT JOIN `download_rights` ON `albums_for_users`.`user` = `download_rights`.`user` WHERE `albums_for_users`.`album` = '$album' AND ( `download_rights`.`album` = '$album' OR `download_rights`.`album` = '*' ) AND ( `download_rights`.`image` = '$image' OR `download_rights`.`image` = '*' );";
 $result = mysqli_query ( $conn->db, $sql );
 $response = array ();
 while ( $r = mysqli_fetch_assoc ( $result ) ) {

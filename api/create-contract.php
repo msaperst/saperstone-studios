@@ -88,12 +88,16 @@ if (isset ( $_POST ['invoice'] ) && $_POST ['invoice'] != "") {
     $invoice = "'" . mysqli_real_escape_string ( $conn->db, $_POST ['invoice'] ) . "'";
 }
 
-$sql = "INSERT INTO `contracts` (`type`, `name`, `address`, `number`, `email`, `date`, `location`, 
+$link = "";
+$sql = "INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`, 
         `session`, `details`, `amount`, `deposit`, `invoice`, `content`) 
-        VALUES ('$type','$name',$address,$number,$email,$date,$location,'$session',$details,
+        VALUES ('$link','$type','$name',$address,$number,$email,$date,$location,'$session',$details,
         $amount,$deposit,$invoice,'$content');";
 mysqli_query ( $conn->db, $sql );
 $last_id = mysqli_insert_id ( $conn->db );
+$link = md5( $last_id . $type . $name . $session );
+$sql = "UPDATE `contracts` SET `link` = '$link' WHERE `id` = $last_id;";
+mysqli_query ( $conn->db, $sql );
 
 if (isset ( $_POST ['lineItems'] ) && $_POST ['lineItems'] != "") {
     $lineItems = $_POST ['lineItems'];

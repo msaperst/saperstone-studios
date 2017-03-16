@@ -95,7 +95,7 @@ function setupImageAccess() {
                             var result_li = $('<li>');
                             var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                             result_a.click(function() {
-                                addAlbumUser($('#album-users'), user.id);
+                                addAlbumUser($('#album-users'), user.id, true);
                                 $('.search-results').remove();
                             });
                             results_ul.append(result_li.append(result_a));
@@ -141,7 +141,7 @@ function setupImageAccess() {
                             var result_li = $('<li>');
                             var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                             result_a.click(function() {
-                                addAlbumUser($('#download-users'), user.id);
+                                addAlbumUser($('#download-users'), user.id, true);
                                 $('.search-results').remove();
                             });
                             results_ul.append(result_li.append(result_a));
@@ -187,7 +187,7 @@ function setupImageAccess() {
                             var result_li = $('<li>');
                             var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                             result_a.click(function() {
-                                addAlbumUser($('#share-users'), user.id);
+                                addAlbumUser($('#share-users'), user.id, true);
                                 $('.search-results').remove();
                             });
                             results_ul.append(result_li.append(result_a));
@@ -233,7 +233,7 @@ function setupImageAccess() {
                 album : $('#album').attr('album-id'),
             }, function(album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
-                    addAlbumUser($('#album-users'), album_users[i].user);
+                    addAlbumUser($('#album-users'), album_users[i].user, false);
                 }
             }, "json");
             var downloadsDiv = $('<div>');
@@ -251,7 +251,7 @@ function setupImageAccess() {
                 image : img.attr('image-id')
             }, function(album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
-                    addAlbumUser($('#download-users'), album_users[i].user);
+                    addAlbumUser($('#download-users'), album_users[i].user, false);
                 }
             }, "json");
             var sharesDiv = $('<div>');
@@ -269,7 +269,7 @@ function setupImageAccess() {
                 image : img.attr('image-id')
             }, function(album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
-                    addAlbumUser($('#share-users'), album_users[i].user);
+                    addAlbumUser($('#share-users'), album_users[i].user, false);
                 }
             }, "json");
         }
@@ -304,7 +304,7 @@ function setupAlbumAccess() {
                             var result_li = $('<li>');
                             var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                             result_a.click(function() {
-                                addAlbumUser($('#album-users'), user.id);
+                                addAlbumUser($('#album-users'), user.id, true);
                                 $('.search-results').remove();
                             });
                             results_ul.append(result_li.append(result_a));
@@ -350,7 +350,7 @@ function setupAlbumAccess() {
                             var result_li = $('<li>');
                             var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                             result_a.click(function() {
-                                addAlbumUser($('#download-users'), user.id);
+                                addAlbumUser($('#download-users'), user.id, true);
                                 $('.search-results').remove();
                             });
                             results_ul.append(result_li.append(result_a));
@@ -396,7 +396,7 @@ function setupAlbumAccess() {
                             var result_li = $('<li>');
                             var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
                             result_a.click(function() {
-                                addAlbumUser($('#share-users'), user.id);
+                                addAlbumUser($('#share-users'), user.id, true);
                                 $('.search-results').remove();
                             });
                             results_ul.append(result_li.append(result_a));
@@ -442,7 +442,7 @@ function setupAlbumAccess() {
                 album : $('#album').attr('album-id'),
             }, function(album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
-                    addAlbumUser($('#album-users'), album_users[i].user);
+                    addAlbumUser($('#album-users'), album_users[i].user, false);
                 }
             }, "json");
             var downloadsDiv = $('<div>');
@@ -460,7 +460,7 @@ function setupAlbumAccess() {
                 image : "*"
             }, function(album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
-                    addAlbumUser($('#download-users'), album_users[i].user);
+                    addAlbumUser($('#download-users'), album_users[i].user, false);
                 }
             }, "json");
             var sharesDiv = $('<div>');
@@ -478,7 +478,7 @@ function setupAlbumAccess() {
                 image : "*"
             }, function(album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
-                    addAlbumUser($('#share-users'), album_users[i].user);
+                    addAlbumUser($('#share-users'), album_users[i].user, false);
                 }
             }, "json");
         }
@@ -538,7 +538,7 @@ function viewMyFavorites() {
     $('#view-all-favorites-btn').show();
 }
 
-function addAlbumUser(ele, user_id) {
+function addAlbumUser(ele, user_id, update) {
     var userSpan = $('<span>');
     userSpan.addClass('selected-user');
     userSpan.attr('user-id', user_id);
@@ -561,16 +561,18 @@ function addAlbumUser(ele, user_id) {
         userSpan.html(data.usr);
         $(ele).append(userSpan);
 
-        var users = [];
-        $('.selected-user', $(ele)).each(function() {
-            users.push($(this).attr('user-id'));
-        });
-        // send our update
-        $.post("/api/" + ele.attr('url'), {
-            album : ele.attr('album-id'),
-            image : ele.attr('image-id'),
-            users : users
-        });
+        if (update) {
+            var users = [];
+            $('.selected-user', $(ele)).each(function() {
+                users.push($(this).attr('user-id'));
+            });
+            // send our update
+            $.post("/api/" + ele.attr('url'), {
+                album : ele.attr('album-id'),
+                image : ele.attr('image-id'),
+                users : users
+            });
+        }
     }, "json");
 
 }
