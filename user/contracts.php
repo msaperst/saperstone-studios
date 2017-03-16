@@ -90,7 +90,7 @@ if (! $user->isAdmin ()) {
         src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
-    <script src="/js/contract.js"></script>
+    <script src="/js/contract-admin.js"></script>
 
 </body>
 

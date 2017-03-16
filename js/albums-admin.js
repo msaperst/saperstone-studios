@@ -10,8 +10,7 @@ $(document).ready(function() {
                 "orderable" : false,
                 "searchable" : false,
                 "data" : function(row) {
-                    var buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' Album Details"><i class="fa fa-pencil-square-o"></i></button>  <button type="button" class="btn btn-xs btn-success view-album-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' Activities"><i class="fa fa-bars"></i></button>';
-                    return buttons;
+                    return '<button type="button" class="btn btn-xs btn-warning edit-album-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' Album Details"><i class="fa fa-pencil-square-o"></i></button>  <button type="button" class="btn btn-xs btn-success view-album-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' Activities"><i class="fa fa-bars"></i></button>';
                 },
                 "targets" : 0
             }, {

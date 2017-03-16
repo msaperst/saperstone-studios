@@ -79,14 +79,16 @@ Photobooth
 Web gallery for sharing
 USB of final images
 $200 print credit'>Platinum Package</option>
-					<option cost='3600.00' details='700 color managed and retouched images with print release
+					<option cost='3600.00'
+						details='700 color managed and retouched images with print release
 8 hours of wedding day coverage
 2nd Photographer
 Engagement session
 Web gallery for sharing
 USB of final images
 $150 print credit'>Gold Package</option>
-					<option cost='2900.00' details='500 color managed and retouched images with print release
+					<option cost='2900.00'
+						details='500 color managed and retouched images with print release
 5 hours of wedding day coverage
 2nd Photographer
 Engagement session
@@ -103,7 +105,7 @@ $100 print credit'>Silver Package</option>
 					value='<?php echo $contract ['invoice']; ?>' />
 			</p>
 			<p>
-				Non refundable deposit of <input id='contract-deposit'
+				Non refundable deposit of $<input id='contract-deposit'
 					class='form-control' style='width: initial; display: initial;'
 					type='number' step='0.01' min='0' placeholder='Deposit'
 					value='<?php echo $contract ['deposit']; ?>' /> and contract to
@@ -133,9 +135,8 @@ $100 print credit'>Silver Package</option>
 			<strong>Name:</strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-name-dup' class='form-control' type='text'
-				placeholder='Client Name' value='<?php echo $contract ['name']; ?>'
-				disabled />
+			<input id='contract-name-signature' class='form-control keep'
+				type='text' placeholder='Client Name' disabled />
 		</div>
 	</div>
 	<div class='row'>
@@ -152,7 +153,7 @@ $100 print credit'>Silver Package</option>
 			<strong>Address:</strong>
 		</div>
 		<div class='col-md-9'>
-			<textarea id='contract-address' class='form-control' type='text'
+			<textarea id='contract-address' class='form-control keep' type='text'
 				placeholder='Client Address'
 				value='<?php echo $contract ['address']; ?>'></textarea>
 		</div>
@@ -162,7 +163,7 @@ $100 print credit'>Silver Package</option>
 			<strong>Number:</strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-number' class='form-control' type='text'
+			<input id='contract-number' class='form-control keep' type='text'
 				placeholder='Client Number'
 				value='<?php echo $contract ['number']; ?>' />
 		</div>
@@ -172,7 +173,7 @@ $100 print credit'>Silver Package</option>
 			<strong>Email: </strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-email' class='form-control' type='text'
+			<input id='contract-email' class='form-control keep' type='text'
 				placeholder='Client Email'
 				value='<?php echo $contract ['email']; ?>' />
 		</div>

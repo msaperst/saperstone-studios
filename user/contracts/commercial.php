@@ -147,9 +147,8 @@ $conn->disconnect ();
 			<strong>Name:</strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-name-dup' class='form-control' type='text'
-				placeholder='Client Name' value='<?php echo $contract ['name']; ?>'
-				disabled />
+			<input id='contract-name-signature' class='form-control keep'
+				type='text' placeholder='Client Name' disabled />
 		</div>
 	</div>
 	<div class='row'>
@@ -166,7 +165,7 @@ $conn->disconnect ();
 			<strong>Address:</strong>
 		</div>
 		<div class='col-md-9'>
-			<textarea id='contract-address' class='form-control' type='text'
+			<textarea id='contract-address' class='form-control keep' type='text'
 				placeholder='Client Address'
 				value='<?php echo $contract ['address']; ?>'></textarea>
 		</div>
@@ -176,7 +175,7 @@ $conn->disconnect ();
 			<strong>Number:</strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-number' class='form-control' type='text'
+			<input id='contract-number' class='form-control keep' type='text'
 				placeholder='Client Number'
 				value='<?php echo $contract ['number']; ?>' />
 		</div>
@@ -186,7 +185,7 @@ $conn->disconnect ();
 			<strong>Email: </strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-email' class='form-control' type='text'
+			<input id='contract-email' class='form-control keep' type='text'
 				placeholder='Client Email'
 				value='<?php echo $contract ['email']; ?>' />
 		</div>
