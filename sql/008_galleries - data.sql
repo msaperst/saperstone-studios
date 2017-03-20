@@ -54,7 +54,7 @@ INSERT IGNORE INTO `galleries` VALUES (46, 40, 'signature-albums.jpg', 'Signatur
 INSERT IGNORE INTO `galleries` VALUES (47, 40, 'engagement-book.jpg', 'Engagement Book', NULL);
 INSERT IGNORE INTO `galleries` VALUES (48, 5, '1year-studio.jpg', 'Studio Sessions', NULL);
 INSERT IGNORE INTO `galleries` VALUES (49, 5, '1year-locaion.jpg', 'On Location', NULL);
-INSERT IGNORE INTO `galleries` VALUES (50, 28, 'album-block.jpg', 'Album Block', 'This wooden block holds 10 of your favorite 5x7 images and is perfect for display on a mantle, coffee table or shelf.  Photos are mounted on a durable styrene, making it easy to rotate through displaying your images.  Color options are black or white, your choice!')
+INSERT IGNORE INTO `galleries` VALUES (50, 28, 'album-block.jpg', 'Album Block', 'This wooden block holds 10 of your favorite 5x7 images and is perfect for display on a mantle, coffee table or shelf.  Photos are mounted on a durable styrene, making it easy to rotate through displaying your images.  Color options are black or white, your choice!');
 INSERT IGNORE INTO `galleries` VALUES (51, 28, 'keepsake-usb.jpg', 'Keepsake USB', 'Every time you order digital files, they are given to you in this keepsake USB case for safe keeping.  Be sure to back these images up in multiple locations as digital media is forever changing!');
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
