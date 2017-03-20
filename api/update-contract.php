@@ -29,6 +29,13 @@ if (isset ( $_POST ['id'] )) {
     $conn->disconnect ();
     exit ();
 }
+$sql = "SELECT * FROM contracts WHERE id = $id;";
+$contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+if (! $contract_info ['id']) {
+    echo "That ID doesn't match any contracts";
+    $conn->disconnect ();
+    exit ();
+}
 
 $type;
 if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {

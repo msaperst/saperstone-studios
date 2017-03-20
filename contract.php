@@ -61,8 +61,12 @@ if (! $contract_info ['name']) {
 			</div>
 		</div>
 		<!-- /.row -->
+		
+		<input type='hidden' id='contract-id' value='<?php echo $contract_info['id']; ?>' />
 
+		<div id='contract'>
 		<?php echo $contract_info['content']; ?>
+		</div>
 		
 		<hr />
 
@@ -72,7 +76,7 @@ if (! $contract_info ['name']) {
 					<div id='contract-initial' class='signature'></div>
 				</div>
 			</div>
-			<div class="col-md-8 text-center">
+			<div id='contract-messages' class="col-md-8 text-center">
 				<?php
     if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
         ?>
@@ -87,7 +91,7 @@ if (! $contract_info ['name']) {
     ?>
 			</div>
 			<div class="col-md-2 text-right">
-				<button id='contract-submit' class='btn btn-success disabled' disabled>Submit Contract</button>
+				<button id='contract-submit' class='btn btn-success disabled' disabled><em class='fa fa-paper-plane'></em> Submit Contract</button>
 			</div>
 			</div>
 		</div>

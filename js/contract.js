@@ -31,7 +31,7 @@ $(document).ready(function() {
 
 function checkInputs() {
     var okToSubmit = true;
-    $('input.keep,textarea.keep').each(function() {
+    $('.keep').each(function() {
         if ($(this).val() === "") {
             okToSubmit = false;
         }
@@ -51,25 +51,50 @@ function submitContract() {
     if ( ! checkInputs() ) {
         BootstrapDialog.alert('Please finish signing the contract before submitting.');
     }
-    $.post('/api/sign-contract.php', {
-        id : id,
-        name : name,
-        address : address,
-        number : number,
-        email : email,
-        signature : signature,
-        initial : signature,
-    }).done(function(data) {
+    
+    $('#contract-submit').prop('disabled',true);
+    $('#contract-submit em').addClass('fa-spinner fa-spin').removeClass('fa-paper-plane');
+    
+    var inputs = previewContract();
+    inputs.content = $('#contract').html();
+    
+    $.post('/api/sign-contract.php', inputs).done(function(data) {
         if (data !== "") {
-            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+            $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         } else {
-            dialogItself.close();
+            //TODO - DO SOMETHING
         }
-        contract_table.ajax.reload(null, false);
     }).fail(function() {
-        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user's albums.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-    }).always(function() {
-        button.stopSpin();
-        enableDialogButtons(dialogItself);
+        $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while submitting your contract.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+    }).always(function(){
+        $('#contract-submit').prop('disabled',false);
+        $('#contract-submit em').removeClass('fa-spinner fa-spin').addClass('fa-paper-plane');
     });
+}
+
+function previewContract() {
+    var inputs = {};
+    inputs.id = $('#contract-id').val();
+    inputs.name = $('#contract-name-signature').val();
+    inputs.address = $('#contract-address').val();
+    inputs.number = $('#contract-number').val();
+    inputs.email = $('#contract-email').val();
+    inputs.signature = signature.jSignature("getData");
+    inputs.initial = initial.jSignature("getData");
+    
+    $('input[type=hidden]').remove();
+    $('textarea.keep').each(function() {
+        $(this).val($(this).val().replace(/(?:\r\n|\r|\n)/g, '<br />'));
+    });
+    $('.keep').each(function() {
+        $(this).replaceWith($(this).val());
+    });
+    var sig = $('<img>');
+    sig.attr('src','data:'+signature.jSignature("getData","svgbase64"));
+    $('#contract-signature-holder').html(sig).removeClass('signature-holder');
+    var ini = $('<img>');
+    ini.attr('src','data:'+initial.jSignature("getData","svgbase64"));
+    $('#contract-initial-holder').html(ini).removeClass('signature-holder');
+    
+    return inputs;
 }

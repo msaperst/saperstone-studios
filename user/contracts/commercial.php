@@ -175,7 +175,7 @@ $conn->disconnect ();
 			<strong>Number:</strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-number' class='form-control keep' type='text'
+			<input id='contract-number' class='form-control keep' type='tel'
 				placeholder='Client Number'
 				value='<?php echo $contract ['number']; ?>' />
 		</div>
@@ -185,7 +185,7 @@ $conn->disconnect ();
 			<strong>Email: </strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-email' class='form-control keep' type='text'
+			<input id='contract-email' class='form-control keep' type='email'
 				placeholder='Client Email'
 				value='<?php echo $contract ['email']; ?>' />
 		</div>
