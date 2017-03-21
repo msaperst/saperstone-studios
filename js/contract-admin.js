@@ -12,7 +12,7 @@ $(document).ready(function() {
             "data" : function(row) {
                 var buttons;
                 if (row.signature === "" || row.signature === null) {
-                    buttons = '<button type="button" class="btn btn-xs btn-warning edit-contract-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-contract-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' ' + row.session + ' Details"><i class="fa file-text-o"></i></button>';
+                    buttons = '<button type="button" class="btn btn-xs btn-warning edit-contract-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-contract-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-file-text-o"></i></button>';
                 } else {
                     buttons = '<button type="button" class="btn btn-xs btn-info dl-contract-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' ' + row.session + ' Contract"><i class="fa fa-file-pdf-o"></i></button>';
                 }
@@ -232,6 +232,7 @@ function editContract(data) {
         title = 'Add New ' + data + ' Contract';
     }
     BootstrapDialog.show({
+        closable: false,
         draggable : true,
         size : BootstrapDialog.SIZE_WIDE,
         title : title,

@@ -93,9 +93,10 @@ if (isset ( $_POST ['content'] ) && $_POST ['content'] != "") {
 
 $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
 $contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-$file = "../user/contracts/$name - " . $contract_info['type'] . "Contract.pdf";
+$file = "../user/contracts/$name - " . $contract_info ['type'] . "Contract.pdf";
 $sql = "UPDATE `contracts` SET `link` = '', `name` = '$name', `address` = '$address', `number` = '$number', 
-        `email` = '$email', `signature` = '$signature', `initial` = '$initial', `content` = '$content', `file` = '$file';";
+        `email` = '$email', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
+        `file` = '$file' WHERE `id` = $id;";
 mysqli_query ( $conn->db, $sql );
 $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
 $contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
@@ -127,20 +128,20 @@ require_once ($path = '../plugins/Browser.php-master/lib/Browser.php');
 $browser = new Browser ();
 $from = "Contracts <contracts@saperstonestudios.com>";
 $to = "Contracts <contracts@saperstonestudios.com>, \"$name\" <$email>";
-$subject = "Saperstone Studios ". ucfirst( $contract_info['type'] ) . " Contract";
+$subject = "Saperstone Studios " . ucfirst ( $contract_info ['type'] ) . " Contract";
 
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
 $text = "This is an automatically generated message from Saperstone Studios\n\n";
 $html .= "<p>Thank you for signing your contract. ";
 $text .= "Thank you for signing your contract. ";
-if( $contract_info['deposit'] > 0 ) {
-    $html .= "Please note you have a $" . $contract_info['deposit'] . " deposit due. ";
-    $text .= "Please note you have a $" . $contract_info['deposit'] . " deposit due. ";
+if ($contract_info ['deposit'] > 0) {
+    $html .= "Please note you have a $" . $contract_info ['deposit'] . " deposit due. ";
+    $text .= "Please note you have a $" . $contract_info ['deposit'] . " deposit due. ";
 }
 if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
-    $html .= "You can pay your invoice online <a href='".$contract_info ['invoice']."' target='_blank'>here</a>.";
-    $text .= "You can pay your invoice online at ".$contract_info ['invoice'].".";
+    $html .= "You can pay your invoice online <a href='" . $contract_info ['invoice'] . "' target='_blank'>here</a>.";
+    $text .= "You can pay your invoice online at " . $contract_info ['invoice'] . ".";
 }
 $html .= "</p>";
 $text .= "\n\n";
@@ -152,7 +153,7 @@ $crlf = "\n";
 $mime = new Mail_mime ( $crlf );
 $mime->setTXTBody ( $text );
 $mime->setHTMLBody ( $html );
-$mime->addAttachment( $file );
+$mime->addAttachment ( $file );
 $body = $mime->get ();
 require ('../php/email.php');
 
