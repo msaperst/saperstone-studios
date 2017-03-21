@@ -122,10 +122,6 @@ $mpdf->WriteHTML ( $content );
 $mpdf->Output ( $file );
 
 // email out pdf
-$IP = $_SERVER ['REMOTE_ADDR'];
-$geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
-require_once ($path = '../plugins/Browser.php-master/lib/Browser.php');
-$browser = new Browser ();
 $from = "Contracts <contracts@saperstonestudios.com>";
 $to = "Contracts <contracts@saperstonestudios.com>, \"$name\" <$email>";
 $subject = "Saperstone Studios " . ucfirst ( $contract_info ['type'] ) . " Contract";
