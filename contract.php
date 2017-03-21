@@ -47,65 +47,65 @@ if (! $contract_info ['name']) {
     <?php require_once "nav.php"; ?>
 
     <!-- Page Content -->
-	<div class="page-content container">
+    <div class="page-content container">
 
-		<!-- Page Heading/Breadcrumbs -->
-		<div class="row">
-			<div class="col-lg-12">
-				<h1 class="page-header text-center">Saperstone Studios Contracts</h1>
-				<ol class="breadcrumb">
-					<li><a href="/">Home</a></li>
-					<li class="active">Information</li>
-					<li class="active">Contract</li>
-				</ol>
-			</div>
-		</div>
-		<!-- /.row -->
-		
-		<input type='hidden' id='contract-id' value='<?php echo $contract_info['id']; ?>' />
+        <!-- Page Heading/Breadcrumbs -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header text-center">Saperstone Studios Contracts</h1>
+                <ol class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li class="active">Information</li>
+                    <li class="active">Contract</li>
+                </ol>
+            </div>
+        </div>
+        <!-- /.row -->
+        
+        <input type='hidden' id='contract-id' value='<?php echo $contract_info['id']; ?>' />
 
-		<div id='contract'>
-		<?php echo $contract_info['content']; ?>
-		</div>
-		
-		<hr />
+        <div id='contract'>
+        <?php echo $contract_info['content']; ?>
+        </div>
+        
+        <hr />
 
-		<div class="row">
-			<div class="col-md-2 text-left">
-				<div id='contract-initial-holder' class='signature-holder'>Initial inside the dotted area
-					<div id='contract-initial' class='signature'></div>
-				</div>
-			</div>
-			<div id='contract-messages' class="col-md-8 text-center">
-				<?php
+        <div class="row">
+            <div class="col-md-2 text-left">
+                <div id='contract-initial-holder' class='signature-holder'>Initial inside the dotted area
+                    <div id='contract-initial' class='signature'></div>
+                </div>
+            </div>
+            <div id='contract-messages' class="col-md-8 text-center">
+                <?php
     if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
         ?>
-				    <a target='_blank'
-					href='
-				    <?php
+                    <a target='_blank'
+                    href='
+                    <?php
         echo $contract_info ['invoice'];
         ?>
-    				'>Paypal Invoice Link</a>
-    				<?php
+                    '>Paypal Invoice Link</a>
+                    <?php
     }
     ?>
-			</div>
-			<div class="col-md-2 text-right">
-				<button id='contract-submit' class='btn btn-success disabled' disabled><em class='fa fa-paper-plane'></em> Submit Contract</button>
-			</div>
-			</div>
-		</div>
+            </div>
+            <div class="col-md-2 text-right">
+                <button id='contract-submit' class='btn btn-success disabled' disabled><em class='fa fa-paper-plane'></em> Submit Contract</button>
+            </div>
+            </div>
+        </div>
 
         <?php require_once "footer.php"; ?>
 
     </div>
-	<!-- /.container -->
+    <!-- /.container -->
 
-	<!--[if lt IE 9]>
-	<script type="text/javascript" src="/plugins/jSignature/flashcanvas.js"></script>
-	<![endif]-->
-	<script src="/plugins/jSignature/jSignature.min.js"></script>
-	<script src="/js/contract.js"></script>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="/plugins/jSignature/flashcanvas.js"></script>
+    <![endif]-->
+    <script src="/plugins/jSignature/jSignature.min.js"></script>
+    <script src="/js/contract.js"></script>
 
 </body>
 
