@@ -62,7 +62,11 @@ function submitContract() {
         if (data !== "") {
             $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         } else {
-            //TODO - DO SOMETHING
+            $('#contract-submit').remove();
+            $('#contract-messages').append("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for signing the contract. You will recieve a confirmation email with the final contract attached shortly.</div>");
+            setTimeout(function () {
+                window.location.href = "/";
+             }, 10000);
         }
     }).fail(function() {
         $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while submitting your contract.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
