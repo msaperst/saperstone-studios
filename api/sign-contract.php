@@ -12,15 +12,6 @@ session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
 session_start ();
 // Start our session
 
-include_once "../php/user.php";
-$user = new User ();
-
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    $conn->disconnect ();
-    exit ();
-}
-
 $id;
 if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
     $id = intval ( $_POST ['id'] );
@@ -100,14 +91,69 @@ if (isset ( $_POST ['content'] ) && $_POST ['content'] != "") {
     exit ();
 }
 
-exit ();
-
-$sql = "UPDATE `contracts` (`link`, `name`, `address`, `number`, `email`, `signature`, `initial`, `content`)
-        VALUES ('','$name','$address','$number','$email','$signature','$initial','$content');";
+$sql = "SELECT * FROM `contracts` WHERE `id` = $id";
+$contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$file = "../user/contracts/$name - " . $contract_info['type'] . "Contract.pdf";
+$sql = "UPDATE `contracts` SET `link` = '', `name` = '$name', `address` = '$address', `number` = '$number', 
+        `email` = '$email', `signature` = '$signature', `initial` = '$initial', `content` = '$content', `file` = '$file';";
 mysqli_query ( $conn->db, $sql );
-
-//TODO - create/save pdf
-//TODO - email out pdf
-
+$sql = "SELECT * FROM `contracts` WHERE `id` = $id";
+$contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 $conn->disconnect ();
+
+// sanitize out content
+$content = str_replace ( "\\n", '', $content );
+$content = str_replace ( "\\\"", '"', $content );
+$content = str_replace ( "\\'", '\'', $content );
+
+// look at some formatting
+$customCSS = file_get_contents ( '../css/mpdf.css' );
+
+// setup our footer
+$footer = "<div align='left'><u>LAS</u>/<img src='$initial' style='height:20px; vertical-align:text-bottom;' /></div>";
+
+// create/save pdf
+require '../plugins/mPDF/vendor/autoload.php';
+$mpdf = new mPDF ();
+$mpdf->SetHTMLFooter ( $footer );
+$mpdf->WriteHTML ( $customCSS, 1 );
+$mpdf->WriteHTML ( $content );
+$mpdf->Output ( $file );
+
+// email out pdf
+$IP = $_SERVER ['REMOTE_ADDR'];
+$geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
+require_once ($path = '../plugins/Browser.php-master/lib/Browser.php');
+$browser = new Browser ();
+$from = "Contracts <contracts@saperstonestudios.com>";
+$to = "Contracts <contracts@saperstonestudios.com>, \"$name\" <$email>";
+$subject = "Saperstone Studios ". ucfirst( $contract_info['type'] ) . " Contract";
+
+$html = "<html><body>";
+$html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
+$text = "This is an automatically generated message from Saperstone Studios\n\n";
+$html .= "<p>Thank you for signing your contract. ";
+$text .= "Thank you for signing your contract. ";
+if( $contract_info['deposit'] > 0 ) {
+    $html .= "Please note you have a $" . $contract_info['deposit'] . " deposit due. ";
+    $text .= "Please note you have a $" . $contract_info['deposit'] . " deposit due. ";
+}
+if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
+    $html .= "You can pay your invoice online <a href='".$contract_info ['invoice']."' target='_blank'>here</a>.";
+    $text .= "You can pay your invoice online at ".$contract_info ['invoice'].".";
+}
+$html .= "</p>";
+$text .= "\n\n";
+$html .= "</body></html>";
+
+require_once "Mail.php";
+require_once "Mail/mime.php";
+$crlf = "\n";
+$mime = new Mail_mime ( $crlf );
+$mime->setTXTBody ( $text );
+$mime->setHTMLBody ( $html );
+$mime->addAttachment( $file );
+$body = $mime->get ();
+require ('../php/email.php');
+
 exit ();

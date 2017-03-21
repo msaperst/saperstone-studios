@@ -36,6 +36,11 @@ if (! $contract_info ['id']) {
     $conn->disconnect ();
     exit ();
 }
+if (! $contract_info ['signature'] != "NULL" ) {
+    echo "That contract has already been signed, it can't be updated";
+    $conn->disconnect ();
+    exit ();
+}
 
 $type;
 if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {

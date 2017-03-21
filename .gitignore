@@ -53,3 +53,6 @@ portrait/img/*.jpg
 img/*/*
 !img/favicon/*
 !img/reviews/*
+
+#our contracts
+user/contracts/*.pdf

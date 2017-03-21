@@ -1,0 +1,2 @@
+ALTER TABLE `contracts` ADD `initial` TEXT NULL AFTER `signature`, ADD `file` VARCHAR(255) NULL AFTER `initial`;
+ALTER TABLE `contracts` CHANGE `signature` `signature` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;

@@ -10,7 +10,13 @@ $(document).ready(function() {
             "orderable" : false,
             "searchable" : false,
             "data" : function(row) {
-                return '<button type="button" class="btn btn-xs btn-warning edit-contract-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-contract-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-arrow-right"></i></button>';
+                var buttons;
+                if (row.signature === "" || row.signature === null) {
+                    buttons = '<button type="button" class="btn btn-xs btn-warning edit-contract-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-contract-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' ' + row.session + ' Details"><i class="fa file-text-o"></i></button>';
+                } else {
+                    buttons = '<button type="button" class="btn btn-xs btn-info dl-contract-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' ' + row.session + ' Contract"><i class="fa fa-file-pdf-o"></i></button>';
+                }
+                return buttons;
             },
             "targets" : 0
         }, {
@@ -41,7 +47,7 @@ $(document).ready(function() {
             "targets" : 5
         }, {
             "data" : function(row) {
-                return ( row.signature === "" || row.signature === null ) ? false : true;
+                return (row.signature === "" || row.signature === null) ? false : true;
             },
             "className" : "contract-signed",
             "targets" : 6
@@ -55,6 +61,7 @@ $(document).ready(function() {
         "fnCreatedRow" : function(nRow, aData) {
             $(nRow).attr('contract-id', aData.id);
             $(nRow).attr('contract-link', aData.link);
+            $(nRow).attr('contract-file', aData.file);
         }
     });
     $('#contracts').on('draw.dt search.dt', function() {
@@ -79,6 +86,10 @@ function setupEdit() {
     $('.view-contract-btn').off().click(function() {
         var link = $(this).closest('tr').attr('contract-link');
         window.location.href = '/contract.php?c=' + link;
+    });
+    $('.dl-contract-btn').off().click(function() {
+        var link = $(this).closest('tr').attr('contract-file');
+        window.open(link);
     });
 }
 
@@ -278,7 +289,7 @@ function previewContract(id, post, dialogItself, button) {
     inputs.lineItems = lineItems;
     // make our viewable replacements
     $('input[type=hidden]').remove();
-    $('#contract-name-signature').prop('disabled',false);
+    $('#contract-name-signature').prop('disabled', false);
     $('#contract-signature').replaceWith('<div id="contract-signature" class="signature"></div>');
     $('#contract-invoice').remove();
     $('textarea').not('.keep').each(function() {
@@ -288,7 +299,7 @@ function previewContract(id, post, dialogItself, button) {
         $(this).replaceWith($(this).val());
     });
     $('input.keep').each(function() {
-        $(this).attr('value',$(this).val());
+        $(this).attr('value', $(this).val());
     });
     $('textarea.keep').each(function() {
         $(this).append($(this).val());

@@ -78,7 +78,9 @@ Engagement sign in book
 Photobooth
 Web gallery for sharing
 USB of final images
-$200 print credit'>Platinum Package</option>
+$200 print credit'
+						<?php if ( $contract ['session'] == "Platinum Package" ) { echo " selected"; } ?>>Platinum
+						Package</option>
 					<option cost='3600.00'
 						details='700 color managed and retouched images with print release
 8 hours of wedding day coverage
@@ -86,7 +88,9 @@ $200 print credit'>Platinum Package</option>
 Engagement session
 Web gallery for sharing
 USB of final images
-$150 print credit'>Gold Package</option>
+$150 print credit'
+						<?php if ( $contract ['session'] == "Gold Package" ) { echo " selected"; } ?>>Gold
+						Package</option>
 					<option cost='2900.00'
 						details='500 color managed and retouched images with print release
 5 hours of wedding day coverage
@@ -94,7 +98,9 @@ $150 print credit'>Gold Package</option>
 Engagement session
 Web gallery for sharing
 USB of final images
-$100 print credit'>Silver Package</option>
+$100 print credit'
+						<?php if ( $contract ['session'] == "Silver Package" ) { echo " selected"; } ?>>Silver
+						Package</option>
 					<option cost=''>Custom</option>
 				</select>: $<input id='contract-amount' class='form-control'
 					style='width: initial; display: initial;' type='number' step='0.01'
@@ -191,7 +197,9 @@ $100 print credit'>Silver Package</option>
 		<div class='col-md-3'>
 			<strong>Address: </strong>
 		</div>
-		<div class='col-md-9'>5012 Whisper Willow Dr. Fairfax, VA 22030</div>
+		<div class='col-md-9'>
+			5012 Whisper Willow Dr.<br />Fairfax, VA 22030
+		</div>
 	</div>
 	<div class='row'>
 		<div class='col-md-3'>
@@ -206,7 +214,7 @@ $100 print credit'>Silver Package</option>
 			<strong>Email:</strong>
 		</div>
 		<div class='col-md-9'>
-			<a target='_blank' href='contracts@saperstonestudios.com'>contracts@saperstonestudios.com</a>
+			<a target='_blank' href='mailto:contracts@saperstonestudios.com'>contracts@saperstonestudios.com</a>
 		</div>
 	</div>
 	</p>

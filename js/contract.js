@@ -86,14 +86,22 @@ function previewContract() {
     $('textarea.keep').each(function() {
         $(this).val($(this).val().replace(/(?:\r\n|\r|\n)/g, '<br />'));
     });
+    $('.keep[type=tel]').each(function() {
+        var tel = $(this).val();
+        $(this).replaceWith("<a href='tel:" + tel + "' target='_blank'>" + tel + "</a>");
+    });
+    $('.keep[type=email]').each(function() {
+        var email = $(this).val();
+        $(this).replaceWith("<a href='mailto:" + email + "' target='_blank'>" + email + "</a>");
+    });
     $('.keep').each(function() {
         $(this).replaceWith($(this).val());
     });
     var sig = $('<img>');
-    sig.attr('src','data:'+signature.jSignature("getData","svgbase64"));
+    sig.attr('src','data:'+signature.jSignature("getData","svgbase64").join(","));
     $('#contract-signature-holder').html(sig).removeClass('signature-holder');
     var ini = $('<img>');
-    ini.attr('src','data:'+initial.jSignature("getData","svgbase64"));
+    ini.attr('src','data:'+initial.jSignature("getData","svgbase64").join(","));
     $('#contract-initial-holder').html(ini).removeClass('signature-holder');
     
     return inputs;

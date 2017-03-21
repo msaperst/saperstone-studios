@@ -1,0 +1,13 @@
+h4 {
+	font-size: large;
+}
+
+div.col-md-3 {
+	float: left;
+	width: 25%;
+}
+
+div.col-md-9 {
+	float: left;
+	width: 75%;
+}

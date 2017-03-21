@@ -14,7 +14,7 @@ $conn->connect ();
 
 $contract_link;
 // if no album is set, throw a 404 error
-if (! isset ( $_GET ['c'] )) {
+if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "" ) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "errors/404.php";
     exit ();

@@ -203,7 +203,7 @@ $conn->disconnect ();
 		<div class='col-md-3'>
 			<strong>Address: </strong>
 		</div>
-		<div class='col-md-9'>5012 Whisper Willow Dr. Fairfax, VA 22030</div>
+		<div class='col-md-9'>5012 Whisper Willow Dr.<br/>Fairfax, VA 22030</div>
 	</div>
 	<div class='row'>
 		<div class='col-md-3'>
@@ -218,7 +218,7 @@ $conn->disconnect ();
 			<strong>Email:</strong>
 		</div>
 		<div class='col-md-9'>
-			<a target='_blank' href='contracts@saperstonestudios.com'>contracts@saperstonestudios.com</a>
+			<a target='_blank' href='mailto:contracts@saperstonestudios.com'>contracts@saperstonestudios.com</a>
 		</div>
 	</div>
 	</p>
