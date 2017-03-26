@@ -63,13 +63,13 @@ $conn->disconnect ();
 			id='contract-name' class='form-control'
 			style='width: initial; display: initial;' type='text'
 			placeholder='Client Name' value='<?php echo $contract ['name']; ?>' />&nbsp;
-		</u>(the "Client").<br /> <strong>Whereas</strong>, Client wishes to engage
-		Photographer to provide certain photography services and Photographer
-		is willing to accept such engagement, all on the terms and conditions
-		set forth herein.<br /> <strong>Now therefore</strong>, in
-		consideration of the mutual promises contained herein and other good
-		and valuable consideration, the receipt and sufficiency of which is
-		hereby acknowledged, the parties agree as follows:
+		</u>(the "Client").<br /> <strong>Whereas</strong>, Client wishes to
+		engage Photographer to provide certain photography services and
+		Photographer is willing to accept such engagement, all on the terms
+		and conditions set forth herein.<br /> <strong>Now therefore</strong>,
+		in consideration of the mutual promises contained herein and other
+		good and valuable consideration, the receipt and sufficiency of which
+		is hereby acknowledged, the parties agree as follows:
 	</p>
 	<ol>
 		<li><strong>Services.</strong> Photographer hereby agrees to provide
@@ -253,13 +253,15 @@ Office Photos:
 		shall be the intellectual property and copyrighted works of
 		Photographer, and shall not be deemed to be works made for hire.
 		Photographer agrees to give, upon payment in full, a limited usage
-		license to Client for personal, non-commercial reproduction and
-		display of selected photographs. Additionally, the files delivered may
-		only be reproduced for personal use and cannot under any circumstance
-		be sold or used for business, advertising, or trade purposes without
-		written authorization from Photographer. Photographer retains creative
-		control over the images produced and all decisions made by
-		Photographer with regards to edits are deemed final.
+		license to Client for reproduction and display of selected
+		photographs, including private or internal use by Client or its
+		employees and reasonable use in business communications by Client
+		(such as website, newsletter or annual report). Additionally, the
+		files delivered may only be reproduced for Client’s use and cannot
+		under any circumstance be sold to, licensed to, or used by a
+		third-party without written authorization from Photographer.
+		Photographer retains creative control over the images produced and all
+		decisions made by Photographer with regards to edits are deemed final.
 	</p>
 	<p>
 		<strong>Credit.</strong> In any publication, display, exhibit or other
