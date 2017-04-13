@@ -55,7 +55,8 @@ $conn->disconnect ();
 
 <div>
 	<h2>Saperstone Studios LLC. Contractor Contract</h2>
-	<input id='contract-type' type='hidden' value='commercial' />
+	<input id='contract-type' type='hidden' value='contractor' />
+	<input id='contract-session' type='hidden' value='contractor' />
 	<p><strong>Saperstone Studios</strong> hereby hires the undersigned photographer (the
 		"Contractor") to photograph material for Saperstone Studios and/or its
 		associates on the following terms and conditions: Saperstone Studios
@@ -143,7 +144,7 @@ $conn->disconnect ();
 				<br />
 	</li>
 	<li>
-		<strong>Session Details</strong> The above session with take place at
+		<strong>Session Details</strong> The above session will take place at
 		the below location on <input id='contract-date' class='form-control'
 			style='width: initial; display: initial;' type='date'
 			placeholder='Date' value='<?php echo $contract ['date']; ?>' /> <br />
@@ -159,8 +160,8 @@ $conn->disconnect ();
 			<strong>Business Name:</strong>
 		</div>
 		<div class='col-md-9'>
-			<input id='contract-details' class='form-control' type='text'
-				placeholder='Contractor Business Name' />
+			<input id='contract-name' class='form-control' type='text'
+				placeholder='Contractor Business Name' value='<?php echo $contract ['name']; ?>' />
 		</div>
 	</div>
 	<div class='row'>
