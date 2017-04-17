@@ -122,6 +122,14 @@ $(document).ready(function() {
                 'padding-left' : '10px'
             });
             reviewCart();
+        }).fail(function(xhr, status, error) {
+            if (xhr.responseText !== "") {
+                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+            } else if (error === "Unauthorized") {
+                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+            } else {
+                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your cart.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+            }
         });
     })
 
@@ -602,71 +610,59 @@ function removeFromCart(removeIcon) {
 }
 
 function downloadImages(album, what) {
-    BootstrapDialog
-            .show({
-                draggable : true,
-                title : 'Terms Of Service',
-                message : '<em class="fa fa-exclamation-triangle"></em> By downloading the selected files, you are agreeing to the right to copy, display, reproduce, enlarge and distribute said photographs taken by the Photographer in connection with the Services and in connection with the publication known as Saperstone Studios for personal use, and any reprints or reproductions, or excerpts thereof; all other rights are expressly reserved by and to Photographer.<br/><br/>While usage in accordance with above policies of selected files on public social media sites and personal websites for non-profit purposes is acceptable, any use of selected files in any publication, display, exhibit or paid medium are not permitted without express consent from Photographer.<br/><br/>Please note that only images you have expressly purchased rights to will be downloaded, even if additional images were selected for this download.',
-                buttons : [
-                        {
-                            icon : 'glyphicon glyphicon-download-alt',
-                            label : ' Download',
-                            cssClass : 'btn-success',
-                            action : function(dialogInItself) {
-                                var $button = this; // 'this' here is a jQuery
-                                                    // object that
-                                // wrapping the <button> DOM element.
-                                var modal = $button.closest('.modal-content');
-                                modal
-                                        .find('.bootstrap-dialog-body')
-                                        .append(
-                                                '<div id="compressing-download" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>We are compressing your images for download. They should automatically start downloading shortly.</div>');
-                                $button.spin();
-                                dialogInItself.enableButtons(false);
-                                dialogInItself.setClosable(false);
-                                // send our update
-                                $
-                                        .post("/api/download-selected-images.php", {
-                                            album : album,
-                                            what : what
-                                        }, "json")
-                                        .done(
-                                                function(data) {
-                                                    data = jQuery.parseJSON(data);
-                                                    if (data.hasOwnProperty('file')) {
-                                                        window.location = data.file;
-                                                        dialogInItself.close();
-                                                    } else if (data.hasOwnProperty('err')) {
-                                                        modal.find('.bootstrap-dialog-body').append(
-                                                                '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.err
-                                                                        + '</div>');
-                                                    } else {
-                                                        modal
-                                                                .find('.bootstrap-dialog-body')
-                                                                .append(
-                                                                        '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
-                                                    }
-                                                })
-                                        .fail(
-                                                function() {
-                                                    modal
-                                                            .find('.bootstrap-dialog-body')
-                                                            .append(
-                                                                    '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
-                                                }).always(function() {
-                                            $('#compressing-download').remove();
-                                            $button.stopSpin();
-                                            dialogInItself.enableButtons(true);
-                                            dialogInItself.setClosable(true);
-                                        });
-                            }
-                        }, {
-                            label : 'Close',
-                            action : function(dialogInItself) {
-                                dialogInItself.close();
-                            }
-                        } ]
-            });
+    BootstrapDialog.show({
+        draggable : true,
+        title : 'Terms Of Service',
+        message : '<em class="fa fa-exclamation-triangle"></em> By downloading the selected files, you are agreeing to the right to copy, display, reproduce, enlarge and distribute said photographs taken by the Photographer in connection with the Services and in connection with the publication known as Saperstone Studios for personal use, and any reprints or reproductions, or excerpts thereof; all other rights are expressly reserved by and to Photographer.<br/><br/>While usage in accordance with above policies of selected files on public social media sites and personal websites for non-profit purposes is acceptable, any use of selected files in any publication, display, exhibit or paid medium are not permitted without express consent from Photographer.<br/><br/>Please note that only images you have expressly purchased rights to will be downloaded, even if additional images were selected for this download.',
+        buttons : [ {
+            icon : 'glyphicon glyphicon-download-alt',
+            label : ' Download',
+            cssClass : 'btn-success',
+            action : function(dialogInItself) {
+                var $button = this; // 'this' here is a jQuery
+                // object that
+                // wrapping the <button> DOM element.
+                var modal = $button.closest('.modal-content');
+                modal.find('.bootstrap-dialog-body').append('<div id="compressing-download" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>We are compressing your images for download. They should automatically start downloading shortly.</div>');
+                $button.spin();
+                dialogInItself.enableButtons(false);
+                dialogInItself.setClosable(false);
+                // send our update
+                $.post("/api/download-selected-images.php", {
+                    album : album,
+                    what : what
+                }, "json").done(function(data) {
+                    data = jQuery.parseJSON(data);
+                    if (data.hasOwnProperty('file')) {
+                        window.location = data.file;
+                        dialogInItself.close();
+                    } else if (data.hasOwnProperty('err')) {
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.err + '</div>');
+                    } else {
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                    }
+                }).fail(function(xhr, status, error) {
+                    if ( xhr.responseText !== "" ) {
+                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+                    } else if ( error === "Unauthorized" ) {
+                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+                    } else {
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                    }
+                }).always(function() {
+                    $('#compressing-download').remove();
+                    $button.stopSpin();
+                    dialogInItself.enableButtons(true);
+                    dialogInItself.setClosable(true);
+                });
+            }
+        }, {
+            label : 'Close',
+            action : function(dialogInItself) {
+                dialogInItself.close();
+            }
+        } ]
+    });
 }
 
 function shareImages(album, what) {
@@ -687,41 +683,38 @@ function submitImages() {
     $("#submit-send").prop("disabled", true);
     $("#submit-send").next().prop("disabled", true);
     $("#submit-send em").removeClass('fa fa-paper-plane').addClass('glyphicon glyphicon-asterisk icon-spin');
-    $
-            .post("/api/send-selected-images.php", {
-                album : $('#submit').attr('album-id'),
-                what : $('#submit').attr('what'),
-                name : $('#submit-name').val(),
-                email : $('#submit-email').val(),
-                comment : $('#submit-comment').val()
-            })
-            .done(function(data) {
-                if (data !== "") {
-                    $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
-                } else {
-                    $("#submit").modal('hide')
-                }
-            })
-            .fail(
-                    function() {
-                        $("#submit .modal-body")
-                                .append(
-                                        '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
-                    }).always(function() {
-                $('#submit-send').prop("disabled", false);
-                $('#submit-send').next().prop("disabled", false);
-                $('#submit-send em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
-            });
+    $.post("/api/send-selected-images.php", {
+        album : $('#submit').attr('album-id'),
+        what : $('#submit').attr('what'),
+        name : $('#submit-name').val(),
+        email : $('#submit-email').val(),
+        comment : $('#submit-comment').val()
+    }).done(function(data) {
+        if (data !== "") {
+            $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
+        } else {
+            $("#submit").modal('hide')
+        }
+    }).fail(function(xhr, status, error) {
+        if ( xhr.responseText !== "" ) {
+            $('#submit .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if ( error === "Unauthorized" ) {
+            $('#submit .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+        }
+    }).always(function() {
+        $('#submit-send').prop("disabled", false);
+        $('#submit-send').next().prop("disabled", false);
+        $('#submit-send em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
+    });
 }
 
 function submitCart() {
     $('#cart-submit').prop("disabled", true);
     $('#cart-submit').next().prop("disabled", true);
     $('#cart-submit em').removeClass('fa fa-credit-card').addClass('glyphicon glyphicon-asterisk icon-spin');
-    $('#cart .modal-body').append(
-            "<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for submitting your request. Your request is being processed, "
-                    + "and you should be forwarded to paypal's payment screen within a few seconds. " + "If you are not, please <a class='gen' target='_blank' "
-                    + "href='mailto:billingerror@saperstonestudios.com'>contact us</a> and we'll try to resolve " + "your issue as soon as we can.</div>");
+    $('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for submitting your request. Your request is being processed, " + "and you should be forwarded to paypal's payment screen within a few seconds. " + "If you are not, please <a class='gen' target='_blank' " + "href='mailto:billingerror@saperstonestudios.com'>contact us</a> and we'll try to resolve " + "your issue as soon as we can.</div>");
 
     var coupon;
     if ($('#cart-coupon').val() !== "") {
@@ -746,54 +739,37 @@ function submitCart() {
         state : $('#cart-state').val(),
         zip : $('#cart-zip').val(),
     };
-    $
-            .post("/api/checkout.php", {
-                user : user,
-                order : order,
-                coupon : coupon
-            }, "json")
-            .done(
-                    function(data) {
-                        data = jQuery.parseJSON(data);
-                        if (data.hasOwnProperty('response') && data.response.Ack === "Success") {
-                            var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
-                            $('#cart .modal-body')
-                                    .append(
-                                            "<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='"
-                                                    + link + "'>this link</a></div>.");
-                            window.location = link;
-                        } else if (data.hasOwnProperty('response') && data.response.Ack === "Failure"
-                                && data.response.Errors.LongMessage === "This transaction cannot be processed. The amount to be charged is zero.") {
-                            $('#cart .modal-body')
-                                    .append(
-                                            "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.</div>");
-                            // TODO - do stuff
-                        } else if (data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.hasOwnProperty('Errors')) {
-                            $('#cart .modal-body')
-                                    .append(
-                                            "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>"
-                                                    + data.response.Errors.LongMessage
-                                                    + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                        } else if (data.hasOwnProperty('error')) {
-                            $('#cart .modal-body')
-                                    .append(
-                                            "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>"
-                                                    + data.error
-                                                    + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                        } else {
-                            $('#cart .modal-body')
-                                    .append(
-                                            "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                        }
-                    })
-            .fail(
-                    function() {
-                        $('#cart .modal-body')
-                                .append(
-                                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                    }).always(function() {
-                $('#cart-submit').prop("disabled", false);
-                $('#cart-submit').next().prop("disabled", false);
-                $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
-            });
+    $.post("/api/checkout.php", {
+        user : user,
+        order : order,
+        coupon : coupon
+    }, "json").done(function(data) {
+        data = jQuery.parseJSON(data);
+        if (data.hasOwnProperty('response') && data.response.Ack === "Success") {
+            var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
+            $('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='" + link + "'>this link</a></div>.");
+            window.location = link;
+        } else if (data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.Errors.LongMessage === "This transaction cannot be processed. The amount to be charged is zero.") {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.</div>");
+            // TODO - do stuff
+        } else if (data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.hasOwnProperty('Errors')) {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        } else if (data.hasOwnProperty('error')) {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.error + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        } else {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
+    }).fail(function(xhr, status, error) {
+        if ( xhr.responseText !== "" ) {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if ( error === "Unauthorized" ) {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
+    }).always(function() {
+        $('#cart-submit').prop("disabled", false);
+        $('#cart-submit').next().prop("disabled", false);
+        $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
+    });
 }

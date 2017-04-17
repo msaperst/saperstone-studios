@@ -23,6 +23,9 @@ $conn->connect ();
 // only admin users and uploader users who own the album can make updates
 if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
+    if ($user->isLoggedIn ()) {
+        echo "Sorry, you do you have appropriate rights to perform this action.";
+    }
     exit ();
 }
 

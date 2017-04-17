@@ -17,7 +17,7 @@ $user = new User ();
 
 $user;
 if (! $user->isLoggedIn ()) {
-    echo "User must be logged in to create an account";
+    echo "User must be logged in to order products";
     $conn->disconnect ();
     exit ();
 } else {

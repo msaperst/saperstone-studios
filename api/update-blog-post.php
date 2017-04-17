@@ -17,6 +17,9 @@ $user = new User ();
 
 if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
+    if ($user->isLoggedIn ()) {
+        echo "Sorry, you do you have appropriate rights to perform this action.";
+    }
     $conn->disconnect ();
     exit ();
 }
@@ -95,11 +98,11 @@ if (isset ( $_POST ['preview'] ['img'] ) && $_POST ['preview'] ['img'] != "") {
 // if we're changing the post activation
 if (isset ( $_POST ['active'] )) {
     $sql = "SELECT active FROM `blog_details` WHERE `id` = $id;";
-    $was_active = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) )['active'];
+    $was_active = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['active'];
     $active = ( int ) $_POST ['active'];
     $sql = "UPDATE `blog_details` SET `active` = '$active' WHERE `id` = $id;";
     mysqli_query ( $conn->db, $sql );
-    if( ! $was_active && $active ) {
+    if (! $was_active && $active) {
         echo "published";
     } else {
         include_once "../php/social-media.php";

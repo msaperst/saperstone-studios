@@ -41,6 +41,9 @@ if (! $blog_comment_info ['id']) {
 // check our user permissions
 if (! $user->isAdmin () && $user->getId () != $blog_comment_info ['user']) {
     header ( 'HTTP/1.0 401 Unauthorized' );
+    if ($user->isLoggedIn ()) {
+        echo "Sorry, you do you have appropriate rights to perform this action.";
+    }
     $conn->disconnect ();
     exit ();
 }

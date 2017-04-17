@@ -96,131 +96,119 @@ function saveGallery(id) {
     }
 
     // save our updates
-    $
-            .post("/api/update-gallery-order.php", {
-                id : id,
-                imgs : imgs,
-            })
-            .done(function(data) {
-                if (data === "") {
-                    $(".image-grid").sortable("destroy");
-                    // fix the buttons
-                    $("#sort-gallery-btn").parent().show();
-                    $("#save-gallery-btn").parent().hide();
-                } else {
-                    $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-                }
-            })
-            .fail(
-                    function() {
-                        $('.breadcrumb')
-                                .after(
-                                        "<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while saving your new gallery order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                    }).always(function() {
-                $.unblockUI();
-            });
+    $.post("/api/update-gallery-order.php", {
+        id : id,
+        imgs : imgs,
+    }).done(function(data) {
+        if (data === "") {
+            $(".image-grid").sortable("destroy");
+            // fix the buttons
+            $("#sort-gallery-btn").parent().show();
+            $("#save-gallery-btn").parent().hide();
+        } else {
+            $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+        }
+    }).fail(function(xhr, status, error) {
+        if (xhr.responseText !== "") {
+            $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if (error === "Unauthorized") {
+            $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while saving your new gallery order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
+    }).always(function() {
+        $.unblockUI();
+    });
 }
 
 function editGallery(id) {
-    $
-            .get(
-                    "/api/get-gallery.php",
-                    {
-                        id : id
+    $.get("/api/get-gallery.php", {
+        id : id
+    }, function(data) {
+        BootstrapDialog.show({
+            draggable : true,
+            size : BootstrapDialog.SIZE_WIDE,
+            title : 'Edit Gallery <b>' + data.title + '</b>',
+            message : function() {
+                var inputs = '<input placeholder="Gallery Title" id="new-gallery-title" type="text" class="form-control" value="' + data.title + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div>' + '</div>' + '<div id="new-gallery-error" class="error"></div>' + '<div id="new-gallery-message" class="success"></div>';
+                return inputs;
+            },
+            buttons : [ {
+                icon : 'glyphicon glyphicon-save',
+                label : ' Save Details',
+                cssClass : 'btn-success',
+                action : function(dialogItself) {
+                    var $button = this; // 'this' here
+                    // is a jQuery
+                    // object that
+                    // wrapping the <button> DOM
+                    // element.
+                    $button.spin();
+                    disableDialogButtons(dialogItself);
+                    $.post("/api/update-gallery.php", {
+                        id : id,
+                        title : $('#new-gallery-title').val()
+                    }).done(function() {
+                        dialogItself.close();
+                    });
+                }
+            }, {
+                label : 'Close',
+                action : function(dialogItself) {
+                    dialogItself.close();
+                }
+            } ],
+            onshown : function(dialogItself) {
+                $('#upload-container').uploadFile({
+                    url : "/api/upload-gallery-images.php",
+                    uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
+                    multiple : true,
+                    dragDrop : true,
+                    uploadButtonLocation : $('.bootstrap-dialog-footer-buttons'),
+                    uploadContainer : $('#upload-container'),
+                    uploadButtonClass : "btn btn-default btn-info",
+                    statusBarWidth : "48%",
+                    dragdropWidth : "100%",
+                    fileName : "myfile",
+                    sequential : true,
+                    sequentialCount : 1,
+                    acceptFiles : "image/*",
+                    uploadQueueOrder : "bottom",
+                    formData : {
+                        "gallery" : id
                     },
-                    function(data) {
-                        BootstrapDialog
-                                .show({
-                                    draggable : true,
-                                    size : BootstrapDialog.SIZE_WIDE,
-                                    title : 'Edit Gallery <b>' + data.title + '</b>',
-                                    message : function() {
-                                        var inputs = '<input placeholder="Gallery Title" id="new-gallery-title" type="text" class="form-control" value="'
-                                                + data.title
-                                                + '" />'
-                                                + '<p></p>'
-                                                + '<div id="upload-container"></div>'
-                                                + '<div id="resize-progress" class="progress">'
-                                                + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div>'
-                                                + '</div>' + '<div id="new-gallery-error" class="error"></div>' + '<div id="new-gallery-message" class="success"></div>';
-                                        return inputs;
-                                    },
-                                    buttons : [ {
-                                        icon : 'glyphicon glyphicon-save',
-                                        label : ' Save Details',
-                                        cssClass : 'btn-success',
-                                        action : function(dialogItself) {
-                                            var $button = this; // 'this' here
-                                            // is a jQuery
-                                            // object that
-                                            // wrapping the <button> DOM
-                                            // element.
-                                            $button.spin();
-                                            disableDialogButtons(dialogItself);
-                                            $.post("/api/update-gallery.php", {
-                                                id : id,
-                                                title : $('#new-gallery-title').val()
-                                            }).done(function() {
-                                                dialogItself.close();
-                                            });
-                                        }
-                                    }, {
-                                        label : 'Close',
-                                        action : function(dialogItself) {
-                                            dialogItself.close();
-                                        }
-                                    } ],
-                                    onshown : function(dialogItself) {
-                                        $('#upload-container').uploadFile({
-                                            url : "/api/upload-gallery-images.php",
-                                            uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
-                                            multiple : true,
-                                            dragDrop : true,
-                                            uploadButtonLocation : $('.bootstrap-dialog-footer-buttons'),
-                                            uploadContainer : $('#upload-container'),
-                                            uploadButtonClass : "btn btn-default btn-info",
-                                            statusBarWidth : "48%",
-                                            dragdropWidth : "100%",
-                                            fileName : "myfile",
-                                            sequential : true,
-                                            sequentialCount : 1,
-                                            acceptFiles : "image/*",
-                                            uploadQueueOrder : "bottom",
-                                            formData : {
-                                                "gallery" : id
-                                            },
-                                            onSubmit : function() {
-                                                $('.ajax-file-upload-container').show();
-                                                dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-upload').addClass('glyphicon-asterisk icon-spin');
-                                                disableDialogButtons(dialogItself);
-                                            },
-                                            onSuccess : function(files, data, xhr, pd) {
-                                                data = JSON.parse(data);
-                                                if ($.isPlainObject(data)) {
-                                                    pd.statusbar.remove();
-                                                    $.each(files, function(i, val) {
-                                                        total++;
-                                                        loaded = gallery.loadImages(1);
-                                                    });
-                                                } else {
-                                                    pd.statusbar.parent().removeClass('ajax-file-upload-container');
-                                                    pd.statusbar.prepend("<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>");
-                                                    pd.statusbar.addClass('alert alert-danger');
-                                                    pd.progressDiv.hide();
-                                                    pd.filename.after(data);
-                                                }
-                                            },
-                                            afterUploadAll : function() {
-                                                setTimeout(function() {
-                                                    $('.ajax-file-upload-container').hide();
-                                                }, 5000);
-                                                dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-asterisk icon-spin').addClass('glyphicon-upload');
-                                                enableDialogButtons(dialogItself);
-                                            },
-                                        });
-                                    }
-                                });
-                    }, "json");
+                    onSubmit : function() {
+                        $('.ajax-file-upload-container').show();
+                        dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-upload').addClass('glyphicon-asterisk icon-spin');
+                        disableDialogButtons(dialogItself);
+                    },
+                    onSuccess : function(files, data, xhr, pd) {
+                        data = JSON.parse(data);
+                        if ($.isPlainObject(data)) {
+                            pd.statusbar.remove();
+                            $.each(files, function(i, val) {
+                                total++;
+                                loaded = gallery.loadImages(1);
+                            });
+                        } else {
+                            pd.statusbar.parent().removeClass('ajax-file-upload-container');
+                            pd.statusbar.prepend("<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>");
+                            pd.statusbar.addClass('alert alert-danger');
+                            pd.progressDiv.hide();
+                            pd.filename.after(data);
+                        }
+                    },
+                    afterUploadAll : function() {
+                        setTimeout(function() {
+                            $('.ajax-file-upload-container').hide();
+                        }, 5000);
+                        dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-asterisk icon-spin').addClass('glyphicon-upload');
+                        enableDialogButtons(dialogItself);
+                    },
+                });
+            }
+        });
+    }, "json");
 }
 
 function disableDialogButtons(dialog) {

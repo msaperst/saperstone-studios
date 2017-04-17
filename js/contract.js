@@ -68,8 +68,14 @@ function submitContract() {
                 window.location.href = "/";
              }, 10000);
         }
-    }).fail(function() {
-        $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while submitting your contract.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+    }).fail(function(xhr, status, error) {
+        if ( xhr.responseText !== "" ) {
+            $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if ( error === "Unauthorized" ) {
+            $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while submitting your contract.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
     }).always(function(){
         $('#contract-submit').prop('disabled',false);
         $('#contract-submit em').removeClass('fa-spinner fa-spin').addClass('fa-paper-plane');
