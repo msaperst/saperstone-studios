@@ -210,6 +210,11 @@ $(document).ready(function() {
     $('#album-carousel').on('slid.bs.carousel', function() {
         getDetails();
     });
+    
+    //submit email
+    $('#notify-submit').click(function(){
+        submitNotifyEmail();
+    });
 });
 
 function getDetails() {
@@ -771,5 +776,33 @@ function submitCart() {
         $('#cart-submit').prop("disabled", false);
         $('#cart-submit').next().prop("disabled", false);
         $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
+    });
+}
+
+function submitNotifyEmail() {
+    $("#notify-submit").prop("disabled", true);
+    $("#notify-submit").next().prop("disabled", true);
+    $("#notify-submit em").removeClass('fa fa-paper-plane').addClass('glyphicon glyphicon-asterisk icon-spin');
+    $.post("/api/add-notification-email.php", {
+        album : $('#submit').attr('album-id'),
+        email : $('#notify-email').val()
+    }).done(function(data) {
+        if (data !== "") {
+            $("#album-thumbs").after('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
+        } else {
+            $("#album-thumbs").empty().after('<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Your email address was successfully recorded. You will be notified once the images have been uploaded.</div>');
+        }
+    }).fail(function(xhr, status, error) {
+        if ( xhr.responseText !== "" ) {
+            $('#album-thumbs').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if ( error === "Unauthorized" ) {
+            $('#album-thumbs').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $("#album-thumbs").after('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+        }
+    }).always(function() {
+        $('#notify-submit').prop("disabled", false);
+        $('#notify-submit').next().prop("disabled", false);
+        $('#notify-submit em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
     });
 }

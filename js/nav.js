@@ -25,27 +25,7 @@ $(function() {
     });
 
     $('#login-submit').click(function() {
-        $.post("/api/login.php", {
-            username : $('#login-user').val(),
-            password : md5($('#login-pass').val()),
-            rememberMe : $('#login-remember').is(':checked') ? 1 : 0,
-            submit : "Login"
-        }).done(function(data) {
-            if (data === "") {
-                $('#login-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Successfully Logged In. Please wait as you are redirected.</div>");
-                location.reload();
-            } else {
-                $('#login-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-            }
-        }).fail(function(xhr, status, error) {
-            if (xhr.responseText !== "") {
-                $('#login-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-            } else if (error === "Unauthorized") {
-                $('#login-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-            } else {
-                $('#login-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-            }
-        });
+        submitLogin();
     });
 
     $('.modal-body').keypress(function(e) {
@@ -55,84 +35,23 @@ $(function() {
     });
 
     $('#logout-button').click(function() {
-        $.post("/api/login.php", {
-            submit : "Logout"
-        }).done(function() {
-            if (window.location.pathname.lastIndexOf('/user/', 0) === 0) {
-                window.location = "/";
-            } else {
-                location.reload();
-            }
-        });
+        logout();
     });
 
     $("#login-forgot-password").click(function() {
-        $('#login-modal').modal('hide');
-        $('#forgot-password-instructions').show();
-        $('#forgot-password-error').empty();
-        $('#forgot-password-message').empty();
-        $('#forgot-password-instructions').show();
-        $('#forgot-password-submit').show();
-        $('#forgot-password-code').hide();
-        $('#forgot-password-new-password').hide();
-        $('#forgot-password-new-password-confirm').hide();
-        $('#forgot-password-reset-password').hide();
-        $('#forgot-password-modal').modal('show');
+        forgotPassword();
     });
 
     $("#forgot-password-submit").click(function() {
-        var button = $(this);
-        button.prop("disabled", true);
-        $.post("/api/send-reset-code.php", {
-            email : $('#forgot-password-email').val(),
-        }).done(function(data) {
-            $('#forgot-password-error').html(data);
-            if (data === "") {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Reset code has been sent, please enter it below, along with a new password</div>");
-                resetPasswordForm();
-                button.prop("disabled", false);
-            } else {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-            }
-        }).fail(function(xhr, status, error) {
-            if (xhr.responseText !== "") {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-            } else if (error === "Unauthorized") {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-            } else {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-            }
-        });
+        forgotPasswordSubmit();
     });
+
     $("#forgot-password-prev-code").click(function() {
         $('#forgot-password-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Enter your email address above, with your previous reset code and a new password below</div>");
         resetPasswordForm();
     });
     $("#forgot-password-reset-password").click(function() {
-        var button = $(this);
-        button.prop("disabled", true);
-        $.post("/api/reset-password.php", {
-            email : $('#forgot-password-email').val(),
-            code : $('#forgot-password-code').val(),
-            password : $('#forgot-password-new-password').val(),
-            passwordConfirm : $('#forgot-password-new-password-confirm').val(),
-        }).done(function(data) {
-            button.prop("disabled", false);
-            if (data === "") {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your password has been successfully reset. Logging you in now.</div>");
-                location.reload();
-            } else {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-            }
-        }).fail(function(xhr, status, error) {
-            if ( xhr.responseText !== "" ) {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-            } else if ( error === "Unauthorized" ) {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-            } else {
-                $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-            }
-        });
+        forgotPasswordReset();
     });
 
     if (window.location.hash && window.location.hash === "#album") {
@@ -145,6 +64,110 @@ window.onhashchange = function() {
         findAlbum();
     }
 };
+
+function submitLogin() {
+    $.post("/api/login.php", {
+        username : $('#login-user').val(),
+        password : md5($('#login-pass').val()),
+        rememberMe : $('#login-remember').is(':checked') ? 1 : 0,
+        submit : "Login"
+    }).done(function(data) {
+        if (data === "") {
+            $('#login-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Successfully Logged In. Please wait as you are redirected.</div>");
+            location.reload();
+        } else {
+            $('#login-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+        }
+    }).fail(function(xhr, status, error) {
+        if (xhr.responseText !== "") {
+            $('#login-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if (error === "Unauthorized") {
+            $('#login-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $('#login-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
+    });
+}
+
+function logout() {
+    $.post("/api/login.php", {
+        submit : "Logout"
+    }).done(function() {
+        if (window.location.pathname.lastIndexOf('/user/', 0) === 0) {
+            window.location = "/";
+        } else {
+            location.reload();
+        }
+    });
+}
+
+function forgotPassword() {
+    $('#login-modal').modal('hide');
+    $('#forgot-password-instructions').show();
+    $('#forgot-password-error').empty();
+    $('#forgot-password-message').empty();
+    $('#forgot-password-instructions').show();
+    $('#forgot-password-submit').show();
+    $('#forgot-password-code').hide();
+    $('#forgot-password-new-password').hide();
+    $('#forgot-password-new-password-confirm').hide();
+    $('#forgot-password-reset-password').hide();
+    $('#forgot-password-modal').modal('show');
+}
+
+function forgotPasswordSubmit() {
+    var button = $(this);
+    button.prop("disabled", true);
+    $.post("/api/send-reset-code.php", {
+        email : $('#forgot-password-email').val(),
+    }).done(function(data) {
+        $('#forgot-password-error').html(data);
+        if (data === "") {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Reset code has been sent, please enter it below, along with a new password</div>");
+            resetPasswordForm();
+            button.prop("disabled", false);
+        } else {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+        }
+    }).fail(function(xhr, status, error) {
+        if (xhr.responseText !== "") {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if (error === "Unauthorized") {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
+    });
+}
+
+function forgotPasswordReset() {
+    var button = $(this);
+    button.prop("disabled", true);
+    $.post("/api/reset-password.php", {
+        email : $('#forgot-password-email').val(),
+        code : $('#forgot-password-code').val(),
+        password : $('#forgot-password-new-password').val(),
+        passwordConfirm : $('#forgot-password-new-password-confirm').val(),
+    }).done(function(data) {
+        button.prop("disabled", false);
+        if (data === "") {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your password has been successfully reset. Logging you in now.</div>");
+            setTimeout(function() {
+                location.reload();
+            }, 5000);
+        } else {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+        }
+    }).fail(function(xhr, status, error) {
+        if (xhr.responseText !== "") {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if (error === "Unauthorized") {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
+    });
+}
 
 function resetPasswordForm() {
     $('#forgot-password-instructions').hide();
@@ -172,9 +195,8 @@ function findAlbum() {
             hotkey : 13,
             cssClass : 'btn-success',
             action : function(dialogItself) {
-                var $button = this; // 'this' here is a jQuery
-                // object that
-                // wrapping the <button> DOM element.
+                var $button = this; // 'this' here is a jQuery object that
+                                    // wrapping the <button> DOM element.
                 var modal = $button.closest('.modal-content');
                 $button.spin();
                 dialogItself.enableButtons(false);
@@ -187,8 +209,7 @@ function findAlbum() {
                     $button.stopSpin();
                     dialogItself.enableButtons(true);
                     dialogItself.setClosable(true);
-                    // goto album url if it
-                    // exists
+                    // goto album url if it exists
                     if ($.isNumeric(data) && data !== '0') {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Navigating to album</div>");
                         window.location.href = '/user/album.php?album=' + data;
@@ -198,9 +219,9 @@ function findAlbum() {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
                 }).fail(function(xhr, status, error) {
-                    if ( xhr.responseText !== "" ) {
+                    if (xhr.responseText !== "") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if ( error === "Unauthorized" ) {
+                    } else if (error === "Unauthorized") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
