@@ -520,8 +520,11 @@ function viewAllFavorites() {
             var list = $('<ul>');
             list.addClass('list-inline');
             $.each(favs, function(index, fav) {
-                var item = $('<li image-id="' + fav.sequence + '" class="img-favorite">');
-                item.css('background-image', 'url("' + fav.location + '")');
+                var item = $('<li image-id="' + fav.sequence + '" class="img-favorite img-favorite-text">');
+                item.css({
+                    'background-image' : 'url("' + fav.location + '")',
+                });
+                item.text(fav.title);
                 list.append(item);
                 if (fav.usr !== null) {
                     link.html(fav.usr);
