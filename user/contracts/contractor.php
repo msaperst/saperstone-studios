@@ -194,11 +194,11 @@ $conn->disconnect ();
 	</div>
 	<div class='row'>
 		<div class='col-md-3'>
-			<strong>Contractor Number:</strong>
+			<strong>Contractor Phone Number:</strong>
 		</div>
 		<div class='col-md-9'>
 			<input id='contract-number' class='form-control keep' type='tel'
-				placeholder='Contractor Number'
+				placeholder='Contractor Phone Number'
 				value='<?php echo $contract ['number']; ?>' />
 		</div>
 	</div>
@@ -231,7 +231,7 @@ $conn->disconnect ();
 	</div>
 	<div class='row'>
 		<div class='col-md-3'>
-			<strong>Number:</strong>
+			<strong>Phone Number:</strong>
 		</div>
 		<div class='col-md-9'>
 			<a target="_blank" href="tel:5712660004">(571) 266-0004</a>
