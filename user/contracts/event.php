@@ -32,6 +32,7 @@ $contract ['details'] = "";
 $contract ['amount'] = "";
 $contract ['deposit'] = "";
 $contract ['invoice'] = "";
+$contract ['location'] = "";
 // get the id if set, and pull these values
 if (isset ( $_GET ['id'] )) {
     $sql = "SELECT * FROM contracts WHERE id = {$_GET['id']};";
@@ -61,6 +62,14 @@ $conn->disconnect ();
 		<li><strong>Services.</strong> Photographer hereby agrees to provide
 			the photography services set forth on the attached Statement of
 			Services (the "Services") to the best of her abilities.</li>
+		<li><strong>Session Details.</strong> The above session with take
+			place at the below location on <input id='contract-date'
+			class='form-control' style='width: initial; display: initial;'
+			type='date' placeholder='Date'
+			value='<?php echo $contract ['date']; ?>' /> at <br /> <textarea
+				id='contract-location' class='form-control' type='text'
+				placeholder='Session Address'
+				value='<?php echo $contract ['location']; ?>'></textarea></li>
 		<li><strong>Compensation.</strong> In consideration of the Services,
 			Client agrees to pay Photographer the following amounts as follows:
 			<p>
@@ -78,16 +87,14 @@ $conn->disconnect ();
 				<em>5012 Whisper Willow Dr, Fairfax VA 22030</em>.
 			</p>
 			<p>
-				Non refundable deposit of $<input id='contract-deposit'
-					class='form-control' style='width: initial; display: initial;'
-					type='number' step='0.01' min='0' placeholder='Deposit'
-					value='<?php echo $contract ['deposit']; ?>' /> and contract to
-				reserve the date <input id='contract-date' class='form-control'
-					style='width: initial; display: initial;' type='date'
-					placeholder='Date' value='<?php echo $contract ['date']; ?>' /> <br />
-				Checks should be made payable to <em>Saperstone Studios</em> and
-				mailed to <em>5012 Whisper Willow Dr, Fairfax VA 22030</em> <br />Remaining
-				balance due 3 weeks prior to event date.
+				Photographer will reserve date as soon as non-refundable deposit of
+				$<input id='contract-deposit' class='form-control'
+					style='width: initial; display: initial;' type='number' step='0.01'
+					min='0' placeholder='Deposit'
+					value='<?php echo $contract ['deposit']; ?>' /> and contract is
+				received <br /> Checks should be made payable to <em>Saperstone
+					Studios</em> and mailed to <em>5012 Whisper Willow Dr, Fairfax VA
+					22030</em> <br />Remaining balance due 3 weeks prior to event date.
 			</p></li>
 		<li><strong>Term.</strong> The initial term of this Contract shall
 			commence on the date hereof and terminate upon completion of the

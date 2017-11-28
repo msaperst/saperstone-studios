@@ -32,6 +32,14 @@ $contract ['details'] = "";
 $contract ['amount'] = "";
 $contract ['deposit'] = "";
 $contract ['invoice'] = "";
+$contract ['ceremony-name'] = "";
+$contract ['ceremony-address'] = "";
+$contract ['ceremony-number'] = "";
+$contract ['ceremony-email'] = "";
+$contract ['reception-name'] = "";
+$contract ['reception-address'] = "";
+$contract ['reception-number'] = "";
+$contract ['reception-email'] = "";
 // get the id if set, and pull these values
 if (isset ( $_GET ['id'] )) {
     $sql = "SELECT * FROM contracts WHERE id = {$_GET['id']};";
@@ -182,6 +190,90 @@ $100 print credit'
 			<input id='contract-email' class='form-control keep' type='email'
 				placeholder='Client Email'
 				value='<?php echo $contract ['email']; ?>' />
+		</div>
+	</div>
+	<h4>Ceremony Venue:</h4>
+	<div class='row'>
+		<div class='col-md-3'>
+			<strong>Name: </strong>
+		</div>
+		<div class='col-md-9'>
+			<input id='contract-ceremony-venue-name' class='form-control keep'
+				type='text' placeholder='Ceremony Venue Name'
+				value='<?php echo $contract ['ceremony-name']; ?>' />
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-3'>
+			<strong>Address: </strong>
+		</div>
+		<div class='col-md-9'>
+			<textarea id='contract-ceremony-venue-address'
+				class='form-control keep' type='text'
+				placeholder='Ceremony Venue Address'
+				value='<?php echo $contract ['ceremony-address']; ?>'></textarea>
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-3'>
+			<strong>Phone Number: </strong>
+		</div>
+		<div class='col-md-9'>
+			<input id='contract-ceremony-venue-number' class='form-control keep'
+				type='text' placeholder='Ceremony Venue Phone Number'
+				value='<?php echo $contract ['ceremony-number']; ?>' />
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-3'>
+			<strong>Email: </strong>
+		</div>
+		<div class='col-md-9'>
+			<input id='contract-ceremony-venue-email' class='form-control keep'
+				type='text' placeholder='Ceremony Venue Email'
+				value='<?php echo $contract ['ceremony-email']; ?>' />
+		</div>
+	</div>
+	<h4>Reception Venue:</h4>
+	<div class='row'>
+		<div class='col-md-3'>
+			<strong>Name: </strong>
+		</div>
+		<div class='col-md-9'>
+			<input id='contract-reception-venue-name' class='form-control keep'
+				type='text' placeholder='Reception Venue Name'
+				value='<?php echo $contract ['ceremony-name']; ?>' />
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-3'>
+			<strong>Address: </strong>
+		</div>
+		<div class='col-md-9'>
+			<textarea id='contract-reception-venue-address'
+				class='form-control keep' type='text'
+				placeholder='Reception Venue Address'
+				value='<?php echo $contract ['ceremony-address']; ?>'></textarea>
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-3'>
+			<strong>Phone Number: </strong>
+		</div>
+		<div class='col-md-9'>
+			<input id='contract-reception-venue-number' class='form-control keep'
+				type='text' placeholder='Reception Venue Phone Number'
+				value='<?php echo $contract ['ceremony-number']; ?>' />
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-3'>
+			<strong>Email: </strong>
+		</div>
+		<div class='col-md-9'>
+			<input id='contract-reception-venue-email' class='form-control keep'
+				type='text' placeholder='Reception Venue Email'
+				value='<?php echo $contract ['ceremony-email']; ?>' />
 		</div>
 	</div>
 	<h4>Photographer:</h4>

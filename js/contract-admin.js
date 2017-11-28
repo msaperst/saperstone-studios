@@ -243,9 +243,10 @@ function editContract(data) {
             cssClass : 'btn-success',
             action : function(dialogItself) {
                 var button = this;
-                var inputs = previewContract(id, post, dialogItself, button);
-                submitContract(inputs, post, dialogItself, button);
-
+                if(requiredInfo(button)) {
+                    var inputs = previewContract(id, post, dialogItself, button);
+                    submitContract(inputs, post, dialogItself, button);
+                }
             }
         }, {
             label : 'Close',
@@ -258,6 +259,23 @@ function editContract(data) {
             setupFormFill();
         }
     });
+}
+
+function requiredInfo(button) {
+    var modal = button.closest('.modal-content');
+    if( $('#contract-type').val() == "" ) {
+        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred with the form.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        return false;
+    }
+    if( $('#contract-name').val() == "" ) {
+        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please enter a Client Name before submitting this form.</div>");
+        return false;
+    }
+    if( $('#contract-session').val() == "" ) {
+        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please enter a Session before submitting this form.</div>");
+        return false;
+    }
+    return true;
 }
 
 function previewContract(id, post, dialogItself, button) {
@@ -331,7 +349,7 @@ function submitContract(inputs, post, dialogItself, button) {
         } else if ( error === "Unauthorized" ) {
             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
-            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user's albums.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while submitting your contract.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
     }).always(function() {
         button.stopSpin();
