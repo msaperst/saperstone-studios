@@ -170,7 +170,7 @@ function addSocialMedias(data) {
     var facebook = $('<div>');
     facebook.addClass('fbook');
     var facebook_div = $('<div>');
-    facebook_div.addClass('fb-like col-md-4 text-left');
+    facebook_div.addClass('fb-like col-xs-6 text-left');
     facebook_div.attr({
         "data-href" : link,
         "data-send" : "false",
@@ -180,8 +180,9 @@ function addSocialMedias(data) {
     facebook.append(facebook_div);
     details_likes.append(facebook);
 
+    // our twitter likes button
     var twitter = $('<div>');
-    twitter.addClass('tweet col-md-4 text-center');
+    twitter.addClass('tweet col-xs-6 text-right');
     var twitter_a = $('<a>');
     twitter_a.addClass('btn btn-xs btn-info');
     twitter_a.attr({
@@ -197,16 +198,6 @@ function addSocialMedias(data) {
 
     twitter.append(twitter_a);
     details_likes.append(twitter);
-
-    var gplus = $('<div>');
-    gplus.addClass('gplus col-md-4 text-right');
-    var gplus_div = $('<div>');
-    gplus_div.addClass('g-plusone');
-    gplus_div.attr({
-        "data-href" : link
-    });
-    gplus.append(gplus_div);
-    details_likes.append(gplus);
     
     return details_likes;
 }
