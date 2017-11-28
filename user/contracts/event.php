@@ -194,7 +194,7 @@ $conn->disconnect ();
 			Event Photography | <input id='contract-session-dup'
 				class='form-control' style='width: initial; display: initial;'
 				type='text' placeholder='Event Type'
-				value='<?php echo $contract ['session']; ?>' disabled /> |
+				value='<?php echo $contract ['session']; ?>' /> |
 			photojournalistic style documentation
 		</div>
 	</div>
