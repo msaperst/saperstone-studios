@@ -21,3 +21,4 @@ run zap
 	set cookie to be secure
 	fix incomplete cache control
 run openscap
+ceremony and reception venue are not saved when editing contract
