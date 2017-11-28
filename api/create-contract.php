@@ -98,7 +98,7 @@ $sql = "INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `e
         $amount,$deposit,$invoice,'$content');";
 mysqli_query ( $conn->db, $sql );
 $last_id = mysqli_insert_id ( $conn->db );
-$link = md5( $last_id . $type . $name . $session );
+$link = md5 ( $last_id . $type . $name . $session );
 $sql = "UPDATE `contracts` SET `link` = '$link' WHERE `id` = $last_id;";
 mysqli_query ( $conn->db, $sql );
 

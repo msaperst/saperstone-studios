@@ -46,6 +46,11 @@ $response = array ();
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     $response [] = $r;
 }
+$sql = "SELECT * FROM `download_rights` WHERE `user` = '0' AND ( `download_rights`.`album` = '$album' OR `download_rights`.`album` = '*' ) AND ( `download_rights`.`image` = '$image' OR `download_rights`.`image` = '*' );";
+$result = mysqli_query ( $conn->db, $sql );
+while ( $r = mysqli_fetch_assoc ( $result ) ) {
+    $response [] = $r;
+}
 echo json_encode ( $response );
 
 $conn->disconnect ();

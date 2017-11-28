@@ -45,7 +45,7 @@ if (isset ( $_GET ['album'] )) {
         if (isset ( $favorites [$album] )) {
             $user_favs [$user] = $favorites [$album];
         } else {
-            unset( $user_favs [$user] );
+            unset ( $user_favs [$user] );
         }
     }
 }

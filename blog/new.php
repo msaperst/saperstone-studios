@@ -222,7 +222,8 @@ if (isset ( $_GET ['p'] )) {
             <div class="col-lg-12">
                 <strong><input id='post-title-input'
                     class='form-control input-lg text-center' type='text'
-                    placeholder='Blog Post Title' value='<?php echo str_replace('\'', '&apos;', $title); ?>' /></strong>
+                    placeholder='Blog Post Title'
+                    value='<?php echo str_replace('\'', '&apos;', $title); ?>' /></strong>
             </div>
         </div>
         <div class="row">

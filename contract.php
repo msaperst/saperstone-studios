@@ -14,7 +14,7 @@ $conn->connect ();
 
 $contract_link;
 // if no album is set, throw a 404 error
-if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "" ) {
+if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "") {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "errors/404.php";
     exit ();
@@ -61,40 +61,45 @@ if (! $contract_info ['name']) {
             </div>
         </div>
         <!-- /.row -->
-        
-        <input type='hidden' id='contract-id' value='<?php echo $contract_info['id']; ?>' />
+
+        <input type='hidden' id='contract-id'
+            value='<?php echo $contract_info['id']; ?>' />
 
         <div id='contract'>
         <?php echo $contract_info['content']; ?>
         </div>
-        
+
         <hr />
 
         <div class="row">
             <div class="col-md-2 text-left">
-                <div id='contract-initial-holder' class='signature-holder'>Initial inside the dotted area
+                <div id='contract-initial-holder' class='signature-holder'>
+                    Initial inside the dotted area
                     <div id='contract-initial' class='signature'></div>
                 </div>
             </div>
             <div id='contract-messages' class="col-md-8 text-center">
                 <?php
-    if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
-        ?>
+                if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
+                    ?>
                     <a target='_blank'
                     href='
                     <?php
-        echo $contract_info ['invoice'];
-        ?>
+                    echo $contract_info ['invoice'];
+                    ?>
                     '>Paypal Invoice Link</a>
                     <?php
-    }
-    ?>
+                }
+                ?>
             </div>
             <div class="col-md-2 text-right">
-                <button id='contract-submit' class='btn btn-success disabled' disabled><em class='fa fa-paper-plane'></em> Submit Contract</button>
-            </div>
+                <button id='contract-submit' class='btn btn-success disabled'
+                    disabled>
+                    <em class='fa fa-paper-plane'></em> Submit Contract
+                </button>
             </div>
         </div>
+    </div>
 
         <?php require_once "footer.php"; ?>
 

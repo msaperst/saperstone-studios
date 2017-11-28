@@ -27,7 +27,7 @@ class SocialMedia {
         $result = mysqli_query ( $this->db, $sql );
         while ( $r = mysqli_fetch_assoc ( $result ) ) {
             fwrite ( $feed, "    <item>\n" );
-            fwrite ( $feed, "      <title>" . htmlspecialchars( $r ['title'] ) . "</title>\n" );
+            fwrite ( $feed, "      <title>" . htmlspecialchars ( $r ['title'] ) . "</title>\n" );
             fwrite ( $feed, "      <link>$url/blog/post.php?p=" . $r ['id'] . "</link>\n" );
             fwrite ( $feed, "      <guid>$url/blog/post.php?p=" . $r ['id'] . "</guid>\n" );
             fwrite ( $feed, "    </item>\n" );
@@ -42,7 +42,7 @@ class SocialMedia {
     function publishBlogToTwitter($post_id) {
         // get our post information
         $details = mysqli_fetch_assoc ( mysqli_query ( $this->db, "SELECT * FROM `blog_details` WHERE id=$post_id;" ) );
-
+        
         $title = $details ['title'];
         $image = $details ['preview'];
         $link = $this->baseURL () . "/blog/post.php?p=$post_id";
@@ -74,7 +74,7 @@ class SocialMedia {
             $pageURL .= "s";
         }
         $pageURL .= "://";
-        if ($_SERVER ["SERVER_PORT"] != "80" && $_SERVER ["SERVER_PORT"] != "443" ) {
+        if ($_SERVER ["SERVER_PORT"] != "80" && $_SERVER ["SERVER_PORT"] != "443") {
             $pageURL .= $_SERVER ["SERVER_NAME"] . ":" . $_SERVER ["SERVER_PORT"];
         } else {
             $pageURL .= $_SERVER ["SERVER_NAME"];

@@ -67,7 +67,7 @@ mysqli_query ( $conn->db, $sql );
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && $user->isAdmin ()) {
     $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
     $codeExist = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `albums` WHERE code = '$code';" ) );
-    if( ! $codeExist ) {
+    if (! $codeExist) {
         $sql = "UPDATE albums SET code='$code' WHERE id='$id';";
         mysqli_query ( $conn->db, $sql );
     } else {

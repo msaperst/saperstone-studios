@@ -43,7 +43,7 @@ if (! $album_info ['name']) {
 }
 
 // check for album access
-$isAlbumDownloadable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `download_rights` WHERE user = '*' AND album = '" . $album . "';" ) );
+$isAlbumDownloadable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `download_rights` WHERE user = '0' AND album = '" . $album . "';" ) );
 if (! $user->isLoggedIn () && ! $isAlbumDownloadable) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     $conn->disconnect ();
@@ -56,7 +56,7 @@ if ($user->isLoggedIn ()) {
 
 // determine what the user can download
 $downloadable = array ();
-$sql = "SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId () . "' OR `user` = '*';";
+$sql = "SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId () . "' OR `user` = '0';";
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     if ($r ['album'] == "*" || ($r ['album'] == $album && $r ['image'] == "*")) {

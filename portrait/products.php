@@ -145,10 +145,18 @@
     if ($user->isAdmin ()) {
         ?>
     <script src="/js/edit-image.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
+        <script src="/js/jquery.uploadfile.js"></script>
     <?php
     }
     ?>
+
+
+
+
+
+
+
+
 
 </body>
 

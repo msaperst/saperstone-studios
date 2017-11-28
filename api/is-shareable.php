@@ -74,7 +74,7 @@ if (! $album_info ['title']) {
     exit ();
 }
 
-$sql = "SELECT * FROM `share_rights` WHERE ( `user` = '$user' OR `user` = '*' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
+$sql = "SELECT * FROM `share_rights` WHERE ( `user` = '$user' OR `user` = '0' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
 $shareable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($shareable ['user']) {
     echo 1;

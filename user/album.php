@@ -70,8 +70,8 @@ if ($user->isLoggedIn ()) {
     mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Visited Album', NULL, $album );" );
 }
 
-$isAlbumDownloadable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `download_rights` WHERE user = '*' AND album = '" . $album . "';" ) );
-$isAlbumSharable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `share_rights` WHERE user = '*' AND album = '" . $album . "';" ) );
+$isAlbumDownloadable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `download_rights` WHERE user = '0' AND album = '" . $album . "';" ) );
+$isAlbumSharable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `share_rights` WHERE user = '0' AND album = '" . $album . "';" ) );
 ?>
 
 <!DOCTYPE html>
@@ -141,17 +141,17 @@ footer {
         <!-- Services Section -->
         <div id="album-thumbs" class="row">
             <?php
-        if (count ( $images ) > 0) {
-            ?>
+            if (count ( $images ) > 0) {
+                ?>
             <div id="col-0" class="col-md-3 col-sm-6 col-gallery"></div>
             <div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
             <div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
             <div id="col-3" class="col-md-3 col-sm-6 col-gallery"></div>
             <?php
-        } else {
-            ?>
-            <div class="col-md-12 text-center">Sorry, no images have been
-                uploaded to your gallery yet. You can submit your email to be
+            } else {
+                ?>
+            <div class="col-md-12 text-center">Sorry, no images have
+                been uploaded to your gallery yet. You can submit your email to be
                 notified when images are added if you would like. Your email address
                 will not be used for any other purposes.</div>
             <div class="col-md-4 col-md-offset-4 text-center">
@@ -166,8 +166,8 @@ footer {
                 </button>
             </div>
             <?php
-        }
-        ?>
+            }
+            ?>
         </div>
         <!-- /.row -->
         

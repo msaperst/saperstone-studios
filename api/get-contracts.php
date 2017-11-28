@@ -28,12 +28,12 @@ $response = array ();
 $sql = "SELECT * FROM contracts;";
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $r['lineItems'] = array();
+    $r ['lineItems'] = array ();
     
     $sql = "SELECT * FROM contract_line_items WHERE contract = {$r['id']};";
     $sesult = mysqli_query ( $conn->db, $sql );
     while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
-        $r['lineItems'] [] = $s;
+        $r ['lineItems'] [] = $s;
     }
     $response [] = $r;
 }

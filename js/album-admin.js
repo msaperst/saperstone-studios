@@ -1,4 +1,8 @@
 var resultsSelected = false;
+var allUser = {};
+allUser.id = "0";
+allUser.usr = "<i>All Users</i>";
+
 
 $(document).ready(function() {
 
@@ -97,15 +101,7 @@ function setupImageAccess() {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     $.each(data, function(key, user) {
-                        if (!($("#album-users .selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
-                            var result_li = $('<li>');
-                            var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-                            result_a.click(function() {
-                                addAlbumUser($('#album-users'), user.id, true);
-                                $('.search-results').remove();
-                            });
-                            results_ul.append(result_li.append(result_a));
-                        }
+                        results_ul.append(createUserBullet("album-users", user));
                     });
                     results_ul.hover(function() {
                         resultsSelected = true;
@@ -142,16 +138,9 @@ function setupImageAccess() {
                 }, function(data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
+                    results_ul.append(createUserBullet("download-users", allUser));
                     $.each(data, function(key, user) {
-                        if (!($("#download-users .selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
-                            var result_li = $('<li>');
-                            var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-                            result_a.click(function() {
-                                addAlbumUser($('#download-users'), user.id, true);
-                                $('.search-results').remove();
-                            });
-                            results_ul.append(result_li.append(result_a));
-                        }
+                        results_ul.append(createUserBullet("download-users", user));
                     });
                     results_ul.hover(function() {
                         resultsSelected = true;
@@ -188,16 +177,9 @@ function setupImageAccess() {
                 }, function(data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
+                    results_ul.append(createUserBullet("share-users", allUser));
                     $.each(data, function(key, user) {
-                        if (!($("#share-users .selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
-                            var result_li = $('<li>');
-                            var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-                            result_a.click(function() {
-                                addAlbumUser($('#share-users'), user.id, true);
-                                $('.search-results').remove();
-                            });
-                            results_ul.append(result_li.append(result_a));
-                        }
+                        results_ul.append(createUserBullet("share-users", user));
                     });
                     results_ul.hover(function() {
                         resultsSelected = true;
@@ -306,15 +288,7 @@ function setupAlbumAccess() {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     $.each(data, function(key, user) {
-                        if (!($("#album-users .selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
-                            var result_li = $('<li>');
-                            var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-                            result_a.click(function() {
-                                addAlbumUser($('#album-users'), user.id, true);
-                                $('.search-results').remove();
-                            });
-                            results_ul.append(result_li.append(result_a));
-                        }
+                        results_ul.append(createUserBullet("album-users", user));
                     });
                     results_ul.hover(function() {
                         resultsSelected = true;
@@ -351,16 +325,9 @@ function setupAlbumAccess() {
                 }, function(data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
+                    results_ul.append(createUserBullet("download-users", allUser));
                     $.each(data, function(key, user) {
-                        if (!($("#download-users .selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
-                            var result_li = $('<li>');
-                            var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-                            result_a.click(function() {
-                                addAlbumUser($('#download-users'), user.id, true);
-                                $('.search-results').remove();
-                            });
-                            results_ul.append(result_li.append(result_a));
-                        }
+                        results_ul.append(createUserBullet("download-users", user));
                     });
                     results_ul.hover(function() {
                         resultsSelected = true;
@@ -397,16 +364,9 @@ function setupAlbumAccess() {
                 }, function(data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
+                    results_ul.append(createUserBullet("share-users", allUser));
                     $.each(data, function(key, user) {
-                        if (!($("#share-users .selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
-                            var result_li = $('<li>');
-                            var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-                            result_a.click(function() {
-                                addAlbumUser($('#share-users'), user.id, true);
-                                $('.search-results').remove();
-                            });
-                            results_ul.append(result_li.append(result_a));
-                        }
+                        results_ul.append(createUserBullet("share-users", user));
                     });
                     results_ul.hover(function() {
                         resultsSelected = true;
@@ -583,5 +543,17 @@ function addAlbumUser(ele, user_id, update) {
             });
         }
     }, "json");
+}
 
+function createUserBullet(element, user) {
+    if (!($("#" + element + " .selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
+        var result_li = $('<li>');
+        var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
+        result_a.click(function() {
+            addAlbumUser($('#' + element), user.id, true);
+            $('.search-results').remove();
+        });
+        return result_li.append(result_a);
+    }
+    return null;
 }
