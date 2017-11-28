@@ -97,9 +97,9 @@ $(document).ready(function() {
                         dialogItself.enableButtons(true);
                         dialogItself.setClosable(true);
                     }).fail(function(xhr, status, error) {
-                        if ( xhr.responseText !== "" ) {
+                        if (xhr.responseText !== "") {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                        } else if ( error === "Unauthorized" ) {
+                        } else if (error === "Unauthorized") {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                         } else {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
@@ -135,129 +135,16 @@ function editAlbum(id) {
             size : BootstrapDialog.SIZE_WIDE,
             title : 'Edit Album <b>' + data.name + '</b>',
             message : function() {
-                var inputs = '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' + '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' + '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' + '<p></p>' + '<input placeholder="Album Code" id="new-album-code" type="text" class="form-control" value="' + data.code + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div></div>';
+                var inputs = '<div id="album" album-id="' + id + '" class="hidden"><div id="album-title">' + data.name + '</div></div><input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' + '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' + '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' + '<p></p>' + '<input placeholder="Album Code" id="new-album-code" type="text" class="form-control" value="' + data.code + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div></div>';
                 return inputs;
             },
             buttons : [ {
                 id : 'album-users-btn',
                 icon : 'glyphicon glyphicon-picture',
-                label : ' Update Users',
+                label : ' Set Access',
                 cssClass : 'btn-info',
-                action : function(dialogItself) {
-                    var $button = this;
-                    $button.spin();
-                    disableDialogButtons(dialogItself);
-                    // send our update
-                    BootstrapDialog.show({
-                        draggable : true,
-                        title : 'Users for Album <b>' + data.name + '</b>',
-                        message : function() {
-                            var inputs = $('<div class="open">');
-
-                            var searchInput = $('<input>');
-                            searchInput.attr('id', 'user-search');
-                            searchInput.attr('type', 'text');
-                            searchInput.addClass('form-control');
-                            searchInput.attr('placeholder', 'Enter User Name');
-                            searchInput.on("keyup focus", function() {
-                                var search_ele = $(this);
-                                var keyword = search_ele.val();
-                                $.get("/api/search-users.php", {
-                                    keyword : keyword
-                                }, function(data) {
-                                    $('.search-results').remove();
-                                    var results_ul = $('<ul class="dropdown-menu search-results">');
-                                    $.each(data, function(key, user) {
-                                        if (!($(".selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
-                                            var result_li = $('<li>');
-                                            var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-                                            result_a.click(function() {
-                                                addUser(user.id);
-                                                $('.search-results').remove();
-                                            });
-                                            results_ul.append(result_li.append(result_a));
-                                        }
-                                    });
-                                    results_ul.hover(function() {
-                                        resultsSelected = true;
-                                    }, function() {
-                                        resultsSelected = false;
-                                    });
-                                    search_ele.after(results_ul);
-                                }, "json");
-                            });
-                            searchInput.focusout(function() {
-                                if (!resultsSelected) {
-                                    $('.search-results').remove();
-                                }
-                            });
-                            inputs.append(searchInput);
-
-                            return inputs;
-                        },
-                        buttons : [ {
-                            icon : 'glyphicon glyphicon-save',
-                            label : ' Update',
-                            cssClass : 'btn-success',
-                            action : function(dialogInItself) {
-                                var $buttonIn = this;
-                                var modal = $buttonIn.closest('.modal-content');
-                                $buttonIn.spin();
-                                dialogInItself.enableButtons(false);
-                                dialogInItself.setClosable(false);
-                                var users = [];
-                                $('#album-users .selected-album').each(function() {
-                                    users.push($(this).attr('user-id'));
-                                });
-                                // send our update
-                                $.post("/api/update-album-users.php", {
-                                    album : data.id,
-                                    users : users
-                                }).done(function(data) {
-                                    if (data === "") {
-                                        dialogInItself.close();
-                                        enableDialogButtons(dialogItself);
-                                    } else {
-                                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-                                    }
-                                }).fail(function(xhr, status, error) {
-                                    if ( xhr.responseText !== "" ) {
-                                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                                    } else if ( error === "Unauthorized" ) {
-                                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-                                    } else {
-                                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your album users.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                                    }
-                                    dialogInItself.enableButtons(true);
-                                    dialogInItself.setClosable(true);
-                                }).always(function() {
-                                    $buttonIn.stopSpin();
-                                });
-                            }
-                        }, {
-                            label : 'Close',
-                            action : function(dialogInItself) {
-                                $button.stopSpin();
-                                enableDialogButtons(dialogItself);
-                                dialogInItself.close();
-                            }
-                        } ],
-                        onshown : function(dialogInItself) {
-                            var albumsDiv = $('<div>');
-                            albumsDiv.attr('id', 'album-users');
-                            albumsDiv.css({
-                                'padding' : '0 10px 5px 10px'
-                            });
-                            dialogInItself.$modalBody.after(albumsDiv);
-                            $.get("/api/get-album-users.php", {
-                                album : data.id
-                            }, function(album_users) {
-                                for (var i = 0, len = album_users.length; i < len; i++) {
-                                    addUser(album_users[i].user);
-                                }
-                            }, "json");
-                        }
-                    });
+                action : function() {
+                    setupAlbumAccess();
                 }
             }, {
                 icon : 'glyphicon glyphicon-trash',
@@ -292,9 +179,9 @@ function editAlbum(id) {
                                     dialogInItself.close();
                                     dialogItself.close();
                                 }).fail(function(xhr, status, error) {
-                                    if ( xhr.responseText !== "" ) {
+                                    if (xhr.responseText !== "") {
                                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                                    } else if ( error === "Unauthorized" ) {
+                                    } else if (error === "Unauthorized") {
                                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                                     } else {
                                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while deleting your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
@@ -385,9 +272,9 @@ function editAlbum(id) {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                         }
                     }).fail(function(xhr, status, error) {
-                        if ( xhr.responseText !== "" ) {
+                        if (xhr.responseText !== "") {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                        } else if ( error === "Unauthorized" ) {
+                        } else if (error === "Unauthorized") {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                         } else {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your album users.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");

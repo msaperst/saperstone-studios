@@ -133,6 +133,7 @@ if (! $user->isLoggedIn ()) {
     if ($user->isAdmin ()) {
         ?>
     <script src="/js/albums-admin.js"></script>
+    <script src="/js/album-admin.js"></script>
     <?php
     } elseif ($user->getRole () == "uploader") {
         ?>

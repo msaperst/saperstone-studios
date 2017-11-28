@@ -782,7 +782,7 @@ footer {
                 ?>
             <span class="text-center"><button id="access-btn"
                     type="button" class="btn btn-default btn-info">
-                    <em class="fa fa-picture-o"></em> Access
+                    <em class="fa fa-picture-o"></em> Set Access
                 </button></span>
             <?php
             }
