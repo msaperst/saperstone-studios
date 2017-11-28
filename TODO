@@ -22,3 +22,4 @@ run zap
 	fix incomplete cache control
 run openscap
 ceremony and reception venue are not saved when editing contract
+fix inability to share images on pinterest
