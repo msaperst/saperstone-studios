@@ -297,9 +297,6 @@ function loadSM() {
         gapi.plusone.go();
     } catch (err) {
         setTimeout(loadSM, 100);
-    } finally {
-// setTimeout(function(){ console.log( "iFrame: " +
-// $("iframe").contents().find('._2tga._49ve')) }, 3000 );
     }
 }
 

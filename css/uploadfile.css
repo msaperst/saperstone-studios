@@ -32,7 +32,7 @@
     padding: 1px;
     border-radius: 3px;
     display: inline-block;
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
 .ajax-file-upload-bar {
@@ -40,7 +40,7 @@
     width: 0;
     height: 20px;
     border-radius: 3px;
-    color: #FFFFFF;
+    color: #ffffff;
 }
 
 .ajax-file-upload-percent {
@@ -129,16 +129,16 @@
 }
 
 .ajax-upload-dragdrop {
-    border: 2px dotted #A5A5C7;
+    border: 2px dotted #a5a5c7;
     width: 420px;
-    color: #DADCE3;
+    color: #dadce3;
     text-align: left;
     vertical-align: middle;
     padding: 10px 10px 0px 10px;
 }
 
 .state-hover {
-    border: 2px solid #A5A5C7;
+    border: 2px solid #a5a5c7;
 }
 
 .ajax-file-upload-container {

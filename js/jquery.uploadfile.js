@@ -49,15 +49,21 @@
             showProgress : false,
             nestedForms : true,
             showDownload : false,
-            onLoad : function(obj) {},
+            onLoad : function(obj) {
+            },
             onSelect : function(files) {
                 return true;
             },
-            onSubmit : function(files, xhr) {},
-            onSuccess : function(files, response, xhr, pd) {},
-            onError : function(files, status, message, pd) {},
-            onCancel : function(files, pd) {},
-            onAbort : function(files, pd) {},
+            onSubmit : function(files, xhr) {
+            },
+            onSuccess : function(files, response, xhr, pd) {
+            },
+            onError : function(files, status, message, pd) {
+            },
+            onCancel : function(files, pd) {
+            },
+            onAbort : function(files, pd) {
+            },
             downloadCallback : false,
             deleteCallback : false,
             afterUploadAll : false,
@@ -520,7 +526,10 @@
             var form = $("<form method='" + s.method + "' action='" + s.url + "' enctype='" + s.enctype + "'></form>");
             var fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' accept='" + s.acceptFiles + "'/>";
             if (s.multiple) {
-                if (s.fileName.indexOf("[]") !== s.fileName.length - 2) // if it does not endwith
+                if (s.fileName.indexOf("[]") !== s.fileName.length - 2) // if it
+                // does
+                // not
+                // endwith
                 {
                     s.fileName += "[]";
                 }
@@ -564,14 +573,8 @@
                 form.hide();
                 createCustomInputFile(obj, group, s, uploadLabel);
                 form.addClass(group);
-                if (s.serialize && feature.fileapi && feature.formdata) // use
-                // HTML5
-                // support
-                // and
-                // split
-                // file
-                // submission
-                {
+                // use HTML5 support and split file submission
+                if (s.serialize && feature.fileapi && feature.formdata) {
                     form.removeClass(group); // Stop Submitting when.
                     var files = this.files;
                     form.remove();
@@ -635,9 +638,8 @@
                     position : 'absolute',
                     left : '-250px'
                 });
-                if (navigator.appVersion.indexOf("MSIE ") !== -1) // IE
-                // Browser
-                {
+                // IE Browser
+                if (navigator.appVersion.indexOf("MSIE ") !== -1) {
                     uploadLabel.attr('for', fileUploadId);
                 } else {
                     uploadLabel.click(function() {
@@ -752,10 +754,8 @@
                         pd.abort.click(function() {
                             removeExistingFileName(obj, fileArray);
                             xhr.abort();
-                            obj.selectedFiles -= fileArray.length; // reduce
-                            // selected
-                            // File
-                            // count
+                            // reduce selected File count
+                            obj.selectedFiles -= fileArray.length;
                             s.onAbort.call(obj, fileArray, pd);
 
                         });
@@ -827,10 +827,8 @@
                                 pd.statusbar.hide().remove();
                                 if (s.deleteCallback)
                                     s.deleteCallback.call(this, data, pd);
-                                obj.selectedFiles -= fileArray.length; // reduce
-                                // selected
-                                // File
-                                // count
+                                obj.selectedFiles -= fileArray.length;
+                                // reduce selected File count
                                 updateFileCounter(s, obj);
 
                             });
