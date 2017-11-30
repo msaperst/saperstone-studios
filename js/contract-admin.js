@@ -263,15 +263,15 @@ function editContract(data) {
 
 function requiredInfo(button) {
     var modal = button.closest('.modal-content');
-    if( $('#contract-type').val() == "" ) {
+    if( $('#contract-type').val() === "" ) {
         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred with the form.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         return false;
     }
-    if( $('#contract-name').val() == "" ) {
+    if( $('#contract-name').val() === "" ) {
         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please enter a Client Name before submitting this form.</div>");
         return false;
     }
-    if( $('#contract-session').val() == "" ) {
+    if( $('#contract-session').val() === "" ) {
         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please enter a Session before submitting this form.</div>");
         return false;
     }
