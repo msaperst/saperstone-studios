@@ -198,7 +198,7 @@
                         src="img/blog.jpg<?php echo $rand; ?>" alt="Blog">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info"
-                            href="/blog/category.php?t=33">See More</a>
+                            href="/blog/category.php?t=7,33">See More</a>
                     </div>
                 </div>
             </div>

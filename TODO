@@ -11,7 +11,6 @@ Fix album delete to use ID
 Convert API calls into function calls - this can then be unit tests ;)
 Align two verticals as horizontal for slideshow
 Allow dragging and dropping of text area to breakup images in blog
-* categories page allow multiple 't', and link weddings to engagement and weddings
 Fix color of LA's face
 * email notification of invalid login
 * logs of download user actions
