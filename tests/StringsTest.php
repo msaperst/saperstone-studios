@@ -84,4 +84,34 @@ class StringsTest extends PHPUnit_Framework_TestCase {
         $result = $this->string->textToHTML ( "Hello\nWorld" );
         $this->assertEquals ( "Hello<br/>World", $result );
     }
+    public function testCommaSingle() {
+        $result = $this->string->commaSeparate ( array (
+                "hello" 
+        ) );
+        $this->assertEquals ( "hello", $result );
+    }
+    public function testCommaTwo() {
+        $result = $this->string->commaSeparate ( array (
+                "hello",
+                "world" 
+        ) );
+        $this->assertEquals ( "hello and world", $result );
+    }
+    public function testCommaThree() {
+        $result = $this->string->commaSeparate ( array (
+                "hello",
+                "there",
+                "world" 
+        ) );
+        $this->assertEquals ( "hello, there and world", $result );
+    }
+    public function testCommaFour() {
+        $result = $this->string->commaSeparate ( array (
+                "hello",
+                "there",
+                "my",
+                "world" 
+        ) );
+        $this->assertEquals ( "hello, there, my and world", $result );
+    }
 }

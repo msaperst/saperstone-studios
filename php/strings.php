@@ -13,5 +13,13 @@ class Strings {
         $text = str_replace ( "\n", "<br/>", $text );
         return str_replace ( "\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $text );
     }
+    function commaSeparate($strings) {
+        $last = array_slice ( $strings, - 1 );
+        $first = join ( ', ', array_slice ( $strings, 0, - 1 ) );
+        $both = array_filter ( array_merge ( array (
+                $first 
+        ), $last ), 'strlen' );
+        return join ( ' and ', $both );
+    }
 }
 ?>

@@ -1,20 +1,30 @@
 <?php
-$category;
+$categories;
+$where;
+$tags = array ();
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['t'] )) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "../errors/404.php";
     exit ();
 } else {
-    $category = ( int ) $_GET ['t'];
+    $categories = array_map ( 'intval', explode ( ',', $_GET ['t'] ) );
+    $where = "`id` = '" . implode ( "' OR `id` = '", $categories ) . "';";
 }
+echo $where;
+
+require_once "../php/strings.php";
+$string = new Strings ();
 
 require_once "../php/sql.php";
 $conn = new Sql ();
 $conn->connect ();
-$sql = "SELECT * FROM `tags` WHERE id = '$category';";
-$details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $details ['tag']) {
+$sql = "SELECT * FROM `tags` WHERE $where";
+$result = mysqli_query ( $conn->db, $sql );
+while ( $row = mysqli_fetch_assoc ( $result ) ) {
+    array_push ( $tags, $row ['tag'] );
+}
+if (empty ( $tags )) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include "../errors/404.php";
     $conn->disconnect ();
@@ -36,7 +46,7 @@ if (! $details ['tag']) {
     <?php
     require_once "../nav.php";
     // get our blog posts
-    $sql = "SELECT * FROM `blog_tags` WHERE tag = $category;";
+    $sql = "SELECT * FROM `blog_tags` WHERE " . str_replace ( $where, "id", "tag" );
     $posts = array ();
     $result = mysqli_query ( $conn->db, $sql );
     while ( $row = mysqli_fetch_assoc ( $result ) ) {
@@ -51,12 +61,12 @@ if (! $details ['tag']) {
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center"><?php echo $details ['tag']; ?> Blog Posts</h1>
+                <h1 class="page-header text-center"><?php echo $string->commaSeparate($tags); ?> Blog Posts</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/blog/categories.php">Categories</a></li>
-                    <li class="active"><?php echo $details ['tag']; ?></li>
+                    <li class="active"><?php echo $string->commaSeparate($tags); ?></li>
                 </ol>
             </div>
         </div>
@@ -77,7 +87,7 @@ if (! $details ['tag']) {
 
     <!-- Script to Activate the Gallery -->
     <script>
-        var postsFull = new PostsFull( <?php echo count($posts); ?>, <?php echo $category; ?> );
+        var postsFull = new PostsFull( <?php echo count($posts); ?>, <?php echo "[" . implode($categories,",") . "]"; ?> );
         
         var loaded = 0;
         $(window,document).on("scroll resize", function(){
