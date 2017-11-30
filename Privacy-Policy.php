@@ -309,7 +309,7 @@
                 <p>
                     If at any time you would like to unsubscribe from receiving future
                     emails, you can email us at <a target='_blank'
-                        href='contact@saperstonestudios.com'>contact@saperstonestudios.com</a>
+                        href='mailto:contact@saperstonestudios.com'>contact@saperstonestudios.com</a>
                     and we will promptly remove you from ALL correspondence.
                 </p>
             </div>
@@ -322,7 +322,7 @@
                 <p>
                     Saperstone Studios<br /> 5012 Whisper Willow Dr<br /> Fairfax,
                     Virginia 22030<br /> United States<br /> <a target='_blank'
-                        href='contact@saperstonestudios.com'>contact@saperstonestudios.com</a><br />
+                        href='mailto:contact@saperstonestudios.com'>contact@saperstonestudios.com</a><br />
                     <a target="_blank" href="tel:5712660004">(571) 266-0004</a><br />
                 </p>
                 <br /> <br /> <br />

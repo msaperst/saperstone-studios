@@ -4,6 +4,7 @@ Unit Tests
 API Tests
 
 Turn what to wear into a gallery?
+left and right controls for galleries
 Unable to delete multiple images from gallery/album
 Set albums to use id (static) instead of sequence
 Fix album delete to use ID
