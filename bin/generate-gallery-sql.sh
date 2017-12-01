@@ -1,7 +1,6 @@
 #!/bin/bash
 
-
-for directory in "../img/portrait/"*; do
+for directory in "../public/img/portrait/"*; do
     if [ ! -d $directory ]; then
         continue
     fi

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for directory in "../albums/"*; do
+for directory in "../public/albums/"*; do
     if [ ! -d $directory ]; then
         continue
     fi

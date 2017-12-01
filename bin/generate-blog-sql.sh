@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IFS=$'\n'       # make newlines the only separator
-for f in $(find ../blog -name '*.php'); do
+for f in $(find ../public/blog -name '*.php'); do
 	
 	#verify we're only importing live, working versions
 	if [[ "$f" == *"_"* ]]; then

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #get our connection information
-host=$(awk -F '"' '/db.host/ {print $2}' ../php/env.ini);
-username=$(awk -F '"' '/db.username/ {print $2}' ../php/env.ini);
-password=$(awk -F '"' '/db.password/ {print $2}' ../php/env.ini);
-database=$(awk -F '"' '/db.database/ {print $2}' ../php/env.ini);
+host=$(awk -F '"' '/db.host/ {print $2}' ../config/env.ini);
+username=$(awk -F '"' '/db.username/ {print $2}' ../config/env.ini);
+password=$(awk -F '"' '/db.password/ {print $2}' ../config/env.ini);
+database=$(awk -F '"' '/db.database/ {print $2}' ../config/env.ini);
 
 output="../scripts/status.txt";
 
@@ -17,7 +17,7 @@ fi
 id=$1;
 markup=$2;
 album=$3;
-location="../albums/$album";
+location="../public/albums/$album";
 
 if [ ! -d "$location" ]; then
     echo "Error: Album doesn't exist" > $output;
