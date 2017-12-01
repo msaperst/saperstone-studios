@@ -1,6 +1,9 @@
 #!/bin/bash
 
-for directory in "../public/albums/"*; do
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+PARENTDIR="$( dirname ${DIR} )";
+
+for directory in "${PARENTDIR}/public/albums/"*; do
     if [ ! -d $directory ]; then
         continue
     fi

@@ -1,12 +1,15 @@
 #!/bin/bash
 
-#get our connection information
-host=$(awk -F '"' '/db.host/ {print $2}' ../config/env.ini);
-username=$(awk -F '"' '/db.username/ {print $2}' ../config/env.ini);
-password=$(awk -F '"' '/db.password/ {print $2}' ../config/env.ini);
-database=$(awk -F '"' '/db.database/ {print $2}' ../config/env.ini);
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+PARENTDIR="$( dirname ${DIR} )";
 
-output="../scripts/status.txt";
+#get our connection information
+host=$(awk -F '"' '/db.host/ {print $2}' ${PARENTDIR}/config/env.ini);
+username=$(awk -F '"' '/db.username/ {print $2}' ${PARENTDIR}/config/env.ini);
+password=$(awk -F '"' '/db.password/ {print $2}' ${PARENTDIR}/config/env.ini);
+database=$(awk -F '"' '/db.database/ {print $2}' ${PARENTDIR}/config/env.ini);
+
+output="${PARENTDIR}/public/scripts/status.txt";
 
 if [ "$#" -ne 3 ]; then
     echo "Error: Appropriate album information not provided" > $output;
@@ -17,7 +20,7 @@ fi
 id=$1;
 markup=$2;
 album=$3;
-location="../public/albums/$album";
+location="${PARENTDIR}/public/albums/$album";
 
 if [ ! -d "$location" ]; then
     echo "Error: Album doesn't exist" > $output;

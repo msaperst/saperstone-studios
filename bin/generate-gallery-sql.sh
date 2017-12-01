@@ -1,6 +1,9 @@
 #!/bin/bash
 
-for directory in "../public/img/portrait/"*; do
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+PARENTDIR="$( dirname ${DIR} )";
+
+for directory in "${PARENTDIR}/public/img/portrait/"*; do
     if [ ! -d $directory ]; then
         continue
     fi

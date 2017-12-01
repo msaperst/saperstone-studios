@@ -1,7 +1,10 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
+PARENTDIR="$( dirname ${DIR} )";
+
 IFS=$'\n'       # make newlines the only separator
-for f in $(find ../public/blog -name '*.php'); do
+for f in $(find ${PARENTDIR}/public/blog -name '*.php'); do
 	
 	#verify we're only importing live, working versions
 	if [[ "$f" == *"_"* ]]; then
@@ -13,7 +16,7 @@ for f in $(find ../public/blog -name '*.php'); do
 	filename=$(basename $f);
  	#echo "Parsing $filename";
  	
- 	if [[ "$location" == "../blog" ]]; then
+ 	if [[ "$location" == *blog ]]; then
  		continue;
 	fi
 

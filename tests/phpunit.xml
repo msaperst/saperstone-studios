@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.3/phpunit.xsd"
-	stopOnFailure="false">
-	<testsuite name="Unit Tests">
-	</testsuite>
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.3/phpunit.xsd"
+    stopOnFailure="false">
+    <testsuite name="Unit Tests">
+    </testsuite>
 
-	<filter>
-		<whitelist processUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">.</directory>
-		</whitelist>
-	</filter>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">.</directory>
+        </whitelist>
+    </filter>
 
-	<logging>
-		<log type="coverage-html" target="../reports/html" />
-		<log type="coverage-clover" target="../reports/clover.xml" />
-		<log type="junit" target="../reports/junit.xml" />
-	</logging>
+    <logging>
+        <log type="coverage-html" target="../reports/html" />
+        <log type="coverage-clover" target="../reports/clover.xml" />
+        <log type="junit" target="../reports/junit.xml" />
+    </logging>
 
 </phpunit>
