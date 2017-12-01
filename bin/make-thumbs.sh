@@ -10,6 +10,8 @@ password=$(awk -F '"' '/db.password/ {print $2}' ${PARENTDIR}/config/env.ini);
 database=$(awk -F '"' '/db.database/ {print $2}' ${PARENTDIR}/config/env.ini);
 
 output="${PARENTDIR}/public/tmp/status.txt";
+mkdir -p $( dirname ${output} );
+touch ${output};
 
 if [ "$#" -ne 3 ]; then
     echo "Error: Appropriate album information not provided" > $output;
