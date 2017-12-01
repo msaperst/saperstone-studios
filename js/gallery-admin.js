@@ -130,8 +130,7 @@ function editGallery(id) {
             size : BootstrapDialog.SIZE_WIDE,
             title : 'Edit Gallery <b>' + data.title + '</b>',
             message : function() {
-                var inputs = '<input placeholder="Gallery Title" id="new-gallery-title" type="text" class="form-control" value="' + data.title + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div>' + '</div>' + '<div id="new-gallery-error" class="error"></div>' + '<div id="new-gallery-message" class="success"></div>';
-                return inputs;
+                return '<input placeholder="Gallery Title" id="new-gallery-title" type="text" class="form-control" value="' + data.title + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div>' + '</div>' + '<div id="new-gallery-error" class="error"></div>' + '<div id="new-gallery-message" class="success"></div>';
             },
             buttons : [ {
                 icon : 'glyphicon glyphicon-save',
@@ -186,7 +185,7 @@ function editGallery(id) {
                         data = JSON.parse(data);
                         if ($.isPlainObject(data)) {
                             pd.statusbar.remove();
-                            $.each(files, function(i, val) {
+                            $.each(files, function() {
                                 total++;
                                 loaded = gallery.loadImages(1);
                             });

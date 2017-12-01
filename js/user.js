@@ -9,8 +9,7 @@ $(document).ready(function() {
             "orderable" : false,
             "searchable" : false,
             "data" : function(row) {
-                var buttons = '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.usr + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-user-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.usr + ' Activities"><i class="fa fa-bars"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As ' + row.usr + '"><i class="fa fa-user-secret"></i></button>';
-                return buttons;
+                return '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.usr + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-user-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.usr + ' Activities"><i class="fa fa-bars"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As ' + row.usr + '"><i class="fa fa-user-secret"></i></button>';
             },
             "targets" : 0
         }, {
@@ -73,7 +72,7 @@ function setupEdit() {
         var id = $(this).closest('tr').attr('user-id');
         $.post("/api/login-as-user.php", {
             id : id
-        }).done(function(data) {
+        }).done(function() {
             window.location.href = "index.php";
         });
     });
@@ -636,7 +635,7 @@ function editUser(data) {
 function viewLogs(id) {
     var dialog = new BootstrapDialog({
         title : 'User Activity',
-        message : function(dialogRef) {
+        message : function() {
             var $message = $('<div>Loading...</div>');
             $.get("/api/get-user-log.php", {
                 id : id
