@@ -48,7 +48,7 @@ class SocialMedia {
         $link = $this->baseURL () . "/blog/post.php?p=$post_id";
         
         // require codebird
-        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resouces/codebird-php-3.1.0/src/codebird.php";
+        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/codebird-php-3.1.0/src/codebird.php";
         
         \Codebird\Codebird::setConsumerKey ( "8DQvx2b18QkSCARsUJs1KDnvp", "fiFRlU4uZfLkyu24yqEB1jcUiprETciiUI4VaSAUlKjkie3GlA" );
         $cb = \Codebird\Codebird::getInstance ();
