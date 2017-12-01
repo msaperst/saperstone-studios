@@ -70,7 +70,7 @@ $sql = "SELECT * FROM albums WHERE id = $id;";
 $result = mysqli_query ( $conn->db, $sql );
 $album_info = mysqli_fetch_assoc ( $result );
 
-system ( "../scripts/make-thumbs.sh $id $markup " . $album_info ['location'] . " > /dev/null 2>&1 &" );
+system ( dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh $id $markup " . $album_info ['location'] . " > /dev/null 2>&1 &" );
 
 $conn->disconnect ();
 exit ();
