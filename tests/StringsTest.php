@@ -1,5 +1,6 @@
 <?php
-require '../../src/strings.php';
+$_SERVER ['DOCUMENT_ROOT'] = __DIR__;
+require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
 class StringsTest extends PHPUnit_Framework_TestCase {
     private $string;
     protected function setUp() {
