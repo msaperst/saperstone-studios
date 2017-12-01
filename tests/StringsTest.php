@@ -1,5 +1,5 @@
 <?php
-require '../php/strings.php';
+require '../../src/strings.php';
 class StringsTest extends PHPUnit_Framework_TestCase {
     private $string;
     protected function setUp() {

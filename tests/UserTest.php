@@ -1,5 +1,5 @@
 <?php
-require '../php/user.php';
+require '../src/user.php';
 class UserTest extends PHPUnit_Framework_TestCase {
     private $user;
     protected function setUp() {
