@@ -402,7 +402,7 @@ function makeThumbs(id, button, dialog, markup) {
         markup : markup
     }).done(function() {
         var myVar = setInterval(function() {
-            $.get("/scripts/status.txt", function(data) {
+            $.get("/tmp/status.txt", function(data) {
                 $('#resize-progress .progress-bar').html(data);
                 if (data.indexOf("Done") === 0) {
                     clearInterval(myVar);
