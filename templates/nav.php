@@ -1,5 +1,26 @@
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <!-- Messages -->
+<?php
+$DOCUMENT_ROOT = "DOCUMENT_ROOT";
+require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+$conn = new Sql ();
+$conn->connect ();
+$sql = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
+$result = mysqli_query ( $conn->db, $sql );
+while ( $row = mysqli_fetch_assoc ( $result ) ) {
+    ?>
+<div
+        class="alert alert-warning<?php if ($row['dismissible']) { echo " alert-dismissable fade in"; } ?>"
+        style="position: absolute; width: 100%; top: -20px; z-index: 100;">
+        <?php if ($row['dismissible']) { echo "<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>"; } ?>
+        <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> <?php echo $row['message']; ?>
+</div>
+<?php
+}
+$conn->disconnect ();
+?>
+
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -21,16 +42,16 @@
         <?php
         switch ($nav) {
             case "portrait" :
-                require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav-portrait.php";
+                require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "templates/nav-portrait.php";
                 break;
             case "wedding" :
-                require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav-wedding.php";
+                require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "templates/nav-wedding.php";
                 break;
             case "commercial" :
-                require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav-commercial.php";
+                require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "templates/nav-commercial.php";
                 break;
             default :
-                require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav-main.php";
+                require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "templates/nav-main.php";
         }
         ?>
             
