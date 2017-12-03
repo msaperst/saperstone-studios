@@ -196,7 +196,7 @@ function findAlbum() {
             cssClass : 'btn-success',
             action : function(dialogItself) {
                 var $button = this; // 'this' here is a jQuery object that
-                                    // wrapping the <button> DOM element.
+                // wrapping the <button> DOM element.
                 var modal = $button.closest('.modal-content');
                 $button.spin();
                 dialogItself.enableButtons(false);
@@ -236,6 +236,13 @@ function findAlbum() {
             }
         } ],
     });
+}
+
+function setCookie(content, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = content + ";" + expires + ";path=/";
 }
 
 function searchBlog() {

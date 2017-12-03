@@ -1,6 +1,5 @@
-<!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <!-- Messages -->
+
+<!-- Messages -->
 <?php
 $DOCUMENT_ROOT = "DOCUMENT_ROOT";
 require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";
@@ -8,19 +7,32 @@ $conn = new Sql ();
 $conn->connect ();
 $sql = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
 $result = mysqli_query ( $conn->db, $sql );
-while ( $row = mysqli_fetch_assoc ( $result ) ) {
+if (mysqli_num_rows ( $result )) {
     ?>
+<div id='displayed-alerts'
+    style='position: fixed; width: 100%; top: -10px; z-index: 10000;'>
+    <?php
+}
+while ( $row = mysqli_fetch_assoc ( $result ) ) {
+    if (! isset ( $_COOKIE ["id" . $row ['id']] )) {
+        ?>
 <div
-        class="alert alert-warning<?php if ($row['dismissible']) { echo " alert-dismissable fade in"; } ?>"
-        style="position: absolute; width: 100%; top: -20px; z-index: 100;">
-        <?php if ($row['dismissible']) { echo "<a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>"; } ?>
+        class="alert alert-warning<?php if ($row['dismissible']) { echo " alert-dismissable fade in"; } ?>">
+        <?php if ($row['dismissible']) { echo "<a href='#' onclick='javascript:setCookie(\"id${row['id']}=dismiss\", 9999999);' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>"; } ?>
         <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> <?php echo $row['message']; ?>
 </div>
+<?php
+    }
+}
+if (mysqli_num_rows ( $result )) {
+    ?>
+    </div>
 <?php
 }
 $conn->disconnect ();
 ?>
-
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
