@@ -1,5 +1,5 @@
 <?php
-$_SERVER ['DOCUMENT_ROOT'] = __DIR__;
+$_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
 require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 class UserTest extends PHPUnit_Framework_TestCase {
     private $user;
