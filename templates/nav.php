@@ -1,10 +1,15 @@
 
 <!-- Messages -->
 <?php
+$initial_connection = false;
 $DOCUMENT_ROOT = "DOCUMENT_ROOT";
-require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+if (isset ( $conn )) {
+    $initial_connection = true;
+} else {
+    require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+    $conn = new Sql ();
+    $conn->connect ();
+}
 $sql = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
 $result = mysqli_query ( $conn->db, $sql );
 if (mysqli_num_rows ( $result )) {
@@ -28,6 +33,9 @@ if (mysqli_num_rows ( $result )) {
     ?>
     </div>
 <?php
+    if (! $initial_connection) {
+        $conn->disconnect ();
+    }
 }
 ?>
 <!-- Navigation -->
