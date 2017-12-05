@@ -29,8 +29,9 @@
                 <li><a href="/blog/new.php">Write New Post</a></li>
                 <li><a href="/blog/manage.php">Manage Posts</a></li>
                 <?php } ?>
-                <li><input id="nav-search-input" /> <em
-                    id="nav-search-icon" class="fa fa-search"></em></li>
+                <li style="padding-left: 15px;"><input id="nav-search-input"
+                    style="min-width: 100px;" /> <em id="nav-search-icon"
+                    class="fa fa-search"></em></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Information<strong
