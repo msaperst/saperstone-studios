@@ -29,16 +29,16 @@ class GetBlogFullTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals ( 200, $response->getStatusCode () );
         $this->assertEquals ( "No blog post provided", $response->getBody () );
     }
-    public function testBadPostProvided() {
-        $response = $this->client->get ( 'http://localhost/api/get-blog-full.php', [ 
-                'query' => [ 
-                        'post' => 9999999 
-                ] 
-        ] );
+//     public function testBadPostProvided() {
+//         $response = $this->client->get ( 'http://localhost/api/get-blog-full.php', [ 
+//                 'query' => [ 
+//                         'post' => 9999999 
+//                 ] 
+//         ] );
         
-        $this->assertEquals ( 200, $response->getStatusCode () );
-        $this->assertEquals ( "Blog doesn't exist!", $response->getBody () );
-    }
+//         $this->assertEquals ( 200, $response->getStatusCode () );
+//         $this->assertEquals ( "Blog doesn't exist!", $response->getBody () );
+//     }
     public function testInputType() {
         $response = $this->client->get ( 'http://localhost/api/get-blog-full.php', [ 
                 'query' => [ 
