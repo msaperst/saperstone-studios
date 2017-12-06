@@ -3,7 +3,7 @@
 <?php
 $initial_connection = false;
 $DOCUMENT_ROOT = "DOCUMENT_ROOT";
-if (isset ( $conn )) {
+if (isset ( $conn ) && $conn->isConnected()) {
     $initial_connection = true;
 } else {
     require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";

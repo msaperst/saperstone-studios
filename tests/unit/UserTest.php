@@ -1,12 +1,8 @@
 <?php
 $_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
-require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 class UserTest extends PHPUnit_Framework_TestCase {
     private $user;
-    protected function setUp() {
-    }
-    protected function tearDown() {
-    }
     public function testNoUser() {
         $this->user = new User ();
         $this->assertFalse ( $this->user->isLoggedIn () );

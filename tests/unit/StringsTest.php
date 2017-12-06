@@ -1,13 +1,10 @@
 <?php
 $_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
-require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
 class StringsTest extends PHPUnit_Framework_TestCase {
     private $string;
     protected function setUp() {
         $this->string = new Strings ();
-    }
-    protected function tearDown() {
-        $this->string = NULL;
     }
     public function testRandomNegativeLength() {
         $result = $this->string->randomString ( - 1 );

@@ -1,6 +1,7 @@
 <?php
 class Sql {
-    var $params;
+    private $params;
+    private $connected = false;
     public $db;
     function __construct() {
         $this->params = parse_ini_file ( dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "config/env.ini" );
@@ -13,9 +14,14 @@ class Sql {
             echo "Debugging error: " . mysqli_connect_error () . PHP_EOL;
             exit ( 1 );
         }
+        $this->connected = true;
     }
     function disconnect() {
         mysqli_close ( $this->db );
+        $this->connected = false;
+    }
+    function isConnected() {
+        return $this->connected;
     }
 }
 ?>

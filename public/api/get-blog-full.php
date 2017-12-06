@@ -22,11 +22,17 @@ if (isset ( $_GET ['post'] )) {
     $post = ( int ) $_GET ['post'];
 } else {
     echo "No blog post provided";
+    $conn->disconnect();
     exit ();
 }
 
 $sql = "SELECT * FROM `blog_details` WHERE id = $post;";
 $r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+if (! $r ['title']) {
+    echo "Blog doesn't exist!";
+    $conn->disconnect();
+    exit ();
+}
 $r ['date'] = date ( 'F jS, Y', strtotime ( $r ['date'] ) );
 $sql = "SELECT * FROM `blog_images` WHERE blog = " . $r ['id'] . ";";
 $images = mysqli_query ( $conn->db, $sql );
