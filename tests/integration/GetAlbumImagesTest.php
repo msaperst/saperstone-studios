@@ -10,7 +10,7 @@ class GetAlbumImagesTest extends PHPUnit_Framework_TestCase {
         // seed required test data
         $conn = new Sql ();
         $conn->connect ();
-        $sql = "INSERT INTO `albums` ( `id`, `name`, `description`, `location`) VALUES ('9999998', 'Integration Test Album', 'An album to verify an integration test', '/tmp');";
+        $sql = "INSERT INTO `albums` ( `id`, `name`, `description`, `location`, `owner`) VALUES (9999998, 'Integration Test Album', 'An album to verify an integration test', '/tmp', 1);";
         mysqli_query ( $conn->db, $sql );
         $conn->disconnect ();
     }
