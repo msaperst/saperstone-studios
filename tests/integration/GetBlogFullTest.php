@@ -11,7 +11,7 @@ class GetBlogFullTest extends PHPUnit_Framework_TestCase {
         // seed required test data
         $conn = new Sql ();
         $conn->connect ();
-        $sql = "INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`, `twitter`) VALUES (9999998, 'Integration Test Post', NULL, '2012-10-25', 'some_preview_img.jpg', '-5', '0', '0');";
+        $sql = "INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`, `twitter`) VALUES (9999998, 'Integration Test Post', '2012-10-25', 'some_preview_img.jpg', '-5', '0', '0');";
         mysqli_query ( $conn->db, $sql );
         $conn->disconnect ();
     }
