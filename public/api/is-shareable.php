@@ -76,7 +76,7 @@ if (! $album_info ['title']) {
 
 $sql = "SELECT * FROM `share_rights` WHERE ( `user` = '$user' OR `user` = '0' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
 $shareable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($shareable ['user']) {
+if ($shareable ['album']) {
     echo 1;
     $conn->disconnect ();
     exit ();

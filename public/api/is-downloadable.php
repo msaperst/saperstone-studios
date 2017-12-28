@@ -76,7 +76,7 @@ if (! $album_info ['title']) {
 
 $sql = "SELECT * FROM `download_rights` WHERE ( `user` = '$user' OR `user` = '0' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
 $downloadable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($downloadable ['user']) {
+if ($downloadable ['album']) {
     echo 1;
     $conn->disconnect ();
     exit ();
