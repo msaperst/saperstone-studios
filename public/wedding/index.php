@@ -116,7 +116,7 @@
                     alt="Turn Your Moment Into A Memory with Saperstone Studios"
                     src="/img/moment-to-memory.png" style="float: right;" />
                 <ul class="list-inline social-buttons text-center social-padding">
-                    <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/social-list.php"; ?>
+                    <?php $icon-size = "fa-2x"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/social-list.php"; ?>
                 </ul>
             </div>
         </div>
