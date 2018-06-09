@@ -18,7 +18,7 @@
         </div>
         <div class="col-md-4 text-center">
             <ul class="list-inline social-buttons">
-                <?php $icon-size = ""; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/social-list.php"; ?>
+                <?php $iconSize = ""; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/social-list.php"; ?>
             </ul>
         </div>
         <div class="col-md-4 text-right">

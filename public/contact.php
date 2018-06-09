@@ -70,7 +70,7 @@ $user = new User ();
                         style='padding-left: 35px;'>Please no walk ins.</em>
                 </p>
                 <ul class="list-unstyled list-inline list-social-icons">
-                     <?php $icon-size = "fa-2x"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/social-list.php"; ?>
+                     <?php $iconSize = "fa-2x"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/social-list.php"; ?>
                 </ul>
             </div>
         </div>
