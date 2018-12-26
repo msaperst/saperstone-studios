@@ -1,21 +1,17 @@
-def urlBranch
 def workspace
 def branch
-def branchType
 def baseVersion
 def version
 def pullRequest
 def refspecs
+def branchCheckout
 
 node() {
     workspace = pwd()
-    branch = env.BRANCH_NAME.replaceAll(/\//, "-")
-    branchType = env.BRANCH_NAME.split(/\//)[0]
-    urlBranch = env.BRANCH_NAME.replaceAll(/\//, "%252F")
-    baseVersion = "${env.BUILD_NUMBER}"
-    version = "$branch-$baseVersion"
+//    branch = env.BRANCH_NAME.replaceAll(/\//, "-")
+//    baseVersion = "${env.BUILD_NUMBER}"
+//    version = "$branch-$baseVersion"
     env.PROJECT = "saperstone-studios"
-    def branchCheckout
     pullRequest = env.CHANGE_ID
     if (pullRequest) {
         branchCheckout = "pr/${pullRequest}"
@@ -24,6 +20,7 @@ node() {
         branchCheckout = env.BRANCH_NAME
         refspecs = '+refs/heads/*:refs/remotes/origin/*'
     }
+    branchCheckout = 'docker'
     stage('Checkout Code') { // for display purposes
         // Get the test code from Gitblit repository
         checkout([
