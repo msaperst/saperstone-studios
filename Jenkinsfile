@@ -8,9 +8,10 @@ def branchCheckout
 
 node() {
     workspace = pwd()
-//    branch = env.BRANCH_NAME.replaceAll(/\//, "-")
-//    baseVersion = "${env.BUILD_NUMBER}"
-//    version = "$branch-$baseVersion"
+    env.BRANCH_NAME = 'docker'
+    branch = env.BRANCH_NAME.replaceAll(/\//, "-")
+    baseVersion = "${env.BUILD_NUMBER}"
+    version = "$branch-$baseVersion"
     env.PROJECT = "saperstone-studios"
     pullRequest = env.CHANGE_ID
     if (pullRequest) {
@@ -20,7 +21,6 @@ node() {
         branchCheckout = env.BRANCH_NAME
         refspecs = '+refs/heads/*:refs/remotes/origin/*'
     }
-    branchCheckout = 'docker'
     stage('Checkout Code') { // for display purposes
         // Get the test code from Gitblit repository
         checkout([
@@ -44,6 +44,7 @@ node() {
                -Dsonar.projectKey=saperstone-studios \
                -Dsonar.projectName='Saperstone Studios' \
                -Dsonar.projectVersion=2.0 \
+               -Dsonar.branch.name=${branch}
                -Dsonar.sources=./bin,./public,./src,./templates \
                -Dsonar.tests=./tests \
                -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
