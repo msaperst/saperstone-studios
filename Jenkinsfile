@@ -39,4 +39,15 @@ node() {
     stage('Run Unit Tests') {
         sh "vendor/phpunit/phpunit/phpunit tests/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
     }
+    stage('Run Sonar Analysis') {
+        sh "mvn sonar:sonar\n" +
+                " -Dsonar.projectKey=saperstone-studios\n" +
+                " -Dsonar.projectName=Saperstone Studios\n" +
+                " -Dsonar.projectVersion=2.0\n" +
+                " -Dsonar.sources=./bin,./public,./src,./templates\n" +
+                " -Dsonar.tests=./tests\n" +
+                " -Dsonar.exclusions=public/js/jqBootstrapValidation.js\n" +
+                " -Dsonar.php.tests.reportPath=./reports/junit.xml\n" +
+                " -Dsonar.php.coverage.reportPaths=./reports/clover.xml"
+    }
 }
