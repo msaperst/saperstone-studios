@@ -40,7 +40,7 @@ node() {
         sh "vendor/phpunit/phpunit/phpunit tests/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
     }
     stage('Run Sonar Analysis') {
-        sh """mvn sonar:sonar \
+        sh """sonar-scanner \
                -Dsonar.projectKey=saperstone-studios \
                -Dsonar.projectName=Saperstone Studios \
                -Dsonar.projectVersion=2.0 \
