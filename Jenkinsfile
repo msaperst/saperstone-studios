@@ -42,7 +42,7 @@ node() {
     stage('Run Sonar Analysis') {
         sh """sonar-scanner \
                -Dsonar.projectKey=saperstone-studios \
-               -Dsonar.projectName=Saperstone Studios \
+               -Dsonar.projectName='Saperstone Studios' \
                -Dsonar.projectVersion=2.0 \
                -Dsonar.sources=./bin,./public,./src,./templates \
                -Dsonar.tests=./tests \
