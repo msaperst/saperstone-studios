@@ -12,6 +12,10 @@ pids
 .buildpath
 .project
 
+# Intellij Files
+saperstone-studios.iml
+.idea/*
+
 # Generated files
 public/blog.rss
 public/tmp/**
