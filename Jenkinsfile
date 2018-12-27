@@ -1,5 +1,3 @@
-import groovy.io.FileType
-
 def workspace
 def branch
 def baseVersion
@@ -56,11 +54,12 @@ node() {
     stage('Compress JS') {
         def jsDir = new File("$workspace/public/js/")
         def files = []
-        jsDir.eachFile(FileType.FILES) {
+        jsDir.eachFile {
+            print it.name
             files << it.name
         }
         files.each {
-            newFile = it.take(it.lastIndexOf('.')) + "min.js"
+            newFile = it.take(it.lastIndexOf('.')) + ".min.js"
             print "Compressing $it to $newFile"
         }
 //        sh '''for file in ./public/js/*.js; do
