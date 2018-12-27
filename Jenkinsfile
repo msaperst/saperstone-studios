@@ -59,6 +59,8 @@ node() {
 }
 
 def compress(filetype) {
+    Random rnd = new Random()
+    def random = rnd.nextInt(9999999)
     def output = sh returnStdout: true, script: "ls ./public/$filetype/"
     def files = output.split()
     files.each { file ->
@@ -69,8 +71,6 @@ def compress(filetype) {
         //remove the old file
         sh "rm ./public/$filetype/$file"
         //fix all references to old file
-        Random rnd = new Random()
-        def random = rnd.nextInt(9999999)
         sh "find ./ -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
     }
 }
