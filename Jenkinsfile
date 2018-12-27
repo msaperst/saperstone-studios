@@ -61,11 +61,11 @@ node() {
             //compress the file
             sh "uglifyjs ./public/js/$file > ./public/js/$newFile"
             //remove the old file
-            new File("$workspace/public/js/$file").delete()
+            sh "rm ./public/js/$file"
             //fix all references to old file
             Random rnd = new Random()
-            def random = rnd.nextInt(9999999999)
-            sh "find ./ -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\\\"
+            def random = rnd.nextInt(9999999)
+            sh "find ./ -type f -exec sed -i \\'s/$file/$newFile?$random/g\\' {} \\"
         }
     }
 }
