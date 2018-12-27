@@ -1,3 +1,5 @@
+import groovy.io.FileType
+
 def workspace
 def branch
 def baseVersion
