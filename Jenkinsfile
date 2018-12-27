@@ -52,11 +52,9 @@ node() {
                 -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
     }
     stage('Compress JS') {
-        sh "ls ${workspace}/public/js/"
-        def jsDir = new File(workspace + '/public/js/')
+        def jsDir = new File(workspace + '/public/js')
         def files = []
         jsDir.eachFile {
-            print it.name
             files << it.name
         }
         files.each { file->
