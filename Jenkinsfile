@@ -21,6 +21,7 @@ node() {
         branchCheckout = env.BRANCH_NAME
         refspecs = '+refs/heads/*:refs/remotes/origin/*'
     }
+    cleanWs()
     stage('Checkout Code') { // for display purposes
         // Get the test code from Gitblit repository
         checkout([
@@ -52,14 +53,12 @@ node() {
                 -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
     }
     stage('Compress JS') {
-        def jsDir = new File(workspace + '/public/js')
-        def files = []
-        jsDir.eachFile {
-            files << it.name
-        }
+        def output = sh returnStdout: true, script: 'ls ./public/js/'
+        def files = output.split()
         files.each { file->
             newFile = file.take(file.lastIndexOf('.')) + ".min.js"
             print "Compressing $file to $newFile"
+            sh "uglifyjs $file > $newFile"
         }
 //        sh '''for file in ./public/js/*.js; do
 //                    echo Compressing $file ${file %.js}.min.js;
