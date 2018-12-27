@@ -63,8 +63,9 @@ node() {
             //remove the old file
             new File("$workspace/public/js/$file").delete()
             //fix all references to old file
-            sh "find ./ -type f -exec sed -i 's/'\"$file\"'/'\"${file %.js}\"'.min.js?'\"${RANDOM}${RANDOM}\"'/g' {} \\\\"
-
+            Random rnd = new Random()
+            def random = rnd.nextInt(9999999999)
+            sh "find ./ -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\\\"
         }
     }
 }
