@@ -65,7 +65,7 @@ node() {
             //fix all references to old file
             Random rnd = new Random()
             def random = rnd.nextInt(9999999)
-            sh "find ./ -type f -exec sed -i \\'s/$file/$newFile?$random/g\\' {} \\"
+            sh "find ./ -type f -exec sed -i \\'s/$file/$newFile?$random$random/g\\' {} \\\\"
         }
     }
 }
