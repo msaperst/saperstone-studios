@@ -52,15 +52,16 @@ node() {
                 -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
     }
     stage('Compress JS') {
-        def jsDir = new File("$workspace/public/js/")
+        sh "ls ${workspace}/public/js/"
+        def jsDir = new File(workspace + '/public/js/')
         def files = []
         jsDir.eachFile {
             print it.name
             files << it.name
         }
-        files.each {
-            newFile = it.take(it.lastIndexOf('.')) + ".min.js"
-            print "Compressing $it to $newFile"
+        files.each { file->
+            newFile = file.take(file.lastIndexOf('.')) + ".min.js"
+            print "Compressing $file to $newFile"
         }
 //        sh '''for file in ./public/js/*.js; do
 //                    echo Compressing $file ${file %.js}.min.js;
