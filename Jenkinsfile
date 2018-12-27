@@ -52,20 +52,25 @@ node() {
                 -Dsonar.php.tests.reportPath=./reports/junit.xml \
                 -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
     }
-    stage('Compress JS') {
-        def output = sh returnStdout: true, script: 'ls ./public/js/'
-        def files = output.split()
-        files.each { file->
-            //get the new filename
-            newFile = file.take(file.lastIndexOf('.')) + ".min.js"
-            //compress the file
-            sh "uglifyjs ./public/js/$file > ./public/js/$newFile"
-            //remove the old file
-            sh "rm ./public/js/$file"
-            //fix all references to old file
-            Random rnd = new Random()
-            def random = rnd.nextInt(9999999)
-            sh "find ./ -type f -exec sed -i \\'s/$file/$newFile?$random$random/g\\' {} \\\\"
-        }
+    stage('Compress Files') {
+        compress('js')
+        compress('css')
+    }
+}
+
+def compress(filetype) {
+    def output = sh returnStdout: true, script: "ls ./public/$filetype/"
+    def files = output.split()
+    files.each { file ->
+        //get the new filename
+        newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
+        //compress the file
+        sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
+        //remove the old file
+        sh "rm ./public/$filetype/$file"
+        //fix all references to old file
+        Random rnd = new Random()
+        def random = rnd.nextInt(9999999)
+        sh "find ./ -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
     }
 }
