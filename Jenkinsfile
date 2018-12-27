@@ -41,14 +41,32 @@ node() {
     }
     stage('Run Sonar Analysis') {
         sh """sonar-scanner \
-               -Dsonar.projectKey=saperstone-studios \
-               -Dsonar.projectName='Saperstone Studios' \
-               -Dsonar.projectVersion=2.0 \
-               -Dsonar.branch=${branch} \
-               -Dsonar.sources=./bin,./public,./src,./templates \
-               -Dsonar.tests=./tests \
-               -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
-               -Dsonar.php.tests.reportPath=./reports/junit.xml \
-               -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
+                -Dsonar.projectKey=saperstone-studios \
+                -Dsonar.projectName='Saperstone Studios' \
+                -Dsonar.projectVersion=2.0 \
+                -Dsonar.branch=${branch} \
+                -Dsonar.sources=./bin,./public,./src,./templates \
+                -Dsonar.tests=./tests \
+                -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
+                -Dsonar.php.tests.reportPath=./reports/junit.xml \
+                -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
+    }
+    stage('Compress JS') {
+        def jsDir = new File("./public/js/")
+        def files = []
+        jsDir.eachFile(FileType.FILES) {
+            files << it.name
+        }
+        files.each {
+            newFile = it.take(it.lastIndexOf('.')) + "min.js"
+            print "Compressing $it to $newFile"
+        }
+//        sh '''for file in ./public/js/*.js; do
+//                    echo Compressing $file ${file %.js}.min.js;
+//                    uglifyjs $file > ${file %.js}.min.js;
+//                    rm $file;
+//                    file=\$(basename $file);
+//                    find ./ -type f -exec sed -i 's/'"$file"'/'"${file %.js}"'.min.js?'"${RANDOM}${RANDOM}"'/g' {} \\;
+//                done'''
     }
 }
