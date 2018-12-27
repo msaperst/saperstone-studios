@@ -56,16 +56,15 @@ node() {
         def output = sh returnStdout: true, script: 'ls ./public/js/'
         def files = output.split()
         files.each { file->
+            //get the new filename
             newFile = file.take(file.lastIndexOf('.')) + ".min.js"
-            print "Compressing $file to $newFile"
-            sh "uglifyjs $file > $newFile"
+            //compress the file
+            sh "uglifyjs ./public/js/$file > ./public/js/$newFile"
+            //remove the old file
+            new File("$workspace/public/js/$file").delete()
+            //fix all references to old file
+            sh "find ./ -type f -exec sed -i 's/'\"$file\"'/'\"${file %.js}\"'.min.js?'\"${RANDOM}${RANDOM}\"'/g' {} \\\\"
+
         }
-//        sh '''for file in ./public/js/*.js; do
-//                    echo Compressing $file ${file %.js}.min.js;
-//                    uglifyjs $file > ${file %.js}.min.js;
-//                    rm $file;
-//                    file=\$(basename $file);
-//                    find ./ -type f -exec sed -i 's/'"$file"'/'"${file %.js}"'.min.js?'"${RANDOM}${RANDOM}"'/g' {} \\;
-//                done'''
     }
 }
