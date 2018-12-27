@@ -52,10 +52,32 @@ node() {
                 -Dsonar.php.tests.reportPath=./reports/junit.xml \
                 -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
     }
-    stage('Compress Files') {
+    stage('Prep Files') {
         compress('js')
         compress('css')
+        sh "rm ./public/img/main/*"
+        sh "rm ./public/img/reviews/*"
+        sh "rm ./public/wedding/img/*"
+        sh "rm ./public/portrait/img/*"
+        sh "rm ./public/commercial/img/*"
     }
+    stage('Install Plugins') {
+        //install jSignature plugin
+        sh "cd $workspace/public/js; mkdir jSignature; cd jSignature; wget --quiet http://willowsystems.github.io/jSignature/jSignature.zip; unzip -qq jSignature.zip; rm jSignature.zip;"
+        //install mPDF
+        def mpdfVersion = "6.1.0"
+        sh "cd $workspace/resources; mkdir mPDF; cd mPDF; wget --quiet https://github.com/mpdf/mpdf/releases/download/v${mpdfVersion}/02-mPDF-v${mpdfVersion}-without-examples.zip; unzip -qq 02-mPDF-v${mpdfVersion}-without-examples.zip; rm 02-mPDF-v${mpdfVersion}-without-examples.zip;"
+        //install/configure paypal plugin
+        def paypalVersion = "3.9.1"
+        sh "cd $workspace/resources; wget --quiet https://github.com/paypal/merchant-sdk-php/archive/v${paypalVersion}.tar.gz; tar -xf v${paypalVersion}.tar.gz; rm v${paypalVersion}.tar.gz;"
+        sh "cd $workspace/resources/merchant-sdk-php-${paypalVersion}/samples; php -f install.php; sed -i 's/mode = sandbox/mode = live/' sdk_config.ini; sed -i 's/acct1.UserName =/acct1.UserName = la_api1.saperstonestudios.com/' sdk_config.ini; sed -i 's/acct1.Password =/acct1.Password = 8X4VK4N2LJKCKWMZ/' sdk_config.ini; sed -i 's/acct1.Signature =/acct1.Signature = A5E8XrygZ.s0QlQk.FeDSEXnQbElAmZQu1A3lwY5E1gAqDowdsLWF34r/' sdk_config.ini;"
+        //install/configure ua parser plugin
+        sh "cd $workspace/resources; wget --quiet https://github.com/cbschuld/Browser.php/archive/master.zip; unzip -qq master.zip; rm master.zip;"
+        //install/configure twitter plugin
+        def twitterVersion = "3.1.0"
+        sh "cd $workspace/resources; wget --quiet https://github.com/jublonet/codebird-php/archive/${twitterVersion}.tar.gz; tar -xf ${twitterVersion}.tar.gz; rm ${twitterVersion}.tar.gz;"
+    }
+    stage('Build Docker Container')
 }
 
 def compress(filetype) {
@@ -63,6 +85,7 @@ def compress(filetype) {
     def random = rnd.nextInt(9999999)
     def output = sh returnStdout: true, script: "ls ./public/$filetype/"
     def files = output.split()
+    files.removeAll{ it == "mpdf.css" }
     files.each { file ->
         //get the new filename
         newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"

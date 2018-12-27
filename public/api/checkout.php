@@ -179,7 +179,7 @@ $setECReqDetails->BillingAgreementDetails = array (
 $setECReqDetails->SolutionType = "Sole";
 
 // Display options
-$setECReqDetails->cppheaderimage = "https://saperstonestudios.com/Includes/images/2014websitelogo250px.png";
+$setECReqDetails->cppheaderimage = "https://saperstonestudios.com/img/2014websitelogo250px.png";
 $setECReqDetails->cppheaderbordercolor = "9DCB3B";
 $setECReqDetails->cppheaderbackcolor = "9DCB3B";
 $setECReqDetails->cpppayflowcolor = "9DCB3B";
