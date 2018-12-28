@@ -8,8 +8,8 @@ RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli
 
 # setup additional tooling
 RUN apt-get update && \
-        apt-get install -yy mysql-client
-#        apt-get install -yy php-imagick imagemagick
+        apt-get install -yy mysql-client && \
+        apt-get install -yy imagemagick
 
 # copy over files
 COPY bin /var/www/bin
@@ -21,5 +21,8 @@ RUN ln -s /var/www/src/errors /var/www/public/errors
 RUN chown -R www-data:www-data /var/www/
 
 WORKDIR /var/www
+
+EXPOSE 80
+EXPOSE 443
 
 CMD ["./bin/setup-database.sh"]
