@@ -1,12 +1,4 @@
 <?php
-session_name ( 'ssLogin' );
-// Starting the session
-
-session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-// Making the cookie live for 2 weeks
-
-session_start ();
-// Start our session
 
 $post;
 // if no album is set, throw a 404 error
@@ -18,6 +10,7 @@ if (! isset ( $_GET ['p'] )) {
     $post = ( int ) $_GET ['p'];
 }
 
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $conn = new Sql ();
 $conn->connect ();

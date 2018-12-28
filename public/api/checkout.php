@@ -11,14 +11,7 @@ use PayPal\PayPalAPI\SetExpressCheckoutRequestType;
 use PayPal\PayPalAPI\SetExpressCheckoutReq;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
 
-// Starting the session
-session_name ( 'ssLogin' );
-
-// Making the cookie live for 2 weeks
-session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-
-// Start our session
-session_start ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/PPBootStrap.php";
 
 // this will hold our results/response

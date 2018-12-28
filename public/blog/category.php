@@ -13,6 +13,7 @@ if (! isset ( $_GET ['t'] )) {
 }
 echo $where;
 
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
 $string = new Strings ();
 

@@ -1,0 +1,31 @@
+version: '3'
+services:
+  php:
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+    image: saperstone-studios-php
+    ports:
+    - 8080:80
+    links:
+    - mysql
+    environment:
+      DB_HOST: 192.168.3.128
+      DB_PORT: 13306
+      DB_DATABASE: saperstone-studios
+      DB_USERNAME: saperstone-studios
+      DB_PASSWORD: secret
+      EMAIL_HOST: smtp.1and1.com
+      EMAIL_PORT: 587
+      EMAIL_USERNAME: contact@saperstonestudios.com
+      EMAIL_PASSWORD: UB2L2ZT2txn2uYWquWef
+  mysql:
+    image: mysql:5.7
+    restart: always
+    ports:
+    - 13306:3306
+    environment:
+      MYSQL_DATABASE: saperstone-studios
+      MYSQL_USER: saperstone-studios
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: super-secret

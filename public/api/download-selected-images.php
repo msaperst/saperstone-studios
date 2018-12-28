@@ -1,18 +1,10 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $conn = new Sql ();
 $conn->connect ();
 
-// Starting the session
-session_name ( 'ssLogin' );
-
-// Making the cookie live for 2 weeks
-session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-
-// Start our session
-session_start ();
-
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $user = new User ();
 
 if (isset ( $_POST ['what'] )) {

@@ -77,7 +77,10 @@ node() {
         def twitterVersion = "3.1.0"
         sh "cd $workspace/resources; wget --quiet https://github.com/jublonet/codebird-php/archive/${twitterVersion}.tar.gz; tar -xf ${twitterVersion}.tar.gz; rm ${twitterVersion}.tar.gz;"
     }
-    stage('Build Docker Container')
+    stage('Build Docker Container') {
+        //build docker containers
+        sh "docker-compose build"
+    }
 }
 
 def compress(filetype) {

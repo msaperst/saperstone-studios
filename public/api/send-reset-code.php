@@ -1,5 +1,6 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 $conn = new Sql ();
 $conn->connect ();
 
@@ -18,9 +19,6 @@ if (isset ( $_POST ['email'] )) {
     exit ();
 }
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
 if (filter_var ( $email, FILTER_VALIDATE_EMAIL )) {
     $resetCode = $string->randomString ( 8 );
     mysqli_query ( $conn->db, "UPDATE users SET resetKey='$resetCode' WHERE email='$email';" );

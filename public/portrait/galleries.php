@@ -9,6 +9,7 @@ if (! isset ( $_GET ['w'] )) {
     $what = ( int ) $_GET ['w'];
 }
 
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $conn = new Sql ();
 $conn->connect ();

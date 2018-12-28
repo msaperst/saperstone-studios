@@ -1,6 +1,4 @@
 <?php
-$params = parse_ini_file ( dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "config/env.ini" );
-
 $headers = array (
         'Reply-To' => $from,
         'From' => $from,
@@ -9,11 +7,11 @@ $headers = array (
 );
 $headers = $mime->headers ( $headers );
 $smtp = Mail::factory ( 'smtp', array (
-        'host' => $params ['email.host'],
-        'port' => $params ['email.port'],
+        'host' => getenv('EMAIL_HOST'),
+        'port' => getenv('DB_PORT'),
         'auth' => true,
-        'username' => $params ['email.username'],
-        'password' => $params ['email.password'] 
+        'username' => getenv('DB_USERNAME'),
+        'password' => getenv('DB_PASSWORD')
 ) );
 
 $mail = $smtp->send ( $to, $headers, $body );

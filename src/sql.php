@@ -3,11 +3,8 @@ class Sql {
     private $params;
     private $connected = false;
     public $db;
-    function __construct() {
-        $this->params = parse_ini_file ( dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "config/env.ini" );
-    }
     function connect() {
-        $this->db = mysqli_connect ( $this->params ['db.host'], $this->params ['db.username'], $this->params ['db.password'], $this->params ['db.database'] );
+        $this->db = mysqli_connect ( getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USERNAME'), getenv('DB_PASSWORD'), getenv('DB_DATABASE') );
         if (! $this->db) {
             echo "Error: Unable to connect to MySQL." . PHP_EOL;
             echo "Debugging errno: " . mysqli_connect_errno () . PHP_EOL;
