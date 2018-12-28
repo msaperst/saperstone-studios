@@ -35,7 +35,8 @@ node() {
         ])
     }
     stage('Install Dependencies') {
-        sh "composer install"
+        // commenting out as not needed without UT/ITs
+        // sh "composer install"
     }
     stage('Run Unit Tests') {
         // commenting out as UTs don't work as they rely on DB
