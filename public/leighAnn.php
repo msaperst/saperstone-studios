@@ -52,43 +52,41 @@
             <div class="col-md-12">
                 <img src='img/leigh-ann.jpg' alt="Leigh Ann" align='right'
                     style='margin: 0px 0px 20px 20px;' />
-                <p>I am a lifestyle photographer based in Northern Virginia and
-                    specialize in wedding and family photography as well as retouch. I
-                    am based in Fairfax, Virginia but available for travel anywhere.</p>
-                <p>
-                    Travel is a personal favorite of mine and my photo albums include
-                    images of me and my husband Max being complete goofballs together.
-                    Our photos show us scuba-diving, white water rafting, rolling down
-                    hills in hamster balls and cuddling koala's. This sense of
-                    adventure carries over into my photography and I strive to provide
-                    more than a photo session but an experience. Unique, out-of-the-box
-                    creative thinking to create memories and a custom experience for
-                    every client is what it's all about. I'm not your `old-school`
-                    photographer. I'll ask you to play and I'll ask you to be silly and
-                    I do my best to make you laugh (often at my own expense) <em
-                        class='fa fa-smile-o'></em>. I'm always looking for something new
-                    and completely different... the more quirky, the better. I want my
-                    time with you to show a vibrancy, to be creative and fun! I know
-                    I've done a job well done when you refer me to your friends and
-                    family and it is oh-so-appreciated!
-                </p>
-                <p>
-                    Not only do I have a degree in photography, but back in my
-                    corporate days, I worked for Ringling Bros. circus! My life was
-                    filled with clowns, elephants and acrobats (oh my?!) I was the lead
-                    on color management and retouch in their photo services department
-                    for many years making sure all their billboards, program books and
-                    marketing needs were in tip top shape. That's the kind of
-                    experience I pass on to my clients. It's a little known fact that a
-                    lot of hours go on behind the scenes to make your images what they
-                    are. Don't believe a single image you see in magazines <em
-                        class='fa fa-smile-o'></em>
-                </p>
-                <p>
-                    I accept a limited number of weddings and portrait sessions each
+                <p>Hey!  My name is Leigh Ann and I'm the Wham Bam Boss Lady at Saperstone
+                    Studios! We're located in Fairfax, VA but have been In NOVA most of my
+                    life (Herndon, Oak Hill, Reston, Fairfax...)</p>
+                <h4>The short list</h4>
+                <ul>
+                    <li>Addicted to HomeGoods (my second home)</li>
+                    <li>Just got a Cricut and I'm overwhelmed</li>
+                    <li>Will sabotage myself in any board game if it means I can beat my husband</li>
+                    <li>You can never travel enough</li>
+                    <li>I'm probably the only person in the world who doesn't drink coffee</li>
+                </ul>
+                <h4>The long list</h4>
+                <p>My first son made me a mother but my second son made me a #boymom.  I've officially
+                    joined the hashtag ranks as a mother of wild ones and I wouldn't trade my crazy goobers
+                    for the world <3 When I grow up, I want to be just like them and view the world with wonder.
+                    every. day. If you follow me on <a href='https://www.facebook.com/SaperstoneStudios'
+                    target='_blank'>Facebook</a> and <a href='https://instagram.com/saperstonestudios'
+                    target='_blank'>Instagram</a> you'll see their adorable faces pop up frequently. (Sorry, not sorry) ;)</p>
+                <p>Pre children you'd find me and my husband traveling the world, playing Settlers of Catan (we're
+                    only competitive with each other) and cracking poop jokes.  While we do less of the former and
+                    more of the latter (soooo many poop jokes with 3 boys in the house) we do it all together and
+                    I love him like a unicorn loves prancing on rainbows :D</p>
+                <h4>A little about my photography</h4>
+                <p>I'll ask you to play and I'll ask you to be silly and I do my best to make you laugh (often at
+                    my own expense).  I want my time with you to show a vibrancy, to be creative and fun! I know I've
+                    done a job well done when you refer me to your friends and family and it is oh-so-appreciated!</p>
+                <p>Not only do I have a degree in photography, but back in my corporate days, I worked for Ringling
+                    Bros. circus! My life was filled with clowns, elephants and acrobats (oh my?!) I was the lead on
+                    color management and retouch in their photo services department for many years making sure all
+                    their billboards, program books and marketing needs were in tip top shape. That's the kind of
+                    experience I pass on to my clients. It's a little known fact that a lot of hours go on behind the
+                    scenes to make your images what they are. Don't believe a single image you see in magazines.</p>
+                <p>I accept a limited number of weddings and portrait sessions each
                     year so <a href='/contact.php'>contact me</a> today to reserve a
-                    date!
-                </p>
+                    date!</p>
             </div>
         </div>
         <!-- /.row -->
