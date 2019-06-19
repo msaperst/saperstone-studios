@@ -38,9 +38,7 @@ $user = new User ();
             <!-- Map Column -->
             <div class="col-md-8">
                 <!-- Embedded Google Map -->
-                <iframe width="100%" height="400px" frameborder="0" scrolling="no"
-                    marginheight="0" marginwidth="0"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d198865.28560409523!2d-77.53850004379905!3d38.84917415728946!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89b637e9f071197b%3A0x4c75c5462bac5863!2sSaperstone+Studios!5e0!3m2!1sen!2sus!4v1463780133083"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d795385.7040435313!2d-77.45577126502923!3d38.84398800429194!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x4c75c5462bac5863!2sSaperstone+Studios!5e0!3m2!1sen!2suk!4v1560954738867!5m2!1sen!2suk" width="100%" height="450px" frameborder="0" style="border:0" allowfullscreen></iframe>
             </div>
             <!-- Contact Details Column -->
             <div class="col-md-4">
