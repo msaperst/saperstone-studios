@@ -39,7 +39,7 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Portraits</span> <img
                         class="img-responsive"
-                        src="/content/main/portraits.jpg<?php echo $rand; ?>" width="100%"
+                        src="/img/main/portraits.jpg<?php echo $rand; ?>" width="100%"
                         alt="Portraits">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="/portrait/index.php">See
@@ -51,7 +51,7 @@
                 <div section='Weddings'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Weddings</span> <img
-                        class="img-responsive" src="/content/main/weddings.jpg<?php echo $rand; ?>"
+                        class="img-responsive" src="/img/main/weddings.jpg<?php echo $rand; ?>"
                         width="100%" alt="Weddings">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="/wedding/index.php">See

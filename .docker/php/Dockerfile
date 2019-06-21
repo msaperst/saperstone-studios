@@ -19,17 +19,18 @@ COPY resources /var/www/resources
 COPY src /var/www/src
 COPY templates /var/www/templates
 
-VOLUME /var/www/public/content
-VOLUME /var/www/public/logs
+VOLUME /var/www/content
+VOLUME /var/www/logs
 
-RUN ln -s /var/www/public/content/commercial /var/www/public/commercial/img
-RUN ln -s /var/www/public/content/portrait /var/www/public/portrait/img
-RUN ln -s /var/www/public/content/wedding /var/www/public/wedding/img
-RUN ln -s /var/www/public/content/retouch /var/www/public/retouch/img
-RUN ln -s /var/www/public/content/reviews /var/www/public/img/reviews
-RUN ln -s /var/www/public/content/albums /var/www/public/albums
-RUN ln -s /var/www/public/content/blog /var/www/public/blog/posts
-RUN ln -s /var/www/public/content/contracts /var/www/public/user/contracts/files
+RUN ln -s /var/www/content/commercial /var/www/public/commercial/img
+RUN ln -s /var/www/content/portrait /var/www/public/portrait/img
+RUN ln -s /var/www/content/wedding /var/www/public/wedding/img
+RUN ln -s /var/www/content/main /var/www/public/img/main
+RUN ln -s /var/www/content/retouch /var/www/public/retouch/img
+RUN ln -s /var/www/content/reviews /var/www/public/img/reviews
+RUN ln -s /var/www/content/albums /var/www/public/albums
+RUN ln -s /var/www/content/blog /var/www/public/blog/posts
+RUN ln -s /var/www/content/contracts /var/www/public/user/contracts/files
 RUN ln -s /var/www/src/errors /var/www/public/errors
 RUN chown -R www-data:www-data /var/www/
 

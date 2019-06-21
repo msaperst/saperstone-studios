@@ -50,8 +50,8 @@ services:
     links:
       - mysql
     volumes:
-      - ./content:/var/www/public/content
-      - ./logs:/var/www/public/logs
+      - ./content:/var/www/content
+      - ./logs:/var/www/logs
     environment:
       DB_HOST: mysql
       DB_PORT: "3306"

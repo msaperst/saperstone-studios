@@ -140,7 +140,7 @@ if (isset ( $_GET ['c'] )) {
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Wedding Wire</span> <img
                         class="img-responsive"
-                        src="/content/main/wedding-wire.jpg<?php echo $rand; ?>" width="100%"
+                        src="/img/main/wedding-wire.jpg<?php echo $rand; ?>" width="100%"
                         alt="Wedding Wire">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" target="_blank"
@@ -154,7 +154,7 @@ if (isset ( $_GET ['c'] )) {
                 <div section='Yelp'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Yelp</span> <img class="img-responsive"
-                        src="/content/main/yelp.jpg<?php echo $rand; ?>" width="100%" alt="Yelp">
+                        src="/img/main/yelp.jpg<?php echo $rand; ?>" width="100%" alt="Yelp">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" target="_blank"
                             href="http://www.yelp.com/biz/saperstone-studios-fairfax">See
@@ -167,7 +167,7 @@ if (isset ( $_GET ['c'] )) {
                 <div section='Google'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Google</span> <img
-                        class="img-responsive" src="/content/main/google.jpg<?php echo $rand; ?>"
+                        class="img-responsive" src="/img/main/google.jpg<?php echo $rand; ?>"
                         width="100%" alt="Google">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" target="_blank"
