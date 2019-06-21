@@ -30,7 +30,7 @@ RUN ln -s /var/www/content/retouch /var/www/public/retouch/img
 RUN ln -s /var/www/content/reviews /var/www/public/img/reviews
 RUN ln -s /var/www/content/albums /var/www/public/albums
 RUN ln -s /var/www/content/blog /var/www/public/blog/posts
-RUN ln -s /var/www/content/contracts /var/www/public/user/contracts/files
+RUN ln -s /var/www/content/contracts /var/www/public/user/contracts
 RUN ln -s /var/www/src/errors /var/www/public/errors
 RUN chown -R www-data:www-data /var/www/
 

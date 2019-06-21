@@ -65,4 +65,4 @@ public/img/*/*
 !public/img/reviews/*
 
 #our contracts
-public/user/contracts/*.pdf
+public/contracts/*.pdf
