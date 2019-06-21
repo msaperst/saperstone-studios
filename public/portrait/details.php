@@ -60,7 +60,7 @@
                     most likely crack some jokes at my own expense but it's all in the
                     name of having fun and capturing natural, fun moments that reflect
                     who you are. My photography style is vibrant and colorful to
-                    reflect how you love life.</a>
+                    reflect how you love life.
                 </p>
 
                 <p>

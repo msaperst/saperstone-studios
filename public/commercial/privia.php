@@ -11,7 +11,7 @@
 
 <body>
 
-    <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
+    <?php $nav = "commercial"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
 
     <!-- Page Content -->
     <div class="page-content container">
@@ -22,7 +22,7 @@
                 <h1 class="page-header text-center">Privia Health Terms of Service</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li class="active">Commercial</li>
+                    <li><a href="index.php">Commercial</a></li>
                     <li class="active">Privia</li>
                     <li class="active">Copywrite</li>
                 </ol>
