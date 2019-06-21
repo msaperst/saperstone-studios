@@ -1,32 +1,64 @@
 version: '3'
 services:
+  mysql:
+    build:
+      context: .
+      dockerfile: .docker/sql/Dockerfile
+    container_name: saperstonestudios_mysql
+    restart: always
+    volumes:
+    - mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    environment:
+      TZ: "America/New_York"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_ROOT_PASSWORD: "super-secret"
+      MYSQL_DATABASE: 'saperstone-studios'
+      MYSQL_USER: 'saperstone-studios'
+      MYSQL_PASSWORD: 'secret'
+  php-myadmin:
+    image: corbinu/docker-phpmyadmin
+    container_name: saperstonestudios_php-myadmin
+    depends_on:
+      - mysql
+    ports:
+      - "8080:80"
+    expose:
+      - 8080
+    environment:
+      MYSQL_ROOT_PASSWORD: "super-secret"
+    links:
+      - mysql
   php:
     build:
       context: .
       dockerfile: .docker/php/Dockerfile
-    image: saperstone-studios-php
+    container_name: saperstonestudios_php
+    depends_on:
+      - mysql
     ports:
-    - 8080:80
-    - 8443:443
+      - 80:80
+      - 443:443
+    expose:
+      - 80
+      - 443
     links:
-    - mysql
+      - mysql
+    volumes:
+      - ./content:/var/www/public/content
+      - ./logs:/var/www/public/logs
     environment:
-      DB_HOST: 192.168.3.128
-      DB_PORT: 13306
-      DB_DATABASE: saperstone-studios
-      DB_USERNAME: saperstone-studios
-      DB_PASSWORD: secret
-      EMAIL_HOST: smtp.1and1.com
-      EMAIL_PORT: 587
-      EMAIL_USERNAME: contact@saperstonestudios.com
-      EMAIL_PASSWORD: UB2L2ZT2txn2uYWquWef
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_DATABASE: "saperstone-studios"
+      DB_USERNAME: "saperstone-studios"
+      DB_PASSWORD: "secret"
+      EMAIL_HOST: "smtp.1and1.com"
+      EMAIL_PORT: "587"
+      EMAIL_USERNAME: "contact@saperstonestudios.com"
+      EMAIL_PASSWORD: "UB2L2ZT2txn2uYWquWef"
+volumes:
   mysql:
-    image: mysql:5.7
-    restart: always
-    ports:
-    - 13306:3306
-    environment:
-      MYSQL_DATABASE: saperstone-studios
-      MYSQL_USER: saperstone-studios
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: super-secret

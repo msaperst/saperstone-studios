@@ -54,7 +54,7 @@ foreach ( $_POST ['content'] as $content ) {
 }
 
 // move and resize our preview image
-$storage_dir = "../blog/" . str_replace ( "-", "/", $date );
+$storage_dir = "../blog/posts/" . str_replace ( "-", "/", $date );
 if (! is_dir ( $storage_dir )) {
     mkdir ( $storage_dir, 0755, true );
 }

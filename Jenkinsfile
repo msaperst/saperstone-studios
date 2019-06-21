@@ -57,11 +57,6 @@ node() {
     stage('Prep Files') {
         compress('js')
         compress('css')
-        sh "rm ./public/img/main/*"
-        sh "rm ./public/img/reviews/*"
-        sh "rm ./public/wedding/img/*"
-        sh "rm ./public/portrait/img/*"
-        sh "rm ./public/commercial/img/*"
     }
     stage('Install Plugins') {
         //install jSignature plugin
