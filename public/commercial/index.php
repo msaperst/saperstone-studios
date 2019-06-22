@@ -177,7 +177,7 @@
                         class="img-responsive" src="img/reviews.jpg<?php echo $rand; ?>"
                         alt="Raves">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="reviews.php?c=1">See
+                        <br /> <br /> <br /> <a class="info" href="reviews.php?c=3">See
                             More</a>
                     </div>
                 </div>
@@ -189,7 +189,7 @@
                         src="img/blog.jpg<?php echo $rand; ?>" alt="Blog">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info"
-                            href="/blog/category.php?t=20">See More</a>
+                            href="/blog/category.php?t=99">See More</a>
                     </div>
                 </div>
             </div>
