@@ -53,7 +53,7 @@
         <div class="row" style='padding-top: 30px'>
             <div class="col-lg-12">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img width="100%" src="img/events.jpg<?php echo $rand; ?>"
+                    <img width="100%" src="img/branding-1.jpg<?php echo $rand; ?>"
                         alt="Events" />
                     <div class="overlay"></div>
                 </div>
