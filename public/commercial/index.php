@@ -25,14 +25,14 @@
 <body>
 
     <?php
-    $nav = "portrait";
+    $nav = "commercial";
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
     
     // get our gallery images
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
     $conn = new Sql ();
     $conn->connect ();
-    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.title = 'Portrait';";
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.title = 'Commercial';";
     $result = mysqli_query ( $conn->db, $sql );
     $images = array ();
     while ( $row = mysqli_fetch_assoc ( $result ) ) {
@@ -46,10 +46,10 @@
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center">Portraits</h1>
+                <h1 class="page-header text-center">Commercial</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li class="active">Portraits</li>
+                    <li class="active">Commercial</li>
                 </ol>
             </div>
         </div>
@@ -60,7 +60,7 @@
             <!-- Content Column -->
             <div class="col-md-9">
                 <!-- Carousel -->
-                <div id="portraitCarousel"
+                <div id="commercialCarousel"
                     class="carousel slide carousel-three-by-two">
                     <!-- Indicators -->
                     <ol class="carousel-indicators">
@@ -70,7 +70,7 @@
                             if ($num == 0) {
                                 $class = " class='active'";
                             }
-                            echo "<li data-target='#portraitCarousel' data-slide-to='$num'$class></li>";
+                            echo "<li data-target='#commercialCarousel' data-slide-to='$num'$class></li>";
                         }
                         ?>
                     </ol>
@@ -95,16 +95,16 @@
                     </div>
 
                     <!-- Controls -->
-                    <a class="left carousel-control" href="#portraitCarousel"
+                    <a class="left carousel-control" href="#commercialCarousel"
                         data-slide="prev"> <span class="icon-prev"></span>
-                    </a> <a class="right carousel-control" href="#portraitCarousel"
+                    </a> <a class="right carousel-control" href="#commercialCarousel"
                         data-slide="next"> <span class="icon-next"></span>
                     </a>
                     <?php if ($user->isAdmin ()) { ?>
                     <span
                         style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
                         <button class="ajax-file-upload"
-                            onclick="location.href='galleries.php?w=1'"
+                            onclick="location.href='galleries.php?w=52'"
                             style="position: relative; overflow: hidden; cursor: pointer;">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
@@ -123,7 +123,7 @@
             </div>
         </div>
 
-        <!-- Portrait Services Section -->
+        <!-- Commercial Services Section -->
         <div class="row">
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section='Details'

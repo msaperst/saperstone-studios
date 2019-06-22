@@ -1,11 +1,19 @@
 <?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
+<?php include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php"; ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
-    <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
+    <?php
+        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
+        if ($user->isAdmin ()) {
+    ?>
+    <link href="/css/uploadfile.css" rel="stylesheet">
+    <?php
+        }
+    ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
 
 </head>
@@ -100,6 +108,16 @@
                     </a> <a class="right carousel-control" href="#night-carousel"
                         data-slide="next"> <span class="icon-next"></span>
                     </a>
+                    <?php if ($user->isAdmin ()) { ?>
+                    <span
+                        style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
+                        <button class="ajax-file-upload"
+                            onclick="location.href='/commercial/galleries.php?w=12'"
+                            style="position: relative; overflow: hidden; cursor: pointer;">
+                            <i class="fa fa-pencil-square-o"></i> Edit These Images
+                        </button>
+                    </span>
+                    <?php } ?>
                 </div>
             </div>
         </div>

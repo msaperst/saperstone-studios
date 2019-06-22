@@ -7,10 +7,10 @@
             class="dropdown-toggle" data-toggle="dropdown">Details<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="experience.php">Headshots</a></li>
-                <li><a href="engagement.php">Events</a></li>
-                <li><a href="process.php">Professional Branding</a></li>
-                <li><a href="products.php">Photobooth</a></li>
+                <li><a href="headshots.php">Headshots</a></li>
+                <li><a href="events.php">Events</a></li>
+                <li><a href="branding.php">Professional Branding</a></li>
+                <li><a href="photobooth.php">Photobooth</a></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
