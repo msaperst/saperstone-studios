@@ -26,7 +26,6 @@ RUN ln -s /var/www/content/commercial /var/www/public/commercial/img
 RUN ln -s /var/www/content/portrait /var/www/public/portrait/img
 RUN ln -s /var/www/content/wedding /var/www/public/wedding/img
 RUN ln -s /var/www/content/main /var/www/public/img/main
-RUN ln -s /var/www/content/retouch /var/www/public/retouch
 RUN ln -s /var/www/content/reviews /var/www/public/img/reviews
 RUN ln -s /var/www/content/albums /var/www/public/albums
 RUN ln -s /var/www/content/blog /var/www/public/blog/posts
