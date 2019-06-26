@@ -3,12 +3,6 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 PARENTDIR="$( dirname ${DIR} )";
 
-#get our connection information
-host=$(awk -F '"' '/db.host/ {print $2}' ${PARENTDIR}/config/env.ini);
-username=$(awk -F '"' '/db.username/ {print $2}' ${PARENTDIR}/config/env.ini);
-password=$(awk -F '"' '/db.password/ {print $2}' ${PARENTDIR}/config/env.ini);
-database=$(awk -F '"' '/db.database/ {print $2}' ${PARENTDIR}/config/env.ini);
-
 output="${PARENTDIR}/public/tmp/status.txt";
 mkdir -p $( dirname ${output} );
 touch ${output};
@@ -65,7 +59,7 @@ for file in $location/*.*; do
             file_size=`echo $file_info | cut -d ' ' -f 3`;
             width=`echo $file_size | cut -d 'x' -f 1`;
             height=`echo $file_size | cut -d 'x' -f 2`;
-            mysql -u $username -p$password -e "UPDATE \`$database\`.\`album_images\` SET width='$width', height='$height' WHERE album='$id' AND location='${file:2}';"
+            mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "UPDATE \`$database\`.\`album_images\` SET width='$width', height='$height' WHERE album='$id' AND location='${file:2}';"
         fi
     fi
 done

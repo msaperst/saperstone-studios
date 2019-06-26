@@ -1,16 +1,8 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 $conn = new Sql ();
 $conn->connect ();
-
-session_name ( 'ssLogin' );
-// Starting the session
-
-session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-// Making the cookie live for 2 weeks
-
-session_start ();
-// Start our session
 
 $id;
 if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
@@ -93,7 +85,7 @@ if (isset ( $_POST ['content'] ) && $_POST ['content'] != "") {
 
 $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
 $contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-$file = "../user/contracts/$name - " . $contract_info ['type'] . "Contract.pdf";
+$file = "../contracts/$name - " . $contract_info ['type'] . "Contract.pdf";
 $sql = "UPDATE `contracts` SET `link` = '', `name` = '$name', `address` = '$address', `number` = '$number', 
         `email` = '$email', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
         `file` = '$file' WHERE `id` = $id;";

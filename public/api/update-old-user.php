@@ -1,5 +1,6 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 $conn = new Sql ();
 $conn->connect ();
 
@@ -72,9 +73,7 @@ mysqli_query ( $conn->db, $sql );
 mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( $id, CURRENT_TIMESTAMP, 'Converted User', NULL, NULL );" );
 
 // need to auto-login
-session_name ( 'ssLogin' );
-session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-session_start ();
+require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 
 $_SESSION ['usr'] = $username;
 $_SESSION ['hash'] = $hash;

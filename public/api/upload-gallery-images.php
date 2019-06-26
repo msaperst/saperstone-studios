@@ -1,18 +1,10 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $conn = new Sql ();
 $conn->connect ();
 
-session_name ( 'ssLogin' );
-// Starting the session
-
-session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-// Making the cookie live for 2 weeks
-
-session_start ();
-// Start our session
-
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $user = new User ();
 
 // only admin users can make updates
@@ -65,7 +57,11 @@ while ( $gallery_info ['parent'] != NULL ) {
     $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 }
 $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
-$output_dir = "../img/$location";
+$location = strtolower( $location );
+$location = preg_replace( '/^commercial/', 'commercial/img', $location );
+$location = preg_replace( '/^portrait/', 'portrait/img', $location );
+$location = preg_replace( '/^wedding/', 'wedding/img', $location );
+$output_dir = "../$location";
 if (! is_dir ( $output_dir )) {
     mkdir ( $output_dir, 0755, true );
 }
@@ -113,7 +109,7 @@ if (isset ( $_FILES ["myfile"] )) {
             $size = getimagesize ( $output_dir . $fileName );
         }
         $response [$next_seq] = $fileName;
-        $sql = "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`) VALUES ('$id', '$fileName', '$next_seq', '', '/img/$location$fileName', '" . $size [0] . "', '" . $size [1] . "');";
+        $sql = "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`) VALUES ('$id', '$fileName', '$next_seq', '', '/$location$fileName', '" . $size [0] . "', '" . $size [1] . "');";
         mysqli_query ( $conn->db, $sql );
         $next_seq ++;
     }

@@ -3,18 +3,26 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 PARENTDIR="$( dirname ${DIR} )";
 
-#get our connection information
-host=$(awk -F '"' '/db.host/ {print $2}' ${PARENTDIR}/config/env.ini);
-username=$(awk -F '"' '/db.username/ {print $2}' ${PARENTDIR}/config/env.ini);
-password=$(awk -F '"' '/db.password/ {print $2}' ${PARENTDIR}/config/env.ini);
-database=$(awk -F '"' '/db.database/ {print $2}' ${PARENTDIR}/config/env.ini);
+#wait for database to be available
+while ! mysqladmin ping -h $DB_HOST -P $DB_PORT --silent; do
+    echo "Waiting for db"
+    sleep 1
+done
 
 #create our database if it doesn't exist
 echo "Creating Database"
-mysql -h $host -u $username -p$password -e "CREATE DATABASE IF NOT EXISTS \`$database\`;" > /dev/null 2>&1
+mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS \`$DB_DATABASE\`;" > /dev/null 2>&1
 
+#setup our schema
 for file in ${DIR}/sql/*.sql; do
     filename=${file##*/}
     echo "Running ${filename%.sql}";
-    mysql -h $host -u $username -p$password $database < "$file" #> /dev/null 2>&1
+    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < "$file" #> /dev/null 2>&1
 done
+
+#launch apache2
+apache2-foreground
+
+#cleanup sql files
+rm -r bin/sql
+rm bin/setup-database.sh

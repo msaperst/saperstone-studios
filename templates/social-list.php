@@ -7,6 +7,3 @@
         class="fa fa-twitter-square <?php echo $iconSize; ?>"></em></a></li>
 <li><a target="_blank" type="application/rss+xml" href="/blog.rss"><em
         class="fa fa-rss-square <?php echo $iconSize; ?>"></em></a></li>
-<li><a target="_blank"
-    href="https://plus.google.com/+SaperstoneStudios"><em
-        class="fa fa-google-plus-square <?php echo $iconSize; ?>"></em></a></li>

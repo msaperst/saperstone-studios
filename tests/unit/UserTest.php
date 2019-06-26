@@ -1,7 +1,10 @@
 <?php
+use PHPUnit\Framework\TestCase;
+
 $_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-class UserTest extends PHPUnit_Framework_TestCase {
+
+class UserTest extends TestCase {
     private $user;
     public function testNoUser() {
         $this->user = new User ();

@@ -1,7 +1,10 @@
 <?php
+use PHPUnit\Framework\TestCase;
+
 $_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-class GetBlogFullTest extends PHPUnit_Framework_TestCase {
+
+class GetBlogFullTest extends TestCase {
     private $client;
     protected function setUp() {
         // setup our guzzle client

@@ -1,7 +1,10 @@
 <?php
+use PHPUnit\Framework\TestCase;
+
 $_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-class GetAlbumImagesTest extends PHPUnit_Framework_TestCase {
+
+class GetAlbumImagesTest extends TestCase {
     private $client;
     protected function setUp() {
         $this->client = new GuzzleHttp\Client ( [ 

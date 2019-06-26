@@ -1,18 +1,10 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $conn = new Sql ();
 $conn->connect ();
 
-session_name ( 'ssLogin' );
-// Starting the session
-
-session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-// Making the cookie live for 2 weeks
-
-session_start ();
-// Start our session
-
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $user = new User ();
 
 if (! $user->isAdmin ()) {
@@ -55,8 +47,8 @@ if ($howLong <= 0) {
     exit ();
 }
 
-$command = "UPDATE \`" . $conn->params ['db.database'] . "\`.\`blog_details\` SET \`active\` = '1' WHERE \`id\` = '$post';";
-$command = "mysql -h " . $conn->params ['db.host'] . " -u " . $conn->params ['db.username'] . " -p" . $conn->params ['db.password'] . " -e \"$command\"";
+$command = "UPDATE \`" . getenv('DB_DATABASE') . "\`.\`blog_details\` SET \`active\` = '1' WHERE \`id\` = '$post';";
+$command = "mysql -h " . getenv('DB_HOST') . " -P " . getenv('DB_PORT') . " -u " . getenv('DB_USERNAME') . " -p" . getenv('DB_PASSWORD') . " -e \"$command\"";
 system ( "nohup bash -c 'sleep $howLong; $command' > /dev/null 2>&1 &" );
 
 $conn->disconnect ();

@@ -47,9 +47,7 @@ if ($row ['usr']) {
     mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Reset Password', NULL, NULL );" );
     
     // If everything is OK login
-    session_name ( 'ssLogin' );
-    session_set_cookie_params ( 2 * 7 * 24 * 60 * 60 );
-    session_start ();
+    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
     $_SESSION ['usr'] = $row ['usr'];
     $_SESSION ['hash'] = $row ['hash'];
     $_SESSION ['rememberMe'] = 1;
