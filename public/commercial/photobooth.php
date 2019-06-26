@@ -21,14 +21,14 @@
 <body>
 
     <?php
-    $nav = "wedding";
+    $nav = "commercial";
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
     
     // get our gallery images
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
     $conn = new Sql ();
     $conn->connect ();
-    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = 37;";
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = 57;";
     $result = mysqli_query ( $conn->db, $sql );
     $images = array ();
     while ( $row = mysqli_fetch_assoc ( $result ) ) {
@@ -45,7 +45,7 @@
                 <h1 class="page-header text-center">Photobooth</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php">Weddings</a></li>
+                    <li><a href="index.php">Commercial</a></li>
                     <li><a href="details.php">Details</a></li>
                     <li class="active">Photobooth</li>
                 </ol>
@@ -57,7 +57,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <p>
-                    Perfect for any wedding or event, photo booths are a fantastic way
+                    Perfect for any event, photo booths are a fantastic way
                     to add instant fun to any occasion. Here are the basics, please <a
                         href='/contact.php'>contact us</a> for more details!
                 </p>
@@ -125,7 +125,7 @@
                     <span
                         style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
                         <button class="ajax-file-upload"
-                            onclick="location.href='/commercial/galleries.php?w=37'"
+                            onclick="location.href='/commercial/galleries.php?w=57'"
                             style="position: relative; overflow: hidden; cursor: pointer;">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
