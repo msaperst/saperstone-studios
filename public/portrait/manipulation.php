@@ -67,10 +67,10 @@
     <script src='/js/retouch.js'></script>
     <script>
         var images = [];
-        images[0] = { thumb:'/retouch/img/portrait/manipulation/0001.jpg', orig:'/retouch/img/portrait/manipulation/0001_o.jpg', edit:'/retouch/img/portrait/manipulation/0001_e.jpg', width:'750', height:'589', text:'' };
-        images[1] = { thumb:'/retouch/img/portrait/manipulation/0002.jpg', orig:'/retouch/img/portrait/manipulation/0002_o.jpg', edit:'/retouch/img/portrait/manipulation/0002_e.jpg', width:'750', height:'589', text:'' };
-        images[2] = { thumb:'/retouch/img/portrait/manipulation/0009.jpg', orig:'/retouch/img/portrait/manipulation/0009_o.jpg', edit:'/retouch/img/portrait/manipulation/0009_e.jpg', width:'499', height:'750', text:'' };
-        images[3] = { thumb:'/retouch/img/portrait/manipulation/0011.jpg', orig:'/retouch/img/portrait/manipulation/0011_o.jpg', edit:'/retouch/img/portrait/manipulation/0011_e.jpg', width:'750', height:'499', text:'' };
+        images[0] = { thumb:'/retouch/portrait/manipulation/0001.jpg', orig:'/retouch/portrait/manipulation/0001_o.jpg', edit:'/retouch/portrait/manipulation/0001_e.jpg', width:'750', height:'589', text:'' };
+        images[1] = { thumb:'/retouch/portrait/manipulation/0002.jpg', orig:'/retouch/portrait/manipulation/0002_o.jpg', edit:'/retouch/portrait/manipulation/0002_e.jpg', width:'750', height:'589', text:'' };
+        images[2] = { thumb:'/retouch/portrait/manipulation/0009.jpg', orig:'/retouch/portrait/manipulation/0009_o.jpg', edit:'/retouch/portrait/manipulation/0009_e.jpg', width:'499', height:'750', text:'' };
+        images[3] = { thumb:'/retouch/portrait/manipulation/0011.jpg', orig:'/retouch/portrait/manipulation/0011_o.jpg', edit:'/retouch/portrait/manipulation/0011_e.jpg', width:'750', height:'499', text:'' };
         var retouch = new Retouch( $('#holder'), images, true );
     </script>
 

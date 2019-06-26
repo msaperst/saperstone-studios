@@ -68,11 +68,11 @@
     <script src='/js/retouch.js'></script>
     <script>
     var images = [];
-    images[0] = { thumb:'/retouch/img/portrait/restoration/10.jpg', orig:'/retouch/img/portrait/restoration/10-BEFORE.jpg', edit:'/retouch/img/portrait/restoration/10-AFTER.jpg', width:'400', height:'500', text:'' };
-    images[1] = { thumb:'/retouch/img/portrait/restoration/11_DSC_2405.jpg', orig:'/retouch/img/portrait/restoration/11_DSC_2405-BEFORE.jpg', edit:'/retouch/img/portrait/restoration/11_DSC_2405-AFTER.jpg', width:'680', height:'862', text:'' };
-    images[2] = { thumb:'/retouch/img/portrait/restoration/7.jpg', orig:'/retouch/img/portrait/restoration/7-BEFORE.jpg', edit:'/retouch/img/portrait/restoration/7-AFTER.jpg', width:'573', height:'716', text:'' };
-    images[3] = { thumb:'/retouch/img/portrait/restoration/CeliaGettinger.jpg', orig:'/retouch/img/portrait/restoration/CeliaGettinger-BEFORE.jpg', edit:'/retouch/img/portrait/restoration/CeliaGettinger-AFTER.jpg', width:'1000', height:'1394', text:'' };
-    images[4] = { thumb:'/retouch/img/portrait/restoration/Yayas_rt.jpg', orig:'/retouch/img/portrait/restoration/Yayas_rt-BEFORE.jpg', edit:'/retouch/img/portrait/restoration/Yayas_rt-AFTER.jpg', width:'2000', height:'1538', text:'' };
+    images[0] = { thumb:'/retouch/portrait/restoration/10.jpg', orig:'/retouch/portrait/restoration/10-BEFORE.jpg', edit:'/retouch/portrait/restoration/10-AFTER.jpg', width:'400', height:'500', text:'' };
+    images[1] = { thumb:'/retouch/portrait/restoration/11_DSC_2405.jpg', orig:'/retouch/portrait/restoration/11_DSC_2405-BEFORE.jpg', edit:'/retouch/portrait/restoration/11_DSC_2405-AFTER.jpg', width:'680', height:'862', text:'' };
+    images[2] = { thumb:'/retouch/portrait/restoration/7.jpg', orig:'/retouch/portrait/restoration/7-BEFORE.jpg', edit:'/retouch/portrait/restoration/7-AFTER.jpg', width:'573', height:'716', text:'' };
+    images[3] = { thumb:'/retouch/portrait/restoration/CeliaGettinger.jpg', orig:'/retouch/portrait/restoration/CeliaGettinger-BEFORE.jpg', edit:'/retouch/portrait/restoration/CeliaGettinger-AFTER.jpg', width:'1000', height:'1394', text:'' };
+    images[4] = { thumb:'/retouch/portrait/restoration/Yayas_rt.jpg', orig:'/retouch/portrait/restoration/Yayas_rt-BEFORE.jpg', edit:'/retouch/portrait/restoration/Yayas_rt-AFTER.jpg', width:'2000', height:'1538', text:'' };
     var retouch = new Retouch( $('#holder'), images, true );
     </script>
 
