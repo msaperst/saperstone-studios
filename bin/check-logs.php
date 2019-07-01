@@ -1,6 +1,6 @@
 <?php
 $delta = 5 * 60;
-$file = "../logs/error.log";
+$file = "/var/www/logs/error.log";
 $updated = 0;
 if (file_exists ( $file )) {
     $updated = filemtime ( $file );

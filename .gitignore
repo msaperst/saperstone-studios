@@ -35,9 +35,12 @@ coverage
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
+target
+test-output
 
 # phpunit artifacts
 reports/**
+.phpunit.result.cache
 
 # Dependency directory
 # Commenting this out is preferred by some people, see
@@ -47,6 +50,7 @@ phpmyadmin
 
 # Users Environment Variables
 .lock-wscript
+.env
 
 # Some third party tools
 resources

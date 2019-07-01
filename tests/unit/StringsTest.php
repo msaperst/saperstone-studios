@@ -115,4 +115,40 @@ class StringsTest extends TestCase {
         ) );
         $this->assertEquals ( "hello, there, my and world", $result );
     }
+    public function testStartsWithGood() {
+        $result = $this->string->startsWith ( "Max", "M" );
+        $this->assertTrue( $result );
+    }
+    public function testStartsWithWholeWord() {
+        $result = $this->string->startsWith ( "Max", "Max" );
+        $this->assertTrue( $result );
+    }
+    public function testStartsWithBad() {
+        $result = $this->string->startsWith ( "Max", "Leigh" );
+        $this->assertFalse( $result );
+    }
+    public function testStartsWithBadCase() {
+        $result = $this->string->startsWith ( "Max", "m" );
+        $this->assertFalse( $result );
+    }
+    public function testEndsWithGood() {
+            $result = $this->string->endsWith ( "Max", "x" );
+            $this->assertTrue( $result );
+    }
+    public function testEndsWithWholeWord() {
+        $result = $this->string->endsWith ( "Max", "Max" );
+        $this->assertTrue( $result );
+    }
+    public function testEndsWithEmail() {
+            $result = $this->string->endsWith ( "Max@saperstonestudios.com", "@saperstonestudios.com" );
+            $this->assertTrue( $result );
+        }
+    public function testEndsWithBad() {
+        $result = $this->string->endsWith ( "Max", "Leigh" );
+        $this->assertFalse( $result );
+    }
+    public function testEndsWithBadCase() {
+        $result = $this->string->endsWith ( "Max", "X" );
+        $this->assertFalse( $result );
+    }
 }

@@ -1,4 +1,17 @@
 <?php
+
+include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
+$string = new Strings ();
+
+$email_user_creds = 'EMAIL_USERNAME';
+$email_pass_creds = 'EMAIL_PASSWORD';
+
+// in order to ensure LA gets these sent emails in her inbox, we'll send them from her ss gmail instead of @ss domain if they're to and from her
+if( $string->endsWith($to, "@saperstonestudios.com>") ) {
+    $email_user_creds = 'EMAIL_USERNAME_BACKUP';
+    $email_pass_creds = 'EMAIL_PASSWORD_BACKUP';
+}
+
 $headers = array(
     'Reply-To' => $from,
     'From' => $from,
@@ -8,18 +21,18 @@ $headers = array(
 $headers = $mime->headers($headers);
 $smtp = Mail::factory('smtp', array(
     'host' => getenv('EMAIL_HOST'),
-    'port' => getenv('DB_PORT'),
+    'port' => getenv('EMAIL_PORT'),
     'auth' => true,
-    'username' => getenv('DB_USERNAME'),
-    'password' => getenv('DB_PASSWORD')
+    'username' => getenv($email_user_creds),
+    'password' => getenv($email_pass_creds)
 ));
 
 $mail = $smtp->send($to, $headers, $body);
 
-if (!file_exists('../logs')) {
-    mkdir("../logs", 0700);
+if (!file_exists('/var/www/logs')) {
+    mkdir("/var/www/logs", 0700);
 }
-$myFile = "../logs/emails.txt";
+$myFile = "/var/www/logs/emails.txt";
 
 $fh = fopen($myFile, 'a') or die ("can't open file");
 fwrite($fh, "From: " . $from . "\n");

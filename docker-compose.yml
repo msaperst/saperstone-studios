@@ -38,6 +38,13 @@ services:
     build:
       context: .
       dockerfile: .docker/php/Dockerfile
+      args:
+        MPDF_VERSION: 6.1.0
+        PAYPAL_VERSION: 3.9.1
+        PAYPAL_USERNAME: ${PAYPAL_USERNAME}
+        PAYPAL_PASSWORD: ${PAYPAL_PASSWORD}
+        PAYPAL_SIGNATURE: ${PAYPAL_SIGNATURE}
+        TWITTER_VERSION: 3.1.0
     container_name: saperstonestudios_php
     depends_on:
     - mysql
@@ -62,5 +69,7 @@ services:
       EMAIL_PORT: ${EMAIL_PORT}
       EMAIL_USERNAME: ${EMAIL_USER}
       EMAIL_PASSWORD: ${EMAIL_PASS}
+      EMAIL_USERNAME_BACKUP: ${EMAIL_USER_X}
+      EMAIL_PASSWORD_BACKUP: ${EMAIL_PASS_X}
 volumes:
   mysql:
