@@ -10,7 +10,7 @@ node() {
     cleanWs()
     ansiColor('xterm') {
         workspace = pwd()
-        env.BRANCH_NAME = 'docker'
+        env.BRANCH_NAME = 'master'
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
         baseVersion = "${env.BUILD_NUMBER}"
         version = "$branch-$baseVersion"
@@ -37,7 +37,7 @@ node() {
             ])
         }
         stage('Install PHPUnit') {
-            sh "wget -O phpunit https://phar.phpunit.de/phpunit-7.phar"
+            sh "wget -q -O phpunit https://phar.phpunit.de/phpunit-7.phar"
             sh "chmod +x phpunit"
         }
         stage('Run Unit Tests') {
