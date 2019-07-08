@@ -82,6 +82,11 @@ EMAIL_PASS_X=${emailPassX}' > .env"
             sh "ln -s content /home/msaperst/saperstone-studios/content"
             sh "chmod -R 777 content"
         }
+        stage('Kill Any Old Docker Containers') {
+            sh "docker kill saperstonestudios_php"
+            sh "docker kill saperstonestudios_php-myadmin"
+            sh "docker kill saperstonestudios_mysql"
+        }
         stage('Launch Docker Container') {
             sh "docker-compose up --build -d"
         }
