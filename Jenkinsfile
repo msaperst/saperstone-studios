@@ -78,6 +78,10 @@ EMAIL_USER_X=${emailUserX}\n\
 EMAIL_PASS_X=${emailPassX}' > .env"
             }
         }
+        stage('Setup Files') {
+            sh "ln -s content /home/msaperst/saperstone-studios/content"
+            sh "chmod -R 777 content"
+        }
         stage('Launch Docker Container') {
             sh "docker-compose up --build -d"
         }
