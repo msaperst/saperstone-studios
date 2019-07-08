@@ -70,7 +70,7 @@ DB_NAME=saperstone-studios\n\
 DB_USER=saperstone-studios\n\
 DB_PASS=secret\n\
 \n\
-EMAIL_HOST=smtp.1 and1.com\n\
+EMAIL_HOST=smtp.1and1.com\n\
 EMAIL_PORT=587\n\
 EMAIL_USER=${emailUser}\n\
 EMAIL_PASS=${emailPass}\n\
