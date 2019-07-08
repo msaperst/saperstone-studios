@@ -50,13 +50,13 @@ node() {
         withCredentials([
                 usernamePassword(
                         credentialsId: 'saperstone-studios-contact',
-                        usernameVariable: 'email-user',
-                        passwordVariable: 'email-pass'
+                        usernameVariable: 'emailUser',
+                        passwordVariable: 'emailPass'
                 ),
                 usernamePassword(
                         credentialsId: 'saperstone-studios-gmail',
-                        usernameVariable: 'email-user-x',
-                        passwordVariable: 'email-pass-x'
+                        usernameVariable: 'emailUserX',
+                        passwordVariable: 'emailPassX'
                 )
         ]) {
             stage('Setup env File') {
@@ -72,10 +72,10 @@ DB_PASS=secret\n\
 \n\
 EMAIL_HOST=smtp.1 and1.com\n\
 EMAIL_PORT=587\n\
-EMAIL_USER=${email-user}\n\
-EMAIL_PASS=${email-pass}\n\
-EMAIL_USER_X=${email-user-x}\n\
-EMAIL_PASS_X=${email-pass-x}' > .env"
+EMAIL_USER=${emailUser}\n\
+EMAIL_PASS=${emailPass}\n\
+EMAIL_USER_X=${emailUserX}\n\
+EMAIL_PASS_X=${emailPassX}' > .env"
             }
         }
         stage('Build Docker Container') {
