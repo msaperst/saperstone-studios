@@ -34,6 +34,9 @@ node() {
                                     ]]
         ])
     }
+    stage('Install Dependencies') {
+        sh "composer install"
+    }
     stage('Run Unit Tests') {
          sh "vendor/phpunit/phpunit/phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
     }
@@ -42,7 +45,6 @@ node() {
         compress('css')
     }
     stage('Build Docker Container') {
-        //build docker containers
         sh "docker-compose build"
     }
     stage('Launch Docker Container') {
