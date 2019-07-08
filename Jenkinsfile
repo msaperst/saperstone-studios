@@ -81,7 +81,6 @@ EMAIL_PASS_X=${emailPassX}' > .env"
         stage('Setup Files') {
             sh "rm -r content"
             sh "ln -s /home/msaperst/saperstone-studios/content content"
-            sh "chmod -R 777 content"
         }
         stage('Kill Any Old Docker Containers') {
             sh "docker kill saperstonestudios_php"
