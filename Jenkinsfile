@@ -34,11 +34,12 @@ node() {
                                     ]]
         ])
     }
-    stage('Install Dependencies') {
-        sh "composer install"
+    stage('Install PHPUnit') {
+        sh "wget -O phpunit https://phar.phpunit.de/phpunit-7.phar"
+        sh "chmod +x phpunit"
     }
     stage('Run Unit Tests') {
-         sh "vendor/phpunit/phpunit/phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
+         sh "./phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
     }
     stage('Prep Files') {
         compress('js')
