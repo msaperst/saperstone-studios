@@ -47,6 +47,37 @@ node() {
             compress('js')
             compress('css')
         }
+        withCredentials([
+                usernamePassword(
+                        credentialsId: 'saperstone-studios-contact',
+                        usernameVariable: 'email-user',
+                        passwordVariable: 'email-pass'
+                ),
+                usernamePassword(
+                        credentialsId: 'saperstone-studios-gmail',
+                        usernameVariable: 'email-user-x',
+                        passwordVariable: 'email-pass-x'
+                )
+        ]) {
+            stage('Setup env File') {
+                sh "echo 'ADMIN_PORT=9090\n\
+HTTP_PORT=90\n\
+HTTPS_PORT=9443\n\
+\n\
+DB_ROOT=super-secret\n\
+DB_PORT=3406\n\
+DB_NAME=saperstone-studios\n\
+DB_USER=saperstone-studios\n\
+DB_PASS=secret\n\
+\n\
+EMAIL_HOST=smtp.1 and1.com\n\
+EMAIL_PORT=587\n\
+EMAIL_USER=${email-user}\n\
+EMAIL_PASS=${email-pass}\n\
+EMAIL_USER_X=${email-user-x}\n\
+EMAIL_PASS_X=${email-pass-x}' > .env"
+            }
+        }
         stage('Build Docker Container') {
             sh "docker-compose build"
         }
@@ -84,6 +115,9 @@ def compress(filetype) {
     def files = output.split()
     files.remove("mpdf.css") //TODO - not working?
     files.each { file ->
+        if ( file == "mpdf.css" ) {
+            return
+        }
         //get the new filename
         newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
         //compress the file
