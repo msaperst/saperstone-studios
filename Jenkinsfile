@@ -113,7 +113,6 @@ def compress(filetype) {
     def random = rnd.nextInt(9999999)
     def output = sh returnStdout: true, script: "ls ./public/$filetype/"
     def files = output.split()
-    files.remove("mpdf.css") //TODO - not working?
     files.each { file ->
         if ( file == "mpdf.css" ) {
             return
