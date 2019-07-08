@@ -78,11 +78,8 @@ EMAIL_USER_X=${emailUserX}\n\
 EMAIL_PASS_X=${emailPassX}' > .env"
             }
         }
-        stage('Build Docker Container') {
-            sh "docker-compose build"
-        }
         stage('Launch Docker Container') {
-            sh "docker-compose up"
+            sh "docker-compose up --build -d"
         }
         stage('Run Integration Tests') {
             //TODO
