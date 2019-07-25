@@ -1,30 +1,40 @@
 <?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
+<?php include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php"; ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
-    <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
-
     <?php
-    $rand = "";
-    if ($user->isAdmin ()) {
-        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
-        ?>
+        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
+        if ($user->isAdmin ()) {
+    ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php
-    }
+        }
     ?>
-    
+    <link href="/css/hover-effect.css" rel="stylesheet">
+
 </head>
 
 <body>
 
-    <?php $nav = "commercial"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
+    <?php
+    $nav = "commercial";
+    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
+
+    // get our gallery images
+    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+    $conn = new Sql ();
+    $conn->connect ();
+    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = 61;";
+    $result = mysqli_query ( $conn->db, $sql );
+    $images = array ();
+    while ( $row = mysqli_fetch_assoc ( $result ) ) {
+        $images [] = $row;
+    }
+    ?>
 
     <!-- Page Content -->
     <div class="page-content container">
