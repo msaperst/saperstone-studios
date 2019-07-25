@@ -36,7 +36,7 @@
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Commercial</a></li>
-                    <li><a href="details.php">Details</a></li>
+                    <li><a href="services.php">Services</a></li>
                     <li class="active">Headshots</li>
                 </ol>
             </div>
@@ -46,41 +46,27 @@
         <!-- Features Section -->
         <div class="row">
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img width="100%"
-                        src="img/headshots-main-1.jpg<?php echo $rand; ?>"
-                        alt="Professional Headshots" />
+                <div section="Professional Headshots"
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Professional Headshots</span> <img
+                        class="img-responsive" alt="Professional Headshots"
+                        src="img/headshots-main-1.jpg<?php echo $rand; ?>" />
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=53">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="professional-headshots.php">See More</a>
                     </div>
                 </div>
             </div>
-            <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <img width="100%"
-                        src="img/headshots-main-2.jpg<?php echo $rand; ?>"
-                        alt="Company Headshots" />
-                    <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="galleries.php?w=54">See More</a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="row" style='padding-top: 30px'>
-            <div class="col-lg-12">
-                <h2>Professional Headshots</h2>
-                <p>
-                    Stand out from the crowd with an updated headshot. Perfect for LinkedIn, Business cards or your
-                    website. 'Say cheese!' so sooo outdated and will never be uttered at Saperstone Studios. We
-                    have a relaxed session and strive to achieve natural smiles -- you really can tell the difference!
-                </p>
-                <h2>Company Headshots</h2>
-                <p>
-                    Have a business of 3 or 3000? No problem. Get a consistent look throughout all your employees
-                    images - even the make up shots. We can bring the studio to you and can handle nearly any amount
-                    of headshots in any time period.
-                </p>
+            <div class="col-xs-6">
+                <div section="Company Headshots"
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Company Headshots</span> <img
+                        class="img-responsive" alt="Company Headshots"
+                        src="img/headshots-main-2.jpg<?php echo $rand; ?>" />
+                    <div class="overlay">
+                        <br /> <br /> <br /> <a class="info" href="company-headshots.php">See More</a>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- /.row -->

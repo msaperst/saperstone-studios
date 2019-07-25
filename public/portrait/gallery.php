@@ -96,14 +96,14 @@ if ($parent == 'Product') {
                         <?php
                     } elseif (isset ( $grandparent ) && $grandparent == 'Product') {
                         ?>
-                    <li><a href='details.php'>Details</a></li>
+                    <li><a href='services.php'>Services</a></li>
                     <li><a href='products.php'>Products</a></li>
                     <li><a href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
                     <li class='active'><?php echo $details['title']; ?></li>
                         <?php
                     } elseif ($details ['parent'] != NULL && $details ['title'] == 'Product') {
                         ?>
-                    <li><a href='details.php'>Details</a></li>
+                    <li><a href='services.php'>Services</a></li>
                     <li><a href='products.php'>Products</a></li>
                     <li class='active'>Gallery</li>
                         <?php

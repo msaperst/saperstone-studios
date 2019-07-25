@@ -4,7 +4,7 @@
     <ul class="nav navbar-nav navbar-right">
         <!--                 <li><a href="index.php">Home</a></li> -->
         <li class="dropdown"><a href="javascript:void(0);"
-            class="dropdown-toggle" data-toggle="dropdown">Details<strong
+            class="dropdown-toggle" data-toggle="dropdown">Services<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="headshots.php">Headshots</a></li>

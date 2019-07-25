@@ -23,7 +23,7 @@
             class="dropdown-toggle" data-toggle="dropdown">Commercial<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="/commercial/details.php">Details</a></li>
+                <li><a href="/commercial/services.php">Services</a></li>
                 <li><a href="/commercial/gallery.php?w=52">Gallery</a></li>
                 <li><a href="/commercial/retouch.php">Retouch</a></li>
                 <li><a href="/commercial/reviews.php?c=3">Raves</a></li>
