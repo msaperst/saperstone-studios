@@ -108,7 +108,7 @@
                     <span
                         style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
                         <button class="ajax-file-upload"
-                            onclick="location.href='/commercial/galleries.php?w=56'"
+                            onclick="location.href='/commercial/galleries.php?w=61'"
                             style="position: relative; overflow: hidden; cursor: pointer;">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>

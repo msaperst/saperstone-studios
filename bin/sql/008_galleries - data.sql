@@ -62,5 +62,10 @@ INSERT IGNORE INTO `galleries` VALUES (54, 52, 'company-headshots.jpg', 'Company
 INSERT IGNORE INTO `galleries` VALUES (55, 52, 'events.jpg', 'Events', NULL);
 INSERT IGNORE INTO `galleries` VALUES (56, 52, 'professional-branding.jpg', 'Professional Branding', NULL);
 INSERT IGNORE INTO `galleries` VALUES (57, 52, 'photobooth.jpg', 'Photobooth', NULL);
+INSERT IGNORE INTO `galleries` VALUES (58, 52, 'professional-headshots.jpg', 'Professional Headshots - Slideshow', NULL);
+INSERT IGNORE INTO `galleries` VALUES (59, 52, 'company-headshots.jpg', 'Company Headshots - Slideshow', NULL);
+INSERT IGNORE INTO `galleries` VALUES (60, 52, 'events.jpg', 'Events - Slideshow', NULL);
+INSERT IGNORE INTO `galleries` VALUES (61, 52, 'professional-branding.jpg', 'Professional Branding - Slideshow', NULL);
+INSERT IGNORE INTO `galleries` VALUES (62, 52, 'photobooth.jpg', 'Photobooth - Slideshow', NULL);
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
