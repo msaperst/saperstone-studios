@@ -81,6 +81,8 @@ EMAIL_PASS_X=${emailPassX}' > .env"
         stage('Setup Files') {
             sh "rm -r content"
             sh "ln -s /home/msaperst/saperstone-studios/content content"
+            sh "rm -r logs"
+            sh "ln -s /home/msaperst/saperstone-studios/logs logs"
         }
         stage('Kill Any Old Docker Containers') {
             try {
