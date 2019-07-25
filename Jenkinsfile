@@ -79,17 +79,29 @@ EMAIL_PASS_X=${emailPassX}' > .env"
             }
         }
         stage('Setup Files') {
-            sh "rm -r content"
+            try {
+                sh "rm -r content"
+            } catch (e) {
+            }
             sh "ln -s /home/msaperst/saperstone-studios/content content"
-            sh "rm -r logs"
+            try {
+                sh "rm -r logs"
+            } catch (e) {
+            }
             sh "ln -s /home/msaperst/saperstone-studios/logs logs"
         }
         stage('Kill Any Old Docker Containers') {
             try {
                 sh "docker kill saperstonestudios_php"
+            } catch (e) {
+            }
+            try {
                 sh "docker kill saperstonestudios_php-myadmin"
+            } catch (e) {
+            }
+            try {
                 sh "docker kill saperstonestudios_mysql"
-            } catch( e ) {
+            } catch (e) {
             }
         }
         stage('Launch Docker Container') {
@@ -125,7 +137,7 @@ def compress(filetype) {
     def output = sh returnStdout: true, script: "ls ./public/$filetype/"
     def files = output.split()
     files.each { file ->
-        if ( file == "mpdf.css" ) {
+        if (file == "mpdf.css") {
             return
         }
         //get the new filename
