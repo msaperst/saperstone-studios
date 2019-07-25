@@ -19,7 +19,7 @@ public class ContactMeIT extends Selenified {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass(ITestContext test) {
-        setAppURL(this, test, "http://localhost/");
+        setAppURL(this, test, "http://localhost:90/");
         setContentType(this, test, HTTP.ContentType.FORMDATA);
     }
 
