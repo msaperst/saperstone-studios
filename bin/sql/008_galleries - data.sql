@@ -5,14 +5,14 @@
 LOCK TABLES `galleries` WRITE;
 /*!40000 ALTER TABLE `galleries` DISABLE KEYS */;
 -- INSERT IGNORE INTO `galleries` VALUES (0, NULL, NULL, 'Leigh Ann');
-INSERT IGNORE INTO `galleries` VALUES (1, NULL, NULL, 'Portraits', NULL);
+INSERT IGNORE INTO `galleries` VALUES (1, NULL, NULL, 'Portrait', NULL);
 INSERT IGNORE INTO `galleries` VALUES (2, 1, 'maternity.jpg', 'Maternity', NULL);
 INSERT IGNORE INTO `galleries` VALUES (3, 1, 'newborn.jpg', 'Newborn', NULL);
 INSERT IGNORE INTO `galleries` VALUES (4, 1, '6-month.jpg', '6 Months', NULL);
 INSERT IGNORE INTO `galleries` VALUES (5, 1, '1-year.jpg', 'First Birthday', NULL);
 INSERT IGNORE INTO `galleries` VALUES (6, 1, 'family.jpg', 'Kids and Family', NULL);
 INSERT IGNORE INTO `galleries` VALUES (7, 1, 'senior.jpg', 'Seniors', NULL);
-INSERT IGNORE INTO `galleries` VALUES (8, NULL, NULL, 'Weddings', NULL);
+INSERT IGNORE INTO `galleries` VALUES (8, NULL, NULL, 'Wedding', NULL);
 INSERT IGNORE INTO `galleries` VALUES (9, 8, 'surprise.jpg', 'Surprise Proposals', NULL);
 INSERT IGNORE INTO `galleries` VALUES (10, 8, 'engagement.jpg', 'Engagements', NULL);
 INSERT IGNORE INTO `galleries` VALUES (11, 8, 'wedding.jpg', 'Weddings', NULL);
@@ -32,7 +32,7 @@ INSERT IGNORE INTO `galleries` VALUES (24, 11, 'wedding-fav.jpg', 'Favorites', N
 INSERT IGNORE INTO `galleries` VALUES (25, 11, 'wedding-1.jpg', 'Wedding 1', NULL);
 INSERT IGNORE INTO `galleries` VALUES (26, 11, 'wedding-2.jpg', 'Wedding 2', NULL);
 INSERT IGNORE INTO `galleries` VALUES (27, 11, 'wedding-3.jpg', 'Wedding 3', NULL);
-INSERT IGNORE INTO `galleries` VALUES (28, 1, NULL, 'Products', NULL);
+INSERT IGNORE INTO `galleries` VALUES (28, 1, NULL, 'Product', NULL);
 INSERT IGNORE INTO `galleries` VALUES (29, 28, 'story-grid.jpg', 'Story Grids', 'Hate making sure your prints are evenly spaced once hung on the wall?  Then this is the art product for you.  Each story grid comes with a paper template to hang on the wall.  Your template indicates where to place metal pegs which then make up a grid system on your wall.  Simply slip the prints onto the metal pegs and voila! Evenly spaced prints! These collages range in overall sizes from 2'' x 3'' all the way up to 4.5'' x 2'' or beyond and are totally customizable. Images are printed on either metal or a lustre photographic paper, your choice.');
 INSERT IGNORE INTO `galleries` VALUES (30, 28, 'keepsake-album.jpg', 'Heirloom Albums', 'How are you planning to share all those amazing memories with future little ones? Heirloom albums are the perfect way to put all your favorite images in one place. Hand made and printed Fuji lustre paper that has a 100+ year rating (the highest in the industry), these albums will be sure to stand the test of time for generations to come.');
 INSERT IGNORE INTO `galleries` VALUES (31, 28, 'acrylic-print.jpg', 'Acrylic Prints', 'These gorgeous portraits are printed on a metallic paper and mounted under acrylic for a frameless modern way to display your images.  They stand out from the wall about 3/4 of an inch which gives depth.  One image can stand alone or order multiples to display a series from your session.');
@@ -42,7 +42,7 @@ INSERT IGNORE INTO `galleries` VALUES (34, 28, 'canvas-print.jpg', 'Canvas Print
 INSERT IGNORE INTO `galleries` VALUES (35, 4, '6-month-studio.jpg', 'In Studio', NULL);
 INSERT IGNORE INTO `galleries` VALUES (36, 4, '6-month-location.jpg', 'On Location', NULL);
 INSERT IGNORE INTO `galleries` VALUES (37, 8, 'photobooth.jpg', 'Photobooth', NULL);
-INSERT IGNORE INTO `galleries` VALUES (38, 8, NULL, 'Products', NULL);
+INSERT IGNORE INTO `galleries` VALUES (38, 8, NULL, 'Product', NULL);
 INSERT IGNORE INTO `galleries` VALUES (39, 38, 'story-grid.jpg', 'Story Grids', 'Hate making sure your prints are evenly spaced once hung on the wall?  Then this is the art product for you.  Each story grid comes with a paper template to hang on the wall.  Your template indicates where to place metal pegs which then make up a grid system on your wall.  Simply slip the prints onto the metal pegs and voila! Evenly spaced prints! These collages range in overall sizes from 2'' x 3'' all the way up to 4.5'' x 2'' or beyond and are totally customizable. Images are printed on either metal or a lustre photographic paper, your choice.');
 INSERT IGNORE INTO `galleries` VALUES (40, 38, 'keepsake-album.jpg', 'Heirloom Albums', 'How are you planning to share all those amazing memories with future little ones? Heirloom albums are the perfect way to put all your favorite images in one place. Hand made and printed Fuji lustre paper that has a 100+ year rating (the highest in the industry), these albums will be sure to stand the test of time for generations to come.');
 INSERT IGNORE INTO `galleries` VALUES (41, 38, 'acrylic-print.jpg', 'Acrylic Prints', 'These gorgeous portraits are printed on a metallic paper and mounted under acrylic for a frameless modern way to display your images.  They stand out from the wall about 3/4 of an inch which gives depth.  One image can stand alone or order multiples to display a series from your session.');
