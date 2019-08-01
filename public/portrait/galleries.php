@@ -89,7 +89,7 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
                 <h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php"><?php echo ucfirst($nav); ?>s</a></li>
+                    <li><a href="index.php"><?php echo ucfirst($nav); ?></a></li>
                     <?php
                     if ($parent ['parent'] != NULL && $parent ['title'] != 'Product' && $grandparent ['title'] != "Product") {
                         ?>

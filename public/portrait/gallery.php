@@ -86,7 +86,7 @@ if ($parent == 'Product') {
                 <h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php"><?php echo $parent; ?>s</a></li>
+                    <li><a href="index.php"><?php echo $parent; ?></a></li>
                     <?php
                     if ($details ['parent'] != NULL && $details ['title'] != 'Product' && (! isset ( $grandparent ) || $grandparent != 'Product')) {
                         ?>

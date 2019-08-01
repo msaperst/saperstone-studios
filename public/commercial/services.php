@@ -36,7 +36,7 @@
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Commercial</a></li>
-                    <li class="active">Details</li>
+                    <li class="active">Services</li>
                 </ol>
             </div>
         </div>
@@ -84,7 +84,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-sm-offset-4 col-md-4 col-sm-6 col-xs-12">
                 <div section="Photobooth"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Photobooth</span> <img
