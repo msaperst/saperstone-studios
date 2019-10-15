@@ -7,7 +7,7 @@
 CREATE TABLE IF NOT EXISTS `contracts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `link` varchar(255) NOT NULL,
-  `type` enum('wedding','portrait','commercial','other') NOT NULL,
+  `type` enum('wedding','portrait','commercial','contractor','event','partnership','other') NOT NULL,
   `name` text NOT NULL,
   `address` text,
   `number` varchar(255) DEFAULT NULL,
