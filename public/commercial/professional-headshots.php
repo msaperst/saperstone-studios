@@ -58,9 +58,9 @@
         <div class="row" style='padding-top: 30px'>
             <div class="col-lg-12">
                 <p>
-                    Have a business of 3 or 3000? No problem. Get a consistent look throughout all your employees
-                    images - even the make up shots. We can bring the studio to you and can handle nearly any amount
-                    of headshots in any time period.
+                    Stand out from the crowd with an updated headshot.  Perfect for LinkedIn, Business cards or your website.
+                    'Say cheese!' so sooo outdated and will never be uttered at Saperstone Studios. We have a relaxed session
+                    and strive to achieve natural smiles -- you really can tell the difference!
                 </p>
             </div>
         </div>

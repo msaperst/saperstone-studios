@@ -58,7 +58,7 @@
         <!-- Main Content -->
         <div class="row" style="margin-bottom: 30px;">
             <!-- Content Column -->
-            <div class="col-md-9">
+            <div class="col-md-12">
                 <!-- Carousel -->
                 <div id="commercialCarousel"
                     class="carousel slide carousel-three-by-two">
@@ -111,15 +111,6 @@
                     </span>
                     <?php } ?>
                 </div>
-            </div>
-            <!-- Sidebar Column -->
-            <div class="col-md-3">
-                <img class="sidebar-img"
-                    alt="Turn Your Moment Into A Memory with Saperstone Studios"
-                    src="/img/moment-to-memory.png" style="float: right;" />
-                <ul class="list-inline social-buttons text-center social-padding">
-                    <?php $iconSize = "fa-2x"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/social-list.php"; ?>
-                </ul>
             </div>
         </div>
 
@@ -211,7 +202,7 @@
                         src="img/blog.jpg<?php echo $rand; ?>" alt="Blog">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info"
-                            href="/blog/category.php?t=99">See More</a>
+                            href="/blog/category.php?t=75">See More</a>
                     </div>
                 </div>
             </div>

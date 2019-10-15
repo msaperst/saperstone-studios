@@ -55,25 +55,20 @@
                     goes into your photos is what happens after you download the images
                     to the computer.
                 </p>
-                <p>How many times have you loved your smile in one photograph but
-                    your sister thought she looked better in a different one? I can
-                    make you both happy by combining the two images into one
-                    flawlessly. Honestly, I would challenge you to pick out which
-                    images have been altered and you wouldn't be able to tell.</p>
-                <p>Many happy memories from your wedding will be the candid,
-                    unplanned moments of joy with family and friends. Unavoidable
-                    things can happen throughout the day from damaged boutonniere's to
-                    distracting objects in your background. That is why Saperstone
-                    Studios will put in the additional care to retouch your images at
-                    our discretion to be album ready at no additional cost.</p>
-                <p>
-                    I've worked in the photography industry for over 10 years,
-                    coordinating photo shoots and performing high level color
-                    management and retouch for program books and billboards for
-                    Ringling Bros. Barnum & Bailey Circus <em>[[So many elephants!]]</em>
-                    as well as a local DC fashion company managing the retouch workflow
-                    and consistent quality control. <em>That's</em> the expertise and
-                    knowledge I pass onto you.
+                <p>I've worked in the photography industry for over 10 years, coordinating
+                    photo shoots and performing high level color management and retouch for
+                    program books and billboards for Ringling Bros. Barnum & Bailey Circus
+                    <em>[[So many elephants!]]</em> as well as a local DC fashion company
+                    managing the retouch workflow and consistent quality control. <em>That's</em>
+                    the expertise and knowledge I pass onto you.
+                </p>
+                <h2>Why Photography</h2>
+                <p>People buy from people. The first page we click on a website is the “about”
+                    page, we want to know more about the people behind the business before deciding
+                    to work with them. Creating authentic photographs which reflect your personality
+                    and brand is so important. I'll work with you to ensure key qualities that define
+                    you and your company shine through in your images. And bottom line? We have FUN!
+                    Contact me today to get started!
                 </p>
             </div>
         </div>

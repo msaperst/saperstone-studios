@@ -66,7 +66,7 @@ if (isset ( $_GET ['c'] )) {
                     <?php
                     if (isset ( $category )) {
                         ?>
-                    <li><a href='index.php'><?php  echo ucfirst ( $details ['name'] ); ?>s</a></li>
+                    <li><a href='index.php'><?php  echo ucfirst ( $details ['name'] ); ?></a></li>
                     <li class='active'>Raves</li>
                     <?php
                     } else {
