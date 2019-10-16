@@ -57,25 +57,42 @@ node() {
                         credentialsId: 'saperstone-studios-gmail',
                         usernameVariable: 'emailUserX',
                         passwordVariable: 'emailPassX'
+                ),
+                usernamePass(
+                        credentialsId: 'paypal',
+                        usernameVariable: 'paypalUser',
+                        passwordVariable: 'paypalPass'
+                ),
+                string(
+                        credentialsId: 'paypal-signature',
+                        variable: 'paypalSignature'
                 )
         ]) {
             stage('Setup env File') {
-                sh "echo 'ADMIN_PORT=9090\n\
+                sh "echo '[tool hosting information]\n\
+ADMIN_PORT=9090\n\
 HTTP_PORT=90\n\
 HTTPS_PORT=9443\n\
 \n\
+[database information]\n\
 DB_ROOT=super-secret\n\
 DB_PORT=3406\n\
 DB_NAME=saperstone-studios\n\
 DB_USER=saperstone-studios\n\
 DB_PASS=secret\n\
 \n\
+[email information]\n\
 EMAIL_HOST=smtp.1and1.com\n\
 EMAIL_PORT=587\n\
 EMAIL_USER=${emailUser}\n\
 EMAIL_PASS=${emailPass}\n\
 EMAIL_USER_X=${emailUserX}\n\
-EMAIL_PASS_X=${emailPassX}' > .env"
+EMAIL_PASS_X=${emailPassX}\n\
+\n\
+[paypal information]\n\
+PAYPAL_USERNAME=${paypalUser}\n\
+PAYPAL_PASSWORD=${paypalPass}\n\
+PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             }
         }
         stage('Setup Files') {
