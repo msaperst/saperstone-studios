@@ -1,34 +1,14 @@
-import com.coveros.selenified.Browser.BrowserUse;
-import com.coveros.selenified.Selenified;
 import com.coveros.selenified.services.Call;
-import com.coveros.selenified.services.HTTP;
 import com.coveros.selenified.services.Request;
 import com.coveros.selenified.services.Response;
-import org.testng.ITestContext;
-import org.testng.ITestResult;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContactMeIT extends Selenified {
+public class ContactMeIT extends Base {
 
-    @BeforeClass(alwaysRun = true)
-    public void beforeClass(ITestContext test) {
-        setAppURL(this, test, "http://localhost:90/");
-        setContentType(this, test, HTTP.ContentType.FORMDATA);
-    }
-
-    @BeforeMethod(alwaysRun = true, groups = {"api", "contact-me"})
-    protected void startTest(Object[] dataProvider, Method method, ITestContext test, ITestResult result) throws IOException {
-        super.startTest(dataProvider, method, test, result, BrowserUse.FALSE);
-    }
-
-    @Test
+    @Test(groups = {"api", "contact-me"})
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.post("api/contact-me.php", new Request());
@@ -38,7 +18,7 @@ public class ContactMeIT extends Selenified {
         finish();
     }
 
-    @Test
+    @Test(groups = {"api", "contact-me"})
     public void onlyNameTest() {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
@@ -50,7 +30,7 @@ public class ContactMeIT extends Selenified {
         finish();
     }
 
-    @Test
+    @Test(groups = {"api", "contact-me"})
     public void onlyNamePhoneTest() {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
@@ -63,7 +43,7 @@ public class ContactMeIT extends Selenified {
         finish();
     }
 
-    @Test
+    @Test(groups = {"api", "contact-me"})
     public void onlyNamePhoneEmailTest() {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
@@ -77,7 +57,7 @@ public class ContactMeIT extends Selenified {
         finish();
     }
 
-    @Test
+    @Test(groups = {"api", "contact-me"})
     public void allTest() {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
@@ -92,7 +72,7 @@ public class ContactMeIT extends Selenified {
         finish();
     }
 
-    @Test
+    @Test(groups = {"api", "contact-me"})
     public void allTestSS() {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();

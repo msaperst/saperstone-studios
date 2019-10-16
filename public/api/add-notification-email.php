@@ -1,6 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 
 $conn = new Sql ();
 $conn->connect ();
@@ -20,7 +21,7 @@ if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
 } else {
     if (! isset ( $_POST ['album'] )) {
         echo "Album id is required!";
-    } elseif ($_POST ['album'] != "") {
+    } elseif ($_POST ['album'] == "") {
         echo "Album id cannot be blank!";
     } else {
         echo "Some other Album id error occurred!";
@@ -43,7 +44,7 @@ if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
 } else {
     if (! isset ( $_POST ['email'] )) {
         echo "Email is required!";
-    } elseif ($_POST ['email'] != "") {
+    } elseif ($_POST ['email'] == "") {
         echo "Email cannot be blank!";
     } else {
         echo "Some other email error occurred!";
