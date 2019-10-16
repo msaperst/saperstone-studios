@@ -140,7 +140,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         keepAll              : true,
                         reportDir            : 'target/failsafe-reports',
                         reportFiles          : 'report.html',
-                        reportName           : 'Sauce Test Report'
+                        reportName           : 'API Test Report'
                 ])
             }
         }
