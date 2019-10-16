@@ -69,19 +69,19 @@ node() {
                 )
         ]) {
             stage('Setup env File') {
-                sh "echo '[tool hosting information]\n\
+                sh "echo '# tool hosting information\n\
 ADMIN_PORT=9090\n\
 HTTP_PORT=90\n\
 HTTPS_PORT=9443\n\
 \n\
-[database information]\n\
+# database information\n\
 DB_ROOT=super-secret\n\
 DB_PORT=3406\n\
 DB_NAME=saperstone-studios\n\
 DB_USER=saperstone-studios\n\
 DB_PASS=secret\n\
 \n\
-[email information]\n\
+# email information\n\
 EMAIL_HOST=ssl://smtp.gmail.com\n\
 EMAIL_PORT=465\n\
 EMAIL_USER=${emailUser}\n\
@@ -89,7 +89,7 @@ EMAIL_PASS=${emailPass}\n\
 EMAIL_USER_X=${emailUserX}\n\
 EMAIL_PASS_X=${emailPassX}\n\
 \n\
-[paypal information]\n\
+# paypal information\n\
 PAYPAL_USERNAME=${paypalUser}\n\
 PAYPAL_PASSWORD=${paypalPass}\n\
 PAYPAL_SIGNATURE=${paypalSignature}' > .env"

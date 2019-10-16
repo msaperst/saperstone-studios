@@ -32,7 +32,7 @@
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center">Commercial Details</h1>
+                <h1 class="page-header text-center">Commercial Services</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Commercial</a></li>
@@ -41,14 +41,6 @@
             </div>
         </div>
         <!-- /.row -->
-
-        <div class="row" style='padding-top: 30px'>
-            <div class="col-lg-12">
-                <p>
-                    Some text?
-                </p>
-            </div>
-        </div>
 
         <div class="row" style='padding-top: 30px'>
             <div class="col-md-4 col-sm-6 col-xs-12">

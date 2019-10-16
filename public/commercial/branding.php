@@ -56,7 +56,7 @@
         <!-- Features Section -->
         <div class="row">
             <div class="col-lg-12">
-                <h2><i>Go beyond the average headshot and tell the story of your brand through photography.</i></h2>
+                <h2 align='center'><i>Go beyond the average headshot and tell the <br/>story of your brand through photography.</i></h2>
             </div>
         </div>
 

@@ -179,7 +179,7 @@
                         class="img-responsive" src="img/about.jpg<?php echo $rand; ?>"
                         alt="About">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="/about.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="/commercial/about.php">See More</a>
                     </div>
                 </div>
             </div>

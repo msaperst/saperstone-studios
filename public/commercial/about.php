@@ -49,7 +49,7 @@
                 <h2>What Makes Saperstone Studios Unique</h2>
                 <p>
                     It's all in the name, Saperstone Studios Photography and <em><a
-                        href='/portrait/retouch.php'>Retouch</a></em>. It's a digital age
+                        href='retouch.php'>Retouch</a></em>. It's a digital age
                     and as such the art of photography has expanded beyond being able
                     to compose and take beautiful photographs. Much of the work that
                     goes into your photos is what happens after you download the images
@@ -68,7 +68,7 @@
                     to work with them. Creating authentic photographs which reflect your personality
                     and brand is so important. I'll work with you to ensure key qualities that define
                     you and your company shine through in your images. And bottom line? We have FUN!
-                    Contact me today to get started!
+                    <a target='_blank' href='mailto:contact@saperstonestudios.com'>Contact me</a> today to get started!
                 </p>
             </div>
         </div>
