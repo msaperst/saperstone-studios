@@ -149,6 +149,4 @@ public class AddNotificationEmailIT extends Selenified {
             this.apps.get().getReporter().fail("", "DB Results contain user '" + expectedUser + "'", "DB Results contain user '" + user + "'");
         }
     }
-
-
 }

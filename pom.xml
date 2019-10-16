@@ -47,6 +47,7 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>tests/java</sourceDirectory>
         <testSourceDirectory>tests/api/</testSourceDirectory>
         <plugins>
             <plugin>
