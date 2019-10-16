@@ -58,7 +58,7 @@ node() {
                         usernameVariable: 'emailUserX',
                         passwordVariable: 'emailPassX'
                 ),
-                usernamePass(
+                usernamePassword(
                         credentialsId: 'paypal',
                         usernameVariable: 'paypalUser',
                         passwordVariable: 'paypalPass'
@@ -128,7 +128,21 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             //TODO
         }
         stage('Run API Tests') {
-            sh "mvn clean verify"
+            try {
+                sh "mvn clean verify"
+            } catch (e) {
+                throw e
+            } finally {
+                junit 'target/failsafe-reports/TEST-*.xml'
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'target/failsafe-reports',
+                        reportFiles          : 'report.html',
+                        reportName           : 'Sauce Test Report'
+                ])
+            }
         }
         stage('Run UI Tests') {
             //TODO
