@@ -82,8 +82,8 @@ DB_USER=saperstone-studios\n\
 DB_PASS=secret\n\
 \n\
 [email information]\n\
-EMAIL_HOST=smtp.1and1.com\n\
-EMAIL_PORT=587\n\
+EMAIL_HOST=ssl://smtp.gmail.com\n\
+EMAIL_PORT=465\n\
 EMAIL_USER=${emailUser}\n\
 EMAIL_PASS=${emailPass}\n\
 EMAIL_USER_X=${emailUserX}\n\
