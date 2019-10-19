@@ -1,11 +1,7 @@
-import com.coveros.selenified.Selenified;
 import com.coveros.selenified.services.Call;
-import com.coveros.selenified.services.HTTP;
 import com.coveros.selenified.services.Request;
 import com.coveros.selenified.services.Response;
-import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -14,16 +10,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddNotificationEmailIT extends Selenified {
+public class AddNotificationEmailIT extends BaseBrowser {
 
     private int albumId = 9999;
-
-    //TODO once reporter is properly exposed to calls or in general, switch back to extending Base, and remove this
-    @BeforeClass(alwaysRun = true)
-    public void beforeClass(ITestContext test) {
-        setAppURL(this, test, "http://localhost:90/");
-        setContentType(this, test, HTTP.ContentType.FORMDATA);
-    }
 
     @BeforeMethod(groups = {"needs-album"})
     public void createAlbum() {

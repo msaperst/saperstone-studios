@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContactMeIT extends Base {
+public class ContactMeIT extends BaseBrowserless {
 
     @Test(groups = {"api", "contact-me"})
     public void emptyParamsTest() {

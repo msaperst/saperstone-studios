@@ -17,7 +17,7 @@ if (isset ( $_POST ['post'] ) && $_POST ['post'] != "") {
 } else {
     if (! isset ( $_POST ['post'] )) {
         echo "Post id is required!";
-    } elseif ($_POST ['post'] != "") {
+    } elseif ($_POST ['post'] == "") {
         echo "Post id cannot be blank!";
     } else {
         echo "Some other Post id error occurred!";

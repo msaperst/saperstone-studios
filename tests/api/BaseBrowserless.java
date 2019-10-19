@@ -9,7 +9,7 @@ import org.testng.annotations.BeforeMethod;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-public class Base extends Selenified {
+public class BaseBrowserless extends Selenified {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass(ITestContext test) {
