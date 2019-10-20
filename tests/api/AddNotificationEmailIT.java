@@ -5,6 +5,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class AddNotificationEmailIT extends BaseBrowser {
     }
 
     @Test(groups = {"api", "add-notification-email", "needs-album"})
-    public void goodEmailUser() throws SQLException {
+    public void goodEmailUser() throws SQLException, UnknownHostException {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
         data.put("album", albumId);
@@ -97,14 +98,14 @@ public class AddNotificationEmailIT extends BaseBrowser {
         ResultSet rs = SQL.select("SELECT * FROM `notification_emails` WHERE `album` = " + albumId);
         while (rs.next()) {
             checkEmail(rs);
-            checkUser("172.25.0.1", rs);
+            checkUser(getLocalHostLANAddress().getHostAddress(), rs);
         }
         // verify no issues
         finish();
     }
 
     @Test(groups = {"api", "add-notification-email", "needs-album"})
-    public void goodEmailNoUser() throws SQLException {
+    public void goodEmailNoUser() throws SQLException, UnknownHostException {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
         data.put("album", albumId);
@@ -115,7 +116,7 @@ public class AddNotificationEmailIT extends BaseBrowser {
         ResultSet rs = SQL.select("SELECT * FROM `notification_emails` WHERE `album` = " + albumId);
         while (rs.next()) {
             checkEmail(rs);
-            checkUser("172.25.0.1", rs);
+            checkUser(getLocalHostLANAddress().getHostAddress(), rs);
         }
         // verify no issues
         finish();

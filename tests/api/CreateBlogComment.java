@@ -5,6 +5,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -75,7 +79,7 @@ public class CreateBlogComment extends BaseBrowser {
     }
 
     @Test(groups = {"api", "create-blog-comment", "needs-post"})
-    public void AllGood() throws SQLException {
+    public void AllGood() throws SQLException, UnknownHostException {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogId);
@@ -88,7 +92,7 @@ public class CreateBlogComment extends BaseBrowser {
             checkUser(null, rs);
             checkName("", rs);
             checkDate(formatter.format(date), rs);
-            checkIp("172.25.0.1", rs);
+            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
             checkEmail("", rs);
             checkComment("some message", rs);
         }
@@ -97,7 +101,7 @@ public class CreateBlogComment extends BaseBrowser {
     }
 
     @Test(groups = {"api", "create-blog-comment", "needs-post"})
-    public void blogWithName() throws SQLException {
+    public void blogWithName() throws SQLException, UnknownHostException {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogId);
@@ -111,7 +115,7 @@ public class CreateBlogComment extends BaseBrowser {
             checkUser(null, rs);
             checkName("some name", rs);
             checkDate(formatter.format(date), rs);
-            checkIp("172.25.0.1", rs);
+            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
             checkEmail("", rs);
             checkComment("some message", rs);
         }
@@ -120,7 +124,7 @@ public class CreateBlogComment extends BaseBrowser {
     }
 
     @Test(groups = {"api", "create-blog-comment", "needs-post"})
-    public void blogWithEmail() throws SQLException {
+    public void blogWithEmail() throws SQLException, UnknownHostException {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogId);
@@ -134,7 +138,7 @@ public class CreateBlogComment extends BaseBrowser {
             checkUser(null, rs);
             checkName("", rs);
             checkDate(formatter.format(date), rs);
-            checkIp("172.25.0.1", rs);
+            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
             checkEmail("max@max.max", rs);
             checkComment("some message", rs);
         }
@@ -143,7 +147,7 @@ public class CreateBlogComment extends BaseBrowser {
     }
 
     @Test(groups = {"api", "create-blog-comment", "needs-post"})
-    public void blogWithAll() throws SQLException {
+    public void blogWithAll() throws SQLException, UnknownHostException {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogId);
@@ -158,7 +162,7 @@ public class CreateBlogComment extends BaseBrowser {
             checkUser(null, rs);
             checkName("max", rs);
             checkDate(formatter.format(date), rs);
-            checkIp("172.25.0.1", rs);
+            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
             checkEmail("max@max.max", rs);
             checkComment("some message", rs);
         }
@@ -167,7 +171,7 @@ public class CreateBlogComment extends BaseBrowser {
     }
 
     @Test(groups = {"api", "create-blog-comment", "needs-post"})
-    public void blogWithLoggedInAll() throws SQLException {
+    public void blogWithLoggedInAll() throws SQLException, UnknownHostException {
         //TODO - finish once login is figured out
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
@@ -183,7 +187,7 @@ public class CreateBlogComment extends BaseBrowser {
             checkUser(null, rs);
             checkName("max", rs);
             checkDate(formatter.format(date), rs);
-            checkIp("172.25.0.1", rs);
+            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
             checkEmail("max@max.max", rs);
             checkComment("some message", rs);
         }
