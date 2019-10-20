@@ -7,13 +7,19 @@ $conn->connect ();
 
 $user = new User ();
 
+if (!$user->isLoggedIn ()) {
+    header ( 'HTTP/1.0 401 Unauthorized' );
+    $conn->disconnect ();
+    exit ();
+}
+
 $id = "";
 if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
     $id = ( int ) $_POST ['id'];
 } else {
     if (! isset ( $_POST ['id'] )) {
         echo "Album id is required!";
-    } elseif ($_POST ['id'] != "") {
+    } elseif ($_POST ['id'] == "") {
         echo "Album id cannot be blank!";
     } else {
         echo "Some other Album id error occurred!";
@@ -31,10 +37,7 @@ if (! $album_info ['id']) {
 }
 // only admin users and uploader users who own the album can make updates
 if (! ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner']))) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
-    }
+    header ( 'HTTP/1.0 403 Unauthorized' );
     $conn->disconnect ();
     exit ();
 }

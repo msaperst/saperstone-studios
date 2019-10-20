@@ -17,15 +17,14 @@ public class CreateBlogComment extends BaseBrowser {
     private int blogId = 9999;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
 
-
     @BeforeMethod(groups = {"needs-post"})
     public void createAlbum() {
-        SQL.execute("INSERT INTO `blog_details` (`id`, `title`, `preview`, `date`, `offset`) VALUES (" + blogId + ", 'sample blog post', '', '2019-10-18', 0));");
+        SQL.execute("INSERT INTO `blog_details` (`id`, `title`, `preview`, `date`, `offset`) VALUES ('" + blogId + "', 'sample blog post', '', '2019-10-18', 0);");
     }
 
     @AfterMethod(groups = {"needs-post"}, alwaysRun = true)
     public void deleteAlbum() {
-        SQL.execute("DELETE FROM `blog_details` WHERE `albums`.`id` = " + blogId);
+        SQL.execute("DELETE FROM `blog_details` WHERE `blog_details`.`id` = " + blogId);
         SQL.execute("DELETE FROM `blog_comments` WHERE `blog_comments`.`blog` = " + blogId);
     }
 
@@ -64,7 +63,7 @@ public class CreateBlogComment extends BaseBrowser {
     }
 
     @Test(groups = {"api", "create-blog-comment", "needs-post"})
-    public void noMessageId() {
+    public void noMessage() {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogId);
@@ -76,7 +75,7 @@ public class CreateBlogComment extends BaseBrowser {
     }
 
     @Test(groups = {"api", "create-blog-comment", "needs-post"})
-    public void AllGoodId() throws SQLException {
+    public void AllGood() throws SQLException {
         Call call = this.calls.get();
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogId);
@@ -167,8 +166,30 @@ public class CreateBlogComment extends BaseBrowser {
         finish();
     }
 
-
-    //TODO - finish once login is figured out
+    @Test(groups = {"api", "create-blog-comment", "needs-post"})
+    public void blogWithLoggedInAll() throws SQLException {
+        //TODO - finish once login is figured out
+        Call call = this.calls.get();
+        Map<String, Object> data = new HashMap<>();
+        data.put("post", blogId);
+        data.put("name", "max");
+        data.put("email", "max@max.max");
+        data.put("message", "some message");
+        Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
+        Date date = new Date(System.currentTimeMillis());
+        response.azzert().equals(200);
+        ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
+        while (rs.next()) {
+            checkUser(null, rs);
+            checkName("max", rs);
+            checkDate(formatter.format(date), rs);
+            checkIp("172.25.0.1", rs);
+            checkEmail("max@max.max", rs);
+            checkComment("some message", rs);
+        }
+        // verify no issues
+        finish();
+    }
 
     private void checkUser(String expectedUser, ResultSet rs) throws SQLException {
         String user = rs.getString("user");

@@ -7,13 +7,19 @@ $conn->connect ();
 
 $user = new User ();
 
+if (!$user->isLoggedIn ()) {
+    header ( 'HTTP/1.0 401 Unauthorized' );
+    $conn->disconnect ();
+    exit ();
+}
+
 $comment = "";
 if (isset ( $_POST ['comment'] ) && $_POST ['comment'] != "") {
     $comment = ( int ) $_POST ['comment'];
 } else {
     if (! isset ( $_POST ['comment'] )) {
         echo "Comment id is required!";
-    } elseif ($_POST ['comment'] != "") {
+    } elseif ($_POST ['comment'] == "") {
         echo "Comment id cannot be blank!";
     } else {
         echo "Some other Album id error occurred!";
@@ -32,10 +38,7 @@ if (! $blog_comment_info ['id']) {
 
 // check our user permissions
 if (! $user->isAdmin () && $user->getId () != $blog_comment_info ['user']) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
-    }
+    header ( 'HTTP/1.0 403 Unauthorized' );
     $conn->disconnect ();
     exit ();
 }
