@@ -80,6 +80,11 @@ RUN cd /var/www/resources && \
         tar -xf ${TWITTER_VERSION}.tar.gz && \
         rm ${TWITTER_VERSION}.tar.gz
 
+# try setting the timezone
+ARG TZ=America/New_York
+ENV TZ=$TZ
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # setup our volumes
 VOLUME /var/www/content
 VOLUME /var/www/logs
