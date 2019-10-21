@@ -7,10 +7,16 @@ $conn->connect ();
 
 $user = new User ();
 
-if (isset ( $_GET ['code'] )) {
+if (isset ( $_GET ['code'] ) && $_GET ['code'] != "") {
     $code = mysqli_real_escape_string ( $conn->db, $_GET ['code'] );
 } else {
-    echo "Code is not provided!";
+    if (! isset ( $_GET ['code'] )) {
+        echo "Album code is required!";
+    } elseif ($_GET ['code'] == "") {
+        echo "Album code cannot be blank!";
+    } else {
+        echo "Some other album code error occurred!";
+    }
     $conn->disconnect ();
     exit ();
 }
@@ -26,7 +32,7 @@ if ($r ['id']) {
     exit ();
 }
 
-if (isset ( $_GET ['albumAdd'] ) && $_GET ['albumAdd'] == 1) {
+if ($user->isLoggedIn() && isset ( $_GET ['albumAdd'] ) && $_GET ['albumAdd'] == 1) {
     $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "' AND album = '" . $r ['id'] . "';";
     $s = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
     if (! $s ['user']) {

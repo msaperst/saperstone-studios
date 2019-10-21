@@ -1,17 +1,19 @@
-import com.coveros.selenified.Browser;
 import com.coveros.selenified.Selenified;
 import com.coveros.selenified.services.HTTP;
 import org.testng.ITestContext;
-import org.testng.ITestResult;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class BaseBrowser extends Selenified {
 
@@ -43,22 +45,21 @@ public class BaseBrowser extends Selenified {
      *
      * @throws UnknownHostException If the LAN address of the machine cannot be found.
      */
-    static InetAddress getLocalHostLANAddress() throws UnknownHostException {
+    InetAddress getLocalHostLANAddress() throws UnknownHostException {
         try {
             InetAddress candidateAddress = null;
             // Iterate all NICs (network interface cards)...
-            for (Enumeration ifaces = NetworkInterface.getNetworkInterfaces(); ifaces.hasMoreElements();) {
+            for (Enumeration ifaces = NetworkInterface.getNetworkInterfaces(); ifaces.hasMoreElements(); ) {
                 NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
                 // Iterate all IP addresses assigned to each card...
-                for (Enumeration inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
+                for (Enumeration inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements(); ) {
                     InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
                     if (!inetAddr.isLoopbackAddress()) {
 
                         if (inetAddr.isSiteLocalAddress()) {
                             // Found non-loopback site-local address. Return it immediately...
                             return inetAddr;
-                        }
-                        else if (candidateAddress == null) {
+                        } else if (candidateAddress == null) {
                             // Found non-loopback address, but not necessarily site-local.
                             // Store it as a candidate to be returned if site-local address is not subsequently found...
                             candidateAddress = inetAddr;
@@ -82,11 +83,48 @@ public class BaseBrowser extends Selenified {
                 throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
             }
             return jdkSuppliedAddress;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             UnknownHostException unknownHostException = new UnknownHostException("Failed to determine LAN address: " + e);
             unknownHostException.initCause(e);
             throw unknownHostException;
+        }
+    }
+
+    void checkDbEquals(String expected, ResultSet rs, String column) throws SQLException {
+        String actual = rs.getString(column);
+        if (actual == expected || expected.equals(actual)) {
+            this.apps.get().getReporter().pass("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
+        } else {
+            this.apps.get().getReporter().fail("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
+        }
+    }
+
+    void checkDbMatches(String expected, ResultSet rs, String column) throws SQLException {
+        String actual = rs.getString(column);
+        if (actual.matches(expected)) {
+            this.apps.get().getReporter().pass("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
+        } else {
+            this.apps.get().getReporter().fail("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
+        }
+    }
+
+    void assertZipContains(String zipFilePath, List<String> expectedFiles) throws IOException {
+            List<String> actualFiles = new ArrayList<>();
+
+            ZipFile zipFile = new ZipFile(zipFilePath);
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                String name = entry.getName();
+                actualFiles.add(name);
+            }
+            zipFile.close();
+
+        if (expectedFiles.equals(actualFiles)) {
+            this.apps.get().getReporter().pass("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
+        } else {
+            this.apps.get().getReporter().fail("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
         }
     }
 }

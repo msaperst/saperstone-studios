@@ -7,23 +7,36 @@ $conn->connect ();
 
 $user = new User ();
 
-if (isset ( $_POST ['what'] )) {
+if (isset ( $_POST ['what'] ) && $_POST ['what'] != "") {
     $what = mysqli_real_escape_string ( $conn->db, $_POST ['what'] );
 } else {
-    $response ['err'] = "Need to provide what you desire to download";
+    if (! isset ( $_POST ['what'] )) {
+        $response ['err'] = "What to download is required!";
+    } elseif ($_POST ['what'] == "") {
+        $response ['err'] = "What to download cannot be blank!";
+    } else {
+        $response ['err'] = "Some other download error occurred!";
+    }
     echo json_encode ( $response );
     $conn->disconnect ();
     exit ();
 }
 
-if (isset ( $_POST ['album'] )) {
-    $album = mysqli_real_escape_string ( $conn->db, $_POST ['album'] );
+if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
+    $album = ( int ) $_POST ['album'];
 } else {
-    $response ['err'] = "Need to provide album";
+    if (! isset ( $_POST ['album'] )) {
+        $response ['err'] = "Album to download from is required!";
+    } elseif ($_POST ['album'] == "") {
+        $response ['err'] = "Album to download from cannot be blank!";
+    } else {
+        $response ['err'] = "Some other download error occurred!";
+    }
     echo json_encode ( $response );
     $conn->disconnect ();
     exit ();
 }
+
 $sql = "SELECT * FROM `albums` WHERE id = '$album';";
 $album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 // if the album doesn't exist, throw a 404 error
@@ -134,7 +147,7 @@ if ($images == "") {
 if (! is_dir ( "../tmp/" )) {
     mkdir ( "../tmp/" );
 }
-$myFile = "../tmp/" . $album_info ['name'] . " " . date ( "Y-m-d.H-i-s" ) . ".zip";
+$myFile = "../tmp/" . $album_info ['name'] . " " . date ( "Y-m-d H-i-s" ) . ".zip";
 $command = `zip -j "$myFile" $images`;
 $response ['file'] = $myFile;
 echo json_encode ( $response );

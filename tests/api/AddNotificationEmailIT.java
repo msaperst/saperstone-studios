@@ -94,11 +94,11 @@ public class AddNotificationEmailIT extends BaseBrowser {
         Response response = call.post("api/add-notification-email.php", new Request().setMultipartData(data));
         response.azzert().equals(200);
         response.azzert().equals("");
-        //TODO needs to login
+        //TODO needs to login to use that user instead
         ResultSet rs = SQL.select("SELECT * FROM `notification_emails` WHERE `album` = " + albumId);
         while (rs.next()) {
-            checkEmail(rs);
-            checkUser(getLocalHostLANAddress().getHostAddress(), rs);
+            checkDbEquals("max@max.max", rs, "email");
+            checkDbMatches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", rs, "user");
         }
         // verify no issues
         finish();
@@ -115,28 +115,10 @@ public class AddNotificationEmailIT extends BaseBrowser {
         response.azzert().equals("");
         ResultSet rs = SQL.select("SELECT * FROM `notification_emails` WHERE `album` = " + albumId);
         while (rs.next()) {
-            checkEmail(rs);
-            checkUser(getLocalHostLANAddress().getHostAddress(), rs);
+            checkDbEquals("max@max.max", rs, "email");
+            checkDbMatches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", rs, "user");
         }
         // verify no issues
         finish();
-    }
-
-    private void checkEmail(ResultSet rs) throws SQLException {
-        String email = rs.getString("email");
-        if ("max@max.max".equals(email)) {
-            this.apps.get().getReporter().pass("", "DB Results contain email 'max@max.max'", "DB Results contain email '" + email + "'");
-        } else {
-            this.apps.get().getReporter().fail("", "DB Results contain email 'max@max.max'", "DB Results contain email '" + email + "'");
-        }
-    }
-
-    private void checkUser(String expectedUser, ResultSet rs) throws SQLException {
-        String user = rs.getString("user");
-        if (expectedUser.equals(user)) {
-            this.apps.get().getReporter().pass("", "DB Results contain user '" + expectedUser + "'", "DB Results contain user '" + user + "'");
-        } else {
-            this.apps.get().getReporter().fail("", "DB Results contain user '" + expectedUser + "'", "DB Results contain user '" + user + "'");
-        }
     }
 }

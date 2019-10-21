@@ -5,9 +5,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -89,12 +86,12 @@ public class CreateBlogComment extends BaseBrowser {
         response.azzert().equals(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
-            checkUser(null, rs);
-            checkName("", rs);
-            checkDate(formatter.format(date), rs);
-            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
-            checkEmail("", rs);
-            checkComment("some message", rs);
+            checkDbEquals(null, rs, "user");
+            checkDbEquals("", rs, "name");
+            checkDbEquals(formatter.format(date), rs, "date");
+            checkDbMatches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", rs, "ip");
+            checkDbEquals("", rs, "email");
+            checkDbEquals("some message", rs, "comment");
         }
         // verify no issues
         finish();
@@ -112,12 +109,12 @@ public class CreateBlogComment extends BaseBrowser {
         response.azzert().equals(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
-            checkUser(null, rs);
-            checkName("some name", rs);
-            checkDate(formatter.format(date), rs);
-            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
-            checkEmail("", rs);
-            checkComment("some message", rs);
+            checkDbEquals(null, rs, "user");
+            checkDbEquals("some name", rs, "name");
+            checkDbEquals(formatter.format(date), rs, "date");
+            checkDbMatches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", rs, "ip");
+            checkDbEquals("", rs, "email");
+            checkDbEquals("some message", rs, "comment");
         }
         // verify no issues
         finish();
@@ -135,12 +132,12 @@ public class CreateBlogComment extends BaseBrowser {
         response.azzert().equals(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
-            checkUser(null, rs);
-            checkName("", rs);
-            checkDate(formatter.format(date), rs);
-            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
-            checkEmail("max@max.max", rs);
-            checkComment("some message", rs);
+            checkDbEquals(null, rs, "user");
+            checkDbEquals("", rs, "name");
+            checkDbEquals(formatter.format(date), rs, "date");
+            checkDbMatches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", rs, "ip");
+            checkDbEquals("max@max.max", rs, "email");
+            checkDbEquals("some message", rs, "comment");
         }
         // verify no issues
         finish();
@@ -159,12 +156,12 @@ public class CreateBlogComment extends BaseBrowser {
         response.azzert().equals(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
-            checkUser(null, rs);
-            checkName("max", rs);
-            checkDate(formatter.format(date), rs);
-            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
-            checkEmail("max@max.max", rs);
-            checkComment("some message", rs);
+            checkDbEquals(null, rs, "user");
+            checkDbEquals("max", rs, "name");
+            checkDbEquals(formatter.format(date), rs, "date");
+            checkDbMatches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", rs, "ip");
+            checkDbEquals("max@max.max", rs, "email");
+            checkDbEquals("some message", rs, "comment");
         }
         // verify no issues
         finish();
@@ -184,68 +181,14 @@ public class CreateBlogComment extends BaseBrowser {
         response.azzert().equals(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
-            checkUser(null, rs);
-            checkName("max", rs);
-            checkDate(formatter.format(date), rs);
-            checkIp(getLocalHostLANAddress().getHostAddress(), rs);
-            checkEmail("max@max.max", rs);
-            checkComment("some message", rs);
+            checkDbEquals(null, rs, "user");
+            checkDbEquals("max", rs, "name");
+            checkDbEquals(formatter.format(date), rs, "date");
+            checkDbMatches("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", rs, "ip");
+            checkDbEquals("max@max.max", rs, "email");
+            checkDbEquals("some message", rs, "comment");
         }
         // verify no issues
         finish();
-    }
-
-    private void checkUser(String expectedUser, ResultSet rs) throws SQLException {
-        String user = rs.getString("user");
-        if (user == expectedUser || expectedUser.equals(user)) {
-            this.apps.get().getReporter().pass("", "DB Results contain user '" + expectedUser + "'", "DB Results contain user '" + user + "'");
-        } else {
-            this.apps.get().getReporter().fail("", "DB Results contain user '" + expectedUser + "'", "DB Results contain user '" + user + "'");
-        }
-    }
-
-    private void checkName(String expectedName, ResultSet rs) throws SQLException {
-        String name = rs.getString("name");
-        if (expectedName.equals(name)) {
-            this.apps.get().getReporter().pass("", "DB Results contain name '" + expectedName + "'", "DB Results contain name '" + name + "'");
-        } else {
-            this.apps.get().getReporter().fail("", "DB Results contain name '" + expectedName + "'", "DB Results contain name '" + name + "'");
-        }
-    }
-
-    private void checkDate(String expectedDate, ResultSet rs) throws SQLException {
-        String date = rs.getString("date");
-        if (expectedDate.equals(date)) {
-            this.apps.get().getReporter().pass("", "DB Results contain date '" + expectedDate + "'", "DB Results contain date '" + date + "'");
-        } else {
-            this.apps.get().getReporter().fail("", "DB Results contain date '" + expectedDate + "'", "DB Results contain date '" + date + "'");
-        }
-    }
-
-    private void checkIp(String expectedIp, ResultSet rs) throws SQLException {
-        String ip = rs.getString("ip");
-        if (expectedIp.equals(ip)) {
-            this.apps.get().getReporter().pass("", "DB Results contain ip '" + expectedIp + "'", "DB Results contain ip '" + ip + "'");
-        } else {
-            this.apps.get().getReporter().fail("", "DB Results contain ip '" + expectedIp + "'", "DB Results contain ip '" + ip + "'");
-        }
-    }
-
-    private void checkEmail(String expectedEmail, ResultSet rs) throws SQLException {
-        String email = rs.getString("email");
-        if (expectedEmail.equals(email)) {
-            this.apps.get().getReporter().pass("", "DB Results contain email '" + expectedEmail + "'", "DB Results contain email '" + email + "'");
-        } else {
-            this.apps.get().getReporter().fail("", "DB Results contain email '" + expectedEmail + "'", "DB Results contain email '" + email + "'");
-        }
-    }
-
-    private void checkComment(String expectedComment, ResultSet rs) throws SQLException {
-        String comment = rs.getString("comment");
-        if (expectedComment.equals(comment)) {
-            this.apps.get().getReporter().pass("", "DB Results contain comment '" + expectedComment + "'", "DB Results contain comment '" + comment + "'");
-        } else {
-            this.apps.get().getReporter().fail("", "DB Results contain comment '" + expectedComment + "'", "DB Results contain comment '" + comment + "'");
-        }
     }
 }
