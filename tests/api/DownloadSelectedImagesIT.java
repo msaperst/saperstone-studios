@@ -136,6 +136,8 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         finish();
     }
 
+    // TODO - need to put in check for log for downloaded images (and clean it out) once user login is figured out
+
     //TODO - need to expand repeat the below another 2 times (once for download user logged in, once for admin user logged in)
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void allPossibleAllDesiredTest(ITestContext test) throws IOException {
