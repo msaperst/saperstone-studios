@@ -36,7 +36,7 @@ public class GetAlbumImagesIT extends BaseBrowser {
         Call call = this.calls.get();
         Response response = call.get("api/get-album-images.php", new Request());
         response.azzert().equals(200);
-        response.azzert().equals("Album id is required!");
+        response.azzert().equals("{\"err\":\"Album id is required!\"}");
         // verify no issues
         finish();
     }
@@ -48,7 +48,7 @@ public class GetAlbumImagesIT extends BaseBrowser {
         data.put("albumId", "");
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
         response.azzert().equals(200);
-        response.azzert().equals("Album id cannot be blank!");
+        response.azzert().equals("{\"err\":\"Album id cannot be blank!\"}");
         // verify no issues
         finish();
     }
@@ -60,7 +60,7 @@ public class GetAlbumImagesIT extends BaseBrowser {
         data.put("albumId", "999999999");
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
         response.azzert().equals(200);
-        response.azzert().equals("Album doesn't exist!");
+        response.azzert().equals("{\"err\":\"Album doesn't exist!\"}");
         // verify no issues
         finish();
     }
