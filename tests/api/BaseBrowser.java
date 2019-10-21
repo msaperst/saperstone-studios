@@ -1,5 +1,7 @@
 import com.coveros.selenified.Selenified;
 import com.coveros.selenified.services.HTTP;
+import com.coveros.selenified.services.Response;
+import com.google.gson.JsonArray;
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 
@@ -14,6 +16,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import static com.coveros.selenified.utilities.Constants.DIV_I;
+import static com.coveros.selenified.utilities.Constants.END_IDIV;
+import static com.coveros.selenified.utilities.Constants.GSON;
 
 public class BaseBrowser extends Selenified {
 
@@ -125,6 +131,14 @@ public class BaseBrowser extends Selenified {
             this.apps.get().getReporter().pass("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
         } else {
             this.apps.get().getReporter().fail("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
+        }
+    }
+
+    void assertArraySize(JsonArray json, int size) {
+        if (json.size() == size) {
+            this.apps.get().getReporter().pass("", "Expected JsonArray to have size '" + size + "'", "JsonArray has content " + DIV_I + apps.get().getReporter().formatHTML(GSON.toJson(json)) + END_IDIV);
+        } else {
+            this.apps.get().getReporter().fail("", "Expected JsonArray to have size '" + size + "'", "JsonArray has content " + DIV_I + apps.get().getReporter().formatHTML(GSON.toJson(json)) + END_IDIV);
         }
     }
 }

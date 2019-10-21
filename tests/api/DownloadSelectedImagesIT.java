@@ -22,6 +22,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     private int albumIdSome = 9997;
     private int badAlbumId = 9999;
     private String[] files = {"file.1.png", "file.2.png", "file.3.png", "file.4.png", "file.5.png",};
+    File zipFile = new File("sample-album-download.zip");
 
     @BeforeMethod(groups = {"needs-album"})
     public void createAlbum() throws IOException {
@@ -59,6 +60,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
             File imageFile = new File("content/albums/" + file);
             imageFile.delete();
         }
+        zipFile.delete();
     }
 
     @Test(groups = {"api", "download-selected-images"})
@@ -147,7 +149,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-all " + formatter.format(date) + ".zip\"}");
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
-        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), new File("sample-album-download.zip"));
+        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
         assertZipContains("sample-album-download.zip", Arrays.asList("file.1.png", "file.2.png", "file.3.png", "file.4.png", "file.5.png"));
         // verify no issues
         finish();
@@ -170,7 +172,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-all " + formatter.format(date) + ".zip\"}");
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
-        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), new File("sample-album-download.zip"));
+        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
         assertZipContains("sample-album-download.zip", Arrays.asList("file.2.png", "file.3.png", "file.4.png"));
         // verify no issues
         finish();
@@ -191,7 +193,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-all " + formatter.format(date) + ".zip\"}");
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
-        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), new File("sample-album-download.zip"));
+        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
         assertZipContains("sample-album-download.zip", Collections.singletonList("file.2.png"));
         // verify no issues
         finish();
@@ -222,7 +224,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-all " + formatter.format(date) + ".zip\"}");
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
-        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), new File("sample-album-download.zip"));
+        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
         assertZipContains("sample-album-download.zip", Collections.singletonList("file.2.png"));
         // verify no issues
         finish();
@@ -240,7 +242,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-some " + formatter.format(date) + ".zip\"}");
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
-        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), new File("sample-album-download.zip"));
+        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
         assertZipContains("sample-album-download.zip", Arrays.asList("file.2.png", "file.3.png"));
         // verify no issues
         finish();
@@ -263,7 +265,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-some " + formatter.format(date) + ".zip\"}");
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
-        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), new File("sample-album-download.zip"));
+        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
         assertZipContains("sample-album-download.zip", Arrays.asList("file.2.png", "file.3.png"));
         // verify no issues
         finish();
@@ -284,7 +286,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-some " + formatter.format(date) + ".zip\"}");
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
-        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), new File("sample-album-download.zip"));
+        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
         assertZipContains("sample-album-download.zip", Collections.singletonList("file.2.png"));
         // verify no issues
         finish();
@@ -315,7 +317,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-some " + formatter.format(date) + ".zip\"}");
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
-        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), new File("sample-album-download.zip"));
+        FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
         assertZipContains("sample-album-download.zip", Collections.singletonList("file.2.png"));
         // verify no issues
         finish();

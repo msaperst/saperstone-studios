@@ -11,14 +11,21 @@ $response = array ();
 $start = 0;
 $howMany = 999999999999999999;
 
-if (isset ( $_GET ['albumId'] )) {
+if (isset ( $_GET ['albumId'] ) && $_GET ['albumId'] != "") {
     $albumId = ( int ) $_GET ['albumId'];
 } else {
-    $response ['err'] = "Need to provide album";
+    if (! isset ( $_GET ['albumId'] )) {
+        $response ['err'] = "Album id is required!";
+    } elseif ($_GET ['albumId'] == "") {
+        $response ['err'] = "Album id cannot be blank!";
+    } else {
+        $response ['err'] = "Some other Album id error occurred!";
+    }
     echo json_encode ( $response );
     $conn->disconnect ();
     exit ();
 }
+
 if (isset ( $_GET ['start'] )) {
     $start = ( int ) $_GET ['start'];
 }
@@ -36,7 +43,7 @@ if (! $album_info ['name']) {
     exit ();
 }
 
-// if not an admin and no exists for the album
+// if not an admin and no code exists for the album     //todo, this seems like an issue, we should ensure the code is stored
 if (! $user->isAdmin () && $album_info ['code'] == "") {
     // if not logged in, throw an error
     if (! $user->isLoggedIn ()) {

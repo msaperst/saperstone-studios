@@ -13,7 +13,7 @@ if (isset ( $_GET ['id'] ) && $_GET ['id'] != "") {
 } else {
     if (! isset ( $_GET ['id'] )) {
         echo "Album id is required!";
-    } elseif ($_GET ['id'] != "") {
+    } elseif ($_GET ['id'] == "") {
         echo "Album id cannot be blank!";
     } else {
         echo "Some other Album id error occurred!";

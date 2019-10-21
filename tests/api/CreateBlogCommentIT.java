@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateBlogComment extends BaseBrowser {
+public class CreateBlogCommentIT extends BaseBrowser {
 
     private int blogId = 9999;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
