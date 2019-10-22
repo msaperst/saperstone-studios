@@ -10,11 +10,17 @@ $user = new User ();
 $response = array ();
 $post = 0;
 
-if (isset ( $_GET ['post'] )) {
+if (isset ( $_GET ['post'] ) && $_GET ['post'] != "") {
     $post = ( int ) $_GET ['post'];
 } else {
-    echo "No blog post provided";
-    $conn->disconnect();
+    if (! isset ( $_GET ['post'] )) {
+        echo "Post id is required!";
+    } elseif ($_GET ['post'] == "") {
+        echo "Post id cannot be blank!";
+    } else {
+        echo "Some other Post id error occurred!";
+    }
+    $conn->disconnect ();
     exit ();
 }
 
@@ -25,6 +31,7 @@ if (! $r ['title']) {
     $conn->disconnect();
     exit ();
 }
+
 $r ['date'] = date ( 'F jS, Y', strtotime ( $r ['date'] ) );
 $sql = "SELECT * FROM `blog_images` WHERE blog = " . $r ['id'] . ";";
 $images = mysqli_query ( $conn->db, $sql );
