@@ -1,23 +1,19 @@
-def workspace
 def branch
-def baseVersion
 def version
-def pullRequest
 def refspecs
 def branchCheckout
+def dockerRepo = "victor:9086"
+def dockerRegistry = "${dockerRepo}/saperstone-studios"
 
 node() {
     cleanWs()
     ansiColor('xterm') {
-        workspace = pwd()
         env.BRANCH_NAME = 'master'
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
-        baseVersion = "${env.BUILD_NUMBER}"
-        version = "$branch-$baseVersion"
+        version = "$branch-${env.BUILD_NUMBER}"
         env.PROJECT = "saperstone-studios"
-        pullRequest = env.CHANGE_ID
-        if (pullRequest) {
-            branchCheckout = "pr/${pullRequest}"
+        if (env.CHANGE_ID) {
+            branchCheckout = "pr/${env.CHANGE_ID}"
             refspecs = '+refs/pull/*/head:refs/remotes/origin/pr/*'
         } else {
             branchCheckout = env.BRANCH_NAME
@@ -157,29 +153,41 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Launch Docker Container') {
             sh "docker-compose up --build -d"
         }
-        stage('Run Integration Tests') {
-            //TODO
+        stage('Functional Tests') {
+            parallel(
+                    "Integration Tests": {
+                        stage('Run Integration Tests') {
+                            //TODO
+                        }
+                    },
+                    "API Tests": {
+                        stage('Run API Tests') {
+                            try {
+                                sh "mvn clean verify"
+                            } catch (e) {
+                                // throw e
+                            } finally {
+                                junit 'target/failsafe-reports/TEST-*.xml'
+                                publishHTML([
+                                        allowMissing         : false,
+                                        alwaysLinkToLastBuild: true,
+                                        keepAll              : true,
+                                        reportDir            : 'target/failsafe-reports',
+                                        reportFiles          : 'report.html',
+                                        reportName           : 'API Test Report'
+                                ])
+                            }
+                        }
+                    },
+                    "UI Tests": {
+                        stage('Run UI Tests') {
+                            //TODO
+                        }
+                    }
+            )
         }
-        stage('Run API Tests') {
-            try {
-                sh "mvn clean verify"
-            } catch (e) {
-                // throw e
-            } finally {
-                junit 'target/failsafe-reports/TEST-*.xml'
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'target/failsafe-reports',
-                        reportFiles          : 'report.html',
-                        reportName           : 'API Test Report'
-                ])
-            }
-        }
-        stage('Run UI Tests') {
-            //TODO
-        }
+
+
         stage('Publish Containers') {
             withCredentials([
                     usernamePassword(
@@ -188,33 +196,33 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                             passwordVariable: 'dockerPass'
                     )
             ]) {
-                sh "docker login -u ${dockerUser} -p ${dockerPass}"
+                sh "docker login ${dockerRepo} -u ${dockerUser} -p ${dockerPass}"
             }
             // tag and push each of our containers
             parallel(
                     "PHP ${version}": {
-                        sh "docker tag workspace_php victor:9096/saperstone-studios/php:${version}"
-                        sh "docker push victor:9096/saperstone-studios/php:${version}"
+                        sh "docker tag workspace_php ${dockerRegistry}/php:${version}"
+                        sh "docker push ${dockerRegistry}/php:${version}"
                     },
                     "PHP Latest": {
-                        sh "docker tag workspace_php victor:9096/saperstone-studios/php:latest"
-                        sh "docker push victor:9096/saperstone-studios/php:latest"
+                        sh "docker tag workspace_php ${dockerRegistry}/php:latest"
+                        sh "docker push ${dockerRegistry}/php:latest"
                     },
                     "PHP MyAdmin ${version}": {
-                        sh "docker tag phpmyadmin/phpmyadmin victor:9096/saperstone-studios/php-myadmin:${version}"
-                        sh "docker push victor:9096/saperstone-studios/php-myadmin:${version}"
+                        sh "docker tag phpmyadmin/phpmyadmin ${dockerRegistry}/php-myadmin:${version}"
+                        sh "docker push ${dockerRegistry}/php-myadmin:${version}"
                     },
                     "PHP MyAdmin Latest": {
-                        sh "docker tag phpmyadmin/phpmyadmin victor:9096/saperstone-studios/php-myadmin:latest"
-                        sh "docker push victor:9096/saperstone-studios/php-myadmin:latest"
+                        sh "docker tag phpmyadmin/phpmyadmin ${dockerRegistry}/php-myadmin:latest"
+                        sh "docker push ${dockerRegistry}/php-myadmin:latest"
                     },
                     "MySQL ${version}": {
-                        sh "docker tag workspace_mysql victor:9096/saperstone-studios/mysql:${version}"
-                        sh "docker push victor:9096/saperstone-studios/mysql:${version}"
+                        sh "docker tag workspace_mysql ${dockerRegistry}/mysql:${version}"
+                        sh "docker push ${dockerRegistry}/mysql:${version}"
                     },
                     "MySQL Latest": {
-                        sh "docker tag workspace_mysql victor:9096/saperstone-studios/mysql:latest"
-                        sh "docker push victor:9096/saperstone-studios/mysql:latest"
+                        sh "docker tag workspace_mysql ${dockerRegistry}/mysql:latest"
+                        sh "docker push ${dockerRegistry}/mysql:latest"
                     }
             )
             sh "docker system prune -a"
