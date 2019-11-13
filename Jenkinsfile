@@ -137,18 +137,17 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             sh "ln -s /home/msaperst/saperstone-studios/logs logs"
         }
         stage('Kill Any Old Docker Containers') {
-            try {
-                sh "docker kill saperstonestudios_php"
-            } catch (e) {
-            }
-            try {
-                sh "docker kill saperstonestudios_php-myadmin"
-            } catch (e) {
-            }
-            try {
-                sh "docker kill saperstonestudios_mysql"
-            } catch (e) {
-            }
+            parallel(
+                    "Kill Old PHP Container": {
+                        killContainer("saperstonestudios_php")
+                    },
+                    "Kill Old PHP Admin Container": {
+                        killContainer("saperstonestudios_php-myadmin")
+                    },
+                    "Kill Old MySQL Container": {
+                        killContainer("saperstonestudios_mysql")
+                    }
+            )
         }
         stage('Launch Docker Container') {
             sh "docker-compose up --build -d"
@@ -241,6 +240,15 @@ def compress(filetype) {
             sh "rm ./public/$filetype/$file"
             //fix all references to old file
             sh "find ./ -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
+        }
+    }
+}
+
+def killContainer(containerName) {
+    stage("Kill Container " + containerName) {
+        try {
+            sh "docker kill ${containerName}"
+        } catch (e) {
         }
     }
 }
