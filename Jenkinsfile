@@ -184,27 +184,27 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             // tag and push each of our containers
             parallel(
                     "PHP ${version}": {
-                        sh "docker tag php victor:9096/saperstone-studios/php:${version}"
+                        sh "docker tag workspace_php victor:9096/saperstone-studios/php:${version}"
                         sh "docker push victor:9096/saperstone-studios/php:${version}"
                     },
                     "PHP Latest": {
-                        sh "docker tag php victor:9096/saperstone-studios/php:latest"
+                        sh "docker tag workspace_php victor:9096/saperstone-studios/php:latest"
                         sh "docker push victor:9096/saperstone-studios/php:latest"
                     },
                     "PHP MyAdmin ${version}": {
-                        sh "docker tag phpmyadmin victor:9096/saperstone-studios/php-myadmin:${version}"
+                        sh "docker tag phpmyadmin/phpmyadmin victor:9096/saperstone-studios/php-myadmin:${version}"
                         sh "docker push victor:9096/saperstone-studios/php-myadmin:${version}"
                     },
                     "PHP MyAdmin Latest": {
-                        sh "docker tag phpmyadmin victor:9096/saperstone-studios/php-myadmin:latest"
+                        sh "docker tag phpmyadmin/phpmyadmin victor:9096/saperstone-studios/php-myadmin:latest"
                         sh "docker push victor:9096/saperstone-studios/php-myadmin:latest"
                     },
                     "MySQL ${version}": {
-                        sh "docker tag mysql victor:9096/saperstone-studios/mysql:${version}"
+                        sh "docker tag workspace_mysql victor:9096/saperstone-studios/mysql:${version}"
                         sh "docker push victor:9096/saperstone-studios/mysql:${version}"
                     },
                     "MySQL Latest": {
-                        sh "docker tag mysql victor:9096/saperstone-studios/mysql:latest"
+                        sh "docker tag workspace_mysql victor:9096/saperstone-studios/mysql:latest"
                         sh "docker push victor:9096/saperstone-studios/mysql:latest"
                     }
             )
