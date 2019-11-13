@@ -186,8 +186,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     }
             )
         }
-
-
         stage('Publish Containers') {
             withCredentials([
                     usernamePassword(
@@ -200,32 +198,27 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             }
             // tag and push each of our containers
             parallel(
-                    "PHP ${version}": {
+                    "PHP": {
                         sh "docker tag workspace_php ${dockerRegistry}/php:${version}"
                         sh "docker push ${dockerRegistry}/php:${version}"
-                    },
-                    "PHP Latest": {
                         sh "docker tag workspace_php ${dockerRegistry}/php:latest"
                         sh "docker push ${dockerRegistry}/php:latest"
                     },
-                    "PHP MyAdmin ${version}": {
+                    "PHP MyAdmin": {
                         sh "docker tag phpmyadmin/phpmyadmin ${dockerRegistry}/php-myadmin:${version}"
                         sh "docker push ${dockerRegistry}/php-myadmin:${version}"
-                    },
-                    "PHP MyAdmin Latest": {
                         sh "docker tag phpmyadmin/phpmyadmin ${dockerRegistry}/php-myadmin:latest"
                         sh "docker push ${dockerRegistry}/php-myadmin:latest"
                     },
-                    "MySQL ${version}": {
+                    "MySQL": {
                         sh "docker tag workspace_mysql ${dockerRegistry}/mysql:${version}"
                         sh "docker push ${dockerRegistry}/mysql:${version}"
-                    },
-                    "MySQL Latest": {
                         sh "docker tag workspace_mysql ${dockerRegistry}/mysql:latest"
                         sh "docker push ${dockerRegistry}/mysql:latest"
                     }
             )
             sh "docker system prune -a"
+            sh "docker logout ${dockerRepo}"
         }
     }
 }
