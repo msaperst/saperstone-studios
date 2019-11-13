@@ -233,7 +233,7 @@ def compress(filetype) {
                 return
             }
             //get the new filename
-            newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
+            def newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
             //compress the file
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
             //remove the old file

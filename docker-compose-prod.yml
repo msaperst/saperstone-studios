@@ -1,9 +1,7 @@
 version: '3'
 services:
   mysql:
-    build:
-      context: .
-      dockerfile: .docker/sql/Dockerfile
+    image: victor:9086/saperstone-studios/mysql:latest
     container_name: saperstonestudios_mysql
     restart: always
     volumes:
@@ -20,7 +18,7 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
   php-myadmin:
-    image: phpmyadmin/phpmyadmin
+    image: victor:9086/saperstone-studios/php-myadmin:latest
     container_name: saperstonestudios_php-myadmin
     restart: always
     depends_on:
@@ -35,16 +33,7 @@ services:
     links:
     - mysql
   php:
-    build:
-      context: .
-      dockerfile: .docker/php/Dockerfile
-      args:
-        MPDF_VERSION: 6.1.0
-        PAYPAL_VERSION: 3.9.1
-        PAYPAL_USERNAME: ${PAYPAL_USERNAME}
-        PAYPAL_PASSWORD: ${PAYPAL_PASSWORD}
-        PAYPAL_SIGNATURE: ${PAYPAL_SIGNATURE}
-        TWITTER_VERSION: 3.1.0
+    image: victor:9086/saperstone-studios/php:latest
     container_name: saperstonestudios_php
     restart: always
     depends_on:
