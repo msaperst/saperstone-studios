@@ -181,6 +181,15 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             //TODO
         }
         stage('Publish Containers') {
+            withCredentials([
+                    usernamePassword(
+                            credentialsId: 'nexus-docker',
+                            usernameVariable: 'dockerUser',
+                            passwordVariable: 'dockerPass'
+                    )
+            ]) {
+                sh "docker login -u ${dockerUser} -p ${dockerPass}"
+            }
             // tag and push each of our containers
             parallel(
                     "PHP ${version}": {
