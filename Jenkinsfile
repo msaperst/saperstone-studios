@@ -56,8 +56,14 @@ node() {
                 -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
         }
         stage('Prep Files') {
-            compress('js')
-            compress('css')
+            parallel(
+                    "Compress JS": {
+                        compress('js')
+                    },
+                    "Compress CSS": {
+                        compress('css')
+                    }
+            )
         }
         withCredentials([
                 usernamePassword(
@@ -176,46 +182,55 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         }
         stage('Publish Containers') {
             // tag and push each of our containers
-            parallel (
+            parallel(
                     "PHP ${version}": {
-                        sh "docker tag saperstonestudios_php victor:9096/saperstone-studios/php:${version}"
+                        sh "docker tag php victor:9096/saperstone-studios/php:${version}"
+                        sh "docker push victor:9096/saperstone-studios/php:${version}"
                     },
                     "PHP Latest": {
-                        sh "docker tag saperstonestudios_php victor:9096/saperstone-studios/php:latest"
+                        sh "docker tag php victor:9096/saperstone-studios/php:latest"
+                        sh "docker push victor:9096/saperstone-studios/php:latest"
                     },
                     "PHP MyAdmin ${version}": {
-                        sh "docker tag phpmyadmin/phpmyadmin victor:9096/saperstone-studios/php-myadmin:${version}"
+                        sh "docker tag phpmyadmin victor:9096/saperstone-studios/php-myadmin:${version}"
+                        sh "docker push victor:9096/saperstone-studios/php-myadmin:${version}"
                     },
                     "PHP MyAdmin Latest": {
-                        sh "docker tag phpmyadmin/phpmyadmin victor:9096/saperstone-studios/php-myadmin:latest"
+                        sh "docker tag phpmyadmin victor:9096/saperstone-studios/php-myadmin:latest"
+                        sh "docker push victor:9096/saperstone-studios/php-myadmin:latest"
                     },
                     "MySQL ${version}": {
-                        sh "docker tag saperstonestudios_mysql victor:9096/saperstone-studios/mysql:${version}"
+                        sh "docker tag mysql victor:9096/saperstone-studios/mysql:${version}"
+                        sh "docker push victor:9096/saperstone-studios/mysql:${version}"
                     },
                     "MySQL Latest": {
-                        sh "docker tag saperstonestudios_mysql victor:9096/saperstone-studios/mysql:latest"
+                        sh "docker tag mysql victor:9096/saperstone-studios/mysql:latest"
+                        sh "docker push victor:9096/saperstone-studios/mysql:latest"
                     }
             )
+            sh "docker system prune -a"
         }
     }
 }
 
 def compress(filetype) {
-    Random rnd = new Random()
-    def random = rnd.nextInt(9999999)
-    def output = sh returnStdout: true, script: "ls ./public/$filetype/"
-    def files = output.split()
-    files.each { file ->
-        if (file == "mpdf.css") {
-            return
+    stage("Compress " + filetype.toUpperCase()) {
+        Random rnd = new Random()
+        def random = rnd.nextInt(9999999)
+        def output = sh returnStdout: true, script: "ls ./public/$filetype/"
+        def files = output.split()
+        files.each { file ->
+            if (file == "mpdf.css") {
+                return
+            }
+            //get the new filename
+            newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
+            //compress the file
+            sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
+            //remove the old file
+            sh "rm ./public/$filetype/$file"
+            //fix all references to old file
+            sh "find ./ -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
         }
-        //get the new filename
-        newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
-        //compress the file
-        sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
-        //remove the old file
-        sh "rm ./public/$filetype/$file"
-        //fix all references to old file
-        sh "find ./ -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
     }
 }

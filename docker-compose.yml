@@ -1,6 +1,7 @@
 version: '3'
 services:
   mysql:
+    image: mysql
     build:
       context: .
       dockerfile: .docker/sql/Dockerfile
@@ -20,7 +21,7 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
   php-myadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin
     container_name: saperstonestudios_php-myadmin
     restart: always
     depends_on:
@@ -35,6 +36,7 @@ services:
     links:
     - mysql
   php:
+    image: php
     build:
       context: .
       dockerfile: .docker/php/Dockerfile
