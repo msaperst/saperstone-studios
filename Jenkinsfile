@@ -3,7 +3,6 @@ def version
 def refspecs
 def branchCheckout
 def dockerRepo = "victor:9086"
-dockerRegistry = "${dockerRepo}/saperstone-studios"
 
 node() {
     cleanWs()
@@ -266,6 +265,8 @@ def killContainer(containerName) {
 }
 
 def pushContainer(localContainerName, nexusContainerName) {
+    def dockerRepo = "victor:9086"
+    def dockerRegistry = "${dockerRepo}/saperstone-studios"
     stage("Pushing Container " + nexusContainerName) {
         sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:${version}"
         sh "docker push ${dockerRegistry}/${nexusContainerName}:${version}"
