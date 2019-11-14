@@ -216,13 +216,13 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Copy Container to Walter') {
             parallel(
                     "PHP": {
-                        copyContainer("workspace_php")
+                        copyContainer("saperstonestudios_php")
                     },
                     "PHP MyAdmin": {
-                        copyContainer("phpmyadmin/phpmyadmin")
+                        copyContainer("saperstonestudios_php-myadmin")
                     },
                     "MySQL": {
-                        copyContainer("workspace_mysql")
+                        copyContainer("saperstonestudios_mysql")
                     }
             )
         }
@@ -265,7 +265,7 @@ def killContainer(containerName) {
     }
 }
 
-pushContainer(dockerRegistry, version, localContainerName, nexusContainerName) {
+def pushContainer(dockerRegistry, version, localContainerName, nexusContainerName) {
     stage("Pushing Container " + nexusContainerName) {
         sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:${version}"
         sh "docker push ${dockerRegistry}/${nexusContainerName}:${version}"
