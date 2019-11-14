@@ -138,13 +138,13 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         }
         stage('Kill Any Old Docker Containers') {
             parallel(
-                    "Kill Old PHP Container": {
+                    "PHP": {
                         killContainer("saperstonestudios_php")
                     },
-                    "Kill Old PHP Admin Container": {
+                    "PHP MyAdmin": {
                         killContainer("saperstonestudios_php-myadmin")
                     },
-                    "Kill Old MySQL Container": {
+                    "MySQL": {
                         killContainer("saperstonestudios_mysql")
                     }
             )
@@ -198,26 +198,33 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             // tag and push each of our containers
             parallel(
                     "PHP": {
-                        sh "docker tag workspace_php ${dockerRegistry}/php:${version}"
-                        sh "docker push ${dockerRegistry}/php:${version}"
-                        sh "docker tag workspace_php ${dockerRegistry}/php:latest"
-                        sh "docker push ${dockerRegistry}/php:latest"
+                        pushContainer("workspace_php", "php")
                     },
                     "PHP MyAdmin": {
-                        sh "docker tag phpmyadmin/phpmyadmin ${dockerRegistry}/php-myadmin:${version}"
-                        sh "docker push ${dockerRegistry}/php-myadmin:${version}"
-                        sh "docker tag phpmyadmin/phpmyadmin ${dockerRegistry}/php-myadmin:latest"
-                        sh "docker push ${dockerRegistry}/php-myadmin:latest"
+                        pushContainer("phpmyadmin/phpmyadmin", "php-myadmin")
                     },
                     "MySQL": {
-                        sh "docker tag workspace_mysql ${dockerRegistry}/mysql:${version}"
-                        sh "docker push ${dockerRegistry}/mysql:${version}"
-                        sh "docker tag workspace_mysql ${dockerRegistry}/mysql:latest"
-                        sh "docker push ${dockerRegistry}/mysql:latest"
+                        pushContainer("workspace_mysql", "mysql")
                     }
             )
-            sh "docker system prune -a"
+            sh "docker system prune -a -f"
             sh "docker logout ${dockerRepo}"
+        }
+        timeout(time: 30, unit: 'MINUTES') {
+            input 'Do you want to deploy to production?'
+        }
+        stage('Copy Container to Walter') {
+            parallel(
+                    "PHP": {
+                        copyContainer("workspace_php")
+                    },
+                    "PHP MyAdmin": {
+                        copyContainer("phpmyadmin/phpmyadmin")
+                    },
+                    "MySQL": {
+                        copyContainer("workspace_mysql")
+                    }
+            )
         }
     }
 }
@@ -250,5 +257,20 @@ def killContainer(containerName) {
             sh "docker kill ${containerName}"
         } catch (e) {
         }
+    }
+}
+
+def pushContainer(localContainerName, nexusContainerName) {
+    stage("Pushing Container " + nexusContainerName) {
+        sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:${version}"
+        sh "docker push ${dockerRegistry}/${nexusContainerName}:${version}"
+        sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:latest"
+        sh "docker push ${dockerRegistry}/${nexusContainerName}:latest"
+    }
+}
+
+def copyContainer(containerName) {
+    stage("Copying Container " + containerName) {
+        sh "docker save ${containerName} | gzip | ssh 192.168.1.2 'gunzip | docker load'"
     }
 }
