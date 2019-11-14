@@ -3,6 +3,7 @@ def version
 def refspecs
 def branchCheckout
 def dockerRepo = "victor:9086"
+def dockerRegistry = "${dockerRepo}/saperstone-studios"
 
 node() {
     cleanWs()
@@ -197,13 +198,13 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             // tag and push each of our containers
             parallel(
                     "PHP": {
-                        pushContainer("workspace_php", "php")
+                        pushContainer(dockerRegistry, version, "workspace_php", "php")
                     },
                     "PHP MyAdmin": {
-                        pushContainer("phpmyadmin/phpmyadmin", "php-myadmin")
+                        pushContainer(dockerRegistry, version, "phpmyadmin/phpmyadmin", "php-myadmin")
                     },
                     "MySQL": {
-                        pushContainer("workspace_mysql", "mysql")
+                        pushContainer(dockerRegistry, version, "workspace_mysql", "mysql")
                     }
             )
             sh "docker system prune -a -f"
@@ -264,9 +265,7 @@ def killContainer(containerName) {
     }
 }
 
-def pushContainer(localContainerName, nexusContainerName) {
-    def dockerRepo = "victor:9086"
-    def dockerRegistry = "${dockerRepo}/saperstone-studios"
+pushContainer(dockerRegistry, version, localContainerName, nexusContainerName) {
     stage("Pushing Container " + nexusContainerName) {
         sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:${version}"
         sh "docker push ${dockerRegistry}/${nexusContainerName}:${version}"
