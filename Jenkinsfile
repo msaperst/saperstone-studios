@@ -3,7 +3,7 @@ def version
 def refspecs
 def branchCheckout
 def dockerRepo = "victor:9086"
-def dockerRegistry = "${dockerRepo}/saperstone-studios"
+dockerRegistry = "${dockerRepo}/saperstone-studios"
 
 node() {
     cleanWs()
@@ -225,6 +225,11 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         copyContainer("workspace_mysql")
                     }
             )
+        }
+        stage('Stand Up New Instance') {
+            //copy over prod docker compose - TODO
+            //docker-compose stop
+            //docker-compose -f docker-compose-prod.yml up -d
         }
     }
 }
