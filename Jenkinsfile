@@ -216,13 +216,13 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Copy Container to Walter') {
             parallel(
                     "PHP": {
-                        copyContainer("saperstonestudios_php")
+                        copyContainer(dockerRegistry, version,"saperstonestudios_php")
                     },
                     "PHP MyAdmin": {
-                        copyContainer("saperstonestudios_php-myadmin")
+                        copyContainer(dockerRegistry, version,"saperstonestudios_php-myadmin")
                     },
                     "MySQL": {
-                        copyContainer("saperstonestudios_mysql")
+                        copyContainer(dockerRegistry, version,"saperstonestudios_mysql")
                     }
             )
         }
