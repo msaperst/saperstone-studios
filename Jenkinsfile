@@ -227,9 +227,11 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             )
         }
         stage('Stand Up New Instance') {
-            //copy over prod docker compose - TODO
-            //docker-compose stop
-            //docker-compose -f docker-compose-prod.yml up -d
+            sh "scp docker-compose-prod.yml 192.168.1.2:/var/www/ss-docker/"
+            sh "ssh 192.168.1.2 \"sed -i 's/latest/${version}/g'\" /var/www/ss-docker/docker-compose-prod.yml"
+            sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml stop'"
+            sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml up -d'"
+            sh "docker system prune -a -f"
         }
     }
 }

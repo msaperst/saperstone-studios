@@ -64,7 +64,7 @@
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Commercial</span> <img
                         class="img-responsive" src="/img/main/commercial.jpg<?php echo $rand; ?>"
-                        width="100%" alt="Weddings">
+                        width="100%" alt="Commercial">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="/commercial/index.php">See
                             More</a>

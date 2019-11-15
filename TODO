@@ -38,7 +38,6 @@ Export Data from Tables:
     `blog_comments`
     `blog_details`
     `blog_images`
-    `blog_tags`
     `blog_texts`
     `cart`
     `contracts`
