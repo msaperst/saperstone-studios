@@ -274,8 +274,8 @@ def pushContainer(dockerRegistry, version, localContainerName, nexusContainerNam
     }
 }
 
-def copyContainer(containerName) {
+def copyContainer(dockerRegistry, version, containerName) {
     stage("Copying Container " + containerName) {
-        sh "docker save ${containerName} | gzip | ssh 192.168.1.2 'gunzip | docker load'"
+        sh "docker save ${dockerRegistry}/${containerName}:${version} | gzip | ssh 192.168.1.2 'gunzip | docker load'"
     }
 }
