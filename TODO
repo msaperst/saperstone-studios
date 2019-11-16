@@ -27,33 +27,12 @@ ceremony and reception venue are not saved when editing contract
 fix inability to share images on pinterest
 unable to download/view images on ipad/iphone
 * unable to drag text areas on blog
-* overlapping text on blog posts on mobile?
+* magnifying glass search on desktop not aligned
 
 
-MIGRATION:
-Export Data from Tables:
-    `albums`
-    `albums_for_users`
-    `album_images`
-    `blog_comments`
-    `blog_details`
-    `blog_images`
-    `blog_texts`
-    `cart`
-    `contracts`
-    `contract_line_items`
-    `download_rights`
-    `favorites`
-    `gallery_images`        (use from victor)
-    `notification_emails`
-    `old_users`
-    `usage`
-    `users`
-    `user_logs`
-Copy over dynamic content
-    albums
-    blog
-Get all images
-    copying that over manually
-        need to convert sql for
-           gallery images (saved)
+
+MIGRATION
+* images need protecting
+* need to put everything to SSL
+* need to setup/create cert
+* need to tell victor apache to point to new site
