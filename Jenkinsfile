@@ -102,6 +102,7 @@ node() {
 ADMIN_PORT=9090\n\
 HTTP_PORT=90\n\
 HTTPS_PORT=9443\n\
+SERVER_NAME=victor\n\
 \n\
 # database information\n\
 DB_ROOT=${sqlRootPass}\n\

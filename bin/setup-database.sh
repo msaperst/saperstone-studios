@@ -20,6 +20,9 @@ for file in ${DIR}/sql/*.sql; do
     mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < "$file" #> /dev/null 2>&1
 done
 
+#set server name
+echo "export SERVER_NAME='${SERVER_NAME}'" >> /etc/apache2/envvars
+
 #launch apache2
 apache2-foreground
 
