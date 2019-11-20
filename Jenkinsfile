@@ -232,8 +232,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             sh "ssh 192.168.1.2 \"sed -i 's/latest/${version}/g'\" /var/www/ss-docker/docker-compose-prod.yml"
             sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml stop'"
             sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml up -d'"
-            sh "sleep 30"
-            sh "docker system prune -a -f"
+            sh "ssh 192.168.1.2 'docker system prune -a -f'"
         }
     }
 }
