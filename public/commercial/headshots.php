@@ -45,7 +45,7 @@
 
         <!-- Features Section -->
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section="Professional Headshots"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Professional Headshots</span> <img
@@ -57,7 +57,7 @@
                 </div>
             </div>
 
-            <div class="col-xs-6">
+            <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section="Company Headshots"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>Company Headshots</span> <img

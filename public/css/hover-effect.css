@@ -101,3 +101,8 @@
     outline: none;
     box-shadow: none;
 }
+
+/* our own forcing of larger images for small screens */
+.img-responsive {
+    width: 100%;
+}
