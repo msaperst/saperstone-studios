@@ -236,6 +236,7 @@ blockquote p {
 #nav-search-input {
     display: inline-block;
     margin-left: 5px;
+    width: 115px;
 }
 
 #nav-search-icon {

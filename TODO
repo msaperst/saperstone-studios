@@ -32,7 +32,4 @@ unable to download/view images on ipad/iphone
 
 
 MIGRATION
-* images need protecting
-* need to put everything to SSL
-* need to setup/create cert
-* need to tell victor apache to point to new site
+* redirect from http to https (pull from walter

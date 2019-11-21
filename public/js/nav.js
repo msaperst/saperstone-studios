@@ -12,8 +12,6 @@ $(function() {
         }
     });
 
-    $('#nav-search-input').width($('#nav-search-input').parent().parent().width() - 70);
-
     $('#nav-search-icon').click(function() {
         searchBlog();
     });
