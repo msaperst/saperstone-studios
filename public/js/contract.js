@@ -65,7 +65,7 @@ function submitContract() {
             $('#contract-submit').remove();
             $('#contract-messages').append("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for signing the contract. You will recieve a confirmation email with the final contract attached shortly.</div>");
             setTimeout(function () {
-                window.location.href = "/";
+                location.reload(true);
              }, 10000);
         }
     }).fail(function(xhr, status, error) {

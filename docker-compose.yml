@@ -39,7 +39,7 @@ services:
       context: .
       dockerfile: .docker/php/Dockerfile
       args:
-        MPDF_VERSION: 6.1.0
+        MPDF_VERSION: 7.1.9
         PAYPAL_VERSION: 3.9.1
         PAYPAL_USERNAME: ${PAYPAL_USERNAME}
         PAYPAL_PASSWORD: ${PAYPAL_PASSWORD}

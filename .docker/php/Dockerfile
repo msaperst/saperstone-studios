@@ -4,12 +4,18 @@ FROM php:7.3.0-apache
 RUN apt-get update && \
         apt-get install -yy mysql-client && \
         apt-get install -yy imagemagick && \
-        apt-get install -yy libzip-dev wget zip unzip
+        apt-get install -yy libpng-dev libzip-dev wget zip unzip
 # setup mail plugins
 RUN pear install Mail && \
         pear install Mail_Mime && \
         pear install Auth_SASL && \
         pear install pear/Net_SMTP
+# install composer
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php -r "if (hash_file('sha384', 'composer-setup.php') === 'a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+    php -r "unlink('composer-setup.php');"
+COPY .docker/php/composer.json /var/www/
 
 # configure apache
 RUN rm -r /var/www/html
@@ -18,7 +24,7 @@ COPY .docker/php/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
 COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 RUN a2enmod rewrite expires speling ssl
 RUN docker-php-ext-configure zip --with-libzip
-RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip
+RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd
 
 # copy over files
 COPY bin /var/www/bin
@@ -27,7 +33,7 @@ COPY src /var/www/src
 COPY templates /var/www/templates
 
 # install plugins
-ARG MPDF_VERSION=6.1.0
+ARG MPDF_VERSION=7.1.9
 ENV MPDF_VERSION="${MPDF_VERSION}"
 ARG PAYPAL_VERSION=3.9.1
 ENV PAYPAL_VERSION="${PAYPAL_VERSION}"
@@ -49,12 +55,8 @@ RUN cd /var/www/public/js && \
         unzip -qq jSignature.zip && \
         rm jSignature.zip
 ## install mPDF
-RUN cd /var/www/resources && \
-        mkdir mPDF && \
-        cd mPDF && \
-        wget --quiet https://github.com/mpdf/mpdf/releases/download/v${MPDF_VERSION}/02-mPDF-v${MPDF_VERSION}-without-examples.zip && \
-        unzip -qq 02-mPDF-v${MPDF_VERSION}-without-examples.zip && \
-        rm 02-mPDF-v${MPDF_VERSION}-without-examples.zip
+RUN cd /var/www/ && \
+        composer require mpdf/mpdf:${MPDF_VERSION}
 ## install/configure paypal plugin
 RUN cd /var/www/resources && \
         wget --quiet https://github.com/paypal/merchant-sdk-php/archive/v${PAYPAL_VERSION}.tar.gz && \

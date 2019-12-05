@@ -85,8 +85,8 @@ if (isset ( $_POST ['content'] ) && $_POST ['content'] != "") {
 
 $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
 $contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-$file = "../contracts/$name - " . $contract_info ['type'] . "Contract.pdf";
-$sql = "UPDATE `contracts` SET `link` = '', `name` = '$name', `address` = '$address', `number` = '$number', 
+$file = "../user/contracts/$name - " . $contract_info ['type'] . "Contract.pdf";
+$sql = "UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
         `email` = '$email', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
         `file` = '$file' WHERE `id` = $id;";
 mysqli_query ( $conn->db, $sql );
@@ -106,8 +106,8 @@ $customCSS = file_get_contents ( '../css/mpdf.css' );
 $footer = "<div align='left'><u>LAS</u>/<img src='$initial' style='height:20px; vertical-align:text-bottom;' /></div>";
 
 // create/save pdf
-require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/mPDF/vendor/autoload.php";
-$mpdf = new mPDF ();
+require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/autoload.php";
+$mpdf = new \Mpdf\Mpdf();
 $mpdf->SetHTMLFooter ( $footer );
 $mpdf->WriteHTML ( $customCSS, 1 );
 $mpdf->WriteHTML ( $content );

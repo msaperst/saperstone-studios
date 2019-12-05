@@ -15,6 +15,9 @@ $(document).ready(function() {
                     buttons = '<button type="button" class="btn btn-xs btn-warning edit-contract-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-contract-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-file-text-o"></i></button>';
                 } else {
                     buttons = '<button type="button" class="btn btn-xs btn-info dl-contract-btn" data-toggle="tooltip" data-placement="right" title="Download ' + row.name + ' ' + row.session + ' Contract"><i class="fa fa-file-pdf-o"></i></button>';
+                    if (row.link !== "") {
+                        buttons += ' <button type="button" class="btn btn-xs btn-success view-contract-btn" data-toggle="tooltip" data-placement="right" title="View Embedded ' + row.name + ' ' + row.session + ' Contract"><i class="fa fa-file-pdf-o"></i></button>';
+                    }
                 }
                 return buttons;
             },
@@ -91,6 +94,10 @@ function setupEdit() {
         var link = $(this).closest('tr').attr('contract-file');
         window.open(link);
     });
+    $('.view-contract-btn').off().click(function() {
+            var link = $(this).closest('tr').attr('contract-link');
+            window.location.href = '/contract.php?c=' + link;
+        });
 }
 
 function setupAddLineItem() {
@@ -236,7 +243,7 @@ function editContract(data) {
         draggable : true,
         size : BootstrapDialog.SIZE_WIDE,
         title : title,
-        message : $('<div></div>').load('contracts/' + type + '.php?' + content),
+        message : $('<div></div>').load('contract/' + type + '.php?' + content),
         buttons : [ {
             icon : 'glyphicon glyphicon-save',
             label : ' Save',

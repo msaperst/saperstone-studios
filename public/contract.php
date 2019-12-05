@@ -5,7 +5,7 @@ $conn = new Sql ();
 $conn->connect ();
 
 $contract_link;
-// if no album is set, throw a 404 error
+// if no contract is set, throw a 404 error
 if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "") {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
@@ -16,8 +16,8 @@ if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "") {
 
 $sql = "SELECT * FROM `contracts` WHERE link = '" . $contract_link . "';";
 $contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-// if the album doesn't exist, throw a 404 error
-if (! $contract_info ['name']) {
+// if the contract doesn't exist, throw a 404 error
+if (! $contract_info ['link']) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
     $conn->disconnect ();
@@ -57,6 +57,15 @@ if (! $contract_info ['name']) {
         <input type='hidden' id='contract-id'
             value='<?php echo $contract_info['id']; ?>' />
 
+        <?php
+            // if the contract is already signed
+            if ($contract_info ['file']) {
+        ?>
+        <embed src='<?php echo substr( $contract_info['file'], 2 ); ?>' type="application/pdf" width="100%" height="600px" />
+        <?php
+            } else {
+        ?>
+
         <div id='contract'>
         <?php echo $contract_info['content']; ?>
         </div>
@@ -91,6 +100,9 @@ if (! $contract_info ['name']) {
                 </button>
             </div>
         </div>
+        <?php
+            }
+        ?>
     </div>
 
         <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/footer.php"; ?>
