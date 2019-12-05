@@ -85,7 +85,7 @@ if (isset ( $_POST ['content'] ) && $_POST ['content'] != "") {
 
 $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
 $contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-$file = "../user/contracts/$name - " . $contract_info ['type'] . "Contract.pdf";
+$file = "../user/contracts/$name - " . date('Y-m-d') . " - " . ucfirst( $contract_info ['type'] ) . " Contract.pdf";
 $sql = "UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
         `email` = '$email', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
         `file` = '$file' WHERE `id` = $id;";
