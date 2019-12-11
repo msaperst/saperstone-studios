@@ -5,7 +5,7 @@ $user = new User ();
 
 $album;
 // if no album is set, throw a 404 error
-if (! isset ( $_GET ['album'] )) {
+if (! isset ( $_GET ['album'] ) || $_GET ['album'] == "") {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
     exit ();
@@ -27,29 +27,50 @@ if (! $album_info ['name']) {
     exit ();
 }
 
-// if not an admin and no code exists for the album
-if (! $user->isAdmin () && ($album_info ['code'] == "" || ($album_info ['code'] != "" && (! isset ( $_SESSION ['searched'] ) || ! isset ( $_SESSION ['searched'] [$album] ) || ! $_SESSION ['searched'] [$album])))) {
-    // if not logged in, throw an error
-    if (! $user->isLoggedIn ()) {
-        header ( 'HTTP/1.0 401 Unauthorized' );
-        include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
-        $conn->disconnect ();
-        exit ();
-        // if logged in
+// logic found here: https://www.draw.io/#G1oa_DMoW0-na6KNuex0oligsw1jdRbqaI
+if( $user->isAdmin () ) {
+    // if admin, do nothing, you shall pass onwards
+} else if ($_SESSION ['searched'] [$album] ) {
+    // if you successfully searched for the album, do nothing, you shall pass onwards
+} else if ( $user->isLoggedIn() ) {
+    $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";
+    $result = mysqli_query ( $conn->db, $sql );
+    $albums = array ();
+    while ( $r = mysqli_fetch_assoc ( $result ) ) {
+        $albums [] = $r ['album'];
+    }
+    if (in_array ( $album, $albums )) {
+        // user is logged in, and user has access to album, do nothing, you shall pass onwards
     } else {
-        $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";
-        $result = mysqli_query ( $conn->db, $sql );
-        $albums = array ();
-        while ( $r = mysqli_fetch_assoc ( $result ) ) {
-            $albums [] = $r ['album'];
-        }
-        // and if not in album user list
-        if (! in_array ( $album, $albums )) {
+        if( !$album_info ['code'] ) {
             header ( 'HTTP/1.0 401 Unauthorized' );
             include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
             $conn->disconnect ();
             exit ();
+        } else {
+            header ( 'HTTP/1.0 401 Unauthorized' );
+            $title = "401";
+            $subtitle = "Unauthorized";
+            $message = "Your request requires authentication.<br/>\nDespite being logged in, you do not have access to this album. Please <a href='#album'>enter the album code</a> to view this album.<br/>\n";
+            require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/error.php";
+            $conn->disconnect ();
+            exit ();
         }
+    }
+} else {
+    if( !$album_info ['code'] ) {
+        header ( 'HTTP/1.0 401 Unauthorized' );
+        include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
+        $conn->disconnect ();
+        exit ();
+    } else {
+        header ( 'HTTP/1.0 401 Unauthorized' );
+        $title = "401";
+        $subtitle = "Unauthorized";
+        $message = "Your request requires authentication.<br/>\nPlease either <a href='javascript:void(0);' data-toggle='modal' data-target='#login-modal'>Login</a> or <a href='#album'>enter the album code</a> to view this album.<br/>\n";
+        require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/error.php";
+        $conn->disconnect ();
+        exit ();
     }
 }
 
