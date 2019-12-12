@@ -42,15 +42,17 @@ if (! $user_info ['id']) {
 session_unset ();
 session_destroy ();
 
-session_name ( 'ssLogin' );
+session_name ( 'login' );
 // Making the cookie live for 1 hour
 session_set_cookie_params ( 60 * 60 );
 session_start ();
 
 $_SESSION ['usr'] = $user_info ['usr'];
 $_SESSION ['hash'] = $user_info ['hash'];
-$_SESSION ['rememberMe'] = 0;
-setcookie ( 'ssRemember', 0 );
+unset($_COOKIE['hash']);
+unset($_COOKIE['usr']);
+setcookie('hash', null, -1, '/');
+setcookie('usr', null, -1, '/');
 
 $conn->disconnect ();
 exit ();

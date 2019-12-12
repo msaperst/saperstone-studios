@@ -122,6 +122,11 @@ if ($user->isLoggedIn ()) {
                     </div>
                 </div>
             </div>
+            <span>
+                <div class="checkbox">
+                    <label><input id="profile-remember" type="checkbox"> Remember me</label>
+                </div>
+            </span>
             <div class="row">
                 <div id="update-profile-message" class="col-md-12"></div>
             </div>
@@ -130,7 +135,7 @@ if ($user->isLoggedIn ()) {
                     <div class="col-md-2">
                         <button id="update-profile" type="submit"
                             class="btn btn-primary btn-success alert">
-                            <em class="fa fa-floppy-o"></em> Update
+                            <em class="fa fa-floppy-o"></em> Register
                         </button>
                     </div>
                 </div>

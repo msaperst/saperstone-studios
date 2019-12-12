@@ -25,10 +25,10 @@ if (filter_var ( $email, FILTER_VALIDATE_EMAIL )) {
     $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT firstName, lastName FROM users WHERE email='$email';" ) );
     $name = "";
     if ($row ['firstName']) {
-        $name += $row ['firstName'];
+        $name .= $row ['firstName'];
     }
     if ($row ['lastName']) {
-        $name += " " . $row ['lastName'];
+        $name .= " " . $row ['lastName'];
     }
     
     if (is_array ( $row )) {

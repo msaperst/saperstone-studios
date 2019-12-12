@@ -72,10 +72,15 @@ mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( $last_id, CURRENT_TI
 
 $_SESSION ['usr'] = $username;
 $_SESSION ['hash'] = $hash;
-$_SESSION ['rememberMe'] = 1;
+ // Store some data in the session
 
-setcookie ( 'ssRemember', 1 );
-// We create the tzRemember cookie
+if( $_POST['rememberMe'] ) {
+    // remember the user if prompted
+    $_COOKIE['hash'] = $hash;
+    $_COOKIE ['usr'] = $username;
+    setcookie ( 'hash', $hash, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+    setcookie ( 'usr', $username, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+}
 
 mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='$hash';" );
 sleep ( 1 );

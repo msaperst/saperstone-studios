@@ -109,6 +109,7 @@ function forgotPassword() {
     $('#forgot-password-code').hide();
     $('#forgot-password-new-password').hide();
     $('#forgot-password-new-password-confirm').hide();
+    $('#forgot-password-remember-span').hide();
     $('#forgot-password-reset-password').hide();
     $('#forgot-password-modal').modal('show');
 }
@@ -146,6 +147,7 @@ function forgotPasswordReset() {
         code : $('#forgot-password-code').val(),
         password : $('#forgot-password-new-password').val(),
         passwordConfirm : $('#forgot-password-new-password-confirm').val(),
+        rememberMe : $('#forgot-password-remember').is(':checked') ? 1 : 0,
     }).done(function(data) {
         button.prop("disabled", false);
         if (data === "") {
@@ -173,6 +175,7 @@ function resetPasswordForm() {
     $('#forgot-password-code').show();
     $('#forgot-password-new-password').show();
     $('#forgot-password-new-password-confirm').show();
+    $('#forgot-password-remember-span').show();
     $('#forgot-password-reset-password').show();
 }
 

@@ -4,7 +4,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 $conn = new Sql ();
 $conn->connect ();
 
-if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['ssRemember'] ) && ! isset ( $_SESSION ['rememberMe'] )) {
+if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['hash'] ) && ! isset ( $_COOKIE ['usr'] )) {
     // If you are logged in, but you don't have the tzRemember cookie (browser restart)
     // and you have not checked the rememberMe checkbox:
     
@@ -15,9 +15,17 @@ if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['
 }
 
 if ($_POST ['submit'] == 'Logout') {
+    // note the logout
     $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE hash='{$_SESSION['hash']}'" ) );
     mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );" );
-    
+
+    // remove any stored login
+    unset($_COOKIE['hash']);
+    unset($_COOKIE['usr']);
+    setcookie('hash', null, -1, '/');
+    setcookie('usr', null, -1, '/');
+
+    // destroy the session
     session_unset ();
     session_destroy ();
     $conn->disconnect ();
@@ -44,15 +52,19 @@ if ($_POST ['submit'] == 'Login') {
         
         if ($row ['usr'] && $row ['active']) {
             // If everything is OK login
-            
+
             $_SESSION ['usr'] = $row ['usr'];
             $_SESSION ['hash'] = $row ['hash'];
-            $_SESSION ['rememberMe'] = $_POST ['rememberMe'];
             // Store some data in the session
-            
-            setcookie ( 'ssRemember', $_POST ['rememberMe'] );
-            // We create the tzRemember cookie
-            
+
+            if( $_POST['rememberMe'] ) {
+                // remember the user if prompted
+                $_COOKIE['hash'] = $row ['hash'];
+                $_COOKIE ['usr'] = $row ['usr'];
+                setcookie ( 'hash', $row ['hash'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+                setcookie ( 'usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+            }
+
             mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
             mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
             // Update last login in DB

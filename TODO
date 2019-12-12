@@ -30,6 +30,8 @@ unable to download/view images on ipad/iphone
 * magnifying glass search on desktop not aligned
 cents aren't properly saved in db for price/deposit on contracts
 
+*** resort images in albums based on file names
+
 
 MIGRATION
 * redirect from http to https (pull from walter

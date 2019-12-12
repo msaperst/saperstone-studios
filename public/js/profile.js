@@ -129,7 +129,8 @@ function updateProfile() {
         lastName : $('#profile-lastname').val(),
         curPass : $('#profile-current-password').length ? md5($('#profile-current-password').val()) : "",
         password : $('#profile-password').val().length ? md5($('#profile-password').val()) : "",
-        email : $('#profile-email').val()
+        email : $('#profile-email').val(),
+        rememberMe : $('#profile-remember').is(':checked') ? 1 : 0,
     }).done(function(data) {
         if (data !== "") {
             $('#update-profile-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");

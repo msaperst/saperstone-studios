@@ -50,9 +50,15 @@ if ($row ['usr']) {
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
     $_SESSION ['usr'] = $row ['usr'];
     $_SESSION ['hash'] = $row ['hash'];
-    $_SESSION ['rememberMe'] = 1;
-    
-    setcookie ( 'ssRemember', 1 );
+     // Store some data in the session
+
+    if( $_POST['rememberMe'] ) {
+        // remember the user if prompted
+        $_COOKIE['hash'] = $row ['hash'];
+        $_COOKIE ['usr'] = $row ['usr'];
+        setcookie ( 'hash', $row ['hash'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+        setcookie ( 'usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+    }
     
     mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$row ['hash']}';" );
     sleep ( 1 );
