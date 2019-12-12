@@ -49,6 +49,12 @@
     integrity="sha256-9wRM03dUw6ABCs+AU69WbK33oktrlXamEXMvxUaF+KU="
     crossorigin="anonymous"></script>
 
+<!-- Popper JS -->
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+
 <!-- Bootstrap Core JavaScript -->
 <script
     src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
@@ -56,6 +62,10 @@
     crossorigin="anonymous"></script>
 <script
     src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
+
+
+<!-- GDPR Cookie Handling -->
+<script src="/js/jquery.bs.gdpr.cookies.js"></script>
 
 <!-- Custom Core JavaScript -->
 <script src="/js/nav.js"></script>
@@ -75,7 +85,9 @@
 
 <!-- Google Analytics -->
 <?php
-if (isset ( $_SERVER ['HTTPS'] ) && $_SERVER ['HTTPS'] == "on") {
+$trackAnalytics = false;
+$preferences = json_decode( $_COOKIE['CookiePreferences'] );
+if (isset ( $_SERVER ['HTTPS'] ) && $_SERVER ['HTTPS'] == "on" && in_array( "analytics", $preferences ) ) {
     ?>
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

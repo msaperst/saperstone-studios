@@ -2,6 +2,52 @@ var my_role;
 var my_id;
 
 $(function() {
+    //setup our cookie consent policy, unless we're on the privacy policy page
+    if (top.location.pathname !== '/Privacy-Policy.php') {
+        $('body').bsgdprcookies({
+            // Cookie Consent message
+            message:"This site uses cookies in order to provide you with the best experience possible, provide social media " +
+            "features, analyze our traffic, and personalize album and photo data.<br/>\n<br/>\n" +
+            "Please click 'Accept' to accept this use of your data. Alternatively, you may click 'Customize' to accept (or " +
+            "reject) specific categories of data processing.<br/>\n<br/>\n" +
+            "For more information on how we process your personal data - or to update your preferences at any time - please " +
+            "visit our ",
+
+            // set expiration
+            expireDays: 10 * 52 * 7,
+
+            // options for read more link
+            moreLinkActive:true,
+            moreLinkLabel:'Privacy Policy',
+            moreLinkNewTab:true,
+            moreLink:'privacy-policy.php',
+
+            //customize options
+            allowAdvancedOptions:true,
+            advancedTitle:'Select which cookies you want to accept',
+            advancedAutoOpenDelay: 1000,
+            advancedButtonLabel:'Customize',
+            advancedCookiesToSelect: [
+                {
+                    name: 'necessary',
+                    title: 'Necessary',
+                    description: 'Required for the site to work properly',
+                    isFixed: true
+                },
+                {
+                    name: 'preferences',
+                    title: 'Site Preferences',
+                    description: 'Required for saving your site preferences, e.g. remembering your username etc.',
+                },
+                {
+                    name: 'analytics',
+                    title: 'Analytics',
+                    description: 'Required to collect site visits, browser types, etc.',
+                },
+            ],
+        });
+    }
+
     my_role = $('#my-user-role').val();
     my_id = $('#my-user-id').val();
 

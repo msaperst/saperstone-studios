@@ -31,7 +31,7 @@ unable to download/view images on ipad/iphone
 cents aren't properly saved in db for price/deposit on contracts
 
 *** resort images in albums based on file names
-
+*** based on new cookie preferences, disable stuff
 
 MIGRATION
 * redirect from http to https (pull from walter
