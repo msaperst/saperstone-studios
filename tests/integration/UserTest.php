@@ -19,8 +19,14 @@ class UserTest extends TestCase {
         $this->assertEquals ( '', $this->user->getEmail () );
         $this->user = NULL;
     }
-    public function testBadUser() {
+    public function testBadSessionUser() {
         $_SESSION ['hash'] = "1234567890abcdef1234567890abcdef";
+        $this->user = new User ();
+        $this->assertFalse ( $this->user->isLoggedIn () );
+        $this->user = NULL;
+    }
+    public function testBadCookieUser() {
+        $_COOKIE ['hash'] = "1234567890abcdef1234567890abcdef";
         $this->user = new User ();
         $this->assertFalse ( $this->user->isLoggedIn () );
         $this->user = NULL;
@@ -40,7 +46,7 @@ class UserTest extends TestCase {
         $this->user = NULL;
     }
     public function testDownloadUser() {
-        $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
+        $_COOKIE ['hash'] = "5510b5e6fffd897c234cafe499f76146";
         $this->user = new User ();
         $this->assertTrue ( $this->user->isLoggedIn () );
         $this->assertEquals ( 3, $this->user->getId () );

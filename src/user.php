@@ -5,8 +5,15 @@ class User {
         include_once "sql.php";
         $sql = new Sql ();
         $sql->connect ();
-        if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
-            $this->user_details = mysqli_fetch_assoc ( mysqli_query ( $sql->db, "SELECT * FROM users WHERE hash='{$_SESSION['hash']}';" ) );
+        $hash = NULL;
+        if( isset ( $_COOKIE ) && isset ( $_COOKIE['hash'] )) {
+            $hash = $_COOKIE['hash'];
+        }
+        if( isset ( $_SESSION ) && isset ( $_SESSION ['hash'] )) {
+            $hash = $_SESSION ['hash'];
+        }
+        if ($hash != NULL ) {
+            $this->user_details = mysqli_fetch_assoc ( mysqli_query ( $sql->db, "SELECT * FROM users WHERE hash='{$hash}';" ) );
         }
         $sql->disconnect ();
     }
