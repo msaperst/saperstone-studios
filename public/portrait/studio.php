@@ -46,7 +46,7 @@
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php"><?php echo ucfirst($nav); ?></a></li>
-                    <li><a href="services.php">Services</a></li>
+                    <li><a href="details.php">Details</a></li>
                     <li class="active">Studio</li>
                 </ol>
             </div>
