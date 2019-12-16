@@ -57,6 +57,9 @@ while ( $gallery_info ['parent'] != NULL ) {
     $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 }
 $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
+if ( $location == str_replace " ", "-", $gallery_info ['title'] ) . "/" ) {
+    $location = "img/main/" . $location;
+}
 $location = strtolower( $location );
 $location = preg_replace( '/^commercial/', 'commercial/img', $location );
 $location = preg_replace( '/^portrait/', 'portrait/img', $location );
@@ -95,16 +98,16 @@ if (isset ( $_FILES ["myfile"] )) {
     $response = array ();
     foreach ( $ret as $fileName ) {
         $size = getimagesize ( $output_dir . $fileName );
-        if ($size [0] < 900) {
+        if ($size [0] < 1140) {
             echo json_encode ( "This image doesn't meet the minimum width requirements of 900px<br/>The image is " . $size [0] . " x " . $size [1] );
             unlink ( $output_dir . $fileName );
             exit ( 1 );
-        } elseif ($size [1] < 600) {
+        } elseif ($size [1] < 760) {
             echo json_encode ( "This image doesn't meet the minimum height requirements of 600px<br/>The image is " . $size [0] . " x " . $size [1] );
             unlink ( $output_dir . $fileName );
             exit ( 1 );
         } else {
-            system ( "mogrify -resize 900x600 \"$output_dir$fileName\"" );
+            system ( "mogrify -resize 1140x760 \"$output_dir$fileName\"" );
             system ( "mogrify -density 72 \"$output_dir$fileName\"" );
             $size = getimagesize ( $output_dir . $fileName );
         }

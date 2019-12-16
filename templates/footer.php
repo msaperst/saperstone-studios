@@ -78,7 +78,7 @@
 <!-- Script to Activate the Carousel -->
 <script>
     $('.carousel').carousel({
-        interval: 8000, //changes the display speed
+        interval: 4000, //changes the display speed
         duration: 2000, //changes the slide speed
     });
 </script>
