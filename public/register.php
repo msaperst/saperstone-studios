@@ -124,7 +124,7 @@ if ($user->isLoggedIn ()) {
             </div>
             <span>
                 <div class="checkbox">
-                    <label><input id="profile-remember" type="checkbox"> Remember me</label>
+                    <label id="profile-remember-span" ><input id="profile-remember" type="checkbox"> Remember me</label>
                 </div>
             </span>
             <div class="row">

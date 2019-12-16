@@ -135,7 +135,7 @@ if (mysqli_num_rows ( $result )) {
                         id="login-pass" type="password" name="pass" placeholder="Password" />
                     <span>
                         <div class="checkbox">
-                            <label><input id="login-remember" type="checkbox"> Remember me</label>
+                            <label id="login-remember-span" ><input id="login-remember" type="checkbox"> Remember me</label>
                         </div>
                     </span>
                     <div class="login-help">

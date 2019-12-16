@@ -45,17 +45,32 @@ $(function() {
                     description: 'Required to collect site visits, browser types, etc.',
                 },
             ],
+            OnAccept: function() {
+                // show remember me option if user accepts to use preferences cookies
+                var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
+                if( cookies !== null && cookies.includes("preferences") ) {
+                    // hide all of the labels containing this
+                    $('#profile-remember-span').show();
+                    $('#login-remember-span').show();
+                    $('#forgot-password-remember-span').show();
+                }
+            }
         });
     }
+
+    var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
 
     my_role = $('#my-user-role').val();
     my_id = $('#my-user-id').val();
 
+    //only save if analytics
+    var resolution = "";
+    if( cookies !== null && cookies.includes("analytics") ) {
+        resolution = { resolution : screen.width + "x" + screen.height };
+    }
     $.ajax({
         url : '/api/save-stats.php',
-        data : {
-            resolution : screen.width + "x" + screen.height
-        }
+        data : resolution
     });
 
     $('#nav-search-icon').click(function() {
@@ -101,6 +116,18 @@ $(function() {
     if (window.location.hash && window.location.hash === "#album") {
         findAlbum();
     }
+
+    // hide remember me option if user declines to use preferences cookies
+    if( cookies === null || !cookies.includes("preferences") ) {
+        // hide all of the labels containing this
+        $('#profile-remember-span').hide();
+        $('#login-remember-span').hide();
+        $('#forgot-password-remember-span').hide();
+        // ensure everything is unchecked
+        $("#profile-remember").prop("checked", false);
+        $('#login-remember').prop("checked", false);
+        $('#forgot-password-remember').prop("checked", false);
+    }
 });
 
 window.onhashchange = function() {
@@ -108,6 +135,33 @@ window.onhashchange = function() {
         findAlbum();
     }
 };
+
+// Cookies
+function createCookie(name, value, days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toGMTString();
+    }
+    else var expires = "";
+
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    createCookie(name, "", -1);
+}
 
 function submitLogin() {
     $.post("/api/login.php", {
@@ -221,7 +275,10 @@ function resetPasswordForm() {
     $('#forgot-password-code').show();
     $('#forgot-password-new-password').show();
     $('#forgot-password-new-password-confirm').show();
-    $('#forgot-password-remember-span').show();
+    var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
+    if( cookies !== null && cookies.includes("preferences") ) {
+        $('#forgot-password-remember-span').show();
+    }
     $('#forgot-password-reset-password').show();
 }
 
@@ -283,13 +340,6 @@ function findAlbum() {
             }
         } ],
     });
-}
-
-function setCookie(content, exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-    var expires = "expires=" + d.toUTCString();
-    document.cookie = content + ";" + expires + ";path=/";
 }
 
 function searchBlog() {

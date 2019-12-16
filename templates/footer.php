@@ -85,7 +85,6 @@
 
 <!-- Google Analytics -->
 <?php
-$trackAnalytics = false;
 $preferences = json_decode( $_COOKIE['CookiePreferences'] );
 if (isset ( $_SERVER ['HTTPS'] ) && $_SERVER ['HTTPS'] == "on" && in_array( "analytics", $preferences ) ) {
     ?>
