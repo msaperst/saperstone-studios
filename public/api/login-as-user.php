@@ -42,7 +42,7 @@ if (! $user_info ['id']) {
 session_unset ();
 session_destroy ();
 
-session_name ( 'login' );
+session_name ( 'session' );
 // Making the cookie live for 1 hour
 session_set_cookie_params ( 60 * 60 );
 session_start ();
