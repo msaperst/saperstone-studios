@@ -57,7 +57,7 @@ while ( $gallery_info ['parent'] != NULL ) {
     $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 }
 $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
-if ( $location == str_replace " ", "-", $gallery_info ['title'] ) . "/" ) {
+if ( $location == str_replace ( " ", "-", $gallery_info ['title'] ) . "/" ) {
     $location = "img/main/" . $location;
 }
 $location = strtolower( $location );
