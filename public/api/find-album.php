@@ -24,8 +24,15 @@ if (isset ( $_GET ['code'] ) && $_GET ['code'] != "") {
 $sql = "SELECT * FROM albums WHERE code = '$code';";
 $r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($r ['id']) {
+    $_SESSION ["searched"] [$r ['id']] = md5( "ablum" . $code );
+    $preferences = json_decode( $_COOKIE['CookiePreferences'] );
+    if (in_array( "preferences", $preferences ) ) {
+        $searched = json_decode( $_COOKIE ["searched"] );
+        $searched [$r ['id']] = md5( "ablum" . $code );
+        $_COOKIE ["searched"] = json_encode( $searched );
+        setcookie ( 'searched', json_encode( $searched ), time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+    }
     echo $r ['id'];
-    $_SESSION ["searched"] [$r ['id']] = 1;
 } else {
     echo "That code doesn't match any albums";
     $conn->disconnect ();

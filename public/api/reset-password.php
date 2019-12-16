@@ -52,7 +52,8 @@ if ($row ['usr']) {
     $_SESSION ['hash'] = $row ['hash'];
      // Store some data in the session
 
-    if( $_POST['rememberMe'] ) {
+    $preferences = json_decode( $_COOKIE['CookiePreferences'] );
+    if( $_POST['rememberMe'] && in_array( "preferences", $preferences ) ) {
         // remember the user if prompted
         $_COOKIE['hash'] = $row ['hash'];
         $_COOKIE ['usr'] = $row ['usr'];

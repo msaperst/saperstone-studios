@@ -57,9 +57,10 @@ if ($_POST ['submit'] == 'Login') {
             $_SESSION ['hash'] = $row ['hash'];
             // Store some data in the session
 
-            if( $_POST['rememberMe'] ) {
+            $preferences = json_decode( $_COOKIE['CookiePreferences'] );
+            if( $_POST['rememberMe'] && in_array( "preferences", $preferences ) ) {
                 // remember the user if prompted
-                $_COOKIE['hash'] = $row ['hash'];
+                $_COOKIE ['hash'] = $row ['hash'];
                 $_COOKIE ['usr'] = $row ['usr'];
                 setcookie ( 'hash', $row ['hash'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
                 setcookie ( 'usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');

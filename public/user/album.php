@@ -30,7 +30,9 @@ if (! $album_info ['name']) {
 // logic found here: https://www.draw.io/#G1oa_DMoW0-na6KNuex0oligsw1jdRbqaI
 if( $user->isAdmin () ) {
     // if admin, do nothing, you shall pass onwards
-} else if ($_SESSION ['searched'] [$album] ) {
+} else if ($album_info ['code'] &&  // if an album code exists
+        ( ( $_SESSION ['searched'] != null && $_SESSION ['searched'] [$album] == md5( "ablum" . $album_info ['code'] ) ) || // and it's stored in your session
+        ( $_COOKIE ['searched'] != null && ( (array) json_decode( $_COOKIE ['searched'] ) ) [$album] == md5( "ablum" . $album_info ['code'] ) ) ) ) { // or it's stored in your cookies
     // if you successfully searched for the album, do nothing, you shall pass onwards
 } else if ( $user->isLoggedIn() ) {
     $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";

@@ -20,7 +20,7 @@ $(function() {
             moreLinkActive:true,
             moreLinkLabel:'Privacy Policy',
             moreLinkNewTab:true,
-            moreLink:'privacy-policy.php',
+            moreLink:'/Privacy-Policy.php',
 
             //customize options
             allowAdvancedOptions:true,
