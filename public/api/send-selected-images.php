@@ -8,7 +8,7 @@ $conn->connect ();
 $user = new User ();
 
 if (! $user->isLoggedIn ()) {
-    $user = $_SERVER ['REMOTE_ADDR'];
+    $user = getClientIP();
 } else {
     $user = $user->getId ();
 }
@@ -70,7 +70,7 @@ if (isset ( $_POST ['comment'] )) {
 
 // send email
 $user = new User ();
-$IP = $_SERVER ['REMOTE_ADDR'];
+$IP = getClientIP();
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/lib/Browser.php");
 $browser = new Browser ();

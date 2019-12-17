@@ -45,7 +45,7 @@ if (isset ( $_POST ['resolution'] ) && $_POST ['resolution'] != "") {
 require_once "Mail.php";
 require_once "Mail/mime.php";
 
-$IP = $_SERVER ['REMOTE_ADDR'];
+$IP = getClientIP();
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/lib/Browser.php");
 $browser = new Browser ();

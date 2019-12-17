@@ -54,7 +54,7 @@ if ($user->getId () != "") {
     $user = 'NULL';
 }
 
-$sql = "INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ($post, $user, '$name', CURRENT_TIMESTAMP, '" . $_SERVER ['REMOTE_ADDR'] . "', '$email', '$message' );";
+$sql = "INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ($post, $user, '$name', CURRENT_TIMESTAMP, '" . getClientIP . "', '$email', '$message' );";
 mysqli_query ( $conn->db, $sql );
 $last_id = mysqli_insert_id ( $conn->db );
 

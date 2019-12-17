@@ -69,7 +69,7 @@ if (isset ( $_SERVER ['HTTP_REFERER'] )) {
                         '/api/send-error.php',
                         {
                             error: '<?php echo $title; ?>',
-                            page: '<?php echo curPageURL(); ?>',
+                            page: '<?php echo getCurrentPage(); ?>',
                             referrer: '<?php echo $referer ?>',
                             resolution: screen.width+'x'+screen.height
                         }
@@ -78,21 +78,4 @@ if (isset ( $_SERVER ['HTTP_REFERER'] )) {
     </script>
 
 </body>
-
 </html>
-
-<?php
-function curPageURL() {
-    $pageURL = 'http';
-    if (isset ( $_SERVER ["HTTPS"] ) && $_SERVER ["HTTPS"] == "on") {
-        $pageURL .= "s";
-    }
-    $pageURL .= "://";
-    if ($_SERVER ["SERVER_PORT"] != "80") {
-        $pageURL .= $_SERVER ["SERVER_NAME"] . ":" . $_SERVER ["SERVER_PORT"] . $_SERVER ["REQUEST_URI"];
-    } else {
-        $pageURL .= $_SERVER ["SERVER_NAME"] . $_SERVER ["REQUEST_URI"];
-    }
-    return $pageURL;
-}
-?>

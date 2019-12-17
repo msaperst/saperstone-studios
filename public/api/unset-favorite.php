@@ -9,7 +9,7 @@ $user = new User ();
 
 $user_id;
 if (! $user->isLoggedIn ()) {
-    $user_id = $_SERVER ['REMOTE_ADDR'];
+    $user_id = getClientIP();
 } else {
     $user_id = $user->getId ();
 }

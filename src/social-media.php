@@ -69,7 +69,15 @@ class SocialMedia {
         mysqli_query ( $this->db, $sql );
     }
     function baseURL() {
-        return "https://saperstonestudios.com";
+        $pageURL = 'http';
+        if (isset ( $_SERVER ["SERVER_PORT"] ) && $_SERVER ["SERVER_PORT"] == "9443") {
+            $pageURL .= "s";
+        }
+        $pageURL .= "://" . $getServer();
+        if ($_SERVER ["SERVER_PORT"] != "90" || $_SERVER ["SERVER_PORT"] != "9443" ) {
+            $pageURL .= $getServer() . ":" . $_SERVER ["SERVER_PORT"];
+        }
+        return $pageURL;
     }
 }
 ?>

@@ -29,7 +29,7 @@ if (! $user->isLoggedIn ()) {
 }
 
 // retrieve all of our sent information
-$IP = $_SERVER ['REMOTE_ADDR'];
+$IP = getClientIP();
 $user_details = $order_details = $coupon = "";
 if (isset ( $_POST ['user'] )) {
     $user_details = mysqli_real_escape_string ( $conn->db, $_POST ['user'] );
@@ -121,7 +121,7 @@ while ( $item = mysqli_fetch_assoc ( $result ) ) {
         
         // our information about the product for the email
         $option = array_pop ( $options );
-        $preview = "<img src='http" . (isset ( $_SERVER ['HTTPS'] ) ? 's' : '') . "://" . $_SERVER ['HTTP_HOST'] . $item ['location'] . "' style='max-width:100px;max-height:100px;' alt='" . $item ['title'] . "' />";
+        $preview = "<img src='http" . (isset ( $_SERVER ['HTTPS'] ) ? 's' : '') . "://" . $getHost()  . $item ['location'] . "' style='max-width:100px;max-height:100px;' alt='" . $item ['title'] . "' />";
         $order_text .= "\t\t" . $item ['title'] . "\t" . $item ['album_title'] . "\t" . $item ['name'] . "\t" . $item ['size'] . "\t$option\t\t$" . $item ['price'] . "\n";
         $order_HTML .= "<tr><td>" . $item ['title'] . "</td><td>" . $item ['album_title'] . "</td><td>$preview</td><td>" . $item ['name'] . "</td><td>" . $item ['size'] . "</td><td>$option</td><td>$" . number_format ( $item ['price'], 2 ) . "</td></tr>";
     }

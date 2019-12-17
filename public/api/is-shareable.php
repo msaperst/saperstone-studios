@@ -15,7 +15,7 @@ if ($user->isAdmin ()) {
 
 $user;
 if (! $user->isLoggedIn ()) {
-    $user = $_SERVER ['REMOTE_ADDR'];
+    $user = getClientIP();
 } else {
     $user = $user->getId ();
 }

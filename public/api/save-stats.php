@@ -13,7 +13,7 @@ if ($user->isLoggedIn ()) {
 
 $resolution = $position = $lat = $lon = $width = $height = "";
 // get some location information
-$ip = $_SERVER ['REMOTE_ADDR'];
+$ip = getClientIP();
 if (isset ( $_GET ['position'] )) {
     $position = urldecode ( $_GET ['position'] );
     $temp = split ( ",", $position );

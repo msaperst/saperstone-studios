@@ -54,7 +54,7 @@ if (! $user->isLoggedIn () && ! $isAlbumDownloadable) {
     $conn->disconnect ();
     exit ();
 }
-$userid = $_SERVER ['REMOTE_ADDR'];
+$userid = getClientIP();
 if ($user->isLoggedIn ()) {
     $userid = $user->getId ();
 }
@@ -156,7 +156,7 @@ echo json_encode ( $response );
 mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode ( "\n", $image_array ) . "', $album );" );
 
 // send email
-$IP = $_SERVER ['REMOTE_ADDR'];
+$IP = getClientIP();
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/lib/Browser.php");
 $browser = new Browser ();
