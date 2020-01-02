@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginIT extends BaseBrowser {
+public class LoginIT extends SelenifiedBase {
 
     @BeforeMethod(groups = {"needs-album"})
     public void createAlbum() {
@@ -30,8 +30,8 @@ public class LoginIT extends BaseBrowser {
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.post("api/login.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("");
+        response.assertEquals().code(200);
+        response.assertEquals().message("");
         // verify no issues
         finish();
     }
@@ -42,8 +42,8 @@ public class LoginIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("submit", "Logout");
         Response response = call.post("api/login.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("");
+        response.assertEquals().code(200);
+        response.assertEquals().message("");
         // verify no issues
         finish();
     }
@@ -55,8 +55,8 @@ public class LoginIT extends BaseBrowser {
         data.put("submit", "Login");
         data.put("password", "max");
         Response response = call.post("api/login.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("All the fields must be filled in!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("All the fields must be filled in!");
         // verify no issues
         finish();
     }
@@ -68,8 +68,8 @@ public class LoginIT extends BaseBrowser {
         data.put("submit", "Login");
         data.put("username", "max");
         Response response = call.post("api/login.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("All the fields must be filled in!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("All the fields must be filled in!");
         // verify no issues
         finish();
     }
@@ -82,8 +82,8 @@ public class LoginIT extends BaseBrowser {
         data.put("username", "max");
         data.put("password", "password");
         Response response = call.post("api/login.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Credentials do not match our records!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Credentials do not match our records!");
         // verify no issues
         finish();
     }
@@ -96,22 +96,22 @@ public class LoginIT extends BaseBrowser {
         data.put("username", "inactive-test-user");
         data.put("password", "password");
         Response response = call.post("api/login.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Sorry, you account has been deactivated. Please                     <a target=\"_blank\" href=\"mailto:webmaster@saperstonestudios.com\">contact our                    webmaster</a> to get this resolved.");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Sorry, you account has been deactivated. Please                     <a target=\"_blank\" href=\"mailto:webmaster@saperstonestudios.com\">contact our                    webmaster</a> to get this resolved.");
         ResultSet rs = SQL.select("SELECT * FROM `users` WHERE `id` = 9999");
         while (rs.next()) {
             String lastLogin = rs.getString("lastLogin");
             if (lastLogin == null) {
-                this.apps.get().getReporter().pass("", "DB Results contain lastLogin of null", "DB Results contain lastLogin of '" + lastLogin + "'");
+                this.calls.get().getReporter().pass("", "DB Results contain lastLogin of null", "DB Results contain lastLogin of '" + lastLogin + "'");
             } else {
-                this.apps.get().getReporter().fail("", "DB Results contain lastLogin of null", "DB Results contain lastLogin of '" + lastLogin + "'");
+                this.calls.get().getReporter().fail("", "DB Results contain lastLogin of null", "DB Results contain lastLogin of '" + lastLogin + "'");
             }
         }
         rs = SQL.select("SELECT * FROM `user_logs` WHERE `user` = 9998");
         if (rs.getFetchSize() == 0) {
-            this.apps.get().getReporter().pass("", "DB Results contain no logs of user", "DB Results contains '" + rs.getFetchSize() + "' instances of user logs");
+            this.calls.get().getReporter().pass("", "DB Results contain no logs of user", "DB Results contains '" + rs.getFetchSize() + "' instances of user logs");
         } else {
-            this.apps.get().getReporter().fail("", "DB Results contain no logs of user", "DB Results contains '" + rs.getFetchSize() + "' instances of user logs");
+            this.calls.get().getReporter().fail("", "DB Results contain no logs of user", "DB Results contains '" + rs.getFetchSize() + "' instances of user logs");
         }
         // verify no issues
         finish();
@@ -125,24 +125,24 @@ public class LoginIT extends BaseBrowser {
         data.put("username", "active-test-user");
         data.put("password", "password");
         Response response = call.post("api/login.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("");
+        response.assertEquals().code(200);
+        response.assertEquals().message("");
         ResultSet rs = SQL.select("SELECT * FROM `users` WHERE `id` = 9998");
         while (rs.next()) {
             String lastLogin = rs.getString("lastLogin");
             if (lastLogin != null) {
-                this.apps.get().getReporter().pass("", "DB Results contain lastLogin of not null", "DB Results contain lastLogin of '" + lastLogin + "'");
+                this.calls.get().getReporter().pass("", "DB Results contain lastLogin of not null", "DB Results contain lastLogin of '" + lastLogin + "'");
             } else {
-                this.apps.get().getReporter().fail("", "DB Results contain lastLogin of not null", "DB Results contain lastLogin of '" + lastLogin + "'");
+                this.calls.get().getReporter().fail("", "DB Results contain lastLogin of not null", "DB Results contain lastLogin of '" + lastLogin + "'");
             }
         }
         rs = SQL.select("SELECT * FROM `user_logs` WHERE `user` = 9998");
         while (rs.next()) {
             String action = rs.getString("action");
             if ("Logged In".equals(action)) {
-                this.apps.get().getReporter().pass("", "DB Results contains records of logging in", "DB Results contains record of '" + action + "'");
+                this.calls.get().getReporter().pass("", "DB Results contains records of logging in", "DB Results contains record of '" + action + "'");
             } else {
-                this.apps.get().getReporter().fail("", "DB Results contains records of logging in", "DB Results contains record of '" + action + "'");
+                this.calls.get().getReporter().fail("", "DB Results contains records of logging in", "DB Results contains record of '" + action + "'");
             }
         }
         //TODO check session details

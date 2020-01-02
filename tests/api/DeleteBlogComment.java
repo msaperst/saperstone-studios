@@ -12,13 +12,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeleteBlogComment extends BaseBrowser {
+public class DeleteBlogComment extends SelenifiedBase {
 
     @Test(groups = {"api", "delete-album"})
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.post("api/delete-blog-comment.php", new Request());
-        response.azzert().equals(401);
+        response.assertEquals().code(401);
         // verify no issues
         finish();
     }
@@ -46,8 +46,8 @@ public class DeleteBlogComment extends BaseBrowser {
 //    public void emptyParamsTest() {
 //        Call call = this.calls.get();
 //        Response response = call.post("api/delete-blog-comment.php", new Request());
-//        response.azzert().equals(200);
-//        response.azzert().equals("Comment id is required!");
+//        response.assertEquals().code(200);
+//        response.assertEquals().message("Comment id is required!");
 //        // verify no issues
 //        finish();
 //    }
@@ -58,8 +58,8 @@ public class DeleteBlogComment extends BaseBrowser {
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("comment", "");
 //        Response response = call.post("api/delete-blog-comment.php", new Request().setMultipartData(data));
-//        response.azzert().equals(200);
-//        response.azzert().equals("Comment id cannot be blank!");
+//        response.assertEquals().code(200);
+//        response.assertEquals().message("Comment id cannot be blank!");
 //        // verify no issues
 //        finish();
 //    }
@@ -70,8 +70,8 @@ public class DeleteBlogComment extends BaseBrowser {
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("comment", "999999999");
 //        Response response = call.post("api/delete-blog-comment.php", new Request().setMultipartData(data));
-//        response.azzert().equals(200);
-//        response.azzert().equals("That ID doesn't match any comments");
+//        response.assertEquals().code(200);
+//        response.assertEquals().message("That ID doesn't match any comments");
 //        // verify no issues
 //        finish();
 //    }

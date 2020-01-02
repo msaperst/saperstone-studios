@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddNotificationEmailIT extends BaseBrowser {
+public class AddNotificationEmailIT extends SelenifiedBase {
 
     private int albumId = 9999;
 
@@ -30,8 +30,8 @@ public class AddNotificationEmailIT extends BaseBrowser {
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.post("api/add-notification-email.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("Album id is required!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Album id is required!");
         // verify no issues
         finish();
     }
@@ -42,8 +42,8 @@ public class AddNotificationEmailIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("album", "");
         Response response = call.post("api/add-notification-email.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Album id cannot be blank!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Album id cannot be blank!");
         // verify no issues
         finish();
     }
@@ -54,8 +54,8 @@ public class AddNotificationEmailIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("album", "999999999");
         Response response = call.post("api/add-notification-email.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("That ID doesn't match any albums");
+        response.assertEquals().code(200);
+        response.assertEquals().message("That ID doesn't match any albums");
         // verify no issues
         finish();
     }
@@ -66,8 +66,8 @@ public class AddNotificationEmailIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("album", albumId);
         Response response = call.post("api/add-notification-email.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Email is required!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Email is required!");
         // verify no issues
         finish();
     }
@@ -79,8 +79,8 @@ public class AddNotificationEmailIT extends BaseBrowser {
         data.put("album", albumId);
         data.put("email", "");
         Response response = call.post("api/add-notification-email.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Email cannot be blank!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Email cannot be blank!");
         // verify no issues
         finish();
     }
@@ -92,8 +92,8 @@ public class AddNotificationEmailIT extends BaseBrowser {
         data.put("album", albumId);
         data.put("email", "max@max.max");
         Response response = call.post("api/add-notification-email.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("");
+        response.assertEquals().code(200);
+        response.assertEquals().message("");
         //TODO needs to login to use that user instead
         ResultSet rs = SQL.select("SELECT * FROM `notification_emails` WHERE `album` = " + albumId);
         while (rs.next()) {
@@ -111,8 +111,8 @@ public class AddNotificationEmailIT extends BaseBrowser {
         data.put("album", albumId);
         data.put("email", "max@max.max");
         Response response = call.post("api/add-notification-email.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("");
+        response.assertEquals().code(200);
+        response.assertEquals().message("");
         ResultSet rs = SQL.select("SELECT * FROM `notification_emails` WHERE `album` = " + albumId);
         while (rs.next()) {
             checkDbEquals("max@max.max", rs, "email");

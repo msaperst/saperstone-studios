@@ -3,13 +3,13 @@ import com.coveros.selenified.services.Request;
 import com.coveros.selenified.services.Response;
 import org.testng.annotations.Test;
 
-public class GetAlbumsIT extends BaseBrowserless {
+public class GetAlbumsIT extends SelenifiedBase {
 
     @Test(groups = {"api", "get-albums"})
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.post("api/get-albums.php", new Request());
-        response.azzert().equals(401);
+        response.assertEquals().code(401);
         // verify no issues
         finish();
     }
@@ -20,8 +20,8 @@ public class GetAlbumsIT extends BaseBrowserless {
 //    public void emptyParamsTest() {
 //        Call call = this.calls.get();
 //        Response response = call.post("api/delete-album.php", new Request());
-//        response.azzert().equals(200);
-//        response.azzert().equals("Album id is required!");
+//        response.assertEquals().code(200);
+//        response.assertEquals().message("Album id is required!");
 //        // verify no issues
 //        finish();
 //    }
@@ -32,8 +32,8 @@ public class GetAlbumsIT extends BaseBrowserless {
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("id", "");
 //        Response response = call.post("api/delete-album.php", new Request());
-//        response.azzert().equals(200);
-//        response.azzert().equals("Album id cannot be blank!");
+//        response.assertEquals().code(200);
+//        response.assertEquals().message("Album id cannot be blank!");
 //        // verify no issues
 //        finish();
 //    }
@@ -44,8 +44,8 @@ public class GetAlbumsIT extends BaseBrowserless {
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("id", "999999999");
 //        Response response = call.post("api/delete-album.php", new Request());
-//        response.azzert().equals(200);
-//        response.azzert().equals("That ID doesn't match any albums");
+//        response.assertEquals().code(200);
+//        response.assertEquals().message("That ID doesn't match any albums");
 //        // verify no issues
 //        finish();
 //    }

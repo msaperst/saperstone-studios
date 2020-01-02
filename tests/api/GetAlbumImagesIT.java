@@ -1,16 +1,15 @@
 import com.coveros.selenified.services.Call;
 import com.coveros.selenified.services.Request;
 import com.coveros.selenified.services.Response;
+import com.google.gson.JsonObject;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GetAlbumImagesIT extends BaseBrowser {
+public class GetAlbumImagesIT extends SelenifiedBase {
 
     private int albumId = 9999;
     private String[] files = {"file.1.png", "file.2.png", "file.3.png", "file.4.png", "file.5.png",};
@@ -34,9 +33,11 @@ public class GetAlbumImagesIT extends BaseBrowser {
     @Test(groups = {"api", "get-album-images"})
     public void emptyParamsTest() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "Album id is required!");
         Response response = call.get("api/get-album-images.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"Album id is required!\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -44,11 +45,13 @@ public class GetAlbumImagesIT extends BaseBrowser {
     @Test(groups = {"api", "get-album-images"})
     public void blankPostId() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "Album id cannot be blank!");
         Map<String, Object> data = new HashMap<>();
         data.put("albumId", "");
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"Album id cannot be blank!\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -56,11 +59,13 @@ public class GetAlbumImagesIT extends BaseBrowser {
     @Test(groups = {"api", "get-album-images"})
     public void badPostId() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "Album doesn't exist!");
         Map<String, Object> data = new HashMap<>();
         data.put("albumId", "999999999");
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"Album doesn't exist!\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -73,7 +78,7 @@ public class GetAlbumImagesIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("albumId", albumId);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         assertArraySize(response.getArrayData(), 5);
         // verify no issues
         finish();
@@ -86,7 +91,7 @@ public class GetAlbumImagesIT extends BaseBrowser {
         data.put("albumId", albumId);
         data.put("start", 2);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         assertArraySize(response.getArrayData(), 3);
         // verify no issues
         finish();
@@ -100,7 +105,7 @@ public class GetAlbumImagesIT extends BaseBrowser {
         data.put("start", 2);
         data.put("howMany", 2);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         assertArraySize(response.getArrayData(), 2);
         // verify no issues
         finish();
@@ -114,7 +119,7 @@ public class GetAlbumImagesIT extends BaseBrowser {
         data.put("start", 2);
         data.put("howMany", 5);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         assertArraySize(response.getArrayData(), 3);
         // verify no issues
         finish();
@@ -127,7 +132,7 @@ public class GetAlbumImagesIT extends BaseBrowser {
         data.put("albumId", albumId);
         data.put("start", 7);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         assertArraySize(response.getArrayData(), 0);
         // verify no issues
         finish();

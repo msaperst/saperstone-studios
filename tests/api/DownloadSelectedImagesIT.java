@@ -2,6 +2,7 @@ import com.coveros.selenified.services.Call;
 import com.coveros.selenified.services.Request;
 import com.coveros.selenified.services.Response;
 import com.coveros.selenified.utilities.Property;
+import com.google.gson.JsonObject;
 import org.apache.commons.io.FileUtils;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
@@ -15,7 +16,7 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class DownloadSelectedImagesIT extends BaseBrowser {
+public class DownloadSelectedImagesIT extends SelenifiedBase {
 
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
     private int albumIdAll = 9996;
@@ -66,9 +67,11 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images"})
     public void emptyParamsTest() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "What to download is required!");
         Response response = call.post("api/download-selected-images.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"What to download is required!\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -76,11 +79,13 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images"})
     public void emptyWhatTest() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "What to download cannot be blank!");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "");
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"What to download cannot be blank!\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -88,11 +93,13 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images"})
     public void noAlbumTest() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "Album to download from is required!");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "some-file");
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"Album to download from is required!\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -100,12 +107,14 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images"})
     public void emptyAlbumTest() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "Album to download from cannot be blank!");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "some-file");
         data.put("album", "");
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"Album to download from cannot be blank!\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -113,12 +122,14 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images"})
     public void badAlbumTest() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "Album doesn't exist!");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "some-file");
         data.put("album", 9999999);
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"Album doesn't exist!\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -131,7 +142,7 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         data.put("what", "some-file");
         data.put("album", badAlbumId);
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(401);
+        response.assertEquals().code(401);
         // verify no issues
         finish();
     }
@@ -142,13 +153,15 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void allPossibleAllDesiredTest(ITestContext test) throws IOException {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        Date date = new Date(System.currentTimeMillis());
+        json.addProperty("file", "../tmp/sample-album-download-all " + formatter.format(date) + ".zip");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "all");
         data.put("album", albumIdAll);
-        Date date = new Date(System.currentTimeMillis());
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-all " + formatter.format(date) + ".zip\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
         FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
@@ -165,13 +178,15 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         SQL.execute("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('" + getLocalHostLANAddress().getHostAddress() + "', '" + albumIdAll + "', '4');");
 
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        Date date = new Date(System.currentTimeMillis());
+        json.addProperty("file", "../tmp/sample-album-download-all " + formatter.format(date) + ".zip");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdAll);
-        Date date = new Date(System.currentTimeMillis());
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-all " + formatter.format(date) + ".zip\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
         FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
@@ -186,13 +201,15 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         SQL.execute("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('" + getLocalHostLANAddress().getHostAddress() + "', '" + albumIdAll + "', '2');");
 
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        Date date = new Date(System.currentTimeMillis());
+        json.addProperty("file", "../tmp/sample-album-download-all " + formatter.format(date) + ".zip");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdAll);
-        Date date = new Date(System.currentTimeMillis());
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-all " + formatter.format(date) + ".zip\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
         FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
@@ -204,12 +221,14 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void allPossibleNoFavoriteDesired() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdAll);
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -217,13 +236,15 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void allPossibleOneDesired(ITestContext test) throws IOException {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        Date date = new Date(System.currentTimeMillis());
+        json.addProperty("file", "../tmp/sample-album-download-all " + formatter.format(date) + ".zip");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "2");
         data.put("album", albumIdAll);
-        Date date = new Date(System.currentTimeMillis());
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-all " + formatter.format(date) + ".zip\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
         FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
@@ -235,13 +256,15 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void SomeOverlapPossibleAllDesiredTest(ITestContext test) throws IOException {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        Date date = new Date(System.currentTimeMillis());
+        json.addProperty("file", "../tmp/sample-album-download-some " + formatter.format(date) + ".zip");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "all");
         data.put("album", albumIdSome);
-        Date date = new Date(System.currentTimeMillis());
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-some " + formatter.format(date) + ".zip\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
         FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
@@ -258,13 +281,15 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         SQL.execute("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('" + getLocalHostLANAddress().getHostAddress() + "', '" + albumIdSome + "', '4');");
 
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        Date date = new Date(System.currentTimeMillis());
+        json.addProperty("file", "../tmp/sample-album-download-some " + formatter.format(date) + ".zip");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdSome);
-        Date date = new Date(System.currentTimeMillis());
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-some " + formatter.format(date) + ".zip\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
         FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
@@ -279,13 +304,15 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         SQL.execute("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('" + getLocalHostLANAddress().getHostAddress() + "', '" + albumIdSome + "', '2');");
 
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        Date date = new Date(System.currentTimeMillis());
+        json.addProperty("file", "../tmp/sample-album-download-some " + formatter.format(date) + ".zip");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdSome);
-        Date date = new Date(System.currentTimeMillis());
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-some " + formatter.format(date) + ".zip\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
         FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
@@ -297,12 +324,14 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void SomeOverlapPossibleNoFavoriteDesired() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdSome);
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -310,13 +339,15 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void SomeOverlapPossibleOneDesired(ITestContext test) throws IOException {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        Date date = new Date(System.currentTimeMillis());
+        json.addProperty("file", "../tmp/sample-album-download-some " + formatter.format(date) + ".zip");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "2");
         data.put("album", albumIdSome);
-        Date date = new Date(System.currentTimeMillis());
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"file\":\"..\\/tmp\\/sample-album-download-some " + formatter.format(date) + ".zip\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         String fileUrl = response.getObjectData().get("file").getAsString().replaceAll(" ", "%20");
         // verify the file
         FileUtils.copyURLToFile(new URL(Property.getAppURL(this.getClass().getName(), test) + "api/" + fileUrl), zipFile);
@@ -333,12 +364,14 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         SQL.execute("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('" + getLocalHostLANAddress().getHostAddress() + "', '" + albumIdSome + "', '5');");
 
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdSome);
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -349,12 +382,14 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
         SQL.execute("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('" + getLocalHostLANAddress().getHostAddress() + "', '" + albumIdSome + "', '1');");
 
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdSome);
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -362,12 +397,14 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void NoOverlapPossibleNoFavoriteDesired() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "favorites");
         data.put("album", albumIdSome);
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -375,12 +412,14 @@ public class DownloadSelectedImagesIT extends BaseBrowser {
     @Test(groups = {"api", "download-selected-images", "needs-album"})
     public void NoOverlapPossibleOneDesired() {
         Call call = this.calls.get();
+        JsonObject json = new JsonObject();
+        json.addProperty("err", "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.");
         Map<String, Object> data = new HashMap<>();
         data.put("what", "5");
         data.put("album", albumIdSome);
         Response response = call.post("api/download-selected-images.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("{\"err\":\"There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.\"}");
+        response.assertEquals().code(200);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }

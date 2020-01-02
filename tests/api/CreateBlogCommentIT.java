@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateBlogCommentIT extends BaseBrowser {
+public class CreateBlogCommentIT extends SelenifiedBase {
 
     private int blogId = 9999;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
@@ -33,8 +33,8 @@ public class CreateBlogCommentIT extends BaseBrowser {
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.post("api/create-blog-comment.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("Post id is required!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Post id is required!");
         // verify no issues
         finish();
     }
@@ -45,8 +45,8 @@ public class CreateBlogCommentIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("post", "");
         Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Post id cannot be blank!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Post id cannot be blank!");
         // verify no issues
         finish();
     }
@@ -57,8 +57,8 @@ public class CreateBlogCommentIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("post", "999999999");
         Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("That ID doesn't match any posts");
+        response.assertEquals().code(200);
+        response.assertEquals().message("That ID doesn't match any posts");
         // verify no issues
         finish();
     }
@@ -69,8 +69,8 @@ public class CreateBlogCommentIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogId);
         Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Message is required!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Message is required!");
         // verify no issues
         finish();
     }
@@ -83,7 +83,7 @@ public class CreateBlogCommentIT extends BaseBrowser {
         data.put("message", "some message");
         Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
         Date date = new Date(System.currentTimeMillis());
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
             checkDbEquals(null, rs, "user");
@@ -106,7 +106,7 @@ public class CreateBlogCommentIT extends BaseBrowser {
         data.put("message", "some message");
         Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
         Date date = new Date(System.currentTimeMillis());
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
             checkDbEquals(null, rs, "user");
@@ -129,7 +129,7 @@ public class CreateBlogCommentIT extends BaseBrowser {
         data.put("message", "some message");
         Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
         Date date = new Date(System.currentTimeMillis());
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
             checkDbEquals(null, rs, "user");
@@ -153,7 +153,7 @@ public class CreateBlogCommentIT extends BaseBrowser {
         data.put("message", "some message");
         Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
         Date date = new Date(System.currentTimeMillis());
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
             checkDbEquals(null, rs, "user");
@@ -178,7 +178,7 @@ public class CreateBlogCommentIT extends BaseBrowser {
         data.put("message", "some message");
         Response response = call.post("api/create-blog-comment.php", new Request().setMultipartData(data));
         Date date = new Date(System.currentTimeMillis());
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         ResultSet rs = SQL.select("SELECT * FROM `blog_comments` WHERE `blog` = " + blogId);
         while (rs.next()) {
             checkDbEquals(null, rs, "user");

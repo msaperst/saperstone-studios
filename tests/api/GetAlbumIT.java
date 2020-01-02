@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GetAlbumIT extends BaseBrowserless {
+public class GetAlbumIT extends SelenifiedBase {
 
     private int albumId = 9999;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
@@ -28,8 +28,8 @@ public class GetAlbumIT extends BaseBrowserless {
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.get("api/get-album.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("Album id is required!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Album id is required!");
         // verify no issues
         finish();
     }
@@ -40,8 +40,8 @@ public class GetAlbumIT extends BaseBrowserless {
         Map<String, Object> data = new HashMap<>();
         data.put("id", "");
         Response response = call.get("api/get-album.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Album id cannot be blank!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Album id cannot be blank!");
         // verify no issues
         finish();
     }
@@ -52,8 +52,8 @@ public class GetAlbumIT extends BaseBrowserless {
         Map<String, Object> data = new HashMap<>();
         data.put("id", "999999999");
         Response response = call.get("api/get-album.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals("That ID doesn't match any albums");
+        response.assertEquals().code(200);
+        response.assertEquals().message("That ID doesn't match any albums");
         // verify no issues
         finish();
     }
@@ -64,7 +64,7 @@ public class GetAlbumIT extends BaseBrowserless {
         Map<String, Object> data = new HashMap<>();
         data.put("id", albumId);
         Response response = call.get("api/get-album.php", new Request().setUrlParams(data));
-        response.azzert().equals(401);
+        response.assertEquals().code(401);
         // verify no issues
         finish();
     }

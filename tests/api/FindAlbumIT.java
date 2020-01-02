@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FindAlbumIT extends BaseBrowserless {
+public class FindAlbumIT extends SelenifiedBase {
 
     private int albumId = 9999;
 
@@ -26,8 +26,8 @@ public class FindAlbumIT extends BaseBrowserless {
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.get("api/find-album.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("Album code is required!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Album code is required!");
         // verify no issues
         finish();
     }
@@ -38,8 +38,8 @@ public class FindAlbumIT extends BaseBrowserless {
         Map<String, Object> data = new HashMap<>();
         data.put("code", "");
         Response response = call.get("api/find-album.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Album code cannot be blank!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Album code cannot be blank!");
         // verify no issues
         finish();
     }
@@ -50,8 +50,8 @@ public class FindAlbumIT extends BaseBrowserless {
         Map<String, Object> data = new HashMap<>();
         data.put("code", "some-bogus-album");
         Response response = call.get("api/find-album.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals("That code doesn't match any albums");
+        response.assertEquals().code(200);
+        response.assertEquals().message("That code doesn't match any albums");
         // verify no issues
         finish();
     }
@@ -62,8 +62,8 @@ public class FindAlbumIT extends BaseBrowserless {
         Map<String, Object> data = new HashMap<>();
         data.put("code", "sample-album");
         Response response = call.get("api/find-album.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals(String.valueOf(albumId));
+        response.assertEquals().code(200);
+        response.assertEquals().message(String.valueOf(albumId));
         // verify no issues
         finish();
     }

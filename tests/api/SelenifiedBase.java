@@ -1,11 +1,14 @@
+import com.coveros.selenified.Browser;
 import com.coveros.selenified.Selenified;
 import com.coveros.selenified.services.HTTP;
-import com.coveros.selenified.services.Response;
 import com.google.gson.JsonArray;
 import org.testng.ITestContext;
+import org.testng.ITestResult;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
@@ -17,16 +20,22 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static com.coveros.selenified.utilities.Constants.DIV_I;
+import static com.coveros.selenified.utilities.Constants.*;
 import static com.coveros.selenified.utilities.Constants.END_IDIV;
-import static com.coveros.selenified.utilities.Constants.GSON;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
-public class BaseBrowser extends Selenified {
+public class SelenifiedBase extends Selenified {
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass(ITestContext test) {
         setAppURL(this, test, "http://localhost:90/");
         setContentType(this, test, HTTP.ContentType.FORMDATA);
+    }
+
+    @BeforeMethod(alwaysRun = true)
+    protected void startTest(Object[] dataProvider, Method method, ITestContext test, ITestResult result) throws IOException {
+        super.startTest(dataProvider, method, test, result, Browser.BrowserUse.FALSE);
     }
 
     /**
@@ -99,46 +108,50 @@ public class BaseBrowser extends Selenified {
     void checkDbEquals(String expected, ResultSet rs, String column) throws SQLException {
         String actual = rs.getString(column);
         if (actual == expected || expected.equals(actual)) {
-            this.apps.get().getReporter().pass("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
+            this.calls.get().getReporter().pass("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
         } else {
-            this.apps.get().getReporter().fail("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
+            this.calls.get().getReporter().fail("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
         }
+        assertEquals(expected, actual, "DB Results Mismatch");
     }
 
     void checkDbMatches(String expected, ResultSet rs, String column) throws SQLException {
         String actual = rs.getString(column);
         if (actual.matches(expected)) {
-            this.apps.get().getReporter().pass("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
+            this.calls.get().getReporter().pass("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
         } else {
-            this.apps.get().getReporter().fail("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
+            this.calls.get().getReporter().fail("", "DB Results contain " + column + " '" + expected + "'", "DB Results contain " + column + " '" + actual + "'");
         }
+        assertTrue(actual.matches(expected), "DB Results Mismatch");
     }
 
     void assertZipContains(String zipFilePath, List<String> expectedFiles) throws IOException {
-            List<String> actualFiles = new ArrayList<>();
+        List<String> actualFiles = new ArrayList<>();
 
-            ZipFile zipFile = new ZipFile(zipFilePath);
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        ZipFile zipFile = new ZipFile(zipFilePath);
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                String name = entry.getName();
-                actualFiles.add(name);
-            }
-            zipFile.close();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            String name = entry.getName();
+            actualFiles.add(name);
+        }
+        zipFile.close();
 
         if (expectedFiles.equals(actualFiles)) {
-            this.apps.get().getReporter().pass("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
+            this.calls.get().getReporter().pass("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
         } else {
-            this.apps.get().getReporter().fail("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
+            this.calls.get().getReporter().fail("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
         }
+        assertEquals(actualFiles, expectedFiles, "ZIP Contents Mismatch");
     }
 
     void assertArraySize(JsonArray json, int size) {
         if (json.size() == size) {
-            this.apps.get().getReporter().pass("", "Expected JsonArray to have size '" + size + "'", "JsonArray has content " + DIV_I + apps.get().getReporter().formatHTML(GSON.toJson(json)) + END_IDIV);
+            this.calls.get().getReporter().pass("", "Expected JsonArray to have size '" + size + "'", "JsonArray has content " + DIV_I + this.calls.get().getReporter().formatHTML(GSON.toJson(json)) + END_IDIV);
         } else {
-            this.apps.get().getReporter().fail("", "Expected JsonArray to have size '" + size + "'", "JsonArray has content " + DIV_I + apps.get().getReporter().formatHTML(GSON.toJson(json)) + END_IDIV);
+            this.calls.get().getReporter().fail("", "Expected JsonArray to have size '" + size + "'", "JsonArray has content " + DIV_I + this.calls.get().getReporter().formatHTML(GSON.toJson(json)) + END_IDIV);
         }
+        assertEquals(json.size(), size, "Array Size Mismatch");
     }
 }

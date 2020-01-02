@@ -6,14 +6,14 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContactMeIT extends BaseBrowserless {
+public class ContactMeIT extends SelenifiedBase {
 
     @Test(groups = {"api", "contact-me"})
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.post("api/contact-me.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("Name is required");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Name is required");
         // verify no issues
         finish();
     }
@@ -24,8 +24,8 @@ public class ContactMeIT extends BaseBrowserless {
         Map<String, Object> data = new HashMap<>();
         data.put("name", "Max");
         Response response = call.post("api/contact-me.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Phone is required");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Phone is required");
         // verify no issues
         finish();
     }
@@ -37,8 +37,8 @@ public class ContactMeIT extends BaseBrowserless {
         data.put("name", "Max");
         data.put("phone", "571-245-3351");
         Response response = call.post("api/contact-me.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Email is required");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Email is required");
         // verify no issues
         finish();
     }
@@ -51,8 +51,8 @@ public class ContactMeIT extends BaseBrowserless {
         data.put("phone", "571-245-3351");
         data.put("email", "msaperst@gmail.com");
         Response response = call.post("api/contact-me.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("A message is required");
+        response.assertEquals().code(200);
+        response.assertEquals().message("A message is required");
         // verify no issues
         finish();
     }
@@ -66,8 +66,8 @@ public class ContactMeIT extends BaseBrowserless {
         data.put("email", "msaperst@gmail.com");
         data.put("message", "Hi There! I am a test email");
         Response response = call.post("api/contact-me.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.");
         // verify no issues
         finish();
     }
@@ -81,8 +81,8 @@ public class ContactMeIT extends BaseBrowserless {
         data.put("email", "msaperst@saperstonestudios.com");
         data.put("message", "Hi There! I am another test email");
         Response response = call.post("api/contact-me.php", new Request().setMultipartData(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.");
         // verify no issues
         finish();
     }

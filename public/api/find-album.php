@@ -26,7 +26,7 @@ $r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
 if ($r ['id']) {
     $_SESSION ["searched"] [$r ['id']] = md5( "ablum" . $code );
     $preferences = json_decode( $_COOKIE['CookiePreferences'] );
-    if (in_array( "preferences", $preferences ) ) {
+    if ( is_array( $preferences ) && in_array( "preferences", $preferences ) ) {
         $searched = json_decode( $_COOKIE ["searched"] );
         $searched [$r ['id']] = md5( "ablum" . $code );
         $_COOKIE ["searched"] = json_encode( $searched );

@@ -4,19 +4,16 @@ import com.coveros.selenified.services.Response;
 import com.google.gson.JsonObject;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class CheckoutIT extends BaseBrowserless {
+public class CheckoutIT extends SelenifiedBase {
 
     @Test(groups = {"api", "checkout"})
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.post("api/checkout.php", new Request());
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         JsonObject json = new JsonObject();
         json.addProperty("error", "User must be logged in to submit their order.");
-        response.azzert().equals(json);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }

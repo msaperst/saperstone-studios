@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GetBlogFullIT extends BaseBrowser {
+public class GetBlogFullIT extends SelenifiedBase {
 
     private int blogId = 9998;
     private int blogIdAll = 9999;
@@ -42,8 +42,8 @@ public class GetBlogFullIT extends BaseBrowser {
     public void emptyParamsTest() {
         Call call = this.calls.get();
         Response response = call.get("api/get-blog-full.php", new Request());
-        response.azzert().equals(200);
-        response.azzert().equals("Post id is required!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Post id is required!");
         // verify no issues
         finish();
     }
@@ -54,8 +54,8 @@ public class GetBlogFullIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("post", "");
         Response response = call.get("api/get-blog-full.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Post id cannot be blank!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Post id cannot be blank!");
         // verify no issues
         finish();
     }
@@ -66,8 +66,8 @@ public class GetBlogFullIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("post", "999999999");
         Response response = call.get("api/get-blog-full.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
-        response.azzert().equals("Blog doesn't exist!");
+        response.assertEquals().code(200);
+        response.assertEquals().message("Blog doesn't exist!");
         // verify no issues
         finish();
     }
@@ -78,7 +78,7 @@ public class GetBlogFullIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogId);
         Response response = call.get("api/get-blog-full.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         JsonObject json = new JsonObject();
         json.addProperty("id", String.valueOf(blogId));
         json.addProperty("title", "sample blog post");
@@ -88,7 +88,7 @@ public class GetBlogFullIT extends BaseBrowser {
         json.addProperty("offset", "0");
         json.addProperty("active", "0");
         json.addProperty("twitter", "0");
-        response.azzert().equals(json);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
@@ -99,7 +99,7 @@ public class GetBlogFullIT extends BaseBrowser {
         Map<String, Object> data = new HashMap<>();
         data.put("post", blogIdAll);
         Response response = call.get("api/get-blog-full.php", new Request().setUrlParams(data));
-        response.azzert().equals(200);
+        response.assertEquals().code(200);
         JsonObject json = new JsonObject();
         json.addProperty("id", String.valueOf(blogIdAll));
         json.addProperty("title", "sample blog post");
@@ -160,7 +160,7 @@ public class GetBlogFullIT extends BaseBrowser {
         JsonArray commentArray = new JsonArray();
         commentArray.add(comment);
         json.add("comments", commentArray);
-        response.azzert().equals(json);
+        response.assertEquals().objectData(json);
         // verify no issues
         finish();
     }
