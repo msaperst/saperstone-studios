@@ -14,9 +14,7 @@ import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -27,10 +25,14 @@ import static org.testng.Assert.assertTrue;
 
 public class SelenifiedBase extends Selenified {
 
+    Map<String, Object> loginCookie = new HashMap<>();
+
     @BeforeClass(alwaysRun = true)
     public void beforeClass(ITestContext test) {
         setAppURL(this, test, "http://localhost:90/");
         setContentType(this, test, HTTP.ContentType.FORMDATA);
+
+        loginCookie.put("Cookie", "hash=1d7505e7f434a7713e84ba399e937191");
     }
 
     @BeforeMethod(alwaysRun = true)
@@ -144,14 +146,5 @@ public class SelenifiedBase extends Selenified {
             this.calls.get().getReporter().fail("", "Zip file contains files <b>" + String.join("</b>, <b>", expectedFiles) + "</b>", "Zip file contains files <b>" + String.join("</b>, <b>", actualFiles) + "</b>");
         }
         assertEquals(actualFiles, expectedFiles, "ZIP Contents Mismatch");
-    }
-
-    void assertArraySize(JsonArray json, int size) {
-        if (json.size() == size) {
-            this.calls.get().getReporter().pass("", "Expected JsonArray to have size '" + size + "'", "JsonArray has content " + DIV_I + this.calls.get().getReporter().formatHTML(GSON.toJson(json)) + END_IDIV);
-        } else {
-            this.calls.get().getReporter().fail("", "Expected JsonArray to have size '" + size + "'", "JsonArray has content " + DIV_I + this.calls.get().getReporter().formatHTML(GSON.toJson(json)) + END_IDIV);
-        }
-        assertEquals(json.size(), size, "Array Size Mismatch");
     }
 }

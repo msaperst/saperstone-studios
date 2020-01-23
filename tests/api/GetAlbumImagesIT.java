@@ -79,7 +79,7 @@ public class GetAlbumImagesIT extends SelenifiedBase {
         data.put("albumId", albumId);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
         response.assertEquals().code(200);
-        assertArraySize(response.getArrayData(), 5);
+        response.assertEquals().arraySize(5);
         // verify no issues
         finish();
     }
@@ -92,7 +92,7 @@ public class GetAlbumImagesIT extends SelenifiedBase {
         data.put("start", 2);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
         response.assertEquals().code(200);
-        assertArraySize(response.getArrayData(), 3);
+        response.assertEquals().arraySize(3);
         // verify no issues
         finish();
     }
@@ -106,7 +106,7 @@ public class GetAlbumImagesIT extends SelenifiedBase {
         data.put("howMany", 2);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
         response.assertEquals().code(200);
-        assertArraySize(response.getArrayData(), 2);
+        response.assertEquals().arraySize(2);
         // verify no issues
         finish();
     }
@@ -120,7 +120,7 @@ public class GetAlbumImagesIT extends SelenifiedBase {
         data.put("howMany", 5);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
         response.assertEquals().code(200);
-        assertArraySize(response.getArrayData(), 3);
+        response.assertEquals().arraySize(3);
         // verify no issues
         finish();
     }
@@ -133,7 +133,7 @@ public class GetAlbumImagesIT extends SelenifiedBase {
         data.put("start", 7);
         Response response = call.get("api/get-album-images.php", new Request().setUrlParams(data));
         response.assertEquals().code(200);
-        assertArraySize(response.getArrayData(), 0);
+        response.assertEquals().arraySize(0);
         // verify no issues
         finish();
     }
