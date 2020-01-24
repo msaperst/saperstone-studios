@@ -115,12 +115,11 @@
                     traffic and site interaction so that we can offer better site
                     experiences and tools in the future.</p>
                 <p>We use cookies to:
-                
-                
                 <ul>
                     <li>Help remember and process the items in the shopping cart.</li>
                     <li>Understand and save user's preferences for future visits.</li>
                 </ul>
+                <p>You can review or edit your current cookie options <span id='edit-cookies'>here</span></p>
                 <p>You can choose to have your computer warn you each time a cookie
                     is being sent, or you can choose to turn off all cookies. You do
                     this through your browser settings. Since browser is a little

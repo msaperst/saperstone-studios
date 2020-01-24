@@ -11,29 +11,34 @@
 
 (function($) {
 
-    $.fn.bsgdprcookies = function(options, event) {
+    $.fn.bsgdprcookies = function(event) {
 
         var $element = $(this);
         var cookieShow = ReadCookie('CookieShow');
         var cookiePreferences = ReadCookie('CookiePreferences');
 
         // Set default settings
-        var settings = $.extend({
+        var settings = {
             id: 'bs-gdpr-cookies-modal',
             class: '',
             title: 'Cookies & Privacy Policy',
             backdrop: 'static',
-            message: 'Your cookie message...',
+            message:"This site uses cookies in order to provide you with the best experience possible, provide social media " +
+                        "features, analyze our traffic, and personalize album and photo data.<br/>\n<br/>\n" +
+                        "Please click 'Accept' to accept this use of your data. Alternatively, you may click 'Customize' to accept (or " +
+                        "reject) specific categories of data processing.<br/>\n<br/>\n" +
+                        "For more information on how we process your personal data - or to update your preferences at any time - please " +
+                        "visit our ",
             messageScrollBar: false,
             messageMaxHeightPercent: 25,
             delay: 1500,
-            expireDays: 30,
-            moreLinkActive: true,
-            moreLinkLabel: 'More informations..',
-            moreLinkNewTab: true,
-            moreLink: 'privacy-policy.php',
+            expireDays: 10 * 52 * 7,
+            moreLinkActive:true,
+            moreLinkLabel:'Privacy Policy',
+            moreLinkNewTab:true,
+            moreLink:'/Privacy-Policy.php',
             acceptButtonLabel: 'Accept',
-            allowAdvancedOptions: false,
+            allowAdvancedOptions: true,
             advancedTitle: 'Select which cookies you want to accept',
             advancedAutoOpenDelay: 1000,
             advancedButtonLabel: 'Customize',
@@ -48,23 +53,24 @@
                     name: 'preferences',
                     title: 'Site Preferences',
                     description: 'Required for saving your site preferences, e.g. remembering your username etc.',
-                    isFixed: false
                 },
                 {
                     name: 'analytics',
                     title: 'Analytics',
                     description: 'Required to collect site visits, browser types, etc.',
-                    isFixed: false
                 },
-                {
-                    name: 'marketing',
-                    title: 'Marketing',
-                    description: 'Required to marketing, e.g. newsletters, social media, etc',
-                    isFixed: false
-                }
             ],
-            OnAccept: function() {}
-        }, options);
+            OnAccept: function() {
+                // show remember me option if user accepts to use preferences cookies
+                var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
+                if( cookies !== null && cookies.includes("preferences") ) {
+                    // hide all of the labels containing this
+                    $('#profile-remember-span').show();
+                    $('#login-remember-span').show();
+                    $('#forgot-password-remember-span').show();
+                }
+            }
+        };
 
         if(!cookieShow || !cookiePreferences || event == 'reinit') {
 
@@ -162,7 +168,7 @@
                 $.each($('input[name="bsgdpr[]"]').serializeArray(), function(i, field){
                     preferences.push(field.value);
                 });
-                CreateCookie('CookiePreferences', JSON.stringify(preferences), 365);
+                CreateCookie('CookiePreferences', JSON.stringify(preferences), settings.expireDays);
 
                 // Run callback function
                 settings.OnAccept.call(this);

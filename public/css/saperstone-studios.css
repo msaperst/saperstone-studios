@@ -18,6 +18,15 @@ a, a:hover, a:focus {
     color: #00ab9e;
 }
 
+#edit-cookies {
+    color: #00ab9e;
+    cursor: pointer;
+}
+
+#edit-cookies:hover {
+    text-decoration: underline;
+}
+
 .overlay {
     width: 100%;
     height: 100%;
