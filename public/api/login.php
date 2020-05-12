@@ -44,7 +44,7 @@ if ($_POST ['submit'] == 'Login') {
     
     if (! count ( $err )) {
         $_POST ['username'] = mysqli_real_escape_string ( $conn->db, $_POST ['username'] );
-        $_POST ['password'] = mysqli_real_escape_string ( $conn->db, $_POST ['password'] );
+        $_POST ['password'] = md5( mysqli_real_escape_string ( $conn->db, $_POST ['password'] ) );
         $_POST ['rememberMe'] = ( int ) $_POST ['rememberMe'];
         
         // Escaping all input data

@@ -808,8 +808,6 @@ footer {
 
     <!-- Gallery JavaScript -->
     <script src="/js/album.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.3.1/js/md5.min.js"></script>
     <?php
     if ($user->isAdmin ()) {
         ?>

@@ -56,7 +56,7 @@ if (isset ( $_POST ['lastName'] ) && $_POST ['lastName'] != "") {
 }
 
 if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
-    $password = mysqli_real_escape_string ( $conn->db, $_POST ['password'] );
+    $password = md5( mysqli_real_escape_string ( $conn->db, $_POST ['password'] ) );
 } else {
     echo "Password is not provided";
     $conn->disconnect ();
