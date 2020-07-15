@@ -119,7 +119,7 @@ function eraseCookie(name) {
 function submitLogin() {
     $.post("/api/login.php", {
         username : $('#login-user').val(),
-        password : md5($('#login-pass').val()),
+        password : $('#login-pass').val(),
         rememberMe : $('#login-remember').is(':checked') ? 1 : 0,
         submit : "Login"
     }).done(function(data) {

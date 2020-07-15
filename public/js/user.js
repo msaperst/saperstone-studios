@@ -470,8 +470,8 @@ function editUser(data) {
                             // send our update
                             $.post("/api/update-user-password.php", {
                                 id : data.id,
-                                password : md5($('#user-password').val()),
-                                passwordConfirm : md5($('#user-password-confirm').val()),
+                                password : $('#user-password').val(),
+                                passwordConfirm : $('#user-password-confirm').val(),
                             }).done(function(data) {
                                 if (data === "") {
                                     $button.stopSpin();

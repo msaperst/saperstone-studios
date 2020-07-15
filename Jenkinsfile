@@ -21,14 +21,14 @@ node() {
         }
         cleanWs()
         stage('Checkout Code') { // for display purposes
-            // Get the test code from Gitblit repository
+            // Get the test code from GitHub repository
             checkout([
                     $class           : 'GitSCM',
                     branches         : [[name: "*/${branchCheckout}"]],
                     userRemoteConfigs: [[
-                                                url          : 'http://victor/gitblit/r/saperstone-studios.git',
+                                                url          : 'git@github.com:msaperst/saperstone-studios.git',
                                                 refspec      : "${refspecs}",
-                                                credentialsId: '33c0a87f-a4c8-4736-9598-e8898458ce89'
+                                                credentialsId: 'github'
                                         ]]
             ])
         }

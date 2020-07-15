@@ -723,7 +723,7 @@ function submitCart() {
 
     var coupon;
     if ($('#cart-coupon').val() !== "") {
-        coupon = md5($('#cart-coupon').val());
+        coupon = $('#cart-coupon').val();
     }
     var order = [];
     $('#cart-items tr').each(function() {

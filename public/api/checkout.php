@@ -46,7 +46,7 @@ if (isset ( $_POST ['order'] )) {
     exit ();
 }
 if (isset ( $_POST ['coupon'] )) {
-    $coupon = mysqli_real_escape_string ( $conn->db, $_POST ['coupon'] );
+    $coupon = md5( mysqli_real_escape_string ( $conn->db, $_POST ['coupon'] ) );
 }
 
 // generate our items to order

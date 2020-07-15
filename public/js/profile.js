@@ -127,8 +127,8 @@ function updateProfile() {
         username : $('#profile-username').val(),
         firstName : $('#profile-firstname').val(),
         lastName : $('#profile-lastname').val(),
-        curPass : $('#profile-current-password').length ? md5($('#profile-current-password').val()) : "",
-        password : $('#profile-password').val().length ? md5($('#profile-password').val()) : "",
+        curPass : $('#profile-current-password').length ? $('#profile-current-password').val() : "",
+        password : $('#profile-password').val().length ? $('#profile-password').val() : "",
         email : $('#profile-email').val(),
         rememberMe : $('#profile-remember').is(':checked') ? 1 : 0,
     }).done(function(data) {
