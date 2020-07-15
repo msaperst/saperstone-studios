@@ -161,7 +161,7 @@
                         include 2-3 sibling/family portraits</li>
                 </ul>
                 <p>
-                    <a href='galleries.php?w=4'>See More</a>
+                    <a href='gallery.php?w=4'>See More</a>
                 </p>
             </div>
 
