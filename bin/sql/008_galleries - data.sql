@@ -57,10 +57,10 @@ INSERT IGNORE INTO `galleries` VALUES (49, 5, '1year-locaion.jpg', 'On Location'
 INSERT IGNORE INTO `galleries` VALUES (50, 28, 'album-block.jpg', 'Album Block', 'This wooden block holds 10 of your favorite 5x7 images and is perfect for display on a mantle, coffee table or shelf.  Photos are mounted on a durable styrene, making it easy to rotate through displaying your images.  Color options are black or white, your choice!');
 INSERT IGNORE INTO `galleries` VALUES (51, 28, 'keepsake-usb.jpg', 'Keepsake USB', 'Every time you order digital files, they are given to you in this keepsake USB case for safe keeping.  Be sure to back these images up in multiple locations as digital media is forever changing!');
 INSERT IGNORE INTO `galleries` VALUES (52, NULL, NULL, 'Commercial', NULL);
-INSERT IGNORE INTO `galleries` VALUES (53, 52, 'professional-headshots.jpg', 'Professional Headshots', NULL);
-INSERT IGNORE INTO `galleries` VALUES (54, 52, 'company-headshots.jpg', 'Company Headshots', NULL);
+INSERT IGNORE INTO `galleries` VALUES (53, 52, 'studio-headshots.jpg', 'Studio Headshots', NULL);
+INSERT IGNORE INTO `galleries` VALUES (54, 52, 'company-headshots.jpg', 'Company Headshots and Team Photos', NULL);
 INSERT IGNORE INTO `galleries` VALUES (55, 52, 'events.jpg', 'Events', NULL);
-INSERT IGNORE INTO `galleries` VALUES (56, 52, 'professional-branding.jpg', 'Professional Branding', NULL);
+INSERT IGNORE INTO `galleries` VALUES (56, 52, 'professional-branding.jpg', 'Professional Branding', 'Move away from the ''stock photo'' look for your website, social media and branding materials and give your business a more personal voice. Below are some past projects we''ve done to showcase different companies and their individual corporate culture.');
 INSERT IGNORE INTO `galleries` VALUES (57, 52, 'photobooth.jpg', 'Photobooth', NULL);
 INSERT IGNORE INTO `galleries` VALUES (58, NULL, 'professional-headshots.jpg', 'Professional Headshots - Slideshow', NULL);
 INSERT IGNORE INTO `galleries` VALUES (59, NULL, 'company-headshots.jpg', 'Company Headshots - Slideshow', NULL);
@@ -69,5 +69,15 @@ INSERT IGNORE INTO `galleries` VALUES (61, NULL, 'professional-branding.jpg', 'P
 INSERT IGNORE INTO `galleries` VALUES (62, NULL, 'photobooth.jpg', 'Photobooth - Slideshow', NULL);
 INSERT IGNORE INTO `galleries` VALUES (63, 28, 'reveal-box.jpg', 'Reveal Box', 'Hand made in Italy with a wide array of color options in leatherette to customize to your home and style. The Reveal Box holds 15 of your favorite images from your session on fine art paper either printed on a thick styrene at 8x10 or printed as 5x7 and placed in an 8x10 matte - Mix and match however you choose.<br/><br/>This box also allows for display versatility. Place your favorite image on top to be viewed through the glass window, place images in an 8x10 frame and put on your walls or tabletop or even place images as is on an easel. These images can go from box to frame and back again with extreme ease.');
 INSERT IGNORE INTO `galleries` VALUES (63, 38, 'reveal-box.jpg', 'Reveal Box', 'Hand made in Italy with a wide array of color options in leatherette to customize to your home and style. The Reveal Box holds 15 of your favorite images from your session on fine art paper either printed on a thick styrene at 8x10 or printed as 5x7 and placed in an 8x10 matte - Mix and match however you choose.<br/><br/>This box also allows for display versatility. Place your favorite image on top to be viewed through the glass window, place images in an 8x10 frame and put on your walls or tabletop or even place images as is on an easel. These images can go from box to frame and back again with extreme ease.');
+INSERT IGNORE INTO `galleries` VALUES (64, 52, 'on-location-headshots.jpg', 'On Location Headshots', NULL);
+INSERT IGNORE INTO `galleries` VALUES (65, 56, 'team-hot-cocoa-social.jpg', 'Team Hot Cocoa Social', NULL);
+INSERT IGNORE INTO `galleries` VALUES (66, 56, 'corporate-culture.jpg', 'Corporate Culture', NULL);
+INSERT IGNORE INTO `galleries` VALUES (67, 56, 'doctor-care.jpg', 'Doctor Care', NULL);
+INSERT IGNORE INTO `galleries` VALUES (68, 56, 'neurogrow-brain-fitness-center.jpg', 'NeuroGrow - Brain Fitness Center', NULL);
+INSERT IGNORE INTO `galleries` VALUES (69, 55, 'company-meeting.jpg', 'Company Meeting', NULL);
+INSERT IGNORE INTO `galleries` VALUES (70, 55, 'holiday-party.jpg', 'Holiday Party', NULL);
+INSERT IGNORE INTO `galleries` VALUES (71, 55, 'corporate-picnic.jpg', 'Corporate Picnic', NULL);
+
+
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
