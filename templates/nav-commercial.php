@@ -16,11 +16,11 @@
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="galleries.php?w=53">Studio Headshots</a></li>
-                <li><a href="galleries.php?w=64">On Location</a></li>
-                <li><a href="galleries.php?w=54">Company Headshots and Team Photos</a></li>
+                <li><a href="galleries.php?w=54">On Location</a></li>
+                <li><a href="galleries.php?w=55">Company Headshots and Team Photos</a></li>
                 <li><a href="gallery.php?w=56">Professional Branding</a></li>
-                <li><a href="gallery.php?w=55">Events</a></li>
-                <li><a href="galleries.php?w=57">Photobooth</a></li>
+                <li><a href="gallery.php?w=57">Events</a></li>
+                <li><a href="galleries.php?w=58">Photobooth</a></li>
             </ul></li>
         <li><a href="retouch.php">Retouch</a></li>
         <li><a href="reviews.php?c=3">Raves</a></li>

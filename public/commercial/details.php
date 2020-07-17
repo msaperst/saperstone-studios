@@ -44,46 +44,46 @@
 
         <div class="row" style='padding-top: 30px'>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Headshots"
+                <div section="Services"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Headshots</span> <img
-                        class="img-responsive" src="img/headshots.jpg<?php echo $rand; ?>"
-                        alt="Headshots">
+                    <span class='preview-title'>Services</span> <img
+                        class="img-responsive" src="img/services.jpg<?php echo $rand; ?>"
+                        alt="Services">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="headshots.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="services.php">See More</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Events"
+                <div section="Background Options"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Events</span> <img
-                        class="img-responsive" src="img/events.jpg<?php echo $rand; ?>"
-                        alt="Events">
+                    <span class='preview-title'>Background Options</span> <img
+                        class="img-responsive" src="img/background-options.jpg<?php echo $rand; ?>"
+                        alt="Background Options">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="events.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="background.php">See More</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Professional Branding"
+                <div section="What to Expect"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Professional Branding</span> <img
-                        class="img-responsive" src="img/branding.jpg<?php echo $rand; ?>"
-                        alt="Professional Branding">
+                    <span class='preview-title'>What to Expect</span> <img
+                        class="img-responsive" src="img/what-to-expect.jpg<?php echo $rand; ?>"
+                        alt="What to Expect">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="branding.php">See More</a>
+                        <br /> <br /> <br /> <a class="info" href="expect.php">See More</a>
                     </div>
                 </div>
             </div>
             <div class="col-sm-offset-4 col-md-4 col-sm-6 col-xs-12">
-                <div section="Photobooth"
+                <div section="FAQ"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
-                    <span class='preview-title'>Photobooth</span> <img
+                    <span class='preview-title'>FAQ</span> <img
                         class="img-responsive"
-                        src="img/photobooth.jpg<?php echo $rand; ?>" alt="Photobooth">
+                        src="img/faq.jpg<?php echo $rand; ?>" alt="FAQ">
                     <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="photobooth.php">See
+                        <br /> <br /> <br /> <a class="info" href="faq.php">See
                             More</a>
                     </div>
                 </div>

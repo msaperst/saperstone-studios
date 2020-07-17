@@ -720,3 +720,14 @@ img.protect {
     top: 0;
     z-index: 98;
 }
+
+/* for toggling visible content */
+.collapse-header {
+    cursor: pointer;
+}
+.collapse-header i {
+    color: #980f7f
+}
+.collapse-content {
+    display: none;
+}

@@ -70,9 +70,9 @@ INSERT IGNORE INTO `galleries` VALUES (65, 56, 'team-hot-cocoa-social.jpg', 'Tea
 INSERT IGNORE INTO `galleries` VALUES (66, 56, 'corporate-culture.jpg', 'Corporate Culture', NULL);
 INSERT IGNORE INTO `galleries` VALUES (67, 56, 'doctor-care.jpg', 'Doctor Care', NULL);
 INSERT IGNORE INTO `galleries` VALUES (68, 56, 'neurogrow-brain-fitness-center.jpg', 'NeuroGrow - Brain Fitness Center', NULL);
-INSERT IGNORE INTO `galleries` VALUES (69, 55, 'company-meeting.jpg', 'Company Meeting', NULL);
-INSERT IGNORE INTO `galleries` VALUES (70, 55, 'holiday-party.jpg', 'Holiday Party', NULL);
-INSERT IGNORE INTO `galleries` VALUES (71, 55, 'corporate-picnic.jpg', 'Corporate Picnic', NULL);
+INSERT IGNORE INTO `galleries` VALUES (69, 57, 'company-meeting.jpg', 'Company Meeting', NULL);
+INSERT IGNORE INTO `galleries` VALUES (70, 57, 'holiday-party.jpg', 'Holiday Party', NULL);
+INSERT IGNORE INTO `galleries` VALUES (71, 57, 'corporate-picnic.jpg', 'Corporate Picnic', NULL);
 
 
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
