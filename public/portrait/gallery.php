@@ -141,7 +141,7 @@ if ($parent == 'Product') {
             <div
                 class="<?php echo $padding; ?>col-md-4 col-sm-6 col-xs-12">
                 <div section="<?php echo $child['title']; ?>"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'><?php echo $child['title']; ?></span> <img
                         class="img-responsive" alt="<?php echo $child['title']; ?>"
                         src="img/<?php echo $child['image']; echo $rand; ?>" />

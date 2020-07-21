@@ -51,13 +51,13 @@
                 <h2 class="page-header">Studio Headshots</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/studio-headshots-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Studio Headshots">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/studio-headshots-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Studio Headshots">
                 </div>
@@ -83,13 +83,13 @@
                 <h2 class="page-header">On Location Headshots</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/on-location-headshots-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="On Location Headshots">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/on-location-headshots-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="On Location Headshots">
                 </div>
@@ -109,13 +109,13 @@
                 <h2 class="page-header">Company Headshots</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/company-headshots-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Company Headshots">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/company-headshots-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Company Headshots">
                 </div>
@@ -137,13 +137,13 @@
                 <h2 class="page-header">Professional Branding</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/professional-branding-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Professional Branding">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/professional-branding-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Professional Branding">
                 </div>
@@ -166,13 +166,13 @@
                 <h2 class="page-header">Events</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/events-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Events">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/events-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Events">
                 </div>
@@ -192,13 +192,13 @@
                 <h2 class="page-header">Photo Booth</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/photo-booth-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Photo Booth">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/photo-booth-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Photo Booth">
                 </div>

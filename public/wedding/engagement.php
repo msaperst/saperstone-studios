@@ -46,7 +46,7 @@
         <!-- Features Section -->
         <div class="row">
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img width="100%"
                         src="img/engagement-main-1.jpg<?php echo $rand; ?>"
                         alt="Engagements" />
@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img width="100%"
                         src="img/engagement-main-2.jpg<?php echo $rand; ?>"
                         alt="Engagements" />

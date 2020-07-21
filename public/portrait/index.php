@@ -127,7 +127,7 @@
         <div class="row">
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section='Details'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Details</span> <img
                         class="img-responsive" src="img/details.jpg<?php echo $rand; ?>"
                         alt="Details">
@@ -138,7 +138,7 @@
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section='Gallery'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Gallery</span> <img
                         class="img-responsive" src="img/gallery.jpg<?php echo $rand; ?>"
                         alt="Gallery">
@@ -150,7 +150,7 @@
             </div>
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div section='Retouch'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Retouch</span> <img
                         class="img-responsive" src="img/retouch.jpg<?php echo $rand; ?>"
                         alt="Retouch">
@@ -161,7 +161,7 @@
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section='About'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>About</span> <img
                         class="img-responsive" src="img/about.jpg<?php echo $rand; ?>"
                         alt="About">
@@ -172,7 +172,7 @@
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section='Raves'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Raves</span> <img
                         class="img-responsive" src="img/reviews.jpg<?php echo $rand; ?>"
                         alt="Raves">
@@ -184,7 +184,7 @@
             </div>
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div section='Blog'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Blog</span> <img class="img-responsive"
                         src="img/blog.jpg<?php echo $rand; ?>" alt="Blog">
                     <div class="overlay">

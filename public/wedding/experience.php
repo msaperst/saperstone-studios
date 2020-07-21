@@ -46,7 +46,7 @@
         <!-- Features Section -->
         <div class="row">
             <div class="col-lg-12">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img width="100%" src="img/experience.jpg<?php echo $rand; ?>"
                         alt="Experience" />
                     <div class="overlay"></div>

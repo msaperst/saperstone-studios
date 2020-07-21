@@ -47,7 +47,7 @@
         <div class="row">
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section="Professional Headshots"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Professional Headshots</span> <img
                         class="img-responsive" alt="Professional Headshots"
                         src="img/headshots-main-1.jpg<?php echo $rand; ?>" />
@@ -59,7 +59,7 @@
 
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section="Company Headshots"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Company Headshots</span> <img
                         class="img-responsive" alt="Company Headshots"
                         src="img/headshots-main-2.jpg<?php echo $rand; ?>" />

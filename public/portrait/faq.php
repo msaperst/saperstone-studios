@@ -45,13 +45,13 @@
         <!-- Features Section -->
         <div class="row">
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/details-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Details">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/details-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Details">
                 </div>

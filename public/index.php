@@ -36,7 +36,7 @@
             </div>
             <div class="col-md-4 col-xs-12">
                 <div section='Portraits'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Portraits</span> <img
                         class="img-responsive"
                         src="/img/main/portraits.jpg<?php echo $rand; ?>" width="100%"
@@ -49,7 +49,7 @@
             </div>
             <div class="col-md-4 col-xs-12">
                 <div section='Weddings'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Weddings</span> <img
                         class="img-responsive" src="/img/main/weddings.jpg<?php echo $rand; ?>"
                         width="100%" alt="Weddings">
@@ -61,7 +61,7 @@
             </div>
             <div class="col-md-4 col-xs-12">
                 <div section='Commercial'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Commercial</span> <img
                         class="img-responsive" src="/img/main/commercial.jpg<?php echo $rand; ?>"
                         width="100%" alt="Commercial">

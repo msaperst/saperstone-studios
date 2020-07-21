@@ -51,7 +51,7 @@
                 <h2 class="page-header">The Fab Five | $100</h2>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable vertical"; } ?>">
                     <img src="img/fab-five.jpg<?php echo $rand; ?>" width="100%"
                         alt="The Fab Five">
                 </div>
@@ -74,7 +74,7 @@
                 <h2 class="page-header">The Basic | $200</h2>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable vertical"; } ?>">
                     <img src="img/basic.jpg<?php echo $rand; ?>" width="100%"
                         alt="The Basic">
                 </div>
@@ -97,7 +97,7 @@
                 <h2 class="page-header">The Professional | $400</h2>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable vertical"; } ?>">
                     <img src="img/professional.jpg<?php echo $rand; ?>" width="100%"
                         alt="The Professional">
                 </div>

@@ -78,7 +78,7 @@
         <div class="row" style='padding-top: 30px'>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="The Wedding Experience"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>The Wedding Experience</span> <img
                         class="img-responsive" src="img/wedding.jpg<?php echo $rand; ?>"
                         alt="The Wedding Experience">
@@ -90,7 +90,7 @@
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Engagements"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Engagements</span> <img
                         class="img-responsive"
                         src="img/engagement.jpg<?php echo $rand; ?>" alt="Engagements">
@@ -102,7 +102,7 @@
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="The Process"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>The Process</span> <img
                         class="img-responsive" src="img/process.jpg<?php echo $rand; ?>"
                         alt="The Process">
@@ -113,7 +113,7 @@
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Products and Investment"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Products and Investment</span> <img
                         class="img-responsive" src="img/products.jpg<?php echo $rand; ?>"
                         alt="Products and Investment">
@@ -124,7 +124,7 @@
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Night Photography"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Night Photography</span> <img
                         class="img-responsive" src="img/night.jpg<?php echo $rand; ?>"
                         alt="Night Photography">
@@ -135,7 +135,7 @@
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Photobooth"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Photobooth</span> <img
                         class="img-responsive"
                         src="img/photobooth.jpg<?php echo $rand; ?>" alt="Photobooth">

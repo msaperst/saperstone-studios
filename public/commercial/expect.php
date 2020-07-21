@@ -51,13 +51,13 @@
         <!-- Features Section -->
         <div class="row">
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/expect-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="What to Expect">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/expect-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="What to Expect">
                 </div>

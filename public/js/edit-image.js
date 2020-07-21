@@ -5,14 +5,25 @@ if (folder.endsWith(".php") || folder === "/") {
 }
 
 $(document).ready(function() {
-    $('.editable').append('<span class="editme" style="position:absolute; bottom:0; right:0; padding:5px;"></span>');
+    $('.editable').each(function(){
+        var scale = 2 / 3;
+        if( $(this).hasClass("horizontal")) {
+            scale = 2 / 3;
+        } else if ($(this).hasClass("vertical")) {
+            scale = 3 / 2;
+        } else if ($(this).hasClass("square")) {
+            scale = 1;
+        }
+        $(this).append('<span class="editme" style="position:absolute; bottom:0; right:0; padding:5px;" scale="' + scale + '"></span>');
+    });
     $('.editme').each(function() {
         var img = $(this).parent().find('img');
         var this_class = $(this).parent().parent().attr('class');
         var count = this_class.match(/col-([a-z]{2})-(\d+)/);
         count = count[0].match(/(\d+)/)[0];
+        var scale = $(this).attr('scale')
         var min_width = 1200 / 12 * count;
-        var min_height = 1200 / 12 * count * 2 / 3;
+        var min_height = min_width * scale;
         var location = img.attr('src').split('?')[0];
         $(this).uploadFile({
             url : "/api/upload-image.php",
@@ -50,7 +61,7 @@ $(document).ready(function() {
                         message : '<h1>Updating Image...</h1>'
                     });
                     if (min_width < 1200) {
-                        arrangeImage(img);
+                        arrangeImage(img, scale);
                     } else {
                         cropImage(img);
                     }
@@ -60,9 +71,9 @@ $(document).ready(function() {
     });
 });
 
-function arrangeImage(img) {
+function arrangeImage(img, scale) {
     cleanImage(img);
-    var forcedHeight = parseInt(img.parent().width()) * 2 / 3;
+    var forcedHeight = parseInt(img.parent().width()) * scale;
     img.parent().css({
         'height' : forcedHeight + 'px',
     });

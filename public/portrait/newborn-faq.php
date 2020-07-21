@@ -46,13 +46,13 @@
         <!-- Features Section -->
         <div class="row">
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/newborn-faq-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Newborn">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/newborn-faq-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Newborn">
                 </div>
@@ -97,13 +97,13 @@
         </div>
         <div class="row" style="padding-top: 20px;">
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/newborn-faq-3.jpg<?php echo $rand; ?>" width="100%"
                         alt="Newborn">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/newborn-faq-4.jpg<?php echo $rand; ?>" width="100%"
                         alt="Newborn">
                 </div>

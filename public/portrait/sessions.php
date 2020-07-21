@@ -57,13 +57,13 @@
                 <h2 class="page-header">Maternity</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/maternity-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Maternity">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/maternity-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Maternity">
                 </div>
@@ -90,13 +90,13 @@
                 <h2 class="page-header">Newborn</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/newborn-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Newborn">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/newborn-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Newborn">
                 </div>
@@ -131,13 +131,13 @@
                 <h2 class="page-header">Sitting up - 6 to 8 Months</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/6-month-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="6 Month">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/6-month-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="6 Month">
                 </div>
@@ -169,13 +169,13 @@
                 <h2 class="page-header">Cake Smash - 1 Year</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/1-year-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="1 Year">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/1-year-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="1 Year">
                 </div>
@@ -202,13 +202,13 @@
                 <h2 class="page-header">Family and Kids</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/family-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Family">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/family-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Family">
                 </div>
@@ -246,13 +246,13 @@
                 <h2 class="page-header">High School Senior</h2>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/senior-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Senior">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/senior-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Senior">
                 </div>

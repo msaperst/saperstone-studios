@@ -97,13 +97,13 @@ if (isset ( $_GET ['c'] )) {
                 }
                 ?>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="<?php echo $r['image1']; echo $rand; ?>" width="100%"
                         alt="<?php echo $r['image1']; ?>">
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="<?php echo $r['image2']; echo $rand; ?>" width="100%"
                         alt="<?php echo $r['image2']; ?>">
                 </div>
@@ -137,7 +137,7 @@ if (isset ( $_GET ['c'] )) {
 
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Wedding Wire'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Wedding Wire</span> <img
                         class="img-responsive"
                         src="/img/main/wedding-wire.jpg<?php echo $rand; ?>" width="100%"
@@ -152,7 +152,7 @@ if (isset ( $_GET ['c'] )) {
 
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Yelp'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Yelp</span> <img class="img-responsive"
                         src="/img/main/yelp.jpg<?php echo $rand; ?>" width="100%" alt="Yelp">
                     <div class="overlay">
@@ -165,7 +165,7 @@ if (isset ( $_GET ['c'] )) {
 
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Google'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Google</span> <img
                         class="img-responsive" src="/img/main/google.jpg<?php echo $rand; ?>"
                         width="100%" alt="Google">

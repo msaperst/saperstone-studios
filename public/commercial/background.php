@@ -61,19 +61,19 @@
                 <h3 class="page-header">Solid Grey</h3>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/solid-grey-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Solid Grey">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/solid-grey-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Solid Grey">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/solid-grey-3.jpg<?php echo $rand; ?>" width="100%"
                         alt="Solid Grey">
                 </div>
@@ -83,19 +83,19 @@
                 <h3 class="page-header">Solid White</h3>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/solid-white-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Solid White">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/solid-white-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Solid White">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/solid-white-3.jpg<?php echo $rand; ?>" width="100%"
                         alt="Solid White">
                 </div>
@@ -105,19 +105,19 @@
                 <h3 class="page-header">Muslin Grey</h3>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/muslin-grey-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Muslin Grey">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/muslin-grey-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Muslin Grey">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/muslin-grey-3.jpg<?php echo $rand; ?>" width="100%"
                         alt="Muslin Grey">
                 </div>
@@ -127,19 +127,19 @@
                 <h3 class="page-header">Muslin Brown</h3>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/muslin-brown-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Muslin Brown">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/muslin-brown-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Muslin Brown">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/muslin-brown-3.jpg<?php echo $rand; ?>" width="100%"
                         alt="Muslin Brown">
                 </div>
@@ -155,19 +155,19 @@
             </div>
 
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/environmental-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Environmental">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/environmental-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Environmental">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/environmental-3.jpg<?php echo $rand; ?>" width="100%"
                         alt="Environmental">
                 </div>
@@ -181,19 +181,19 @@
             </div>
 
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/outdoors-1.jpg<?php echo $rand; ?>" width="100%"
                         alt="Outdoors">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/outdoors-2.jpg<?php echo $rand; ?>" width="100%"
                         alt="Outdoors">
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
                     <img src="img/outdoors-3.jpg<?php echo $rand; ?>" width="100%"
                         alt="Outdoors">
                 </div>

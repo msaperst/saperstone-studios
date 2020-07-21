@@ -73,7 +73,7 @@
         <div class="row" style='padding-top: 30px'>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Retouch'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Portrait Retouch</span> <img
                         class="img-responsive"
                         src="img/portrait-retouch.jpg<?php echo $rand; ?>" width="100%"
@@ -86,7 +86,7 @@
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Restoration'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Restoration</span> <img
                         class="img-responsive"
                         src="img/restoration.jpg<?php echo $rand; ?>" width="100%"
@@ -99,7 +99,7 @@
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section='Manipulation'
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Other</span> <img
                         class="img-responsive"
                         src="img/manipulation.jpg<?php echo $rand; ?>" width="100%"
