@@ -101,7 +101,7 @@
                         href='/blog/post.php?p=413'>parking lots</a>, you'd be surprised
                         what I can do with a small amount of greenery!</p>
                 <p>
-                    <a href='galleries.php?w=64'>See More</a>
+                    <a href='galleries.php?w=54'>See More</a>
                 </p>
             </div>
 
@@ -129,7 +129,7 @@
                 <p><a href='/contact.php'>Contact me today</a> for a custom quote based
                         off of the desired number of headshots and group shots needed.</p>
                 <p>
-                    <a href='galleries.php?w=54'>See More</a>
+                    <a href='galleries.php?w=55'>See More</a>
                 </p>
             </div>
 
@@ -184,7 +184,7 @@
                         you worked so hard to create as well as people having a great
                         time and interacting with your brand.</p>
                 <p>
-                    <a href='gallery.php?w=55'>See More</a>
+                    <a href='gallery.php?w=57'>See More</a>
                 </p>
             </div>
 
@@ -221,7 +221,7 @@
                     <li>Fun props included!</li>
                 </ul>
                 <p>
-                    <a href='galleries.php?w=57'>See More</a>
+                    <a href='galleries.php?w=58'>See More</a>
                 </p>
             </div>
         </div>

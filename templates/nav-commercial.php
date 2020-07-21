@@ -9,6 +9,7 @@
                 <li><a href="services.php">Services</a></li>
                 <li><a href="background.php">Background Options</a></li>
                 <li><a href="expect.php">What to Expect</a></li>
+                <li><a href="pricing.php">Pricing</a></li>
                 <li><a href="faq.php">FAQ</a></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"

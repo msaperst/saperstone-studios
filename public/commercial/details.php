@@ -76,7 +76,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-offset-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="col-sm-offset-2 col-md-4 col-sm-6 col-xs-12">
+                <div section="Pricing"
+                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
+                    <span class='preview-title'>Pricing</span> <img
+                        class="img-responsive"
+                        src="img/pricing.jpg<?php echo $rand; ?>" alt="Pricing">
+                    <div class="overlay">
+                        <br /> <br /> <br /> <a class="info" href="pricing.php">See
+                            More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="FAQ"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable"; } ?>">
                     <span class='preview-title'>FAQ</span> <img
