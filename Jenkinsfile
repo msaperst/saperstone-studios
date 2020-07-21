@@ -212,7 +212,17 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             sh "docker logout ${dockerRepo}"
         }
         timeout(time: 30, unit: 'MINUTES') {
-            input 'Do you want to deploy to production?'
+            input(
+                message: 'Deploy To Production?',
+                ok: 'Yes',
+                parameters: [
+                    booleanParam(
+                        defaultValue: true,
+                        description: 'Should we deploy this out to production',
+                        name: 'Deploy?'
+                    )
+                ]
+            )
         }
         stage('Copy Container to Walter') {
             parallel(
