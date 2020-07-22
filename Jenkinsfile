@@ -211,18 +211,20 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             sh "docker system prune -a -f"
             sh "docker logout ${dockerRepo}"
         }
-        timeout(time: 30, unit: 'MINUTES') {
-            input(
-                message: 'Deploy To Production?',
-                ok: 'Yes',
-                parameters: [
-                    booleanParam(
-                        defaultValue: true,
-                        description: 'Should we deploy this out to production',
-                        name: 'Deploy?'
-                    )
-                ]
-            )
+        stage('Deploy to Production') {
+            timeout(time: 30, unit: 'MINUTES') {
+                input(
+                    message: 'Deploy To Production?',
+                    ok: 'Yes',
+                    parameters: [
+                        booleanParam(
+                            defaultValue: true,
+                            description: 'Should we deploy this out to production',
+                            name: 'Deploy?'
+                        )
+                    ]
+                )
+            }
         }
         stage('Copy Container to Walter') {
             parallel(
