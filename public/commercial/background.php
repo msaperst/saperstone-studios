@@ -177,7 +177,7 @@
                 <h2 class="page-header">Outdoors</h2>
             </div>
             <div class="col-xs-12" style="padding-top: 20px;">
-                <p>Take the session outside of an easy, natural and relaxed look.</p>
+                <p>Take the session outside for an easy, natural and relaxed look.</p>
             </div>
 
             <div class="col-xs-4">
