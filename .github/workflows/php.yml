@@ -17,6 +17,9 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
+    - name: Super-Linter
+      uses: github/super-linter@v3.3.2
+
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v2
