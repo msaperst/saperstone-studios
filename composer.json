@@ -1,0 +1,11 @@
+{
+    "name": "fatmax.com/saperstone-studios",
+    "description": "Saperstone Studios website tooling needed for localized testing",
+    "require-dev": {
+        "phpunit/phpunit": "^7"
+    },
+
+    "scripts": {
+        "unit-test": "vendor/phpunit/phpunit/phpunit tests/unit/"
+    }
+}

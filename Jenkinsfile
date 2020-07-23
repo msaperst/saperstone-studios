@@ -37,7 +37,27 @@ node() {
             sh "chmod +x phpunit"
         }
         stage('Run Unit Tests') {
-            sh "./phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
+            try {
+                sh "./phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
+            } catch (e) {
+                // throw e
+            } finally {
+                junit 'reports/junit.xml'
+                step([
+                    $class: 'CloverPublisher',
+                    cloverReportDir: 'reports/',
+                    cloverReportFileName: 'clover.xml'
+                ])
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/html',
+                        reportFiles          : 'index.html',
+                        reportName           : 'Clover Coverage Report'
+                ])
+            }
+
         }
         stage('Run Sonar Analysis') {
             sh """sonar-scanner \
