@@ -76,9 +76,6 @@ require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARAT
 $browser = new Browser ();
 $from = "Selects <selects@saperstonestudios.com>";
 $to = "Selects <selects@saperstonestudios.com>";
-if ($email != "") {
-    $to .= ", \"$name\" <$email>";
-}
 $subject = "Selects Have Been Made";
 
 $html = "<html><body>";
@@ -100,6 +97,24 @@ $mime->setTXTBody ( $text );
 $mime->setHTMLBody ( $html );
 $body = $mime->get ();
 require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/email.php";
+
+// send a separate one to the user
+if ($email != "") {
+    $to = "$name <$email>";
+    $subject = "Thank You for Making Selects";
+
+    $text = "Thank you for making your selects. We'll start working on your images, and reach back out to you shortly with access to your final images.";
+    $html = "<html><body>$text</body></html>";
+
+    require_once "Mail.php";
+    require_once "Mail/mime.php";
+    $crlf = "\n";
+    $mime = new Mail_mime ( $crlf );
+    $mime->setTXTBody ( $text );
+    $mime->setHTMLBody ( $html );
+    $body = $mime->get ();
+    require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/email.php";
+}
 
 $conn->disconnect ();
 exit ();

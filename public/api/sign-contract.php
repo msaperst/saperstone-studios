@@ -115,12 +115,10 @@ $mpdf->Output ( $file );
 
 // email out pdf
 $from = "Contracts <contracts@saperstonestudios.com>";
-$to = "Contracts <contracts@saperstonestudios.com>, \"$name\" <$email>";
+$to = "$name <$email>";
 $subject = "Saperstone Studios " . ucfirst ( $contract_info ['type'] ) . " Contract";
 
 $html = "<html><body>";
-$html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
-$text = "This is an automatically generated message from Saperstone Studios\n\n";
 $html .= "<p>Thank you for signing your contract. ";
 $text .= "Thank you for signing your contract. ";
 if ($contract_info ['deposit'] > 0) {
@@ -130,6 +128,31 @@ if ($contract_info ['deposit'] > 0) {
 if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
     $html .= "You can pay your invoice online <a href='" . $contract_info ['invoice'] . "' target='_blank'>here</a>.";
     $text .= "You can pay your invoice online at " . $contract_info ['invoice'] . ".";
+}
+$html .= "</p>";
+$text .= "\n\n";
+$html .= "</body></html>";
+
+require_once "Mail.php";
+require_once "Mail/mime.php";
+$crlf = "\n";
+$mime = new Mail_mime ( $crlf );
+$mime->setTXTBody ( $text );
+$mime->setHTMLBody ( $html );
+$mime->addAttachment ( $file );
+$body = $mime->get ();
+require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/email.php";
+
+// now send to LAS
+$to = "Contracts <contracts@saperstonestudios.com>";
+$html = "<html><body>";
+$html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
+$text = "This is an automatically generated message from Saperstone Studios\n\n";
+$html .= "<p>$name has signed their contract, this is a copy of it for your records. ";
+$text .= "$name has signed their contract, this is a copy of it for your records. ";
+if ($contract_info ['deposit'] > 0) {
+    $html .= "Don't forget that they have a $" . $contract_info ['deposit'] . " deposit due. ";
+    $text .= "Don't forget that they have a $" . $contract_info ['deposit'] . " deposit due. ";
 }
 $html .= "</p>";
 $text .= "\n\n";
