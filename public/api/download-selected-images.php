@@ -158,7 +158,7 @@ mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CU
 // send email
 $IP = getClientIP();
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
-require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/lib/Browser.php");
+require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php");
 $browser = new Browser ();
 $from = "Actions <actions@saperstonestudios.com>";
 $to = "Actions <actions@saperstonestudios.com>";

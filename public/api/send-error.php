@@ -47,7 +47,7 @@ require_once "Mail/mime.php";
 
 $IP = getClientIP();
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
-require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/lib/Browser.php");
+require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php");
 $browser = new Browser ();
 
 // create email body and send it
