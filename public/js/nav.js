@@ -81,6 +81,14 @@ $(function() {
         $('#login-remember').prop("checked", false);
         $('#forgot-password-remember').prop("checked", false);
     }
+
+    $('#displayed-alerts .close').click(function(){
+        var id = $(this).attr('id');
+        createCookie(id,"dismissed",9999);
+        // fix the heading size
+        var heading = $('.navbar-inverse').css('border-top-width');
+        $('.navbar-inverse').css('border-top-width', parseInt(heading) - 60 + "px");
+    });
 });
 
 window.onhashchange = function() {

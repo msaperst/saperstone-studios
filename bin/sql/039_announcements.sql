@@ -16,3 +16,4 @@ CREATE TABLE IF NOT EXISTS `announcements` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 ALTER TABLE `announcements` CHANGE `message` `message` TEXT NOT NULL;
+ALTER TABLE `announcements` ADD `path` VARCHAR(255) NOT NULL AFTER `message`;
