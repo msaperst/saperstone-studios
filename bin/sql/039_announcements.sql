@@ -14,3 +14,5 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+ALTER TABLE `announcements` CHANGE `message` `message` TEXT NOT NULL;

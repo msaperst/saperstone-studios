@@ -2,6 +2,7 @@
 <!-- Messages -->
 <?php
 $initial_connection = false;
+$height_offset = 10;
 $DOCUMENT_ROOT = "DOCUMENT_ROOT";
 if (isset ( $conn ) && $conn->isConnected()) {
     $initial_connection = true;
@@ -15,11 +16,12 @@ $result = mysqli_query ( $conn->db, $sql );
 if (mysqli_num_rows ( $result )) {
     ?>
 <div id='displayed-alerts'
-    style='position: fixed; width: 100%; top: -10px; z-index: 10000;'>
+    style='position: fixed; width: 100%; top: -20px; z-index: 10000; font-size:large; font-weight:bold; text-align:center'>
     <?php
 }
 while ( $row = mysqli_fetch_assoc ( $result ) ) {
     if (! isset ( $_COOKIE ["id" . $row ['id']] )) {
+           $height_offset += 60;
         ?>
 <div
         class="alert alert-warning<?php if ($row['dismissible']) { echo " alert-dismissable fade in"; } ?>">
@@ -39,7 +41,7 @@ if (mysqli_num_rows ( $result )) {
 }
 ?>
 <!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="border-top:<?php echo $height_offset; ?>px #980f7f solid">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -57,7 +59,7 @@ if (mysqli_num_rows ( $result )) {
                 alt="Saperstone Studios Logo"></a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
-        
+
         <?php
         switch ($nav) {
             case "portrait" :
@@ -73,7 +75,7 @@ if (mysqli_num_rows ( $result )) {
                 require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "templates/nav-main.php";
         }
         ?>
-            
+
                   <?php
                 if (! $user->isLoggedIn ()) {
                     ?>
