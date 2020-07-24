@@ -11,6 +11,8 @@ if (isset ( $conn ) && $conn->isConnected()) {
     $conn = new Sql ();
     $conn->connect ();
 }
+include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
+$string = new Strings ();
 $sql = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
 $result = mysqli_query ( $conn->db, $sql );
 if (mysqli_num_rows ( $result )) {
@@ -20,12 +22,12 @@ if (mysqli_num_rows ( $result )) {
     <?php
 }
 while ( $row = mysqli_fetch_assoc ( $result ) ) {
-    if (! isset ( $_COOKIE ["id" . $row ['id']] )) {
+    if (! isset ( $_COOKIE ["announcement-" . $row ['id']] ) && $string->startsWith($_SERVER['REQUEST_URI'],$row['path'])) {
            $height_offset += 60;
         ?>
 <div
         class="alert alert-warning<?php if ($row['dismissible']) { echo " alert-dismissable fade in"; } ?>">
-        <?php if ($row['dismissible']) { echo "<a href='#' onclick='javascript:setCookie(\"id${row['id']}=dismiss\", 9999999);' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>"; } ?>
+        <?php if ($row['dismissible']) { echo "<a id='announcement-" . $row['id'] . "' href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>"; } ?>
         <strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> <?php echo $row['message']; ?>
 </div>
 <?php
@@ -41,7 +43,7 @@ if (mysqli_num_rows ( $result )) {
 }
 ?>
 <!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="border-top:<?php echo $height_offset; ?>px #980f7f solid">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="border-top-width:<?php echo $height_offset; ?>px">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
