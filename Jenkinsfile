@@ -32,13 +32,11 @@ node() {
                                         ]]
             ])
         }
-        stage('Install PHPUnit') {
-            sh "wget -q -O phpunit https://phar.phpunit.de/phpunit-7.phar"
-            sh "chmod +x phpunit"
-        }
         stage('Run Unit Tests') {
             try {
-                sh "./phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
+                sh "composer validate"
+                sh "composer install --prefer-dist --no-progress --no-suggest"
+                sh "composer unit-test"
             } catch (e) {
                 // throw e
             } finally {
