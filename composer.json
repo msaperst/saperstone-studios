@@ -6,6 +6,6 @@
     },
 
     "scripts": {
-        "unit-test": "vendor/phpunit/phpunit/phpunit tests/unit/"
+        "unit-test": "vendor/phpunit/phpunit/phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
     }
 }
