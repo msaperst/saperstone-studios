@@ -14,11 +14,10 @@ if (! isset ( $_GET ['album'] ) || $_GET ['album'] == "") {
 }
 
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $sql = "SELECT * FROM `albums` WHERE id = '" . $album . "';";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$album_info = $sql->getRow( $sql );
 // if the album doesn't exist, throw a 404 error
 if (! $album_info ['name']) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
@@ -456,7 +455,7 @@ footer {
                     <ul class="nav nav-tabs">
                         <?php
                         $sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';";
-                        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+                        $row = $sql->getRow( $sql );
                         $categories = explode ( ",", str_replace ( "'", "", substr ( $row ['COLUMN_TYPE'], 5, (strlen ( $row ['COLUMN_TYPE'] ) - 6) ) ) );
                         $categories = array_diff ( $categories, [ 
                                 "other" 
@@ -753,7 +752,7 @@ footer {
             <?php
             } else {
                 $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '" . $user->getId () . "';";
-                $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+                $result = $sql->getRow( $sql );
                 if ($result ['total'] > 0) {
                     ?>
             <span class="text-center"><button id="cart-btn"
@@ -775,7 +774,7 @@ footer {
             ?>
             <?php
             $sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId () . "' AND `album` = '" . $album . "';";
-            $result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+            $result = $sql->getRow( $sql );
             if ($result ['total'] > 0) {
                 ?>
             <span class="text-center"><button id="favorite-btn"

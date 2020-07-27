@@ -1,8 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 if (isset ( $_GET ['type'] ) && $_GET ['type'] != "") {
     $type = ( int ) $_GET ['type'];

@@ -1,8 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $id;
 if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
@@ -13,7 +12,7 @@ if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
     exit ();
 }
 $sql = "SELECT * FROM contracts WHERE id = $id;";
-$contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$contract_info = $sql->getRow( $sql );
 if (! $contract_info ['id']) {
     echo "That ID doesn't match any contracts";
     $conn->disconnect ();
@@ -22,7 +21,7 @@ if (! $contract_info ['id']) {
 
 $name;
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+    $name = $sql->escapeString( $_POST ['name'] );
 } else {
     echo "Name is not provided";
     $conn->disconnect ();
@@ -31,7 +30,7 @@ if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
 
 $address;
 if (isset ( $_POST ['address'] ) && $_POST ['address'] != "") {
-    $address = mysqli_real_escape_string ( $conn->db, $_POST ['address'] );
+    $address = $sql->escapeString( $_POST ['address'] );
 } else {
     echo "Address is not provided";
     $conn->disconnect ();
@@ -40,7 +39,7 @@ if (isset ( $_POST ['address'] ) && $_POST ['address'] != "") {
 
 $number;
 if (isset ( $_POST ['number'] ) && $_POST ['number'] != "") {
-    $number = mysqli_real_escape_string ( $conn->db, $_POST ['number'] );
+    $number = $sql->escapeString( $_POST ['number'] );
 } else {
     echo "Number is not provided";
     $conn->disconnect ();
@@ -49,7 +48,7 @@ if (isset ( $_POST ['number'] ) && $_POST ['number'] != "") {
 
 $email;
 if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $email = $sql->escapeString( $_POST ['email'] );
 } else {
     echo "Email is not provided";
     $conn->disconnect ();
@@ -58,7 +57,7 @@ if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
 
 $signature;
 if (isset ( $_POST ['signature'] ) && $_POST ['signature'] != "") {
-    $signature = mysqli_real_escape_string ( $conn->db, $_POST ['signature'] );
+    $signature = $sql->escapeString( $_POST ['signature'] );
 } else {
     echo "Signature is not provided";
     $conn->disconnect ();
@@ -67,7 +66,7 @@ if (isset ( $_POST ['signature'] ) && $_POST ['signature'] != "") {
 
 $initial;
 if (isset ( $_POST ['initial'] ) && $_POST ['initial'] != "") {
-    $initial = mysqli_real_escape_string ( $conn->db, $_POST ['initial'] );
+    $initial = $sql->escapeString( $_POST ['initial'] );
 } else {
     echo "Initial is not provided";
     $conn->disconnect ();
@@ -76,7 +75,7 @@ if (isset ( $_POST ['initial'] ) && $_POST ['initial'] != "") {
 
 $content;
 if (isset ( $_POST ['content'] ) && $_POST ['content'] != "") {
-    $content = mysqli_real_escape_string ( $conn->db, $_POST ['content'] );
+    $content = $sql->escapeString( $_POST ['content'] );
 } else {
     echo "Content is not provided";
     $conn->disconnect ();
@@ -84,14 +83,14 @@ if (isset ( $_POST ['content'] ) && $_POST ['content'] != "") {
 }
 
 $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
-$contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$contract_info = $sql->getRow( $sql );
 $file = "../user/contracts/$name - " . date('Y-m-d') . " - " . ucfirst( $contract_info ['type'] ) . " Contract.pdf";
 $sql = "UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
         `email` = '$email', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
         `file` = '$file' WHERE `id` = $id;";
 mysqli_query ( $conn->db, $sql );
 $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
-$contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$contract_info = $sql->getRow( $sql );
 $conn->disconnect ();
 
 // sanitize out content

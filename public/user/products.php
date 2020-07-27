@@ -45,10 +45,9 @@ if (! $user->isAdmin ()) {
 
         <?php
         require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-        $conn = new Sql ();
-        $conn->connect ();
+        $sql = new Sql ();
         $sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';";
-        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+        $row = $sql->getRow( $sql );
         $categories = explode ( ",", str_replace ( "'", "", substr ( $row ['COLUMN_TYPE'], 5, (strlen ( $row ['COLUMN_TYPE'] ) - 6) ) ) );
         
         foreach ( $categories as $category ) {

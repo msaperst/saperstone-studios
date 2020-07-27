@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -25,7 +24,7 @@ if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {
 }
 
 if (isset ( $_POST ['option'] ) && $_POST ['option'] != "") {
-    $option = mysqli_real_escape_string ( $conn->db, $_POST ['option'] );
+    $option = $sql->escapeString( $_POST ['option'] );
 } else {
     echo "Option is not provided";
     $conn->disconnect ();

@@ -11,16 +11,14 @@ class GetAlbumImagesTest extends TestCase {
                 'base_uri' => 'http://localhost/api/' 
         ] );
         // seed required test data
-        $conn = new Sql ();
-        $conn->connect ();
+        $sql = new Sql ();
         $sql = "INSERT INTO `albums` ( `id`, `name`, `description`, `location`, `owner`) VALUES (9999998, 'Integration Test Album', 'An album to verify an integration test', '/tmp', 1);";
         mysqli_query ( $conn->db, $sql );
         $conn->disconnect ();
     }
     protected function tearDown() {
         // removed seeded test data
-        $conn = new Sql ();
-        $conn->connect ();
+        $sql = new Sql ();
         $sql = "DELETE FROM `albums` WHERE `id` = '9999998';";
         mysqli_query ( $conn->db, $sql );
         $conn->disconnect ();

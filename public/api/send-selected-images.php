@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -14,7 +13,7 @@ if (! $user->isLoggedIn ()) {
 }
 
 if (isset ( $_POST ['what'] )) {
-    $what = mysqli_real_escape_string ( $conn->db, $_POST ['what'] );
+    $what = $sql->escapeString( $_POST ['what'] );
 } else {
     $response ['err'] = "Need to provide what you desire to download";
     echo json_encode ( $response );
@@ -23,14 +22,14 @@ if (isset ( $_POST ['what'] )) {
 }
 
 if (isset ( $_POST ['album'] )) {
-    $album = mysqli_real_escape_string ( $conn->db, $_POST ['album'] );
+    $album = $sql->escapeString( $_POST ['album'] );
 } else {
     echo "No album was provided. Please refresh this page and resubmit this request.";
     $conn->disconnect ();
     exit ();
 }
 $sql = "SELECT * FROM `albums` WHERE id = '$album';";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$album_info = $sql->getRow( $sql );
 // if the album doesn't exist, throw a 404 error
 if (! $album_info ['name']) {
     echo "The provided album does not exist. Please refresh this page and resubmit this request.";
@@ -57,15 +56,15 @@ if ($what == "favorites") {
 
 $name = "";
 if (isset ( $_POST ['name'] )) {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+    $name = $sql->escapeString( $_POST ['name'] );
 }
 $email = "";
 if (isset ( $_POST ['email'] )) {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $email = $sql->escapeString( $_POST ['email'] );
 }
 $comment = "";
 if (isset ( $_POST ['comment'] )) {
-    $comment = mysqli_real_escape_string ( $conn->db, $_POST ['comment'] );
+    $comment = $sql->escapeString( $_POST ['comment'] );
 }
 
 // send email

@@ -3,8 +3,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $user = new User ();
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
@@ -20,7 +19,7 @@ if (! isset ( $_POST ['image'] ) || $_POST ['image'] == "") {
     echo "Image to crop wasn't provided";
     exit ();
 } else {
-    $image = mysqli_real_escape_string ( $conn->db, $_POST ['image'] );
+    $image = $sql->escapeString( $_POST ['image'] );
 }
 if (! file_exists ( $image )) {
     echo "Image to crop doesn't exist";

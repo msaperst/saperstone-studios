@@ -3,8 +3,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $user = new User ();
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 // only admin users and uploader users who own the album can make updates
 if (! $user->isAdmin ()) {
@@ -23,7 +22,7 @@ if (isset ( $_FILES ["myfile"] )) {
     // If Any browser does not support serializing of multiple files using FormData()
     // single file
     if (! is_array ( $_FILES ["myfile"] ["name"] )) {
-        $location = mysqli_real_escape_string ( $conn->db, $_POST ['location'] );
+        $location = $sql->escapeString( $_POST ['location'] );
         $filePath = dirname ( $location );
         $fileName = basename ( $location );
         move_uploaded_file ( $_FILES ["myfile"] ["tmp_name"], "$filePath/tmp_$fileName" );

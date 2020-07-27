@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -25,7 +24,7 @@ if (isset ( $_GET ['post'] ) && $_GET ['post'] != "") {
 }
 
 $sql = "SELECT * FROM `blog_details` WHERE id = $post;";
-$r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$r = $sql->getRow( $sql );
 if (! $r ['title']) {
     echo "Blog doesn't exist!";
     $conn->disconnect();

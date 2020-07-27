@@ -3,17 +3,15 @@ $category;
 // if no active category is set, throw a 404 error
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 if (isset ( $_GET ['c'] )) {
     $category = ( int ) $_GET ['c'];
-    $sql = "SELECT * FROM `review_types` WHERE id = '$category';";
-    $details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $details = $sql->getRow( "SELECT * FROM `review_types` WHERE id = '$category';" );
     if (! $details ['name']) {
         header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
         include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-        $conn->disconnect ();
+        $sql->disconnect ();
         exit ();
     }
 }
@@ -87,10 +85,8 @@ if (isset ( $_GET ['c'] )) {
             if (isset ( $category )) {
                 $where = " WHERE `category` = $category";
             }
-            $sql = "SELECT * FROM `reviews`$where;";
-            $result = mysqli_query ( $conn->db, $sql );
             $counter = 0;
-            while ( $r = mysqli_fetch_assoc ( $result ) ) {
+            foreach ( $sql->getRows ( "SELECT * FROM `reviews`$where;" ) as $r ) {
                 $style = " align='right' style='margin: 0px 0px 20px 20px;'";
                 if ($counter % 2) {
                     $style = " align='left' style='margin: 0px 20px 20px 0px;'";
@@ -124,6 +120,7 @@ if (isset ( $_GET ['c'] )) {
             <?php
                 $counter ++;
             }
+            $sql->disconnect ();
             ?>
         </div>
         <!-- /.row -->
@@ -196,5 +193,3 @@ if ($user->isAdmin ()) {
 </body>
 
 </html>
-<?php
-$conn->disconnect ();

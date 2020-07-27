@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -36,7 +35,7 @@ if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
 }
 
 $sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$album_info = $sql->getRow( $sql );
 if (! $album_info ['id']) {
     echo "That ID doesn't match any albums";
     $conn->disconnect ();
@@ -59,7 +58,7 @@ if (isset ( $_GET ['image'] ) && $_GET ['image'] != "") {
 }
 
 $sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$album_info = $sql->getRow( $sql );
 if (! $album_info ['title']) {
     echo "That image doesn't match anything";
     $conn->disconnect ();
@@ -67,7 +66,7 @@ if (! $album_info ['title']) {
 }
 
 $sql = "SELECT * FROM `download_rights` WHERE ( `user` = '$user' OR `user` = '0' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
-$downloadable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$downloadable = $sql->getRow( $sql );
 if ($downloadable ['album']) {
     echo 1;
     $conn->disconnect ();

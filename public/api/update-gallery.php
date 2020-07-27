@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -33,7 +32,7 @@ if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
 }
 
 $sql = "SELECT * FROM galleries WHERE id = $id;";
-$gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$gallery_info = $sql->getRow( $sql );
 if (! $gallery_info ['id']) {
     echo "That ID doesn't match any galleries";
     $conn->disconnect ();
@@ -43,7 +42,7 @@ if (! $gallery_info ['id']) {
 $title = "";
 
 if (isset ( $_POST ['title'] )) {
-    $title = mysqli_real_escape_string ( $conn->db, $_POST ['title'] );
+    $title = $sql->escapeString( $_POST ['title'] );
 }
 
 $sql = "UPDATE galleries SET title='$title' WHERE id='$id';";

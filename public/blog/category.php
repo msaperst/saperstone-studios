@@ -17,8 +17,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 $string = new Strings ();
 
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 $sql = "SELECT * FROM `tags` WHERE $where";
 $result = mysqli_query ( $conn->db, $sql );
 while ( $row = mysqli_fetch_assoc ( $result ) ) {

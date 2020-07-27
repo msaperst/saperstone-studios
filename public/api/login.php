@@ -1,8 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['hash'] ) && ! isset ( $_COOKIE ['usr'] )) {
     // If you are logged in, but you don't have the tzRemember cookie (browser restart)
@@ -16,7 +15,7 @@ if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['
 
 if ($_POST ['submit'] == 'Logout') {
     // note the logout
-    $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE hash='{$_SESSION['hash']}'" ) );
+    $row = $sql->getRow( "SELECT * FROM users WHERE hash='{$_SESSION['hash']}'" );
     mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );" );
 
     // remove any stored login
@@ -43,12 +42,12 @@ if ($_POST ['submit'] == 'Login') {
     }
     
     if (! count ( $err )) {
-        $_POST ['username'] = mysqli_real_escape_string ( $conn->db, $_POST ['username'] );
-        $_POST ['password'] = md5( mysqli_real_escape_string ( $conn->db, $_POST ['password'] ) );
+        $_POST ['username'] = $sql->escapeString( $_POST ['username'] );
+        $_POST ['password'] = md5( $sql->escapeString( $_POST ['password'] ) );
         $_POST ['rememberMe'] = ( int ) $_POST ['rememberMe'];
         
         // Escaping all input data
-        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE usr='{$_POST['username']}' AND pass='{$_POST ['password']}'" ) );
+        $row = $sql->getRow( "SELECT * FROM users WHERE usr='{$_POST['username']}' AND pass='{$_POST ['password']}'" );
         
         if ($row ['usr'] && $row ['active']) {
             // If everything is OK login

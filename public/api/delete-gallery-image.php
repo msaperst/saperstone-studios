@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -32,7 +31,7 @@ if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
 }
 
 $sql = "SELECT * FROM galleries WHERE id = $gallery;";
-$gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$gallery_info = $sql->getRow( $sql );
 if (! $gallery_info ['id']) {
     echo "That ID doesn't match any gallerys";
     $conn->disconnect ();
@@ -56,7 +55,7 @@ if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
 
 // delete our image from mysql table
 $sql = "SELECT location FROM gallery_images WHERE id='$image';";
-$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$row = $sql->getRow( $sql );
 $sql = "DELETE FROM gallery_images WHERE id='$image';";
 mysqli_query ( $conn->db, $sql );
 

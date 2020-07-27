@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -30,7 +29,7 @@ if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
 }
 
 $sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$album_info = $sql->getRow( $sql );
 if (! $album_info ['id']) {
     echo "That ID doesn't match any albums";
     $conn->disconnect ();
@@ -53,7 +52,7 @@ if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
 }
 
 $sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$album_info = $sql->getRow( $sql );
 if (! $album_info ['title']) {
     echo "That image doesn't match anything";
     $conn->disconnect ();
@@ -70,7 +69,7 @@ $sql = "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('$user_id', '
 mysqli_query ( $conn->db, $sql );
 // get our new favorite count for the album
 $sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '$user_id' AND `album` = '$album';";
-$result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$result = $sql->getRow( $sql );
 echo $result ['total'];
 
 $conn->disconnect ();

@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -20,7 +19,7 @@ if (isset ( $_GET ['tag'] )) {
     $where = "( blog_tags.tag = '" . implode ( "' OR blog_tags.tag = '", $tags ) . "' )";
     $sql = "SELECT blog_details.* FROM `blog_tags` JOIN `blog_details` ON blog_tags.blog = blog_details.id WHERE $where AND blog_details.active ORDER BY `date` DESC LIMIT $start,1;";
 }
-$r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$r = $sql->getRow( $sql );
 if (! $r ['id']) {
     $conn->disconnect ();
     exit ();

@@ -1,29 +1,28 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $err = array ();
 
 if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL )) {
-    $_POST ['email'] = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $_POST ['email'] = $sql->escapeString( $_POST ['email'] );
 } elseif ($_POST ['email'] == "") {
     $err [] = "All the fields must be filled in!";
 } else {
     $err [] = "Enter a valid email address!";
 }
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
-    $_POST ['code'] = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
+    $_POST ['code'] = $sql->escapeString( $_POST ['code'] );
 } else {
     $err [] = "All the fields must be filled in!";
 }
 if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
-    $_POST ['password'] = mysqli_real_escape_string ( $conn->db, $_POST ['password'] );
+    $_POST ['password'] = $sql->escapeString( $_POST ['password'] );
 } else {
     $err [] = "All the fields must be filled in!";
 }
 if (isset ( $_POST ['passwordConfirm'] ) && $_POST ['passwordConfirm'] != "") {
-    $_POST ['passwordConfirm'] = mysqli_real_escape_string ( $conn->db, $_POST ['passwordConfirm'] );
+    $_POST ['passwordConfirm'] = $sql->escapeString( $_POST ['passwordConfirm'] );
 } else {
     $err [] = "All the fields must be filled in!";
 }
@@ -39,7 +38,7 @@ if (count ( $err ) > 0) {
     exit ();
 }
 
-$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE email='{$_POST['email']}' AND resetKey='{$_POST ['code']}';" ) );
+$row = $sql->getRow( "SELECT * FROM users WHERE email='{$_POST['email']}' AND resetKey='{$_POST ['code']}';" );
 if ($row ['usr']) {
     // If everything is OK login, so update our password
     mysqli_query ( $conn->db, "UPDATE users SET pass='" . md5 ( $_POST ['password'] ) . "' WHERE email='{$_POST ['email']}' AND resetKey='{$_POST ['code']}';" );

@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -17,7 +16,7 @@ if (! $user->isAdmin ()) {
 }
 
 if (isset ( $_POST ['album'] )) {
-    $album = mysqli_real_escape_string ( $conn->db, $_POST ['album'] );
+    $album = $sql->escapeString( $_POST ['album'] );
 } else {
     echo "Album is not provided";
     $conn->disconnect ();
@@ -25,7 +24,7 @@ if (isset ( $_POST ['album'] )) {
 }
 
 if (isset ( $_POST ['image'] )) {
-    $image = mysqli_real_escape_string ( $conn->db, $_POST ['image'] );
+    $image = $sql->escapeString( $_POST ['image'] );
 } else {
     echo "Image is not provided";
     $conn->disconnect ();
@@ -37,7 +36,7 @@ mysqli_query ( $conn->db, $sql );
 
 if (isset ( $_POST ['users'] )) {
     foreach ( $_POST ['users'] as $user ) {
-        $user = mysqli_real_escape_string ( $conn->db, $user );
+        $user = $sql->escapeString( $user );
         $sql = "INSERT INTO `share_rights` ( `user`, `album`, `image` ) VALUES ( '$user', '$album', '$image' );";
         mysqli_query ( $conn->db, $sql );
     }

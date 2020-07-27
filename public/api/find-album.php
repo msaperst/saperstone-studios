@@ -2,13 +2,12 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
 if (isset ( $_GET ['code'] ) && $_GET ['code'] != "") {
-    $code = mysqli_real_escape_string ( $conn->db, $_GET ['code'] );
+    $code = $sql->escapeString( $_GET ['code'] );
 } else {
     if (! isset ( $_GET ['code'] )) {
         echo "Album code is required!";
@@ -22,7 +21,7 @@ if (isset ( $_GET ['code'] ) && $_GET ['code'] != "") {
 }
 
 $sql = "SELECT * FROM albums WHERE code = '$code';";
-$r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$r = $sql->getRow( $sql );
 if ($r ['id']) {
     $_SESSION ["searched"] [$r ['id']] = md5( "ablum" . $code );
     $preferences = json_decode( $_COOKIE['CookiePreferences'] );
@@ -41,7 +40,7 @@ if ($r ['id']) {
 
 if ($user->isLoggedIn() && isset ( $_GET ['albumAdd'] ) && $_GET ['albumAdd'] == 1) {
     $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "' AND album = '" . $r ['id'] . "';";
-    $s = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $s = $sql->getRow( $sql );
     if (! $s ['user']) {
         $sql = "INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . $user->getId () . "', '" . $r ['id'] . "' );";
         mysqli_query ( $conn->db, $sql );

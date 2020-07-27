@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -35,7 +34,7 @@ $contract ['reception-email'] = "";
 // get the id if set, and pull these values
 if (isset ( $_GET ['id'] )) {
     $sql = "SELECT * FROM contracts WHERE id = {$_GET['id']};";
-    $contract = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $contract = $sql->getRow( $sql );
 }
 $conn->disconnect ();
 ?>

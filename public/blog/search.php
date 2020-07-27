@@ -1,8 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $search;
 // if no album is set, throw a 404 error
@@ -11,7 +10,7 @@ if (! isset ( $_GET ['s'] )) {
     include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
     exit ();
 } else {
-    $search = mysqli_real_escape_string ( $conn->db, $_GET ['s'] );
+    $search = $sql->escapeString( $_GET ['s'] );
 }
 ?>
 

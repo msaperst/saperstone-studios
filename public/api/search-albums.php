@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -18,7 +17,7 @@ if (! $user->isAdmin ()) {
 
 $keyword = "";
 if (isset ( $_GET ['keyword'] )) {
-    $keyword = mysqli_real_escape_string ( $conn->db, $_GET ['keyword'] );
+    $keyword = $sql->escapeString( $_GET ['keyword'] );
 }
 
 $sql = "SELECT * FROM albums WHERE `name` COLLATE UTF8_GENERAL_CI LIKE '%$keyword%'";

@@ -32,27 +32,26 @@ if (! $user->isLoggedIn ()) {
 $IP = getClientIP();
 $user_details = $order_details = $coupon = "";
 if (isset ( $_POST ['user'] )) {
-    $user_details = mysqli_real_escape_string ( $conn->db, $_POST ['user'] );
+    $user_details = $sql->escapeString( $_POST ['user'] );
 } else {
     $response ['error'] = "User details not set";
     echo json_encode ( $response );
     exit ();
 }
 if (isset ( $_POST ['order'] )) {
-    $order_details = mysqli_real_escape_string ( $conn->db, $_POST ['order'] );
+    $order_details = $sql->escapeString( $_POST ['order'] );
 } else {
     $response ['error'] = "Order details not set";
     echo json_encode ( $response );
     exit ();
 }
 if (isset ( $_POST ['coupon'] )) {
-    $coupon = md5( mysqli_real_escape_string ( $conn->db, $_POST ['coupon'] ) );
+    $coupon = md5( $sql->escapeString( $_POST ['coupon'] ) );
 }
 
 // generate our items to order
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 // setup our urls for success or failure
 $url = $_SERVER ['HTTP_REFERER'];
@@ -219,8 +218,7 @@ if (isset ( $setECResponse )) {
         $token = $setECResponse->Token;
         
         // clear out our shopping cart
-        $conn = new Sql ();
-        $conn->connect ();
+        $sql = new Sql ();
         $sql = "DELETE FROM `cart` WHERE `user` = '$user';";
         mysqli_query ( $conn->db, $sql );
         $conn->disconnect ();

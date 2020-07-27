@@ -15,8 +15,7 @@
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
     // get our blog posts
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $conn = new Sql ();
-    $conn->connect ();
+    $sql = new Sql ();
     $sql = "SELECT * FROM `blog_details`;";
     $posts = array ();
     $result = mysqli_query ( $conn->db, $sql );

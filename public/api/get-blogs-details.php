@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -26,7 +25,7 @@ if ($user->isAdmin () && isset ( $_GET ['a'] ) && $_GET ['a']) {
 }
 $sql = "SELECT * FROM `blog_details` $active ORDER BY `date` DESC LIMIT $start,$howMany;";
 if (isset ( $_GET ['tag'] )) {
-    $tag = mysqli_real_escape_string ( $conn->db, $_GET ['tag'] );
+    $tag = $sql->escapeString( $_GET ['tag'] );
     $sql = "SELECT blog_details.* FROM `blog_tags` JOIN `blog_details` ON blog_tags.blog = blog_details.id WHERE blog_tags.tag = '$tag' $andActive ORDER BY `date` DESC LIMIT $start,$howMany;";
 }
 $result = mysqli_query ( $conn->db, $sql );

@@ -90,8 +90,7 @@ if (! $user->isAdmin ()) {
                                     <option></option>
                                     <option value='0' style='color: red;'>New Category</option>
                                     <?php
-                                    $conn = new Sql ();
-                                    $conn->connect ();
+                                    $sql = new Sql ();
                                     $sql = "SELECT * FROM `tags`;";
                                     $result = mysqli_query ( $conn->db, $sql );
                                     while ( $row = mysqli_fetch_assoc ( $result ) ) {

@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -18,7 +17,7 @@ if (! $user->isAdmin ()) {
 
 $title = "";
 if (isset ( $_POST ['title'] ) && $_POST ['title'] != "") {
-    $title = mysqli_real_escape_string ( $conn->db, $_POST ['title'] );
+    $title = $sql->escapeString( $_POST ['title'] );
 } else {
     echo "No title was provided";
     exit ();
@@ -26,7 +25,7 @@ if (isset ( $_POST ['title'] ) && $_POST ['title'] != "") {
 
 $date = "";
 if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
-    $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
+    $date = $sql->escapeString( $_POST ['date'] );
 } else {
     echo "No date was provided";
     exit ();
@@ -34,7 +33,7 @@ if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
 
 $previewImage = "";
 if (isset ( $_POST ['preview'] ['img'] ) && $_POST ['preview'] ['img'] != "") {
-    $previewImage = mysqli_real_escape_string ( $conn->db, $_POST ['preview'] ['img'] );
+    $previewImage = $sql->escapeString( $_POST ['preview'] ['img'] );
 } else {
     echo "No preview image provided";
     exit ();
@@ -75,7 +74,7 @@ mysqli_query ( $conn->db, $sql );
 // enter our tag information
 if (isset ( $_POST ['tags'] )) {
     foreach ( $_POST ['tags'] as $tag ) {
-        $tag = mysqli_real_escape_string ( $conn->db, $tag );
+        $tag = $sql->escapeString( $tag );
         $sql = "INSERT INTO `blog_tags` ( `blog`, `tag` ) VALUES ('$blog_id', '$tag');";
         mysqli_query ( $conn->db, $sql );
     }
@@ -84,14 +83,14 @@ if (isset ( $_POST ['tags'] )) {
 // get down all of our content
 foreach ( $_POST ['content'] as $content ) {
     if ($content ['type'] == "text") {
-        $text = mysqli_real_escape_string ( $conn->db, $content ['text'] );
+        $text = $sql->escapeString( $content ['text'] );
         $group = ( int ) $content ['group'];
         $sql = "INSERT INTO `blog_texts` ( `blog`, `contentGroup`, `text` ) VALUES ('$blog_id', '$group', '$text');";
         mysqli_query ( $conn->db, $sql );
     } elseif ($content ['type'] == "images") {
         $group = ( int ) $content ['group'];
         foreach ( $content ['imgs'] as $img ) {
-            $location = mysqli_real_escape_string ( $conn->db, $img ['location'] );
+            $location = $sql->escapeString( $img ['location'] );
             $top = ( int ) $img ['top'];
             $left = ( int ) $img ['left'];
             $width = ( int ) $img ['width'];

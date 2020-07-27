@@ -2,36 +2,35 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
 // check if fields passed are empty
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+    $name = $sql->escapeString( $_POST ['name'] );
 }
 
 if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $email = $sql->escapeString( $_POST ['email'] );
 }
 
 if (isset ( $_POST ['error'] ) && $_POST ['error'] != "") {
-    $error = mysqli_real_escape_string ( $conn->db, $_POST ['error'] );
+    $error = $sql->escapeString( $_POST ['error'] );
 } else {
     echo "Error is required";
     exit ();
 }
 
 if (isset ( $_POST ['page'] ) && $_POST ['page'] != "") {
-    $page = mysqli_real_escape_string ( $conn->db, $_POST ['page'] );
+    $page = $sql->escapeString( $_POST ['page'] );
 } else {
     echo "A page is required";
     exit ();
 }
 
 if (isset ( $_POST ['referrer'] ) && $_POST ['referrer'] != "") {
-    $referrer = mysqli_real_escape_string ( $conn->db, $_POST ['referrer'] );
+    $referrer = $sql->escapeString( $_POST ['referrer'] );
 } else {
     echo "A referrer is required";
     exit ();
@@ -39,7 +38,7 @@ if (isset ( $_POST ['referrer'] ) && $_POST ['referrer'] != "") {
 
 $resolution = "";
 if (isset ( $_POST ['resolution'] ) && $_POST ['resolution'] != "") {
-    $resolution = mysqli_real_escape_string ( $conn->db, $_POST ['resolution'] );
+    $resolution = $sql->escapeString( $_POST ['resolution'] );
 }
 
 require_once "Mail.php";

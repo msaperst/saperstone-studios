@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -19,14 +18,14 @@ if (! $user->isAdmin ()) {
 $tag = "";
 
 if (isset ( $_POST ['tag'] ) && $_POST ['tag'] != "") {
-    $tag = mysqli_real_escape_string ( $conn->db, $_POST ['tag'] );
+    $tag = $sql->escapeString( $_POST ['tag'] );
 } else {
     echo "No category was provided";
     exit ();
 }
 
 $sql = "SELECT * FROM `tags` WHERE `tag` = '$tag';";
-$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$row = $sql->getRow( $sql );
 if ($row ['id']) {
     echo "That category already exists";
     exit ();

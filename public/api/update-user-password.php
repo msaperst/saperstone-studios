@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -24,12 +23,12 @@ if (isset ( $_POST ['id'] )) {
     $err [] = "ID is not provided";
 }
 if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
-    $_POST ['password'] = mysqli_real_escape_string ( $conn->db, $_POST ['password'] );
+    $_POST ['password'] = $sql->escapeString( $_POST ['password'] );
 } else {
     $err [] = "All the fields must be filled in!";
 }
 if (isset ( $_POST ['passwordConfirm'] ) && $_POST ['passwordConfirm'] != "") {
-    $_POST ['passwordConfirm'] = mysqli_real_escape_string ( $conn->db, $_POST ['passwordConfirm'] );
+    $_POST ['passwordConfirm'] = $sql->escapeString( $_POST ['passwordConfirm'] );
 } else {
     $err [] = "All the fields must be filled in!";
 }

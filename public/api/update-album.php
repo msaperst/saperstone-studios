@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -23,7 +22,7 @@ if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
 }
 
 $sql = "SELECT * FROM albums WHERE id = $id;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$album_info = $sql->getRow( $sql );
 if (! $album_info ['id']) {
     echo "That ID doesn't match any albums";
     $conn->disconnect ();
@@ -42,22 +41,22 @@ $date = "NULL";
 $code = "";
 
 if (isset ( $_POST ['name'] )) {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+    $name = $sql->escapeString( $_POST ['name'] );
 }
 if (isset ( $_POST ['description'] )) {
-    $description = mysqli_real_escape_string ( $conn->db, $_POST ['description'] );
+    $description = $sql->escapeString( $_POST ['description'] );
 }
 if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
-    $date = "'" . mysqli_real_escape_string ( $conn->db, $_POST ['date'] ) . "'";
+    $date = "'" . $sql->escapeString( $_POST ['date'] ) . "'";
 }
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
-    $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
+    $code = $sql->escapeString( $_POST ['code'] );
 }
 
 $sql = "UPDATE albums SET name='$name', description='$description', date=$date, code=NULL WHERE id='$id';";
 mysqli_query ( $conn->db, $sql );
 if (isset ( $_POST ['code'] ) && $_POST ['code'] != "" && $user->isAdmin ()) {
-    $code = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
+    $code = $sql->escapeString( $_POST ['code'] );
     $codeExist = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `albums` WHERE code = '$code';" ) );
     if (! $codeExist) {
         $sql = "UPDATE albums SET code='$code' WHERE id='$id';";

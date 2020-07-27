@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -32,7 +31,7 @@ if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
 }
 
 $sql = "SELECT * FROM users WHERE id = $id;";
-$user_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$user_info = $sql->getRow( $sql );
 if (! $user_info ['id']) {
     echo "That ID doesn't match any users";
     $conn->disconnect ();

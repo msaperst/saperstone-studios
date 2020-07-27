@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -25,7 +24,7 @@ if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
 }
 
 if (isset ( $_POST ['size'] ) && $_POST ['size'] != "") {
-    $size = mysqli_real_escape_string ( $conn->db, $_POST ['size'] );
+    $size = $sql->escapeString( $_POST ['size'] );
 } else {
     echo "Size is not provided";
     $conn->disconnect ();

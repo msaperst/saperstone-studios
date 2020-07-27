@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -31,14 +30,14 @@ if (isset ( $_POST ['id'] )) {
     exit ();
 }
 if (isset ( $_POST ['username'] ) && $_POST ['username'] != "") {
-    $username = mysqli_real_escape_string ( $conn->db, $_POST ['username'] );
+    $username = $sql->escapeString( $_POST ['username'] );
 } else {
     echo "Username is not provided";
     $conn->disconnect ();
     exit ();
 }
 if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL )) {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $email = $sql->escapeString( $_POST ['email'] );
 } else {
     echo "Email is not provided";
     $conn->disconnect ();
@@ -46,7 +45,7 @@ if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE
 }
 
 $sql = "SELECT * FROM users WHERE usr = '$username' AND id != '$id';";
-$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$row = $sql->getRow( $sql );
 if ($row ['usr']) {
     echo "That user ID already exists";
     $conn->disconnect ();
@@ -54,13 +53,13 @@ if ($row ['usr']) {
 }
 
 if (isset ( $_POST ['firstName'] )) {
-    $firstName = mysqli_real_escape_string ( $conn->db, $_POST ['firstName'] );
+    $firstName = $sql->escapeString( $_POST ['firstName'] );
 }
 if (isset ( $_POST ['lastName'] )) {
-    $lastName = mysqli_real_escape_string ( $conn->db, $_POST ['lastName'] );
+    $lastName = $sql->escapeString( $_POST ['lastName'] );
 }
 if (isset ( $_POST ['role'] )) {
-    $role = mysqli_real_escape_string ( $conn->db, $_POST ['role'] );
+    $role = $sql->escapeString( $_POST ['role'] );
 }
 if (isset ( $_POST ['active'] )) {
     $active = ( int ) $_POST ['active'];

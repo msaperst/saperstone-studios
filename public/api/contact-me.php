@@ -1,38 +1,37 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $to = "Contact <contact@saperstonestudios.com>";
 if (isset ( $_POST ['to'] ) && $_POST ['to'] != "") {
-    $to = mysqli_real_escape_string ( $conn->db, $_POST ['to'] );
+    $to = $sql->escapeString( $_POST ['to'] );
 }
 
 // check if fields passed are empty
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+    $name = $sql->escapeString( $_POST ['name'] );
 } else {
     echo "Name is required";
     exit ();
 }
 
 if (isset ( $_POST ['phone'] ) && $_POST ['phone'] != "") {
-    $phone = mysqli_real_escape_string ( $conn->db, $_POST ['phone'] );
+    $phone = $sql->escapeString( $_POST ['phone'] );
 } else {
     echo "Phone is required";
     exit ();
 }
 
 if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $email = $sql->escapeString( $_POST ['email'] );
 } else {
     echo "Email is required";
     exit ();
 }
 
 if (isset ( $_POST ['message'] ) && $_POST ['message'] != "") {
-    $message = mysqli_real_escape_string ( $conn->db, $_POST ['message'] );
+    $message = $sql->escapeString( $_POST ['message'] );
 } else {
     echo "A message is required";
     exit ();
@@ -40,7 +39,7 @@ if (isset ( $_POST ['message'] ) && $_POST ['message'] != "") {
 
 $resolution = "";
 if (isset ( $_POST ['resolution'] ) && $_POST ['resolution'] != "") {
-    $resolution = mysqli_real_escape_string ( $conn->db, $_POST ['resolution'] );
+    $resolution = $sql->escapeString( $_POST ['resolution'] );
 }
 
 require_once "Mail.php";

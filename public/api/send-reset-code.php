@@ -1,8 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 require_once "Mail.php";
 require_once "Mail/mime.php";
@@ -13,7 +12,7 @@ $string = new Strings ();
 
 $email = "";
 if (isset ( $_POST ['email'] )) {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $email = $sql->escapeString( $_POST ['email'] );
 } else {
     echo "Enter an email address!";
     exit ();
@@ -22,7 +21,7 @@ if (isset ( $_POST ['email'] )) {
 if (filter_var ( $email, FILTER_VALIDATE_EMAIL )) {
     $resetCode = $string->randomString ( 8 );
     mysqli_query ( $conn->db, "UPDATE users SET resetKey='$resetCode' WHERE email='$email';" );
-    $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT firstName, lastName FROM users WHERE email='$email';" ) );
+    $row = $sql->getRow( "SELECT firstName, lastName FROM users WHERE email='$email';" );
     $name = "";
     if ($row ['firstName']) {
         $name .= $row ['firstName'];

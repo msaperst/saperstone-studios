@@ -53,8 +53,7 @@ $isMobile = $browser->isMobile () ? "1" : "0";
 $isRobot = $browser->isRobot () ? "1" : "0";
 $isTablet = $browser->isTablet () ? "1" : "0";
 
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 if ($lat == "NULL" && $lon == "NULL") {
     $sql = "INSERT INTO `usage` (`user`, `ip`, `browser`, `version`, `width`, `height`, `os`, `url`, `isTablet`, `isMobile`, `isAOL`, `isFacebook`, `isRobot`, `ua`) VALUES ($user, '$ip', '" . $browser->getBrowser () . "', '" . $browser->getVersion () . "', $width, $height, '" . $browser->getPlatform () . "', '$referrer', '$isTablet', '$isMobile', '$isAol', '$isFacebook', '$isRobot', '" . $browser->getUserAgent () . "');";
 } else {

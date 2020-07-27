@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -22,7 +21,7 @@ $description = "";
 $date = "NULL";
 // confirm we have an album name
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+    $name = $sql->escapeString( $_POST ['name'] );
 } else {
     echo "Album name is required!";
     $conn->disconnect ();
@@ -31,10 +30,10 @@ if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
 
 // sanitize our inputs
 if (isset ( $_POST ['description'] )) {
-    $description = mysqli_real_escape_string ( $conn->db, $_POST ['description'] );
+    $description = $sql->escapeString( $_POST ['description'] );
 }
 if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
-    $date = "'" . mysqli_real_escape_string ( $conn->db, $_POST ['date'] ) . "'";
+    $date = "'" . $sql->escapeString( $_POST ['date'] ) . "'";
 }
 
 // generate our location for the files

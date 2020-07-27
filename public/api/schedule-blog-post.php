@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -26,7 +25,7 @@ if (isset ( $_POST ['post'] )) {
 
 $date;
 if (isset ( $_POST ['date'] )) {
-    $date = mysqli_real_escape_string ( $conn->db, $_POST ['date'] );
+    $date = $sql->escapeString( $_POST ['date'] );
 } else {
     echo "No publish date provided";
     exit ();
@@ -34,7 +33,7 @@ if (isset ( $_POST ['date'] )) {
 
 $time;
 if (isset ( $_POST ['time'] )) {
-    $time = mysqli_real_escape_string ( $conn->db, $_POST ['time'] );
+    $time = $sql->escapeString( $_POST ['time'] );
 } else {
     echo "No publish time provided";
     exit ();

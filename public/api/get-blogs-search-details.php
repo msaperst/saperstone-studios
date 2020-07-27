@@ -1,8 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $response = [ ];
 $start = 0;
@@ -15,7 +14,7 @@ if (isset ( $_GET ['howMany'] )) {
     $howMany = ( int ) $_GET ['howMany'];
 }
 if (isset ( $_GET ['searchTerm'] )) {
-    $search = mysqli_real_escape_string ( $conn->db, $_GET ['searchTerm'] );
+    $search = $sql->escapeString( $_GET ['searchTerm'] );
 } else {
     exit ();
 }
@@ -24,7 +23,7 @@ $sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIK
 $result = mysqli_query ( $conn->db, $sql );
 while ( $r = mysqli_fetch_assoc ( $result ) ) {
     $sql = "SELECT * FROM `blog_details` WHERE `id` = '" . $r ['blog'] . "';";
-    $response [] = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $response [] = $sql->getRow( $sql );
 }
 echo json_encode ( $response );
 

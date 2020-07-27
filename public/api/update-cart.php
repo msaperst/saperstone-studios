@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -30,7 +29,7 @@ if (isset ( $_POST ['images'] ) && is_array ( $_POST ['images'] )) {
 }
 
 $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '{$user->getId()}';";
-$result = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$result = $sql->getRow( $sql );
 echo $result ['total'];
 
 $conn->disconnect ();

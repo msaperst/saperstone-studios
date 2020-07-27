@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -27,7 +26,7 @@ if (isset ( $_GET ['id'] )) {
 
 $response = array ();
 $sql = "SELECT * FROM contracts WHERE id = $id;";
-$response = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$response = $sql->getRow( $sql );
 $response ['lineItems'] = array ();
 
 $sql = "SELECT * FROM contract_line_items WHERE contract = $id;";

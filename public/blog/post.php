@@ -12,10 +12,9 @@ if (! isset ( $_GET ['p'] )) {
 
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 $sql = "SELECT * FROM `blog_details` WHERE id = '$post';";
-$details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$details = $sql->getRow( $sql );
 if (! $details ['title']) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
     include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";

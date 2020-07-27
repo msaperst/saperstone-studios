@@ -2,13 +2,12 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
 if (isset ( $_POST ['what'] ) && $_POST ['what'] != "") {
-    $what = mysqli_real_escape_string ( $conn->db, $_POST ['what'] );
+    $what = $sql->escapeString( $_POST ['what'] );
 } else {
     if (! isset ( $_POST ['what'] )) {
         $response ['err'] = "What to download is required!";
@@ -38,7 +37,7 @@ if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
 }
 
 $sql = "SELECT * FROM `albums` WHERE id = '$album';";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$album_info = $sql->getRow( $sql );
 // if the album doesn't exist, throw a 404 error
 if (! $album_info ['name']) {
     $response ['err'] = "Album doesn't exist!";

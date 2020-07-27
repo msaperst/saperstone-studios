@@ -10,8 +10,7 @@
     
     <?php
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $conn = new Sql ();
-    $conn->connect ();
+    $sql = new Sql ();
     $products = array ();
     $sql = "SELECT * FROM `galleries` WHERE parent = 38;";
     $result = mysqli_query ( $conn->db, $sql );

@@ -1,10 +1,7 @@
 <?php
 class User {
     private $user_details = NULL;
-    function __construct() {
-        include_once "sql.php";
-        $sql = new Sql ();
-        $sql->connect ();
+    function __construct($sql) {
         $hash = NULL;
         if( isset ( $_COOKIE ) && isset ( $_COOKIE['hash'] )) {
             $hash = $_COOKIE['hash'];
@@ -13,9 +10,8 @@ class User {
             $hash = $_SESSION ['hash'];
         }
         if ($hash != NULL ) {
-            $this->user_details = mysqli_fetch_assoc ( mysqli_query ( $sql->db, "SELECT * FROM users WHERE hash='{$hash}';" ) );
+            $this->user_details = $sql->getRow( "SELECT * FROM users WHERE hash='{$hash}';" );
         }
-        $sql->disconnect ();
     }
     function isLoggedIn() {
         if ($this->user_details != NULL) {

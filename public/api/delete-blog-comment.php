@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -29,7 +28,7 @@ if (isset ( $_POST ['comment'] ) && $_POST ['comment'] != "") {
 }
 
 $sql = "SELECT * FROM blog_comments WHERE id = $comment;";
-$blog_comment_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$blog_comment_info = $sql->getRow( $sql );
 if (! $blog_comment_info ['id']) {
     echo "That ID doesn't match any comments";
     $conn->disconnect ();

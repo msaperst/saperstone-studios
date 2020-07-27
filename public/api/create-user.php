@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -26,13 +25,13 @@ $active = "";
 $err = array ();
 
 if (isset ( $_POST ['username'] ) && $_POST ['username'] != "") {
-    $username = mysqli_real_escape_string ( $conn->db, $_POST ['username'] );
+    $username = $sql->escapeString( $_POST ['username'] );
 } else {
     $err [] = "Username is not provided";
 }
 if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL )) {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
-    $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT email FROM users WHERE email='$email'" ) );
+    $email = $sql->escapeString( $_POST ['email'] );
+    $row = $sql->getRow( "SELECT email FROM users WHERE email='$email'" );
     if ($row ['email']) {
         $err [] = "We already have an account on file for that email address.";
     }
@@ -43,7 +42,7 @@ if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE
 }
 
 $sql = "SELECT * FROM users WHERE usr = '$username'";
-$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$row = $sql->getRow( $sql );
 if ($row ['usr']) {
     $err [] = "That user ID already exists";
 }
@@ -55,13 +54,13 @@ if (count ( $err ) > 0) {
 }
 
 if (isset ( $_POST ['firstName'] )) {
-    $firstName = mysqli_real_escape_string ( $conn->db, $_POST ['firstName'] );
+    $firstName = $sql->escapeString( $_POST ['firstName'] );
 }
 if (isset ( $_POST ['lastName'] )) {
-    $lastName = mysqli_real_escape_string ( $conn->db, $_POST ['lastName'] );
+    $lastName = $sql->escapeString( $_POST ['lastName'] );
 }
 if (isset ( $_POST ['role'] )) {
-    $role = mysqli_real_escape_string ( $conn->db, $_POST ['role'] );
+    $role = $sql->escapeString( $_POST ['role'] );
 }
 if (isset ( $_POST ['active'] )) {
     $active = ( int ) $_POST ['active'];

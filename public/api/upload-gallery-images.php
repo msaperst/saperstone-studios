@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -33,7 +32,7 @@ if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
 }
 
 $sql = "SELECT * FROM galleries WHERE id = '$id';";
-$gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$gallery_info = $sql->getRow( $sql );
 if (! $gallery_info ['title']) {
     echo "The ID '$id' doesn't match any galleries";
     $conn->disconnect ();
@@ -54,7 +53,7 @@ $location = "";
 while ( $gallery_info ['parent'] != NULL ) {
     $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
     $sql = "SELECT * FROM galleries WHERE id = '" . $gallery_info ['parent'] . "';";
-    $gallery_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $gallery_info = $sql->getRow( $sql );
 }
 $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
 if ( $location == str_replace ( " ", "-", $gallery_info ['title'] ) . "/" ) {

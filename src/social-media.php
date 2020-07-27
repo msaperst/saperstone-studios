@@ -5,7 +5,6 @@ class SocialMedia {
     function __construct() {
         include_once "sql.php";
         $sql = new Sql ();
-        $sql->connect ();
         $this->db = $sql->db;
     }
     function generateRSS() {

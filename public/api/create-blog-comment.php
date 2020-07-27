@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -27,7 +26,7 @@ if (isset ( $_POST ['post'] ) && $_POST ['post'] != "") {
 }
 
 $sql = "SELECT * FROM blog_details WHERE id = $post;";
-$blog_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$blog_info = $sql->getRow( $sql );
 if (! $blog_info ['id']) {
     echo "That ID doesn't match any posts";
     $conn->disconnect ();
@@ -35,13 +34,13 @@ if (! $blog_info ['id']) {
 }
 
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+    $name = $sql->escapeString( $_POST ['name'] );
 }
 if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+    $email = $sql->escapeString( $_POST ['email'] );
 }
 if (isset ( $_POST ['message'] ) && $_POST ['message'] != "") {
-    $message = mysqli_real_escape_string ( $conn->db, $_POST ['message'] );
+    $message = $sql->escapeString( $_POST ['message'] );
 } else {
     echo "Message is required!";
     $conn->disconnect ();

@@ -2,8 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+$sql = new Sql ();
 
 $user = new User ();
 
@@ -26,7 +25,7 @@ $location = "../tmp";
 if (isset ( $_GET ['p'] )) {
     $post = ( int ) $_GET ['p'];
     $sql = "SELECT * FROM `blog_details` WHERE id = '$post';";
-    $details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $details = $sql->getRow( $sql );
     if (! $details ['title']) {
         header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
         include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
@@ -226,8 +225,7 @@ if (isset ( $_GET ['p'] )) {
                     <option></option>
                     <option value='0' style='color: red;'>New Category</option>
                 <?php
-                $conn = new Sql ();
-                $conn->connect ();
+                $sql = new Sql ();
                 $sql = "SELECT * FROM `tags`;";
                 $result = mysqli_query ( $conn->db, $sql );
                 while ( $row = mysqli_fetch_assoc ( $result ) ) {

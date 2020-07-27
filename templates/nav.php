@@ -1,27 +1,20 @@
 
 <!-- Messages -->
 <?php
-$initial_connection = false;
 $height_offset = 10;
 $DOCUMENT_ROOT = "DOCUMENT_ROOT";
-if (isset ( $conn ) && $conn->isConnected()) {
-    $initial_connection = true;
-} else {
-    require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $conn = new Sql ();
-    $conn->connect ();
-}
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
+require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+include_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/strings.php";
+$navSql = new Sql ();
 $string = new Strings ();
-$sql = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
-$result = mysqli_query ( $conn->db, $sql );
-if (mysqli_num_rows ( $result )) {
+$query = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
+if ($navSql->getRowCount ( $query )) {
     ?>
 <div id='displayed-alerts'
     style='position: fixed; width: 100%; top: -20px; z-index: 10000; font-size:large; font-weight:bold; text-align:center'>
     <?php
 }
-while ( $row = mysqli_fetch_assoc ( $result ) ) {
+foreach ( $navSql->getRows( $query ) as $row ) {
     if (! isset ( $_COOKIE ["announcement-" . $row ['id']] ) && $string->startsWith($_SERVER['REQUEST_URI'],$row['path'])) {
            $height_offset += 60;
         ?>
@@ -33,13 +26,11 @@ while ( $row = mysqli_fetch_assoc ( $result ) ) {
 <?php
     }
 }
-if (mysqli_num_rows ( $result )) {
+if ($navSql->getRowCount ( $query )) {
     ?>
     </div>
 <?php
-    if (! $initial_connection) {
-        $conn->disconnect ();
-    }
+    $navSql->disconnect();
 }
 ?>
 <!-- Navigation -->

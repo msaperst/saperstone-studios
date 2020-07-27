@@ -17,8 +17,7 @@
     
     // get our gallery images
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $conn = new Sql ();
-    $conn->connect ();
+    $sql = new Sql ();
     $sql = "SELECT * FROM `blog_details`;";
     $result = mysqli_query ( $conn->db, $sql );
     $posts = array ();
