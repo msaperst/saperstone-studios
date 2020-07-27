@@ -1,5 +1,12 @@
-<?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
-
+<?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$sql = new Sql ();
+$user = new User ($sql);
+$images = $sql->getRows( "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.title = 'Home Studio';" );
+$sql->disconnect();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,20 +27,7 @@
 
 <body>
 
-    <?php
-    $nav = explode ( "/", $_SERVER ['REQUEST_URI'] ) [1];
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
-    
-    // get our gallery images
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $sql = new Sql ();
-    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.title = 'Home Studio';";
-    $result = mysqli_query ( $conn->db, $sql );
-    $images = array ();
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $images [] = $row;
-    }
-    ?>
+    <?php $nav = explode ( "/", $_SERVER ['REQUEST_URI'] ) [1]; require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
 
     <!-- Page Content -->
     <div class="page-content container">

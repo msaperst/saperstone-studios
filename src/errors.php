@@ -1,7 +1,7 @@
 <?php
-function throwError($error) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " $error Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/$error.php";
+function throwError($errorCode) {
+    header ( $_SERVER ["SERVER_PROTOCOL"] . " $errorCode Not Found" );
+    require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/$errorCode.php";
     if( isset( $sql ) && $sql->isConnected() ) {
         $sql->disconnect();
     }

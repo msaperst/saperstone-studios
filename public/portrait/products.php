@@ -1,5 +1,12 @@
-<?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
-
+<?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$sql = new Sql ();
+$user = new User ($sql);
+$products = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = 28;" );
+$sql->disconnect();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,15 +16,6 @@
     <link href="/css/hover-effect.css" rel="stylesheet">
     
     <?php
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $sql = new Sql ();
-    $products = array ();
-    $sql = "SELECT * FROM `galleries` WHERE parent = 28;";
-    $result = mysqli_query ( $conn->db, $sql );
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $products [] = $r;
-    }
-    
     $rand = "";
     if ($user->isAdmin ()) {
         require_once '../../src/strings.php';
