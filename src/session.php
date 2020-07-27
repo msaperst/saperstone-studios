@@ -34,9 +34,9 @@ function getBaseURL() {
     if (isset ( $_SERVER ["SERVER_PORT"] ) && $_SERVER ["SERVER_PORT"] == "9443") {
         $pageURL .= "s";
     }
-    $pageURL .= "://" . $getServer();
-    if ($_SERVER ["SERVER_PORT"] != "90" || $_SERVER ["SERVER_PORT"] != "9443" ) {
-        $pageURL .= $getServer() . ":" . $_SERVER ["SERVER_PORT"];
+    $pageURL .= "://" . getServer();
+    if ($_SERVER ["SERVER_PORT"] != "90" && $_SERVER ["SERVER_PORT"] != "9443" ) {
+        $pageURL .= ":" . $_SERVER ["SERVER_PORT"];
     }
     return $pageURL;
 }

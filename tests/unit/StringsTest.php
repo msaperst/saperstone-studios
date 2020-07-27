@@ -151,4 +151,8 @@ class StringsTest extends TestCase {
         $result = $this->string->endsWith ( "Max", "X" );
         $this->assertFalse( $result );
     }
+    public function testEndsWithNoSearch() {
+        $result = $this->string->endsWith ( "Max", "" );
+        $this->assertTrue( $result );
+    }
 }
