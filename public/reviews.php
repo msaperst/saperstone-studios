@@ -1,20 +1,22 @@
 <?php
-$category;
-// if no active category is set, throw a 404 error
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
+$user = new User ($sql);
+$where;
 
 if (isset ( $_GET ['c'] )) {
     $category = ( int ) $_GET ['c'];
     $details = $sql->getRow( "SELECT * FROM `review_types` WHERE id = '$category';" );
     if (! $details ['name']) {
-        header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-        include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-        $sql->disconnect ();
-        exit ();
+        throw404();
     }
+    $where = " WHERE `category` = $category";
 }
+$reviews = $sql->getRows ( "SELECT * FROM `reviews`$where;" );
+$sql->disconnect();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -86,7 +88,7 @@ if (isset ( $_GET ['c'] )) {
                 $where = " WHERE `category` = $category";
             }
             $counter = 0;
-            foreach ( $sql->getRows ( "SELECT * FROM `reviews`$where;" ) as $r ) {
+            foreach ( $reviews as $review ) {
                 $style = " align='right' style='margin: 0px 0px 20px 20px;'";
                 if ($counter % 2) {
                     $style = " align='left' style='margin: 0px 20px 20px 0px;'";
@@ -94,24 +96,24 @@ if (isset ( $_GET ['c'] )) {
                 ?>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <img src="<?php echo $r['image1']; echo $rand; ?>" width="100%"
-                        alt="<?php echo $r['image1']; ?>">
+                    <img src="<?php echo $review['image1']; echo $rand; ?>" width="100%"
+                        alt="<?php echo $review['image1']; ?>">
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <img src="<?php echo $r['image2']; echo $rand; ?>" width="100%"
-                        alt="<?php echo $r['image2']; ?>">
+                    <img src="<?php echo $review['image2']; echo $rand; ?>" width="100%"
+                        alt="<?php echo $review['image2']; ?>">
                 </div>
             </div>
             <div class="col-xs-12" style="padding-top: 20px;">
 
                 <blockquote>
                     <p>
-                        <?php echo $r['quote']; ?>
+                        <?php echo $review['quote']; ?>
                     
                     </p>
-                    <footer><?php echo $r['client']; ?><br /> <em><?php echo $r['event']; ?></em>
+                    <footer><?php echo $review['client']; ?><br /> <em><?php echo $review['event']; ?></em>
                     </footer>
 
                 </blockquote>
@@ -120,7 +122,6 @@ if (isset ( $_GET ['c'] )) {
             <?php
                 $counter ++;
             }
-            $sql->disconnect ();
             ?>
         </div>
         <!-- /.row -->

@@ -1,4 +1,5 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $sql = new Sql ();
@@ -6,12 +7,12 @@ $sql = new Sql ();
 $search;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['s'] )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+    throw404();
 } else {
     $search = $sql->escapeString( $_GET ['s'] );
 }
+$posts = $sql->getRows( "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog`;" );
+$sql->disconnect();
 ?>
 
 <!DOCTYPE html>
@@ -27,17 +28,7 @@ if (! isset ( $_GET ['s'] )) {
 <body>
 
     <?php
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
-    
-    // get our gallery images
-    $sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog`;";
-    $result = mysqli_query ( $conn->db, $sql );
-    $posts = array ();
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $posts [] = $row;
-    }
-    $conn->disconnect ();
-    ?>
+    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
     
     <!-- Page Content -->
     <div class="page-content container">

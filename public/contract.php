@@ -1,25 +1,22 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $sql = new Sql ();
 
 $contract_link;
 // if no contract is set, throw a 404 error
 if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "") {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+    throw404();
 } else {
     $contract_link = $sql->escapeString( $_GET ['c'] );
 }
 
 $contract_info = $sql->getRow( "SELECT * FROM `contracts` WHERE link = '" . $contract_link . "';" );
-$sql->disconnect ();
+$sql->disconnect();
 // if the contract doesn't exist, throw a 404 error
 if (! $contract_info ['link']) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+    throw404();
 }
 
 ?>

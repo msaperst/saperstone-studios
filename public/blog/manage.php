@@ -1,14 +1,12 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$user = new User ();
-
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
-    exit ();
-}
-
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$sql = new Sql ();
+$user = new User ($sql);
+$user->forceAdmin();
+$categories = $sql->getRows( "SELECT * FROM `tags`;" );
+$sql->disconnect();
 ?>
 
 <!DOCTYPE html>
@@ -90,13 +88,9 @@ if (! $user->isAdmin ()) {
                                     <option></option>
                                     <option value='0' style='color: red;'>New Category</option>
                                     <?php
-                                    $sql = new Sql ();
-                                    $sql = "SELECT * FROM `tags`;";
-                                    $result = mysqli_query ( $conn->db, $sql );
-                                    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-                                        echo "<option value='" . $row ['id'] . "'>" . $row ['tag'] . "</option>";
+                                    foreach ( $categories as $category ) {
+                                        echo "<option value='" . $category ['id'] . "'>" . $category ['tag'] . "</option>";
                                     }
-                                    $conn->disconnect ();
                                     ?>
                                 </select>
                             </div>

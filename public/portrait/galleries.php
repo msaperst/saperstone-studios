@@ -1,10 +1,10 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
+
 $what;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['w'] )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+    throw404();
 } else {
     $what = ( int ) $_GET ['w'];
 }
@@ -12,31 +12,18 @@ if (! isset ( $_GET ['w'] )) {
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $sql = new Sql ();
-$sql = "SELECT * FROM `galleries` WHERE id = '$what';";
-$details = $sql->getRow( $sql );
+$details = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '$what';" );
 if (! $details ['id']) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
+    throw404();
 }
 
-$sql = "SELECT * FROM `galleries` WHERE parent = '$what';";
-$children = array ();
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $children [] = $r;
-}
-
-$sql = "SELECT * FROM `galleries` WHERE id = '" . $details ['parent'] . "';";
-$parent = $sql->getRow( $sql );
+$children = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '$what';" );
+$parent = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '" . $details ['parent'] . "';" );
 if ($parent ['parent'] != NULL) {
-    $sql = "SELECT * FROM `galleries` WHERE id = '" . $parent ['parent'] . "';";
-    $grandparent = $sql->getRow( $sql );
+    $grandparent = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '" . $parent ['parent'] . "';" );
 }
 if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
-    $sql = "SELECT `title` FROM `galleries` WHERE id = " . $grandparent ['parent'] . ";";
-    $greatgrandparent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
+    $greatgrandparent = $sql->getRow( "SELECT `title` FROM `galleries` WHERE id = " . $grandparent ['parent'] . ";" ) ['title'];
 }
 
 ?>
@@ -70,13 +57,8 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
     
     // get our gallery images
-    $sql = "SELECT * FROM `gallery_images` WHERE gallery = '$what' ORDER BY `sequence`;";
-    $result = mysqli_query ( $conn->db, $sql );
-    $images = array ();
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $images [] = $row;
-    }
-    $conn->disconnect ();
+    $images = $sql->getRows( "SELECT * FROM `gallery_images` WHERE gallery = '$what' ORDER BY `sequence`;" );
+    $sql->disconnect ();
     ?>
     
     <!-- Page Content -->

@@ -197,7 +197,6 @@
 
         <?php
         require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/footer.php";
-        $conn->disconnect ();
         ?>
 
     </div>

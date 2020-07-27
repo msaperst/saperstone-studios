@@ -1,13 +1,10 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$user = new User ();
-
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
-    exit ();
-}
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$sql = new Sql ();
+$user = new User ($sql);
+$user->forceAdmin();
 
 ?>
 
@@ -44,10 +41,7 @@ if (! $user->isAdmin ()) {
         <!-- /.row -->
 
         <?php
-        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-        $sql = new Sql ();
-        $sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';";
-        $row = $sql->getRow( $sql );
+        $row = $sql->getRow( "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';" );
         $categories = explode ( ",", str_replace ( "'", "", substr ( $row ['COLUMN_TYPE'], 5, (strlen ( $row ['COLUMN_TYPE'] ) - 6) ) ) );
         
         foreach ( $categories as $category ) {
@@ -62,9 +56,7 @@ if (! $user->isAdmin ()) {
                     </button>
                 </h2>
                 <?php
-            $sql = "SELECT `id`,`name` FROM `product_types` WHERE `category` = '$category';";
-            $result = mysqli_query ( $conn->db, $sql );
-            while ( $r = mysqli_fetch_assoc ( $result ) ) {
+            foreach ( $sql->getRows( "SELECT `id`,`name` FROM `product_types` WHERE `category` = '$category';" ) as $r ) {
                 ?>
                 <div class="col-md-4 col-sm-6 bootstrap-dialog"
                     product-type='<?php echo $r['id']; ?>'>
@@ -103,9 +95,7 @@ if (! $user->isAdmin ()) {
                         </thead>
                         <tbody>
                             <?php
-                $sql = "SELECT * FROM `products` WHERE `product_type` = '" . $r ['id'] . "';";
-                $sesult = mysqli_query ( $conn->db, $sql );
-                while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+                foreach ( $sql->getRows( "SELECT * FROM `products` WHERE `product_type` = '" . $r ['id'] . "';" ) as $s ) {
                     ?>
                             <tr product-id='<?php echo $s['id']; ?>'>
                                 <td>
@@ -162,9 +152,7 @@ if (! $user->isAdmin ()) {
                     <hr />
                     <div class='product-options'>
                     <?php
-                $sql = "SELECT * FROM `product_options` WHERE `product_type` = '" . $r ['id'] . "';";
-                $sesult = mysqli_query ( $conn->db, $sql );
-                while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+                foreach ( $sql->getRows( "SELECT * FROM `product_options` WHERE `product_type` = '" . $r ['id'] . "';" ) as $s ) {
                     echo "<span class='selected-album'>" . $s ['opt'] . "</span>";
                 }
                 ?>
@@ -190,8 +178,8 @@ if (! $user->isAdmin ()) {
         ?>
 
         <?php
+        $sql->disconnect();
         require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/footer.php";
-        $conn->disconnect ();
         ?>
 
     </div>

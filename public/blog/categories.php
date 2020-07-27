@@ -1,14 +1,9 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $sql = new Sql ();
-
-$sql = "SELECT `tags`.`id`, `tags`.`tag`, COUNT(`blog_tags`.`tag`) AS `count` FROM blog_tags JOIN tags ON blog_tags.tag = tags.id GROUP BY blog_tags.tag;";
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $tags [] = $r;
-}
-$conn->disconnect ();
+$tags = $sql->getRows( "SELECT `tags`.`id`, `tags`.`tag`, COUNT(`blog_tags`.`tag`) AS `count` FROM blog_tags JOIN tags ON blog_tags.tag = tags.id GROUP BY blog_tags.tag;" );
+$sql->disconnect ();
 ?>
 <!DOCTYPE html>
 <html lang="en">

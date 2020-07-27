@@ -1,9 +1,17 @@
+<?php
+require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$navSql = new Sql ();
+$navUser = new User ($navSql);
+$navSql->disconnect();
+?>
+
 <hr>
 
 <!-- User Information For JS -->
 <div class="hidden">
-    <input id="my-user-id" value="<?php echo $user->getId(); ?>" /> <input
-        id="my-user-role" value="<?php echo $user->getRole(); ?>" />
+    <input id="my-user-id" value="<?php echo $navUser->getId(); ?>" /> <input
+        id="my-user-role" value="<?php echo $navUser->getRole(); ?>" />
 </div>
 
 <!-- Footer -->

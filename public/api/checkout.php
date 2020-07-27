@@ -18,7 +18,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "res
 $response = array ();
 
 // get our user information
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $user = new User ();
 if (! $user->isLoggedIn ()) {
     $response ['error'] = "User must be logged in to submit their order.";
@@ -193,7 +193,7 @@ try {
     /* wrap API method calls on the service object with a try catch */
     $setECResponse = $paypalService->SetExpressCheckout ( $setECReq );
 } catch ( Exception $ex ) {
-    include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/Error.php";
+    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/Error.php";
     exit ();
 }
 

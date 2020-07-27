@@ -1,4 +1,10 @@
-<?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
+<?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+$sql = new Sql ();
+$posts = $sql->getRows("SELECT * FROM `blog_details`;");
+$sql->disconnect ();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,19 +17,7 @@
 
 <body>
 
-    <?php
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
-    // get our blog posts
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $sql = new Sql ();
-    $sql = "SELECT * FROM `blog_details`;";
-    $posts = array ();
-    $result = mysqli_query ( $conn->db, $sql );
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $posts [] = $row;
-    }
-    $conn->disconnect ();
-    ?>
+    <?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
     
     <!-- Page Content -->
     <div class="page-content container">

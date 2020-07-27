@@ -3,7 +3,7 @@ class SocialMedia {
     var $sql;
     var $db;
     function __construct() {
-        include_once "sql.php";
+        require_once "sql.php";
         $sql = new Sql ();
         $this->db = $sql->db;
     }

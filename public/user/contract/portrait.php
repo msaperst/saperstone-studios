@@ -1,16 +1,10 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
-$user = new User ();
-
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    $conn->disconnect ();
-    exit ();
-}
+$user = new User ($sql);
+$user->forceAdmin();
 
 $contract;
 $contract ['name'] = "";
@@ -25,10 +19,9 @@ $contract ['location'] = "";
 $contract ['invoice'] = "";
 // get the id if set, and pull these values
 if (isset ( $_GET ['id'] )) {
-    $sql = "SELECT * FROM contracts WHERE id = {$_GET['id']};";
-    $contract = $sql->getRow( $sql );
+    $contract = $sql->getRow( "SELECT * FROM contracts WHERE id = {$_GET['id']};" );
 }
-$conn->disconnect ();
+$sql->disconnect ();
 ?>
 
 <div>

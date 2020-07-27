@@ -16,7 +16,7 @@ if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['
 if ($_POST ['submit'] == 'Logout') {
     // note the logout
     $row = $sql->getRow( "SELECT * FROM users WHERE hash='{$_SESSION['hash']}'" );
-    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );" );
+    $sql->executeStatement( "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );" );
 
     // remove any stored login
     unset($_COOKIE['hash']);
@@ -27,7 +27,7 @@ if ($_POST ['submit'] == 'Logout') {
     // destroy the session
     session_unset ();
     session_destroy ();
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
@@ -65,8 +65,8 @@ if ($_POST ['submit'] == 'Login') {
                 setcookie ( 'usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
             }
 
-            mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
-            mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
+            $sql->executeStatement( "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
+            $sql->executeStatement( "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
             // Update last login in DB
         } elseif ($row ['usr']) {
             $err [] = 'Sorry, you account has been deactivated. Please 
@@ -81,9 +81,9 @@ if ($_POST ['submit'] == 'Login') {
         // Save the error messages in the session
         echo implode ( '<br />', $err );
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();

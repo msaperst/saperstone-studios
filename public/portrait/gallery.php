@@ -1,10 +1,10 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
+
 $what;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['w'] )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+    throw404();
 } else {
     $what = ( int ) $_GET ['w'];
 }
@@ -12,41 +12,24 @@ if (! isset ( $_GET ['w'] )) {
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 $sql = new Sql ();
-$sql = "SELECT * FROM `galleries` WHERE id = '$what';";
-$details = $sql->getRow( $sql );
+$details = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '$what';" );
 if (! $details ['id']) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
+    throw404();
 }
 
-$sql = "SELECT * FROM `galleries` WHERE parent = '$what';";
-$children = array ();
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    if ($r ['title'] != 'Product') {
-        $children [] = $r;
-    }
-}
+$children = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '$what' AND title != 'Product';" );
 if (sizeof ( $children ) == 0) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
+    throw404();
 }
 
 $parent = $details ['title'];
 if ($details ['parent'] != NULL) {
-    $sql = "SELECT `title` FROM `galleries` WHERE id = " . $details ['parent'] . ";";
-    $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
+    $parent = $sql->getRow( "SELECT `title` FROM `galleries` WHERE id = " . $details ['parent'] . ";" ) ['title'];
 }
 if ($parent == 'Product') {
     $grandparent = $parent;
-    $sql = "SELECT `parent` FROM `galleries` WHERE id = " . $details ['parent'] . ";";
-    $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['parent'];
-    $sql = "SELECT `title` FROM `galleries` WHERE id =$parent;";
-    $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
+    $parent = $sql->getRow( "SELECT `parent` FROM `galleries` WHERE id = " . $details ['parent'] . ";" ) ['parent'];
+    $parent = $sql->getRow( "SELECT `title` FROM `galleries` WHERE id = $parent;" ) ['title'];
 }
 ?>
 
@@ -122,13 +105,8 @@ if ($parent == 'Product') {
             <?php
             for($i = 0; $i < count ( $children ); $i ++) {
                 $child = $children [$i];
-                $sql = "SELECT * FROM `galleries` WHERE parent = '" . $child ['id'] . "';";
-                $grandchildren = array ();
-                $result = mysqli_query ( $conn->db, $sql );
-                while ( $r = mysqli_fetch_assoc ( $result ) ) {
-                    $grandchildren [] = $r;
-                }
-                
+                $grandchildren = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '" . $child ['id'] . "';" );
+                $sql->disconnect();
                 $padding = "";
                 if (count ( $children ) % 3 == 1 && $i == (count ( $children ) - 1)) {
                     $padding = "col-sm-offset-4 ";

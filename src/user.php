@@ -1,7 +1,9 @@
 <?php
 class User {
     private $user_details = NULL;
+    private $sql;
     function __construct($sql) {
+        $this->sql = $sql;
         $hash = NULL;
         if( isset ( $_COOKIE ) && isset ( $_COOKIE['hash'] )) {
             $hash = $_COOKIE['hash'];
@@ -67,6 +69,20 @@ class User {
             return $this->user_details ['email'];
         }
         return "";
+    }
+
+    function forceAdmin() {
+        if (! $this->isAdmin ()) {
+            require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
+            throw401();
+        }
+    }
+
+    function forceLogIn() {
+        if (! $this->isLoggedIn ()) {
+            require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
+            throw401();
+        }
     }
 }
 ?>

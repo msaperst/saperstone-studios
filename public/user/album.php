@@ -1,29 +1,23 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$user = new User ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
 
 $album;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['album'] ) || $_GET ['album'] == "") {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+    throw404();
 } else {
     $album = ( int ) $_GET ['album'];
 }
 
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
-$sql = "SELECT * FROM `albums` WHERE id = '" . $album . "';";
-$album_info = $sql->getRow( $sql );
+$user = new User ($sql);
+$album_info = $sql->getRow( "SELECT * FROM `albums` WHERE id = '" . $album . "';" );
 // if the album doesn't exist, throw a 404 error
 if (! $album_info ['name']) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
+    throw404();
 }
 
 // logic found here: https://www.draw.io/#G1oa_DMoW0-na6KNuex0oligsw1jdRbqaI
@@ -34,58 +28,46 @@ if( $user->isAdmin () ) {
         ( $_COOKIE ['searched'] != null && ( (array) json_decode( $_COOKIE ['searched'] ) ) [$album] == md5( "ablum" . $album_info ['code'] ) ) ) ) { // or it's stored in your cookies
     // if you successfully searched for the album, do nothing, you shall pass onwards
 } else if ( $user->isLoggedIn() ) {
-    $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";
-    $result = mysqli_query ( $conn->db, $sql );
-    $albums = array ();
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $albums [] = $r ['album'];
-    }
+    $albums = $sql->getRows( "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';" )
     if (in_array ( $album, $albums )) {
         // user is logged in, and user has access to album, do nothing, you shall pass onwards
     } else {
         if( !$album_info ['code'] ) {
-            header ( 'HTTP/1.0 401 Unauthorized' );
-            include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
-            $conn->disconnect ();
-            exit ();
+            throw401();
         } else {
             header ( 'HTTP/1.0 401 Unauthorized' );
             $title = "401";
             $subtitle = "Unauthorized";
             $message = "Your request requires authentication.<br/>\nDespite being logged in, you do not have access to this album. Please <a href='#album'>enter the album code</a> to view this album.<br/>\n";
             require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/error.php";
-            $conn->disconnect ();
+            $sql->disconnect ();
             exit ();
         }
     }
 } else {
     if( !$album_info ['code'] ) {
-        header ( 'HTTP/1.0 401 Unauthorized' );
-        include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
-        $conn->disconnect ();
-        exit ();
+        throw401();
     } else {
         header ( 'HTTP/1.0 401 Unauthorized' );
         $title = "401";
         $subtitle = "Unauthorized";
         $message = "Your request requires authentication.<br/>\nPlease either <a href='javascript:void(0);' data-toggle='modal' data-target='#login-modal'>Login</a> or <a href='#album'>enter the album code</a> to view this album.<br/>\n";
         require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/error.php";
-        $conn->disconnect ();
+        $sql->disconnect ();
         exit ();
     }
 }
 
 // update our last accessed
 if (! $user->isAdmin ()) {
-    $sql = "UPDATE `albums` SET `lastAccessed` = now() WHERE id = '" . $album . "';";
-    mysqli_query ( $conn->db, $sql );
+    $sql->executeStatement( "UPDATE `albums` SET `lastAccessed` = now() WHERE id = '" . $album . "';" );
 }
 if ($user->isLoggedIn ()) {
-    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Visited Album', NULL, $album );" );
+    $sql->executeStatement( "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Visited Album', NULL, $album );" );
 }
 
-$isAlbumDownloadable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `download_rights` WHERE user = '0' AND album = '" . $album . "';" ) );
-$isAlbumSharable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `share_rights` WHERE user = '0' AND album = '" . $album . "';" ) );
+$isAlbumDownloadable = $sql->getRowCount( "SELECT * FROM `download_rights` WHERE user = '0' AND album = '" . $album . "';" );
+$isAlbumSharable = $sql->getRowCount( "SELECT * FROM `share_rights` WHERE user = '0' AND album = '" . $album . "';" );
 ?>
 
 <!DOCTYPE html>
@@ -110,12 +92,7 @@ footer {
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
     
     // get our gallery images
-    $sql = "SELECT album_images.*, albums.name, albums.description, albums.date FROM `album_images` JOIN `albums` ON album_images.album = albums.id WHERE albums.id = '" . $album . "' ORDER BY `sequence`;";
-    $result = mysqli_query ( $conn->db, $sql );
-    $images = array ();
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $images [] = $row;
-    }
+    $images = $sql->getRows( "SELECT album_images.*, albums.name, albums.description, albums.date FROM `album_images` JOIN `albums` ON album_images.album = albums.id WHERE albums.id = '" . $album . "' ORDER BY `sequence`;" );
     ?>
 
     <!-- Page Content -->
@@ -454,8 +431,7 @@ footer {
                 <div class="modal-body">
                     <ul class="nav nav-tabs">
                         <?php
-                        $sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';";
-                        $row = $sql->getRow( $sql );
+                        $row = $sql->getRow( "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';" );
                         $categories = explode ( ",", str_replace ( "'", "", substr ( $row ['COLUMN_TYPE'], 5, (strlen ( $row ['COLUMN_TYPE'] ) - 6) ) ) );
                         $categories = array_diff ( $categories, [ 
                                 "other" 
@@ -480,18 +456,14 @@ footer {
                            <div id="<?php echo $category; ?>"
                             class="row tab-pane fade<?php if ($counter == 0) { echo " in active"; }?>">
                                <?php
-                            $sql = "SELECT `id`,`name` FROM `product_types` WHERE `category` = '$category';";
-                            $result = mysqli_query ( $conn->db, $sql );
-                            while ( $r = mysqli_fetch_assoc ( $result ) ) {
+                            foreach ( $sql->getRows( "SELECT `id`,`name` FROM `product_types` WHERE `category` = '$category';" ) as $r ) {
                                 ?>
                             <div class="col-md-4 col-sm-6"
                                 product-type='<?php echo $r['id']; ?>'>
                                 <h3><?php echo ucwords($r['name']); ?></h3>
                                 <table class="table borderless">
                                 <?php
-                                $sql = "SELECT * FROM `products` WHERE `product_type` = '" . $r ['id'] . "';";
-                                $sesult = mysqli_query ( $conn->db, $sql );
-                                while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+                                foreach ( $sql->getRows( "SELECT * FROM `products` WHERE `product_type` = '" . $r ['id'] . "';" ) as $s ) {
                                     $max = "";
                                     if ($r ['id'] == "10") {
                                         $max = " max='1'";
@@ -751,8 +723,7 @@ footer {
                 </div></span>
             <?php
             } else {
-                $sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '" . $user->getId () . "';";
-                $result = $sql->getRow( $sql );
+                $result = $sql->getRow( "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '" . $user->getId () . "';" );
                 if ($result ['total'] > 0) {
                     ?>
             <span class="text-center"><button id="cart-btn"
@@ -773,8 +744,8 @@ footer {
             }
             ?>
             <?php
-            $sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId () . "' AND `album` = '" . $album . "';";
-            $result = $sql->getRow( $sql );
+            $result = $sql->getRow( "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId () . "' AND `album` = '" . $album . "';" );
+            $sql->disconnect();
             if ($result ['total'] > 0) {
                 ?>
             <span class="text-center"><button id="favorite-btn"
@@ -820,7 +791,6 @@ footer {
         <script src="/js/albums-uploader.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>
     <?php
-        $conn->disconnect ();
     }
     ?>
 

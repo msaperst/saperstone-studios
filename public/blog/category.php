@@ -1,34 +1,26 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
+
 $categories;
 $where;
-$tags = array ();
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['t'] )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+    throw404();
 } else {
     $categories = array_map ( 'intval', explode ( ',', $_GET ['t'] ) );
     $where = "`id` = '" . implode ( "' OR `id` = '", $categories ) . "';";
 }
-
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
-$string = new Strings ();
-
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
 $sql = new Sql ();
-$sql = "SELECT * FROM `tags` WHERE $where";
-$result = mysqli_query ( $conn->db, $sql );
-while ( $row = mysqli_fetch_assoc ( $result ) ) {
-    array_push ( $tags, $row ['tag'] );
-}
+$string = new Strings ();
+$tags = $sql->getRows( "SELECT tag FROM `tags` WHERE $where" );
 if (empty ( $tags )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
+    throw404();
 }
+$posts = $sql->getRows( "SELECT * FROM `blog_tags` WHERE " . str_replace ( $where, "id", "tag" ) );
+$sql->disconnect ();
 ?>
 
 <!DOCTYPE html>
@@ -42,17 +34,7 @@ if (empty ( $tags )) {
 
 <body>
 
-    <?php
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
-    // get our blog posts
-    $sql = "SELECT * FROM `blog_tags` WHERE " . str_replace ( $where, "id", "tag" );
-    $posts = array ();
-    $result = mysqli_query ( $conn->db, $sql );
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $posts [] = $row;
-    }
-    $conn->disconnect ();
-    ?>
+    <?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
     
     <!-- Page Content -->
     <div class="page-content container">

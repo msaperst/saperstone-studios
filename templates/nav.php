@@ -4,8 +4,10 @@
 $height_offset = 10;
 $DOCUMENT_ROOT = "DOCUMENT_ROOT";
 require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-include_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/strings.php";
+require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "src/strings.php";
 $navSql = new Sql ();
+$navUser = new User($navSql);
 $string = new Strings ();
 $query = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
 if ($navSql->getRowCount ( $query )) {
@@ -70,15 +72,15 @@ if ($navSql->getRowCount ( $query )) {
         ?>
 
                   <?php
-                if (! $user->isLoggedIn ()) {
+                if (! $navUser->isLoggedIn ()) {
                     ?>
                 <li><a href="javascript:void(0);" data-toggle="modal"
             data-target="#login-modal"><em class="fa fa-sign-in"></em> Login</a></li>
                 <?php
-                } elseif ($user->isAdmin ()) {
+                } elseif ($navUser->isAdmin ()) {
                     ?>
                 <li class="dropdown"><a href="javascript:void(0);"
-            class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->getUser (); ?><strong
+            class="dropdown-toggle" data-toggle="dropdown"><?php echo $navUser->getUser (); ?><strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="/user/users.php">Manage Users</a></li>
@@ -94,7 +96,7 @@ if ($navSql->getRowCount ( $query )) {
                 } else {
                     ?>
                 <li class="dropdown"><a href="javascript:void(0);"
-            class="dropdown-toggle" data-toggle="dropdown"><?php echo $user->getUser (); ?><strong
+            class="dropdown-toggle" data-toggle="dropdown"><?php echo $navUser->getUser (); ?><strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="/user/index.php">View Albums</a></li>

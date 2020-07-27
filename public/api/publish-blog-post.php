@@ -1,7 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
 
 $user = new User ();
@@ -26,7 +26,7 @@ if (isset ( $_POST ['post'] )) {
 $sql = "UPDATE `blog_details` SET `active` = '1' WHERE `id` = '$post';";
 mysqli_query ( $conn->db, $sql );
 
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/social-media.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/social-media.php";
 $sm = new SocialMedia ();
 $sm->generateRSS ();
 $sm->publishBlogToTwitter ( $post );
