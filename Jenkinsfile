@@ -124,10 +124,10 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             try {
                 sh "composer integration-pre-test"
                 sh "composer integration-test"
-                sh "composer integration-post-test"
             } catch (e) {
                 throw e
             } finally {
+                sh "composer integration-post-test"
                 junit 'reports/it-junit.xml'
                 step([
                     $class: 'CloverPublisher',
