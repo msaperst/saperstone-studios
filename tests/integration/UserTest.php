@@ -28,23 +28,23 @@ class UserTest extends TestCase {
         $this->assertEquals ( '', $user->getLastName () );
         $this->assertEquals ( '', $user->getName () );
         $this->assertEquals ( '', $user->getEmail () );
-        $user = NULL;
     }
     public function testBadSessionUser() {
         $_SESSION ['hash'] = "1234567890abcdef1234567890abcdef";
         $user = new User ($this->sql);
+        unset( $_SESSION ['hash'] );
         $this->assertFalse ( $user->isLoggedIn () );
-        $user = NULL;
     }
     public function testBadCookieUser() {
         $_COOKIE ['hash'] = "1234567890abcdef1234567890abcdef";
         $user = new User ($this->sql);
+        unset( $_COOKIE ['hash'] );
         $this->assertFalse ( $user->isLoggedIn () );
-        $user = NULL;
     }
     public function testAdminUser() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $user = new User ($this->sql);
+        unset( $_SESSION ['hash'] );
         $this->assertTrue ( $user->isLoggedIn () );
         $this->assertEquals ( 1, $user->getId () );
         $this->assertEquals ( 'msaperst', $user->getUser () );
@@ -54,11 +54,11 @@ class UserTest extends TestCase {
         $this->assertEquals ( 'Saperstone', $user->getLastName () );
         $this->assertEquals ( 'Max Saperstone', $user->getName () );
         $this->assertEquals ( 'msaperst@gmail.com', $user->getEmail () );
-        $user = NULL;
     }
     public function testDownloadUser() {
         $_COOKIE ['hash'] = "5510b5e6fffd897c234cafe499f76146";
         $user = new User ($this->sql);
+        unset( $_COOKIE ['hash'] );
         $this->assertTrue ( $user->isLoggedIn () );
         $this->assertEquals ( 3, $user->getId () );
         $this->assertEquals ( 'downloader', $user->getUser () );
@@ -68,11 +68,11 @@ class UserTest extends TestCase {
         $this->assertEquals ( 'User', $user->getLastName () );
         $this->assertEquals ( 'Download User', $user->getName () );
         $this->assertEquals ( 'email@example.org', $user->getEmail () );
-        $user = NULL;
     }
     public function testUploadUser() {
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
         $user = new User ($this->sql);
+        unset( $_SESSION ['hash'] );
         $this->assertTrue ( $user->isLoggedIn () );
         $this->assertEquals ( 4, $user->getId () );
         $this->assertEquals ( 'uploader', $user->getUser () );
@@ -82,6 +82,5 @@ class UserTest extends TestCase {
         $this->assertEquals ( 'User', $user->getLastName () );
         $this->assertEquals ( 'Upload User', $user->getName () );
         $this->assertEquals ( 'uploader@example.org', $user->getEmail () );
-        $user = NULL;
     }
 }

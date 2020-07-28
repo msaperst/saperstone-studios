@@ -38,24 +38,47 @@ node() {
                 sh "composer install --prefer-dist --no-progress --no-suggest"
                 sh "composer unit-test"
             } catch (e) {
-                // throw e
+                throw e
             } finally {
-                junit 'reports/junit.xml'
+                junit 'reports/ut-junit.xml'
                 step([
                     $class: 'CloverPublisher',
                     cloverReportDir: 'reports/',
-                    cloverReportFileName: 'clover.xml'
+                    cloverReportFileName: 'ut-clover.xml'
                 ])
                 publishHTML([
                         allowMissing         : false,
                         alwaysLinkToLastBuild: true,
                         keepAll              : true,
-                        reportDir            : 'reports/html',
+                        reportDir            : 'reports/ut-coverage',
                         reportFiles          : 'index.html',
-                        reportName           : 'Clover Coverage Report'
+                        reportName           : 'Unit Test Coverage Report'
                 ])
             }
-
+        }
+        stage('Run Integration Tests') {
+            try {
+                sh "composer integration-pre-test"
+                sh "composer integration-test"
+                sh "composer integration-post-test"
+            } catch (e) {
+                throw e
+            } finally {
+                junit 'reports/it-junit.xml'
+                step([
+                    $class: 'CloverPublisher',
+                    cloverReportDir: 'reports/',
+                    cloverReportFileName: 'it-clover.xml'
+                ])
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/it-coverage',
+                        reportFiles          : 'index.html',
+                        reportName           : 'Integration Test Coverage Report'
+                ])
+            }
         }
         stage('Run Sonar Analysis') {
             sh """sonar-scanner \
@@ -67,7 +90,7 @@ node() {
                 -Dsonar.tests=./tests \
                 -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
                 -Dsonar.php.tests.reportPath=./reports/junit.xml \
-                -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
+                -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
         }
         stage('Prep Files') {
             parallel(
