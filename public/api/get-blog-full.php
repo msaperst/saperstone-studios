@@ -4,7 +4,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
 
-$user = new User ();
+$user = new User ($sql);
 
 $response = array ();
 $post = 0;

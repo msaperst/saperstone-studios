@@ -1,7 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$user = new User ();
+$user = new User ($sql);
 
 // only admin users can make updates
 if (! $user->isAdmin ()) {

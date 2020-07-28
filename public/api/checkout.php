@@ -18,8 +18,9 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "res
 $response = array ();
 
 // get our user information
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$user = new User ();
+$user = new User ($sql);
 if (! $user->isLoggedIn ()) {
     $response ['error'] = "User must be logged in to submit their order.";
     echo json_encode ( $response );

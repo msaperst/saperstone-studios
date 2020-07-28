@@ -4,7 +4,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
 
-$user = new User ();
+$user = new User ($sql);
 
 // check if fields passed are empty
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {

@@ -4,7 +4,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
 
-$user = new User ();
+$user = new User ($sql);
 
 if (! $user->isLoggedIn ()) {
     $user = getClientIP();
@@ -68,7 +68,7 @@ if (isset ( $_POST ['comment'] )) {
 }
 
 // send email
-$user = new User ();
+$user = new User ($sql);
 $IP = getClientIP();
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php");

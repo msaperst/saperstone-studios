@@ -4,7 +4,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
 
-$user = new User ();
+$user = new User ($sql);
 
 if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );

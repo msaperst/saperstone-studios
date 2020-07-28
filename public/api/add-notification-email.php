@@ -5,7 +5,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 
 $sql = new Sql ();
 
-$user = new User ();
+$user = new User ($sql);
 
 $user_id;
 if (! $user->isLoggedIn ()) {
