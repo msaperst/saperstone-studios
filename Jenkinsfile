@@ -8,7 +8,7 @@ def dockerRegistry = "${dockerRepo}/saperstone-studios"
 node() {
     cleanWs()
     ansiColor('xterm') {
-        env.BRANCH_NAME = 'master'
+        env.BRANCH_NAME = 'feature/sqlRework'       //TODO - clean me up!!!
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
         version = "$branch-${env.BUILD_NUMBER}"
         env.PROJECT = "saperstone-studios"
