@@ -6,6 +6,8 @@
     },
 
     "scripts": {
-        "unit-test": "vendor/phpunit/phpunit/phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
+        "unit-test": "vendor/phpunit/phpunit/phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/",
+        "integration-pre-test": "export $(grep -v '^#' .env | xargs); docker build -q -f .docker/sql/Dockerfile -t integration_sql .; INTEGRATION_SQL_ID=`docker run -d -e MYSQL_ALLOW_EMPTY_PASSWORD=no -e MYSQL_ROOT_PASSWORD=${DB_ROOT} -e MYSQL_DATABASE=${DB_NAME} -e MYSQL_USER=${DB_USER} -e MYSQL_PASSWORD=${DB_PASS} -p ${DB_PORT}:3306 integration_sql;`",
+        "integration-test": "export $(grep -v '^#' .env | xargs); vendor/phpunit/phpunit/phpunit tests/integration/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
     }
 }

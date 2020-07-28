@@ -52,9 +52,9 @@ services:
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_DATABASE: ${DB_NAME}
-      DB_USERNAME: ${DB_USER}
-      DB_PASSWORD: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
       SERVER_NAME: ${SERVER_NAME}
       EMAIL_HOST: ${EMAIL_HOST}
       EMAIL_PORT: ${EMAIL_PORT}

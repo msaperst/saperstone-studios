@@ -4,7 +4,7 @@ class Sql {
     private $mysqli;
 
     function __construct() {
-        $this->mysqli = new mysqli ( getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USERNAME'), getenv('DB_PASSWORD'), getenv('DB_DATABASE') );
+        $this->mysqli = new mysqli ( getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME') );
         if ($this->mysqli -> connect_errno) {
             throw new Exception( "Failed to connect to MySQL: " . $mysqli -> connect_error );
             exit();

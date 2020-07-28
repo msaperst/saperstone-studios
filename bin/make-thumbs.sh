@@ -59,7 +59,7 @@ for file in $location/*.*; do
             file_size=`echo $file_info | cut -d ' ' -f 3`;
             width=`echo $file_size | cut -d 'x' -f 1`;
             height=`echo $file_size | cut -d 'x' -f 2`;
-            mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "UPDATE \`$database\`.\`album_images\` SET width='$width', height='$height' WHERE album='$id' AND location='${file:2}';"
+            mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS -e "UPDATE \`$database\`.\`album_images\` SET width='$width', height='$height' WHERE album='$id' AND location='${file:2}';"
         fi
     fi
 done

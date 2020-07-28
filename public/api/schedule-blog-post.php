@@ -46,8 +46,8 @@ if ($howLong <= 0) {
     exit ();
 }
 
-$command = "UPDATE \`" . getenv('DB_DATABASE') . "\`.\`blog_details\` SET \`active\` = '1' WHERE \`id\` = '$post';";
-$command = "mysql -h " . getenv('DB_HOST') . " -P " . getenv('DB_PORT') . " -u " . getenv('DB_USERNAME') . " -p" . getenv('DB_PASSWORD') . " -e \"$command\"";
+$command = "UPDATE \`" . getenv('DB_NAME') . "\`.\`blog_details\` SET \`active\` = '1' WHERE \`id\` = '$post';";
+$command = "mysql -h " . getenv('DB_HOST') . " -P " . getenv('DB_PORT') . " -u " . getenv('DB_USER') . " -p" . getenv('DB_PASS') . " -e \"$command\"";
 system ( "nohup bash -c 'sleep $howLong; $command' > /dev/null 2>&1 &" );
 
 $conn->disconnect ();

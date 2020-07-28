@@ -22,19 +22,19 @@ class User {
         return false;
     }
     function getId() {
-        if ($this->user_details ['id']) {
+        if ($this->isLoggedIn() && $this->user_details ['id']) {
             return $this->user_details ['id'];
         }
         return "";
     }
     function getUser() {
-        if ($this->user_details ['usr']) {
+        if ($this->isLoggedIn() && $this->user_details ['usr']) {
             return $this->user_details ['usr'];
         }
         return "";
     }
     function getRole() {
-        if ($this->user_details ['role']) {
+        if ($this->isLoggedIn() && $this->user_details ['role']) {
             return $this->user_details ['role'];
         }
         return "";
@@ -43,29 +43,34 @@ class User {
         return ($this->getRole () === "admin");
     }
     function getFirstName() {
-        if ($this->user_details ['firstName']) {
+        if ($this->isLoggedIn() && $this->user_details ['firstName']) {
             return $this->user_details ['firstName'];
         }
         return "";
     }
     function getLastName() {
-        if ($this->user_details ['lastName']) {
+        if ($this->isLoggedIn() && $this->user_details ['lastName']) {
             return $this->user_details ['lastName'];
         }
         return "";
     }
     function getName() {
         $name = "";
-        if ($this->user_details ['firstName']) {
-            $name .= $this->user_details ['firstName'];
-        }
-        if ($this->user_details ['lastName']) {
-            $name .= " " . $this->user_details ['lastName'];
+        if( $this->isLoggedIn() ) {
+            if ($this->user_details ['firstName']) {
+                $name .= $this->user_details ['firstName'];
+            }
+            if ($this->user_details ['lastName']) {
+                if ( $name != "" ) {
+                    $name .= " ";
+                }
+                $name .= $this->user_details ['lastName'];
+            }
         }
         return $name;
     }
     function getEmail() {
-        if ($this->user_details ['email']) {
+        if ($this->isLoggedIn() && $this->user_details ['email']) {
             return $this->user_details ['email'];
         }
         return "";
@@ -73,14 +78,14 @@ class User {
 
     function forceAdmin() {
         if (! $this->isAdmin ()) {
-            require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
+            require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
             throw401();
         }
     }
 
     function forceLogIn() {
         if (! $this->isLoggedIn ()) {
-            require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors.php";
+            require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
             throw401();
         }
     }
