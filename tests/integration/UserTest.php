@@ -15,6 +15,7 @@ class UserTest extends TestCase {
 
     public function tearDown() {
         $this->sql->disconnect();
+        $this->sql = NULL;
     }
 
     public function testNoUser() {

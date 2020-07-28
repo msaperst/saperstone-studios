@@ -204,19 +204,11 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     "API Tests": {
                         stage('Run API Tests') {
                             try {
-                                sh "mvn clean verify"
+                                sh "composer api-test"
                             } catch (e) {
-                                // throw e
+                                throw e
                             } finally {
-                                junit 'target/failsafe-reports/TEST-*.xml'
-                                publishHTML([
-                                        allowMissing         : false,
-                                        alwaysLinkToLastBuild: true,
-                                        keepAll              : true,
-                                        reportDir            : 'target/failsafe-reports',
-                                        reportFiles          : 'report.html',
-                                        reportName           : 'API Test Report'
-                                ])
+                                junit 'reports/api-junit.xml'
                             }
                         }
                     },
