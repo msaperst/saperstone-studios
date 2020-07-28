@@ -7,8 +7,8 @@
 
     "scripts": {
         "unit-test": "vendor/phpunit/phpunit/phpunit tests/unit/ --log-junit reports/ut-junit.xml --coverage-clover reports/ut-clover.xml --coverage-html reports/ut-coverage --whitelist src/",
-        "integration-pre-test": "export $(grep -v '^#' .env | xargs); export DB_PORT=3506; docker build -q -f .docker/sql/Dockerfile -t integration_sql .; docker run -d -e MYSQL_ALLOW_EMPTY_PASSWORD=no -e MYSQL_ROOT_PASSWORD=${DB_ROOT} -e MYSQL_DATABASE=${DB_NAME} -e MYSQL_USER=${DB_USER} -e MYSQL_PASSWORD=${DB_PASS} -p ${DB_PORT}:3306 --expose ${DB_PORT} integration_sql; ./bin/setup-database.sh true;",
-        "integration-test": "export $(grep -v '^#' .env | xargs); export DB_PORT=3506; vendor/phpunit/phpunit/phpunit tests/integration/ --log-junit reports/it-junit.xml --coverage-clover reports/it-clover.xml --coverage-html reports/it-coverage --whitelist src/",
+        "integration-pre-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3506; docker build -q -f .docker/sql/Dockerfile -t integration_sql .; docker run -d -e MYSQL_ALLOW_EMPTY_PASSWORD=no -e MYSQL_ROOT_PASSWORD=${DB_ROOT} -e MYSQL_DATABASE=${DB_NAME} -e MYSQL_USER=${DB_USER} -e MYSQL_PASSWORD=${DB_PASS} -p ${DB_PORT}:3306 --expose ${DB_PORT} integration_sql; ./bin/setup-database.sh true;",
+        "integration-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3506; vendor/phpunit/phpunit/phpunit tests/integration/ --log-junit reports/it-junit.xml --coverage-clover reports/it-clover.xml --coverage-html reports/it-coverage --whitelist src/",
         "integration-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=integration_sql --format=\"{{.ID}}\"))"
     }
 }
