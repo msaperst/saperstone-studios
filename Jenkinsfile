@@ -56,52 +56,6 @@ node() {
                 ])
             }
         }
-        stage('Run Integration Tests') {
-            try {
-                sh "composer integration-pre-test"
-                sh "composer integration-test"
-                sh "composer integration-post-test"
-            } catch (e) {
-                throw e
-            } finally {
-                junit 'reports/it-junit.xml'
-                step([
-                    $class: 'CloverPublisher',
-                    cloverReportDir: 'reports/',
-                    cloverReportFileName: 'it-clover.xml'
-                ])
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/it-coverage',
-                        reportFiles          : 'index.html',
-                        reportName           : 'Integration Test Coverage Report'
-                ])
-            }
-        }
-        stage('Run Sonar Analysis') {
-            sh """sonar-scanner \
-                -Dsonar.projectKey=saperstone-studios \
-                -Dsonar.projectName='Saperstone Studios' \
-                -Dsonar.projectVersion=2.0 \
-                -Dsonar.branch=${branch} \
-                -Dsonar.sources=./bin,./public,./src,./templates \
-                -Dsonar.tests=./tests \
-                -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
-                -Dsonar.php.tests.reportPath=./reports/junit.xml \
-                -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
-        }
-        stage('Prep Files') {
-            parallel(
-                    "Compress JS": {
-                        compress('js')
-                    },
-                    "Compress CSS": {
-                        compress('css')
-                    }
-            )
-        }
         withCredentials([
                 usernamePassword(
                         credentialsId: 'saperstone-studios-contact',
@@ -165,6 +119,52 @@ PAYPAL_USERNAME=${paypalUser}\n\
 PAYPAL_PASSWORD=${paypalPass}\n\
 PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             }
+        }
+        stage('Run Integration Tests') {
+            try {
+                sh "composer integration-pre-test"
+                sh "composer integration-test"
+                sh "composer integration-post-test"
+            } catch (e) {
+                throw e
+            } finally {
+                junit 'reports/it-junit.xml'
+                step([
+                    $class: 'CloverPublisher',
+                    cloverReportDir: 'reports/',
+                    cloverReportFileName: 'it-clover.xml'
+                ])
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/it-coverage',
+                        reportFiles          : 'index.html',
+                        reportName           : 'Integration Test Coverage Report'
+                ])
+            }
+        }
+        stage('Run Sonar Analysis') {
+            sh """sonar-scanner \
+                -Dsonar.projectKey=saperstone-studios \
+                -Dsonar.projectName='Saperstone Studios' \
+                -Dsonar.projectVersion=2.0 \
+                -Dsonar.branch=${branch} \
+                -Dsonar.sources=./bin,./public,./src,./templates \
+                -Dsonar.tests=./tests \
+                -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
+                -Dsonar.php.tests.reportPath=./reports/junit.xml \
+                -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
+        }
+        stage('Prep Files') {
+            parallel(
+                    "Compress JS": {
+                        compress('js')
+                    },
+                    "Compress CSS": {
+                        compress('css')
+                    }
+            )
         }
         stage('Setup Files') {
             try {
