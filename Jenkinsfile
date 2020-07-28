@@ -198,7 +198,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             parallel(
                     "Integration Tests": {
                         stage('Run Integration Tests') {
-                            //TODO
+                            sh "composer integration-test"
                         }
                     },
                     "API Tests": {
