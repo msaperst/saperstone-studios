@@ -52,31 +52,31 @@ class ContactMeTest extends TestCase {
         $this->assertEquals("A message is required", $response->getBody());
     }
 
-//     public function testAll() {
-//         $response = $this->http->request('POST', 'api/contact-me.php', [
-//                 'form_params' => [
-//                     'name' => 'Max',
-//                     'phone' => '571-245-3351',
-//                     'email' => 'msaperst@gmail.com',
-//                     'message' => 'Hi There! I am a test email'
-//                 ]
-//         ]);
-//         $this->assertEquals(200, $response->getStatusCode());
-//         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", $response->getBody());
-//     }
-//
-//     public function testAllSS() {
-//         $response = $this->http->request('POST', 'api/contact-me.php', [
-//                 'form_params' => [
-//                     'name' => 'Max',
-//                     'phone' => '571-245-3351',
-//                     'email' => 'msaperst@saperstonestudios.com',
-//                     'message' => 'Hi There! I am a test email'
-//                 ]
-//         ]);
-//         $this->assertEquals(200, $response->getStatusCode());
-//         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", $response->getBody());
-//     }
+    public function testAll() {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+                'form_params' => [
+                    'name' => 'Max',
+                    'phone' => '571-245-3351',
+                    'email' => 'msaperst@gmail.com',
+                    'message' => 'Hi There! I am a test email'
+                ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", $response->getBody());
+    }
+
+    public function testAllSS() {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+                'form_params' => [
+                    'name' => 'Max',
+                    'phone' => '571-245-3351',
+                    'email' => 'msaperst@saperstonestudios.com',
+                    'message' => 'Hi There! I am a test email'
+                ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", $response->getBody());
+    }
 }
 
 ?>
