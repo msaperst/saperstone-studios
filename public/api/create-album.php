@@ -3,16 +3,15 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 // ensure we are logged in appropriately
 if (! $user->isAdmin () && $user->getRole () != "uploader") {
     header ( 'HTTP/1.0 401 Unauthorized' );
     if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
+        echo "Sorry, you do you have appropriate rights to perform this action";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
@@ -23,8 +22,14 @@ $date = "NULL";
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = $sql->escapeString( $_POST ['name'] );
 } else {
-    echo "Album name is required!";
-    $conn->disconnect ();
+    if (! isset ( $_POST ['name'] )) {
+        echo "Album name is required";
+    } elseif ($_POST ['name'] == "") {
+        echo "Album name can not be blank";
+    } else {
+        echo "Some other album name error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
@@ -43,22 +48,14 @@ if (! mkdir ( "../albums/$location", 0755, true )) {
     $error = error_get_last ();
     echo $error ['message'] . "<br/>";
     echo "Unable to create album";
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', $date, '$location', '" . $user->getId () . "');";
-mysqli_query ( $conn->db, $sql );
-$last_id = mysqli_insert_id ( $conn->db );
-
+$last_id = $sql->executeStatement( "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', $date, '$location', '" . $user->getId () . "');" );
 if ($user->getRole () == "uploader" && $last_id != 0) {
-    $sql = "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $user->getId () . "', '$last_id');";
-    mysqli_query ( $conn->db, $sql );
-    
-    if ($user->isLoggedIn ()) {
-        // update our user records table
-        mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );" );
-    }
+    $sql->executeStatement( "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $user->getId () . "', '$last_id');" );
+    $sql->executeStatement( "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );" );
 }
 if ($last_id == 0) {
     rmdir ( "../albums/$location" );
@@ -66,5 +63,5 @@ if ($last_id == 0) {
 
 echo $last_id;
 
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();

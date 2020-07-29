@@ -20,10 +20,12 @@ $response = array ();
 // get our user information
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$sql = new Sql ();
 $user = new User ($sql);
 if (! $user->isLoggedIn ()) {
-    $response ['error'] = "User must be logged in to submit their order.";
+    $response ['error'] = "You must be logged in to submit your order";
     echo json_encode ( $response );
+    $sql->disconnect ();
     exit ();
 } else {
     $user = $user->getId ();
@@ -49,10 +51,6 @@ if (isset ( $_POST ['order'] )) {
 if (isset ( $_POST ['coupon'] )) {
     $coupon = md5( $sql->escapeString( $_POST ['coupon'] ) );
 }
-
-// generate our items to order
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$sql = new Sql ();
 
 // setup our urls for success or failure
 $url = $_SERVER ['HTTP_REFERER'];
@@ -93,10 +91,10 @@ $taxTotalValue = 0;
 $order_text = "";
 $order_HTML = "<table><tr><th>Name</th><th>Album</th><th>Preview</th><th>Product</th><th>Size</th><th>Item Option</th><th>Price</th></tr>";
 
-$sql = "SELECT `cart`.*,`album_images`.*,`products`.*,`product_types`.*,`albums`.`name` AS album_title FROM `cart` JOIN `album_images` ON `cart`.`image` = `album_images`.`sequence` AND `cart`.`album` = `album_images`.`album` JOIN `products` ON `cart`.`product` = `products`.`id` JOIN `product_types` ON `products`.`product_type` = `product_types`.`id` JOIN `albums` ON `cart`.`album` = `albums`.`id` WHERE `cart`.`user` = '$user';";
-$result = mysqli_query ( $conn->db, $sql );
 $counter = 0;
-while ( $item = mysqli_fetch_assoc ( $result ) ) {
+$items = $sql->getRows( "SELECT `cart`.*,`album_images`.*,`products`.*,`product_types`.*,`albums`.`name` AS album_title FROM `cart` JOIN `album_images` ON `cart`.`image` = `album_images`.`sequence` AND `cart`.`album` = `album_images`.`album` JOIN `products` ON `cart`.`product` = `products`.`id` JOIN `product_types` ON `products`.`product_type` = `product_types`.`id` JOIN `albums` ON `cart`.`album` = `albums`.`id` WHERE `cart`.`user` = '$user';" );
+$sql->disconnect ();
+foreach ( $items as $item ) {
     $options = getOptions ( $order_details, $item ['product'], $item ['image'] );
     for($i = 0; $i < $item ['count']; $i ++) {
         $itemAmount = new BasicAmountType ( $currencyCode, $item ['price'] );
@@ -126,8 +124,6 @@ while ( $item = mysqli_fetch_assoc ( $result ) ) {
         $order_HTML .= "<tr><td>" . $item ['title'] . "</td><td>" . $item ['album_title'] . "</td><td>$preview</td><td>" . $item ['name'] . "</td><td>" . $item ['size'] . "</td><td>$option</td><td>$" . number_format ( $item ['price'], 2 ) . "</td></tr>";
     }
 }
-$conn->disconnect ();
-
 // finish the order details with the tax and item total
 $order_text .= "\t\tTax\t\t\t\t\t\t\t\t\t$" . number_format ( $taxTotalValue, 2 ) . "\n";
 $order_text .= "\t\t\t\t\t\t\tTotal Amount: $" . number_format ( $itemTotalValue, 2 ) . "\n";
@@ -220,9 +216,8 @@ if (isset ( $setECResponse )) {
         
         // clear out our shopping cart
         $sql = new Sql ();
-        $sql = "DELETE FROM `cart` WHERE `user` = '$user';";
-        mysqli_query ( $conn->db, $sql );
-        $conn->disconnect ();
+        $sql->executeStatement( "DELETE FROM `cart` WHERE `user` = '$user';" );
+        $sql->disconnect ();
         
         // markup purchases items as purchases
         // TODO

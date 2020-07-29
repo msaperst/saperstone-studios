@@ -18,8 +18,11 @@ class AddNotificationEmailTest extends TestCase {
 
     public function tearDown() {
         $this->http = NULL;
-        $this->sql->executeStatement( "DELETE FROM `albums` WHERE `albums`.`id` = 999" );
-        $this->sql->executeStatement( "DELETE FROM `notification_emails` WHERE `notification_emails`.`album` = 999" );
+        $this->sql->executeStatement( "DELETE FROM `albums` WHERE `albums`.`id` = 999;" );
+        $this->sql->executeStatement( "DELETE FROM `notification_emails` WHERE `notification_emails`.`album` = 999;" );
+        $count = $this->sql->getRow( "SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
+        $count++;
+        $this->sql->executeStatement( "ALTER TABLE `albums` AUTO_INCREMENT = $count;" );
     }
 
     public function testNoAlbumId() {

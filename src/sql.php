@@ -41,6 +41,9 @@ class Sql {
             return $rows;
         }
         $result = $this->mysqli->query($selectStatement);
+        if( $result == NULL ) {
+            return $rows;
+        }
         while( $row = $result->fetch_assoc() ) {
             array_push($rows, $row);
         }
@@ -51,7 +54,11 @@ class Sql {
         if ( ! $this->connected) {
             return 0;
         }
-        return $this->mysqli->query($selectStatement)->num_rows;
+        $rows = $this->mysqli->query($selectStatement);
+        if( $rows == NULL ) {
+            return 0;
+        }
+        return $rows->num_rows;
     }
 
     function executeStatement($statement) {
