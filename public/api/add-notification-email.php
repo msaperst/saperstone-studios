@@ -2,9 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 $user_id;
@@ -19,21 +17,20 @@ if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
     $album = ( int ) $_POST ['album'];
 } else {
     if (! isset ( $_POST ['album'] )) {
-        echo "Album id is required!";
+        echo "Album id is required";
     } elseif ($_POST ['album'] == "") {
-        echo "Album id cannot be blank!";
+        echo "Album id can not be blank";
     } else {
-        echo "Some other Album id error occurred!";
+        echo "Some other album id error occurred";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = $sql->getRow( $sql );
+$album_info = $sql->getRow( "SELECT * FROM albums WHERE id = $album;" );
 if (! $album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect ();
+    echo "Album id does not match any albums";
+    $sql->disconnect ();
     exit ();
 }
 
@@ -42,19 +39,18 @@ if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
     $email = $sql->escapeString( $_POST ['email'] );
 } else {
     if (! isset ( $_POST ['email'] )) {
-        echo "Email is required!";
+        echo "Email is required";
     } elseif ($_POST ['email'] == "") {
-        echo "Email cannot be blank!";
+        echo "Email can not be blank";
     } else {
-        echo "Some other email error occurred!";
+        echo "Some other email error occurred";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
 // update our mysql database
-$sql = "INSERT INTO `notification_emails` (`album`, `user`, `email`) VALUES ('$album', '$user_id', '$email');";
-mysqli_query ( $conn->db, $sql );
-
-$conn->disconnect ();
+$sql->executeStatement( "INSERT INTO `notification_emails` (`album`, `user`, `email`) VALUES ('$album', '$user_id', '$email');" );
+$sql->disconnect ();
 exit ();
+?>
