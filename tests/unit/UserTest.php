@@ -296,11 +296,11 @@ class UserTest extends TestCase {
         $_SESSION['hash'] = "123";
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(array(
-            "email" => "msaperst@gmail.com"
+            "email" => "msaperst+sstest@gmail.com"
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "msaperst@gmail.com", $user->getEmail () );
+        $this->assertEquals ( "msaperst+sstest@gmail.com", $user->getEmail () );
     }
 
     public function testGetEmailNoEmail() {

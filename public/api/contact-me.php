@@ -12,28 +12,58 @@ if (isset ( $_POST ['to'] ) && $_POST ['to'] != "") {
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = $sql->escapeString( $_POST ['name'] );
 } else {
-    echo "Name is required";
+    if (! isset ( $_POST ['name'] )) {
+        echo "Name is required";
+    } elseif ($_POST ['name'] == "") {
+        echo "Name can not be blank";
+    } else {
+        echo "Some other name error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
 if (isset ( $_POST ['phone'] ) && $_POST ['phone'] != "") {
     $phone = $sql->escapeString( $_POST ['phone'] );
 } else {
-    echo "Phone is required";
+    if (! isset ( $_POST ['phone'] )) {
+        echo "Phone is required";
+    } elseif ($_POST ['phone'] == "") {
+        echo "Phone can not be blank";
+    } else {
+        echo "Some other phone error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
-if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
+if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
     $email = $sql->escapeString( $_POST ['email'] );
 } else {
-    echo "Email is required";
+    if (! isset ( $_POST ['email'] )) {
+        echo "Email is required";
+    } elseif ($_POST ['email'] == "") {
+        echo "Email can not be blank";
+    } elseif ( ! filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
+        echo "Email is not valid";
+    } else {
+        echo "Some other email error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
 if (isset ( $_POST ['message'] ) && $_POST ['message'] != "") {
     $message = $sql->escapeString( $_POST ['message'] );
 } else {
-    echo "A message is required";
+    if (! isset ( $_POST ['message'] )) {
+        echo "Message is required";
+    } elseif ($_POST ['message'] == "") {
+        echo "Message can not be blank";
+    } else {
+        echo "Some other message error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
@@ -41,6 +71,7 @@ $resolution = "";
 if (isset ( $_POST ['resolution'] ) && $_POST ['resolution'] != "") {
     $resolution = $sql->escapeString( $_POST ['resolution'] );
 }
+$sql->disconnect ();
 
 require_once "Mail.php";
 require_once "Mail/mime.php";

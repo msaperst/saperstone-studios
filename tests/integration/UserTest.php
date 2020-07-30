@@ -54,7 +54,7 @@ class UserTest extends TestCase {
         $this->assertEquals ( 'Max', $user->getFirstName () );
         $this->assertEquals ( 'Saperstone', $user->getLastName () );
         $this->assertEquals ( 'Max Saperstone', $user->getName () );
-        $this->assertEquals ( 'msaperst@gmail.com', $user->getEmail () );
+        $this->assertEquals ( 'msaperst+sstest@gmail.com', $user->getEmail () );
     }
     public function testDownloadUser() {
         $_COOKIE ['hash'] = "5510b5e6fffd897c234cafe499f76146";

@@ -82,6 +82,17 @@ class AddNotificationEmailTest extends TestCase {
         $this->assertEquals("Email can not be blank", $response->getBody());
     }
 
+    public function testBadEmail() {
+        $response = $this->http->request('POST', 'api/add-notification-email.php', [
+                'form_params' => [
+                    'album' => 999,
+                    'email' => 'max@max'
+                ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Email is not valid", $response->getBody());
+    }
+
     public function testLoggedIn() {
         $cookieJar = CookieJar::fromArray([
                     'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -89,7 +100,7 @@ class AddNotificationEmailTest extends TestCase {
         $response = $this->http->request('POST', 'api/add-notification-email.php', [
                 'form_params' => [
                     'album' => 999,
-                    'email' => 'msaperst@gmail.com'
+                    'email' => 'msaperst+sstest@gmail.com'
                 ],
                 'cookies' => $cookieJar
         ]);
@@ -99,14 +110,14 @@ class AddNotificationEmailTest extends TestCase {
         $this->assertEquals( 1, sizeOf( $rows ) );
         $this->assertEquals( 999, $rows[0]['album'] );
         $this->assertEquals( 1, $rows[0]['user'] );
-        $this->assertEquals( 'msaperst@gmail.com', $rows[0]['email'] );
+        $this->assertEquals( 'msaperst+sstest@gmail.com', $rows[0]['email'] );
     }
 
     public function testNotLoggedIn() {
         $response = $this->http->request('POST', 'api/add-notification-email.php', [
                 'form_params' => [
                     'album' => 999,
-                    'email' => 'msaperst@gmail.com'
+                    'email' => 'msaperst+sstest@gmail.com'
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -115,7 +126,7 @@ class AddNotificationEmailTest extends TestCase {
         $this->assertEquals( 1, sizeOf( $rows ) );
         $this->assertEquals( 999, $rows[0]['album'] );
         $this->assertTrue( filter_var( $rows[0]['user'], FILTER_VALIDATE_IP ) !== false );
-        $this->assertEquals( 'msaperst@gmail.com', $rows[0]['email'] );
+        $this->assertEquals( 'msaperst+sstest@gmail.com', $rows[0]['email'] );
     }
 }
 ?>

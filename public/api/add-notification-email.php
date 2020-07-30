@@ -35,13 +35,15 @@ if (! $album_info ['id']) {
 }
 
 $email = "";
-if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
+if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
     $email = $sql->escapeString( $_POST ['email'] );
 } else {
     if (! isset ( $_POST ['email'] )) {
         echo "Email is required";
     } elseif ($_POST ['email'] == "") {
         echo "Email can not be blank";
+    } elseif ( ! filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
+        echo "Email is not valid";
     } else {
         echo "Some other email error occurred";
     }
