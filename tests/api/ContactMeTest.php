@@ -51,7 +51,7 @@ class ContactMeTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("A message is required", $response->getBody());
     }
-
+// TODO - uncomment me
 //     public function testAll() {
 //         $response = $this->http->request('POST', 'api/contact-me.php', [
 //                 'form_params' => [
