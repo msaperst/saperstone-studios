@@ -68,5 +68,12 @@ class Sql {
         $this->mysqli->query($statement);
         return $this->mysqli->insert_id;
     }
+
+    function getEnumValues( $table, $field ) {
+        $type = $this->mysqli->query( "SHOW COLUMNS FROM {$table} WHERE Field = '{$field}'" )->fetch_assoc()['Type'];
+        preg_match("/^enum\(\'(.*)\'\)$/", $type, $matches);
+        $enum = explode("','", $matches[1]);
+        return $enum;
+    }
 }
 ?>

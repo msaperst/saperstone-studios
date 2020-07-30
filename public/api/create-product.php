@@ -3,7 +3,6 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 if (! $user->isAdmin ()) {
@@ -11,31 +10,46 @@ if (! $user->isAdmin ()) {
     if ($user->isLoggedIn ()) {
         echo "You do not have appropriate rights to perform this action";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
 if (isset ( $_POST ['category'] ) && $_POST ['category'] != "") {
     $category = $sql->escapeString( $_POST ['category'] );
+    // check for valid categories
+    $enums = $sql->getEnumValues( 'product_types', 'category' );
+    if (! in_array( $category, $enums ) ) {
+        echo "Product category is not valid";
+        $sql->disconnect ();
+        exit ();
+    }
 } else {
-    echo "Category is not provided";
-    $conn->disconnect ();
+    if (! isset ( $_POST ['category'] )) {
+        echo "Product category is required";
+    } elseif ($_POST ['category'] == "") {
+        echo "Product category can not be blank";
+    } else {
+        echo "Some other product category error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = $sql->escapeString( $_POST ['name'] );
 } else {
-    echo "Name is not provided";
-    $conn->disconnect ();
+    if (! isset ( $_POST ['name'] )) {
+        echo "Product name is required";
+    } elseif ($_POST ['name'] == "") {
+        echo "Product name can not be blank";
+    } else {
+        echo "Some other product name error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (NULL, '$category', '$name');";
-mysqli_query ( $conn->db, $sql );
-$last_id = mysqli_insert_id ( $conn->db );
-
-echo $last_id;
-
-$conn->disconnect ();
+echo $sql->executeStatement( "INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (NULL, '$category', '$name');" );
+$sql->disconnect ();
 exit ();
+?>
