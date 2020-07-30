@@ -3,15 +3,14 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
+        echo "You do not have appropriate rights to perform this action";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
@@ -20,22 +19,25 @@ $tag = "";
 if (isset ( $_POST ['tag'] ) && $_POST ['tag'] != "") {
     $tag = $sql->escapeString( $_POST ['tag'] );
 } else {
-    echo "No category was provided";
+    if (! isset ( $_POST ['tag'] )) {
+        echo "Blog tag is required";
+    } elseif ($_POST ['tag'] == "") {
+        echo "Blog tag can not be blank";
+    } else {
+        echo "Some other blog tag error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "SELECT * FROM `tags` WHERE `tag` = '$tag';";
-$row = $sql->getRow( $sql );
+$row = $sql->getRow( "SELECT * FROM `tags` WHERE `tag` = '$tag';" );
 if ($row ['id']) {
-    echo "That category already exists";
+    echo "Blog tag already exists";
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "INSERT INTO tags ( tag ) VALUES ('$tag');";
-mysqli_query ( $conn->db, $sql );
-$last_id = mysqli_insert_id ( $conn->db );
-
+$last_id = $sql->executeStatement( "INSERT INTO tags ( tag ) VALUES ('$tag');" );
 echo $last_id;
-
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();

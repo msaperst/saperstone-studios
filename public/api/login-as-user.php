@@ -8,7 +8,7 @@ $user = new User ($sql);
 if (! $user->isAdmin ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
     if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
+        echo "You do not have appropriate rights to perform this action";
     }
     $sql->disconnect ();
     exit ();

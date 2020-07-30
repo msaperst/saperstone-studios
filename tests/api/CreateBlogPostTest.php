@@ -40,7 +40,7 @@ class CreateBlogPostTest extends TestCase {
             ]);
         } catch ( GuzzleHttp\Exception\ClientException $e ) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
-            $this->assertEquals("Sorry, you do you have appropriate rights to perform this action", $e->getResponse()->getBody() );
+            $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody() );
         }
     }
 
