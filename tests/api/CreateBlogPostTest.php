@@ -177,7 +177,7 @@ class CreateBlogPostTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog content is required", (string) $response->getBody() );
+        $this->assertEquals("Blog content is required", $response->getBody() );
     }
 
 // TODO - commenting out, not sure how to make it work right
@@ -197,7 +197,7 @@ class CreateBlogPostTest extends TestCase {
 //                'cookies' => $cookieJar
 //         ]);
 //         $this->assertEquals(200, $response->getStatusCode());
-//         $this->assertEquals("Blog content can not be empty", (string) $response->getBody() );
+//         $this->assertEquals("Blog content can not be empty", $response->getBody() );
 //     }
 //
 //     public function testBadContent() {

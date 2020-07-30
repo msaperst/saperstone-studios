@@ -80,7 +80,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("That username already exists in the system", (string) $response->getBody() );
+        $this->assertEquals("That username already exists in the system", $response->getBody() );
     }
 
     public function testNoEmail() {

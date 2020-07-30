@@ -2,8 +2,8 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$user = new User ($sql);
 $sql = new Sql ();
+$user = new User ($sql);
 
 // only admin users and uploader users who own the album can make updates
 if (! $user->isAdmin ()) {
@@ -11,6 +11,7 @@ if (! $user->isAdmin ()) {
     if ($user->isLoggedIn ()) {
         echo "You do not have appropriate rights to perform this action";
     }
+    $sql->disconnect ();
     exit ();
 }
 

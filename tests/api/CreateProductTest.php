@@ -55,7 +55,7 @@ class CreateProductTest extends TestCase {
         $this->assertEquals("Product category is required", $response->getBody() );
     }
 
-    public function testBlankType() {
+    public function testBlankCategory() {
         $cookieJar = CookieJar::fromArray([
                     'hash' => '1d7505e7f434a7713e84ba399e937191'
                 ], 'localhost');
@@ -69,7 +69,7 @@ class CreateProductTest extends TestCase {
         $this->assertEquals("Product category can not be blank", $response->getBody() );
     }
 
-    public function testBadType() {
+    public function testBadCategory() {
         $cookieJar = CookieJar::fromArray([
                     'hash' => '1d7505e7f434a7713e84ba399e937191'
                 ], 'localhost');
@@ -80,7 +80,7 @@ class CreateProductTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product category is not valid", (string) $response->getBody() );
+        $this->assertEquals("Product category is not valid", $response->getBody() );
     }
 
     public function testNoName() {
