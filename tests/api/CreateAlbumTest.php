@@ -69,6 +69,22 @@ class CreateAlbumTest extends TestCase {
         $this->assertEquals("Album name can not be blank", $response->getBody() );
     }
 
+    public function testBadDate() {
+        date_default_timezone_set("America/New_York");
+        $cookieJar = CookieJar::fromArray([
+                    'hash' => '1d7505e7f434a7713e84ba399e937191'
+                ], 'localhost');
+        $response = $this->http->request('POST', 'api/create-album.php', [
+                'form_params' => array(
+                    'name' => 'Sample Album',
+                    'date' => '1234'
+                ),
+                'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Album date is not the correct format", $response->getBody() );
+    }
+
     public function testJustAlbumName() {   // done as an admin
         try {
             date_default_timezone_set("America/New_York");
@@ -88,7 +104,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals( $albumId, $album['id'] );
             $this->assertEquals( 'Sample Album', $album['name'] );
             $this->assertEquals( '', $album['description'] );
-            $this->assertEquals( date("Y-m-d h:i:s"), $album['date'] );
+            $this->assertEquals( date("Y-m-d H:i:s"), $album['date'] );
             $this->assertNull( $album['lastAccessed'] );
             $this->assertEquals( 'SampleAlbum_' . time(), $album['location'] );
             $this->assertNull( $album['code'] );
@@ -115,7 +131,7 @@ class CreateAlbumTest extends TestCase {
                     'form_params' => array(
                         'name' => 'Sample Album',
                         'description' => 'Sample Album Description',
-                        'date' => '2020-07-28 11:29:28'
+                        'date' => '2020-07-28'
                     ),
                     'cookies' => $cookieJar
             ]);
@@ -126,7 +142,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals( $albumId, $album['id'] );
             $this->assertEquals( 'Sample Album', $album['name'] );
             $this->assertEquals( 'Sample Album Description', $album['description'] );
-            $this->assertEquals( '2020-07-28 11:29:28', $album['date'] );
+            $this->assertEquals( '2020-07-28 00:00:00', $album['date'] );
             $this->assertNull( $album['lastAccessed'] );
             $this->assertEquals( 'SampleAlbum_' . time(), $album['location'] );
             $this->assertNull( $album['code'] );
@@ -140,7 +156,7 @@ class CreateAlbumTest extends TestCase {
             $userLogs = $this->sql->getRows( "SELECT * FROM `user_logs` WHERE `user_logs`.`album` = $albumId;" );
             $this->assertEquals( 1, sizeOf( $userLogs ) );
             $this->assertEquals( 4, $userLogs[0]['user'] );
-            $this->assertEquals( date("Y-m-d h:i:s"), $userLogs[0]['time'] );
+            $this->assertEquals( date("Y-m-d H:i:s"), $userLogs[0]['time'] );
             $this->assertEquals( 'Created Album', $userLogs[0]['action'] );
             $this->assertNull( $userLogs[0]['what'] );
             $this->assertEquals( $albumId, $userLogs[0]['album'] );
@@ -169,30 +185,13 @@ class CreateAlbumTest extends TestCase {
                     'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>47</b><br />\nmkdir(): File exists<br/>Unable to create album", $response->getBody() );
+            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>55</b><br />\nmkdir(): File exists<br/>Unable to create album", $response->getBody() );
         } finally {
             $oldmask = umask(0);
             mkdir( 'content/albums/' );
             chmod( 'content/albums/', 0777 );
             umask($oldmask);
         }
-    }
-
-    public function testCantCreateAlbum() {
-        date_default_timezone_set("America/New_York");
-        $cookieJar = CookieJar::fromArray([
-                    'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-                ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-album.php', [
-                'form_params' => array(
-                    'name' => 'Sample Album',
-                    'date' => '1234'
-                ),
-                'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals( '0', $response->getBody() );
-        $this->assertFalse( file_exists( 'content/albums/SampleAlbum_' . time() ) );
     }
 }
 ?>

@@ -38,7 +38,15 @@ if (isset ( $_POST ['description'] )) {
     $description = $sql->escapeString( $_POST ['description'] );
 }
 if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
-    $date = "'" . $sql->escapeString( $_POST ['date'] ) . "'";
+    $date = $sql->escapeString( $_POST ['date'] );
+    $format = 'Y-m-d';
+    $d = DateTime::createFromFormat($format, $date);
+    if ( ! ($d && $d->format($format) === $date ) ) {
+        echo "Album date is not the correct format";
+        $sql->disconnect ();
+        exit ();
+    }
+    $date = "'" . $date . "'";
 }
 
 // generate our location for the files
@@ -53,15 +61,10 @@ if (! mkdir ( "../albums/$location", 0755, true )) {
 }
 
 $last_id = $sql->executeStatement( "INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', $date, '$location', '" . $user->getId () . "');" );
-if ($user->getRole () == "uploader" && $last_id != 0) {
+if ($user->getRole () == "uploader") {
     $sql->executeStatement( "INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $user->getId () . "', '$last_id');" );
     $sql->executeStatement( "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );" );
 }
-if ($last_id == 0) {
-    rmdir ( "../albums/$location" );
-}
-
 echo $last_id;
-
 $sql->disconnect ();
 exit ();

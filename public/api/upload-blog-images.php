@@ -1,6 +1,8 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$sql = new Sql ();
 $user = new User ($sql);
 
 // only admin users can make updates
@@ -9,7 +11,7 @@ if (! $user->isAdmin ()) {
     if ($user->isLoggedIn ()) {
         echo "Sorry, you do you have appropriate rights to perform this action.";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
