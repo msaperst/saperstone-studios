@@ -6,7 +6,7 @@ use GuzzleHttp\Cookie\CookieJar;
 $_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 
-class CreateProductTest extends TestCase {
+class CreateProductOptionTest extends TestCase {
     private $http;
     private $sql;
 
@@ -22,7 +22,7 @@ class CreateProductTest extends TestCase {
     public function testNotLoggedIn() {
         $response;
         try {
-            $response = $this->http->request('POST', 'api/create-product.php');
+            $response = $this->http->request('POST', 'api/create-product-option.php');
         } catch ( GuzzleHttp\Exception\ClientException $e ) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody() );
@@ -35,7 +35,7 @@ class CreateProductTest extends TestCase {
                 ], 'localhost');
         $response;
         try {
-            $response = $this->http->request('POST', 'api/create-product.php', [
+            $response = $this->http->request('POST', 'api/create-product-option.php', [
                     'cookies' => $cookieJar
             ]);
         } catch ( GuzzleHttp\Exception\ClientException $e ) {
@@ -44,97 +44,80 @@ class CreateProductTest extends TestCase {
         }
     }
 
-    public function testNoCategory() {
+    public function testNoType() {
         $cookieJar = CookieJar::fromArray([
                     'hash' => '1d7505e7f434a7713e84ba399e937191'
                 ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-product.php', [
+        $response = $this->http->request('POST', 'api/create-product-option.php', [
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product category is required", $response->getBody() );
+        $this->assertEquals("Product type is required", $response->getBody() );
     }
 
     public function testBlankType() {
         $cookieJar = CookieJar::fromArray([
                     'hash' => '1d7505e7f434a7713e84ba399e937191'
                 ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-product.php', [
+        $response = $this->http->request('POST', 'api/create-product-option.php', [
                 'form_params' => [
-                   'category' => ''
+                   'type' => ''
                ],
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product category can not be blank", $response->getBody() );
-    }
-
-    public function testBadType() {
-        $cookieJar = CookieJar::fromArray([
-                    'hash' => '1d7505e7f434a7713e84ba399e937191'
-                ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-product.php', [
-                'form_params' => [
-                   'category' => 'wedding'
-               ],
-               'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product category is not valid", (string) $response->getBody() );
+        $this->assertEquals("Product type can not be blank", $response->getBody() );
     }
 
     public function testNoName() {
         $cookieJar = CookieJar::fromArray([
                     'hash' => '1d7505e7f434a7713e84ba399e937191'
                 ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-product.php', [
+        $response = $this->http->request('POST', 'api/create-product-option.php', [
                 'form_params' => [
-                    'category' => 'signature'
+                    'type' => '1'
                 ],
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product name is required", $response->getBody() );
+        $this->assertEquals("Product option is required", $response->getBody() );
     }
 
     public function testBlankName() {
         $cookieJar = CookieJar::fromArray([
                     'hash' => '1d7505e7f434a7713e84ba399e937191'
                 ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-product.php', [
+        $response = $this->http->request('POST', 'api/create-product-option.php', [
                 'form_params' => [
-                   'category' => 'signature',
-                   'name' => ''
+                   'type' => '1',
+                   'option' => ''
                ],
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product name can not be blank", $response->getBody() );
+        $this->assertEquals("Product option can not be blank", $response->getBody() );
     }
 
-    public function testProduct() {
+    public function testProductOption() {
         try {
             $cookieJar = CookieJar::fromArray([
                         'hash' => '1d7505e7f434a7713e84ba399e937191'
                     ], 'localhost');
-            $response = $this->http->request('POST', 'api/create-product.php', [
+            $response = $this->http->request('POST', 'api/create-product-option.php', [
                     'form_params' => [
-                       'category' => 'signature',
-                       'name' => 'explosion'
+                       'type' => '999',
+                       'option' => 'explosion'
                    ],
                    'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $productId = $response->getBody();
-            $productDetails = $this->sql->getRow( "SELECT * FROM `product_types` WHERE `product_types`.`id` = $productId;" );
-            $this->assertEquals( $productId, $productDetails['id'] );
-            $this->assertEquals( 'signature', $productDetails['category'] );
-            $this->assertEquals( 'explosion', $productDetails['name'] );
+            $this->assertEquals( '', $response->getBody() );
+            $productOptionDetails = $this->sql->getRows( "SELECT * FROM `product_options` WHERE `product_options`.`product_type` = 999;" );
+            $this->assertEquals( 1, sizeOf( $productOptionDetails ) );
+            $this->assertEquals( 999, $productOptionDetails[0]['product_type'] );
+            $this->assertEquals( 'explosion', $productOptionDetails[0]['opt'] );
         } finally {
-            $this->sql->executeStatement( "DELETE FROM `product_types` WHERE `product_types`.`id` = $productId;" );
-            $count = $this->sql->getRow( "SELECT MAX(`id`) AS `count` FROM `product_types`;")['count'];
-            $count++;
-            $this->sql->executeStatement( "ALTER TABLE `product_types` AUTO_INCREMENT = $count;" );
+            $this->sql->executeStatement( "DELETE FROM `product_options` WHERE `product_options`.`product_type` = 999;" );
         }
     }
 }

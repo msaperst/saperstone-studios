@@ -3,7 +3,6 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 if (! $user->isAdmin ()) {
@@ -11,28 +10,38 @@ if (! $user->isAdmin ()) {
     if ($user->isLoggedIn ()) {
         echo "You do not have appropriate rights to perform this action";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
 if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {
     $type = ( int ) $_POST ['type'];
 } else {
-    echo "Product type is not provided";
-    $conn->disconnect ();
+    if (! isset ( $_POST ['type'] )) {
+        echo "Product type is required";
+    } elseif ($_POST ['type'] == "") {
+        echo "Product type can not be blank";
+    } else {
+        echo "Some other product type error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
 if (isset ( $_POST ['option'] ) && $_POST ['option'] != "") {
     $option = $sql->escapeString( $_POST ['option'] );
 } else {
-    echo "Option is not provided";
-    $conn->disconnect ();
+    if (! isset ( $_POST ['option'] )) {
+        echo "Product option is required";
+    } elseif ($_POST ['option'] == "") {
+        echo "Product option can not be blank";
+    } else {
+        echo "Some other product option error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "INSERT INTO `product_options` (`product_type`, `opt`) VALUES ('$type', '$option');";
-mysqli_query ( $conn->db, $sql );
-
-$conn->disconnect ();
+$sql->executeStatement( "INSERT INTO `product_options` (`product_type`, `opt`) VALUES ('$type', '$option');" );
+$sql->disconnect ();
 exit ();
