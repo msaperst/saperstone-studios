@@ -133,7 +133,7 @@ foreach ( $_POST ['content'] as $content ) {
             rename ( "$location", "$storage_dir/" . basename ( $location ) );
             system ( "mogrify -resize ${width}x \"$storage_dir/" . basename ( $location ) . "\"" );
             system ( "mogrify -density 72 \"$storage_dir/" . basename ( $location ) . "\"" );
-            
+
             $sql->executeStatement( "INSERT INTO `blog_images` ( `blog`, `contentGroup`, `location`, `top`, `left`, `width`, `height` ) VALUES ('$blog_id', '$group', '$storage_dir/" . basename ( $location ) . "', '$top', '$left', '$width', '$height');" );
         }
     } else {

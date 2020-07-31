@@ -94,7 +94,7 @@ class DeleteAlbumImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id can not be blank", (string)$response->getBody());
+        $this->assertEquals("Album id can not be blank", $response->getBody());
     }
 
     public function testLetterAlbum() {
@@ -151,7 +151,7 @@ class DeleteAlbumImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image id can not be blank", (string)$response->getBody() );
+        $this->assertEquals("Image id can not be blank", $response->getBody() );
     }
 
     public function testDeleteImage1() {

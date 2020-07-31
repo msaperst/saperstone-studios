@@ -233,7 +233,7 @@ class CreateBlogPostTest extends TestCase {
             $response = $this->http->request('POST', 'api/create-blog-post.php', [
                     'form_params' => [
                         'title' => 'Sample Blog',
-                        'date' => '2020-01-01',
+                        'date' => '2030-01-01',
                         'preview' => [
                             'img' => '../blog/posts/image.jpg',
                             'offset' => '10px'
@@ -262,23 +262,23 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals( $blogId, $blogDetails['id'] );
             $this->assertEquals( "Sample Blog", $blogDetails['title'] );
             $this->assertNull( $blogDetails['safe_title'] );
-            $this->assertEquals( "2020-01-01", $blogDetails['date'] );
-            $this->assertEquals( "../blog/posts/2020/01/01/preview_image-$blogId.jpg", $blogDetails['preview'] );
+            $this->assertEquals( "2030-01-01", $blogDetails['date'] );
+            $this->assertEquals( "../blog/posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview'] );
             $this->assertEquals( "10", $blogDetails['offset'] );
             $this->assertEquals( "0", $blogDetails['active'] );
             $this->assertEquals( "0", $blogDetails['twitter'] );
             $blogImages = $this->sql->getRow( "SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;" );
             $this->assertEquals( $blogId, $blogImages['blog'] );
             $this->assertEquals( 1, $blogImages['contentGroup'] );
-            $this->assertEquals( '../blog/posts/2020/01/01/image.jpg', $blogImages['location'] );
+            $this->assertEquals( '../blog/posts/2030/01/01/image.jpg', $blogImages['location'] );
             $this->assertEquals( '1140', $blogImages['width'] );
             $this->assertEquals( '647', $blogImages['height'] );
             $this->assertEquals( '0', $blogImages['left'] );
             $this->assertEquals( '0', $blogImages['top'] );
             $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;" ) );
             $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;" ) );
-            $this->assertTrue( file_exists ( "content/blog/2020/01/01/preview_image-$blogId.jpg" ) );
-            $this->assertTrue( file_exists ( "content/blog/2020/01/01/image.jpg" ) );
+            $this->assertTrue( file_exists ( "content/blog/2030/01/01/preview_image-$blogId.jpg" ) );
+            $this->assertTrue( file_exists ( "content/blog/2030/01/01/image.jpg" ) );
         } finally {
             // cleanup
             $this->sql->executeStatement( "DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;" );
@@ -301,7 +301,7 @@ class CreateBlogPostTest extends TestCase {
             $response = $this->http->request('POST', 'api/create-blog-post.php', [
                     'form_params' => [
                         'title' => 'Sample Blog',
-                        'date' => '2020-01-01',
+                        'date' => '2030-01-01',
                         'preview' => [
                             'img' => '../blog/posts/image.jpg',
                         ],
@@ -321,8 +321,8 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals( $blogId, $blogDetails['id'] );
             $this->assertEquals( "Sample Blog", $blogDetails['title'] );
             $this->assertNull( $blogDetails['safe_title'] );
-            $this->assertEquals( "2020-01-01", $blogDetails['date'] );
-            $this->assertEquals( "../blog/posts/2020/01/01/preview_image-$blogId.jpg", $blogDetails['preview'] );
+            $this->assertEquals( "2030-01-01", $blogDetails['date'] );
+            $this->assertEquals( "../blog/posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview'] );
             $this->assertEquals( "0", $blogDetails['offset'] );
             $this->assertEquals( "0", $blogDetails['active'] );
             $this->assertEquals( "0", $blogDetails['twitter'] );
@@ -354,7 +354,7 @@ class CreateBlogPostTest extends TestCase {
             $response = $this->http->request('POST', 'api/create-blog-post.php', [
                     'form_params' => [
                         'title' => 'Sample Blog',
-                        'date' => '2020-01-01',
+                        'date' => '2030-01-01',
                         'preview' => [
                             'img' => '../blog/posts/image.jpg',
                             'offset' => '33px'
@@ -391,15 +391,15 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals( $blogId, $blogDetails['id'] );
             $this->assertEquals( "Sample Blog", $blogDetails['title'] );
             $this->assertNull( $blogDetails['safe_title'] );
-            $this->assertEquals( "2020-01-01", $blogDetails['date'] );
-            $this->assertEquals( "../blog/posts/2020/01/01/preview_image-$blogId.jpg", $blogDetails['preview'] );
+            $this->assertEquals( "2030-01-01", $blogDetails['date'] );
+            $this->assertEquals( "../blog/posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview'] );
             $this->assertEquals( "33", $blogDetails['offset'] );
             $this->assertEquals( "0", $blogDetails['active'] );
             $this->assertEquals( "0", $blogDetails['twitter'] );
             $blogImages = $this->sql->getRow( "SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;" );
             $this->assertEquals( $blogId, $blogImages['blog'] );
             $this->assertEquals( 1, $blogImages['contentGroup'] );
-            $this->assertEquals( '../blog/posts/2020/01/01/image.jpg', $blogImages['location'] );
+            $this->assertEquals( '../blog/posts/2030/01/01/image.jpg', $blogImages['location'] );
             $this->assertEquals( '1140', $blogImages['width'] );
             $this->assertEquals( '647', $blogImages['height'] );
             $this->assertEquals( '0', $blogImages['left'] );

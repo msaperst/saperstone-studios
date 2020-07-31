@@ -3,12 +3,11 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 if (!$user->isLoggedIn ()) {
     header ( 'HTTP/1.0 401 Unauthorized' );
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
@@ -17,34 +16,32 @@ if (isset ( $_POST ['comment'] ) && $_POST ['comment'] != "") {
     $comment = ( int ) $_POST ['comment'];
 } else {
     if (! isset ( $_POST ['comment'] )) {
-        echo "Comment id is required!";
+        echo "Comment id is required";
     } elseif ($_POST ['comment'] == "") {
-        echo "Comment id cannot be blank!";
+        echo "Comment id can not be blank";
     } else {
-        echo "Some other Album id error occurred!";
+        echo "Some other comment id error occurred";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "SELECT * FROM blog_comments WHERE id = $comment;";
-$blog_comment_info = $sql->getRow( $sql );
+$blog_comment_info = $sql->getRow( "SELECT * FROM blog_comments WHERE id = $comment;" );
 if (! $blog_comment_info ['id']) {
-    echo "That ID doesn't match any comments";
-    $conn->disconnect ();
+    echo "Comment id does not match any comments";
+    $sql->disconnect ();
     exit ();
 }
 
 // check our user permissions
-if (! $user->isAdmin () && $user->getId () != $blog_comment_info ['user']) {
+if (! ( $user->isAdmin () || $user->getId () == $blog_comment_info ['user'] ) ) {
     header ( 'HTTP/1.0 403 Unauthorized' );
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
 // delete our image from mysql table
-$sql = "DELETE FROM blog_comments WHERE id='$comment';";
-mysqli_query ( $conn->db, $sql );
-
-$conn->disconnect ();
+$sql->executeStatement( "DELETE FROM blog_comments WHERE id='$comment';" );
+$sql->disconnect ();
 exit ();
+?>

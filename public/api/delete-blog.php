@@ -3,7 +3,6 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 // only admin users
@@ -12,7 +11,7 @@ if (! $user->isAdmin ()) {
     if ($user->isLoggedIn ()) {
         echo "You do not have appropriate rights to perform this action";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
@@ -21,36 +20,35 @@ if (isset ( $_POST ['post'] ) && $_POST ['post'] != "") {
     $id = ( int ) $_POST ['post'];
 } else {
     if (! isset ( $_POST ['post'] )) {
-        echo "Postt id is required!";
-    } elseif ($_POST ['post'] != "") {
-        echo "Post id cannot be blank!";
+        echo "Blog id is required";
+    } elseif ($_POST ['post'] == "") {
+        echo "Blog id can not be blank";
     } else {
-        echo "Some other Post id error occurred!";
+        echo "Some other blog id error occurred";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "SELECT * FROM blog_details WHERE id = $id;";
-$blog_details = $sql->getRow( $sql );
+$blog_details = $sql->getRow( "SELECT * FROM blog_details WHERE id = $id;" );
 if (! $blog_details ['id']) {
-    echo "That ID doesn't match any posts";
-    $conn->disconnect ();
+    echo "Blog id does not match any blogs";
+    $sql->disconnect ();
     exit ();
 }
 
-// delete everything
-$sql = "DELETE FROM blog_details WHERE id='$id';";
-mysqli_query ( $conn->db, $sql );
-$sql = "DELETE FROM blog_images WHERE blog='$id';";
-mysqli_query ( $conn->db, $sql );
-$sql = "DELETE FROM blog_tags WHERE blog='$id';";
-mysqli_query ( $conn->db, $sql );
-$sql = "DELETE FROM blog_texts WHERE blog='$id';";
-mysqli_query ( $conn->db, $sql );
+// delete our files
+$rows = $sql->getRows( "SELECT * FROM blog_images WHERE blog='$id';" );
+foreach( $rows as $row ) {
+    unlink( "../blog/" . $row['location'] );
+}
+//TODO - delete the folder if empty
 
-// TODO still need to delete images on disk
-// TODO check if folders are empty, and delete those as well
+// delete our database
+$sql->executeStatement( "DELETE FROM blog_details WHERE id='$id';" );
+$sql->executeStatement( "DELETE FROM blog_images WHERE blog='$id';" );
+$sql->executeStatement( "DELETE FROM blog_tags WHERE blog='$id';" );
+$sql->executeStatement( "DELETE FROM blog_texts WHERE blog='$id';" );
 
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();
