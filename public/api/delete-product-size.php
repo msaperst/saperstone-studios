@@ -3,7 +3,6 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 if (! $user->isAdmin ()) {
@@ -11,20 +10,31 @@ if (! $user->isAdmin ()) {
     if ($user->isLoggedIn ()) {
         echo "You do not have appropriate rights to perform this action";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-if (isset ( $_POST ['id'] )) {
+if (isset ( $_POST ['id'] ) && $_POST ['id'] != "" ) {
     $id = ( int ) $_POST ['id'];
 } else {
-    echo "ID is not provided";
-    $conn->disconnect ();
+    if (! isset ( $_POST ['id'] )) {
+        echo "Product size is required";
+    } elseif ($_POST ['id'] == "") {
+        echo "Product size can not be blank";
+    } else {
+        echo "Some other product size error occurred";
+    }
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "DELETE FROM products WHERE id='$id';";
-mysqli_query ( $conn->db, $sql );
+$product_details = $sql->getRow( "SELECT * FROM products WHERE id = $id;" );
+if (! $product_details ['id']) {
+    echo "Product size does not match any products";
+    $sql->disconnect ();
+    exit ();
+}
 
-$conn->disconnect ();
+$sql->executeStatement( "DELETE FROM products WHERE id='$id';" );
+$sql->disconnect ();
 exit ();
