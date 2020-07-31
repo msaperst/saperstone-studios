@@ -333,6 +333,16 @@ class UserTest extends TestCase {
         unset($_SESSION['hash']);
         $this->assertNull ($user->forceLogin () );
     }
+
+    public function testGeneratePassword() {
+        $mockSql = $this->createMock(Sql::class);
+        $mockSql->method("getRow")->willReturn(array(
+            "id" => ""
+        ));
+        $user = new User($mockSql);
+        $this->assertEquals( 20, strlen( $user->generatePassword() ) );
+        $this->assertEquals( 1, preg_match( "/^([a-zA-Z0-9]{20})$/", $user->generatePassword() ) );
+    }
 }
 
 ?>

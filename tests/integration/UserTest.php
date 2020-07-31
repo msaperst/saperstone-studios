@@ -15,7 +15,6 @@ class UserTest extends TestCase {
 
     public function tearDown() {
         $this->sql->disconnect();
-        $this->sql = NULL;
     }
 
     public function testNoUser() {
@@ -54,7 +53,7 @@ class UserTest extends TestCase {
         $this->assertEquals ( 'Max', $user->getFirstName () );
         $this->assertEquals ( 'Saperstone', $user->getLastName () );
         $this->assertEquals ( 'Max Saperstone', $user->getName () );
-        $this->assertEquals ( 'msaperst+sstest@gmail.com', $user->getEmail () );
+        $this->assertEquals ( 'msaperst@gmail.com', $user->getEmail () );
     }
     public function testDownloadUser() {
         $_COOKIE ['hash'] = "5510b5e6fffd897c234cafe499f76146";
@@ -83,5 +82,11 @@ class UserTest extends TestCase {
         $this->assertEquals ( 'User', $user->getLastName () );
         $this->assertEquals ( 'Upload User', $user->getName () );
         $this->assertEquals ( 'uploader@example.org', $user->getEmail () );
+    }
+
+    public function testGeneratePassword() {
+        $user = new User ($this->sql);
+        $this->assertEquals( 20, strlen( $user->generatePassword() ) );
+        $this->assertEquals( 1, preg_match( "/^([a-zA-Z0-9]{20})$/", $user->generatePassword() ) );
     }
 }

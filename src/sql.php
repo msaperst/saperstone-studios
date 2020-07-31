@@ -13,8 +13,10 @@ class Sql {
     }
 
     function disconnect() {
-        $this->mysqli->close();
-        $this->connected = false;
+        if( $this->connected ) {
+            $this->mysqli->close();
+            $this->connected = false;
+        }
     }
 
     function isConnected() {
