@@ -34,6 +34,7 @@ class DeleteBlogTest extends TestCase {
         $count++;
         $this->sql->executeStatement( "ALTER TABLE `blog_details` AUTO_INCREMENT = $count;" );
         system ( "rm -rf " . escapeshellarg ( 'content/blog/2031' ) );
+        $this->sql->disconnect();
     }
 
     public function testNotLoggedIn() {

@@ -12,7 +12,7 @@ if (isset ( $_GET ['gallery'] )) {
 } else {
     $response ['err'] = "Need to provide gallery";
     echo json_encode ( $response );
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 if (isset ( $_GET ['start'] )) {
@@ -23,13 +23,9 @@ if (isset ( $_GET ['howMany'] )) {
 }
 
 if (! array_key_exists ( "err", $response )) {
-    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;";
-    $result = mysqli_query ( $conn->db, $sql );
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $response [] = $r;
-    }
+    $response = $sql->getRows( "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;" );
 }
 echo json_encode ( $response );
 
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();

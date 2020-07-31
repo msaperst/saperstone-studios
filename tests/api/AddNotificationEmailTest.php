@@ -23,6 +23,7 @@ class AddNotificationEmailTest extends TestCase {
         $count = $this->sql->getRow( "SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $this->sql->executeStatement( "ALTER TABLE `albums` AUTO_INCREMENT = $count;" );
+        $this->sql->disconnect();
     }
 
     public function testNoAlbumId() {

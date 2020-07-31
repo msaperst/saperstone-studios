@@ -26,6 +26,7 @@ class CreateBlogCommentTest extends TestCase {
         $count = $this->sql->getRow( "SELECT MAX(`id`) AS `count` FROM `blog_comments`;")['count'];
         $count++;
         $this->sql->executeStatement( "ALTER TABLE `blog_comments` AUTO_INCREMENT = $count;" );
+        $this->sql->disconnect();
     }
 
     public function testNoBlogId() {

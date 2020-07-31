@@ -42,6 +42,7 @@ class DeleteAlbumTest extends TestCase {
         $count++;
         $this->sql->executeStatement( "ALTER TABLE `album_images` AUTO_INCREMENT = $count;" );
         system ( "rm -rf " . escapeshellarg ( 'content/albums/sample' ) );
+        $this->sql->disconnect();
     }
 
     public function testNotLoggedIn() {

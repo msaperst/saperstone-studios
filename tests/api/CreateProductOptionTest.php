@@ -17,6 +17,7 @@ class CreateProductOptionTest extends TestCase {
 
     public function tearDown() {
         $this->http = NULL;
+        $this->sql->disconnect();
     }
 
     public function testNotLoggedIn() {

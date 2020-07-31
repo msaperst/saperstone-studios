@@ -3,7 +3,6 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 if (! $user->isAdmin ()) {
@@ -11,7 +10,7 @@ if (! $user->isAdmin ()) {
     if ($user->isLoggedIn ()) {
         echo "You do not have appropriate rights to perform this action";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
@@ -20,21 +19,20 @@ if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
     $gallery = ( int ) $_POST ['gallery'];
 } else {
     if (! isset ( $_POST ['gallery'] )) {
-        echo "Gallery id is required!";
-    } elseif ($_POST ['gallery'] != "") {
-        echo "Gallery id cannot be blank!";
+        echo "Gallery id is required";
+    } elseif ($_POST ['gallery'] == "") {
+        echo "Gallery id can not be blank";
     } else {
-        echo "Some other Gallery id error occurred!";
+        echo "Some other gallery id error occurred";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "SELECT * FROM galleries WHERE id = $gallery;";
-$gallery_info = $sql->getRow( $sql );
+$gallery_info = $sql->getRow( "SELECT * FROM galleries WHERE id = $gallery;" );
 if (! $gallery_info ['id']) {
-    echo "That ID doesn't match any gallerys";
-    $conn->disconnect ();
+    echo "Gallery id does not match any galleries";
+    $sql->disconnect ();
     exit ();
 }
 
@@ -43,27 +41,23 @@ if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
     $image = ( int ) $_POST ['image'];
 } else {
     if (! isset ( $_POST ['image'] )) {
-        echo "Image id is required!";
-    } elseif ($_POST ['image'] != "") {
-        echo "Image id cannot be blank!";
+        echo "Image id is required";
+    } elseif ($_POST ['image'] == "") {
+        echo "Image id can not be blank";
     } else {
-        echo "Some other Image id error occurred!";
+        echo "Some other image id error occurred";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
 // delete our image from mysql table
-$sql = "SELECT location FROM gallery_images WHERE id='$image';";
-$row = $sql->getRow( $sql );
-$sql = "DELETE FROM gallery_images WHERE id='$image';";
-mysqli_query ( $conn->db, $sql );
+$row = $sql->getRow( "SELECT location FROM gallery_images WHERE id='$image';" );
+$sql->executeStatement( "DELETE FROM gallery_images WHERE id='$image';" );
 
 // need to re-sequence images in mysql table
-$sql = "SET @seq:=-1;";
-mysqli_query ( $conn->db, $sql );
-$sql = "UPDATE gallery_images SET sequence=(@seq:=@seq+1) WHERE gallery='$gallery' ORDER BY `sequence`;";
-mysqli_query ( $conn->db, $sql );
+$sql->executeStatement( "SET @seq:=-1;" );
+$sql->executeStatement( "UPDATE gallery_images SET sequence=(@seq:=@seq+1) WHERE gallery='$gallery' ORDER BY `sequence`;" );
 
 // delete our image from the file system
 if ($row ['location'] != "") {
@@ -73,5 +67,5 @@ if ($row ['location'] != "") {
     system ( "rm -f " . escapeshellarg ( "../" . implode ( "/", $parts ) ) );
 }
 
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();

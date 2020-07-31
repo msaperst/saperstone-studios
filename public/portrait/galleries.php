@@ -17,6 +17,9 @@ if (! $details ['id']) {
     throw404();
 }
 
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$user = new User($sql);
+
 $children = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '$what';" );
 $parent = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '" . $details ['parent'] . "';" );
 if ($parent ['parent'] != NULL) {

@@ -3,7 +3,6 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
 
 // only admin users can make updates
@@ -12,7 +11,7 @@ if (! $user->isAdmin ()) {
     if ($user->isLoggedIn ()) {
         echo "You do not have appropriate rights to perform this action";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
@@ -27,21 +26,18 @@ if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
     } else {
         echo "Some other Gallery ID error occurred!";
     }
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "SELECT * FROM galleries WHERE id = '$id';";
-$gallery_info = $sql->getRow( $sql );
+$gallery_info = $sql->getRow( "SELECT * FROM galleries WHERE id = '$id';" );
 if (! $gallery_info ['title']) {
     echo "The ID '$id' doesn't match any galleries";
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
-$sql = "SELECT MAX(sequence) as next FROM gallery_images WHERE gallery = '$id';";
-$result = mysqli_query ( $conn->db, $sql );
-$gallery_image_info = mysqli_fetch_assoc ( $result );
+$gallery_image_info = $sql->getRow( "SELECT MAX(sequence) as next FROM gallery_images WHERE gallery = '$id';" );
 $next_seq = $gallery_image_info ['next'];
 if (is_numeric ( $next_seq )) {
     $next_seq ++;
@@ -52,8 +48,7 @@ if (is_numeric ( $next_seq )) {
 $location = "";
 while ( $gallery_info ['parent'] != NULL ) {
     $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
-    $sql = "SELECT * FROM galleries WHERE id = '" . $gallery_info ['parent'] . "';";
-    $gallery_info = $sql->getRow( $sql );
+    $gallery_info = $sql->getRow( "SELECT * FROM galleries WHERE id = '" . $gallery_info ['parent'] . "';" );
 }
 $location = str_replace ( " ", "-", $gallery_info ['title'] ) . "/$location";
 if ( $location == str_replace ( " ", "-", $gallery_info ['title'] ) . "/" ) {
@@ -80,6 +75,7 @@ if (isset ( $_FILES ["myfile"] )) {
         $status = move_uploaded_file ( $_FILES ["myfile"] ["tmp_name"], $output_dir . $fileName );
         if (! $status) {
             echo json_encode ( "Some issue occurred saving the file" . print_r ( $_FILES ["myfile"] ) );
+            $sql->disconnect ();
             exit ( 1 );
         }
         $ret [] = $fileName;
@@ -100,10 +96,12 @@ if (isset ( $_FILES ["myfile"] )) {
         if ($size [0] < 1140) {
             echo json_encode ( "This image doesn't meet the minimum width requirements of 900px<br/>The image is " . $size [0] . " x " . $size [1] );
             unlink ( $output_dir . $fileName );
+            $sql->disconnect ();
             exit ( 1 );
         } elseif ($size [1] < 760) {
             echo json_encode ( "This image doesn't meet the minimum height requirements of 600px<br/>The image is " . $size [0] . " x " . $size [1] );
             unlink ( $output_dir . $fileName );
+            $sql->disconnect ();
             exit ( 1 );
         } else {
             system ( "mogrify -resize 1140x760 \"$output_dir$fileName\"" );
@@ -111,13 +109,11 @@ if (isset ( $_FILES ["myfile"] )) {
             $size = getimagesize ( $output_dir . $fileName );
         }
         $response [$next_seq] = $fileName;
-        $sql = "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`) VALUES ('$id', '$fileName', '$next_seq', '', '/$location$fileName', '" . $size [0] . "', '" . $size [1] . "');";
-        mysqli_query ( $conn->db, $sql );
+        $sql->executeStatement( "INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`) VALUES ('$id', '$fileName', '$next_seq', '', '/$location$fileName', '" . $size [0] . "', '" . $size [1] . "');" );
         $next_seq ++;
     }
-    
     echo json_encode ( $response );
 }
 
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();

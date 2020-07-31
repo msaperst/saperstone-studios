@@ -22,6 +22,9 @@ if (sizeof ( $children ) == 0) {
     throw404();
 }
 
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+$user = new User($sql);
+
 $parent = $details ['title'];
 if ($details ['parent'] != NULL) {
     $parent = $sql->getRow( "SELECT `title` FROM `galleries` WHERE id = " . $details ['parent'] . ";" ) ['title'];
@@ -47,6 +50,7 @@ if ($parent == 'Product') {
         require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
+        ?>
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php
@@ -106,7 +110,6 @@ if ($parent == 'Product') {
             for($i = 0; $i < count ( $children ); $i ++) {
                 $child = $children [$i];
                 $grandchildren = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '" . $child ['id'] . "';" );
-                $sql->disconnect();
                 $padding = "";
                 if (count ( $children ) % 3 == 1 && $i == (count ( $children ) - 1)) {
                     $padding = "col-sm-offset-4 ";
@@ -140,6 +143,7 @@ if ($parent == 'Product') {
             </div>
     <?php
             }
+            $sql->disconnect();
             ?>
         </div>
         <!-- /.row -->
