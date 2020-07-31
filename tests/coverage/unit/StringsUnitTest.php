@@ -1,10 +1,10 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
+$_SERVER ['DOCUMENT_ROOT'] = dirname( dirname ( __DIR__ ) );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
 
-class StringsTest extends TestCase {
+class StringsUnitTest extends TestCase {
     private $string;
     protected function setUp() {
         $this->string = new Strings ();

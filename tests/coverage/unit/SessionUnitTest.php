@@ -1,10 +1,10 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
+$_SERVER ['DOCUMENT_ROOT'] = dirname( dirname ( __DIR__ ) );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 
-class SessionTest extends TestCase {
+class SessionUnitTest extends TestCase {
     private $session;
 
     public function testNoClientIp() {

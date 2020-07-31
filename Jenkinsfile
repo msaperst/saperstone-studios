@@ -37,8 +37,6 @@ node() {
                 sh "composer validate"
                 sh "composer install --prefer-dist --no-progress --no-suggest"
                 sh "composer unit-test"
-            } catch (e) {
-                throw e
             } finally {
                 junit 'reports/ut-junit.xml'
                 publishHTML([
@@ -132,8 +130,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             try {
                 sh "composer integration-pre-test"
                 sh "composer integration-test"
-            } catch (e) {
-                throw e
             } finally {
                 sh "composer integration-post-test"
                 junit 'reports/it-junit.xml'
@@ -213,16 +209,39 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Functional Tests') {
             parallel(
                     "Integration Tests": {
-                        stage('Run Integration Tests') {
-                            sh "composer integration-test"
+                        stage('Run Coverage Tests') {
+                            try {
+                               sh "composer coverage-test"
+                            } finally {
+                                junit 'reports/cov-junit.xml'
+                                publishHTML([
+                                        allowMissing         : false,
+                                        alwaysLinkToLastBuild: true,
+                                        keepAll              : true,
+                                        reportDir            : 'reports/',
+                                        reportFiles          : 'cov-results.html',
+                                        reportName           : 'Coverage Test Results Report'
+                                ])
+                                step([
+                                    $class: 'CloverPublisher',
+                                    cloverReportDir: 'reports/',
+                                    cloverReportFileName: 'cov-clover.xml'
+                                ])
+                                publishHTML([
+                                        allowMissing         : false,
+                                        alwaysLinkToLastBuild: true,
+                                        keepAll              : true,
+                                        reportDir            : 'reports/cov-coverage',
+                                        reportFiles          : 'index.html',
+                                        reportName           : 'Coverage Test Coverage Report'
+                                ])
+                            }
                         }
                     },
                     "API Tests": {
                         stage('Run API Tests') {
                             try {
                                 sh "composer api-test"
-                            } catch (e) {
-                                throw e
                             } finally {
                                 junit 'reports/api-junit.xml'
                                 publishHTML([

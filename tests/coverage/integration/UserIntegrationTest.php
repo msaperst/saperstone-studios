@@ -1,11 +1,11 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
+$_SERVER ['DOCUMENT_ROOT'] = dirname( dirname ( __DIR__ ) );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 
-class UserTest extends TestCase {
+class UserIntegrationTest extends TestCase {
 
     private $sql;
 
