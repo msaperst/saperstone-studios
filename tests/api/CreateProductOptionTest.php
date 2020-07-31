@@ -53,7 +53,7 @@ class CreateProductOptionTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type is required", $response->getBody() );
+        $this->assertEquals("Product type is required", (string) $response->getBody() );
     }
 
     public function testBlankType() {
@@ -67,7 +67,7 @@ class CreateProductOptionTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type can not be blank", $response->getBody() );
+        $this->assertEquals("Product type can not be blank", (string) $response->getBody() );
     }
 
     public function testNoName() {
@@ -81,7 +81,7 @@ class CreateProductOptionTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product option is required", $response->getBody() );
+        $this->assertEquals("Product option is required", (string) $response->getBody() );
     }
 
     public function testBlankName() {
@@ -96,7 +96,7 @@ class CreateProductOptionTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product option can not be blank", $response->getBody() );
+        $this->assertEquals("Product option can not be blank", (string) $response->getBody() );
     }
 
     public function testProductOption() {
@@ -112,7 +112,7 @@ class CreateProductOptionTest extends TestCase {
                    'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals( '', $response->getBody() );
+            $this->assertEquals( '', (string) $response->getBody() );
             $productOptionDetails = $this->sql->getRows( "SELECT * FROM `product_options` WHERE `product_options`.`product_type` = 999;" );
             $this->assertEquals( 1, sizeOf( $productOptionDetails ) );
             $this->assertEquals( 999, $productOptionDetails[0]['product_type'] );

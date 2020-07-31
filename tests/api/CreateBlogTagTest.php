@@ -53,7 +53,7 @@ class CreateBlogTagTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog tag is required", $response->getBody() );
+        $this->assertEquals("Blog tag is required", (string) $response->getBody() );
     }
 
     public function testBlankTag() {
@@ -67,7 +67,7 @@ class CreateBlogTagTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog tag can not be blank", $response->getBody() );
+        $this->assertEquals("Blog tag can not be blank", (string) $response->getBody() );
     }
 
     public function testDuplicateTag() {
@@ -83,7 +83,7 @@ class CreateBlogTagTest extends TestCase {
                    'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals("Blog tag already exists", $response->getBody() );
+            $this->assertEquals("Blog tag already exists", (string) $response->getBody() );
         } finally {
             $this->sql->executeStatement( "DELETE FROM `tags` WHERE `tags`.`id` = $tagId;" );
             $count = $this->sql->getRow( "SELECT MAX(`id`) AS `count` FROM `tags`;")['count'];

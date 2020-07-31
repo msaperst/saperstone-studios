@@ -55,7 +55,7 @@ class DeleteProductOptionTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type is required", $response->getBody());
+        $this->assertEquals("Product type is required", (string) $response->getBody());
     }
 
     public function testBlankProductType() {
@@ -69,7 +69,7 @@ class DeleteProductOptionTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type can not be blank", $response->getBody());
+        $this->assertEquals("Product type can not be blank", (string) $response->getBody());
     }
 
     public function testNoProductOption() {
@@ -83,7 +83,7 @@ class DeleteProductOptionTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product option is required", $response->getBody());
+        $this->assertEquals("Product option is required", (string) $response->getBody());
     }
 
     public function testBlankProductOption() {
@@ -98,7 +98,7 @@ class DeleteProductOptionTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product option can not be blank", $response->getBody());
+        $this->assertEquals("Product option can not be blank", (string) $response->getBody());
     }
 
     public function testDeleteProductOption() {
@@ -113,7 +113,7 @@ class DeleteProductOptionTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody());
+        $this->assertEquals("", (string) $response->getBody());
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `product_options` WHERE `product_options`.`product_type` = 999;" ) );
     }
 
@@ -129,7 +129,7 @@ class DeleteProductOptionTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody());
+        $this->assertEquals("", (string) $response->getBody());
         $this->assertEquals( 1, $this->sql->getRowCount( "SELECT * FROM `product_options` WHERE `product_options`.`product_type` = 999;" ) );
     }
 }

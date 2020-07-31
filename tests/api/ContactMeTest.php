@@ -16,7 +16,7 @@ class ContactMeTest extends TestCase {
     public function testNoName() {
         $response = $this->http->request('POST', 'api/contact-me.php');
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Name is required", $response->getBody());
+        $this->assertEquals("Name is required", (string) $response->getBody());
     }
 
     public function testBlankName() {
@@ -26,7 +26,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Name can not be blank", $response->getBody());
+        $this->assertEquals("Name can not be blank", (string) $response->getBody());
     }
 
     public function testNoPhone() {
@@ -36,7 +36,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Phone is required", $response->getBody());
+        $this->assertEquals("Phone is required", (string) $response->getBody());
     }
 
     public function testBlankPhone() {
@@ -47,7 +47,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Phone can not be blank", $response->getBody());
+        $this->assertEquals("Phone can not be blank", (string) $response->getBody());
     }
 
     public function testNoEmail() {
@@ -58,7 +58,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is required", $response->getBody());
+        $this->assertEquals("Email is required", (string) $response->getBody());
     }
 
     public function testBlankEmail() {
@@ -70,7 +70,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email can not be blank", $response->getBody());
+        $this->assertEquals("Email can not be blank", (string) $response->getBody());
     }
 
     public function testBadEmail() {
@@ -82,7 +82,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is not valid", $response->getBody());
+        $this->assertEquals("Email is not valid", (string) $response->getBody());
     }
 
     public function testNoMessage() {
@@ -94,7 +94,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Message is required", $response->getBody());
+        $this->assertEquals("Message is required", (string) $response->getBody());
     }
 
     public function testBlankMessage() {
@@ -107,7 +107,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Message can not be blank", $response->getBody());
+        $this->assertEquals("Message can not be blank", (string) $response->getBody());
     }
 
 // TODO - uncomment me
@@ -121,7 +121,7 @@ class ContactMeTest extends TestCase {
 //                 ]
 //         ]);
 //         $this->assertEquals(200, $response->getStatusCode());
-//         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", $response->getBody());
+//         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", (string) $response->getBody());
 //     }
 //
 //     public function testAllSS() {
@@ -134,7 +134,7 @@ class ContactMeTest extends TestCase {
 //                 ]
 //         ]);
 //         $this->assertEquals(200, $response->getStatusCode());
-//         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", $response->getBody());
+//         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", (string) $response->getBody());
 //     }
 }
 

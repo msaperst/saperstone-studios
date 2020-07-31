@@ -29,7 +29,7 @@ class AddNotificationEmailTest extends TestCase {
     public function testNoAlbumId() {
         $response = $this->http->request('POST', 'api/add-notification-email.php');
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id is required", $response->getBody());
+        $this->assertEquals("Album id is required", (string) $response->getBody());
     }
 
     public function testBlankAlbumId() {
@@ -39,7 +39,7 @@ class AddNotificationEmailTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id can not be blank", $response->getBody());
+        $this->assertEquals("Album id can not be blank", (string) $response->getBody());
     }
 
     public function testLetterAlbumId() {
@@ -49,7 +49,7 @@ class AddNotificationEmailTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id does not match any albums", $response->getBody());
+        $this->assertEquals("Album id does not match any albums", (string) $response->getBody());
     }
 
     public function testBadAlbumId() {
@@ -59,7 +59,7 @@ class AddNotificationEmailTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id does not match any albums", $response->getBody());
+        $this->assertEquals("Album id does not match any albums", (string) $response->getBody());
     }
 
     public function testNoEmail() {
@@ -69,7 +69,7 @@ class AddNotificationEmailTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is required", $response->getBody());
+        $this->assertEquals("Email is required", (string) $response->getBody());
     }
 
     public function testBlankEmail() {
@@ -80,7 +80,7 @@ class AddNotificationEmailTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email can not be blank", $response->getBody());
+        $this->assertEquals("Email can not be blank", (string) $response->getBody());
     }
 
     public function testBadEmail() {
@@ -91,7 +91,7 @@ class AddNotificationEmailTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is not valid", $response->getBody());
+        $this->assertEquals("Email is not valid", (string) $response->getBody());
     }
 
     public function testLoggedIn() {
@@ -106,7 +106,7 @@ class AddNotificationEmailTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody());
+        $this->assertEquals("", (string) $response->getBody());
         $rows = $this->sql->getRows( "SELECT * FROM `notification_emails` WHERE `notification_emails`.`album` = 999" );
         $this->assertEquals( 1, sizeOf( $rows ) );
         $this->assertEquals( 999, $rows[0]['album'] );
@@ -122,7 +122,7 @@ class AddNotificationEmailTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody());
+        $this->assertEquals("", (string) $response->getBody());
         $rows = $this->sql->getRows( "SELECT * FROM `notification_emails` WHERE `notification_emails`.`album` = 999" );
         $this->assertEquals( 1, sizeOf( $rows ) );
         $this->assertEquals( 999, $rows[0]['album'] );

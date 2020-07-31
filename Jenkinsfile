@@ -41,6 +41,14 @@ node() {
                 throw e
             } finally {
                 junit 'reports/ut-junit.xml'
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/',
+                        reportFiles          : 'ut-results.html',
+                        reportName           : 'Unit Test Results Report'
+                ])
                 step([
                     $class: 'CloverPublisher',
                     cloverReportDir: 'reports/',
@@ -129,6 +137,14 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             } finally {
                 sh "composer integration-post-test"
                 junit 'reports/it-junit.xml'
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/',
+                        reportFiles          : 'it-results.html',
+                        reportName           : 'Integration Test Results Report'
+                ])
                 step([
                     $class: 'CloverPublisher',
                     cloverReportDir: 'reports/',
@@ -209,6 +225,14 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                 throw e
                             } finally {
                                 junit 'reports/api-junit.xml'
+                                publishHTML([
+                                        allowMissing         : false,
+                                        alwaysLinkToLastBuild: true,
+                                        keepAll              : true,
+                                        reportDir            : 'reports/',
+                                        reportFiles          : 'api-results.html',
+                                        reportName           : 'API Test Results Report'
+                                ])
                             }
                         }
                     },

@@ -53,7 +53,7 @@ class CropImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image is required", $response->getBody() );
+        $this->assertEquals("Image is required", (string) $response->getBody() );
     }
 
     public function testBlankImage() {
@@ -67,7 +67,7 @@ class CropImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image can not be blank", $response->getBody() );
+        $this->assertEquals("Image can not be blank", (string) $response->getBody() );
     }
 
     public function testBadImage() {
@@ -81,7 +81,7 @@ class CropImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image does not exist", $response->getBody() );
+        $this->assertEquals("Image does not exist", (string) $response->getBody() );
     }
 
     public function testNoMaxWidth() {
@@ -96,7 +96,7 @@ class CropImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image max-width is required", $response->getBody() );
+        $this->assertEquals("Image max-width is required", (string) $response->getBody() );
     }
 
     public function testBlankMaxWidth() {
@@ -112,7 +112,7 @@ class CropImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image max-width can not be blank", $response->getBody() );
+        $this->assertEquals("Image max-width can not be blank", (string) $response->getBody() );
     }
 
     public function testNoTop() {
@@ -128,7 +128,7 @@ class CropImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image top is required", $response->getBody() );
+        $this->assertEquals("Image top is required", (string) $response->getBody() );
     }
 
     public function testBlankTop() {
@@ -145,7 +145,7 @@ class CropImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image top can not be blank", $response->getBody() );
+        $this->assertEquals("Image top can not be blank", (string) $response->getBody() );
     }
 
     public function testNoBottom() {
@@ -162,7 +162,7 @@ class CropImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image bottom is required", $response->getBody() );
+        $this->assertEquals("Image bottom is required", (string) $response->getBody() );
     }
 
     public function testBlankBottom() {
@@ -180,7 +180,7 @@ class CropImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image bottom can not be blank", $response->getBody() );
+        $this->assertEquals("Image bottom can not be blank", (string) $response->getBody() );
     }
 
     public function testCroppedImageTooSmall() {
@@ -199,7 +199,7 @@ class CropImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('Cropped image is smaller than the required image', $response->getBody() );
+        $this->assertEquals('Cropped image is smaller than the required image', (string) $response->getBody() );
         $this->assertFalse( file_exists( 'content/blog/tmp_flower.jpeg' ) );
     }
 
@@ -220,7 +220,7 @@ class CropImageTest extends TestCase {
                    'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals('', $response->getBody() );
+            $this->assertEquals('', (string) $response->getBody() );
             $size = getimagesize ( 'content/blog/flower.jpeg' );
             $this->assertEquals( 300, $size[0] );
             $this->assertEquals( 100, $size[1] );
@@ -246,7 +246,7 @@ class CropImageTest extends TestCase {
                    'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals('', $response->getBody() );
+            $this->assertEquals('', (string) $response->getBody() );
             $size = getimagesize ( 'content/blog/flower.jpeg' );
             $this->assertEquals( 300, $size[0] );
             $this->assertEquals( 150, $size[1] );

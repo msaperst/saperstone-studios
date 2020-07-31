@@ -58,7 +58,7 @@ class DeleteUserTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("User id is required", $response->getBody());
+        $this->assertEquals("User id is required", (string) $response->getBody());
     }
 
     public function testBlankId() {
@@ -72,7 +72,7 @@ class DeleteUserTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("User id can not be blank", $response->getBody());
+        $this->assertEquals("User id can not be blank", (string) $response->getBody());
     }
 
     public function testLetterId() {
@@ -86,7 +86,7 @@ class DeleteUserTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("User id does not match any users", $response->getBody());
+        $this->assertEquals("User id does not match any users", (string) $response->getBody());
     }
 
     public function testBadUser() {
@@ -100,7 +100,7 @@ class DeleteUserTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("User id does not match any users", $response->getBody());
+        $this->assertEquals("User id does not match any users", (string) $response->getBody());
     }
 
     public function testDeleteUser() {

@@ -44,7 +44,7 @@ class DeleteBlogCommentTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Comment id is required", $response->getBody());
+        $this->assertEquals("Comment id is required", (string) $response->getBody());
     }
 
     public function testBlankComment() {
@@ -58,7 +58,7 @@ class DeleteBlogCommentTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Comment id can not be blank", $response->getBody());
+        $this->assertEquals("Comment id can not be blank", (string) $response->getBody());
     }
 
     public function testLetterComment() {
@@ -72,7 +72,7 @@ class DeleteBlogCommentTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Comment id does not match any comments", $response->getBody());
+        $this->assertEquals("Comment id does not match any comments", (string) $response->getBody());
     }
 
     public function testBadComment() {
@@ -86,7 +86,7 @@ class DeleteBlogCommentTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Comment id does not match any comments", $response->getBody());
+        $this->assertEquals("Comment id does not match any comments", (string) $response->getBody());
     }
 
     public function testUploaderCantDeleteOtherComment() {
@@ -119,7 +119,7 @@ class DeleteBlogCommentTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody() );
+        $this->assertEquals("", (string) $response->getBody() );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `blog_comments` WHERE `blog_comments`.`id` = 998;" ) );
     }
 
@@ -134,7 +134,7 @@ class DeleteBlogCommentTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody() );
+        $this->assertEquals("", (string) $response->getBody() );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `blog_comments` WHERE `blog_comments`.`id` = 999;" ) );
     }
 }

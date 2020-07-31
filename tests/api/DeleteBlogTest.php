@@ -70,7 +70,7 @@ class DeleteBlogTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id is required", $response->getBody());
+        $this->assertEquals("Blog id is required", (string) $response->getBody());
     }
 
     public function testBlankBlog() {
@@ -84,7 +84,7 @@ class DeleteBlogTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id can not be blank", $response->getBody());
+        $this->assertEquals("Blog id can not be blank", (string) $response->getBody());
     }
 
     public function testLetterBlog() {
@@ -98,7 +98,7 @@ class DeleteBlogTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", $response->getBody());
+        $this->assertEquals("Blog id does not match any blogs", (string) $response->getBody());
     }
 
     public function testBadBlog() {
@@ -112,7 +112,7 @@ class DeleteBlogTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", $response->getBody());
+        $this->assertEquals("Blog id does not match any blogs", (string) $response->getBody());
     }
 
     public function testDeleteBlog() {
@@ -126,7 +126,7 @@ class DeleteBlogTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody());
+        $this->assertEquals("", (string) $response->getBody());
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;" ) );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 999;" ) );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = 999;" ) );

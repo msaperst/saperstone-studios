@@ -53,7 +53,7 @@ class CreateUserTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Username is required", $response->getBody() );
+        $this->assertEquals("Username is required", (string) $response->getBody() );
     }
 
     public function testBlankUsername() {
@@ -67,7 +67,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Username can not be blank", $response->getBody() );
+        $this->assertEquals("Username can not be blank", (string) $response->getBody() );
     }
 
     public function testDuplicateUsername() {
@@ -81,7 +81,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("That username already exists in the system", $response->getBody() );
+        $this->assertEquals("That username already exists in the system", (string) $response->getBody() );
     }
 
     public function testNoEmail() {
@@ -95,7 +95,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is required", $response->getBody());
+        $this->assertEquals("Email is required", (string) $response->getBody());
     }
 
     public function testBlankEmail() {
@@ -110,7 +110,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email can not be blank", $response->getBody());
+        $this->assertEquals("Email can not be blank", (string) $response->getBody());
     }
 
     public function testBadEmail() {
@@ -125,7 +125,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is not valid", $response->getBody());
+        $this->assertEquals("Email is not valid", (string) $response->getBody());
     }
 
     public function testDuplicateEmail() {
@@ -140,7 +140,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("We already have an account on file for that email address", $response->getBody());
+        $this->assertEquals("We already have an account on file for that email address", (string) $response->getBody());
     }
 
     public function testNoRole() {
@@ -155,7 +155,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Role is required", $response->getBody());
+        $this->assertEquals("Role is required", (string) $response->getBody());
     }
 
     public function testBlankRole() {
@@ -171,7 +171,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Role can not be blank", $response->getBody());
+        $this->assertEquals("Role can not be blank", (string) $response->getBody());
     }
 
     public function testBadRole() {
@@ -187,7 +187,7 @@ class CreateUserTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Role is not valid", $response->getBody());
+        $this->assertEquals("Role is not valid", (string) $response->getBody());
     }
 
     public function testNoExtras() {

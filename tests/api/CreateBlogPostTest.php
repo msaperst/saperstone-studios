@@ -53,7 +53,7 @@ class CreateBlogPostTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog title is required", $response->getBody() );
+        $this->assertEquals("Blog title is required", (string) $response->getBody() );
     }
 
     public function testBlankTitle() {
@@ -67,7 +67,7 @@ class CreateBlogPostTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog title can not be blank", $response->getBody() );
+        $this->assertEquals("Blog title can not be blank", (string) $response->getBody() );
     }
 
     public function testNoDate() {
@@ -81,7 +81,7 @@ class CreateBlogPostTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog date is required", $response->getBody() );
+        $this->assertEquals("Blog date is required", (string) $response->getBody() );
     }
 
     public function testBlankDate() {
@@ -96,7 +96,7 @@ class CreateBlogPostTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog date can not be blank", $response->getBody() );
+        $this->assertEquals("Blog date can not be blank", (string) $response->getBody() );
     }
 
     public function testBadDate() {
@@ -111,7 +111,7 @@ class CreateBlogPostTest extends TestCase {
                    'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals("Blog date is not the correct format", $response->getBody() );
+            $this->assertEquals("Blog date is not the correct format", (string) $response->getBody() );
         }
 
     public function testNoPreviewImage() {
@@ -126,7 +126,7 @@ class CreateBlogPostTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog preview image is required", $response->getBody() );
+        $this->assertEquals("Blog preview image is required", (string) $response->getBody() );
     }
 
     public function testNoPreviewImage2() {
@@ -142,7 +142,7 @@ class CreateBlogPostTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog preview image is required", $response->getBody() );
+        $this->assertEquals("Blog preview image is required", (string) $response->getBody() );
     }
 
     public function testBlankPreviewImage() {
@@ -160,7 +160,7 @@ class CreateBlogPostTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog preview image can not be blank", $response->getBody() );
+        $this->assertEquals("Blog preview image can not be blank", (string) $response->getBody() );
     }
 
     public function testNoContent() {
@@ -178,7 +178,7 @@ class CreateBlogPostTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog content is required", $response->getBody() );
+        $this->assertEquals("Blog content is required", (string) $response->getBody() );
     }
 
 // TODO - commenting out, not sure how to make it work right
@@ -198,7 +198,7 @@ class CreateBlogPostTest extends TestCase {
 //                'cookies' => $cookieJar
 //         ]);
 //         $this->assertEquals(200, $response->getStatusCode());
-//         $this->assertEquals("Blog content can not be empty", $response->getBody() );
+//         $this->assertEquals("Blog content can not be empty", (string) $response->getBody() );
 //     }
 //
 //     public function testBadContent() {
@@ -221,7 +221,7 @@ class CreateBlogPostTest extends TestCase {
 //                 'cookies' => $cookieJar
 //         ]);
 //         $this->assertEquals(200, $response->getStatusCode());
-//         $this->assertEquals("Unexpected content present, please consult the webmaster", $response->getBody() );
+//         $this->assertEquals("Unexpected content present, please consult the webmaster", (string) $response->getBody() );
 //     }
 
     public function testPreviewOffsetOnlyImage() {

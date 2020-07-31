@@ -53,7 +53,7 @@ class CreateContractTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract type is required", $response->getBody() );
+        $this->assertEquals("Contract type is required", (string) $response->getBody() );
     }
 
     public function testBlankType() {
@@ -67,7 +67,7 @@ class CreateContractTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract type can not be blank", $response->getBody() );
+        $this->assertEquals("Contract type can not be blank", (string) $response->getBody() );
     }
 
     public function testNoName() {
@@ -81,7 +81,7 @@ class CreateContractTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract name is required", $response->getBody() );
+        $this->assertEquals("Contract name is required", (string) $response->getBody() );
     }
 
     public function testBlankName() {
@@ -96,7 +96,7 @@ class CreateContractTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract name can not be blank", $response->getBody() );
+        $this->assertEquals("Contract name can not be blank", (string) $response->getBody() );
     }
 
     public function testNoSession() {
@@ -111,7 +111,7 @@ class CreateContractTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract session is required", $response->getBody() );
+        $this->assertEquals("Contract session is required", (string) $response->getBody() );
     }
 
     public function testBlankSession() {
@@ -127,7 +127,7 @@ class CreateContractTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract session can not be blank", $response->getBody() );
+        $this->assertEquals("Contract session can not be blank", (string) $response->getBody() );
     }
 
     public function testNoContent() {
@@ -143,7 +143,7 @@ class CreateContractTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract content is required", $response->getBody() );
+        $this->assertEquals("Contract content is required", (string) $response->getBody() );
     }
 
     public function testBlankContent() {
@@ -160,7 +160,7 @@ class CreateContractTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract content can not be blank", $response->getBody() );
+        $this->assertEquals("Contract content can not be blank", (string) $response->getBody() );
     }
 
     public function testNoDetails() {
@@ -224,7 +224,7 @@ class CreateContractTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Contract date is not the correct format", $response->getBody() );
+        $this->assertEquals("Contract date is not the correct format", (string) $response->getBody() );
     }
 
     public function testAllDetails() {

@@ -58,7 +58,7 @@ class DeleteProductSizeTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product size is required", $response->getBody());
+        $this->assertEquals("Product size is required", (string) $response->getBody());
     }
 
     public function testBlankProductSize() {
@@ -72,7 +72,7 @@ class DeleteProductSizeTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product size can not be blank", $response->getBody());
+        $this->assertEquals("Product size can not be blank", (string) $response->getBody());
     }
 
     public function testLetterProductSize() {
@@ -86,7 +86,7 @@ class DeleteProductSizeTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product size does not match any products", $response->getBody());
+        $this->assertEquals("Product size does not match any products", (string) $response->getBody());
     }
 
     public function testBadProductSize() {
@@ -100,7 +100,7 @@ class DeleteProductSizeTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product size does not match any products", $response->getBody());
+        $this->assertEquals("Product size does not match any products", (string) $response->getBody());
     }
 
     public function testDeleteProductSize() {

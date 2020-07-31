@@ -65,7 +65,7 @@ class DeleteProductTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product id is required", $response->getBody());
+        $this->assertEquals("Product id is required", (string) $response->getBody());
     }
 
     public function testBlankProduct() {
@@ -79,7 +79,7 @@ class DeleteProductTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product id can not be blank", $response->getBody());
+        $this->assertEquals("Product id can not be blank", (string) $response->getBody());
     }
 
     public function testLetterProduct() {
@@ -93,7 +93,7 @@ class DeleteProductTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product id does not match any products", $response->getBody());
+        $this->assertEquals("Product id does not match any products", (string) $response->getBody());
     }
 
     public function testBadProduct() {
@@ -107,7 +107,7 @@ class DeleteProductTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product id does not match any products", $response->getBody());
+        $this->assertEquals("Product id does not match any products", (string) $response->getBody());
     }
 
     public function testDeleteProduct() {
@@ -121,7 +121,7 @@ class DeleteProductTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody());
+        $this->assertEquals("", (string) $response->getBody());
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `product_types` WHERE `product_type`.`id` = 999;" ) );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `product_options` WHERE `product_options`.`product_type` = 999;" ) );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `products` WHERE `products`.`product_type` = 999;" ) );

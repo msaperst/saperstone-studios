@@ -32,7 +32,7 @@ class CreateBlogCommentTest extends TestCase {
     public function testNoBlogId() {
         $response = $this->http->request('POST', 'api/create-blog-comment.php');
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id is required", $response->getBody());
+        $this->assertEquals("Blog id is required", (string) $response->getBody());
     }
 
     public function testBlankBlogId() {
@@ -42,7 +42,7 @@ class CreateBlogCommentTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id can not be blank", $response->getBody());
+        $this->assertEquals("Blog id can not be blank", (string) $response->getBody());
     }
 
     public function testLetterBlogId() {
@@ -52,7 +52,7 @@ class CreateBlogCommentTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", $response->getBody());
+        $this->assertEquals("Blog id does not match any blogs", (string) $response->getBody());
     }
 
     public function testBadBlogId() {
@@ -62,7 +62,7 @@ class CreateBlogCommentTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", $response->getBody());
+        $this->assertEquals("Blog id does not match any blogs", (string) $response->getBody());
     }
 
     public function testNoMessage() {
@@ -72,7 +72,7 @@ class CreateBlogCommentTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Message is required", $response->getBody());
+        $this->assertEquals("Message is required", (string) $response->getBody());
     }
 
     public function testBlankMessage() {
@@ -83,7 +83,7 @@ class CreateBlogCommentTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Message can not be blank", $response->getBody());
+        $this->assertEquals("Message can not be blank", (string) $response->getBody());
     }
 
     public function testLoggedInUser() {    //no other data

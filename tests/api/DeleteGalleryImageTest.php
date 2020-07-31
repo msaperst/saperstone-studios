@@ -73,7 +73,7 @@ class DeleteGalleryImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Gallery id is required", $response->getBody());
+        $this->assertEquals("Gallery id is required", (string) $response->getBody());
     }
 
     public function testBlankGallery() {
@@ -87,7 +87,7 @@ class DeleteGalleryImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Gallery id can not be blank", $response->getBody());
+        $this->assertEquals("Gallery id can not be blank", (string) $response->getBody());
     }
 
     public function testLetterGallery() {
@@ -101,7 +101,7 @@ class DeleteGalleryImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Gallery id does not match any galleries", $response->getBody());
+        $this->assertEquals("Gallery id does not match any galleries", (string) $response->getBody());
     }
 
     public function testBadGalleryId() {
@@ -115,7 +115,7 @@ class DeleteGalleryImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Gallery id does not match any galleries", $response->getBody());
+        $this->assertEquals("Gallery id does not match any galleries", (string) $response->getBody());
     }
     
     public function testNoImage() {
@@ -129,7 +129,7 @@ class DeleteGalleryImageTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image id is required", $response->getBody() );
+        $this->assertEquals("Image id is required", (string) $response->getBody() );
     }
 
     public function testBlankImage() {
@@ -144,7 +144,7 @@ class DeleteGalleryImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Image id can not be blank", $response->getBody() );
+        $this->assertEquals("Image id can not be blank", (string) $response->getBody() );
     }
 
     public function testDeleteImage1() {
@@ -159,7 +159,7 @@ class DeleteGalleryImageTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody() );
+        $this->assertEquals("", (string) $response->getBody() );
         $images = $this->sql->getRows( "SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 999;" );
         $this->assertEquals( 1, sizeOf( $images ) );
         $this->assertEquals( 999, $images[0]['id'] );

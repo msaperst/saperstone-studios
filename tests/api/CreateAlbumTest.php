@@ -53,7 +53,7 @@ class CreateAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album name is required", $response->getBody() );
+        $this->assertEquals("Album name is required", (string) $response->getBody() );
     }
 
     public function testBlankAlbumName() {
@@ -67,7 +67,7 @@ class CreateAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album name can not be blank", $response->getBody() );
+        $this->assertEquals("Album name can not be blank", (string) $response->getBody() );
     }
 
     public function testBadDate() {
@@ -83,7 +83,7 @@ class CreateAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album date is not the correct format", $response->getBody() );
+        $this->assertEquals("Album date is not the correct format", (string) $response->getBody() );
     }
 
     public function testJustAlbumName() {   // done as an admin
@@ -186,7 +186,7 @@ class CreateAlbumTest extends TestCase {
                     'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>55</b><br />\nmkdir(): File exists<br/>Unable to create album", $response->getBody() );
+            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>55</b><br />\nmkdir(): File exists<br/>Unable to create album", (string) $response->getBody() );
         } finally {
             $oldmask = umask(0);
             mkdir( 'content/albums/' );

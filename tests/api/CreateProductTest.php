@@ -53,7 +53,7 @@ class CreateProductTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product category is required", $response->getBody() );
+        $this->assertEquals("Product category is required", (string) $response->getBody() );
     }
 
     public function testBlankCategory() {
@@ -67,7 +67,7 @@ class CreateProductTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product category can not be blank", $response->getBody() );
+        $this->assertEquals("Product category can not be blank", (string) $response->getBody() );
     }
 
     public function testBadCategory() {
@@ -81,7 +81,7 @@ class CreateProductTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product category is not valid", $response->getBody() );
+        $this->assertEquals("Product category is not valid", (string) $response->getBody() );
     }
 
     public function testNoName() {
@@ -95,7 +95,7 @@ class CreateProductTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product name is required", $response->getBody() );
+        $this->assertEquals("Product name is required", (string) $response->getBody() );
     }
 
     public function testBlankName() {
@@ -110,7 +110,7 @@ class CreateProductTest extends TestCase {
                'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product name can not be blank", $response->getBody() );
+        $this->assertEquals("Product name can not be blank", (string) $response->getBody() );
     }
 
     public function testProduct() {

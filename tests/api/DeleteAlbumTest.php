@@ -63,7 +63,7 @@ class DeleteAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id is required", $response->getBody());
+        $this->assertEquals("Album id is required", (string) $response->getBody());
     }
 
     public function testBlankAlbumId() {
@@ -77,7 +77,7 @@ class DeleteAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id can not be blank", $response->getBody());
+        $this->assertEquals("Album id can not be blank", (string) $response->getBody());
     }
 
     public function testLetterAlbumId() {
@@ -91,7 +91,7 @@ class DeleteAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id does not match any albums", $response->getBody());
+        $this->assertEquals("Album id does not match any albums", (string) $response->getBody());
     }
 
     public function testBadAlbumId() {
@@ -105,7 +105,7 @@ class DeleteAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Album id does not match any albums", $response->getBody());
+        $this->assertEquals("Album id does not match any albums", (string) $response->getBody());
     }
 
     public function testUploaderCantDeleteOtherAlbum() {
@@ -141,7 +141,7 @@ class DeleteAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody() );
+        $this->assertEquals("", (string) $response->getBody() );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `albums` WHERE `albums`.`id` = 998;" ) );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `album_images` WHERE `album_images`.`album` = 998;" ) );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 998;" ) );
@@ -159,7 +159,7 @@ class DeleteAlbumTest extends TestCase {
                 'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", $response->getBody() );
+        $this->assertEquals("", (string) $response->getBody() );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `albums` WHERE `albums`.`id` = 999;" ) );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `album_images` WHERE `album_images`.`album` = 999;" ) );
         $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;" ) );
