@@ -208,7 +208,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         }
         stage('Functional Tests') {
             parallel(
-                    "Integration Tests": {
+                    "Coverage Tests": {
                         stage('Run Coverage Tests') {
                             try {
                                sh "composer coverage-test"

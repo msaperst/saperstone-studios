@@ -51,32 +51,20 @@ class SqlIntegrationTest extends TestCase {
     }
 
     public function testGetRows() {
-        $rows = $this->sql->getRows( "SELECT * FROM users;" );
-        $this->assertEquals( 5, sizeOf( $rows ) );
-        $this->assertEquals( 0, $rows[0]['id'] );
-        $this->assertEquals( '<i>All Users</i>', $rows[0]['usr'] );
-        $this->assertEquals( '', $rows[0]['pass'] );
-        $this->assertEquals( '', $rows[0]['firstName'] );
-        $this->assertEquals( '', $rows[0]['lastName'] );
-        $this->assertEquals( '', $rows[0]['email'] );
-        $this->assertEquals( 'admin', $rows[0]['role'] );
-        $this->assertEquals( '', $rows[0]['hash'] );
-        $this->assertEquals( 0, $rows[0]['active'] );
-        $this->assertEquals( 1, preg_match( "/([\\d]{4})-([\\d]{2})-([\\d]{2}) ([\\d]{2}):([\\d]{2}):([\\d]{2})/", $rows[0]['created'] ) );
-        $this->assertNull( $rows[0]['lastLogin'] );
-        $this->assertNull( $rows[0]['resetKey'] );
-        $rows = $this->sql->getRows( "SELECT * FROM user;" );
+        $rows = $this->sql->getRows( "SELECT * FROM reviews;" );
+        $this->assertEquals( 14, sizeOf( $rows ) );
+        $rows = $this->sql->getRows( "SELECT * FROM review;" );
         $this->assertEquals( array(), $rows );
         $this->sql->disconnect();
-        $rows = $this->sql->getRows( "SELECT * FROM users;" );
+        $rows = $this->sql->getRows( "SELECT * FROM reviews;" );
         $this->assertEquals( array(), $rows );
     }
 
     public function testGetRowCount() {
-        $this->assertEquals( 5, $this->sql->getRowCount( "SELECT * FROM users;" ) );
-        $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM user;" ) );
+        $this->assertEquals( 14, $this->sql->getRowCount( "SELECT * FROM reviews;" ) );
+        $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM review;" ) );
         $this->sql->disconnect();
-        $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM users;" ) );
+        $this->assertEquals( 0, $this->sql->getRowCount( "SELECT * FROM reviews;" ) );
     }
 
     public function testExecuteStatement() {
