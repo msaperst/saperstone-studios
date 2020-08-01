@@ -241,6 +241,14 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     "API Tests": {
                         stage('Run API Tests') {
                             try {
+                                timeout(60) {
+                                    waitUntil {
+                                       script {
+                                         def r = sh script: 'wget -q http://localhost:90/ -O /dev/null', returnStdout: true
+                                         return (r == 0);
+                                       }
+                                    }
+                                }
                                 sh "composer api-test"
                             } finally {
                                 junit 'reports/api-junit.xml'
