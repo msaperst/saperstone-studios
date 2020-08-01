@@ -51,7 +51,7 @@ class DeleteAlbumTest extends TestCase {
             $response = $this->http->request('POST', 'api/delete-album.php');
         } catch ( GuzzleHttp\Exception\ClientException $e ) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
-            $this->assertEquals("", $e->getResponse()->getBody() );
+            $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody() );
         }
     }
     

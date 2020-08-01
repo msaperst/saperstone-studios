@@ -2,33 +2,18 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $sql->disconnect ();
-    exit ();
+$api->forceAdmin();
+
+$gallery = $api->retrievePostInt('gallery', 'Gallery id');
+if( is_array( $gallery ) ) {
+    echo $gallery['error'];
+    exit();
 }
-
-$gallery = "";
-if (isset ( $_POST ['gallery'] ) && $_POST ['gallery'] != "") {
-    $gallery = ( int ) $_POST ['gallery'];
-} else {
-    if (! isset ( $_POST ['gallery'] )) {
-        echo "Gallery id is required";
-    } elseif ($_POST ['gallery'] == "") {
-        echo "Gallery id can not be blank";
-    } else {
-        echo "Some other gallery id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
 $gallery_info = $sql->getRow( "SELECT * FROM galleries WHERE id = $gallery;" );
 if (! $gallery_info ['id']) {
     echo "Gallery id does not match any galleries";
@@ -36,19 +21,10 @@ if (! $gallery_info ['id']) {
     exit ();
 }
 
-$image = "";
-if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
-    $image = ( int ) $_POST ['image'];
-} else {
-    if (! isset ( $_POST ['image'] )) {
-        echo "Image id is required";
-    } elseif ($_POST ['image'] == "") {
-        echo "Image id can not be blank";
-    } else {
-        echo "Some other image id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$image = $api->retrievePostInt('image', 'Image id');
+if( is_array( $image ) ) {
+    echo $image['error'];
+    exit();
 }
 
 // delete our image from mysql table

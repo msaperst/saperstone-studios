@@ -2,32 +2,18 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $sql->disconnect ();
-    exit ();
+$api->forceAdmin();
+
+$id = $api->retrievePostInt('id', 'Product id');
+if( is_array( $id ) ) {
+    echo $id['error'];
+    exit();
 }
-
-if (isset ( $_POST ['id'] ) && $_POST ['id'] != "" ) {
-    $id = ( int ) $_POST ['id'];
-} else {
-    if (! isset ( $_POST ['id'] )) {
-        echo "Product id is required";
-    } elseif ($_POST ['id'] == "") {
-        echo "Product id can not be blank";
-    } else {
-        echo "Some other product id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
 $product_details = $sql->getRow( "SELECT * FROM product_types WHERE id = $id;" );
 if (! $product_details ['id']) {
     echo "Product id does not match any products";

@@ -1,70 +1,36 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
+$user = new User ($sql);
+$api = new Api ($sql, $user);
 
 $to = "Contact <contact@saperstonestudios.com>";
 if (isset ( $_POST ['to'] ) && $_POST ['to'] != "") {
     $to = $sql->escapeString( $_POST ['to'] );
 }
 
-// check if fields passed are empty
-if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = $sql->escapeString( $_POST ['name'] );
-} else {
-    if (! isset ( $_POST ['name'] )) {
-        echo "Name is required";
-    } elseif ($_POST ['name'] == "") {
-        echo "Name can not be blank";
-    } else {
-        echo "Some other name error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$name = $api->retrievePostInt('name', 'Name');
+if( is_array( $name ) ) {
+    echo $name['error'];
+    exit();
 }
-
-if (isset ( $_POST ['phone'] ) && $_POST ['phone'] != "") {
-    $phone = $sql->escapeString( $_POST ['phone'] );
-} else {
-    if (! isset ( $_POST ['phone'] )) {
-        echo "Phone is required";
-    } elseif ($_POST ['phone'] == "") {
-        echo "Phone can not be blank";
-    } else {
-        echo "Some other phone error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$phone = $api->retrievePostString('phone', 'Phone number');
+if( is_array( $phone ) ) {
+    echo $phone['error'];
+    exit();
 }
-
-if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
-    $email = $sql->escapeString( $_POST ['email'] );
-} else {
-    if (! isset ( $_POST ['email'] )) {
-        echo "Email is required";
-    } elseif ($_POST ['email'] == "") {
-        echo "Email can not be blank";
-    } elseif ( ! filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
-        echo "Email is not valid";
-    } else {
-        echo "Some other email error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL );
+if( is_array( $email ) ) {
+    echo $email['error'];
+    exit();
 }
-
-if (isset ( $_POST ['message'] ) && $_POST ['message'] != "") {
-    $message = $sql->escapeString( $_POST ['message'] );
-} else {
-    if (! isset ( $_POST ['message'] )) {
-        echo "Message is required";
-    } elseif ($_POST ['message'] == "") {
-        echo "Message can not be blank";
-    } else {
-        echo "Some other message error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$message = $api->retrievePostString('message', 'Message');
+if( is_array( $message ) ) {
+    echo $message['error'];
+    exit();
 }
 
 $resolution = "";

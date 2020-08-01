@@ -173,8 +173,8 @@ class CreateAlbumTest extends TestCase {
     }
 
     public function testCantCreateFolder() {
+        rename( 'content/albums', 'content/tmp_albums');
         try {
-            rmdir( 'content/albums' );
             date_default_timezone_set("America/New_York");
             $cookieJar = CookieJar::fromArray([
                         'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -186,12 +186,9 @@ class CreateAlbumTest extends TestCase {
                     'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>55</b><br />\nmkdir(): File exists<br/>Unable to create album", (string) $response->getBody() );
+            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>49</b><br />\nmkdir(): File exists<br/>Unable to create album", (string) $response->getBody() );
         } finally {
-            $oldmask = umask(0);
-            mkdir( 'content/albums/' );
-            chmod( 'content/albums/', 0777 );
-            umask($oldmask);
+            rename( 'content/tmp_albums', 'content/albums');
         }
     }
 }

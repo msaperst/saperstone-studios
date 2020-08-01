@@ -1,76 +1,41 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
+$api->forceAdmin();
+
+$image = $api->retrievePostString('image', 'Image');
+if( is_array( $image ) ) {
+    echo $image['error'];
+    exit();
+}
+if ( ! file_exists( $_POST['image'] ) ) {
+    echo "Image does not exist";
     $sql->disconnect ();
     exit ();
 }
 
-$image = $maxWidth = $top = $bottom = "";
-if (isset ( $_POST ['image'] ) && $_POST ['image'] != "" && file_exists( $_POST['image'] ) ) {
-    $image = $sql->escapeString( $_POST ['image'] );
-} else {
-    if (! isset ( $_POST ['image'] )) {
-        echo "Image is required";
-    } elseif ($_POST ['image'] == "") {
-        echo "Image can not be blank";
-    } elseif ( ! file_exists ( $_POST ['image'] ) ) {
-        echo "Image does not exist";
-    } else {
-        echo "Some other image error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$maxWidth = $api->retrievePostInt('max-width', 'Image max-width');
+if( is_array( $maxWidth ) ) {
+    echo $maxWidth['error'];
+    exit();
 }
 
-if (isset ( $_POST ['max-width'] ) && $_POST ['max-width'] != "") {
-    $maxWidth = ( int ) $_POST ['max-width'];
-} else {
-    if (! isset ( $_POST ['max-width'] )) {
-        echo "Image max-width is required";
-    } elseif ($_POST ['max-width'] == "") {
-        echo "Image max-width can not be blank";
-    } else {
-        echo "Some other image max-width error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$top = $api->retrievePostInt('top', 'Image top');
+if( is_array( $top ) ) {
+    echo $top['error'];
+    exit();
 }
 
-if (isset ( $_POST ['top'] ) && $_POST ['top'] != "") {
-    $top = ( int ) $_POST ['top'];
-} else {
-    if (! isset ( $_POST ['top'] )) {
-        echo "Image top is required";
-    } elseif ($_POST ['top'] == "") {
-        echo "Image top can not be blank";
-    } else {
-        echo "Some other image top error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
-if (isset ( $_POST ['bottom'] ) && $_POST ['bottom'] != "") {
-    $bottom = ( int ) $_POST ['bottom'];
-} else {
-    if (! isset ( $_POST ['bottom'] )) {
-        echo "Image bottom is required";
-    } elseif ($_POST ['bottom'] == "") {
-        echo "Image bottom can not be blank";
-    } else {
-        echo "Some other image bottom error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$bottom = $api->retrievePostInt('bottom', 'Image bottom');
+if( is_array( $bottom ) ) {
+    echo $bottom['error'];
+    exit();
 }
 
 $height = $bottom - $top;

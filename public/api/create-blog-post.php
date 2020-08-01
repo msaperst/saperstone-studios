@@ -2,55 +2,26 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $sql->disconnect ();
-    exit ();
+$api->forceAdmin();
+
+$title = $api->retrievePostString('title', 'Blog title');
+if( is_array( $title ) ) {
+    echo $title['error'];
+    exit();
 }
 
-$title = "";
-if (isset ( $_POST ['title'] ) && $_POST ['title'] != "") {
-    $title = $sql->escapeString( $_POST ['title'] );
-} else {
-    if (! isset ( $_POST ['title'] )) {
-        echo "Blog title is required";
-    } elseif ($_POST ['title'] == "") {
-        echo "Blog title can not be blank";
-    } else {
-        echo "Some other blog title error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$date = $api->retrievePostDateTime('date', 'Blog date', 'Y-m-d');
+if( is_array( $date ) ) {
+    echo $date['error'];
+    exit();
 }
 
-$date = "";
-if (isset ( $_POST ['date'] ) && $_POST ['date'] != "") {
-    $date = $sql->escapeString( $_POST ['date'] );
-    $format = 'Y-m-d';
-    $d = DateTime::createFromFormat($format, $date);
-    if ( ! ($d && $d->format($format) === $date ) ) {
-        echo "Blog date is not the correct format";
-        $sql->disconnect ();
-        exit ();
-    }
-} else {
-    if (! isset ( $_POST ['date'] )) {
-        echo "Blog date is required";
-    } elseif ($_POST ['date'] == "") {
-        echo "Blog date can not be blank";
-    } else {
-        echo "Some other blog date error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
+//TODO - figure this out
 $previewImage = "";
 if (isset ( $_POST ['preview'] ['img'] ) && $_POST ['preview'] ['img'] != "") {
     $previewImage = $sql->escapeString( $_POST ['preview'] ['img'] );

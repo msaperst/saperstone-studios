@@ -2,26 +2,15 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-$post = "";
-$name = "";
-$email = "";
-$message = "";
-
-if (isset ( $_POST ['post'] ) && $_POST ['post'] != "") {
-    $post = ( int ) $_POST ['post'];
-} else {
-    if (! isset ( $_POST ['post'] )) {
-        echo "Blog id is required";
-    } elseif ($_POST ['post'] == "") {
-        echo "Blog id can not be blank";
-    } else {
-        echo "Some other blog id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$post = $api->retrievePostInt('post', 'Blog id');
+if( is_array( $post ) ) {
+    echo $post['error'];
+    exit();
 }
 
 $blog_info = $sql->getRow( "SELECT * FROM blog_details WHERE id = $post;" );
@@ -31,24 +20,20 @@ if (! $blog_info ['id']) {
     exit ();
 }
 
+$name = "";
 if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
     $name = $sql->escapeString( $_POST ['name'] );
 }
+
+$email = "";
 if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
     $email = $sql->escapeString( $_POST ['email'] );
 }
-if (isset ( $_POST ['message'] ) && $_POST ['message'] != "") {
-    $message = $sql->escapeString( $_POST ['message'] );
-} else {
-    if (! isset ( $_POST ['message'] )) {
-        echo "Message is required";
-    } elseif ($_POST ['message'] == "") {
-        echo "Message can not be blank";
-    } else {
-        echo "Some other message error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+
+$message = $api->retrievePostString('message', 'Message');
+if( is_array( $message ) ) {
+    echo $message['error'];
+    exit();
 }
 
 if ($user->getId () != "") {

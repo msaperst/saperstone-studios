@@ -170,7 +170,7 @@ class DeleteAlbumImageTest extends TestCase {
         $this->assertEquals("", (string) $response->getBody() );
         $images = $this->sql->getRows( "SELECT * FROM `album_images` WHERE `album_images`.`album` = 999;" );
         $this->assertEquals( 1, sizeOf( $images ) );
-        $this->assertEquals( 2, $images[0]['id'] );
+        $this->assertEquals( 1, preg_match( "/^([\d]+)$/", $images[0]['id'] ) );
         $this->assertEquals( 999, $images[0]['album'] );
         $this->assertEquals( '', $images[0]['title'] );
         $this->assertEquals( 0, $images[0]['sequence'] );

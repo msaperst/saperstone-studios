@@ -2,78 +2,35 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $sql->disconnect ();
-    exit ();
+$api->forceAdmin();
+
+$type = $api->retrievePostString('type', 'Contract type');
+if( is_array( $type ) ) {
+    echo $type['error'];
+    exit();
 }
 
-$type;
-if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {
-    $type = $sql->escapeString( $_POST ['type'] );
-    //TODO - need check for valid type
-} else {
-    if (! isset ( $_POST ['type'] )) {
-        echo "Contract type is required";
-    } elseif ($_POST ['type'] == "") {
-        echo "Contract type can not be blank";
-    } else {
-        echo "Some other contract type error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$name = $api->retrievePostString('name', 'Contract name');
+if( is_array( $name ) ) {
+    echo $name['error'];
+    exit();
 }
 
-
-$name;
-if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = $sql->escapeString( $_POST ['name'] );
-} else {
-    if (! isset ( $_POST ['name'] )) {
-        echo "Contract name is required";
-    } elseif ($_POST ['name'] == "") {
-        echo "Contract name can not be blank";
-    } else {
-        echo "Some other contract name error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$session = $api->retrievePostString('session', 'Contract session');
+if( is_array( $session ) ) {
+    echo $session['error'];
+    exit();
 }
 
-$session;
-if (isset ( $_POST ['session'] ) && $_POST ['session'] != "") {
-    $session = $sql->escapeString( $_POST ['session'] );
-} else {
-    if (! isset ( $_POST ['session'] )) {
-        echo "Contract session is required";
-    } elseif ($_POST ['session'] == "") {
-        echo "Contract session can not be blank";
-    } else {
-        echo "Some other contract session error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
-$content;
-if (isset ( $_POST ['content'] ) && $_POST ['content'] != "") {
-    $content = $sql->escapeString( $_POST ['content'] );
-} else {
-    if (! isset ( $_POST ['content'] )) {
-        echo "Contract content is required";
-    } elseif ($_POST ['content'] == "") {
-        echo "Contract content can not be blank";
-    } else {
-        echo "Some other contract content error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$content = $api->retrievePostString('content', 'Contract content');
+if( is_array( $content ) ) {
+    echo $content['error'];
+    exit();
 }
 
 $amount = $deposit = '0';

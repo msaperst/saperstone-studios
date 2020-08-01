@@ -2,34 +2,18 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-// only admin users
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $sql->disconnect ();
-    exit ();
+$api->forceAdmin();
+
+$id = $api->retrievePostInt('post', 'Blog id');
+if( is_array( $id ) ) {
+    echo $id['error'];
+    exit();
 }
-
-$id = "";
-if (isset ( $_POST ['post'] ) && $_POST ['post'] != "") {
-    $id = ( int ) $_POST ['post'];
-} else {
-    if (! isset ( $_POST ['post'] )) {
-        echo "Blog id is required";
-    } elseif ($_POST ['post'] == "") {
-        echo "Blog id can not be blank";
-    } else {
-        echo "Some other blog id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
 $blog_details = $sql->getRow( "SELECT * FROM blog_details WHERE id = $id;" );
 if (! $blog_details ['id']) {
     echo "Blog id does not match any blogs";

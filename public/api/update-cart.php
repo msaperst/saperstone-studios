@@ -2,15 +2,12 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isLoggedIn ()) {
-    echo "User must be logged in to add to their cart";
-    $conn->disconnect ();
-    exit ();
-}
+$api->forceLoggedIn();
 
 // empty out our old cart for this image
 $sql = "DELETE FROM `cart` WHERE `user` = '{$user->getId()}';";

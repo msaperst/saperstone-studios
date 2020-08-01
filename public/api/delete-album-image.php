@@ -2,33 +2,18 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $sql->disconnect ();
-    exit ();
+$api->forceAdmin();
+
+$album = $api->retrievePostInt('album', 'Album id');
+if( is_array( $album ) ) {
+    echo $album['error'];
+    exit();
 }
-
-$album = "";
-if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
-    $album = ( int ) $_POST ['album'];
-} else {
-    if (! isset ( $_POST ['album'] )) {
-        echo "Album id is required";
-    } elseif ($_POST ['album'] == "") {
-        echo "Album id can not be blank";
-    } else {
-        echo "Some other album id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
 $album_info = $sql->getRow( "SELECT * FROM albums WHERE id = $album;" );
 if (! $album_info ['id']) {
     echo "Album id does not match any albums";
@@ -36,19 +21,10 @@ if (! $album_info ['id']) {
     exit ();
 }
 
-$sequence = "";
-if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
-    $sequence = ( int ) $_POST ['image'];
-} else {
-    if (! isset ( $_POST ['image'] )) {
-        echo "Image id is required";
-    } elseif ($_POST ['image'] == "") {
-        echo "Image id can not be blank";
-    } else {
-        echo "Some other image id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$sequence = $api->retrievePostInt('image', 'Image id');
+if( is_array( $sequence ) ) {
+    echo $sequence['error'];
+    exit();
 }
 
 // delete our image from mysql table

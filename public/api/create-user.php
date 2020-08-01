@@ -2,79 +2,45 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
+$api->forceAdmin();
+
+$username = $api->retrievePostString('username', 'Username');
+if( is_array( $username ) ) {
+    echo $username['error'];
+    exit();
+}
+$row = $sql->getRow( "SELECT * FROM users WHERE usr = '$username'" );
+if ($row ['usr']) {
+    echo "That username already exists in the system";
     $sql->disconnect ();
     exit ();
 }
 
-$username;
-if (isset ( $_POST ['username'] ) && $_POST ['username'] != "") {
-    $username = $sql->escapeString( $_POST ['username'] );
-    $row = $sql->getRow( "SELECT * FROM users WHERE usr = '$username'" );
-    if ($row ['usr']) {
-        echo "That username already exists in the system";
-        $sql->disconnect ();
-        exit ();
-    }
-} else {
-    if (! isset ( $_POST ['username'] )) {
-        echo "Username is required";
-    } elseif ($_POST ['type'] == "") {
-        echo "Username can not be blank";
-    } else {
-        echo "Some other username error occurred";
-    }
+$email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL );
+if( is_array( $email ) ) {
+    echo $email['error'];
+    exit();
+}
+$row = $sql->getRow( "SELECT email FROM users WHERE email='$email'" );
+if ($row ['email']) {
+    echo "We already have an account on file for that email address";
     $sql->disconnect ();
     exit ();
 }
 
-$email;
-if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
-    $email = $sql->escapeString( $_POST ['email'] );
-    $row = $sql->getRow( "SELECT email FROM users WHERE email='$email'" );
-    if ($row ['email']) {
-        echo "We already have an account on file for that email address";
-        $sql->disconnect ();
-        exit ();
-    }
-} else {
-    if (! isset ( $_POST ['email'] )) {
-        echo "Email is required";
-    } elseif ($_POST ['email'] == "") {
-        echo "Email can not be blank";
-    } elseif ( ! filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL ) ) {
-        echo "Email is not valid";
-    } else {
-        echo "Some other email error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$role = $api->retrievePostString('role', 'Role');
+if( is_array( $role ) ) {
+    echo $role['error'];
+    exit();
 }
-
-if (isset ( $_POST ['role'] ) && $_POST ['role'] != "") {
-    $role = $sql->escapeString( $_POST ['role'] );
-    // check for valid categories
-    $enums = $sql->getEnumValues( 'users', 'role' );
-    if (! in_array( $role, $enums ) ) {
-        echo "Role is not valid";
-        $sql->disconnect ();
-        exit ();
-    }
-} else {
-    if (! isset ( $_POST ['role'] )) {
-        echo "Role is required";
-    } elseif ($_POST ['role'] == "") {
-        echo "Role can not be blank";
-    } else {
-        echo "Some other role error occurred";
-    }
+$enums = $sql->getEnumValues( 'users', 'role' );
+if (! in_array( $role, $enums ) ) {
+    echo "Role is not valid";
     $sql->disconnect ();
     exit ();
 }

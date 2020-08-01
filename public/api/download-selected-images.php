@@ -2,57 +2,38 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
-
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (isset ( $_POST ['what'] ) && $_POST ['what'] != "") {
-    $what = $sql->escapeString( $_POST ['what'] );
-} else {
-    if (! isset ( $_POST ['what'] )) {
-        $response ['err'] = "What to download is required!";
-    } elseif ($_POST ['what'] == "") {
-        $response ['err'] = "What to download cannot be blank!";
-    } else {
-        $response ['err'] = "Some other download error occurred!";
-    }
-    echo json_encode ( $response );
-    $conn->disconnect ();
-    exit ();
+$what = $api->retrievePostString('what', 'What to download');
+if( is_array( $what ) ) {
+    echo json_encode( $what );
+    exit();
 }
 
-if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
-    $album = ( int ) $_POST ['album'];
-} else {
-    if (! isset ( $_POST ['album'] )) {
-        $response ['err'] = "Album to download from is required!";
-    } elseif ($_POST ['album'] == "") {
-        $response ['err'] = "Album to download from cannot be blank!";
-    } else {
-        $response ['err'] = "Some other download error occurred!";
-    }
-    echo json_encode ( $response );
-    $conn->disconnect ();
-    exit ();
+$album = $api->retrievePostInt('album', 'Album id');
+if( is_array( $album ) ) {
+    echo json_encode( $album );
+    exit();
 }
-
-$sql = "SELECT * FROM `albums` WHERE id = '$album';";
-$album_info = $sql->getRow( $sql );
+$album_info = $sql->getRow( "SELECT * FROM `albums` WHERE id = '$album';" );
 // if the album doesn't exist, throw a 404 error
 if (! $album_info ['name']) {
-    $response ['err'] = "Album doesn't exist!";
-    echo json_encode ( $response );
-    $conn->disconnect ();
+    echo json_encode ( array( 'error' => 'Album id does not match any albums' ) );
+    $sql->disconnect ();
     exit ();
 }
 
 // check for album access
-$isAlbumDownloadable = mysqli_num_rows ( mysqli_query ( $conn->db, "SELECT * FROM `download_rights` WHERE user = '0' AND album = '" . $album . "';" ) );
+$isAlbumDownloadable = $sql->getRowCount( "SELECT * FROM `download_rights` WHERE user = '0' AND album = '" . $album . "';" );
 if (! $user->isLoggedIn () && ! $isAlbumDownloadable) {
     header ( 'HTTP/1.0 401 Unauthorized' );
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
+
 $userid = getClientIP();
 if ($user->isLoggedIn ()) {
     $userid = $user->getId ();
@@ -60,55 +41,30 @@ if ($user->isLoggedIn ()) {
 
 // determine what the user can download
 $downloadable = array ();
-$sql = "SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId () . "' OR `user` = '0';";
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
+foreach ( $sql->getRows( "SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId () . "' OR `user` = '0';" ) as $r ) {
     if ($r ['album'] == "*" || ($r ['album'] == $album && $r ['image'] == "*")) {
-        $sql = "SELECT * FROM album_images WHERE album = $album;";
-        $sesult = mysqli_query ( $conn->db, $sql );
-        while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
-            $downloadable [] = $s;
-        }
+        $downloadable = $sql->getRows( "SELECT * FROM album_images WHERE album = $album;" );
     } elseif ($r ['album'] == $album) {
-        $sql = "SELECT * FROM album_images WHERE album = $album AND sequence = " . $r ['image'] . ";";
-        $sesult = mysqli_query ( $conn->db, $sql );
-        while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
-            $downloadable [] = $s;
-        }
+        $downloadable = $sql->getRows( "SELECT * FROM album_images WHERE album = $album AND sequence = " . $r ['image'] . ";" );
     }
 }
 $downloadable = array_unique ( $downloadable, SORT_REGULAR );
 
 // determine what the user wants to download
+$desired = array ();
 if ($what == "all") {
-    $sql = "SELECT album_images.* FROM album_images WHERE album = '$album';";
-    $result = mysqli_query ( $conn->db, $sql );
-    $desired = array ();
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $desired [] = $r;
-    }
+    $desired = $sql->getRows( "SELECT album_images.* FROM album_images WHERE album = '$album';" );
 } elseif ($what == "favorites") {
-    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$userid' AND favorites.album = '$album';";
-    $result = mysqli_query ( $conn->db, $sql );
-    $desired = array ();
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $desired [] = $r;
-    }
+    $desired = $sql->getRows( "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$userid' AND favorites.album = '$album';" );
 } else {
-    $sql = "SELECT * FROM album_images WHERE album = '$album' AND sequence = '$what';";
-    $result = mysqli_query ( $conn->db, $sql );
-    $desired = array ();
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $desired [] = $r;
-    }
+    $desired = $sql->getRows( "SELECT * FROM album_images WHERE album = '$album' AND sequence = '$what';" );
 }
 
+// determine what we will download
 $available = array ();
-// if we're an admin, we can download all files
-if ($user->isAdmin ()) {
+if ($user->isAdmin ()) {    // if we're an admin, we can download all files
     $available = $desired;
-    // check to see which files we want to download, we can download
-} else {
+} else {    // check to see which files we want to download, we can download
     foreach ( $desired as $file ) {
         $result = doesArrayContainFile ( $downloadable, $file );
         if ($result) {
@@ -118,9 +74,9 @@ if ($user->isAdmin ()) {
 }
 
 if (empty ( $available )) {
-    $response ['err'] = "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.";
+    $response ['error'] = "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.";
     echo json_encode ( $response );
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 
@@ -138,9 +94,9 @@ foreach ( $available as $image ) {
     }
 }
 if ($images == "") {
-    $response ['err'] = "No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.";
+    $response ['error'] = "No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.";
     echo json_encode ( $response );
-    $conn->disconnect ();
+    $sql->disconnect ();
     exit ();
 }
 if (! is_dir ( "../tmp/" )) {
@@ -152,7 +108,7 @@ $response ['file'] = $myFile;
 echo json_encode ( $response );
 
 // update our user records table
-mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode ( "\n", $image_array ) . "', $album );" );
+$sql->executeStatement( "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode ( "\n", $image_array ) . "', $album );" );
 
 // send email
 $IP = getClientIP();
@@ -209,7 +165,7 @@ $mime->setHTMLBody ( $html );
 $body = $mime->get ();
 require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/email.php";
 
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();
 
 // our function to see if an array of files contains the expected file

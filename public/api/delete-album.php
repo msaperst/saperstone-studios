@@ -2,30 +2,18 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (!$user->isLoggedIn ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    $sql->disconnect ();
-    exit ();
+$api->forceLoggedIn();
+
+$id = $api->retrievePostInt('id', 'Album id');
+if( is_array( $id ) ) {
+    echo $id['error'];
+    exit();
 }
-
-$id = "";
-if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
-    $id = ( int ) $_POST ['id'];
-} else {
-    if (! isset ( $_POST ['id'] )) {
-        echo "Album id is required";
-    } elseif ($_POST ['id'] == "") {
-        echo "Album id can not be blank";
-    } else {
-        echo "Some other album id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
 $album_info = $sql->getRow( "SELECT * FROM albums WHERE id = $id;" );
 if (! $album_info ['id']) {
     echo "Album id does not match any albums";

@@ -641,8 +641,8 @@ function downloadImages(album, what) {
                     if (data.hasOwnProperty('file')) {
                         window.location = data.file;
                         dialogInItself.close();
-                    } else if (data.hasOwnProperty('err')) {
-                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.err + '</div>');
+                    } else if (data.hasOwnProperty('error')) {
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.error + '</div>');
                     } else {
                         modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
                     }

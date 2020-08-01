@@ -2,8 +2,10 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
 // ensure we are logged in appropriately
 if (! $user->isAdmin () && $user->getRole () != "uploader") {
@@ -19,18 +21,10 @@ $name = "";
 $description = "";
 $date = "NULL";
 // confirm we have an album name
-if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = $sql->escapeString( $_POST ['name'] );
-} else {
-    if (! isset ( $_POST ['name'] )) {
-        echo "Album name is required";
-    } elseif ($_POST ['name'] == "") {
-        echo "Album name can not be blank";
-    } else {
-        echo "Some other album name error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$name = $api->retrievePostString('name', 'Album name');
+if( is_array( $name ) ) {
+    echo $name['error'];
+    exit();
 }
 
 // sanitize our inputs

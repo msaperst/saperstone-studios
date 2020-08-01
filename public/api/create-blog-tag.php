@@ -2,32 +2,17 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $sql->disconnect ();
-    exit ();
-}
+$api->forceAdmin();
 
-$tag = "";
-
-if (isset ( $_POST ['tag'] ) && $_POST ['tag'] != "") {
-    $tag = $sql->escapeString( $_POST ['tag'] );
-} else {
-    if (! isset ( $_POST ['tag'] )) {
-        echo "Blog tag is required";
-    } elseif ($_POST ['tag'] == "") {
-        echo "Blog tag can not be blank";
-    } else {
-        echo "Some other blog tag error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
+$tag = $api->retrievePostString('tag', 'Blog tag');
+if( is_array( $tag ) ) {
+    echo $tag['error'];
+    exit();
 }
 
 $row = $sql->getRow( "SELECT * FROM `tags` WHERE `tag` = '$tag';" );

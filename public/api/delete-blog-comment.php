@@ -2,30 +2,18 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 $sql = new Sql ();
 $user = new User ($sql);
+$api = new Api ($sql, $user);
 
-if (!$user->isLoggedIn ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    $sql->disconnect ();
-    exit ();
+$api->forceLoggedIn();
+
+$comment = $api->retrievePostInt('comment', 'Comment id');
+if( is_array( $comment ) ) {
+    echo $comment['error'];
+    exit();
 }
-
-$comment = "";
-if (isset ( $_POST ['comment'] ) && $_POST ['comment'] != "") {
-    $comment = ( int ) $_POST ['comment'];
-} else {
-    if (! isset ( $_POST ['comment'] )) {
-        echo "Comment id is required";
-    } elseif ($_POST ['comment'] == "") {
-        echo "Comment id can not be blank";
-    } else {
-        echo "Some other comment id error occurred";
-    }
-    $sql->disconnect ();
-    exit ();
-}
-
 $blog_comment_info = $sql->getRow( "SELECT * FROM blog_comments WHERE id = $comment;" );
 if (! $blog_comment_info ['id']) {
     echo "Comment id does not match any comments";

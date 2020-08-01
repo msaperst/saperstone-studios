@@ -36,7 +36,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Phone is required", (string) $response->getBody());
+        $this->assertEquals("Phone number is required", (string) $response->getBody());
     }
 
     public function testBlankPhone() {
@@ -47,7 +47,7 @@ class ContactMeTest extends TestCase {
                 ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Phone can not be blank", (string) $response->getBody());
+        $this->assertEquals("Phone number can not be blank", (string) $response->getBody());
     }
 
     public function testNoEmail() {
