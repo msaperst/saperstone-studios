@@ -244,8 +244,8 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                 timeout(60) {
                                     waitUntil {
                                        script {
-                                         def r = sh script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1|cut -d$' ' -f2', returnStdout: true
-                                         return (r == 0);
+                                         def r = sh returnStdout: true, script: "curl -I http://localhost:90/ 2>/dev/null | head -n 1| cut -d$' ' -f2"
+                                         return (r == 200);
                                        }
                                     }
                                 }
