@@ -21,6 +21,7 @@ class UserIntegrationTest extends TestCase {
         $user = new User ($this->sql);
         $this->assertFalse ( $user->isLoggedIn () );
         $this->assertEquals ( '', $user->getId () );
+        $this->assertEquals ( '', $user->getIdentifier () );
         $this->assertEquals ( '', $user->getUser () );
         $this->assertEquals ( '', $user->getRole () );
         $this->assertFalse ( $user->isAdmin () );
@@ -47,6 +48,7 @@ class UserIntegrationTest extends TestCase {
         unset( $_SESSION ['hash'] );
         $this->assertTrue ( $user->isLoggedIn () );
         $this->assertEquals ( 1, $user->getId () );
+        $this->assertEquals ( 1, $user->getIdentifier () );
         $this->assertEquals ( 'msaperst', $user->getUser () );
         $this->assertEquals ( 'admin', $user->getRole () );
         $this->assertTrue ( $user->isAdmin () );
@@ -61,6 +63,7 @@ class UserIntegrationTest extends TestCase {
         unset( $_COOKIE ['hash'] );
         $this->assertTrue ( $user->isLoggedIn () );
         $this->assertEquals ( 3, $user->getId () );
+        $this->assertEquals ( 3, $user->getIdentifier () );
         $this->assertEquals ( 'downloader', $user->getUser () );
         $this->assertEquals ( 'downloader', $user->getRole () );
         $this->assertFalse ( $user->isAdmin () );
@@ -75,6 +78,7 @@ class UserIntegrationTest extends TestCase {
         unset( $_SESSION ['hash'] );
         $this->assertTrue ( $user->isLoggedIn () );
         $this->assertEquals ( 4, $user->getId () );
+        $this->assertEquals ( 4, $user->getIdentifier () );
         $this->assertEquals ( 'uploader', $user->getUser () );
         $this->assertEquals ( 'uploader', $user->getRole () );
         $this->assertFalse ( $user->isAdmin () );

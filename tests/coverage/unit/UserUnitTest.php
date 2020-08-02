@@ -81,6 +81,24 @@ class UserUnitTest extends TestCase {
         $this->assertEquals ( "", $user->getId () );
     }
 
+    public function testNotLoggedInGetIdentifier() {
+            $mockSql = $this->createMock(Sql::class);
+            $mockSql->method("getRow")->willReturn(NULL);
+            $user = new User($mockSql);
+            $this->assertEquals( "", $user->getIdentifier() );
+    }
+
+    public function testGetIdentifier() {
+        $_SESSION['hash'] = "123";
+        $mockSql = $this->createMock(Sql::class);
+        $mockSql->method("getRow")->willReturn(array(
+            "id" => 5
+        ));
+        $user = new User($mockSql);
+        unset($_SESSION['hash']);
+        $this->assertEquals ( "5", $user->getIdentifier () );
+    }
+
     public function testNotLoggedInGetUsr() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
