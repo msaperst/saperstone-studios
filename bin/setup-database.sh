@@ -17,7 +17,7 @@ mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS -e "CREATE DATABASE IF NOT 
 for file in ${DIR}/sql/*.sql; do
     filename=${file##*/}
     echo "Running ${filename%.sql}";
-    mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME < "$file" #> /dev/null 2>&1
+    mysql --force -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME < "$file" #> /dev/null 2>&1
 done
 
 if [ "$DRYRUN" = true ]; then
