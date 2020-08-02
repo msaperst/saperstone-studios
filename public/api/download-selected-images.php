@@ -34,18 +34,15 @@ if (! $user->isLoggedIn () && ! $isAlbumDownloadable) {
     exit ();
 }
 
-$userid = getClientIP();
-if ($user->isLoggedIn ()) {
-    $userid = $user->getId ();
-}
+$userid = $user->getIdentifier();
 
 // determine what the user can download
 $downloadable = array ();
 foreach ( $sql->getRows( "SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId () . "' OR `user` = '0';" ) as $r ) {
     if ($r ['album'] == "*" || ($r ['album'] == $album && $r ['image'] == "*")) {
-        $downloadable = $sql->getRows( "SELECT * FROM album_images WHERE album = $album;" );
+        $downloadable = array_merge( $downloadable, $sql->getRows( "SELECT * FROM album_images WHERE album = $album;" ) );
     } elseif ($r ['album'] == $album) {
-        $downloadable = $sql->getRows( "SELECT * FROM album_images WHERE album = $album AND sequence = " . $r ['image'] . ";" );
+        $downloadable = array_merge( $downloadable, $sql->getRows( "SELECT * FROM album_images WHERE album = $album AND sequence = " . $r ['image'] . ";" ) );
     }
 }
 $downloadable = array_unique ( $downloadable, SORT_REGULAR );
@@ -57,7 +54,7 @@ if ($what == "all") {
 } elseif ($what == "favorites") {
     $desired = $sql->getRows( "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$userid' AND favorites.album = '$album';" );
 } else {
-    $desired = $sql->getRows( "SELECT * FROM album_images WHERE album = '$album' AND sequence = '$what';" );
+    $desired = $sql->getRows( "SELECT * FROM album_images WHERE album = '$album' AND sequence = '" . (int) $what . "';" );
 }
 
 // determine what we will download
@@ -116,7 +113,8 @@ $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php");
 $browser = new Browser ();
 $from = "Actions <actions@saperstonestudios.com>";
-$to = "Actions <actions@saperstonestudios.com>";
+// TODO - NEED TO CHANGE BACK, JUST GOOD FOR TESTING!!!
+$to = "Contact <msaperst+sstest@gmail.com>";
 $subject = "Someone Downloaded Something";
 
 $html = "<html><body>";

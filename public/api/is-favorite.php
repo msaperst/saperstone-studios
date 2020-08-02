@@ -7,12 +7,7 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$user;
-if (! $user->isLoggedIn ()) {
-    $user = getClientIP();
-} else {
-    $user = $user->getId ();
-}
+$user_id = $user->getIdentifier();
 
 $album = "";
 if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
@@ -60,7 +55,7 @@ if (! $album_info ['title']) {
     exit ();
 }
 
-$sql = "SELECT * FROM `favorites` WHERE `user` = '$user' AND `album` = '$album' AND `image` = '$sequence';";
+$sql = "SELECT * FROM `favorites` WHERE `user` = '$user_id' AND `album` = '$album' AND `image` = '$sequence';";
 $favorite = $sql->getRow( $sql );
 if ($favorite ['user']) {
     echo 1;

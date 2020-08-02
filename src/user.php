@@ -1,7 +1,11 @@
 <?php
+
+require_once "session.php";
+
 class User {
     private $user_details = NULL;
     private $sql;
+
     function __construct($sql) {
         $this->sql = $sql;
         $hash = NULL;
@@ -15,18 +19,29 @@ class User {
             $this->user_details = $sql->getRow( "SELECT * FROM users WHERE hash='{$hash}';" );
         }
     }
+
     function isLoggedIn() {
         if ($this->user_details != NULL) {
             return true;
         }
         return false;
     }
+
     function getId() {
         if ($this->isLoggedIn() && $this->user_details ['id']) {
             return $this->user_details ['id'];
         }
         return "";
     }
+
+    function getIdentifier() {
+        if (! $this->isLoggedIn ()) {
+            return getClientIP();
+        } else {
+            return $this->getId ();
+        }
+    }
+
     function getUser() {
         if ($this->isLoggedIn() && $this->user_details ['usr']) {
             return $this->user_details ['usr'];

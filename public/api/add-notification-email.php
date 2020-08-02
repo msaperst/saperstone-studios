@@ -7,12 +7,7 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$user_id;
-if (! $user->isLoggedIn ()) {
-    $user_id = getClientIP();
-} else {
-    $user_id = $user->getId ();
-}
+$user_id = $user->getIdentifier();
 
 $album = $api->retrievePostInt('album', 'Album id');
 if( is_array( $album ) ) {

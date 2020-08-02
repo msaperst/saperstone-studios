@@ -7,12 +7,13 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$to = "Contact <contact@saperstonestudios.com>";
+// TODO - NEED TO CHANGE BACK, JUST GOOD FOR TESTING!!!
+$to = "Contact <msaperst+sstest@gmail.com>";
 if (isset ( $_POST ['to'] ) && $_POST ['to'] != "") {
     $to = $sql->escapeString( $_POST ['to'] );
 }
 
-$name = $api->retrievePostInt('name', 'Name');
+$name = $api->retrievePostString('name', 'Name');
 if( is_array( $name ) ) {
     echo $name['error'];
     exit();

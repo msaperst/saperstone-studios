@@ -7,71 +7,41 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$user_id;
-if (! $user->isLoggedIn ()) {
-    $user_id = getClientIP();
-} else {
-    $user_id = $user->getId ();
-}
+$user_id = $user->getIdentifier();
 
-$album = "";
-if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
-    $album = ( int ) $_POST ['album'];
-} else {
-    if (! isset ( $_POST ['album'] )) {
-        echo "Album id is required!";
-    } elseif ($_POST ['album'] != "") {
-        echo "Album id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
+$album = $api->retrievePostInt('album', 'Album id');
+if( is_array( $album ) ) {
+    echo $album['error'];
+    exit();
 }
-
-$sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = $sql->getRow( $sql );
+$album_info = $sql->getRow( "SELECT * FROM albums WHERE id = $album;" );
 if (! $album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect ();
+    echo "Album id does not match any albums";
+    $sql->disconnect ();
     exit ();
 }
 
-$sequence = "";
-if (isset ( $_POST ['image'] ) && $_POST ['image'] != "") {
-    $sequence = ( int ) $_POST ['image'];
-} else {
-    if (! isset ( $_POST ['image'] )) {
-        echo "Image id is required!";
-    } elseif ($_POST ['image'] != "") {
-        echo "Image id cannot be blank!";
-    } else {
-        echo "Some other Image id error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
+$sequence = $api->retrievePostInt('image', 'Image id');
+if( is_array( $sequence ) ) {
+    echo $sequence['error'];
+    exit();
 }
-
-$sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
-$album_info = $sql->getRow( $sql );
-if (! $album_info ['title']) {
-    echo "That image doesn't match anything";
-    $conn->disconnect ();
+$image_info = $sql->getRow( "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;" );
+if (! $image_info ['id']) {
+    echo "Image id does not match any images";
+    $sql->disconnect ();
     exit ();
 }
 
 if ($user->isLoggedIn ()) {
     // update our user records table
-    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '$sequence', $album );" );
+    $sql->executeStatement( "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '$sequence', $album );" );
 }
 
 // update our mysql database
-$sql = "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('$user_id', '$album', '$sequence');";
-mysqli_query ( $conn->db, $sql );
+$sql->executeStatement( "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('$user_id', '$album', '$sequence');" );
 // get our new favorite count for the album
-$sql = "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '$user_id' AND `album` = '$album';";
-$result = $sql->getRow( $sql );
-echo $result ['total'];
-
-$conn->disconnect ();
+echo $sql->getRow( "SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '$user_id' AND `album` = '$album';" ) ['total'];
+$sql->disconnect ();
 exit ();
+?>

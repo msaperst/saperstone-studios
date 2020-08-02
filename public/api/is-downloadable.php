@@ -13,12 +13,7 @@ if ($user->isAdmin ()) {
     exit ();
 }
 
-$user;
-if (! $user->isLoggedIn ()) {
-    $user = getClientIP();
-} else {
-    $user = $user->getId ();
-}
+$user_id = $user->getIdentifier();
 
 $album = "";
 if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
@@ -66,7 +61,7 @@ if (! $album_info ['title']) {
     exit ();
 }
 
-$sql = "SELECT * FROM `download_rights` WHERE ( `user` = '$user' OR `user` = '0' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
+$sql = "SELECT * FROM `download_rights` WHERE ( `user` = '$user_id' OR `user` = '0' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
 $downloadable = $sql->getRow( $sql );
 if ($downloadable ['album']) {
     echo 1;
