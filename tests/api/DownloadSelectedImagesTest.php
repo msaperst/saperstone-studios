@@ -19,6 +19,7 @@ class DownloadSelectedImagesTest extends TestCase {
         $this->sql->executeStatement( "INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (998, 'sample-album-download-some', 'sample album for testing', 'sample');" );
         $this->sql->executeStatement( "INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 998, '2');" );
         $this->sql->executeStatement( "INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 998, '3');" );
+        $this->sql->executeStatement( "INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('3', 998, '1');" );
         $this->sql->executeStatement( "INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (999, 'sample-album-no-access', 'sample album for testing without any download access', 'sample');");
 
         $oldmask = umask(0);
@@ -30,10 +31,13 @@ class DownloadSelectedImagesTest extends TestCase {
         foreach ( $this->files as $file ) {
             $this->sql->executeStatement( "INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 997, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
             $this->sql->executeStatement( "INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 998, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
-            touch( "content/albums/sample/$file" );
-            chmod( "content/albums/sample/$file", 0777 );
-            touch( "content/albums/sample/full/$file" );
-            chmod( "content/albums/sample/full/$file", 0777 );
+            $this->sql->executeStatement( "INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 999, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
+            if( $counter != 4) {
+                touch( "content/albums/sample/$file" );
+                chmod( "content/albums/sample/$file", 0777 );
+                touch( "content/albums/sample/full/$file" );
+                chmod( "content/albums/sample/full/$file", 0777 );
+            }
             $counter++;
         }
         umask($oldmask);
@@ -134,7 +138,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertTrue( file_exists( 'download.zip' ) );
             $za = new ZipArchive();
             $za->open('download.zip');
-            $this->assertEquals( 5, $za->numFiles );
+            $this->assertEquals( 4, $za->numFiles );
             for( $i = 0; $i < $za->numFiles; $i++ ){
                 $stat = $za->statIndex( $i );
                 $this->assertEquals( "file.$i.png", $stat['name'] );
@@ -232,6 +236,28 @@ class DownloadSelectedImagesTest extends TestCase {
         } finally {
             unlink ( 'download.zip' );
         }
+    }
+
+    public function testUnAuthUserDownloadSingleMissingOpen() {
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                'form_params' => [
+                    'what' => '4',
+                    'album' => 997
+                ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals( "No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.", json_decode($response->getBody(), true)['error']);
+    }
+
+    public function testUnAuthUserDownloadSingleBadOpen() {
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                'form_params' => [
+                    'what' => '5',
+                    'album' => 997
+                ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals( 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
     }
 
     public function testUnAuthUserDownloadAllLimited() {
@@ -375,8 +401,689 @@ class DownloadSelectedImagesTest extends TestCase {
         }
     }
 
-    //TODO - repeat above for logged in user, and admin user
+    public function testAuthUserDownloadAllOpen() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '5510b5e6fffd897c234cafe499f76146'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'all',
+                        'album' => 997
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 4, $za->numFiles );
+            for( $i = 0; $i < $za->numFiles; $i++ ){
+                $stat = $za->statIndex( $i );
+                $this->assertEquals( "file.$i.png", $stat['name'] );
+            }
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
 
+    public function testAuthUserDownloadFavoritesOpen() {
+        try {
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '5510b5e6fffd897c234cafe499f76146'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 997,
+                       'image' => '0'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 997,
+                       'image' => '1'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 997,
+                       'image' => '2'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'favorites',
+                        'album' => 997
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 3, $za->numFiles );
+            for( $i = 0; $i < $za->numFiles; $i++ ){
+                $stat = $za->statIndex( $i );
+                $this->assertEquals( "file.$i.png", $stat['name'] );
+            }
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
 
+    public function testAuthUserDownloadSingleOpen() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '5510b5e6fffd897c234cafe499f76146'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => '1',
+                        'album' => 997
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 1, $za->numFiles );
+            $this->assertEquals( "file.1.png", $za->statIndex( 0 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAuthUserDownloadAllLimited() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '5510b5e6fffd897c234cafe499f76146'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'all',
+                        'album' => 998
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 3, $za->numFiles );
+            $this->assertEquals( "file.1.png", $za->statIndex( 0 )['name'] );
+            $this->assertEquals( "file.2.png", $za->statIndex( 1 )['name'] );
+            $this->assertEquals( "file.3.png", $za->statIndex( 2 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAuthUserDownloadFavoritesLimited() {
+        try {
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '5510b5e6fffd897c234cafe499f76146'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 998,
+                       'image' => '0'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 998,
+                       'image' => '1'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 998,
+                       'image' => '2'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'favorites',
+                        'album' => 998
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 2, $za->numFiles );
+            $this->assertEquals( "file.1.png", $za->statIndex( 0 )['name'] );
+            $this->assertEquals( "file.2.png", $za->statIndex( 1 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAuthUserDownloadSingleGoodLimited() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '5510b5e6fffd897c234cafe499f76146'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => '2',
+                        'album' => 998
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 1, $za->numFiles );
+            $this->assertEquals( "file.2.png", $za->statIndex( 0 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAuthUserDownloadSingleGoodOtherLimited() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '5510b5e6fffd897c234cafe499f76146'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => '1',
+                        'album' => 998
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 1, $za->numFiles );
+            $this->assertEquals( "file.1.png", $za->statIndex( 0 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAuthUserDownloadSingleBadLimited() {
+        $cookieJar = CookieJar::fromArray([
+                    'hash' => '5510b5e6fffd897c234cafe499f76146'
+                ], 'localhost');
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                'form_params' => [
+                    'what' => '4',
+                    'album' => 998
+                ],
+                'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals( 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+    }
+
+    public function testAuthUserDownloadAllClosed() {
+        $cookieJar = CookieJar::fromArray([
+                    'hash' => '5510b5e6fffd897c234cafe499f76146'
+                ], 'localhost');
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                'form_params' => [
+                    'what' => 'all',
+                    'album' => 999
+                ],
+                'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals( 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+    }
+
+    public function testAuthUserDownloadFavoritesClosed() {
+        $cookieJar = CookieJar::fromArray([
+                    'hash' => '5510b5e6fffd897c234cafe499f76146'
+                ], 'localhost');
+        $response = $this->http->request('POST', 'api/set-favorite.php', [
+                'form_params' => [
+                   'album' => 999,
+                   'image' => '0'
+               ],
+               'cookies' => $cookieJar
+        ]);
+        $response = $this->http->request('POST', 'api/set-favorite.php', [
+                'form_params' => [
+                   'album' => 999,
+                   'image' => '1'
+               ],
+               'cookies' => $cookieJar
+        ]);
+        $response = $this->http->request('POST', 'api/set-favorite.php', [
+                'form_params' => [
+                   'album' => 999,
+                   'image' => '2'
+               ],
+               'cookies' => $cookieJar
+        ]);
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                'form_params' => [
+                    'what' => 'favorites',
+                    'album' => 999
+                ],
+                'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals( 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+    }
+
+    public function testAuthUserDownloadSingleClosed() {
+        $cookieJar = CookieJar::fromArray([
+                    'hash' => '5510b5e6fffd897c234cafe499f76146'
+                ], 'localhost');
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                'form_params' => [
+                    'what' => '1',
+                    'album' => 999
+                ],
+                'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals( 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+    }
+
+    public function testAdminUserDownloadAllOpen() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'all',
+                        'album' => 997
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 4, $za->numFiles );
+            for( $i = 0; $i < $za->numFiles; $i++ ){
+                $stat = $za->statIndex( $i );
+                $this->assertEquals( "file.$i.png", $stat['name'] );
+            }
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAdminUserDownloadFavoritesOpen() {
+        try {
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 997,
+                       'image' => '0'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 997,
+                       'image' => '1'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 997,
+                       'image' => '2'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'favorites',
+                        'album' => 997
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 3, $za->numFiles );
+            for( $i = 0; $i < $za->numFiles; $i++ ){
+                $stat = $za->statIndex( $i );
+                $this->assertEquals( "file.$i.png", $stat['name'] );
+            }
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAdminUserDownloadSingleOpen() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => '1',
+                        'album' => 997
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 1, $za->numFiles );
+            $this->assertEquals( "file.1.png", $za->statIndex( 0 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAdminUserDownloadAllLimited() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'all',
+                        'album' => 998
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 4, $za->numFiles );
+            $this->assertEquals( "file.0.png", $za->statIndex( 0 )['name'] );
+            $this->assertEquals( "file.1.png", $za->statIndex( 1 )['name'] );
+            $this->assertEquals( "file.2.png", $za->statIndex( 2 )['name'] );
+            $this->assertEquals( "file.3.png", $za->statIndex( 3 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAdminUserDownloadFavoritesLimited() {
+        try {
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 998,
+                       'image' => '0'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 998,
+                       'image' => '1'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 998,
+                       'image' => '2'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'favorites',
+                        'album' => 998
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 3, $za->numFiles );
+            $this->assertEquals( "file.0.png", $za->statIndex( 0 )['name'] );
+            $this->assertEquals( "file.1.png", $za->statIndex( 1 )['name'] );
+            $this->assertEquals( "file.2.png", $za->statIndex( 2 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAdminUserDownloadSingleGoodLimited() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => '2',
+                        'album' => 998
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 1, $za->numFiles );
+            $this->assertEquals( "file.2.png", $za->statIndex( 0 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAdminUserDownloadSingleGoodOtherLimited() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => '1',
+                        'album' => 998
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 1, $za->numFiles );
+            $this->assertEquals( "file.1.png", $za->statIndex( 0 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAdminUserDownloadSingleBadLimited() {
+        $cookieJar = CookieJar::fromArray([
+                    'hash' => '1d7505e7f434a7713e84ba399e937191'
+                ], 'localhost');
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                'form_params' => [
+                    'what' => '4',
+                    'album' => 998
+                ],
+                'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals( "No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.", json_decode($response->getBody(), true)['error']);
+    }
+
+    public function testAdminUserDownloadAllClosed() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-no-access $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'all',
+                        'album' => 999
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 4, $za->numFiles );
+            for( $i = 0; $i < $za->numFiles; $i++ ){
+                $stat = $za->statIndex( $i );
+                $this->assertEquals( "file.$i.png", $stat['name'] );
+            }
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
+
+    public function testAdminUserDownloadFavoritesClosed() {
+        try {
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 999,
+                       'image' => '0'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 999,
+                       'image' => '1'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $response = $this->http->request('POST', 'api/set-favorite.php', [
+                    'form_params' => [
+                       'album' => 999,
+                       'image' => '2'
+                   ],
+                   'cookies' => $cookieJar
+            ]);
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-no-access $dateTime.zip";
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => 'favorites',
+                        'album' => 999
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 3, $za->numFiles );
+            $this->assertEquals( "file.0.png", $za->statIndex( 0 )['name'] );
+            $this->assertEquals( "file.1.png", $za->statIndex( 1 )['name'] );
+            $this->assertEquals( "file.2.png", $za->statIndex( 2 )['name'] );
+        } finally {
+            unlink ('download.zip');
+        }
+    }
+
+    public function testAdminUserDownloadSingleClosed() {
+        try {
+            $dateTime = date ( "Y-m-d H-i-s" );
+            $zipFile = "../tmp/sample-album-no-access $dateTime.zip";
+            $cookieJar = CookieJar::fromArray([
+                        'hash' => '1d7505e7f434a7713e84ba399e937191'
+                    ], 'localhost');
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                    'form_params' => [
+                        'what' => '1',
+                        'album' => 999
+                    ],
+                    'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals( $zipFile, json_decode($response->getBody(), true)['file']);
+            system ( "wget -q 'http://localhost:90/$zipFile' -O download.zip" );
+            $this->assertTrue( file_exists( 'download.zip' ) );
+            $za = new ZipArchive();
+            $za->open('download.zip');
+            $this->assertEquals( 1, $za->numFiles );
+            $this->assertEquals( "file.1.png", $za->statIndex( 0 )['name'] );
+        } finally {
+            unlink ( 'download.zip' );
+        }
+    }
 }
 ?>
