@@ -6,7 +6,7 @@ use GuzzleHttp\Cookie\CookieJar;
 $_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 
-class GetAlbumTest extends TestCase {
+class GetAlbumImagesTest extends TestCase {
     private $http;
     private $sql;
 
