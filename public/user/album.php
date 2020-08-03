@@ -24,11 +24,15 @@ if (! $album_info ['name']) {
 if( $user->isAdmin () ) {
     // if admin, do nothing, you shall pass onwards
 } else if ($album_info ['code'] &&  // if an album code exists
-        ( ( $_SESSION ['searched'] != null && $_SESSION ['searched'] [$album] == md5( "ablum" . $album_info ['code'] ) ) || // and it's stored in your session
-        ( $_COOKIE ['searched'] != null && ( (array) json_decode( $_COOKIE ['searched'] ) ) [$album] == md5( "ablum" . $album_info ['code'] ) ) ) ) { // or it's stored in your cookies
+        ( ( $_SESSION ['searched'] != null && $_SESSION ['searched'] [$album] == md5( "album" . $album_info ['code'] ) ) || // and it's stored in your session
+        ( $_COOKIE ['searched'] != null && ( json_decode( $_COOKIE ['searched'], true ) ) [$album] == md5( "album" . $album_info ['code'] ) ) ) ) { // or it's stored in your cookies
     // if you successfully searched for the album, do nothing, you shall pass onwards
 } else if ( $user->isLoggedIn() ) {
-    $albums = $sql->getRows( "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';" )
+    $albumUsers = $sql->getRows( "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';" );
+    $albums = array();
+    foreach( $albumUsers as $albumUser ) {
+        array_push( $albums, $albumUser['album'] );
+    }
     if (in_array ( $album, $albums )) {
         // user is logged in, and user has access to album, do nothing, you shall pass onwards
     } else {

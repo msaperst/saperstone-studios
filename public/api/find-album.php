@@ -18,9 +18,11 @@ if ($r ['id']) {
     $_SESSION ["searched"] [$r ['id']] = md5( "ablum" . $code );
     $preferences = json_decode( $_COOKIE['CookiePreferences'] );
     if ( is_array( $preferences ) && in_array( "preferences", $preferences ) ) {
-        $searched = json_decode( $_COOKIE ["searched"] );
-        $searched [$r ['id']] = md5( "ablum" . $code );
-        $_COOKIE ["searched"] = json_encode( $searched );
+        $searched = array ();
+        if( isset( $_COOKIE ["searched"] ) ) {
+            $searched = json_decode( $_COOKIE ["searched"], true );
+        }
+        $searched [$r ['id']] = md5( "album" . $code );
         setcookie ( 'searched', json_encode( $searched ), time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
     }
     echo $r ['id'];

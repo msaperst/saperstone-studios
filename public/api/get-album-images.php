@@ -7,22 +7,18 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$response = array ();
 $start = 0;
 $howMany = 999999999999999999;
 
-if (isset ( $_GET ['albumId'] ) && $_GET ['albumId'] != "") {
-    $albumId = ( int ) $_GET ['albumId'];
-} else {
-    if (! isset ( $_GET ['albumId'] )) {
-        $response ['err'] = "Album id is required!";
-    } elseif ($_GET ['albumId'] == "") {
-        $response ['err'] = "Album id cannot be blank!";
-    } else {
-        $response ['err'] = "Some other Album id error occurred!";
-    }
-    echo json_encode ( $response );
-    $conn->disconnect ();
+$albumId = $api->retrieveGetInt('albumId', 'Album id');
+if( is_array( $albumId ) ) {
+    echo json_encode( $albumId );
+    exit();
+}
+$album_info = $sql->getRow( "SELECT * FROM albums WHERE id = $albumId;" );
+if (! $album_info ['id']) {
+    echo json_encode( array( 'error' => "Album id does not match any albums" ) );
+    $sql->disconnect ();
     exit ();
 }
 
@@ -33,49 +29,34 @@ if (isset ( $_GET ['howMany'] )) {
     $howMany = ( int ) $_GET ['howMany'];
 }
 
-$sql = "SELECT * FROM `albums` WHERE id = '$albumId';";
-$album_info = $sql->getRow( $sql );
-// if the album doesn't exist, throw a 404 error
-if (! $album_info ['name']) {
-    $response ['err'] = "Album doesn't exist!";
-    echo json_encode ( $response );
-    $conn->disconnect ();
+// logic found here: https://www.draw.io/#G1oa_DMoW0-na6KNuex0oligsw1jdRbqaI
+if( $user->isAdmin () ) {
+    // if admin, do nothing, you shall pass onwards
+} else if ($album_info ['code'] &&  // if an album code exists
+        ( ( $_SESSION ['searched'] != null && $_SESSION ['searched'] [$albumId] == md5( "album" . $album_info ['code'] ) ) || // and it's stored in your session
+        ( $_COOKIE ['searched'] != null && json_decode( $_COOKIE ['searched'], true ) [$albumId] == md5( "album" . $album_info ['code'] ) ) ) ) { // or it's stored in your cookies
+    // if you successfully searched for the album, do nothing, you shall pass onwards
+} else if ( $user->isLoggedIn() ) {
+    $albumUsers = $sql->getRows( "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';" );
+    $albums = array();
+    foreach( $albumUsers as $albumUser ) {
+        array_push( $albums, $albumUser['album'] );
+    }
+    if (in_array ( $albumId, $albums )) {
+        // user is logged in, and user has access to album, do nothing, you shall pass onwards
+    } else {
+        header ( 'HTTP/1.0 403 Unauthorized' );
+        $sql->disconnect ();
+        exit ();
+    }
+} else {
+    header ( 'HTTP/1.0 403 Unauthorized' );
+    $sql->disconnect ();
     exit ();
 }
 
-// if not an admin and no code exists for the album     //todo, this seems like an issue, we should ensure the code is stored
-if (! $user->isAdmin () && $album_info ['code'] == "") {
-    // if not logged in, throw an error
-    if (! $user->isLoggedIn ()) {
-        $response ['err'] = "You are not authorized to view this album";
-        echo json_encode ( $response );
-        $conn->disconnect ();
-        exit ();
-    } else {
-        $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "';";
-        $result = mysqli_query ( $conn->db, $sql );
-        $albums = array ();
-        while ( $r = mysqli_fetch_assoc ( $result ) ) {
-            $albums [] = $r ['album'];
-        }
-        // if not in album list
-        if (! in_array ( $albumId, $albums )) {
-            $response ['err'] = "You are not authorized to view this album";
-            echo json_encode ( $response );
-            $conn->disconnect ();
-            exit ();
-        }
-    }
-}
-
-if (! array_key_exists ( "err", $response )) {
-    $sql = "SELECT album_images.* FROM `album_images` JOIN `albums` ON album_images.album = albums.id WHERE albums.id = '$albumId' ORDER BY `sequence` LIMIT $start,$howMany;";
-    $result = mysqli_query ( $conn->db, $sql );
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $response [] = $r;
-    }
-}
-echo json_encode ( $response );
-
-$conn->disconnect ();
+$images = $sql->getRows( "SELECT album_images.* FROM `album_images` JOIN `albums` ON album_images.album = albums.id WHERE albums.id = '$albumId' ORDER BY `sequence` LIMIT $start,$howMany;" );
+echo json_encode ( $images );
+$sql->disconnect ();
 exit ();
+?>
