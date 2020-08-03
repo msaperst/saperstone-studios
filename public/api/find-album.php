@@ -7,22 +7,13 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-if (isset ( $_GET ['code'] ) && $_GET ['code'] != "") {
-    $code = $sql->escapeString( $_GET ['code'] );
-} else {
-    if (! isset ( $_GET ['code'] )) {
-        echo "Album code is required!";
-    } elseif ($_GET ['code'] == "") {
-        echo "Album code cannot be blank!";
-    } else {
-        echo "Some other album code error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
+$code = $api->retrieveGetString('code', 'Album code');
+if( is_array( $code ) ) {
+    echo $code['error'];
+    exit();
 }
 
-$sql = "SELECT * FROM albums WHERE code = '$code';";
-$r = $sql->getRow( $sql );
+$r = $sql->getRow( "SELECT * FROM albums WHERE code = '$code';" );
 if ($r ['id']) {
     $_SESSION ["searched"] [$r ['id']] = md5( "ablum" . $code );
     $preferences = json_decode( $_COOKIE['CookiePreferences'] );
@@ -34,19 +25,17 @@ if ($r ['id']) {
     }
     echo $r ['id'];
 } else {
-    echo "That code doesn't match any albums";
-    $conn->disconnect ();
+    echo "That code does not match any albums";
+    $sql->disconnect ();
     exit ();
 }
 
 if ($user->isLoggedIn() && isset ( $_GET ['albumAdd'] ) && $_GET ['albumAdd'] == 1) {
-    $sql = "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "' AND album = '" . $r ['id'] . "';";
-    $s = $sql->getRow( $sql );
+    $s = $sql->getRow( "SELECT * FROM albums_for_users WHERE user = '" . $user->getId () . "' AND album = '" . $r ['id'] . "';" );
     if (! $s ['user']) {
-        $sql = "INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . $user->getId () . "', '" . $r ['id'] . "' );";
-        mysqli_query ( $conn->db, $sql );
+        $sql->executeStatement( "INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . $user->getId () . "', '" . $r ['id'] . "' );" );
     }
 }
 
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();

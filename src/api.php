@@ -82,6 +82,41 @@ class Api {
         return $this->retrievePost( $variable, $variableName, 'string' );
     }
 
+    private function retrieveGet( $variable, $variableName, $type ) {
+        if (isset ( $_GET [$variable] ) && $_GET [$variable] != "") {
+            switch( $type ) {
+                case "int":
+                    return ( int ) $_GET [$variable];
+                case "float":
+                    return floatval( str_replace( '$', '', $_GET [$variable] ) );
+                case "string":
+                    return $this->sql->escapeString( $_GET [$variable] );
+            }
+        } else {
+            $error;
+            if (! isset ( $_GET [$variable] )) {
+                $error = "$variableName is required";
+            } else {
+                $error = "$variableName can not be blank";
+            }
+            $this->sql->disconnect ();
+            return array( 'error' => $error );
+        }
+        return;
+    }
+
+    function retrieveGetInt( $variable, $variableName ) {
+        return $this->retrieveGet( $variable, $variableName, 'int' );
+    }
+
+    function retrieveGetFloat( $variable, $variableName ) {
+        return $this->retrieveGet( $variable, $variableName, 'float' );
+    }
+
+    function retrieveGetString( $variable, $variableName ) {
+        return $this->retrieveGet( $variable, $variableName, 'string' );
+    }
+
     function forceLoggedIn() {
         if (!$this->user->isLoggedIn ()) {
             header ( 'HTTP/1.0 401 Unauthorized' );
