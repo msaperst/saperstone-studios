@@ -47,11 +47,6 @@ node() {
                         reportFiles          : 'ut-results.html',
                         reportName           : 'Unit Test Results Report'
                 ])
-                step([
-                    $class: 'CloverPublisher',
-                    cloverReportDir: 'reports/',
-                    cloverReportFileName: 'ut-clover.xml'
-                ])
                 publishHTML([
                         allowMissing         : false,
                         alwaysLinkToLastBuild: true,
@@ -140,11 +135,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         reportDir            : 'reports/',
                         reportFiles          : 'it-results.html',
                         reportName           : 'Integration Test Results Report'
-                ])
-                step([
-                    $class: 'CloverPublisher',
-                    cloverReportDir: 'reports/',
-                    cloverReportFileName: 'it-clover.xml'
                 ])
                 publishHTML([
                         allowMissing         : false,
