@@ -7,30 +7,22 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $conn->disconnect ();
+$api->forceAdmin();
+
+$id = $api->retrieveGetInt('id', 'Album id');
+if( is_array( $id ) ) {
+    echo $id['error'];
+    exit();
+}
+$album_info = $sql->getRow( "SELECT * FROM albums WHERE id = $id;" );
+if (! $album_info ['id']) {
+    echo "Album id does not match any albums";
+    $sql->disconnect ();
     exit ();
 }
 
-if (isset ( $_GET ['id'] )) {
-    $id = ( int ) $_GET ['id'];
-} else {
-    echo "ID is not provided";
-    $conn->disconnect ();
-    exit ();
-}
-
-$sql = "SELECT user_logs.*, users.usr FROM user_logs LEFT JOIN users ON user_logs.user = users.id WHERE album = $id";
-$result = mysqli_query ( $conn->db, $sql );
-$actions = array ();
-while ( $row = mysqli_fetch_assoc ( $result ) ) {
-    $actions [] = $row;
-}
+$actions = $sql->getRows( "SELECT user_logs.*, users.usr FROM user_logs LEFT JOIN users ON user_logs.user = users.id WHERE album = $id" );
 echo json_encode ( $actions );
-
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();
+?>
