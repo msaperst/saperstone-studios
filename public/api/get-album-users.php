@@ -7,30 +7,21 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $conn->disconnect ();
+$api->forceAdmin();
+
+$id = $api->retrieveGetInt('id', 'Album id');
+if( is_array( $id ) ) {
+    echo $id['error'];
+    exit();
+}
+$album_info = $sql->getRow( "SELECT * FROM albums WHERE id = $id;" );
+if (! $album_info ['id']) {
+    echo "Album id does not match any albums";
+    $sql->disconnect ();
     exit ();
 }
 
-if (isset ( $_GET ['album'] )) {
-    $album = ( int ) $_GET ['album'];
-} else {
-    echo "Album is not provided";
-    $conn->disconnect ();
-    exit ();
-}
-
-$sql = "SELECT * FROM albums_for_users WHERE album = $album";
-$result = mysqli_query ( $conn->db, $sql );
-$response = array ();
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $response [] = $r;
-}
-echo json_encode ( $response );
-
-$conn->disconnect ();
+$users = $sql->getRows( "SELECT * FROM albums_for_users WHERE album = $id" );
+echo json_encode ( $users );
+$sql->disconnect ();
 exit ();

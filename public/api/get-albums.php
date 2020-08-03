@@ -7,28 +7,22 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-if (! $user->isLoggedIn ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    $conn->disconnect ();
-    exit ();
-}
+$api->forceLoggedIn();
 
 $response = array ();
-$sql;
+$query;
 if ($user->isAdmin ()) {
-    $sql = "SELECT * FROM albums;";
+    $query = "SELECT * FROM albums;";
 } else {
     $id = $user->getId ();
-    $sql = "SELECT albums.* FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '$id' GROUP BY albums.id;";
+    $query = "SELECT albums.* FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '$id' GROUP BY albums.id;";
 }
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    if ($r ['date'] != null) {
-        $r ['date'] = substr ( $r ['date'], 0, 10 );
+$albums = $sql->getRows( $query );
+foreach( $albums as $album ) {
+    if ($album ['date'] != null) {
+        $album ['date'] = substr ( $album ['date'], 0, 10 );
     }
-    $response [] = $r;
 }
-echo "{\"data\":" . json_encode ( $response ) . "}";
-
-$conn->disconnect ();
+echo "{\"data\":" . json_encode ( $albums ) . "}";
+$sql->disconnect ();
 exit ();
