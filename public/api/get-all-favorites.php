@@ -9,11 +9,8 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$sql = "SELECT album_images.*, favorites.user, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence LEFT JOIN users ON favorites.user = users.id;";
-$result = mysqli_query ( $conn->db, $sql );
-
 $favorites = array ();
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
+while ( $r = $sql->getRows( "SELECT album_images.*, favorites.user, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence LEFT JOIN users ON favorites.user = users.id;" ) ) {
     $favorites [$r ['album']] [] = $r;
 }
 
@@ -35,6 +32,6 @@ if (isset ( $_GET ['album'] )) {
     }
 }
 echo json_encode ( $user_favs );
-
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();
+?>
