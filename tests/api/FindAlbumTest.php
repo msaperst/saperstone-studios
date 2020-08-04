@@ -67,6 +67,24 @@ class FindAlbumTest extends TestCase {
         //UNABLE TO CHECK COOKIE
     }
 
+    public function testAlbumCodeAgain() {
+        $cookieJar = CookieJar::fromArray([
+                    'hash' => '1d7505e7f434a7713e84ba399e937191',
+                    'searched' => json_encode( [
+                        999 => md5( 'albumsearch-for-me')
+                    ] )
+                ], 'localhost');
+        $response = $this->http->request('GET', 'api/find-album.php', [
+                'query' => [
+                    'code' => 'search-for-me',
+                ],
+                'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(999, (string) $response->getBody());
+        //UNABLE TO CHECK COOKIE
+    }
+
     public function testAlbumCodeCantAdd() {
         $response = $this->http->request('GET', 'api/find-album.php', [
                 'query' => [

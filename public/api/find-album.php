@@ -15,7 +15,7 @@ if( is_array( $code ) ) {
 
 $r = $sql->getRow( "SELECT * FROM albums WHERE code = '$code';" );
 if ($r ['id']) {
-    $_SESSION ["searched"] [$r ['id']] = md5( "ablum" . $code );
+    $_SESSION ["searched"] [$r ['id']] = md5( "album" . $code );
     $preferences = json_decode( $_COOKIE['CookiePreferences'] );
     if ( is_array( $preferences ) && in_array( "preferences", $preferences ) ) {
         $searched = array ();
