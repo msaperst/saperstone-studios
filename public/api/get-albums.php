@@ -17,12 +17,14 @@ if ($user->isAdmin ()) {
     $id = $user->getId ();
     $query = "SELECT albums.* FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '$id' GROUP BY albums.id;";
 }
+$sanitizedAlbums = array();
 $albums = $sql->getRows( $query );
 foreach( $albums as $album ) {
     if ($album ['date'] != null) {
         $album ['date'] = substr ( $album ['date'], 0, 10 );
     }
+    array_push( $sanitizedAlbums, $album );
 }
-echo "{\"data\":" . json_encode ( $albums ) . "}";
+echo "{\"data\":" . json_encode ( $sanitizedAlbums ) . "}";
 $sql->disconnect ();
 exit ();
