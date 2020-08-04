@@ -68,7 +68,7 @@ class GetAlbumsTest extends TestCase {
         $this->assertEquals( 998, $albums[0]['id'] );
         $this->assertEquals( 'sample-album', $albums[0]['name'] );
         $this->assertEquals( 'sample album for testing', $albums[0]['description'] );
-        $this->assertEquals( '2020-08-03', $albums[0]['date'] );
+        $this->assertEquals( date('Y-m-d'), $albums[0]['date'] );
         $this->assertNull( $albums[0]['lastAccessed'] );
         $this->assertEquals( 'sample', $albums[0]['location'] );
         $this->assertNull( $albums[0]['code'] );
@@ -77,7 +77,7 @@ class GetAlbumsTest extends TestCase {
         $this->assertEquals( 999, $albums[1]['id'] );
         $this->assertEquals( 'sample-album', $albums[1]['name'] );
         $this->assertEquals( 'sample album for testing', $albums[1]['description'] );
-        $this->assertEquals( '2020-08-03', $albums[1]['date'] );
+        $this->assertEquals( date('Y-m-d'), $albums[1]['date'] );
         $this->assertNull( $albums[1]['lastAccessed'] );
         $this->assertEquals( 'sample', $albums[1]['location'] );
         $this->assertEquals( 123, $albums[1]['code'] );
