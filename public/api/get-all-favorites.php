@@ -9,29 +9,26 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$favorites = array ();
-while ( $r = $sql->getRows( "SELECT album_images.*, favorites.user, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence LEFT JOIN users ON favorites.user = users.id;" ) ) {
-    $favorites [$r ['album']] [] = $r;
-}
-
 $user_favs = array ();
-foreach ( $favorites as $album => $favs ) {
-    foreach ( $favs as $fav ) {
-        $user_favs [$fav ['user']] [$album] [] = $fav;
-    }
-}
-
 if (isset ( $_GET ['album'] )) {
     $album = ( int ) $_GET ['album'];
-    foreach ( $user_favs as $user => $favorites ) {
-        if (isset ( $favorites [$album] )) {
-            $user_favs [$user] = $favorites [$album];
-        } else {
-            unset ( $user_favs [$user] );
+    $users = $sql->getRows( "SELECT DISTINCT `favorites`.`user` FROM `favorites` WHERE `favorites`.`album` = $album;" );
+    foreach( $users as $user ) {
+        $images = $sql->getRows( "SELECT album_images.*, favorites.user, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence LEFT JOIN users ON favorites.user = users.id WHERE `favorites`.`album` = $album && `favorites`.`user` = '" . $user['user'] . "';" );
+        $user_favs[$user['user']] = $images;
+    }
+} else {
+    $favorites = array ();
+    foreach ( $sql->getRows( "SELECT album_images.*, favorites.user, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence LEFT JOIN users ON favorites.user = users.id;" ) as $r ) {
+        $favorites [$r ['album']] [] = $r;
+    }
+    foreach ( $favorites as $album => $favs ) {
+        foreach ( $favs as $fav ) {
+            $user_favs [$fav ['user']] [$album] [] = $fav;
         }
     }
 }
-echo json_encode ( $user_favs );
+echo json_encode( $user_favs );
 $sql->disconnect ();
 exit ();
 ?>
