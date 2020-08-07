@@ -7,7 +7,6 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$response = array ();
 $start = 0;
 $howMany = 999999999999999999;
 
@@ -18,22 +17,38 @@ if (isset ( $_GET ['howMany'] )) {
     $howMany = ( int ) $_GET ['howMany'];
 }
 
-$active = "WHERE `active`";
-$andActive = "AND blog_details.active";
+$whereClause = "WHERE blog_details.active = 1";
 if ($user->isAdmin () && isset ( $_GET ['a'] ) && $_GET ['a']) {
-    $active = "";
-    $andActive = "";
+    $whereClause = "";
 }
-$sql = "SELECT * FROM `blog_details` $active ORDER BY `date` DESC LIMIT $start,$howMany;";
-if (isset ( $_GET ['tag'] )) {
-    $tag = $sql->escapeString( $_GET ['tag'] );
-    $sql = "SELECT blog_details.* FROM `blog_tags` JOIN `blog_details` ON blog_tags.blog = blog_details.id WHERE blog_tags.tag = '$tag' $andActive ORDER BY `date` DESC LIMIT $start,$howMany;";
-}
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $response [] = $r;
-}
-echo "{\"data\":" . json_encode ( $response ) . "}";
 
-$conn->disconnect ();
+if (isset ( $_GET ['tag'] )) {
+    $query = "SELECT DISTINCT blog FROM blog_tags AS a1";
+    $where = " WHERE ";
+    for( $i = 1; $i <= sizeof( $_GET['tag'] ); $i++ ) {
+        if( $i != 1 ) {
+            $query .= " JOIN blog_tags AS a$i USING (blog) ";
+        }
+        $where .= "a$i.tag = " . $_GET['tag'][$i-1] . " AND ";
+    }
+    $where = substr($where, 0, -4);
+    $blogs = $sql->getRows( $query . $where );
+
+    if( $whereClause == "" ) {
+        $whereClause = "WHERE (";
+    } else {
+        $whereClause .= " AND (";
+    }
+    foreach( $blogs as $blog ) {
+        $whereClause .= "id = " . (int) $blog['blog'] . " OR ";
+    }
+    $whereClause = substr($whereClause, 0, -3);
+    $whereClause .= ")";
+    $response = $sql->getRows( "SELECT DISTINCT * FROM `blog_details` $whereClause ORDER BY `date` DESC LIMIT $start,$howMany;" );
+} else {
+    $response = $sql->getRows( "SELECT * FROM `blog_details` $whereClause ORDER BY `date` DESC LIMIT $start,$howMany;" );
+}
+
+echo "{\"data\":" . json_encode ( $response ) . "}";
+$sql->disconnect ();
 exit ();

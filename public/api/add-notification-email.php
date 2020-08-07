@@ -32,4 +32,3 @@ if( is_array( $email ) ) {
 $sql->executeStatement( "INSERT INTO `notification_emails` (`album`, `user`, `email`) VALUES ('$album', '$user_id', '$email');" );
 $sql->disconnect ();
 exit ();
-?>

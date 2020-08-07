@@ -45,9 +45,8 @@ class GetAllFavoritesTest extends TestCase {
     }
 
     public function testNotLoggedIn() {
-        $response;
         try {
-            $response = $this->http->request('POST', 'api/get-all-favorites.php');
+            $this->http->request('POST', 'api/get-all-favorites.php');
         } catch ( GuzzleHttp\Exception\ClientException $e ) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody() );
@@ -58,9 +57,8 @@ class GetAllFavoritesTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
                     'hash' => '5510b5e6fffd897c234cafe499f76146'
                 ], 'localhost');
-        $response;
         try {
-            $response = $this->http->request('POST', 'api/get-all-favorites.php', [
+            $this->http->request('POST', 'api/get-all-favorites.php', [
                     'cookies' => $cookieJar
             ]);
         } catch ( GuzzleHttp\Exception\ClientException $e ) {

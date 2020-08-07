@@ -6,7 +6,7 @@ use GuzzleHttp\Cookie\CookieJar;
 $_SERVER ['DOCUMENT_ROOT'] = dirname ( __DIR__ );
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
 
-class DeleteBlogTest extends TestCase {
+class GetBlogFullTest extends TestCase {
     private $http;
     private $sql;
 
@@ -24,10 +24,12 @@ class DeleteBlogTest extends TestCase {
 
     public function tearDown() {
         $this->http = NULL;
+        $this->sql->executeStatement( "DELETE FROM `blog_details` WHERE `blog_details`.`id` = 998;" );
         $this->sql->executeStatement( "DELETE FROM `blog_details` WHERE `blog_details`.`id` = 999;" );
         $this->sql->executeStatement( "DELETE FROM `blog_images` WHERE `blog_images`.`blog` = 999;" );
         $this->sql->executeStatement( "DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = 999;" );
         $this->sql->executeStatement( "DELETE FROM `blog_texts` WHERE `blog_texts`.`blog` = 999;" );
+        $this->sql->executeStatement( "DELETE FROM `blog_comments` WHERE `blog_comments`.`blog` = 999;" );
         $count = $this->sql->getRow( "SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
         $count++;
         $this->sql->executeStatement( "ALTER TABLE `blog_details` AUTO_INCREMENT = $count;" );
