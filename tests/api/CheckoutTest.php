@@ -1,6 +1,7 @@
 <?php
-use PHPUnit\Framework\TestCase;
+
 use GuzzleHttp\Client;
+use PHPUnit\Framework\TestCase;
 
 class CheckoutTest extends TestCase {
     private $http;
@@ -21,4 +22,5 @@ class CheckoutTest extends TestCase {
 
     //TODO - need to finish the rest
 }
+
 ?>

@@ -39,24 +39,24 @@ class GetBlogsDetailsTest extends TestCase {
         $response = $this->http->request('GET', 'api/get-blogs-details.php');
         $this->assertEquals(200, $response->getStatusCode());
         $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals( 1, sizeof( $blogsDetails ) );
-        $this->assertEquals( 2, sizeof( $blogsDetails['data'] ) );
-        $this->assertEquals( 998, $blogsDetails['data'][0]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][0]['title'] );
-        $this->assertNull( $blogsDetails['data'][0]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][0]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][0]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][0]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['twitter'] );
-        $this->assertEquals( 999, $blogsDetails['data'][1]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][1]['title'] );
-        $this->assertNull( $blogsDetails['data'][1]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][1]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][1]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][1]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][1]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][1]['twitter'] );
+        $this->assertEquals(1, sizeof($blogsDetails));
+        $this->assertEquals(2, sizeof($blogsDetails['data']));
+        $this->assertEquals(998, $blogsDetails['data'][0]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
+        $this->assertNull($blogsDetails['data'][0]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
+        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
+        $this->assertEquals(999, $blogsDetails['data'][1]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][1]['title']);
+        $this->assertNull($blogsDetails['data'][1]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][1]['date']);
+        $this->assertEquals('', $blogsDetails['data'][1]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][1]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][1]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][1]['twitter']);
     }
 
     public function testAllBlogsDetailsByTag() {
@@ -67,36 +67,36 @@ class GetBlogsDetailsTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals( 1, sizeof( $blogsDetails ) );
-        $this->assertEquals( 1, sizeof( $blogsDetails['data'] ) );
-        $this->assertEquals( 999, $blogsDetails['data'][0]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][0]['title'] );
-        $this->assertNull( $blogsDetails['data'][0]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][0]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][0]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][0]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['twitter'] );
+        $this->assertEquals(1, sizeof($blogsDetails));
+        $this->assertEquals(1, sizeof($blogsDetails['data']));
+        $this->assertEquals(999, $blogsDetails['data'][0]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
+        $this->assertNull($blogsDetails['data'][0]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
+        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
     }
 
     public function testAllBlogsDetailsByTags() {
         $response = $this->http->request('GET', 'api/get-blogs-details.php', [
             'query' => [
-                'tag' => ['29','30']
+                'tag' => ['29', '30']
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals( 1, sizeof( $blogsDetails ) );
-        $this->assertEquals( 1, sizeof( $blogsDetails['data'] ) );
-        $this->assertEquals( 999, $blogsDetails['data'][0]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][0]['title'] );
-        $this->assertNull( $blogsDetails['data'][0]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][0]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][0]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][0]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['twitter'] );
+        $this->assertEquals(1, sizeof($blogsDetails));
+        $this->assertEquals(1, sizeof($blogsDetails['data']));
+        $this->assertEquals(999, $blogsDetails['data'][0]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
+        $this->assertNull($blogsDetails['data'][0]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
+        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
     }
 
     public function testAllBlogsDetailsAdmin() {
@@ -108,24 +108,24 @@ class GetBlogsDetailsTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals( 1, sizeof( $blogsDetails ) );
-        $this->assertEquals( 2, sizeof( $blogsDetails['data'] ) );
-        $this->assertEquals( 998, $blogsDetails['data'][0]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][0]['title'] );
-        $this->assertNull( $blogsDetails['data'][0]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][0]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][0]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][0]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['twitter'] );
-        $this->assertEquals( 999, $blogsDetails['data'][1]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][1]['title'] );
-        $this->assertNull( $blogsDetails['data'][1]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][1]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][1]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][1]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][1]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][1]['twitter'] );
+        $this->assertEquals(1, sizeof($blogsDetails));
+        $this->assertEquals(2, sizeof($blogsDetails['data']));
+        $this->assertEquals(998, $blogsDetails['data'][0]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
+        $this->assertNull($blogsDetails['data'][0]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
+        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
+        $this->assertEquals(999, $blogsDetails['data'][1]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][1]['title']);
+        $this->assertNull($blogsDetails['data'][1]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][1]['date']);
+        $this->assertEquals('', $blogsDetails['data'][1]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][1]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][1]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][1]['twitter']);
     }
 
     public function testAllBlogsDetailsAdminInactive() {
@@ -140,35 +140,35 @@ class GetBlogsDetailsTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals( 1, sizeof( $blogsDetails ) );
-        $this->assertEquals( 3, sizeof( $blogsDetails['data'] ) );
+        $this->assertEquals(1, sizeof($blogsDetails));
+        $this->assertEquals(3, sizeof($blogsDetails['data']));
 
-        $this->assertEquals( 997, $blogsDetails['data'][0]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][0]['title'] );
-        $this->assertNull( $blogsDetails['data'][0]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][0]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][0]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['offset'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['twitter'] );
+        $this->assertEquals(997, $blogsDetails['data'][0]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
+        $this->assertNull($blogsDetails['data'][0]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
+        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
 
-        $this->assertEquals( 998, $blogsDetails['data'][1]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][1]['title'] );
-        $this->assertNull( $blogsDetails['data'][1]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][1]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][1]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][1]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][1]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][1]['twitter'] );
+        $this->assertEquals(998, $blogsDetails['data'][1]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][1]['title']);
+        $this->assertNull($blogsDetails['data'][1]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][1]['date']);
+        $this->assertEquals('', $blogsDetails['data'][1]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][1]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][1]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][1]['twitter']);
 
-        $this->assertEquals( 999, $blogsDetails['data'][2]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][2]['title'] );
-        $this->assertNull( $blogsDetails['data'][2]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][2]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][2]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][2]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][2]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][2]['twitter'] );
+        $this->assertEquals(999, $blogsDetails['data'][2]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][2]['title']);
+        $this->assertNull($blogsDetails['data'][2]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][2]['date']);
+        $this->assertEquals('', $blogsDetails['data'][2]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][2]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][2]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][2]['twitter']);
     }
 
     public function testAllBlogsDetailsLimit() {
@@ -180,16 +180,16 @@ class GetBlogsDetailsTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals( 1, sizeof( $blogsDetails ) );
-        $this->assertEquals( 1, sizeof( $blogsDetails['data'] ) );
-        $this->assertEquals( 999, $blogsDetails['data'][0]['id'] );
-        $this->assertEquals( 'Sample Blog', $blogsDetails['data'][0]['title'] );
-        $this->assertNull( $blogsDetails['data'][0]['safe_title'] );
-        $this->assertEquals( '2031-01-01', $blogsDetails['data'][0]['date'] );
-        $this->assertEquals( '', $blogsDetails['data'][0]['preview'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['offset'] );
-        $this->assertEquals( 1, $blogsDetails['data'][0]['active'] );
-        $this->assertEquals( 0, $blogsDetails['data'][0]['twitter'] );
+        $this->assertEquals(1, sizeof($blogsDetails));
+        $this->assertEquals(1, sizeof($blogsDetails['data']));
+        $this->assertEquals(999, $blogsDetails['data'][0]['id']);
+        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
+        $this->assertNull($blogsDetails['data'][0]['safe_title']);
+        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
+        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
+        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
+        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
     }
 }
 
