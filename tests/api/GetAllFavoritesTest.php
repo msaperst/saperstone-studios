@@ -49,7 +49,6 @@ class GetAllFavoritesTest extends TestCase {
     }
 
     public function testNotLoggedIn() {
-        echo get_include_path();
         try {
             $this->http->request('POST', 'api/get-all-favorites.php');
         } catch (ClientException $e) {

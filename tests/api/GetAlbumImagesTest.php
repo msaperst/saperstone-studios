@@ -4,6 +4,7 @@ namespace api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -215,7 +216,7 @@ class GetAlbumImagesTest extends TestCase {
             $cookieJar = CookieJar::fromArray([
                 'searched' => json_encode($searched)
             ], 'localhost');
-            $response = $this->http->request('GET', 'api/get-album-images.php', [
+            $this->http->request('GET', 'api/get-album-images.php', [
                 'query' => [
                     'albumId' => 999,
                     'start' => 0,
@@ -223,7 +224,7 @@ class GetAlbumImagesTest extends TestCase {
                 ],
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(403, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -310,7 +311,7 @@ class GetAlbumImagesTest extends TestCase {
                 'hash' => '5510b5e6fffd897c234cafe499f76146',
                 'searched' => json_encode($searched)
             ], 'localhost');
-            $response = $this->http->request('GET', 'api/get-album-images.php', [
+            $this->http->request('GET', 'api/get-album-images.php', [
                 'query' => [
                     'albumId' => 999,
                     'start' => 0,
@@ -318,7 +319,7 @@ class GetAlbumImagesTest extends TestCase {
                 ],
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(403, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }

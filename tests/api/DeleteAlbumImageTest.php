@@ -22,18 +22,18 @@ class DeleteAlbumImageTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '1', '', '/albums/sample/sample2.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('*', '999', '1');");
         $oldmask = umask(0);
-        mkdir('content/albums/sample');
-        chmod('content/albums/sample', 0777);
-        mkdir('content/albums/sample/full');
-        chmod('content/albums/sample/full', 0777);
-        touch('content/albums/sample/sample1.jpg');
-        chmod('content/albums/sample/sample1.jpg', 0777);
-        touch('content/albums/sample/full/sample1.jpg');
-        chmod('content/albums/sample/full/sample1.jpg', 0777);
-        touch('content/albums/sample/sample2.jpg');
-        chmod('content/albums/sample/sample2.jpg', 0777);
-        touch('content/albums/sample/full/sample2.jpg');
-        chmod('content/albums/sample/full/sample2.jpg', 0777);
+        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777);
+        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777);
+        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample1.jpg');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample1.jpg', 0777);
+        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample1.jpg');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample1.jpg', 0777);
+        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample2.jpg');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample2.jpg', 0777);
+        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample2.jpg');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample2.jpg', 0777);
         umask($oldmask);
     }
 
@@ -48,7 +48,7 @@ class DeleteAlbumImageTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg('content/albums/sample'));
+        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
         $this->sql->disconnect();
     }
 

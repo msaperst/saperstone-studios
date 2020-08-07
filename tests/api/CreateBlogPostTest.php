@@ -4,6 +4,7 @@ namespace api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -26,7 +27,7 @@ class CreateBlogPostTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-blog-post.php');
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -40,7 +41,7 @@ class CreateBlogPostTest extends TestCase {
             $this->http->request('POST', 'api/create-blog-post.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }
@@ -227,7 +228,7 @@ class CreateBlogPostTest extends TestCase {
 
     public function testPreviewOffsetOnlyImage() {
         try {
-            touch('content/blog/image.jpg');
+            touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -278,8 +279,8 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals('0', $blogImages['top']);
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;"));
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;"));
-            $this->assertTrue(file_exists("content/blog/2030/01/01/preview_image-$blogId.jpg"));
-            $this->assertTrue(file_exists("content/blog/2030/01/01/image.jpg"));
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/preview_image-$blogId.jpg"));
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/image.jpg"));
         } finally {
             // cleanup
             $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
@@ -294,7 +295,7 @@ class CreateBlogPostTest extends TestCase {
 
     public function testNoPreviewOffsetOnlyText() {
         try {
-            touch('content/blog/image.jpg');
+            touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -346,7 +347,7 @@ class CreateBlogPostTest extends TestCase {
 
     public function testTagsOffsetImagesText() {
         try {
-            touch('content/blog/image.jpg');
+            touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');

@@ -93,6 +93,7 @@ class CreateBlogCommentTest extends TestCase {
     }
 
     public function testLoggedInUser() {    //no other data
+        date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
@@ -111,7 +112,7 @@ class CreateBlogCommentTest extends TestCase {
         $this->assertEquals(999, $blogComment['blog']);
         $this->assertEquals(1, $blogComment['user']);
         $this->assertEquals('', $blogComment['name']);
-        $this->assertEquals(date("Y-m-d H:i:s"), $blogComment['date']);
+        $this->assertStringStartsWith( date("Y-m-d H:i"), $blogComment['date'] );
         $this->assertTrue(filter_var($blogComment['ip'], FILTER_VALIDATE_IP) !== false);
         $this->assertEquals('', $blogComment['email']);
         $this->assertEquals('I love your post!', $blogComment['comment']);

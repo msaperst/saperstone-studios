@@ -4,13 +4,11 @@ namespace api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
-
-$_SERVER ['DOCUMENT_ROOT'] = dirname(__DIR__);
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/sql.php";
 
 class CreateAlbumTest extends TestCase {
     private $http;
@@ -29,7 +27,7 @@ class CreateAlbumTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-album.php');
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -43,7 +41,7 @@ class CreateAlbumTest extends TestCase {
             $this->http->request('POST', 'api/create-album.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }
@@ -115,10 +113,10 @@ class CreateAlbumTest extends TestCase {
             $this->assertNull($album['code']);
             $this->assertEquals(1, $album['owner']);
             $this->assertEquals(0, $album['images']);
-            $this->assertTrue(file_exists('content/albums/SampleAlbum_' . time()));
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/SampleAlbum_' . time()));
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;"));
         } finally {
-            rmdir('content/albums/SampleAlbum_' . time());
+            rmdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/SampleAlbum_' . time());
             $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
             $count++;
@@ -153,7 +151,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertNull($album['code']);
             $this->assertEquals(4, $album['owner']);
             $this->assertEquals(0, $album['images']);
-            $this->assertTrue(file_exists('content/albums/SampleAlbum_' . time()));
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/SampleAlbum_' . time()));
             $albumsForUsers = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
             $this->assertEquals(1, sizeOf($albumsForUsers));
             $this->assertEquals($albumId, $albumsForUsers[0]['album']);
@@ -166,7 +164,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertNull($userLogs[0]['what']);
             $this->assertEquals($albumId, $userLogs[0]['album']);
         } finally {
-            rmdir('content/albums/SampleAlbum_' . time());
+            rmdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/SampleAlbum_' . time());
             $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
             $count++;
@@ -177,7 +175,7 @@ class CreateAlbumTest extends TestCase {
     }
 
     public function testCantCreateFolder() {
-        rename('content/albums', 'content/tmp_albums');
+        rename(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/tmp_albums');
         try {
             date_default_timezone_set("America/New_York");
             $cookieJar = CookieJar::fromArray([
@@ -192,7 +190,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>49</b><br />\nmkdir(): File exists<br/>Unable to create album", (string)$response->getBody());
         } finally {
-            rename('content/tmp_albums', 'content/albums');
+            rename(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/tmp_albums', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums');
         }
     }
 }

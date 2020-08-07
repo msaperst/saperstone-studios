@@ -101,6 +101,18 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
     }
 
+    public function testAllBlogsDetailsByTagsNoMatch() {
+        $response = $this->http->request('GET', 'api/get-blogs-details.php', [
+            'query' => [
+                'tag' => ['29', '30', '31']
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $blogsDetails = json_decode($response->getBody(), true);
+        $this->assertEquals(1, sizeof($blogsDetails));
+        $this->assertEquals(0, sizeof($blogsDetails['data']));
+    }
+
     public function testAllBlogsDetailsAdmin() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'

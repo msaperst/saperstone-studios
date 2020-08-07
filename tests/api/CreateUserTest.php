@@ -193,6 +193,7 @@ class CreateUserTest extends TestCase {
     }
 
     public function testNoExtras() {
+        date_default_timezone_set("America/New_York");
         $date = date("Y-m-d H:i:s");
         try {
             $cookieJar = CookieJar::fromArray([
@@ -231,6 +232,7 @@ class CreateUserTest extends TestCase {
     }
 
     public function testAllData() {
+        date_default_timezone_set("America/New_York");
         $date = date("Y-m-d H:i:s");
         try {
             $cookieJar = CookieJar::fromArray([

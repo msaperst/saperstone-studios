@@ -4,8 +4,10 @@ namespace api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use ZipArchive;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
 
@@ -26,20 +28,20 @@ class DownloadSelectedImagesTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (999, 'sample-album-no-access', 'sample album for testing without any download access', 'sample');");
 
         $oldmask = umask(0);
-        mkdir('content/albums/sample');
-        chmod('content/albums/sample', 0777);
-        mkdir('content/albums/sample/full');
-        chmod('content/albums/sample/full', 0777);
+        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777);
+        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777);
         $counter = 0;
         foreach ($this->files as $file) {
             $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 997, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
             $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 998, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
             $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 999, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
             if ($counter != 4) {
-                touch("content/albums/sample/$file");
-                chmod("content/albums/sample/$file", 0777);
-                touch("content/albums/sample/full/$file");
-                chmod("content/albums/sample/full/$file", 0777);
+                touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/$file");
+                chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/$file", 0777);
+                touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/full/$file");
+                chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/full/$file", 0777);
             }
             $counter++;
         }
@@ -62,7 +64,7 @@ class DownloadSelectedImagesTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg('content/albums/sample'));
+        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
         $this->sql->disconnect();
     }
 
@@ -127,6 +129,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadAllOpen() {
         try {
+            date_default_timezone_set("America/New_York");
             $dateTime = date("Y-m-d H-i-s");
             $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
@@ -364,13 +367,13 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadAllClosed() {
         try {
-            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+            $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'all',
                     'album' => 999
                 ]
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -378,13 +381,13 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadFavoritesClosed() {
         try {
-            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+            $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'favorites',
                     'album' => 999
                 ]
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -392,13 +395,13 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadSingleClosed() {
         try {
-            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+            $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => '1',
                     'album' => 999
                 ]
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
