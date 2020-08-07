@@ -130,8 +130,7 @@ class DownloadSelectedImagesTest extends TestCase {
     public function testUnAuthUserDownloadAllOpen() {
         try {
             date_default_timezone_set("America/New_York");
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'all',
@@ -139,7 +138,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -174,8 +174,7 @@ class DownloadSelectedImagesTest extends TestCase {
                     'image' => '2'
                 ]
             ]);
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'favorites',
@@ -183,7 +182,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -200,8 +200,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadBadWhatOpen() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'abc1',
@@ -209,7 +208,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -223,8 +223,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadSingleOpen() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => '1',
@@ -232,7 +231,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -268,8 +268,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadAllLimited() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'all',
@@ -277,7 +277,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -292,26 +293,26 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadFavoritesLimited() {
         try {
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '0'
                 ]
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '1'
                 ]
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '2'
                 ]
             ]);
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'favorites',
@@ -319,7 +320,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -333,8 +335,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadSingleGoodLimited() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => '2',
@@ -342,7 +344,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -409,8 +412,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAuthUserDownloadAllOpen() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
             ], 'localhost');
@@ -422,7 +424,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -442,29 +445,28 @@ class DownloadSelectedImagesTest extends TestCase {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
             ], 'localhost');
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '0'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '1'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '2'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'favorites',
@@ -473,7 +475,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -490,8 +493,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAuthUserDownloadSingleOpen() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
             ], 'localhost');
@@ -503,7 +505,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -517,8 +520,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAuthUserDownloadAllLimited() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
             ], 'localhost');
@@ -530,7 +533,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -549,29 +553,29 @@ class DownloadSelectedImagesTest extends TestCase {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
             ], 'localhost');
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '0'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '1'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '2'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'favorites',
@@ -580,7 +584,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -595,8 +600,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAuthUserDownloadSingleGoodLimited() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
             ], 'localhost');
@@ -608,7 +613,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -622,8 +628,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAuthUserDownloadSingleGoodOtherLimited() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
             ], 'localhost');
@@ -635,7 +641,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -730,8 +737,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAdminUserDownloadAllOpen() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -743,7 +749,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -763,29 +770,28 @@ class DownloadSelectedImagesTest extends TestCase {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '0'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '1'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '2'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'favorites',
@@ -794,7 +800,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -811,8 +818,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAdminUserDownloadSingleOpen() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-all $dateTime.zip";
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -824,7 +830,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -838,8 +845,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAdminUserDownloadAllLimited() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -851,7 +858,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -871,29 +879,29 @@ class DownloadSelectedImagesTest extends TestCase {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '0'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '1'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 998,
                     'image' => '2'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'favorites',
@@ -902,7 +910,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -918,8 +927,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAdminUserDownloadSingleGoodLimited() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -931,7 +940,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -945,8 +955,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAdminUserDownloadSingleGoodOtherLimited() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-download-some $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -958,7 +968,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -987,8 +998,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAdminUserDownloadAllClosed() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-no-access $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -1000,7 +1011,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-no-access $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -1020,29 +1032,29 @@ class DownloadSelectedImagesTest extends TestCase {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 999,
                     'image' => '0'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 999,
                     'image' => '1'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 999,
                     'image' => '2'
                 ],
                 'cookies' => $cookieJar
             ]);
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-no-access $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
                     'what' => 'favorites',
@@ -1051,7 +1063,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-no-access $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
@@ -1067,8 +1080,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testAdminUserDownloadSingleClosed() {
         try {
-            $dateTime = date("Y-m-d H-i-s");
-            $zipFile = "../tmp/sample-album-no-access $dateTime.zip";
+            date_default_timezone_set("America/New_York");
+            $dateTime = date("Y-m-d H-i");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
@@ -1080,7 +1093,8 @@ class DownloadSelectedImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals($zipFile, json_decode($response->getBody(), true)['file']);
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            $this->assertStringStartsWith("../tmp/sample-album-no-access $dateTime", $zipFile);
             system("wget -q 'http://localhost:90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();

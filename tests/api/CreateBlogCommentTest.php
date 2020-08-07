@@ -135,7 +135,7 @@ class CreateBlogCommentTest extends TestCase {
         $this->assertEquals(999, $blogComment['blog']);
         $this->assertNull($blogComment['user']);
         $this->assertEquals('MaxMaxMaxMax', $blogComment['name']);
-        $this->assertEquals(date("Y-m-d H:i:s"), $blogComment['date']);
+        $this->assertStringStartsWith(date("Y-m-d H:i"), $blogComment['date']);
         $this->assertTrue(filter_var($blogComment['ip'], FILTER_VALIDATE_IP) !== false);
         $this->assertEquals('123@example.com', $blogComment['email']);
         $this->assertEquals('I love your post!', $blogComment['comment']);

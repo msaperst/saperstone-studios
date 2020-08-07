@@ -107,7 +107,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals($albumId, $album['id']);
             $this->assertEquals('Sample Album', $album['name']);
             $this->assertEquals('', $album['description']);
-            $this->assertEquals(date("Y-m-d H:i:s"), $album['date']);
+            $this->assertStringStartsWith(date("Y-m-d H:i"), $album['date']);
             $this->assertNull($album['lastAccessed']);
             $this->assertEquals('SampleAlbum_' . time(), $album['location']);
             $this->assertNull($album['code']);
@@ -159,7 +159,7 @@ class CreateAlbumTest extends TestCase {
             $userLogs = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user_logs`.`album` = $albumId;");
             $this->assertEquals(1, sizeOf($userLogs));
             $this->assertEquals(4, $userLogs[0]['user']);
-            $this->assertEquals(date("Y-m-d H:i:s"), $userLogs[0]['time']);
+            $this->assertStringStartsWith(date("Y-m-d H:i"), $userLogs[0]['time']);
             $this->assertEquals('Created Album', $userLogs[0]['action']);
             $this->assertNull($userLogs[0]['what']);
             $this->assertEquals($albumId, $userLogs[0]['album']);

@@ -194,7 +194,7 @@ class CreateUserTest extends TestCase {
 
     public function testNoExtras() {
         date_default_timezone_set("America/New_York");
-        $date = date("Y-m-d H:i:s");
+        $date = date("Y-m-d H:i");
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -220,7 +220,7 @@ class CreateUserTest extends TestCase {
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(md5('Maxdownloader'), $userDetails['hash']);
             $this->assertEquals(0, $userDetails['active']);
-            $this->assertEquals($date, $userDetails['created']);
+            $this->assertStringStartsWith($date, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
         } finally {
@@ -233,7 +233,7 @@ class CreateUserTest extends TestCase {
 
     public function testAllData() {
         date_default_timezone_set("America/New_York");
-        $date = date("Y-m-d H:i:s");
+        $date = date("Y-m-d H:i");
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -262,7 +262,7 @@ class CreateUserTest extends TestCase {
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(md5('Maxdownloader'), $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
-            $this->assertEquals($date, $userDetails['created']);
+            $this->assertStringStartsWith($date, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
         } finally {
