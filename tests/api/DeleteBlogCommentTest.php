@@ -1,11 +1,14 @@
 <?php
 
+namespace api;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
+use Sql;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname(__DIR__);
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
 
 class DeleteBlogCommentTest extends TestCase {
     private $http;
@@ -28,10 +31,9 @@ class DeleteBlogCommentTest extends TestCase {
     }
 
     public function testNotLoggedIn() {
-        $response;
         try {
-            $response = $this->http->request('POST', 'api/delete-blog-comment.php');
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+            $this->http->request('POST', 'api/delete-blog-comment.php');
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody());
         }
@@ -91,18 +93,17 @@ class DeleteBlogCommentTest extends TestCase {
     }
 
     public function testUploaderCantDeleteOtherComment() {
-        $response;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
             ], 'localhost');
-            $response = $this->http->request('POST', 'api/delete-blog-comment.php', [
+            $this->http->request('POST', 'api/delete-blog-comment.php', [
                 'form_params' => [
                     'comment' => 998
                 ],
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(403, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
             $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `blog_comments` WHERE `blog_comments`.`id` = 998;"));

@@ -1,13 +1,15 @@
 <?php
 
+namespace api;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
+use Sql;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname(__DIR__);
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
 
-class GetBlogFullTest extends TestCase {
+class GetBlogsFullTest extends TestCase {
     private $http;
     private $sql;
 

@@ -6,8 +6,7 @@ class Sql {
     function __construct() {
         $this->mysqli = new mysqli ( getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME') );
         if ($this->mysqli -> connect_errno) {
-            throw new Exception( "Failed to connect to MySQL: " . $mysqli -> connect_error );
-            exit();
+            throw new Exception( "Failed to connect to MySQL: " . $this->mysqli -> connect_error );
         }
         $this->connected = true;
     }
@@ -65,7 +64,7 @@ class Sql {
 
     function executeStatement($statement) {
         if ( ! $this->connected) {
-            throw new Exception("Not connected, unable to execute statement: '" + $statement + "'");
+            throw new Exception("Not connected, unable to execute statement: '" . $statement . "'");
         }
         $this->mysqli->query($statement);
         return $this->mysqli->insert_id;
@@ -74,8 +73,6 @@ class Sql {
     function getEnumValues( $table, $field ) {
         $type = $this->mysqli->query( "SHOW COLUMNS FROM {$table} WHERE Field = '{$field}'" )->fetch_assoc()['Type'];
         preg_match("/^enum\(\'(.*)\'\)$/", $type, $matches);
-        $enum = explode("','", $matches[1]);
-        return $enum;
+        return explode("','", $matches[1]);
     }
 }
-?>

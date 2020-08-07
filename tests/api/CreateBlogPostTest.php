@@ -1,11 +1,13 @@
 <?php
 
+namespace api;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
+use Sql;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname(__DIR__);
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
 
 class CreateBlogPostTest extends TestCase {
     private $http;
@@ -224,7 +226,6 @@ class CreateBlogPostTest extends TestCase {
 //     }
 
     public function testPreviewOffsetOnlyImage() {
-        $blogId;
         try {
             touch('content/blog/image.jpg');
             $cookieJar = CookieJar::fromArray([
@@ -292,7 +293,6 @@ class CreateBlogPostTest extends TestCase {
     }
 
     public function testNoPreviewOffsetOnlyText() {
-        $blogId;
         try {
             touch('content/blog/image.jpg');
             $cookieJar = CookieJar::fromArray([
@@ -345,7 +345,6 @@ class CreateBlogPostTest extends TestCase {
     }
 
     public function testTagsOffsetImagesText() {
-        $blogId;
         try {
             touch('content/blog/image.jpg');
             $cookieJar = CookieJar::fromArray([

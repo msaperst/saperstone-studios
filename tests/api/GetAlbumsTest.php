@@ -1,11 +1,16 @@
 <?php
 
+namespace api;
+
+namespace api;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
+use Sql;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname(__DIR__);
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
 
 class GetAlbumsTest extends TestCase {
     private $http;
@@ -35,10 +40,9 @@ class GetAlbumsTest extends TestCase {
     }
 
     public function testNotLoggedIn() {
-        $response;
         try {
-            $response = $this->http->request('GET', 'api/get-albums.php');
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+            $this->http->request('GET', 'api/get-albums.php');
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody());
         }

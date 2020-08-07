@@ -1,11 +1,14 @@
 <?php
 
+namespace api;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
+use Sql;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname(__DIR__);
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
 
 class GetAllFavoritesTest extends TestCase {
     private $http;
@@ -46,9 +49,10 @@ class GetAllFavoritesTest extends TestCase {
     }
 
     public function testNotLoggedIn() {
+        echo get_include_path();
         try {
             $this->http->request('POST', 'api/get-all-favorites.php');
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -62,7 +66,7 @@ class GetAllFavoritesTest extends TestCase {
             $this->http->request('POST', 'api/get-all-favorites.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleHttp\Exception\ClientException $e) {
+        } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }
