@@ -1,7 +1,12 @@
 <?php
-use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(dirname ( __DIR__ )) ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+namespace coverage\unit;
+
+use PHPUnit\Framework\TestCase;
+use Sql;
+use User;
+
+require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UserUnitTest extends TestCase {
 
@@ -9,7 +14,7 @@ class UserUnitTest extends TestCase {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertFalse ( $user->isLoggedIn () );
+        $this->assertFalse($user->isLoggedIn());
     }
 
     public function testNoHash() {
@@ -18,7 +23,7 @@ class UserUnitTest extends TestCase {
             "id" => ""
         ));
         $user = new User($mockSql);
-        $this->assertFalse ( $user->isLoggedIn () );
+        $this->assertFalse($user->isLoggedIn());
     }
 
     public function testLoggedInCookie() {
@@ -29,7 +34,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_COOKIE['hash']);
-        $this->assertTrue ( $user->isLoggedIn () );
+        $this->assertTrue($user->isLoggedIn());
     }
 
     public function testLoggedInSession() {
@@ -40,7 +45,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertTrue ( $user->isLoggedIn () );
+        $this->assertTrue($user->isLoggedIn());
     }
 
     public function testNotLoggedInCookie() {
@@ -49,14 +54,14 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
         unset($_COOKIE['hash']);
-        $this->assertFalse ( $user->isLoggedIn () );
+        $this->assertFalse($user->isLoggedIn());
     }
 
     public function testNotLoggedInGetId() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertEquals( "", $user->getId() );
+        $this->assertEquals("", $user->getId());
     }
 
     public function testGetId() {
@@ -67,7 +72,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "5", $user->getId () );
+        $this->assertEquals("5", $user->getId());
     }
 
     public function testGetIdNoId() {
@@ -76,14 +81,14 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array());
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "", $user->getId () );
+        $this->assertEquals("", $user->getId());
     }
 
     public function testNotLoggedInGetIdentifier() {
-            $mockSql = $this->createMock(Sql::class);
-            $mockSql->method("getRow")->willReturn(NULL);
-            $user = new User($mockSql);
-            $this->assertEquals( "", $user->getIdentifier() );
+        $mockSql = $this->createMock(Sql::class);
+        $mockSql->method("getRow")->willReturn(NULL);
+        $user = new User($mockSql);
+        $this->assertEquals("", $user->getIdentifier());
     }
 
     public function testGetIdentifier() {
@@ -94,14 +99,14 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "5", $user->getIdentifier () );
+        $this->assertEquals("5", $user->getIdentifier());
     }
 
     public function testNotLoggedInGetUsr() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertEquals( "", $user->getUser() );
+        $this->assertEquals("", $user->getUser());
     }
 
     public function testGetUsr() {
@@ -112,7 +117,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "Max", $user->getUser () );
+        $this->assertEquals("Max", $user->getUser());
     }
 
     public function testGetUsrNoUsr() {
@@ -121,14 +126,14 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array());
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "", $user->getUser () );
+        $this->assertEquals("", $user->getUser());
     }
 
     public function testNotLoggedInGetRole() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertEquals( "", $user->getRole() );
+        $this->assertEquals("", $user->getRole());
     }
 
     public function testGetRole() {
@@ -139,7 +144,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "awesome", $user->getRole () );
+        $this->assertEquals("awesome", $user->getRole());
     }
 
     public function testGetRoleNoRole() {
@@ -148,14 +153,14 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array());
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "", $user->getRole () );
+        $this->assertEquals("", $user->getRole());
     }
 
     public function testNotLoggedInIsAdmin() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertFalse($user->isAdmin() );
+        $this->assertFalse($user->isAdmin());
     }
 
     public function testIsAdminFalse() {
@@ -166,7 +171,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertFalse ($user->isAdmin () );
+        $this->assertFalse($user->isAdmin());
     }
 
     public function testIsAdminTrue() {
@@ -177,14 +182,14 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertTrue ($user->isAdmin () );
+        $this->assertTrue($user->isAdmin());
     }
 
     public function testNotLoggedInGetFirstName() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertEquals( "", $user->getFirstName() );
+        $this->assertEquals("", $user->getFirstName());
     }
 
     public function testGetFirstName() {
@@ -195,7 +200,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "Max", $user->getFirstName () );
+        $this->assertEquals("Max", $user->getFirstName());
     }
 
     public function testGetFirstNameNoFistName() {
@@ -204,14 +209,14 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array());
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "", $user->getFirstName () );
+        $this->assertEquals("", $user->getFirstName());
     }
 
     public function testNotLoggedInGetLastName() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertEquals( "", $user->getLastName() );
+        $this->assertEquals("", $user->getLastName());
     }
 
     public function testGetLastName() {
@@ -222,7 +227,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "Saperstone", $user->getLastName () );
+        $this->assertEquals("Saperstone", $user->getLastName());
     }
 
     public function testGetLastNameNoLastName() {
@@ -231,14 +236,14 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array());
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "", $user->getLastName () );
+        $this->assertEquals("", $user->getLastName());
     }
 
     public function testGetNameNothing() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertEquals( "", $user->getName() );
+        $this->assertEquals("", $user->getName());
     }
 
     public function testGetNameFirst() {
@@ -250,7 +255,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals( "Max", $user->getName() );
+        $this->assertEquals("Max", $user->getName());
     }
 
     public function testGetNameFirstNoLast() {
@@ -262,7 +267,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals( "Max", $user->getName() );
+        $this->assertEquals("Max", $user->getName());
     }
 
     public function testGetNameLast() {
@@ -274,7 +279,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals( "Saperstone", $user->getName() );
+        $this->assertEquals("Saperstone", $user->getName());
     }
 
     public function testGetNameLastNoFirst() {
@@ -286,7 +291,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals( "Saperstone", $user->getName() );
+        $this->assertEquals("Saperstone", $user->getName());
     }
 
     public function testGetNameBoth() {
@@ -298,14 +303,14 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals( "Max Saperstone", $user->getName() );
+        $this->assertEquals("Max Saperstone", $user->getName());
     }
 
     public function testNotLoggedInGetEmail() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
         $user = new User($mockSql);
-        $this->assertEquals( "", $user->getEmail() );
+        $this->assertEquals("", $user->getEmail());
     }
 
     public function testGetEmail() {
@@ -316,7 +321,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "msaperst+sstest@gmail.com", $user->getEmail () );
+        $this->assertEquals("msaperst+sstest@gmail.com", $user->getEmail());
     }
 
     public function testGetEmailNoEmail() {
@@ -325,7 +330,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array());
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertEquals ( "", $user->getEmail () );
+        $this->assertEquals("", $user->getEmail());
     }
 
     public function testForceAdmin() {
@@ -336,7 +341,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertNull ($user->forceAdmin () );
+        $this->assertNull($user->forceAdmin());
     }
 
     public function testForceLogin() {
@@ -347,7 +352,7 @@ class UserUnitTest extends TestCase {
         ));
         $user = new User($mockSql);
         unset($_SESSION['hash']);
-        $this->assertNull ($user->forceLogin () );
+        $this->assertNull($user->forceLogin());
     }
 
     public function testGeneratePassword() {
@@ -356,9 +361,7 @@ class UserUnitTest extends TestCase {
             "id" => ""
         ));
         $user = new User($mockSql);
-        $this->assertEquals( 20, strlen( $user->generatePassword() ) );
-        $this->assertEquals( 1, preg_match( "/^([a-zA-Z0-9]{20})$/", $user->generatePassword() ) );
+        $this->assertEquals(20, strlen($user->generatePassword()));
+        $this->assertEquals(1, preg_match("/^([a-zA-Z0-9]{20})$/", $user->generatePassword()));
     }
 }
-
-?>
