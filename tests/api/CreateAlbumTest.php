@@ -188,7 +188,7 @@ class CreateAlbumTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>49</b><br />\nmkdir(): File exists<br/>Unable to create album", (string)$response->getBody());
+            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/public/api/create-album.php</b> on line <b>48</b><br />\nmkdir(): File exists<br/>Unable to create album", (string)$response->getBody());
         } finally {
             rename(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/tmp_albums', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums');
         }

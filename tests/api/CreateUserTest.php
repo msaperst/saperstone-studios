@@ -26,7 +26,7 @@ class CreateUserTest extends TestCase {
 
     public function testNotLoggedIn() {
         try {
-            $this->http->request('POST', 'api/create-User.php');
+            $this->http->request('POST', 'api/create-user.php');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -38,7 +38,7 @@ class CreateUserTest extends TestCase {
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], 'localhost');
         try {
-            $this->http->request('POST', 'api/create-User.php', [
+            $this->http->request('POST', 'api/create-user.php', [
                 'cookies' => $cookieJar
             ]);
         } catch (ClientException $e) {
@@ -51,7 +51,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -62,7 +62,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => ''
             ],
@@ -76,7 +76,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'msaperst'
             ],
@@ -90,7 +90,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max'
             ],
@@ -104,7 +104,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
                 'email' => ''
@@ -119,7 +119,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
                 'email' => 'max@max'
@@ -134,7 +134,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
                 'email' => 'msaperst@gmail.com'
@@ -149,7 +149,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
                 'email' => 'msaperst+sstest@gmail.com'
@@ -164,7 +164,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
                 'email' => 'msaperst+sstest@gmail.com',
@@ -180,7 +180,7 @@ class CreateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/create-User.php', [
+        $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
                 'email' => 'msaperst+sstest@gmail.com',
@@ -200,7 +200,7 @@ class CreateUserTest extends TestCase {
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
 
-            $response = $this->http->request('POST', 'api/create-User.php', [
+            $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
                     'username' => 'Max',
                     'email' => 'msaperst+sstest@gmail.com',
@@ -239,7 +239,7 @@ class CreateUserTest extends TestCase {
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], 'localhost');
 
-            $response = $this->http->request('POST', 'api/create-User.php', [
+            $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
                     'username' => 'Max',
                     'email' => 'msaperst+sstest@gmail.com',
