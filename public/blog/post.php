@@ -1,4 +1,5 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
 
 $post;
@@ -9,15 +10,13 @@ if (! isset ( $_GET ['p'] )) {
     $post = ( int ) $_GET ['p'];
 }
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+new Session();
 $sql = new Sql ();
 $details = $sql->getRow( "SELECT * FROM `blog_details` WHERE id = '$post';" );
 if (! $details ['title']) {
     throw404();
 }
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $user = new User ($sql);
 $sql->disconnect();
 

@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DeleteUserTest extends TestCase {
     private $http;
@@ -31,7 +31,7 @@ class DeleteUserTest extends TestCase {
 
     public function testNotLoggedIn() {
         try {
-            $this->http->request('POST', 'api/delete-user.php');
+            $this->http->request('POST', 'api/delete-User.php');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -43,7 +43,7 @@ class DeleteUserTest extends TestCase {
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], 'localhost');
         try {
-            $this->http->request('POST', 'api/delete-user.php', [
+            $this->http->request('POST', 'api/delete-User.php', [
                 'cookies' => $cookieJar
             ]);
         } catch (ClientException $e) {
@@ -56,7 +56,7 @@ class DeleteUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/delete-user.php', [
+        $response = $this->http->request('POST', 'api/delete-User.php', [
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -67,7 +67,7 @@ class DeleteUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/delete-user.php', [
+        $response = $this->http->request('POST', 'api/delete-User.php', [
             'form_params' => [
                 'id' => ''
             ],
@@ -81,7 +81,7 @@ class DeleteUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/delete-user.php', [
+        $response = $this->http->request('POST', 'api/delete-User.php', [
             'form_params' => [
                 'id' => 'a'
             ],
@@ -95,7 +95,7 @@ class DeleteUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/delete-user.php', [
+        $response = $this->http->request('POST', 'api/delete-User.php', [
             'form_params' => [
                 'id' => 9999
             ],
@@ -109,7 +109,7 @@ class DeleteUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], 'localhost');
-        $response = $this->http->request('POST', 'api/delete-user.php', [
+        $response = $this->http->request('POST', 'api/delete-User.php', [
             'form_params' => [
                 'id' => 999
             ],

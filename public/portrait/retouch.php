@@ -1,4 +1,9 @@
-<?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
+<?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+new Session();
+$sql = new Sql ();
+$user = new User ($sql);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +14,6 @@
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
     $rand = "";
     if ($user->isAdmin ()) {
-        require_once '../../src/strings.php';
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>

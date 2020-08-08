@@ -7,10 +7,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
-
-$_SERVER ['DOCUMENT_ROOT'] = dirname(__DIR__);
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateBlogCommentTest extends TestCase {
     private $http;
@@ -112,7 +109,7 @@ class CreateBlogCommentTest extends TestCase {
         $this->assertEquals(999, $blogComment['blog']);
         $this->assertEquals(1, $blogComment['user']);
         $this->assertEquals('', $blogComment['name']);
-        $this->assertStringStartsWith( date("Y-m-d H:i"), $blogComment['date'] );
+        $this->assertStringStartsWith(date("Y-m-d H:i"), $blogComment['date']);
         $this->assertTrue(filter_var($blogComment['ip'], FILTER_VALIDATE_IP) !== false);
         $this->assertEquals('', $blogComment['email']);
         $this->assertEquals('I love your post!', $blogComment['comment']);

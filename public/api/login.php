@@ -1,6 +1,6 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'session.php';
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+new Session();
 $sql = new Sql ();
 
 if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['hash'] ) && ! isset ( $_COOKIE ['usr'] )) {

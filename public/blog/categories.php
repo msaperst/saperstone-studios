@@ -1,6 +1,6 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+new Session();
 $sql = new Sql ();
 $tags = $sql->getRows( "SELECT `tags`.`id`, `tags`.`tag`, COUNT(`blog_tags`.`tag`) AS `count` FROM blog_tags JOIN tags ON blog_tags.tag = tags.id GROUP BY blog_tags.tag;" );
 $sql->disconnect ();

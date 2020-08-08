@@ -1,8 +1,6 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'session.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'user.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'api.php';
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+new Session();
 $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
@@ -23,13 +21,9 @@ if (isset ( $_GET ['searchTerm'] )) {
     exit ();
 }
 
-$sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog` DESC LIMIT $start,$howMany;";
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $sql = "SELECT * FROM `blog_details` WHERE `id` = '" . $r ['blog'] . "';";
-    $response [] = $sql->getRow( $sql );
+foreach ( $sql->getRows( "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog` DESC LIMIT $start,$howMany;" ) as $r ) {
+    $response [] = $sql->getRow( "SELECT * FROM `blog_details` WHERE `id` = '" . $r ['blog'] . "';" );
 }
 echo json_encode ( $response );
-
-$conn->disconnect ();
+$sql->disconnect ();
 exit ();

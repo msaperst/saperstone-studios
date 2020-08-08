@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetAlbumUsersTest extends TestCase {
     private $http;

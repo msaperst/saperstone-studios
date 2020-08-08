@@ -11,15 +11,14 @@ use PayPal\PayPalAPI\SetExpressCheckoutRequestType;
 use PayPal\PayPalAPI\SetExpressCheckoutReq;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'session.php';
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+new Session();
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/PPBootStrap.php";
 
 // this will hold our results/response
 $response = array ();
 
 // get our user information
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'user.php';
 $sql = new Sql ();
 $user = new User ($sql);
 if (! $user->isLoggedIn ()) {

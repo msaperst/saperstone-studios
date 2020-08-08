@@ -1,4 +1,5 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
 
 $album;
@@ -9,9 +10,7 @@ if (! isset ( $_GET ['album'] ) || $_GET ['album'] == "") {
     $album = ( int ) $_GET ['album'];
 }
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+new Session();
 $sql = new Sql ();
 $user = new User ($sql);
 $album_info = $sql->getRow( "SELECT * FROM `albums` WHERE id = '" . $album . "';" );

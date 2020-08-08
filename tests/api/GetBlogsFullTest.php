@@ -7,7 +7,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetBlogsFullTest extends TestCase {
     private $http;
@@ -59,7 +59,7 @@ class GetBlogsFullTest extends TestCase {
         $this->assertEquals(0, $blogDetails['offset']);
         $this->assertEquals(1, $blogDetails['active']);
         $this->assertEquals(0, $blogDetails['twitter']);
-        $this->assertEquals( 2, sizeof($blogDetails['tags']));
+        $this->assertEquals(2, sizeof($blogDetails['tags']));
         $this->assertEquals(29, $blogDetails['tags'][0]['id']);
         $this->assertEquals('Tea Ceremony', $blogDetails['tags'][0]['tag']);
         $this->assertEquals(30, $blogDetails['tags'][1]['id']);
@@ -122,7 +122,7 @@ class GetBlogsFullTest extends TestCase {
     public function testGetBlogFullTags() {
         $response = $this->http->request('GET', 'api/get-blogs-full.php', [
             'query' => [
-                'tag' => [29,30]
+                'tag' => [29, 30]
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -135,7 +135,7 @@ class GetBlogsFullTest extends TestCase {
         $this->assertEquals(0, $blogDetails['offset']);
         $this->assertEquals(1, $blogDetails['active']);
         $this->assertEquals(0, $blogDetails['twitter']);
-        $this->assertEquals( 2, sizeof($blogDetails['tags']));
+        $this->assertEquals(2, sizeof($blogDetails['tags']));
         $this->assertEquals(29, $blogDetails['tags'][0]['id']);
         $this->assertEquals('Tea Ceremony', $blogDetails['tags'][0]['tag']);
         $this->assertEquals(30, $blogDetails['tags'][1]['id']);
@@ -146,17 +146,17 @@ class GetBlogsFullTest extends TestCase {
     public function testGetBlogFullTagsNoMatch() {
         $response = $this->http->request('GET', 'api/get-blogs-full.php', [
             'query' => [
-                'tag' => [29,30,31]
+                'tag' => [29, 30, 31]
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('', (string) $response->getBody());
+        $this->assertEquals('', (string)$response->getBody());
     }
 
     public function testGetBlogFullTagsSecond() {
         $response = $this->http->request('GET', 'api/get-blogs-full.php', [
             'query' => [
-                'tag' => [29,30],
+                'tag' => [29, 30],
                 'start' => 1
             ]
         ]);

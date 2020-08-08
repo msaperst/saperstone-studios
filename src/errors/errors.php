@@ -1,5 +1,4 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
 
 function throwError($errorCode) {
     header ( $_SERVER ["SERVER_PROTOCOL"] . " $errorCode Not Found" );

@@ -3,7 +3,8 @@ $referer = "Unknown";
 if (isset ( $_SERVER ['HTTP_REFERER'] )) {
     $referer = $_SERVER ['HTTP_REFERER'];
 }
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+new Session();
 ?>
 
 <!DOCTYPE html>

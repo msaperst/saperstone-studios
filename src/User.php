@@ -1,6 +1,6 @@
 <?php
 
-require_once "session.php";
+require_once "Session.php";
 
 class User {
     private $user_details = NULL;

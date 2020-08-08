@@ -1,4 +1,5 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
 
 $what;
@@ -9,8 +10,7 @@ if (! isset ( $_GET ['w'] )) {
     $what = ( int ) $_GET ['w'];
 }
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
+new Session();
 $sql = new Sql ();
 $details = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '$what';" );
 if (! $details ['id']) {
@@ -22,7 +22,6 @@ if (sizeof ( $children ) == 0) {
     throw404();
 }
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
 $user = new User($sql);
 
 $parent = $details ['title'];
@@ -47,7 +46,6 @@ if ($parent == 'Product') {
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
         $string = new Strings ();
         $rand = "?" . $string->randomString ();
         ?>

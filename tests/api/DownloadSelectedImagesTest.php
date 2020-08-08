@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 use ZipArchive;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'sql.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DownloadSelectedImagesTest extends TestCase {
     private $http;

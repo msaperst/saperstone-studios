@@ -1,4 +1,5 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
 
 $categories;
@@ -10,9 +11,7 @@ if (! isset ( $_GET ['t'] )) {
     $categories = array_map ( 'intval', explode ( ',', $_GET ['t'] ) );
     $where = "`id` = '" . implode ( "' OR `id` = '", $categories ) . "';";
 }
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
+new Session();
 $sql = new Sql ();
 $string = new Strings ();
 $tags = $sql->getRows( "SELECT tag FROM `tags` WHERE $where" );
