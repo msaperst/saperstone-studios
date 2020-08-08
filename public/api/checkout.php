@@ -12,7 +12,8 @@ use PayPal\PayPalAPI\SetExpressCheckoutReq;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
 
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-new Session();
+$session = new Session();
+$session->initialize();
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/PPBootStrap.php";
 
 // this will hold our results/response
@@ -31,7 +32,7 @@ if (! $user->isLoggedIn ()) {
 }
 
 // retrieve all of our sent information
-$IP = getClientIP();
+$IP = $session->getClientIP();
 $user_details = $order_details = $coupon = "";
 if (isset ( $_POST ['user'] )) {
     $user_details = $sql->escapeString( $_POST ['user'] );
@@ -118,7 +119,7 @@ foreach ( $items as $item ) {
         
         // our information about the product for the email
         $option = array_pop ( $options );
-        $preview = "<img src='http" . (isset ( $_SERVER ['HTTPS'] ) ? 's' : '') . "://" . $getHost()  . $item ['location'] . "' style='max-width:100px;max-height:100px;' alt='" . $item ['title'] . "' />";
+        $preview = "<img src='http" . (isset ( $_SERVER ['HTTPS'] ) ? 's' : '') . "://" . $session->getHost()  . $item ['location'] . "' style='max-width:100px;max-height:100px;' alt='" . $item ['title'] . "' />";
         $order_text .= "\t\t" . $item ['title'] . "\t" . $item ['album_title'] . "\t" . $item ['name'] . "\t" . $item ['size'] . "\t$option\t\t$" . $item ['price'] . "\n";
         $order_HTML .= "<tr><td>" . $item ['title'] . "</td><td>" . $item ['album_title'] . "</td><td>$preview</td><td>" . $item ['name'] . "</td><td>" . $item ['size'] . "</td><td>$option</td><td>$" . number_format ( $item ['price'], 2 ) . "</td></tr>";
     }

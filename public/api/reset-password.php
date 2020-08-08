@@ -46,7 +46,8 @@ if ($row ['usr']) {
     mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Reset Password', NULL, NULL );" );
     
     // If everything is OK login
-    new Session();
+    $session = new Session();
+$session->initialize();
     $_SESSION ['usr'] = $row ['usr'];
     $_SESSION ['hash'] = $row ['hash'];
      // Store some data in the session

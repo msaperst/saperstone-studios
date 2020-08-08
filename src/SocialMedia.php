@@ -1,11 +1,13 @@
 <?php
+require_once 'autoloader.php';
 class SocialMedia {
     var $sql;
     var $db;
+    var $session;
     function __construct() {
-        require_once "Sql.php";
-        $sql = new Sql ();
-        $this->db = $sql->db;
+        $this->sql = new Sql ();
+        $this->db = $this->sql->db;
+        $this->session = new Session();
     }
     function generateRSS() {
         $output = "../blog.rss";
@@ -72,9 +74,9 @@ class SocialMedia {
         if (isset ( $_SERVER ["SERVER_PORT"] ) && $_SERVER ["SERVER_PORT"] == "9443") {
             $pageURL .= "s";
         }
-        $pageURL .= "://" . $getServer();
+        $pageURL .= "://" . $this->session->getServer();
         if ($_SERVER ["SERVER_PORT"] != "90" || $_SERVER ["SERVER_PORT"] != "9443" ) {
-            $pageURL .= $getServer() . ":" . $_SERVER ["SERVER_PORT"];
+            $pageURL .= $this->session->getServer() . ":" . $_SERVER ["SERVER_PORT"];
         }
         return $pageURL;
     }

@@ -1,12 +1,13 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-new Session();
+$session = new Session();
+$session->initialize();
 $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
 if (! $user->isLoggedIn ()) {
-    $user = getClientIP();
+    $user = $session->getClientIP();
 } else {
     $user = $user->getId ();
 }
@@ -68,7 +69,7 @@ if (isset ( $_POST ['comment'] )) {
 
 // send email
 $user = new User ($sql);
-$IP = getClientIP();
+$IP = $session->getClientIP();
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php");
 $browser = new Browser ();

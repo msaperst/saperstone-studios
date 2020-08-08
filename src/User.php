@@ -1,12 +1,14 @@
 <?php
 
-require_once "Session.php";
+require_once "autoloader.php";
 
 class User {
     private $user_details = NULL;
     private $sql;
+    private $session;
 
     function __construct($sql) {
+        $this->session = new Session();
         $this->sql = $sql;
         $hash = NULL;
         if( isset ( $_COOKIE ) && isset ( $_COOKIE['hash'] )) {
@@ -36,7 +38,7 @@ class User {
 
     function getIdentifier() {
         if (! $this->isLoggedIn ()) {
-            return getClientIP();
+            return $this->session->getClientIP();
         } else {
             return $this->getId ();
         }

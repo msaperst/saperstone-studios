@@ -1,6 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-new Session();
+$session = new Session();
+$session->initialize();
 $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
@@ -40,7 +41,7 @@ if ($user->getId () != "") {
     $user = 'NULL';
 }
 
-echo $sql->executeStatement ( "INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ($post, $user, '$name', CURRENT_TIMESTAMP, '" . getClientIP() . "', '$email', '$message' );" );
+echo $sql->executeStatement ( "INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ($post, $user, '$name', CURRENT_TIMESTAMP, '" . $session->getClientIP() . "', '$email', '$message' );" );
 $sql->disconnect ();
 exit ();
 ?>

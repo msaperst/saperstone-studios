@@ -1,6 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-new Session();
+$session = new Session();
+$session->initialize();
 $sql = new Sql();
 $user = new User ($sql);
 
@@ -13,7 +14,7 @@ if ($user->isLoggedIn ()) {
 
 $resolution = $position = $lat = $lon = $width = $height = "";
 // get some location information
-$ip = getClientIP();
+$ip = $session->getClientIP();
 if (isset ( $_GET ['position'] )) {
     $position = urldecode ( $_GET ['position'] );
     $temp = split ( ",", $position );

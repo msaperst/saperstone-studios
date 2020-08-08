@@ -2,14 +2,14 @@
 class Session {
 
     function __construct() {
-        if (session_status() != PHP_SESSION_ACTIVE) {
+    }
 
+    function initialize() {
+        if (session_status() != PHP_SESSION_ACTIVE) {
             // Starting the session
             session_name('session');
-
             // Making the cookie live for 2 weeks
             session_set_cookie_params(2 * 7 * 24 * 60 * 60);
-
             // Start our session
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
@@ -41,7 +41,7 @@ class Session {
         if (isset ($_SERVER ["SERVER_PORT"]) && $_SERVER ["SERVER_PORT"] == "9443") {
             $pageURL .= "s";
         }
-        $pageURL .= "://" . getServer();
+        $pageURL .= "://" . $this->getServer();
         if ($_SERVER ["SERVER_PORT"] != "90" && $_SERVER ["SERVER_PORT"] != "9443") {
             $pageURL .= ":" . $_SERVER ["SERVER_PORT"];
         }
@@ -49,6 +49,6 @@ class Session {
     }
 
     function getCurrentPage() {
-        return getBaseURL() . $_SERVER ["REQUEST_URI"];
+        return $this->getBaseURL() . $_SERVER ["REQUEST_URI"];
     }
 }

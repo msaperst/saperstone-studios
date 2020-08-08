@@ -1,8 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname( dirname ( __DIR__ ) );
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
+require_once dirname(dirname(dirname ( __DIR__ )) ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class StringsUnitTest extends TestCase {
     private $string;

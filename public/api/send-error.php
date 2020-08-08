@@ -1,6 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-new Session();
+$session = new Session();
+$session->initialize();
 $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
@@ -43,7 +44,7 @@ if (isset ( $_POST ['resolution'] ) && $_POST ['resolution'] != "") {
 require_once "Mail.php";
 require_once "Mail/mime.php";
 
-$IP = getClientIP();
+$IP = $session->getClientIP();
 $geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
 require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php");
 $browser = new Browser ();

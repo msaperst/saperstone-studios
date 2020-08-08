@@ -1,9 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-$_SERVER ['DOCUMENT_ROOT'] = dirname( dirname ( __DIR__ ) );
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/api.php";
+require_once dirname(dirname(dirname ( __DIR__ )) ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class ApiIntegrationTest extends TestCase {
 

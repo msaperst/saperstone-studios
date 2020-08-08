@@ -11,7 +11,8 @@ if (! isset ( $_GET ['t'] )) {
     $categories = array_map ( 'intval', explode ( ',', $_GET ['t'] ) );
     $where = "`id` = '" . implode ( "' OR `id` = '", $categories ) . "';";
 }
-new Session();
+$session = new Session();
+$session->initialize();
 $sql = new Sql ();
 $string = new Strings ();
 $tags = $sql->getRows( "SELECT tag FROM `tags` WHERE $where" );

@@ -10,7 +10,8 @@ if (! isset ( $_GET ['album'] ) || $_GET ['album'] == "") {
     $album = ( int ) $_GET ['album'];
 }
 
-new Session();
+$session = new Session();
+$session->initialize();
 $sql = new Sql ();
 $user = new User ($sql);
 $album_info = $sql->getRow( "SELECT * FROM `albums` WHERE id = '" . $album . "';" );

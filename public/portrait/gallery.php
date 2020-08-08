@@ -10,7 +10,8 @@ if (! isset ( $_GET ['w'] )) {
     $what = ( int ) $_GET ['w'];
 }
 
-new Session();
+$session = new Session();
+$session->initialize();
 $sql = new Sql ();
 $details = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '$what';" );
 if (! $details ['id']) {

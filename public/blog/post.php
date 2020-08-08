@@ -10,7 +10,8 @@ if (! isset ( $_GET ['p'] )) {
     $post = ( int ) $_GET ['p'];
 }
 
-new Session();
+$session = new Session();
+$session->initialize();
 $sql = new Sql ();
 $details = $sql->getRow( "SELECT * FROM `blog_details` WHERE id = '$post';" );
 if (! $details ['title']) {
