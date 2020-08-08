@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -9,19 +9,19 @@ $api = new Api ($sql, $user);
 $api->forceAdmin();
 
 $tag = $api->retrievePostString('tag', 'Blog tag');
-if( is_array( $tag ) ) {
+if (is_array($tag)) {
     echo $tag['error'];
     exit();
 }
 
-$row = $sql->getRow( "SELECT * FROM `tags` WHERE `tag` = '$tag';" );
+$row = $sql->getRow("SELECT * FROM `tags` WHERE `tag` = '$tag';");
 if ($row ['id']) {
     echo "Blog tag already exists";
-    $sql->disconnect ();
+    $sql->disconnect();
     exit ();
 }
 
-$last_id = $sql->executeStatement( "INSERT INTO tags ( tag ) VALUES ('$tag');" );
+$last_id = $sql->executeStatement("INSERT INTO tags ( tag ) VALUES ('$tag');");
 echo $last_id;
-$sql->disconnect ();
+$sql->disconnect();
 exit ();

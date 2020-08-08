@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -8,22 +8,22 @@ $api = new Api ($sql, $user);
 
 $user_id = $user->getIdentifier();
 $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user_id';";
-$result = mysqli_query ( $conn->db, $sql );
+$result = mysqli_query($conn->db, $sql);
 
-$favorites = array ();
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
+$favorites = array();
+while ($r = mysqli_fetch_assoc($result)) {
     $favorites [$r ['album']] [] = $r;
 }
 
-if (isset ( $_GET ['album'] )) {
-    $album = ( int ) $_GET ['album'];
-    if (isset ( $favorites [$album] )) {
+if (isset ($_GET ['album'])) {
+    $album = ( int )$_GET ['album'];
+    if (isset ($favorites [$album])) {
         $favorites = $favorites [$album];
     } else {
-        $favorites = array ();
+        $favorites = array();
     }
 }
-echo json_encode ( $favorites );
+echo json_encode($favorites);
 
-$conn->disconnect ();
+$conn->disconnect();
 exit ();

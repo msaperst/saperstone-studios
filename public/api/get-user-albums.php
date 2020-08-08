@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -8,21 +8,21 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-if (isset ( $_GET ['user'] )) {
-    $user = ( int ) $_GET ['user'];
+if (isset ($_GET ['user'])) {
+    $user = ( int )$_GET ['user'];
 } else {
     echo "User is not provided";
-    $conn->disconnect ();
+    $conn->disconnect();
     exit ();
 }
 
 $sql = "SELECT * FROM albums_for_users WHERE user = $user";
-$result = mysqli_query ( $conn->db, $sql );
-$response = array ();
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
+$result = mysqli_query($conn->db, $sql);
+$response = array();
+while ($r = mysqli_fetch_assoc($result)) {
     $response [] = $r;
 }
-echo json_encode ( $response );
+echo json_encode($response);
 
-$conn->disconnect ();
+$conn->disconnect();
 exit ();

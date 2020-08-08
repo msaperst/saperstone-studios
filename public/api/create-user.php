@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -9,58 +9,58 @@ $api = new Api ($sql, $user);
 $api->forceAdmin();
 
 $username = $api->retrievePostString('username', 'Username');
-if( is_array( $username ) ) {
+if (is_array($username)) {
     echo $username['error'];
     exit();
 }
-$row = $sql->getRow( "SELECT * FROM users WHERE usr = '$username'" );
+$row = $sql->getRow("SELECT * FROM users WHERE usr = '$username'");
 if ($row ['usr']) {
     echo "That username already exists in the system";
-    $sql->disconnect ();
+    $sql->disconnect();
     exit ();
 }
 
-$email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL );
-if( is_array( $email ) ) {
+$email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
+if (is_array($email)) {
     echo $email['error'];
     exit();
 }
-$row = $sql->getRow( "SELECT email FROM users WHERE email='$email'" );
+$row = $sql->getRow("SELECT email FROM users WHERE email='$email'");
 if ($row ['email']) {
     echo "We already have an account on file for that email address";
-    $sql->disconnect ();
+    $sql->disconnect();
     exit ();
 }
 
 $role = $api->retrievePostString('role', 'Role');
-if( is_array( $role ) ) {
+if (is_array($role)) {
     echo $role['error'];
     exit();
 }
-$enums = $sql->getEnumValues( 'users', 'role' );
-if (! in_array( $role, $enums ) ) {
+$enums = $sql->getEnumValues('users', 'role');
+if (!in_array($role, $enums)) {
     echo "Role is not valid";
-    $sql->disconnect ();
+    $sql->disconnect();
     exit ();
 }
 
 $firstName = $lastName = "";
-if (isset ( $_POST ['firstName'] )) {
-    $firstName = $sql->escapeString( $_POST ['firstName'] );
+if (isset ($_POST ['firstName'])) {
+    $firstName = $sql->escapeString($_POST ['firstName']);
 }
-if (isset ( $_POST ['lastName'] )) {
-    $lastName = $sql->escapeString( $_POST ['lastName'] );
+if (isset ($_POST ['lastName'])) {
+    $lastName = $sql->escapeString($_POST ['lastName']);
 }
 
 $active = 0;
-if (isset ( $_POST ['active'] )) {
-    $active = ( int ) $_POST ['active'];
+if (isset ($_POST ['active'])) {
+    $active = ( int )$_POST ['active'];
 }
 
 $password = $user->generatePassword();
 
-echo $sql->executeStatement ( "INSERT INTO users ( usr, pass, firstName, lastName, email, role, active, hash ) VALUES ('$username', '$password', '$firstName', '$lastName', '$email', '$role', '$active', '" . md5 ( $username . $role ) . "' );" );
-$sql->disconnect ();
+echo $sql->executeStatement("INSERT INTO users ( usr, pass, firstName, lastName, email, role, active, hash ) VALUES ('$username', '$password', '$firstName', '$lastName', '$email', '$role', '$active', '" . md5($username . $role) . "' );");
+$sql->disconnect();
 
 require_once "Mail.php";
 require_once "Mail/mime.php";
@@ -83,10 +83,10 @@ $html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;Username: " . $username;
 $html .= "<br/>&nbsp;&nbsp;&nbsp;&nbsp;Password: " . $password . "</p>";
 $html .= "For security reasons, once logged in, we recommend you <a href='https://saperstonestudios.com/user/profile.php'>reset your password</a>.";
 $crlf = "\n";
-$mime = new Mail_mime ( $crlf );
-$mime->setTXTBody ( $text );
-$mime->setHTMLBody ( $html );
-$body = $mime->get ();
-require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'email.php';
+$mime = new Mail_mime ($crlf);
+$mime->setTXTBody($text);
+$mime->setHTMLBody($html);
+$body = $mime->get();
+require dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'email.php';
 exit ();
 ?>

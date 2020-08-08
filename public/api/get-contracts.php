@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -8,20 +8,20 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$response = array ();
+$response = array();
 $sql = "SELECT * FROM contracts;";
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $r ['lineItems'] = array ();
-    
+$result = mysqli_query($conn->db, $sql);
+while ($r = mysqli_fetch_assoc($result)) {
+    $r ['lineItems'] = array();
+
     $sql = "SELECT * FROM contract_line_items WHERE contract = {$r['id']};";
-    $sesult = mysqli_query ( $conn->db, $sql );
-    while ( $s = mysqli_fetch_assoc ( $sesult ) ) {
+    $sesult = mysqli_query($conn->db, $sql);
+    while ($s = mysqli_fetch_assoc($sesult)) {
         $r ['lineItems'] [] = $s;
     }
     $response [] = $r;
 }
-echo "{\"data\":" . json_encode ( $response ) . "}";
+echo "{\"data\":" . json_encode($response) . "}";
 
-$conn->disconnect ();
+$conn->disconnect();
 exit ();

@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -8,14 +8,14 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-if (isset ( $_GET ['id'] )) {
-    $id = ( int ) $_GET ['id'];
+if (isset ($_GET ['id'])) {
+    $id = ( int )$_GET ['id'];
 } else {
     echo "ID is not provided";
-    $sql->disconnect ();
+    $sql->disconnect();
     exit ();
 }
 
-echo json_encode ( $sql->getRow( "SELECT galleries.*, COUNT(gallery_images.gallery) AS 'images' FROM galleries LEFT JOIN gallery_images ON galleries.id = gallery_images.gallery WHERE galleries.id = $id GROUP BY galleries.id;" ) );
-$sql->disconnect ();
+echo json_encode($sql->getRow("SELECT galleries.*, COUNT(gallery_images.gallery) AS 'images' FROM galleries LEFT JOIN gallery_images ON galleries.id = gallery_images.gallery WHERE galleries.id = $id GROUP BY galleries.id;"));
+$sql->disconnect();
 exit ();

@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -9,25 +9,25 @@ $api = new Api ($sql, $user);
 $api->forceAdmin();
 
 $id;
-if (isset ( $_GET ['id'] )) {
-    $id = ( int ) $_GET ['id'];
+if (isset ($_GET ['id'])) {
+    $id = ( int )$_GET ['id'];
 } else {
     echo "ID is not provided";
-    $conn->disconnect ();
+    $conn->disconnect();
     exit ();
 }
 
-$response = array ();
+$response = array();
 $sql = "SELECT * FROM contracts WHERE id = $id;";
-$response = $sql->getRow( $sql );
-$response ['lineItems'] = array ();
+$response = $sql->getRow($sql);
+$response ['lineItems'] = array();
 
 $sql = "SELECT * FROM contract_line_items WHERE contract = $id;";
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
+$result = mysqli_query($conn->db, $sql);
+while ($r = mysqli_fetch_assoc($result)) {
     $response ['lineItems'] [] = $r;
 }
-echo json_encode ( $response );
+echo json_encode($response);
 
-$conn->disconnect ();
+$conn->disconnect();
 exit ();
