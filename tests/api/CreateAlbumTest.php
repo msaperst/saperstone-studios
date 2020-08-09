@@ -147,7 +147,8 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals('Sample Album Description', $album['description']);
             $this->assertEquals('2020-07-28 00:00:00', $album['date']);
             $this->assertNull($album['lastAccessed']);
-            $this->assertEquals('SampleAlbum_' . time(), $album['location']);
+            $this->assertStringStartsWith('SampleAlbum_' . substr(time(), 0, -1), $album['location']);
+            $albumLocation = $album['location'];
             $this->assertNull($album['code']);
             $this->assertEquals(4, $album['owner']);
             $this->assertEquals(0, $album['images']);
@@ -164,7 +165,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertNull($userLogs[0]['what']);
             $this->assertEquals($albumId, $userLogs[0]['album']);
         } finally {
-            rmdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/SampleAlbum_' . time());
+            rmdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation");
             $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
             $count++;
