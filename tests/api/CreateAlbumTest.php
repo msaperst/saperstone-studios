@@ -109,14 +109,15 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals('', $album['description']);
             $this->assertStringStartsWith(date("Y-m-d H:i"), $album['date']);
             $this->assertNull($album['lastAccessed']);
-            $this->assertEquals('SampleAlbum_' . time(), $album['location']);
+            $albumLocation = $album['location'];
+            $this->assertStringStartsWith('SampleAlbum_' . substr(time(), 0, -1), $album['location']);
             $this->assertNull($album['code']);
             $this->assertEquals(1, $album['owner']);
             $this->assertEquals(0, $album['images']);
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/SampleAlbum_' . time()));
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation"));
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;"));
         } finally {
-            rmdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/SampleAlbum_' . time());
+            rmdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation");
             $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
             $count++;
@@ -147,12 +148,12 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals('Sample Album Description', $album['description']);
             $this->assertEquals('2020-07-28 00:00:00', $album['date']);
             $this->assertNull($album['lastAccessed']);
-            $this->assertStringStartsWith('SampleAlbum_' . substr(time(), 0, -1), $album['location']);
             $albumLocation = $album['location'];
+            $this->assertStringStartsWith('SampleAlbum_' . substr(time(), 0, -1), $album['location']);
             $this->assertNull($album['code']);
             $this->assertEquals(4, $album['owner']);
             $this->assertEquals(0, $album['images']);
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/SampleAlbum_' . time()));
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation"));
             $albumsForUsers = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
             $this->assertEquals(1, sizeOf($albumsForUsers));
             $this->assertEquals($albumId, $albumsForUsers[0]['album']);
