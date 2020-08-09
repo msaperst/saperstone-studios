@@ -1,4 +1,5 @@
 <?php
+require 'Email.php';
 $delta = 5 * 60;
 $file = "/var/www/logs/error.log";
 $updated = 0;
@@ -45,11 +46,10 @@ for($x_pos = 0, $ln = 0, $output = array (); fseek ( $fl, $x_pos, SEEK_END ) !==
 }
 fclose ( $fl );
 
-require_once "Mail.php";
-require_once "Mail/mime.php";
 $to = "Webmaster <msaperst@gmail.com>";
 $from = "Error <error@saperstonestudios.com>";
 $subject = "Apache Errors";
+$email = new Email($to, $from, $subject);
 
 $html = "<html><body>";
 $html .= "This is an automatically generated message from Walter<br/>";
@@ -65,15 +65,6 @@ foreach ( $output as $line ) {
     $text .= "$line\n";
 }
 
-$crlf = "\n";
-
-$mime = new Mail_mime ( $crlf );
-
-$mime->setTXTBody ( $text );
-$mime->setHTMLBody ( $html );
-
-$body = $mime->get ();
-require ('email.php');
-
-echo $error;
-?>
+$email->setText($text);
+$email->setHtml($html);
+echo $email->sendEmail();

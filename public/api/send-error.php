@@ -41,9 +41,6 @@ if (isset ($_POST ['resolution']) && $_POST ['resolution'] != "") {
     $resolution = $sql->escapeString($_POST ['resolution']);
 }
 
-require_once "Mail.php";
-require_once "Mail/mime.php";
-
 $IP = $session->getClientIP();
 $geo_info = json_decode(file_get_contents("http://ipinfo.io/$IP/json"));
 $browser = new Browser ();
