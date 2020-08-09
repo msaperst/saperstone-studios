@@ -112,15 +112,15 @@ class User {
 
     function forceAdmin() {
         if (!$this->isAdmin()) {
-            require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
-            throw401();
+            $errors = new Errors();
+            $errors->throw401();
         }
     }
 
     function forceLogIn() {
         if (!$this->isLoggedIn()) {
-            require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
-            throw401();
+            $errors = new Errors();
+            $errors->throw401();
         }
     }
 }

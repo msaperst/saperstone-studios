@@ -1,14 +1,14 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
+$errors = new Errors();
 
 $search;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['s'] )) {
-    throw404();
+    $errors->throw404();
 } else {
     $search = $sql->escapeString( $_GET ['s'] );
 }

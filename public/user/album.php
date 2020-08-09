@@ -1,11 +1,11 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
+$errors = new Errors();
 
 $album;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['album'] ) || $_GET ['album'] == "") {
-    throw404();
+    $errors->throw404();
 } else {
     $album = ( int ) $_GET ['album'];
 }
@@ -17,7 +17,7 @@ $user = new User ($sql);
 $album_info = $sql->getRow( "SELECT * FROM `albums` WHERE id = '" . $album . "';" );
 // if the album doesn't exist, throw a 404 error
 if (! $album_info ['name']) {
-    throw404();
+    $errors->throw404();
 }
 
 // logic found here: https://www.draw.io/#G1oa_DMoW0-na6KNuex0oligsw1jdRbqaI
@@ -37,7 +37,7 @@ if( $user->isAdmin () ) {
         // user is logged in, and user has access to album, do nothing, you shall pass onwards
     } else {
         if( !$album_info ['code'] ) {
-            throw401();
+            $errors->throw401();
         } else {
             header ( 'HTTP/1.0 401 Unauthorized' );
             $title = "401";
@@ -50,7 +50,7 @@ if( $user->isAdmin () ) {
     }
 } else {
     if( !$album_info ['code'] ) {
-        throw401();
+        $errors->throw401();
     } else {
         header ( 'HTTP/1.0 401 Unauthorized' );
         $title = "401";

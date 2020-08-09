@@ -3,8 +3,6 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new User ($sql);
-$api = new Api ($sql, $user);
 
 $response = [];
 $start = 0;

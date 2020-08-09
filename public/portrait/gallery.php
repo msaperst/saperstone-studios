@@ -1,11 +1,11 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
+$errors = new Errors();
 
 $what;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['w'] )) {
-    throw404();
+    $errors->throw404();
 } else {
     $what = ( int ) $_GET ['w'];
 }
@@ -15,12 +15,12 @@ $session->initialize();
 $sql = new Sql ();
 $details = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '$what';" );
 if (! $details ['id']) {
-    throw404();
+    $errors->throw404();
 }
 
 $children = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '$what' AND title != 'Product';" );
 if (sizeof ( $children ) == 0) {
-    throw404();
+    $errors->throw404();
 }
 
 $user = new User($sql);

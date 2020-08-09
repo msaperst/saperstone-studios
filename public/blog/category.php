@@ -1,12 +1,12 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
+$errors = new Errors();
 
 $categories;
 $where;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['t'] )) {
-    throw404();
+    $errors->throw404();
 } else {
     $categories = array_map ( 'intval', explode ( ',', $_GET ['t'] ) );
     $where = "`id` = '" . implode ( "' OR `id` = '", $categories ) . "';";
@@ -17,7 +17,7 @@ $sql = new Sql ();
 $string = new Strings ();
 $tags = $sql->getRows( "SELECT tag FROM `tags` WHERE $where" );
 if (empty ( $tags )) {
-    throw404();
+    $errors->throw404();
 }
 $posts = $sql->getRows( "SELECT * FROM `blog_tags` WHERE " . str_replace ( $where, "id", "tag" ) );
 $sql->disconnect ();

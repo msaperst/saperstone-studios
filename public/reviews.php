@@ -1,17 +1,17 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
 $user = new User ($sql);
+$errors = new Errors();
 $where;
 
 if (isset ( $_GET ['c'] )) {
     $category = ( int ) $_GET ['c'];
     $details = $sql->getRow( "SELECT * FROM `review_types` WHERE id = '$category';" );
     if (! $details ['name']) {
-        throw404();
+        $errors->throw404();
     }
     $where = " WHERE `category` = $category";
 }
