@@ -4,24 +4,20 @@ $session = new Session();
 $session->initialize();
 $sql = new Sql ();
 
-require_once "Mail.php";
-require_once "Mail/mime.php";
-$crlf = "\n";
-
 $string = new Strings ();
 
-$email = "";
+$emailA = "";
 if (isset ($_POST ['email'])) {
-    $email = $sql->escapeString($_POST ['email']);
+    $emailA = $sql->escapeString($_POST ['email']);
 } else {
     echo "Enter an email address!";
     exit ();
 }
 
-if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+if (filter_var($emailA, FILTER_VALIDATE_EMAIL)) {
     $resetCode = $string->randomString(8);
-    mysqli_query($conn->db, "UPDATE users SET resetKey='$resetCode' WHERE email='$email';");
-    $row = $sql->getRow("SELECT firstName, lastName FROM users WHERE email='$email';");
+    mysqli_query($conn->db, "UPDATE users SET resetKey='$resetCode' WHERE email='$emailA';");
+    $row = $sql->getRow("SELECT firstName, lastName FROM users WHERE email='$emailA';");
     $name = "";
     if ($row ['firstName']) {
         $name .= $row ['firstName'];
@@ -36,13 +32,12 @@ if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $text .= "\t$resetCode";
         $html = "<html><body>" . $string->textToHTML($text) . "</body></html>";
         $from = "noreply@saperstonestudios.com";
-        $to = "$name <$email>";
+        $to = "$name <$emailA>";
 
-        $mime = new Mail_mime ($crlf);
-        $mime->setTXTBody($text);
-        $mime->setHTMLBody($html);
-        $body = $mime->get();
-        require dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'email.php';
+        $email = new Email($to, $from, $subject);
+        $email->setText($text);
+        $email->setHtml($html);
+        $email->sendEmail();
     }
 
     $conn->disconnect();

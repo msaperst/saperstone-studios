@@ -54,6 +54,7 @@ $to = "Webmaster <msaperst@gmail.com>";
 $from = "Error <error@saperstonestudios.com>";
 $subject = "$error Error";
 
+$email = new Email($to, $from, $subject);
 $html = "<html><body>";
 $html .= "This is an automatically generated message from Saperstone Studios<br/>";
 $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a $error on page $page.<br/>";
@@ -69,24 +70,7 @@ if ($user->isLoggedIn()) {
     $html .= "<strong>Name</strong>: $name<br/>";
     $html .= "<strong>Email</strong>: <a href='mailto:$email'>$email</a><br/>";
 }
-if (!isset ($geo_info->city)) {
-    $html .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
-} else {
-    if (isset ($geo_info->postal)) {
-        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
-    } else {
-        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
-    }
-    $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
-}
-if (isset ($_POST ['position']) && isset ($location)) {
-    $html .= "<strong>Location</strong>: $location (estimate based on geolocation $position)<br/>";
-}
-$html .= "<strong>Browser</strong>: " . $browser->getBrowser() . " " . $browser->getVersion() . "<br/>";
-$html .= "<strong>Resoluation</strong>: $resolution<br/>";
-$html .= "<strong>OS</strong>: " . $browser->getPlatform() . "<br/>";
-$html .= "<strong>Full UA</strong>: " . $_SERVER ['HTTP_USER_AGENT'] . "<br/>";
-$html .= "</body></html>";
+$html .= $email->getUserInfoHtml();
 
 $text = "This is an automatically generated message from Saperstone Studios\n";
 $text .= "\t\tSomeone got a $error on page $page.\n";
@@ -101,32 +85,9 @@ if ($user->isLoggedIn()) {
     $text .= "Name: $name\n";
     $text .= "Email: $email\n";
 }
-if (!isset ($geo_info->city)) {
-    $text .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
-} else {
-    if (isset ($geo_info->postal)) {
-        $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
-    } else {
-        $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
-    }
-    $text .= "Hostname: " . $geo_info->hostname . "\n";
-}
-if (isset ($_POST ['position']) && isset ($location)) {
-    $text .= "Location: $location (estimate based on geolocation $position)\n";
-}
-$text .= "Browser: " . $browser->getBrowser() . " " . $browser->getVersion() . "\n";
-$text .= "Resoluation: $resolution";
-$text .= "OS: " . $browser->getPlatform() . "\n";
-$text .= "Full UA: " . $_SERVER ['HTTP_USER_AGENT'] . "\n";
+$text .= $email->getUserInfoText();
 
-$crlf = "\n";
-
-$mime = new Mail_mime ($crlf);
-
-$mime->setTXTBody($text);
-$mime->setHTMLBody($html);
-
-$body = $mime->get();
-
-require dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'email.php';
+$email->setHtml($html);
+$email->setText($text);
+$email->sendEmail();
 exit ();

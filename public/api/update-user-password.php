@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -8,20 +8,20 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$err = array ();
+$err = array();
 
-if (isset ( $_POST ['id'] )) {
-    $id = ( int ) $_POST ['id'];
+if (isset ($_POST ['id'])) {
+    $id = ( int )$_POST ['id'];
 } else {
     $err [] = "ID is not provided";
 }
-if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
-    $_POST ['password'] = $sql->escapeString( $_POST ['password'] );
+if (isset ($_POST ['password']) && $_POST ['password'] != "") {
+    $_POST ['password'] = $sql->escapeString($_POST ['password']);
 } else {
     $err [] = "All the fields must be filled in!";
 }
-if (isset ( $_POST ['passwordConfirm'] ) && $_POST ['passwordConfirm'] != "") {
-    $_POST ['passwordConfirm'] = $sql->escapeString( $_POST ['passwordConfirm'] );
+if (isset ($_POST ['passwordConfirm']) && $_POST ['passwordConfirm'] != "") {
+    $_POST ['passwordConfirm'] = $sql->escapeString($_POST ['passwordConfirm']);
 } else {
     $err [] = "All the fields must be filled in!";
 }
@@ -33,15 +33,15 @@ if ($_POST ['password'] != $_POST ['passwordConfirm']) {
 if ($_POST ['password'] == "" || $_POST ['passwordConfirm'] == "") {
     $err [] = "Password cannot be blank";
 }
-$err = array_unique ( $err );
+$err = array_unique($err);
 
-if (count ( $err ) > 0) {
-    echo implode ( '<br />', $err );
-    $conn->disconnect ();
+if (count($err) > 0) {
+    echo implode('<br />', $err);
+    $conn->disconnect();
     exit ();
 }
 
-mysqli_query ( $conn->db, "UPDATE users SET pass='" . md5 ( $_POST ['password'] ) . "' WHERE id='$id';" );
+mysqli_query($conn->db, "UPDATE users SET pass='" . md5($_POST ['password']) . "' WHERE id='$id';");
 
-$conn->disconnect ();
+$conn->disconnect();
 exit ();

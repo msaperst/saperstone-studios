@@ -47,9 +47,9 @@ if (isset ($_POST ['number']) && $_POST ['number'] != "") {
     exit ();
 }
 
-$email;
+$emailA;
 if (isset ($_POST ['email']) && $_POST ['email'] != "") {
-    $email = $sql->escapeString($_POST ['email']);
+    $emailA = $sql->escapeString($_POST ['email']);
 } else {
     echo "Email is not provided";
     $conn->disconnect();
@@ -87,7 +87,7 @@ $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
 $contract_info = $sql->getRow($sql);
 $file = "../user/contracts/$name - " . date('Y-m-d') . " - " . ucfirst($contract_info ['type']) . " Contract.pdf";
 $sql = "UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
-        `email` = '$email', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
+        `email` = '$emailA', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
         `file` = '$file' WHERE `id` = $id;";
 mysqli_query($conn->db, $sql);
 $sql = "SELECT * FROM `contracts` WHERE `id` = $id";
@@ -115,12 +115,13 @@ $mpdf->Output($file);
 
 // email out pdf
 $from = "Contracts <contracts@saperstonestudios.com>";
-$to = "$name <$email>";
+$to = "$name <$emailA>";
 $subject = "Saperstone Studios " . ucfirst($contract_info ['type']) . " Contract";
+$email = new Email($to, $from, $subject);
 
 $html = "<html><body>";
 $html .= "<p>Thank you for signing your contract. ";
-$text .= "Thank you for signing your contract. ";
+$text = "Thank you for signing your contract. ";
 if ($contract_info ['deposit'] > 0) {
     $html .= "Please note you have a $" . $contract_info ['deposit'] . " deposit due. ";
     $text .= "Please note you have a $" . $contract_info ['deposit'] . " deposit due. ";
@@ -133,18 +134,15 @@ $html .= "</p>";
 $text .= "\n\n";
 $html .= "</body></html>";
 
-require_once "Mail.php";
-require_once "Mail/mime.php";
-$crlf = "\n";
-$mime = new Mail_mime ($crlf);
-$mime->setTXTBody($text);
-$mime->setHTMLBody($html);
-$mime->addAttachment($file);
-$body = $mime->get();
-require dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'email.php';
+$email->setHtml($html);
+$email->setText($text);
+$email->addAttachment($file);
+$email->sendEmail();
 
 // now send to LAS
 $to = "Contracts <contracts@saperstonestudios.com>";
+$email = new Email($to, $from, $subject);
+
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
 $text = "This is an automatically generated message from Saperstone Studios\n\n";
@@ -158,14 +156,9 @@ $html .= "</p>";
 $text .= "\n\n";
 $html .= "</body></html>";
 
-require_once "Mail.php";
-require_once "Mail/mime.php";
-$crlf = "\n";
-$mime = new Mail_mime ($crlf);
-$mime->setTXTBody($text);
-$mime->setHTMLBody($html);
-$mime->addAttachment($file);
-$body = $mime->get();
-require dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'email.php';
+$email->setHtml($html);
+$email->setText($text);
+$email->addAttachment($file);
+$email->sendEmail();
 
 exit ();

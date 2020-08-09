@@ -156,19 +156,19 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadFavoritesOpen() {
         try {
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '0'
                 ]
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '1'
                 ]
             ]);
-            $response = $this->http->request('POST', 'api/set-favorite.php', [
+            $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
                     'album' => 997,
                     'image' => '2'
@@ -223,6 +223,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     public function testUnAuthUserDownloadSingleOpen() {
         try {
+            date_default_timezone_set("America/New_York");
             $dateTime = date("Y-m-d H-i");
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
