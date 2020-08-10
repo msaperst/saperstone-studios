@@ -15,7 +15,7 @@ class CreateBlogTagTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
     }
 
@@ -36,7 +36,7 @@ class CreateBlogTagTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/create-blog-tag.php', [
                 'cookies' => $cookieJar
@@ -50,7 +50,7 @@ class CreateBlogTagTest extends TestCase {
     public function testNoTag() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-tag.php', [
             'cookies' => $cookieJar
         ]);
@@ -61,7 +61,7 @@ class CreateBlogTagTest extends TestCase {
     public function testBlankTag() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-tag.php', [
             'form_params' => [
                 'tag' => ''
@@ -77,7 +77,7 @@ class CreateBlogTagTest extends TestCase {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-blog-tag.php', [
                 'form_params' => [
                     'tag' => 'crazyTestTag'
@@ -98,7 +98,7 @@ class CreateBlogTagTest extends TestCase {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-blog-tag.php', [
                 'form_params' => [
                     'tag' => 'crazyTestTag'

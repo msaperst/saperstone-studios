@@ -15,7 +15,7 @@ class DeleteAlbumTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4);");
@@ -61,7 +61,7 @@ class DeleteAlbumTest extends TestCase {
     public function testNoAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-album.php', [
             'cookies' => $cookieJar
         ]);
@@ -72,7 +72,7 @@ class DeleteAlbumTest extends TestCase {
     public function testBlankAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-album.php', [
             'form_params' => [
                 'id' => ''
@@ -86,7 +86,7 @@ class DeleteAlbumTest extends TestCase {
     public function testLetterAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-album.php', [
             'form_params' => [
                 'id' => 'a'
@@ -100,7 +100,7 @@ class DeleteAlbumTest extends TestCase {
     public function testBadAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-album.php', [
             'form_params' => [
                 'id' => 9999
@@ -115,7 +115,7 @@ class DeleteAlbumTest extends TestCase {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $this->http->request('POST', 'api/delete-album.php', [
                 'form_params' => [
                     'id' => 998
@@ -135,7 +135,7 @@ class DeleteAlbumTest extends TestCase {
     public function testAdminCanDeleteAnyAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-album.php', [
             'form_params' => [
                 'id' => 998
@@ -153,7 +153,7 @@ class DeleteAlbumTest extends TestCase {
     public function testUploaderCanDeleteOwnAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-album.php', [
             'form_params' => [
                 'id' => 999

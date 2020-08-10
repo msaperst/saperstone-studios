@@ -15,7 +15,7 @@ class CreateProductOptionTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
     }
 
@@ -36,7 +36,7 @@ class CreateProductOptionTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/create-product-option.php', [
                 'cookies' => $cookieJar
@@ -50,7 +50,7 @@ class CreateProductOptionTest extends TestCase {
     public function testNoType() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-product-option.php', [
             'cookies' => $cookieJar
         ]);
@@ -61,7 +61,7 @@ class CreateProductOptionTest extends TestCase {
     public function testBlankType() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-product-option.php', [
             'form_params' => [
                 'type' => ''
@@ -75,7 +75,7 @@ class CreateProductOptionTest extends TestCase {
     public function testNoName() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-product-option.php', [
             'form_params' => [
                 'type' => '1'
@@ -89,7 +89,7 @@ class CreateProductOptionTest extends TestCase {
     public function testBlankName() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-product-option.php', [
             'form_params' => [
                 'type' => '1',
@@ -105,7 +105,7 @@ class CreateProductOptionTest extends TestCase {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-product-option.php', [
                 'form_params' => [
                     'type' => '999',

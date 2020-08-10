@@ -14,7 +14,7 @@ class CreateBlogCommentTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', CURRENT_TIMESTAMP, '', 0)");
     }
@@ -93,7 +93,7 @@ class CreateBlogCommentTest extends TestCase {
         date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-comment.php', [
             'form_params' => [
                 'post' => 999,

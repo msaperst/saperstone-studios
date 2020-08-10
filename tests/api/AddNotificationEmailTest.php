@@ -14,7 +14,7 @@ class AddNotificationEmailTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES ('999', 'sample-album', 'sample album for testing', '');");
     }
@@ -100,7 +100,7 @@ class AddNotificationEmailTest extends TestCase {
     public function testLoggedIn() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/add-notification-email.php', [
             'form_params' => [
                 'album' => 999,

@@ -14,7 +14,7 @@ class SetFavoriteTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4);");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '0', '', '/albums/sample/sample1.jpg', '300', '400', '1');");
@@ -37,7 +37,7 @@ class SetFavoriteTest extends TestCase {
     public function testNoAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'cookies' => $cookieJar
         ]);
@@ -48,7 +48,7 @@ class SetFavoriteTest extends TestCase {
     public function testBlankAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => ''
@@ -62,7 +62,7 @@ class SetFavoriteTest extends TestCase {
     public function testLetterAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 'a'
@@ -76,7 +76,7 @@ class SetFavoriteTest extends TestCase {
     public function testBadAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 9999
@@ -90,7 +90,7 @@ class SetFavoriteTest extends TestCase {
     public function testNoImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999
@@ -104,7 +104,7 @@ class SetFavoriteTest extends TestCase {
     public function testBlankImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999,
@@ -119,7 +119,7 @@ class SetFavoriteTest extends TestCase {
     public function testBadImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999,
@@ -150,7 +150,7 @@ class SetFavoriteTest extends TestCase {
     public function testSetFavoriteAuth() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999,

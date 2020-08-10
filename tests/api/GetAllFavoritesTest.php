@@ -15,7 +15,7 @@ class GetAllFavoritesTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
@@ -60,7 +60,7 @@ class GetAllFavoritesTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/get-all-favorites.php', [
                 'cookies' => $cookieJar
@@ -74,14 +74,14 @@ class GetAllFavoritesTest extends TestCase {
     public function testNoAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-all-favorites.php', [
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $favorites = json_decode($response->getBody(), true);
-        $this->assertEquals(3, sizeOf($favorites));
-        $this->assertEquals(2, sizeOf($favorites[1]));
+        $this->assertTrue(3 <= sizeOf($favorites));  //there may be more depending on other things in the test DB
+        $this->assertTrue(2 <= sizeOf($favorites[1]));   //there may be more depending on other things in the test DB
         $this->assertEquals(2, sizeOf($favorites[1][998]));
         $this->assertEquals(996, $favorites[1][998][0]['id']);
         $this->assertEquals(998, $favorites[1][998][0]['album']);
@@ -160,7 +160,7 @@ class GetAllFavoritesTest extends TestCase {
     public function testAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-all-favorites.php', [
             'query' => [
                 'album' => '999'

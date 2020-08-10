@@ -15,7 +15,7 @@ class GetAlbumTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
@@ -47,7 +47,7 @@ class GetAlbumTest extends TestCase {
     public function testNoAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album.php', [
             'cookies' => $cookieJar
         ]);
@@ -58,7 +58,7 @@ class GetAlbumTest extends TestCase {
     public function testBlankAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album.php', [
             'query' => [
                 'id' => ''
@@ -72,7 +72,7 @@ class GetAlbumTest extends TestCase {
     public function testLetterAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album.php', [
             'query' => [
                 'id' => 'a'
@@ -86,7 +86,7 @@ class GetAlbumTest extends TestCase {
     public function testBadAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album.php', [
             'query' => [
                 'id' => 9999
@@ -101,7 +101,7 @@ class GetAlbumTest extends TestCase {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $this->http->request('GET', 'api/get-album.php', [
                 'query' => [
                     'id' => 998
@@ -118,7 +118,7 @@ class GetAlbumTest extends TestCase {
         date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album.php', [
             'query' => [
                 'id' => 998
@@ -141,7 +141,7 @@ class GetAlbumTest extends TestCase {
     public function testUploaderCanGetOwnAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album.php', [
             'query' => [
                 'id' => 999

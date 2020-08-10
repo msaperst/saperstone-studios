@@ -15,7 +15,7 @@ class GetAlbumImagesTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '1234');");
@@ -47,7 +47,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testNoAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'cookies' => $cookieJar
         ]);
@@ -58,7 +58,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testBlankAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => ''
@@ -72,7 +72,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testLetterAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 'a'
@@ -86,7 +86,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testBadAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 9999
@@ -100,7 +100,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testAdminFullView() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 998,
@@ -126,7 +126,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testViewAll() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 999
@@ -168,7 +168,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testViewSecond() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 999,
@@ -196,7 +196,7 @@ class GetAlbumImagesTest extends TestCase {
         $searched [999] = md5("album1234");
         $cookieJar = CookieJar::fromArray([
             'searched' => json_encode($searched)
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 999,
@@ -215,7 +215,7 @@ class GetAlbumImagesTest extends TestCase {
             $searched [999] = md5("album123");
             $cookieJar = CookieJar::fromArray([
                 'searched' => json_encode($searched)
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $this->http->request('GET', 'api/get-album-images.php', [
                 'query' => [
                     'albumId' => 999,
@@ -236,7 +236,7 @@ class GetAlbumImagesTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode($searched)
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 999,
@@ -255,7 +255,7 @@ class GetAlbumImagesTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7',
             'searched' => json_encode($searched)
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 999,
@@ -271,7 +271,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testAuthWithAccess() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 999,
@@ -290,7 +290,7 @@ class GetAlbumImagesTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7',
             'searched' => json_encode($searched)
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-album-images.php', [
             'query' => [
                 'albumId' => 999,
@@ -310,7 +310,7 @@ class GetAlbumImagesTest extends TestCase {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146',
                 'searched' => json_encode($searched)
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $this->http->request('GET', 'api/get-album-images.php', [
                 'query' => [
                     'albumId' => 999,

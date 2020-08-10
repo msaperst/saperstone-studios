@@ -15,7 +15,7 @@ class GetCartTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,1,1,2)');
         $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,2,0,0)');
@@ -34,6 +34,7 @@ class GetCartTest extends TestCase {
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = 997;");
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = 998;");
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = 999;");
+        $this->sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`user` = 1;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 997;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 998;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
@@ -55,7 +56,7 @@ class GetCartTest extends TestCase {
     public function testGottenCart() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/get-cart.php', [
             'cookies' => $cookieJar
         ]);

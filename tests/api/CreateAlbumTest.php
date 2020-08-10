@@ -15,7 +15,7 @@ class CreateAlbumTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
     }
 
@@ -36,7 +36,7 @@ class CreateAlbumTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/create-album.php', [
                 'cookies' => $cookieJar
@@ -50,7 +50,7 @@ class CreateAlbumTest extends TestCase {
     public function testNoAlbumName() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-album.php', [
             'cookies' => $cookieJar
         ]);
@@ -61,7 +61,7 @@ class CreateAlbumTest extends TestCase {
     public function testBlankAlbumName() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-album.php', [
             'form_params' => [
                 'name' => ''
@@ -76,7 +76,7 @@ class CreateAlbumTest extends TestCase {
         date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-album.php', [
             'form_params' => array(
                 'name' => 'Sample Album',
@@ -93,7 +93,7 @@ class CreateAlbumTest extends TestCase {
             date_default_timezone_set("America/New_York");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-album.php', [
                 'form_params' => array(
                     'name' => 'Sample Album'
@@ -130,7 +130,7 @@ class CreateAlbumTest extends TestCase {
             date_default_timezone_set("America/New_York");
             $cookieJar = CookieJar::fromArray([
                 'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-album.php', [
                 'form_params' => array(
                     'name' => 'Sample Album',
@@ -182,7 +182,7 @@ class CreateAlbumTest extends TestCase {
             date_default_timezone_set("America/New_York");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-album.php', [
                 'form_params' => array(
                     'name' => 'Sample Album'
@@ -196,5 +196,3 @@ class CreateAlbumTest extends TestCase {
         }
     }
 }
-
-?>

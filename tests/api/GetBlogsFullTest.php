@@ -14,7 +14,7 @@ class GetBlogsFullTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('997', 'Sample Blog', '2031-01-01', '', 0, 1)");
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('998', 'Sample Blog', '2031-01-01', '', 0, 1)");
@@ -238,7 +238,7 @@ class GetBlogsFullTest extends TestCase {
     public function testGetBlogFullUser() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-blogs-full.php', [
             'query' => [
                 'start' => 2
@@ -294,7 +294,7 @@ class GetBlogsFullTest extends TestCase {
     public function testGetBlogFullAdmin() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-blogs-full.php', [
             'query' => [
                 'start' => 2
