@@ -9,19 +9,10 @@ $api = new Api ($sql, $user);
 $api->forceAdmin();
 
 $response = array();
-$sql = "SELECT * FROM contracts;";
-$result = mysqli_query($conn->db, $sql);
-while ($r = mysqli_fetch_assoc($result)) {
-    $r ['lineItems'] = array();
-
-    $sql = "SELECT * FROM contract_line_items WHERE contract = {$r['id']};";
-    $sesult = mysqli_query($conn->db, $sql);
-    while ($s = mysqli_fetch_assoc($sesult)) {
-        $r ['lineItems'] [] = $s;
-    }
+foreach ($sql->getRows( "SELECT * FROM contracts;" ) as $r) {
+    $r ['lineItems'] = $sql->getRows( "SELECT * FROM contract_line_items WHERE contract = {$r['id']};" );
     $response [] = $r;
 }
 echo "{\"data\":" . json_encode($response) . "}";
-
-$conn->disconnect();
+$sql->disconnect();
 exit ();

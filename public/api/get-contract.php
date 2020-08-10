@@ -8,26 +8,19 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$id;
-if (isset ($_GET ['id'])) {
-    $id = ( int )$_GET ['id'];
-} else {
-    echo "ID is not provided";
-    $conn->disconnect();
+$id = $api->retrieveGetInt('id', 'Contract id');
+if (is_array($id)) {
+    echo $id['error'];
+    exit();
+}
+$contract_info = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
+if (!$contract_info ['id']) {
+    echo "Contract id does not match any contracts";
+    $sql->disconnect();
     exit ();
 }
 
-$response = array();
-$sql = "SELECT * FROM contracts WHERE id = $id;";
-$response = $sql->getRow($sql);
-$response ['lineItems'] = array();
-
-$sql = "SELECT * FROM contract_line_items WHERE contract = $id;";
-$result = mysqli_query($conn->db, $sql);
-while ($r = mysqli_fetch_assoc($result)) {
-    $response ['lineItems'] [] = $r;
-}
-echo json_encode($response);
-
-$conn->disconnect();
+$contract_info ['lineItems'] = $sql->getRows( "SELECT * FROM contract_line_items WHERE contract = $id;" );
+echo json_encode($contract_info);
+$sql->disconnect();
 exit ();

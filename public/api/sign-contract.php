@@ -3,96 +3,70 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
+$user = new User ($sql);
+$api = new Api($sql, $user);
 
-$id;
-if (isset ($_POST ['id']) && $_POST ['id'] != "") {
-    $id = intval($_POST ['id']);
-} else {
-    echo "Id is not provided";
-    $conn->disconnect();
-    exit ();
+$id = $api->retrievePostInt('id', 'Contract id');
+if (is_array($id)) {
+    echo $id['error'];
+    exit();
 }
-$sql = "SELECT * FROM contracts WHERE id = $id;";
-$contract_info = $sql->getRow($sql);
+$contract_info = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
 if (!$contract_info ['id']) {
-    echo "That ID doesn't match any contracts";
-    $conn->disconnect();
+    echo "Contract id does not match any contracts";
+    $sql->disconnect();
     exit ();
 }
 
-$name;
-if (isset ($_POST ['name']) && $_POST ['name'] != "") {
-    $name = $sql->escapeString($_POST ['name']);
-} else {
-    echo "Name is not provided";
-    $conn->disconnect();
-    exit ();
+$name = $api->retrievePostString('name', 'Contract contact name');
+if (is_array($name)) {
+    echo $name['error'];
+    exit();
 }
 
-$address;
-if (isset ($_POST ['address']) && $_POST ['address'] != "") {
-    $address = $sql->escapeString($_POST ['address']);
-} else {
-    echo "Address is not provided";
-    $conn->disconnect();
-    exit ();
+$address = $api->retrievePostString('address', 'Contract contact address');
+if (is_array($address)) {
+    echo $address['error'];
+    exit();
 }
 
-$number;
-if (isset ($_POST ['number']) && $_POST ['number'] != "") {
-    $number = $sql->escapeString($_POST ['number']);
-} else {
-    echo "Number is not provided";
-    $conn->disconnect();
-    exit ();
+$number = $api->retrievePostString('number', 'Contract contact number');
+if (is_array($number)) {
+    echo $number['error'];
+    exit();
 }
 
-$emailA;
-if (isset ($_POST ['email']) && $_POST ['email'] != "") {
-    $emailA = $sql->escapeString($_POST ['email']);
-} else {
-    echo "Email is not provided";
-    $conn->disconnect();
-    exit ();
+$emailA = $api->retrieveValidatedPost('email', 'Contract contact email', FILTER_VALIDATE_EMAIL);
+if (is_array($emailA)) {
+    echo $emailA['error'];
+    exit();
 }
 
-$signature;
-if (isset ($_POST ['signature']) && $_POST ['signature'] != "") {
-    $signature = $sql->escapeString($_POST ['signature']);
-} else {
-    echo "Signature is not provided";
-    $conn->disconnect();
-    exit ();
+$signature = $api->retrievePostString('signature', 'Contract signature');
+if (is_array($signature)) {
+    echo $signature['error'];
+    exit();
 }
 
-$initial;
-if (isset ($_POST ['initial']) && $_POST ['initial'] != "") {
-    $initial = $sql->escapeString($_POST ['initial']);
-} else {
-    echo "Initial is not provided";
-    $conn->disconnect();
-    exit ();
+$initial = $api->retrievePostString('initial', 'Contract initials');
+if (is_array($initial)) {
+    echo $initial['error'];
+    exit();
 }
 
-$content;
-if (isset ($_POST ['content']) && $_POST ['content'] != "") {
-    $content = $sql->escapeString($_POST ['content']);
-} else {
-    echo "Content is not provided";
-    $conn->disconnect();
-    exit ();
+$content = $api->retrievePostString('content', 'Contract content');
+if (is_array($content)) {
+    echo $content['error'];
+    exit();
 }
 
-$sql = "SELECT * FROM `contracts` WHERE `id` = $id";
-$contract_info = $sql->getRow($sql);
+$contract_info = $sql->getRow( "SELECT * FROM `contracts` WHERE `id` = $id" );
 $file = "../user/contracts/$name - " . date('Y-m-d') . " - " . ucfirst($contract_info ['type']) . " Contract.pdf";
-$sql = "UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
+$sql->executeStatement( "UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
         `email` = '$emailA', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
-        `file` = '$file' WHERE `id` = $id;";
-mysqli_query($conn->db, $sql);
-$sql = "SELECT * FROM `contracts` WHERE `id` = $id";
-$contract_info = $sql->getRow($sql);
-$conn->disconnect();
+        `file` = '$file' WHERE `id` = $id;" );
+$contract_info = $sql->getRow("SELECT * FROM `contracts` WHERE `id` = $id");
+$sql->disconnect();
 
 // sanitize out content
 $content = str_replace("\\n", '', $content);
