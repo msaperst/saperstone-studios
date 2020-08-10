@@ -8,60 +8,32 @@ $api = new Api ($sql, $user);
 
 $api->forceLoggedIn();
 
-$album = "";
-if (isset ($_GET ['album']) && $_GET ['album'] != "") {
-    $album = ( int )$_GET ['album'];
-} else {
-    if (!isset ($_GET ['album'])) {
-        echo "Album id is required!";
-    } elseif ($_GET ['album'] != "") {
-        echo "Album id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
-    }
-    $conn->disconnect();
-    exit ();
+$album = $api->retrieveGetInt('album', 'Album id');
+if (is_array($album)) {
+    echo $album['error'];
+    exit();
 }
-
-$sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = $sql->getRow($sql);
+$album_info = $sql->getRow("SELECT * FROM albums WHERE id = $album;");
 if (!$album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect();
+    echo "Album id does not match any albums";
+    $sql->disconnect();
     exit ();
 }
 
-$sequence = "";
-if (isset ($_GET ['image']) && $_GET ['image'] != "") {
-    $sequence = ( int )$_GET ['image'];
-} else {
-    if (!isset ($_GET ['image'])) {
-        echo "Image id is required!";
-    } elseif ($_GET ['image'] != "") {
-        echo "Image id cannot be blank!";
-    } else {
-        echo "Some other Image id error occurred!";
-    }
-    $conn->disconnect();
-    exit ();
+$sequence = $api->retrieveGetInt('image', 'Image id');
+if (is_array($sequence)) {
+    echo $sequence['error'];
+    exit();
 }
-
-$sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
-$album_info = $sql->getRow($sql);
-if (!$album_info ['title']) {
-    echo "That image doesn't match anything";
-    $conn->disconnect();
+$image_info = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;");
+if (!$image_info ['id']) {
+    echo "Image id does not match any images";
+    $sql->disconnect();
     exit ();
 }
 
 // empty out our old cart for this image
-$sql = "SELECT * FROM `cart` WHERE `user` = '$user' AND `album` = '$album' and `image` = '$sequence'";
-$result = mysqli_query($conn->db, $sql);
-$cart = array();
-while ($r = mysqli_fetch_assoc($result)) {
-    $cart [] = $r;
-}
+$cart = $sql->getRows("SELECT * FROM `cart` WHERE `user` = '{$user->getId()}' AND `album` = '$album' and `image` = '$sequence'");
 echo json_encode($cart);
-
-$conn->disconnect();
+$sql->disconnect();
 exit ();

@@ -15,7 +15,7 @@ class CreateBlogPostTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
     }
 
@@ -36,7 +36,7 @@ class CreateBlogPostTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/create-blog-post.php', [
                 'cookies' => $cookieJar
@@ -50,7 +50,7 @@ class CreateBlogPostTest extends TestCase {
     public function testNoTitle() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'cookies' => $cookieJar
         ]);
@@ -61,7 +61,7 @@ class CreateBlogPostTest extends TestCase {
     public function testBlankTitle() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'form_params' => [
                 'title' => ''
@@ -75,7 +75,7 @@ class CreateBlogPostTest extends TestCase {
     public function testNoDate() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'form_params' => [
                 'title' => 'Sample Blog'
@@ -89,7 +89,7 @@ class CreateBlogPostTest extends TestCase {
     public function testBlankDate() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'form_params' => [
                 'title' => 'Sample Blog',
@@ -104,7 +104,7 @@ class CreateBlogPostTest extends TestCase {
     public function testBadDate() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'form_params' => [
                 'title' => 'Sample Blog',
@@ -119,7 +119,7 @@ class CreateBlogPostTest extends TestCase {
     public function testNoPreviewImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'form_params' => [
                 'title' => 'Sample Blog',
@@ -134,7 +134,7 @@ class CreateBlogPostTest extends TestCase {
     public function testNoPreviewImage2() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'form_params' => [
                 'title' => 'Sample Blog',
@@ -150,7 +150,7 @@ class CreateBlogPostTest extends TestCase {
     public function testBlankPreviewImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'form_params' => [
                 'title' => 'Sample Blog',
@@ -168,7 +168,7 @@ class CreateBlogPostTest extends TestCase {
     public function testNoContent() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-blog-post.php', [
             'form_params' => [
                 'title' => 'Sample Blog',
@@ -187,7 +187,7 @@ class CreateBlogPostTest extends TestCase {
 //     public function testEmptyContent() {
 //         $cookieJar = CookieJar::fromArray([
 //                     'hash' => '1d7505e7f434a7713e84ba399e937191'
-//                 ], 'localhost');
+//                 ], getenv('DB_HOST'));
 //         $response = $this->http->request('POST', 'api/create-blog-post.php', [
 //                'form_params' => [
 //                    'title' => 'Sample Blog',
@@ -206,7 +206,7 @@ class CreateBlogPostTest extends TestCase {
 //     public function testBadContent() {
 //         $cookieJar = CookieJar::fromArray([
 //                     'hash' => '1d7505e7f434a7713e84ba399e937191'
-//                 ], 'localhost');
+//                 ], getenv('DB_HOST'));
 //         $response = $this->http->request('POST', 'api/create-blog-post.php', [
 //                 'form_params' => [
 //                     'title' => 'Sample Blog',
@@ -231,7 +231,7 @@ class CreateBlogPostTest extends TestCase {
             touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-blog-post.php', [
                 'form_params' => [
                     'title' => 'Sample Blog',
@@ -298,7 +298,7 @@ class CreateBlogPostTest extends TestCase {
             touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-blog-post.php', [
                 'form_params' => [
                     'title' => 'Sample Blog',
@@ -350,7 +350,7 @@ class CreateBlogPostTest extends TestCase {
             touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-blog-post.php', [
                 'form_params' => [
                     'title' => 'Sample Blog',

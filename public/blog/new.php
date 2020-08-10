@@ -1,11 +1,11 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
 $user = new User ($sql);
 $user->forceAdmin();
+$errors = new Errors();
 
 $post;
 $title = "";
@@ -21,7 +21,7 @@ if (isset ( $_GET ['p'] )) {
     $post = ( int ) $_GET ['p'];
     $details = $sql->getRow( "SELECT * FROM `blog_details` WHERE id = '$post';" );
     if (! $details ['title']) {
-        throw404();
+        $errors->throw404();
     } else {
         $title = $details ['title'];
         $date = $details ['date'];

@@ -62,12 +62,10 @@ $password = $user->generatePassword();
 echo $sql->executeStatement("INSERT INTO users ( usr, pass, firstName, lastName, email, role, active, hash ) VALUES ('$username', '$password', '$firstName', '$lastName', '$email', '$role', '$active', '" . md5($username . $role) . "' );");
 $sql->disconnect();
 
-require_once "Mail.php";
-require_once "Mail/mime.php";
-
 $to = "$firstName $lastName <$email>";
 $from = "noreply@saperstonestudios.com";
 $subject = "New User Created at Saperstone Studios";
+$email = new Email($to, $from, $subject);
 $text = "Someone has setup a new user for you at Saperstone Studios. ";
 $text .= "You can login and access the site at https://saperstonestudios.com. ";
 $text .= "Initial credentials have been setup for you as: \n";
@@ -82,11 +80,7 @@ $html .= "Initial credentials have been setup for you as: ";
 $html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;Username: " . $username;
 $html .= "<br/>&nbsp;&nbsp;&nbsp;&nbsp;Password: " . $password . "</p>";
 $html .= "For security reasons, once logged in, we recommend you <a href='https://saperstonestudios.com/user/profile.php'>reset your password</a>.";
-$crlf = "\n";
-$mime = new Mail_mime ($crlf);
-$mime->setTXTBody($text);
-$mime->setHTMLBody($html);
-$body = $mime->get();
-require dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'email.php';
+$email->setText($text);
+$email->setHtml($html);
+$email->sendEmail();
 exit ();
-?>

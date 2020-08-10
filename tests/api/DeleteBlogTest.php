@@ -15,7 +15,7 @@ class DeleteBlogTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', '2031-01-01', '', 0)");
         $this->sql->executeStatement("INSERT INTO `blog_images` (`blog`, `contentGroup`, `location`, `width`, `height`, `left`, `top`) VALUES ('999', '1', 'posts/2031/01/01/sample.jpg', 300, 400, 0, 0)");
@@ -53,7 +53,7 @@ class DeleteBlogTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/delete-blog.php', [
                 'cookies' => $cookieJar
@@ -67,7 +67,7 @@ class DeleteBlogTest extends TestCase {
     public function testNoBlog() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog.php', [
             'cookies' => $cookieJar
         ]);
@@ -78,7 +78,7 @@ class DeleteBlogTest extends TestCase {
     public function testBlankBlog() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog.php', [
             'form_params' => [
                 'post' => ''
@@ -92,7 +92,7 @@ class DeleteBlogTest extends TestCase {
     public function testLetterBlog() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog.php', [
             'form_params' => [
                 'post' => 'a'
@@ -106,7 +106,7 @@ class DeleteBlogTest extends TestCase {
     public function testBadBlog() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog.php', [
             'form_params' => [
                 'post' => 9999
@@ -120,7 +120,7 @@ class DeleteBlogTest extends TestCase {
     public function testDeleteBlog() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog.php', [
             'form_params' => [
                 'post' => 999

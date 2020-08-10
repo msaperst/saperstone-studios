@@ -1,14 +1,14 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
+$errors = new Errors();
 $sql = new Sql ();
 
 $contract_link;
 // if no contract is set, throw a 404 error
 if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "") {
-    throw404();
+    $errors->throw404();
 } else {
     $contract_link = $sql->escapeString( $_GET ['c'] );
 }
@@ -17,7 +17,7 @@ $contract_info = $sql->getRow( "SELECT * FROM `contracts` WHERE link = '" . $con
 $sql->disconnect();
 // if the contract doesn't exist, throw a 404 error
 if (! $contract_info ['link']) {
-    throw404();
+    $errors->throw404();
 }
 
 ?>

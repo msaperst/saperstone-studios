@@ -15,7 +15,7 @@ class DeleteGalleryImageTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ('999', '1', 'sample.jpg', 'Sample', NULL);");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '0', '', '/portrait/img/sample/sample1.jpg', '300', '400', '1');");
@@ -56,7 +56,7 @@ class DeleteGalleryImageTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/delete-gallery-image.php', [
                 'cookies' => $cookieJar
@@ -70,7 +70,7 @@ class DeleteGalleryImageTest extends TestCase {
     public function testNoGallery() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
             'cookies' => $cookieJar
         ]);
@@ -81,7 +81,7 @@ class DeleteGalleryImageTest extends TestCase {
     public function testBlankGallery() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
             'form_params' => [
                 'gallery' => ''
@@ -95,7 +95,7 @@ class DeleteGalleryImageTest extends TestCase {
     public function testLetterGallery() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
             'form_params' => [
                 'gallery' => 'a'
@@ -109,7 +109,7 @@ class DeleteGalleryImageTest extends TestCase {
     public function testBadGalleryId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
             'form_params' => [
                 'gallery' => 9999
@@ -123,7 +123,7 @@ class DeleteGalleryImageTest extends TestCase {
     public function testNoImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
             'form_params' => [
                 'gallery' => 999
@@ -137,7 +137,7 @@ class DeleteGalleryImageTest extends TestCase {
     public function testBlankImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
             'form_params' => [
                 'gallery' => 999,
@@ -152,7 +152,7 @@ class DeleteGalleryImageTest extends TestCase {
     public function testDeleteImage1() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
             'form_params' => [
                 'gallery' => 999,

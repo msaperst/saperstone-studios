@@ -196,9 +196,7 @@ try {
 }
 
 if (isset ($setECResponse)) {
-    $to;
     $from = "Orders <orders@saperstonestudios.com>";
-    $subject;
     // setup our email body text
     $full_text = "Thank you for choosing to order your prints from Saperstone Studios. Below you will find an invoice for your order";
     $full_HTML = "<html><body><p>$full_text</p>";
@@ -241,15 +239,10 @@ if (isset ($setECResponse)) {
         $full_HTML .= "<p>This order did not go through due to an error:" . $setECResponse->Errors->LongMessage . ".</p><p>You may want to directly contact this customer.\n\n</p><p>This message was generated/sent after being submitted via <a href='$url'>your web gallery</a></p></body></html>";
     }
 
-    // actually send the email
-    require_once "Mail.php";
-    require_once "Mail/mime.php";
-    $crlf = "\n";
-    $mime = new Mail_mime ($crlf);
-    $mime->setTXTBody($full_text);
-    $mime->setHTMLBody($full_HTML);
-    $body = $mime->get();
-    require dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'email.php';
+    $email = new Email($to, $from, $subject);
+    $email->setHtml($full_HTML);
+    $email->setHtml($full_text);
+    $email->sendEmail();
 
     // gather our response information from paypal, and return it
     $response ['response'] = get_object_vars($setECResponse);

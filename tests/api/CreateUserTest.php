@@ -15,7 +15,7 @@ class CreateUserTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
     }
 
@@ -36,7 +36,7 @@ class CreateUserTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/create-user.php', [
                 'cookies' => $cookieJar
@@ -50,7 +50,7 @@ class CreateUserTest extends TestCase {
     public function testNoUsername() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'cookies' => $cookieJar
         ]);
@@ -61,7 +61,7 @@ class CreateUserTest extends TestCase {
     public function testBlankUsername() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => ''
@@ -75,7 +75,7 @@ class CreateUserTest extends TestCase {
     public function testDuplicateUsername() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'msaperst'
@@ -89,7 +89,7 @@ class CreateUserTest extends TestCase {
     public function testNoEmail() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max'
@@ -103,7 +103,7 @@ class CreateUserTest extends TestCase {
     public function testBlankEmail() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
@@ -118,7 +118,7 @@ class CreateUserTest extends TestCase {
     public function testBadEmail() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
@@ -133,7 +133,7 @@ class CreateUserTest extends TestCase {
     public function testDuplicateEmail() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
@@ -148,7 +148,7 @@ class CreateUserTest extends TestCase {
     public function testNoRole() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
@@ -163,7 +163,7 @@ class CreateUserTest extends TestCase {
     public function testBlankRole() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
@@ -179,7 +179,7 @@ class CreateUserTest extends TestCase {
     public function testBadRole() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'Max',
@@ -198,7 +198,7 @@ class CreateUserTest extends TestCase {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
 
             $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
@@ -237,7 +237,7 @@ class CreateUserTest extends TestCase {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
 
             $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [

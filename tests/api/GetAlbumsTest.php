@@ -2,8 +2,6 @@
 
 namespace api;
 
-namespace api;
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -17,7 +15,7 @@ class GetAlbumsTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('997', 'sample-album', 'sample album for testing', 'sample', 1, '1234');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
@@ -51,7 +49,7 @@ class GetAlbumsTest extends TestCase {
     public function testAdminUser() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/get-albums.php', [
             'cookies' => $cookieJar
         ]);
@@ -61,15 +59,16 @@ class GetAlbumsTest extends TestCase {
     }
 
     public function testUploaderUser() {
+        date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/get-albums.php', [
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $albums = json_decode($response->getBody(), true)['data'];
-        $this->assertEquals(2, sizeOf($albums));
+        $this->assertTrue(2 <= sizeOf($albums));  //there may be more depending on other things in the test DB
         $this->assertEquals(998, $albums[0]['id']);
         $this->assertEquals('sample-album', $albums[0]['name']);
         $this->assertEquals('sample album for testing', $albums[0]['description']);

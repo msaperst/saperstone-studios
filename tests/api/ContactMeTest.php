@@ -11,7 +11,7 @@ class ContactMeTest extends TestCase {
     private $http;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
     }
 
     public function tearDown() {

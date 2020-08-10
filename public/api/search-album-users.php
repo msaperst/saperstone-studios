@@ -1,5 +1,5 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
@@ -9,32 +9,32 @@ $api = new Api ($sql, $user);
 $api->forceAdmin();
 
 $album = "";
-if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
-    $album = ( int ) $_GET ['album'];
+if (isset ($_GET ['album']) && $_GET ['album'] != "") {
+    $album = ( int )$_GET ['album'];
 } else {
-    if (! isset ( $_GET ['album'] )) {
+    if (!isset ($_GET ['album'])) {
         echo "Album id is required!";
     } elseif ($_GET ['album'] != "") {
         echo "Album id cannot be blank!";
     } else {
         echo "Some other Album id error occurred!";
     }
-    $conn->disconnect ();
+    $conn->disconnect();
     exit ();
 }
 
 $keyword = "";
-if (isset ( $_GET ['keyword'] )) {
-    $keyword = $sql->escapeString( $_GET ['keyword'] );
+if (isset ($_GET ['keyword'])) {
+    $keyword = $sql->escapeString($_GET ['keyword']);
 }
 
 $sql = "SELECT * FROM users JOIN albums_for_users ON users.id = albums_for_users.user WHERE `users`.`usr` COLLATE UTF8_GENERAL_CI LIKE '%$keyword%' AND `albums_for_users`.`album` = '$album';";
-$result = mysqli_query ( $conn->db, $sql );
-$response = array ();
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
+$result = mysqli_query($conn->db, $sql);
+$response = array();
+while ($r = mysqli_fetch_assoc($result)) {
     $response [] = $r;
 }
-echo json_encode ( $response );
+echo json_encode($response);
 
-$conn->disconnect ();
+$conn->disconnect();
 exit ();

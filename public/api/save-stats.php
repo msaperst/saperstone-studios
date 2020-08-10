@@ -23,7 +23,6 @@ if (isset ($_GET ['position'])) {
 }
 
 // get our browser information
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php";
 $browser = new Browser ();
 
 // get some additional screen information

@@ -15,7 +15,7 @@ class CropImageTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
     }
 
@@ -36,7 +36,7 @@ class CropImageTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/crop-image.php', [
                 'cookies' => $cookieJar
@@ -50,7 +50,7 @@ class CropImageTest extends TestCase {
     public function testNoImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'cookies' => $cookieJar
         ]);
@@ -61,7 +61,7 @@ class CropImageTest extends TestCase {
     public function testBlankImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => ''
@@ -75,7 +75,7 @@ class CropImageTest extends TestCase {
     public function testBadImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => 'image.jpg'
@@ -90,7 +90,7 @@ class CropImageTest extends TestCase {
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => '../blog/posts/tmp_flower.jpeg'
@@ -105,7 +105,7 @@ class CropImageTest extends TestCase {
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => '../blog/posts/tmp_flower.jpeg',
@@ -121,7 +121,7 @@ class CropImageTest extends TestCase {
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => '../blog/posts/tmp_flower.jpeg',
@@ -137,7 +137,7 @@ class CropImageTest extends TestCase {
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => '../blog/posts/tmp_flower.jpeg',
@@ -154,7 +154,7 @@ class CropImageTest extends TestCase {
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => '../blog/posts/tmp_flower.jpeg',
@@ -171,7 +171,7 @@ class CropImageTest extends TestCase {
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => '../blog/posts/tmp_flower.jpeg',
@@ -190,7 +190,7 @@ class CropImageTest extends TestCase {
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'form_params' => [
                 'image' => '../blog/posts/tmp_flower.jpeg',
@@ -211,7 +211,7 @@ class CropImageTest extends TestCase {
             chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/crop-image.php', [
                 'form_params' => [
                     'image' => '../blog/posts/tmp_flower.jpeg',
@@ -237,7 +237,7 @@ class CropImageTest extends TestCase {
             chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/crop-image.php', [
                 'form_params' => [
                     'image' => '../blog/posts/tmp_flower.jpeg',

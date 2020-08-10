@@ -14,7 +14,7 @@ class FindAlbumTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', '', 'search-for-me');");
     }
@@ -58,7 +58,7 @@ class FindAlbumTest extends TestCase {
     public function testAlbumCode() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/find-album.php', [
             'query' => [
                 'code' => 'search-for-me',
@@ -76,7 +76,7 @@ class FindAlbumTest extends TestCase {
             'searched' => json_encode([
                 999 => md5('albumsearch-for-me')
             ])
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/find-album.php', [
             'query' => [
                 'code' => 'search-for-me',
@@ -104,7 +104,7 @@ class FindAlbumTest extends TestCase {
     public function testAlbumCodeAdded() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/find-album.php', [
             'query' => [
                 'code' => 'search-for-me',

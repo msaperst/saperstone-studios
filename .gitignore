@@ -52,6 +52,7 @@ phpmyadmin
 # Some third party tools
 resources
 public/js/jSignature
+src/Browser.php
 
 # our albums
 public/albums/*/*

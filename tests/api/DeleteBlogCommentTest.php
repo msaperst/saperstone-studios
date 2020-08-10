@@ -15,7 +15,7 @@ class DeleteBlogCommentTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('998', '999', 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'msaperst+sstest@gmail.com', 'this is an awesome post')");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('999', '999', 4, 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'msaperst+sstest@gmail.com', 'this is an awesome post')");
@@ -42,7 +42,7 @@ class DeleteBlogCommentTest extends TestCase {
     public function testNoComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog-comment.php', [
             'cookies' => $cookieJar
         ]);
@@ -53,7 +53,7 @@ class DeleteBlogCommentTest extends TestCase {
     public function testBlankComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog-comment.php', [
             'form_params' => [
                 'comment' => ''
@@ -67,7 +67,7 @@ class DeleteBlogCommentTest extends TestCase {
     public function testLetterComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog-comment.php', [
             'form_params' => [
                 'comment' => 'a'
@@ -81,7 +81,7 @@ class DeleteBlogCommentTest extends TestCase {
     public function testBadComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog-comment.php', [
             'form_params' => [
                 'comment' => 9999
@@ -96,7 +96,7 @@ class DeleteBlogCommentTest extends TestCase {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-            ], 'localhost');
+            ], getenv('DB_HOST'));
             $this->http->request('POST', 'api/delete-blog-comment.php', [
                 'form_params' => [
                     'comment' => 998
@@ -113,7 +113,7 @@ class DeleteBlogCommentTest extends TestCase {
     public function testAdminCanDeleteAnyComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog-comment.php', [
             'form_params' => [
                 'comment' => 998
@@ -128,7 +128,7 @@ class DeleteBlogCommentTest extends TestCase {
     public function testUploaderCanDeleteOwnComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-blog-comment.php', [
             'form_params' => [
                 'comment' => 999

@@ -15,7 +15,7 @@ class DeleteProductSizeTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://localhost:90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (999, '999', '12x19', 100, 10)");
     }
@@ -41,7 +41,7 @@ class DeleteProductSizeTest extends TestCase {
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         try {
             $this->http->request('POST', 'api/delete-product-size.php', [
                 'cookies' => $cookieJar
@@ -55,7 +55,7 @@ class DeleteProductSizeTest extends TestCase {
     public function testNoProduct() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-product-size.php', [
             'cookies' => $cookieJar
         ]);
@@ -66,7 +66,7 @@ class DeleteProductSizeTest extends TestCase {
     public function testBlankProductSize() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-product-size.php', [
             'form_params' => [
                 'id' => ''
@@ -80,7 +80,7 @@ class DeleteProductSizeTest extends TestCase {
     public function testLetterProductSize() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-product-size.php', [
             'form_params' => [
                 'id' => 'a'
@@ -94,7 +94,7 @@ class DeleteProductSizeTest extends TestCase {
     public function testBadProductSize() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-product-size.php', [
             'form_params' => [
                 'id' => 9999
@@ -108,7 +108,7 @@ class DeleteProductSizeTest extends TestCase {
     public function testDeleteProductSize() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], 'localhost');
+        ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-product-size.php', [
             'form_params' => [
                 'id' => 999

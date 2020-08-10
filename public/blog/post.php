@@ -1,11 +1,11 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/errors.php";
+$errors = new Errors();
 
 $post;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['p'] )) {
-    throw404();
+    $errors->throw404();
 } else {
     $post = ( int ) $_GET ['p'];
 }
@@ -15,14 +15,14 @@ $session->initialize();
 $sql = new Sql ();
 $details = $sql->getRow( "SELECT * FROM `blog_details` WHERE id = '$post';" );
 if (! $details ['title']) {
-    throw404();
+    $errors->throw404();
 }
 
 $user = new User ($sql);
 $sql->disconnect();
 
 if (! $user->isAdmin () && ! $details ['active']) {
-    throw404();
+    $errors->throw404();
 }
 ?>
 
