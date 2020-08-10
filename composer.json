@@ -4,7 +4,8 @@
   "require-dev": {
     "phpunit/phpunit": "^7",
     "guzzlehttp/guzzle": "^7",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-zip": "*"
   },
   "scripts": {
     "clean": "rm -rf reports;",

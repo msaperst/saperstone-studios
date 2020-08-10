@@ -143,7 +143,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -187,7 +187,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -213,7 +213,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -237,7 +237,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -283,7 +283,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -326,7 +326,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -350,7 +350,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -430,7 +430,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -481,7 +481,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -511,7 +511,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -539,7 +539,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -590,7 +590,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -619,7 +619,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -647,7 +647,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -692,21 +692,21 @@ class DownloadSelectedImagesTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999,
                 'image' => '0'
             ],
             'cookies' => $cookieJar
         ]);
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999,
                 'image' => '1'
             ],
             'cookies' => $cookieJar
         ]);
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999,
                 'image' => '2'
@@ -755,7 +755,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -806,7 +806,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -836,7 +836,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-all $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -864,7 +864,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -916,7 +916,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -946,7 +946,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -974,7 +974,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-download-some $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -1017,7 +1017,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-no-access $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -1069,7 +1069,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-no-access $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
@@ -1099,7 +1099,7 @@ class DownloadSelectedImagesTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith("../tmp/sample-album-no-access $dateTime", $zipFile);
-            system("wget -q 'http://' . getenv('DB_HOST') . ':90/$zipFile' -O download.zip");
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
             $this->assertTrue(file_exists('download.zip'));
             $za = new ZipArchive();
             $za->open('download.zip');
