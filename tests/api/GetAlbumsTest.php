@@ -2,8 +2,6 @@
 
 namespace api;
 
-namespace api;
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -61,6 +59,7 @@ class GetAlbumsTest extends TestCase {
     }
 
     public function testUploaderUser() {
+        date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
         ], getenv('DB_HOST'));
@@ -69,7 +68,7 @@ class GetAlbumsTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $albums = json_decode($response->getBody(), true)['data'];
-        $this->assertEquals(2, sizeOf($albums));
+        $this->assertTrue(2 <= sizeOf($albums));  //there may be more depending on other things in the test DB
         $this->assertEquals(998, $albums[0]['id']);
         $this->assertEquals('sample-album', $albums[0]['name']);
         $this->assertEquals('sample album for testing', $albums[0]['description']);
