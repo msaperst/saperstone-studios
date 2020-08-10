@@ -239,8 +239,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                        }
                                     }
                                 }
-                                sh "export COMPOSER_PROCESS_TIMEOUT=600"
-                                sh "composer api-test"
+                                sh "COMPOSER_PROCESS_TIMEOUT=600 composer api-test"
                             } finally {
                                 junit 'reports/api-junit.xml'
                                 publishHTML([
