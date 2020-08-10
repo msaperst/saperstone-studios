@@ -14,6 +14,6 @@
     "integration-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3506; vendor/phpunit/phpunit/phpunit tests/coverage/integration/ --log-junit reports/it-junit.xml --testdox-html reports/it-results.html --coverage-clover reports/it-clover.xml --coverage-html reports/it-coverage --whitelist src/",
     "coverage-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3406; vendor/phpunit/phpunit/phpunit tests/coverage/ --log-junit reports/cov-junit.xml --testdox-html reports/cov-results.html --coverage-clover reports/cov-clover.xml --coverage-html reports/cov-coverage --whitelist src/",
     "integration-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=integration_sql --format=\"{{.ID}}\"))",
-    "api-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; vendor/phpunit/phpunit/phpunit tests/api/ --log-junit reports/api-junit.xml --testdox-html reports/api-results.html"
+    "api-test": "export COMPOSER_PROCESS_TIMEOUT=600; export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; vendor/phpunit/phpunit/phpunit tests/api/ --log-junit reports/api-junit.xml --testdox-html reports/api-results.html"
   }
 }
