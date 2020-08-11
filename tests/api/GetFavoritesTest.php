@@ -19,9 +19,9 @@ class GetFavoritesTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (997, 'sample-album-download-all', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (998, 'sample-album-download-all', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (999, 'sample-album-download-all', 'sample album for testing', 'sample');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 997, 'file1', 1, '/albums/sample/file1', '600', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 998, 'file1', 1, '/albums/sample/file1', '600', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 999, 'file1', 1, '/albums/sample/file1', '600', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (997, 997, 'file1', 1, '/albums/sample/file1', '600', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (998, 998, 'file1', 1, '/albums/sample/file1', '600', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (999, 999, 'file1', 1, '/albums/sample/file1', '600', '400', '1');");
     }
 
     public function tearDown() {
@@ -34,6 +34,7 @@ class GetFavoritesTest extends TestCase {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999");
         $this->sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`album` = 999");
+        $this->sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`user` = '3'");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
@@ -70,7 +71,7 @@ class GetFavoritesTest extends TestCase {
         $favorites = json_decode($response->getBody(), true);
         $this->assertEquals(2, sizeof($favorites));
         $this->assertEquals(1, sizeof($favorites[997]));
-        $this->assertEquals(1, $favorites[997][0]['id']);
+        $this->assertEquals(997, $favorites[997][0]['id']);
         $this->assertEquals(997, $favorites[997][0]['album']);
         $this->assertEquals('file1', $favorites[997][0]['title']);
         $this->assertEquals(1, $favorites[997][0]['sequence']);
@@ -80,7 +81,7 @@ class GetFavoritesTest extends TestCase {
         $this->assertEquals(400, $favorites[997][0]['height']);
         $this->assertEquals(1, $favorites[997][0]['active']);
         $this->assertEquals(1, sizeof($favorites[998]));
-        $this->assertEquals(2, $favorites[998][0]['id']);
+        $this->assertEquals(998, $favorites[998][0]['id']);
         $this->assertEquals(998, $favorites[998][0]['album']);
         $this->assertEquals('file1', $favorites[998][0]['title']);
         $this->assertEquals(1, $favorites[998][0]['sequence']);
@@ -118,7 +119,7 @@ class GetFavoritesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $favorites = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeof($favorites));
-        $this->assertEquals(1, $favorites[0]['id']);
+        $this->assertEquals(997, $favorites[0]['id']);
         $this->assertEquals(997, $favorites[0]['album']);
         $this->assertEquals('file1', $favorites[0]['title']);
         $this->assertEquals(1, $favorites[0]['sequence']);
@@ -172,7 +173,7 @@ class GetFavoritesTest extends TestCase {
         $favorites = json_decode($response->getBody(), true);
         $this->assertEquals(2, sizeof($favorites));
         $this->assertEquals(1, sizeof($favorites[997]));
-        $this->assertEquals(1, $favorites[997][0]['id']);
+        $this->assertEquals(997, $favorites[997][0]['id']);
         $this->assertEquals(997, $favorites[997][0]['album']);
         $this->assertEquals('file1', $favorites[997][0]['title']);
         $this->assertEquals(1, $favorites[997][0]['sequence']);
@@ -182,7 +183,7 @@ class GetFavoritesTest extends TestCase {
         $this->assertEquals(400, $favorites[997][0]['height']);
         $this->assertEquals(1, $favorites[997][0]['active']);
         $this->assertEquals(1, sizeof($favorites[998]));
-        $this->assertEquals(2, $favorites[998][0]['id']);
+        $this->assertEquals(998, $favorites[998][0]['id']);
         $this->assertEquals(998, $favorites[998][0]['album']);
         $this->assertEquals('file1', $favorites[998][0]['title']);
         $this->assertEquals(1, $favorites[998][0]['sequence']);
@@ -227,7 +228,7 @@ class GetFavoritesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $favorites = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeof($favorites));
-        $this->assertEquals(1, $favorites[0]['id']);
+        $this->assertEquals(997, $favorites[0]['id']);
         $this->assertEquals(997, $favorites[0]['album']);
         $this->assertEquals('file1', $favorites[0]['title']);
         $this->assertEquals(1, $favorites[0]['sequence']);
