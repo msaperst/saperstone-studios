@@ -121,7 +121,7 @@ class GetContractTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $contractInfo = json_decode( $response->getBody(), true );
+        $contractInfo = json_decode($response->getBody(), true);
         $this->assertEquals('998', $contractInfo['id']);
         $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractInfo['link']);
         $this->assertEquals('commercial', $contractInfo['type']);
@@ -161,7 +161,7 @@ class GetContractTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $contractInfo = json_decode( $response->getBody(), true );
+        $contractInfo = json_decode($response->getBody(), true);
         $this->assertEquals('999', $contractInfo['id']);
         $this->assertEquals('735870e9bd79af1904a0a2eb453430ed', $contractInfo['link']);
         $this->assertEquals('wedding', $contractInfo['type']);

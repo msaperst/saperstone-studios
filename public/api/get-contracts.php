@@ -9,8 +9,8 @@ $api = new Api ($sql, $user);
 $api->forceAdmin();
 
 $response = array();
-foreach ($sql->getRows( "SELECT * FROM contracts;" ) as $r) {
-    $r ['lineItems'] = $sql->getRows( "SELECT * FROM contract_line_items WHERE contract = {$r['id']};" );
+foreach ($sql->getRows("SELECT * FROM contracts;") as $r) {
+    $r ['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = {$r['id']};");
     $response [] = $r;
 }
 echo "{\"data\":" . json_encode($response) . "}";

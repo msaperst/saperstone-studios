@@ -60,11 +60,11 @@ if (is_array($content)) {
     exit();
 }
 
-$contract_info = $sql->getRow( "SELECT * FROM `contracts` WHERE `id` = $id" );
+$contract_info = $sql->getRow("SELECT * FROM `contracts` WHERE `id` = $id");
 $file = "../user/contracts/$name - " . date('Y-m-d') . " - " . ucfirst($contract_info ['type']) . " Contract.pdf";
-$sql->executeStatement( "UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
+$sql->executeStatement("UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
         `email` = '$emailA', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
-        `file` = '$file' WHERE `id` = $id;" );
+        `file` = '$file' WHERE `id` = $id;");
 $contract_info = $sql->getRow("SELECT * FROM `contracts` WHERE `id` = $id");
 $sql->disconnect();
 

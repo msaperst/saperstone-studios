@@ -8,6 +8,6 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-echo json_encode( $sql->getEnumValues('contracts', 'type') );
+echo json_encode($sql->getEnumValues('contracts', 'type'));
 $sql->disconnect();
 exit ();

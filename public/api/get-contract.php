@@ -20,7 +20,7 @@ if (!$contract_info ['id']) {
     exit ();
 }
 
-$contract_info ['lineItems'] = $sql->getRows( "SELECT * FROM contract_line_items WHERE contract = $id;" );
+$contract_info ['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = $id;");
 echo json_encode($contract_info);
 $sql->disconnect();
 exit ();
