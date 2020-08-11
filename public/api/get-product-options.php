@@ -6,20 +6,19 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-if (isset ($_GET ['type']) && $_GET ['type'] != "") {
-    $type = ( int )$_GET ['type'];
-} else {
-    echo "Product type is not provided";
-    $conn->disconnect();
+$type = $api->retrieveGetInt('type', 'Product type');
+if (is_array($type)) {
+    echo $type['error'];
+    exit();
+}
+$product_info = $sql->getRow("SELECT * FROM product_types WHERE id = $type;");
+if (!$product_info ['id']) {
+    echo "Product type does not match any products";
+    $sql->disconnect();
     exit ();
 }
 
-$sql = "SELECT opt FROM product_options WHERE product_type = '$type';";
-$result = mysqli_query($conn->db, $sql);
-while ($r = mysqli_fetch_assoc($result)) {
-    $response [] = $r ['opt'];
-}
-echo json_encode($response);
-
-$conn->disconnect();
+$options = array_column( $sql->getRows( "SELECT opt FROM product_options WHERE product_type = '$type';" ), 'opt' );
+echo json_encode($options);
+$sql->disconnect();
 exit ();

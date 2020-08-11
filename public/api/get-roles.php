@@ -8,12 +8,7 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$sql = "SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'role';";
-$row = $sql->getRow($sql);
-$enumList = explode(",", str_replace("'", "", substr($row ['COLUMN_TYPE'], 5, (strlen($row ['COLUMN_TYPE']) - 6))));
-
-echo json_encode($enumList);
-
-$conn->disconnect();
+$roles = $sql->getEnumValues('users', 'role');
+echo json_encode($roles);
+$sql->disconnect();
 exit ();

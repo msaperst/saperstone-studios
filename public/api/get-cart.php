@@ -12,12 +12,7 @@ $result = $sql->getRows("SELECT * FROM `cart` JOIN `album_images` ON `cart`.`ima
 $cart = array();
 foreach ($result as $r) {
     unset ($r ['cost']);
-    $results = $sql->getRows("SELECT opt FROM product_options WHERE product_type = '" . $r ['product_type'] . "';");
-    $options = array();
-    foreach ($results as $s) {
-        $options [] = $s ['opt'];
-    }
-    $r ['options'] = $options;
+    $r ['options'] = array_column($sql->getRows("SELECT opt FROM product_options WHERE product_type = '" . $r ['product_type'] . "';"), 'opt');
     $cart [] = $r;
 }
 echo json_encode($cart);
