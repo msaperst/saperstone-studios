@@ -8,10 +8,14 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-if (isset ($_GET ['id'])) {
-    $id = ( int )$_GET ['id'];
-} else {
-    echo "ID is not provided";
+$id = $api->retrieveGetInt('id', 'Gallery id');
+if (is_array($id)) {
+    echo $id['error'];
+    exit();
+}
+$gallery_info = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
+if (!$gallery_info ['id']) {
+    echo "Gallery id does not match any galleries";
     $sql->disconnect();
     exit ();
 }

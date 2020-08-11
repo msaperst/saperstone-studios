@@ -10,14 +10,18 @@ $response = array();
 $start = 0;
 $howMany = 999999999999999999;
 
-if (isset ($_GET ['gallery'])) {
-    $gallery = ( int )$_GET ['gallery'];
-} else {
-    $response ['err'] = "Need to provide gallery";
-    echo json_encode($response);
+$gallery = $api->retrieveGetInt('gallery', 'Gallery id');
+if (is_array($gallery)) {
+    echo $gallery['error'];
+    exit();
+}
+$gallery_info = $sql->getRow("SELECT * FROM galleries WHERE id = $gallery;");
+if (!$gallery_info ['id']) {
+    echo "Gallery id does not match any galleries";
     $sql->disconnect();
     exit ();
 }
+
 if (isset ($_GET ['start'])) {
     $start = ( int )$_GET ['start'];
 }
@@ -25,10 +29,7 @@ if (isset ($_GET ['howMany'])) {
     $howMany = ( int )$_GET ['howMany'];
 }
 
-if (!array_key_exists("err", $response)) {
-    $response = $sql->getRows("SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;");
-}
+$response = $sql->getRows("SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;");
 echo json_encode($response);
-
 $sql->disconnect();
 exit ();
