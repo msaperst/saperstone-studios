@@ -10,7 +10,7 @@ use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-class GetContractTest extends TestCase {
+class GetContractsTest extends TestCase {
     private $http;
     private $sql;
 
