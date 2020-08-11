@@ -8,12 +8,7 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$sql = "SELECT * FROM users;";
-$result = mysqli_query($conn->db, $sql);
-while ($r = mysqli_fetch_assoc($result)) {
-    $response [] = $r;
-}
-echo "{\"data\":" . json_encode($response) . "}";
-
-$conn->disconnect();
+$users = $sql->getRows("SELECT * FROM users;");
+echo "{\"data\":" . json_encode($users) . "}";
+$sql->disconnect();
 exit ();

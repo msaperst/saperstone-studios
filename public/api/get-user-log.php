@@ -8,21 +8,18 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-if (isset ($_GET ['id'])) {
-    $id = ( int )$_GET ['id'];
-} else {
-    echo "ID is not provided";
-    $conn->disconnect();
+$id = $api->retrieveGetInt('id', 'User id');
+if (is_array($id)) {
+    echo $id['error'];
+    exit();
+}
+$user_info = $sql->getRow("SELECT * FROM users WHERE id = $id;");
+if (!$user_info ['id']) {
+    echo "User id does not match any users";
+    $sql->disconnect();
     exit ();
 }
 
-$sql = "SELECT user_logs.*, albums.name FROM user_logs LEFT JOIN albums ON user_logs.album = albums.id WHERE user = $id";
-$result = mysqli_query($conn->db, $sql);
-$actions = array();
-while ($row = mysqli_fetch_assoc($result)) {
-    $actions [] = $row;
-}
-echo json_encode($actions);
-
-$conn->disconnect();
+echo json_encode($sql->getRows("SELECT user_logs.*, albums.name FROM user_logs LEFT JOIN albums ON user_logs.album = albums.id WHERE user = $id" ));
+$sql->disconnect();
 exit ();
