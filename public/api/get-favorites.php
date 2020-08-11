@@ -6,12 +6,10 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$user_id = $user->getIdentifier();
-$sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user_id';";
-$result = mysqli_query($conn->db, $sql);
-
+$userId = $user->getIdentifier();
+$results = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$userId';");
 $favorites = array();
-while ($r = mysqli_fetch_assoc($result)) {
+foreach ($results as $r) {
     $favorites [$r ['album']] [] = $r;
 }
 
@@ -24,6 +22,5 @@ if (isset ($_GET ['album'])) {
     }
 }
 echo json_encode($favorites);
-
-$conn->disconnect();
+$sql->disconnect();
 exit ();
