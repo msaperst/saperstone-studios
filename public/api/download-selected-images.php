@@ -35,6 +35,7 @@ if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
 
 $userid = $user->getIdentifier();
 
+//TODO - might need to ensure that the user has access to the album
 // determine what the user can download
 $downloadable = array();
 foreach ($sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId() . "' OR `user` = '0';") as $r) {

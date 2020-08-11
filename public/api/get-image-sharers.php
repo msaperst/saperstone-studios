@@ -8,34 +8,32 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-if (isset ($_GET ['album'])) {
-    $album = ( int )$_GET ['album'];
-} else {
-    echo "Album is not provided";
-    $conn->disconnect();
+$album = $api->retrieveGetInt('album', 'Album id');
+if (is_array($album)) {
+    echo $album['error'];
+    exit();
+}
+$album_info = $sql->getRow("SELECT * FROM albums WHERE id = $album;");
+if (!$album_info ['id']) {
+    echo "Album id does not match any albums";
+    $sql->disconnect();
     exit ();
 }
 
-if (isset ($_GET ['image'])) {
-    $image = ( int )$_GET ['image'];
-} else {
-    echo "Image is not provided";
-    $conn->disconnect();
+$sequence = $api->retrieveGetInt('image', 'Image id');
+if (is_array($sequence)) {
+    echo $sequence['error'];
+    exit();
+}
+$image_info = $sql->getRow("SELECT * FROM album_images WHERE sequence = $sequence;");
+if (!$image_info ['id']) {
+    echo "Image id does not match any images";
+    $sql->disconnect();
     exit ();
 }
 
-$sql = "SELECT * FROM `albums_for_users` LEFT JOIN `share_rights` ON `albums_for_users`.`user` = `share_rights`.`user` WHERE `albums_for_users`.`album` = '$album' AND ( `share_rights`.`album` = '$album' OR `share_rights`.`album` = '*' ) AND ( `share_rights`.`image` = '$image' OR `share_rights`.`image` = '*' );";
-$result = mysqli_query($conn->db, $sql);
-$response = array();
-while ($r = mysqli_fetch_assoc($result)) {
-    $response [] = $r;
-}
-$sql = "SELECT * FROM `share_rights` WHERE `user` = '0' AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$image' OR `image` = '*' );";
-$result = mysqli_query($conn->db, $sql);
-while ($r = mysqli_fetch_assoc($result)) {
-    $response [] = $r;
-}
-echo json_encode($response);
-
-$conn->disconnect();
+$rights = $sql->getRows("SELECT * FROM `albums_for_users` LEFT JOIN `share_rights` ON `albums_for_users`.`user` = `share_rights`.`user` WHERE `albums_for_users`.`album` = '$album' AND ( `share_rights`.`album` = '$album' OR `share_rights`.`album` = '*' ) AND ( `share_rights`.`image` = '$sequence' OR `share_rights`.`image` = '*' );");
+$rights = array_merge($rights, $sql->getRows("SELECT * FROM `share_rights` WHERE `user` = '0' AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );"));
+echo json_encode($rights);
+$sql->disconnect();
 exit ();
