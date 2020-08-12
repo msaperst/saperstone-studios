@@ -1,4 +1,5 @@
 <?php
+
 namespace ui;
 
 use Facebook\WebDriver\Chrome\ChromeOptions;
@@ -11,16 +12,17 @@ class SampleSeleniumTest extends TestCase {
     private $driver;
 
     public function setUp() {
-        $host = 'http://127.0.0.1:4444';
-        $chromeOptions = new ChromeOptions();
-        $chromeOptions->addArguments(['--no-sandbox', '--headless']);
-        $desiredCapabilities = DesiredCapabilities::chrome();
-        $desiredCapabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
-        $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
+        $host = 'http://localhost:4444/wd/hub';
+        if (getenv('BROWSER') == 'firefox') {
+            $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::firefox());
+        } else {
+            $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::chrome());
+        }
         $this->driver->get('http://' . getenv('DB_HOST') . ':90/');
     }
 
     public function tearDown() {
+        $this->driver->takeScreenshot(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . "ui-" . getenv('BROWSER') . DIRECTORY_SEPARATOR . "{$this->getName()}.png");
         $this->driver->quit();
     }
 

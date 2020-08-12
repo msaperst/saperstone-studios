@@ -256,8 +256,8 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                             }
                         }
                     },
-                    "UI Tests": {
-                        stage('Run UI Tests') {
+                    "Chrome UI Tests": {
+                        stage('Run Chrome UI Tests') {
                             try {
                                 timeout(60) {
                                     waitUntil {
@@ -267,17 +267,20 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                         }
                                     }
                                 }
-                                sh "composer ui-pre-test &"
-                                sh "COMPOSER_PROCESS_TIMEOUT=600 composer ui-test"
+                                sh '''export BROWSER=chrome;
+                                    composer ui-pre-test;
+                                    COMPOSER_PROCESS_TIMEOUT=600 composer ui-test;'''
                             } finally {
-                                junit 'reports/ui-junit.xml'
+                                sh '''export BROWSER=chrome;
+                                    composer ui-post-test;'''
+                                junit 'reports/ui-chrome/ui-junit.xml'
                                 publishHTML([
                                         allowMissing         : false,
                                         alwaysLinkToLastBuild: true,
                                         keepAll              : true,
-                                        reportDir            : 'reports/',
+                                        reportDir            : 'reports/ui-chrome/',
                                         reportFiles          : 'ui-results.html',
-                                        reportName           : 'UI Test Results Report'
+                                        reportName           : 'Chrome Test Results Report'
                                 ])
                             }
                         }
