@@ -196,12 +196,15 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Launch Docker Container') {
             sh "docker-compose up --build -d"
         }
+        stage('Clean Up') {
+            sh "composer clean"
+        }
         stage('Functional Tests') {
             parallel(
                     "Coverage Tests": {
                         stage('Run Coverage Tests') {
                             try {
-                               sh "composer coverage-test"
+                                sh "composer coverage-test"
                             } finally {
                                 junit 'reports/cov-junit.xml'
                                 publishHTML([
@@ -233,10 +236,10 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                             try {
                                 timeout(60) {
                                     waitUntil {
-                                       script {
-                                         def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
-                                         return (r.trim() == '200');
-                                       }
+                                        script {
+                                            def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
+                                            return (r.trim() == '200');
+                                        }
                                     }
                                 }
                                 sh "COMPOSER_PROCESS_TIMEOUT=600 composer api-test"
@@ -255,7 +258,28 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     },
                     "UI Tests": {
                         stage('Run UI Tests') {
-                            //TODO
+                            try {
+                                timeout(60) {
+                                    waitUntil {
+                                        script {
+                                            def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
+                                            return (r.trim() == '200');
+                                        }
+                                    }
+                                }
+                                sh "composer ui-pre-test &"
+                                sh "COMPOSER_PROCESS_TIMEOUT=600 composer ui-test"
+                            } finally {
+                                junit 'reports/ui-junit.xml'
+                                publishHTML([
+                                        allowMissing         : false,
+                                        alwaysLinkToLastBuild: true,
+                                        keepAll              : true,
+                                        reportDir            : 'reports/',
+                                        reportFiles          : 'ui-results.html',
+                                        reportName           : 'UI Test Results Report'
+                                ])
+                            }
                         }
                     }
             )
