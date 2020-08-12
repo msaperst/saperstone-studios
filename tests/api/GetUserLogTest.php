@@ -17,14 +17,15 @@ class GetUserLogTest extends TestCase {
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `log_for_users` (`user`, `album`) VALUES (1, '998');");
-        $this->sql->executeStatement("INSERT INTO `log_for_users` (`user`, `album`) VALUES (1, '999');");
+        $this->sql->executeStatement("INSERT INTO `user_logs` (`user`, `album`) VALUES (1, '998');");
+        $this->sql->executeStatement("INSERT INTO `user_logs` (`user`, `album`) VALUES (1, '999');");
     }
 
     public function tearDown() {
         $this->http = NULL;
-        $this->sql->executeStatement("DELETE FROM `log_for_users` WHERE `log_for_users`.`album` = 998;");
-        $this->sql->executeStatement("DELETE FROM `log_for_users` WHERE `log_for_users`.`album` = 999;");
+        $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = 998;");
+        $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = 999;");
+        $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`user` = 3;");
         $this->sql->disconnect();
     }
 
@@ -110,7 +111,7 @@ class GetUserLogTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-user-log.php', [
             'query' => [
-                'id' => 2
+                'id' => 3
             ],
             'cookies' => $cookieJar
         ]);
