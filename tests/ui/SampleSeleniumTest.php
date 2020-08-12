@@ -1,6 +1,7 @@
 <?php
 namespace ui;
 
+use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -11,7 +12,11 @@ class SampleSeleniumTest extends TestCase {
 
     public function setUp() {
         $host = 'http://127.0.0.1:4444';
-        $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::firefox());
+        $chromeOptions = new ChromeOptions();
+        $chromeOptions->addArguments(['--no-sandbox', '--headless']);
+        $desiredCapabilities = DesiredCapabilities::chrome();
+        $desiredCapabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
+        $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
         $this->driver->get('http://' . getenv('DB_HOST') . ':90/');
     }
 
