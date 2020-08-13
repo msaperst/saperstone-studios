@@ -7,9 +7,9 @@ $user = new User ($sql);
 $api = new Api ($sql, $user);
 
 if (!$user->isLoggedIn()) {
-    $user = $session->getClientIP();
+    $userId = $session->getClientIP();
 } else {
-    $user = $user->getId();
+    $userId = $user->getId();
 }
 
 if (isset ($_POST ['what'])) {
@@ -39,7 +39,7 @@ if (!$album_info ['name']) {
 
 $selected = array();
 if ($what == "favorites") {
-    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user' AND favorites.album = '$album';";
+    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$user' AND favorites.album = '$album';";
     $result = mysqli_query($conn->db, $sql);
     $desired = array();
     while ($r = mysqli_fetch_assoc($result)) {

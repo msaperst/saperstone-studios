@@ -8,32 +8,24 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$album = $api->retrieveGetInt('album', 'Album id');
-if (is_array($album)) {
-    echo $album['error'];
+try {
+    $album = new Album($_GET['album']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    $sql->disconnect();
     exit();
 }
-$album_info = $sql->getRow("SELECT * FROM albums WHERE id = $album;");
-if (!$album_info ['id']) {
-    echo "Album id does not match any albums";
-    $sql->disconnect();
-    exit ();
-}
 
-$sequence = $api->retrieveGetInt('image', 'Image id');
-if (is_array($sequence)) {
-    echo $sequence['error'];
+try {
+    $image = new Image($album, $_GET['image']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    $sql->disconnect();
     exit();
 }
-$image_info = $sql->getRow("SELECT * FROM album_images WHERE sequence = $sequence;");
-if (!$image_info ['id']) {
-    echo "Image id does not match any images";
-    $sql->disconnect();
-    exit ();
-}
 
-$rights = $sql->getRows("SELECT * FROM `albums_for_users` LEFT JOIN `download_rights` ON `albums_for_users`.`user` = `download_rights`.`user` WHERE `albums_for_users`.`album` = '$album' AND ( `download_rights`.`album` = '$album' OR `download_rights`.`album` = '*' ) AND ( `download_rights`.`image` = '$sequence' OR `download_rights`.`image` = '*' );");
-$rights = array_merge($rights, $sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '0' AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );"));
+$rights = $sql->getRows("SELECT * FROM `albums_for_users` LEFT JOIN `download_rights` ON `albums_for_users`.`user` = `download_rights`.`user` WHERE `albums_for_users`.`album` = '{$album->getId()}' AND ( `download_rights`.`album` = '{$album->getId()}' OR `download_rights`.`album` = '*' ) AND ( `download_rights`.`image` = '{$image->getId()}' OR `download_rights`.`image` = '*' );");
+$rights = array_merge($rights, $sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '0' AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );"));
 echo json_encode($rights);
 $sql->disconnect();
 exit ();

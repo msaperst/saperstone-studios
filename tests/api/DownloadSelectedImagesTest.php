@@ -22,9 +22,9 @@ class DownloadSelectedImagesTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (997, 'sample-album-download-all', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 997, '*');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (998, 'sample-album-download-some', 'sample album for testing', 'sample');");
-        $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 998, '2');");
-        $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 998, '3');");
-        $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('3', 998, '1');");
+        $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 998, '9982');");
+        $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 998, '9983');");
+        $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('3', 998, '9981');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (999, 'sample-album-no-access', 'sample album for testing without any download access', 'sample');");
 
         $oldmask = umask(0);
@@ -34,9 +34,9 @@ class DownloadSelectedImagesTest extends TestCase {
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777);
         $counter = 0;
         foreach ($this->files as $file) {
-            $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 997, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
-            $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 998, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
-            $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (NULL, 999, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
+            $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('997$counter', 997, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
+            $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('998$counter', 998, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
+            $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('999$counter', 999, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
             if ($counter != 4) {
                 touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/$file");
                 chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/$file", 0777);

@@ -19,12 +19,12 @@ class GetAllFavoritesTest extends TestCase {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
-        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '998', 0);");
-        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '998', 1);");
-        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '999', 1);");
-        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('192.168.1.2', '998', 0);");
-        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('192.168.1.2', '999', 3);");
-        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('192.168.1.3', '998', 1);");
+        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '998', 996);");
+        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '998', 997);");
+        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '999', 998);");
+        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('192.168.1.2', '998', 996);");
+        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('192.168.1.2', '999', 999);");
+        $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('192.168.1.3', '998', 997);");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (996, '998', '', '0', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (997, '998', '', '1', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '1', '', '', '300', '400', '1');");

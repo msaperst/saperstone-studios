@@ -8,66 +8,34 @@ $api = new Api ($sql, $user);
 
 if ($user->isAdmin()) {
     echo 1;
-    $conn->disconnect();
+    $sql->disconnect();
     exit ();
 }
 
-$user_id = $user->getIdentifier();
+$userId = $user->getIdentifier();
 
-$album = "";
-if (isset ($_GET ['album']) && $_GET ['album'] != "") {
-    $album = ( int )$_GET ['album'];
-} else {
-    if (!isset ($_GET ['album'])) {
-        echo "Album id is required!";
-    } elseif ($_GET ['album'] != "") {
-        echo "Album id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
-    }
-    $conn->disconnect();
-    exit ();
+try {
+    $album = new Album($_GET['album']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    $sql->disconnect();
+    exit();
 }
 
-$sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = $sql->getRow($sql);
-if (!$album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect();
-    exit ();
+try {
+    $image = new Image($album, $_GET['image']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    $sql->disconnect();
+    exit();
 }
 
-$sequence = "";
-if (isset ($_GET ['image']) && $_GET ['image'] != "") {
-    $sequence = ( int )$_GET ['image'];
-} else {
-    if (!isset ($_GET ['image'])) {
-        echo "Image id is required!";
-    } elseif ($_GET ['image'] != "") {
-        echo "Image id cannot be blank!";
-    } else {
-        echo "Some other Image id error occurred!";
-    }
-    $conn->disconnect();
-    exit ();
-}
-
-$sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
-$album_info = $sql->getRow($sql);
-if (!$album_info ['title']) {
-    echo "That image doesn't match anything";
-    $conn->disconnect();
-    exit ();
-}
-
-$sql = "SELECT * FROM `download_rights` WHERE ( `user` = '$user_id' OR `user` = '0' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
+$sql = "SELECT * FROM `download_rights` WHERE ( `user` = '$userId' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );";
 $downloadable = $sql->getRow($sql);
 if ($downloadable ['album']) {
     echo 1;
-    $conn->disconnect();
-    exit ();
+} else {
+    echo 0;
 }
-
-echo 0;
-$conn->disconnect();
+$sql->disconnect();
 exit ();

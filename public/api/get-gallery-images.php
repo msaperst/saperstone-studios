@@ -10,16 +10,11 @@ $response = array();
 $start = 0;
 $howMany = 999999999999999999;
 
-$gallery = $api->retrieveGetInt('gallery', 'Gallery id');
-if (is_array($gallery)) {
-    echo $gallery['error'];
+try {
+    $gallery = new Gallery($_GET['gallery']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
-}
-$gallery_info = $sql->getRow("SELECT * FROM galleries WHERE id = $gallery;");
-if (!$gallery_info ['id']) {
-    echo "Gallery id does not match any galleries";
-    $sql->disconnect();
-    exit ();
 }
 
 if (isset ($_GET ['start'])) {
@@ -29,7 +24,7 @@ if (isset ($_GET ['howMany'])) {
     $howMany = ( int )$_GET ['howMany'];
 }
 
-$response = $sql->getRows("SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = '$gallery' ORDER BY `sequence` LIMIT $start,$howMany;");
+$response = $sql->getRows("SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = '{$gallery->getId()}' ORDER BY `sequence` LIMIT $start,$howMany;");
 echo json_encode($response);
 $sql->disconnect();
 exit ();

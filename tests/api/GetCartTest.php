@@ -17,11 +17,11 @@ class GetCartTest extends TestCase {
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,1,1,2)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,2,0,0)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(2,997,3,5,3)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,998,0,31,1)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,999,5,23,1)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,995,1,2)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,996,0,0)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(2,997,997,5,3)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,998,998,31,1)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,999,999,23,1)');
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (995, '997', 'm', '1', 'v', 'a', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (996, '997', 'n', '2', 'w', 'b', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (997, '997', 'o', '3', 'x', 'c', '300', '400', '1');");
@@ -65,7 +65,7 @@ class GetCartTest extends TestCase {
         $this->assertEquals(3, sizeOf($cartDetails));
         $this->assertEquals(1, $cartDetails[0]['user']);
         $this->assertEquals(997, $cartDetails[0]['album']);
-        $this->assertEquals(1, $cartDetails[0]['image']);
+        $this->assertEquals(995, $cartDetails[0]['image']);
         $this->assertEquals(1, $cartDetails[0]['product']);
         $this->assertEquals(2, $cartDetails[0]['count']);
         $this->assertEquals(1, $cartDetails[0]['id']);
@@ -85,7 +85,7 @@ class GetCartTest extends TestCase {
 
         $this->assertEquals(1, $cartDetails[1]['user']);
         $this->assertEquals(998, $cartDetails[1]['album']);
-        $this->assertEquals(0, $cartDetails[1]['image']);
+        $this->assertEquals(998, $cartDetails[1]['image']);
         $this->assertEquals(31, $cartDetails[1]['product']);
         $this->assertEquals(1, $cartDetails[1]['count']);
         $this->assertEquals(10, $cartDetails[1]['id']);
@@ -105,7 +105,7 @@ class GetCartTest extends TestCase {
 
         $this->assertEquals(1, $cartDetails[2]['user']);
         $this->assertEquals(999, $cartDetails[2]['album']);
-        $this->assertEquals(5, $cartDetails[2]['image']);
+        $this->assertEquals(999, $cartDetails[2]['image']);
         $this->assertEquals(23, $cartDetails[2]['product']);
         $this->assertEquals(1, $cartDetails[2]['count']);
         $this->assertEquals(7, $cartDetails[2]['id']);

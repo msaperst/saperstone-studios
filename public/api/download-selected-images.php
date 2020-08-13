@@ -12,21 +12,15 @@ if (is_array($what)) {
     exit();
 }
 
-$album = $api->retrievePostInt('album', 'Album id');
-if (is_array($album)) {
-    echo json_encode($album);
+try {
+    $album = new Album($_POST['album']);
+} catch (Exception $e) {
+    echo json_encode(array('error' => $e->getMessage()));
     exit();
-}
-$album_info = $sql->getRow("SELECT * FROM `albums` WHERE id = '$album';");
-// if the album doesn't exist, throw a 404 error
-if (!$album_info ['name']) {
-    echo json_encode(array('error' => 'Album id does not match any albums'));
-    $sql->disconnect();
-    exit ();
 }
 
 // check for album access
-$isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE user = '0' AND album = '" . $album . "';");
+$isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE user = '0' AND album = '{$album->getId()}';");
 if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
     header('HTTP/1.0 401 Unauthorized');
     $sql->disconnect();
@@ -39,10 +33,10 @@ $userid = $user->getIdentifier();
 // determine what the user can download
 $downloadable = array();
 foreach ($sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId() . "' OR `user` = '0';") as $r) {
-    if ($r ['album'] == "*" || ($r ['album'] == $album && $r ['image'] == "*")) {
-        $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = $album;"));
-    } elseif ($r ['album'] == $album) {
-        $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = $album AND sequence = " . $r ['image'] . ";"));
+    if ($r ['album'] == "*" || ($r ['album'] == $album->getId() && $r ['image'] == "*")) {
+        $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = {$album->getId()};"));
+    } elseif ($r ['album'] == $album->getId()) {
+        $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = {$album->getId()} AND id = " . $r ['image'] . ";"));
     }
 }
 $downloadable = array_unique($downloadable, SORT_REGULAR);
@@ -50,11 +44,11 @@ $downloadable = array_unique($downloadable, SORT_REGULAR);
 // determine what the user wants to download
 $desired = array();
 if ($what == "all") {
-    $desired = $sql->getRows("SELECT album_images.* FROM album_images WHERE album = '$album';");
+    $desired = $sql->getRows("SELECT album_images.* FROM album_images WHERE album = '{$album->getId()}';");
 } elseif ($what == "favorites") {
-    $desired = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$userid' AND favorites.album = '$album';");
+    $desired = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$userid' AND favorites.album = '{$album->getId()}';");
 } else {
-    $desired = $sql->getRows("SELECT * FROM album_images WHERE album = '$album' AND sequence = '" . (int)$what . "';");
+    $desired = $sql->getRows("SELECT * FROM album_images WHERE album = '{$album->getId()}' AND sequence = '" . (int)$what . "';");
 }
 
 // determine what we will download
@@ -99,13 +93,13 @@ if ($images == "") {
 if (!is_dir("../tmp/")) {
     mkdir("../tmp/");
 }
-$myFile = "../tmp/" . $album_info ['name'] . " " . date("Y-m-d H-i-s") . ".zip";
+$myFile = "../tmp/{$album->getName()} " . date("Y-m-d H-i-s") . ".zip";
 $command = `zip -j "$myFile" $images`;
 $response ['file'] = $myFile;
 echo json_encode($response);
 
 // update our user records table
-$sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode("\n", $image_array) . "', $album );");
+$sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode("\n", $image_array) . "', {$album->getId()} );");
 $sql->disconnect();
 
 // send email
@@ -115,8 +109,8 @@ $email = new Email("Contact <msaperst+sstest@gmail.com>", "Actions <actions@sape
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
 $text = "This is an automatically generated message from Saperstone Studios\n\n";
-$html .= "<p>Downloads have been made from the <a href='" . $session->getBaseURL() . "/user/album.php?album=" . $album_info ['id'] . "' target='_blank'>" . $album_info ['name'] . "</a> album</p>";
-$text .= "Downloads have been made from the " . $album_info ['name'] . " album at " . $session->getBaseURL() . "/user/album.php?album=" . $album_info ['id'] . "\n\n";
+$html .= "<p>Downloads have been made from the <a href='" . $session->getBaseURL() . "/user/album.php?album={$album->getId()}' target='_blank'>{$album->getName()}</a> album</p>";
+$text .= "Downloads have been made from the {$album->getName()} album at " . $session->getBaseURL() . "/user/album.php?album={$album->getId()}\n\n";
 $html .= "<p><ul><li>" . implode("</li><li>", $image_array) . "</li></ul></p><br/>";
 $text .= implode("\n", $image_array) . "\n\n";
 $html .= "<p><strong>Name</strong>: " . $user->getName() . "<br/>";

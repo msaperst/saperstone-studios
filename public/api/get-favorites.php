@@ -7,7 +7,7 @@ $user = new User ($sql);
 $api = new Api ($sql, $user);
 
 $userId = $user->getIdentifier();
-$results = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$userId';");
+$results = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$userId';");
 $favorites = array();
 foreach ($results as $r) {
     $favorites [$r ['album']] [] = $r;

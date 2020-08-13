@@ -20,12 +20,12 @@ class GetCartAlbumTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('997', 'sample-album', 'sample album for testing', 'sample', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 5);");
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,1,1,2)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,2,1,0)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,3,0,3)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(2,997,3,5,3)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,998,0,31,1)');
-        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,999,5,23,1)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,995,1,2)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,996,1,0)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,997,0,3)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(2,997,997,5,3)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,998,998,31,1)');
+        $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,999,999,23,1)');
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (995, '997', 'm', '1', 'v', 'a', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (996, '997', 'n', '2', 'w', 'b', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (997, '997', 'o', '3', 'x', 'c', '300', '400', '1');");
@@ -128,7 +128,7 @@ class GetCartAlbumTest extends TestCase {
         $this->assertEquals(2, sizeOf($cartDetails));
         $this->assertEquals(1, $cartDetails[0]['user']);
         $this->assertEquals(997, $cartDetails[0]['album']);
-        $this->assertEquals(1, $cartDetails[0]['image']);
+        $this->assertEquals(995, $cartDetails[0]['image']);
         $this->assertEquals(1, $cartDetails[0]['product']);
         $this->assertEquals(2, $cartDetails[0]['count']);
         $this->assertEquals(1, $cartDetails[0]['id']);
@@ -147,7 +147,7 @@ class GetCartAlbumTest extends TestCase {
         $this->assertEquals(array(), $cartDetails[0]['options']);
         $this->assertEquals(1, $cartDetails[1]['user']);
         $this->assertEquals(997, $cartDetails[1]['album']);
-        $this->assertEquals(2, $cartDetails[1]['image']);
+        $this->assertEquals(996, $cartDetails[1]['image']);
         $this->assertEquals(1, $cartDetails[1]['product']);
         $this->assertEquals(0, $cartDetails[1]['count']);
         $this->assertEquals(1, $cartDetails[1]['id']);
@@ -181,7 +181,7 @@ class GetCartAlbumTest extends TestCase {
         $this->assertEquals(1, sizeOf($cartDetails));
         $this->assertEquals(1, $cartDetails[0]['user']);
         $this->assertEquals(999, $cartDetails[0]['album']);
-        $this->assertEquals(5, $cartDetails[0]['image']);
+        $this->assertEquals(999, $cartDetails[0]['image']);
         $this->assertEquals(23, $cartDetails[0]['product']);
         $this->assertEquals(1, $cartDetails[0]['count']);
         $this->assertEquals(7, $cartDetails[0]['id']);

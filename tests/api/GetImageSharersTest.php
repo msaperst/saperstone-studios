@@ -19,10 +19,10 @@ class GetImageSharersTest extends TestCase {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (999, 'sample-album-download-all', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('2', 999, '*');");
-        $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('0', 999, '2');");
-        $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('3', 999, '2');");
-        $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('3', 999, '3');");
-        $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('4', 999, '3');");
+        $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('0', 999, '998');");
+        $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('3', 999, 998);");
+        $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('3', 999, '999');");
+        $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('4', 999, 999);");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (997, 999, 'file', 1, '/albums/sample/file', '600', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (998, 999, 'file', 2, '/albums/sample/file', '600', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (999, 999, 'file', 3, '/albums/sample/file', '600', '400', '1');");
@@ -185,10 +185,10 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals('*', $downloaders[0]['image']);
         $this->assertEquals(3, $downloaders[1]['user']);
         $this->assertEquals(999, $downloaders[1]['album']);
-        $this->assertEquals('2', $downloaders[1]['image']);
+        $this->assertEquals('998', $downloaders[1]['image']);
         $this->assertEquals(0, $downloaders[2]['user']);
         $this->assertEquals(999, $downloaders[2]['album']);
-        $this->assertEquals('2', $downloaders[2]['image']);
+        $this->assertEquals('998', $downloaders[2]['image']);
     }
 
     public function testAlbumImageThree() {
@@ -210,6 +210,6 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals('*', $downloaders[0]['image']);
         $this->assertEquals(3, $downloaders[1]['user']);
         $this->assertEquals(999, $downloaders[1]['album']);
-        $this->assertEquals('3', $downloaders[1]['image']);
+        $this->assertEquals('999', $downloaders[1]['image']);
     }
 }

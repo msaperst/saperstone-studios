@@ -18,9 +18,9 @@ class DeleteAlbumImageTest extends TestCase {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4);");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '0', '', '/albums/sample/sample1.jpg', '300', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '1', '', '/albums/sample/sample2.jpg', '300', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('*', '999', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '0', '', '/albums/sample/sample1.jpg', '300', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '1', '', '/albums/sample/sample2.jpg', '300', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('*', '999', '999');");
         $oldmask = umask(0);
         mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample');
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777);
@@ -184,7 +184,7 @@ class DeleteAlbumImageTest extends TestCase {
         $downloadRights = $this->sql->getRow("SELECT * FROM `download_rights` WHERE `download_rights`.`album` = 999;");
         $this->assertEquals('*', $downloadRights['user']);
         $this->assertEquals(999, $downloadRights['album']);
-        $this->assertEquals(0, $downloadRights['image']);
+        $this->assertEquals(999, $downloadRights['image']);
         $this->assertFalse(file_exists('content/albums/sample/sample1.jpg'));
         $this->assertFalse(file_exists('content/albums/sample/full/sample1.jpg'));
     }

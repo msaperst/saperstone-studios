@@ -9,7 +9,6 @@ $api = new Api ($sql, $user);
 $api->forceLoggedIn();
 
 $response = array();
-$query;
 if ($user->isAdmin()) {
     $query = "SELECT * FROM albums;";
 } else {

@@ -5,34 +5,21 @@ $session->initialize();
 $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
+$sql->disconnect();
 
 $api->forceLoggedIn();
 
-$id = $api->retrievePostInt('id', 'Album id');
-if (is_array($id)) {
-    echo $id['error'];
+try {
+    $album = new Album($_POST['id']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
-$album_info = $sql->getRow("SELECT * FROM albums WHERE id = $id;");
-if (!$album_info ['id']) {
-    echo "Album id does not match any albums";
-    $sql->disconnect();
-    exit ();
-}
-// only admin users and uploader users who own the album can make updates
-if (!($user->isAdmin() || ($user->getRole() == "uploader" && $user->getId() == $album_info ['owner']))) {
+
+if (!$album->canUserGetData()) {
     header('HTTP/1.0 403 Unauthorized');
-    $sql->disconnect();
     exit ();
 }
 
-$row = $sql->getRow("SELECT location FROM albums WHERE id='$id';");
-$sql->executeStatement("DELETE FROM albums WHERE id='$id';");
-$sql->executeStatement("DELETE FROM album_images WHERE album='$id';");
-$sql->executeStatement("DELETE FROM albums_for_users WHERE album='$id';");
-if ($row ['location'] != "") {
-    system("rm -rf " . escapeshellarg("../albums/" . $row ['location']));
-}
-
-$sql->disconnect();
+$album->delete();
 exit ();

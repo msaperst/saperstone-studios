@@ -144,7 +144,7 @@ class SetFavoriteTest extends TestCase {
         $this->assertEquals(1, sizeOf($images));
         $this->assertTrue(filter_var($images[0]['user'], FILTER_VALIDATE_IP) !== false);
         $this->assertEquals(999, $images[0]['album']);
-        $this->assertEquals('0', $images[0]['image']);
+        $this->assertEquals('999', $images[0]['image']);
     }
 
     public function testSetFavoriteAuth() {
@@ -164,7 +164,7 @@ class SetFavoriteTest extends TestCase {
         $this->assertEquals(1, sizeOf($images));
         $this->assertEquals(1, $images[0]['user']);
         $this->assertEquals(999, $images[0]['album']);
-        $this->assertEquals('0', $images[0]['image']);
+        $this->assertEquals('999', $images[0]['image']);
     }
 }
 

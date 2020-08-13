@@ -8,18 +8,14 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$id = $api->retrieveGetInt('id', 'Gallery id');
-if (is_array($id)) {
-    echo $id['error'];
+try {
+    $gallery = new Gallery($_GET['id']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
-$gallery_info = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
-if (!$gallery_info ['id']) {
-    echo "Gallery id does not match any galleries";
-    $sql->disconnect();
-    exit ();
-}
 
-echo json_encode($sql->getRow("SELECT galleries.*, COUNT(gallery_images.gallery) AS 'images' FROM galleries LEFT JOIN gallery_images ON galleries.id = gallery_images.gallery WHERE galleries.id = $id GROUP BY galleries.id;"));
+//TODO - update this once Image class is completed
+echo json_encode($sql->getRow("SELECT galleries.*, COUNT(gallery_images.gallery) AS 'images' FROM galleries LEFT JOIN gallery_images ON galleries.id = gallery_images.gallery WHERE galleries.id = {$gallery->getId()} GROUP BY galleries.id;"));
 $sql->disconnect();
 exit ();

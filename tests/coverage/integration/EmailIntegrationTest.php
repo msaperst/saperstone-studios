@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-class EmailTest extends TestCase {
+class EmailIntegrationTest extends TestCase {
     public function testSendEmail() {
         $email = new Email('msaperst+sstest@gmail.com', 'la@saperstonestudios.com', 'test');
         $email->setHtml("<b>Test</b> Email");

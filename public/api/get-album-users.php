@@ -8,19 +8,15 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$id = $api->retrieveGetInt('id', 'Album id');
-if (is_array($id)) {
-    echo $id['error'];
+try {
+    $album = new Album($_GET['id']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    $sql->disconnect();
     exit();
 }
-$album_info = $sql->getRow("SELECT * FROM albums WHERE id = $id;");
-if (!$album_info ['id']) {
-    echo "Album id does not match any albums";
-    $sql->disconnect();
-    exit ();
-}
 
-$users = $sql->getRows("SELECT * FROM albums_for_users WHERE album = $id");
+$users = $sql->getRows("SELECT * FROM albums_for_users WHERE album = {$album->getId()}");
 echo json_encode($users);
 $sql->disconnect();
 exit ();
