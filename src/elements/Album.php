@@ -97,7 +97,7 @@ class Album {
 
     function delete() {
         if (!$this->canUserGetData()) {
-            return;
+            throw new Exception("User not authorized to delete album");
         }
         $this->sql->executeStatement("DELETE FROM albums WHERE id='{$this->id}';");
         $this->sql->executeStatement("DELETE FROM album_images WHERE album='{$this->id}';");

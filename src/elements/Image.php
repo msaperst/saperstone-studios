@@ -70,7 +70,7 @@ class Image {
 
     function delete() {
         if (!$this->canUserGetData()) {
-            return;
+            throw new Exception("User not authorized to delete image");
         }
         if ($this->album != NULL) {
             // if we're in an album, delete from the table
@@ -90,10 +90,10 @@ class Image {
 
         // remove the file
         if ($this->location != "") {
-            system("rm -f " . escapeshellarg(dirname(dirname(__DIR__)) . $this->location));
+            system("rm -f " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . $this->location));
             $parts = explode("/", $this->location);
             array_splice($parts, count($parts) - 1, 0, "full");
-            system("rm -f " . escapeshellarg(dirname(dirname(__DIR__)) . implode("/", $parts)));
+            system("rm -f " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public'. implode("/", $parts)));
         }
     }
 }

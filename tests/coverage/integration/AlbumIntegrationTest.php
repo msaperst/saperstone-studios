@@ -13,7 +13,6 @@ class AlbumIntegrationTest extends TestCase {
     private $sql;
 
     public function setUp() {
-        date_default_timezone_set("America/New_York");
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', '', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
@@ -22,10 +21,11 @@ class AlbumIntegrationTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '998');");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (1, '999');");
         $oldmask = umask(0);
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777);
-        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample.jpg');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample.jpg', 0777);
+        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums');
+        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample');
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777);
+        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg');
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg', 0777);
         umask($oldmask);
     }
 
@@ -42,8 +42,8 @@ class AlbumIntegrationTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
         $this->sql->disconnect();
+        system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums'));
     }
 
     public function testNullAlbumId() {
@@ -96,13 +96,19 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals('sample-album', $album->getName());
     }
 
+    public function testGetOwner() {
+        $album = new Album('999');
+        $this->assertEquals(4, $album->getOwner());
+    }
+
     public function testAllDataLoaded() {
+        date_default_timezone_set("America/New_York");
         $album = new Album(999);
         $albumInfo = $album->getDataArray();
         $this->assertEquals(999, $albumInfo['id']);
         $this->assertEquals('sample-album', $albumInfo['name']);
         $this->assertEquals('sample album for testing', $albumInfo['description']);
-        $this->assertEquals(date("Y-m-d h:i:s"), $albumInfo['date']);
+        $this->assertStringStartsWith(date("Y-m-d H:i"), $albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertEquals('123', $albumInfo['code']);
@@ -268,11 +274,15 @@ class AlbumIntegrationTest extends TestCase {
 
     public function testDeleteNoAccess() {
         $album = new Album(999);
-        $album->delete();
+        try {
+            $album->delete();
+        } catch( Exception $e) {
+            $this->assertEquals("User not authorized to delete album", $e->getMessage());
+        }
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `albums` WHERE `albums`.`id` = 999;"));
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 999;"));
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;"));
-        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample.jpg'));
+        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
 
     public function testDeleteNoLocation() {
