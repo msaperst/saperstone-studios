@@ -65,7 +65,7 @@ class GetBlogFullTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", (string)$response->getBody());
+        $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
     public function testBadBlog() {
@@ -75,7 +75,7 @@ class GetBlogFullTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", (string)$response->getBody());
+        $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
     public function testGetBlogFullSimple() {

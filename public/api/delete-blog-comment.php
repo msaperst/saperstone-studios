@@ -5,30 +5,23 @@ $session->initialize();
 $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
+$sql->disconnect();
 
 $api->forceLoggedIn();
 
-$comment = $api->retrievePostInt('comment', 'Comment id');
-if (is_array($comment)) {
-    echo $comment['error'];
+try {
+    $comment = new Comment($_POST['comment']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
-$blog_comment_info = $sql->getRow("SELECT * FROM blog_comments WHERE id = $comment;");
-if (!$blog_comment_info ['id']) {
-    echo "Comment id does not match any comments";
-    $sql->disconnect();
-    exit ();
-}
+
 
 // check our user permissions
-if (!($user->isAdmin() || $user->getId() == $blog_comment_info ['user'])) {
+if (!$comment->canUserGetData()) {
     header('HTTP/1.0 403 Unauthorized');
-    $sql->disconnect();
     exit ();
 }
 
-// delete our image from mysql table
-$sql->executeStatement("DELETE FROM blog_comments WHERE id='$comment';");
-$sql->disconnect();
+$comment->delete();
 exit ();
-?>

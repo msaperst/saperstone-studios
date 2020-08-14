@@ -6,17 +6,12 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$post = $api->retrievePostInt('post', 'Blog id');
-if (is_array($post)) {
-    echo $post['error'];
-    exit();
-}
-
-$blog_info = $sql->getRow("SELECT * FROM blog_details WHERE id = $post;");
-if (!$blog_info ['id']) {
-    echo "Blog id does not match any blogs";
+try {
+    $blog = new Blog($_POST['post']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
-    exit ();
+    exit();
 }
 
 $name = "";
@@ -41,7 +36,6 @@ if ($user->getId() != "") {
     $user = 'NULL';
 }
 
-echo $sql->executeStatement("INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ($post, $user, '$name', CURRENT_TIMESTAMP, '" . $session->getClientIP() . "', '$email', '$message' );");
+echo $sql->executeStatement("INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ({$blog->getId()}, $user, '$name', CURRENT_TIMESTAMP, '" . $session->getClientIP() . "', '$email', '$message' );");
 $sql->disconnect();
 exit ();
-?>

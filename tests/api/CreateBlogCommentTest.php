@@ -55,7 +55,7 @@ class CreateBlogCommentTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", (string)$response->getBody());
+        $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
     public function testBadBlogId() {
@@ -65,7 +65,7 @@ class CreateBlogCommentTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", (string)$response->getBody());
+        $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
     public function testNoMessage() {

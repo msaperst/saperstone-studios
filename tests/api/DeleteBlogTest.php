@@ -100,7 +100,7 @@ class DeleteBlogTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", (string)$response->getBody());
+        $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
     public function testBadBlog() {
@@ -114,7 +114,7 @@ class DeleteBlogTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Blog id does not match any blogs", (string)$response->getBody());
+        $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
     public function testDeleteBlog() {
