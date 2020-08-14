@@ -69,10 +69,8 @@ RUN cd /var/www/resources/merchant-sdk-php-${PAYPAL_VERSION}/samples && \
         sed -i 's/acct1.Password =/acct1.Password = ${PAYPAL_PASSWORD}/' sdk_config.ini && \
         sed -i 's/acct1.Signature =/acct1.Signature = ${PAYPAL_SIGNATURE}/' sdk_config.ini
 ## install/configure ua parser plugin
-RUN cd /var/www/resources && \
-        wget --quiet https://github.com/cbschuld/Browser.php/archive/master.zip && \
-        unzip -qq master.zip && \
-        rm master.zip
+RUN cd /var/www/src && \
+        wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php
 ## install browscap ini
 RUN cd /var/www/resources && \
         wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \
