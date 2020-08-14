@@ -17,10 +17,10 @@ class Api {
                 case "float":
                     return floatval(str_replace('$', '', $_POST [$variable]));
                 case "string":
+                default:
                     return $this->sql->escapeString($_POST [$variable]);
             }
         } else {
-            $error;
             if (!isset ($_POST [$variable])) {
                 $error = "$variableName is required";
             } else {
@@ -29,14 +29,12 @@ class Api {
             $this->sql->disconnect();
             return array('error' => $error);
         }
-        return;
     }
 
     function retrieveValidatedPost($variable, $variableName, $validation) {
         if (isset ($_POST [$variable]) && filter_var($_POST [$variable], $validation)) {
             return $this->sql->escapeString($_POST [$variable]);
         } else {
-            $error;
             if (!isset ($_POST [$variable])) {
                 $error = "$variableName is required";
             } elseif ($_POST [$variable] == "") {
@@ -47,11 +45,9 @@ class Api {
             $this->sql->disconnect();
             return array('error' => $error);
         }
-        return;
     }
 
     function retrievePostDateTime($variable, $variableName, $format) {
-        $error;
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
             $date = $this->sql->escapeString($_POST [$variable]);
             $d = DateTime::createFromFormat($format, $date);
@@ -91,10 +87,10 @@ class Api {
                 case "float":
                     return floatval(str_replace('$', '', $_GET [$variable]));
                 case "string":
+                default:
                     return $this->sql->escapeString($_GET [$variable]);
             }
         } else {
-            $error;
             if (!isset ($_GET [$variable])) {
                 $error = "$variableName is required";
             } else {
@@ -103,7 +99,6 @@ class Api {
             $this->sql->disconnect();
             return array('error' => $error);
         }
-        return;
     }
 
     function retrieveGetInt($variable, $variableName) {

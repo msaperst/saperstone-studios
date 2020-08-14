@@ -204,6 +204,14 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     "Coverage Tests": {
                         stage('Run Coverage Tests') {
                             try {
+                                timeout(60) {
+                                    waitUntil {
+                                        script {
+                                            def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
+                                            return (r.trim() == '200');
+                                        }
+                                    }
+                                }
                                 sh "composer coverage-test"
                             } finally {
                                 junit 'reports/cov-junit.xml'
@@ -267,12 +275,10 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                         }
                                     }
                                 }
-                                sh '''export BROWSER=chrome;
-                                    composer ui-pre-test;
-                                    COMPOSER_PROCESS_TIMEOUT=600 composer ui-test;'''
+                                sh 'export BROWSER=chrome; composer ui-pre-test;'
+                                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=600 composer ui-test;'
                             } finally {
-                                sh '''export BROWSER=chrome;
-                                    composer ui-post-test;'''
+                                sh 'export BROWSER=chrome; composer ui-post-test;'
                                 junit 'reports/ui-chrome/ui-junit.xml'
                                 publishHTML([
                                         allowMissing         : false,

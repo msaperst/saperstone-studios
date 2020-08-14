@@ -36,7 +36,7 @@ class GalleryIntegrationTest extends TestCase {
 
     public function testBadGalleryId() {
         try {
-            new Gallery(9999);
+            new Gallery(8999);
         } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
@@ -44,7 +44,7 @@ class GalleryIntegrationTest extends TestCase {
 
     public function testBadStringGalleryId() {
         try {
-            new Gallery("9999");
+            new Gallery("8999");
         } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
