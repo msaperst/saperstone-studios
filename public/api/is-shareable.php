@@ -12,8 +12,6 @@ if ($user->isAdmin()) {
     exit ();
 }
 
-$userId = $user->getIdentifier();
-
 try {
     $album = new Album($_GET['album']);
 } catch (Exception $e) {
@@ -30,7 +28,7 @@ try {
     exit();
 }
 
-$shareable = $sql->getRow("SELECT * FROM `share_rights` WHERE ( `user` = '$userId' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
+$shareable = $sql->getRow("SELECT * FROM `share_rights` WHERE ( `user` = '{$user->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
 if ($shareable ['album']) {
     echo 1;
 } else {

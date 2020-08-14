@@ -3,8 +3,6 @@
 namespace api;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -78,7 +76,7 @@ class GetGalleryImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $galleryImages = json_decode($response->getBody(), true);
-        $this->assertEquals(3, sizeOf( $galleryImages) );
+        $this->assertEquals(3, sizeOf($galleryImages));
         $this->assertEquals(997, $galleryImages[0]['id']);
         $this->assertEquals(999, $galleryImages[0]['gallery']);
         $this->assertEquals('', $galleryImages[0]['title']);

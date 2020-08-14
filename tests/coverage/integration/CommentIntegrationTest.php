@@ -37,7 +37,7 @@ class CommentIntegrationTest extends TestCase {
     public function testBlankCommentId() {
         try {
             new Comment("");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Comment id can not be blank", $e->getMessage());
         }
     }
@@ -45,7 +45,7 @@ class CommentIntegrationTest extends TestCase {
     public function testLetterCommentId() {
         try {
             new Comment("a");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Comment id does not match any comments", $e->getMessage());
         }
     }
@@ -53,7 +53,7 @@ class CommentIntegrationTest extends TestCase {
     public function testBadCommentId() {
         try {
             new Comment(9999);
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Comment id does not match any comments", $e->getMessage());
         }
     }
@@ -61,7 +61,7 @@ class CommentIntegrationTest extends TestCase {
     public function testBadStringCommentId() {
         try {
             new Comment("9999");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Comment id does not match any comments", $e->getMessage());
         }
     }
@@ -102,13 +102,13 @@ class CommentIntegrationTest extends TestCase {
         $comment = new Comment(998);
         $commentInfo = $comment->getDataArray();
         $this->assertEquals(998, $commentInfo['id']);
-        $this->assertEquals( 999, $commentInfo['blog']);
-        $this->assertNull( $commentInfo['user']);
-        $this->assertEquals( 'Anna', $commentInfo['name']);
-        $this->assertEquals( '2012-10-31 09:56:47', $commentInfo['date']);
-        $this->assertEquals( '68.98.132.164', $commentInfo['ip']);
-        $this->assertEquals( 'annad@annadbruce.com', $commentInfo['email']);
-        $this->assertEquals( 'hehehehehe this rules!', $commentInfo['comment']);
+        $this->assertEquals(999, $commentInfo['blog']);
+        $this->assertNull($commentInfo['user']);
+        $this->assertEquals('Anna', $commentInfo['name']);
+        $this->assertEquals('2012-10-31 09:56:47', $commentInfo['date']);
+        $this->assertEquals('68.98.132.164', $commentInfo['ip']);
+        $this->assertEquals('annad@annadbruce.com', $commentInfo['email']);
+        $this->assertEquals('hehehehehe this rules!', $commentInfo['comment']);
         $this->assertFalse(key_exists('delete', $commentInfo));
     }
 
@@ -119,21 +119,21 @@ class CommentIntegrationTest extends TestCase {
         $commentInfo = $comment->getDataArray();
         unset($_SESSION['hash']);
         $this->assertEquals(999, $commentInfo['id']);
-        $this->assertEquals( 999, $commentInfo['blog']);
-        $this->assertEquals( 4, $commentInfo['user']);
-        $this->assertEquals( 'Uploader', $commentInfo['name']);
-        $this->assertEquals( '2012-10-31 13:56:47', $commentInfo['date']);
-        $this->assertEquals( '192.168.1.2', $commentInfo['ip']);
-        $this->assertEquals( 'msaperst@gmail.com', $commentInfo['email']);
-        $this->assertEquals( 'awesome post', $commentInfo['comment']);
-        $this->assertTrue( $commentInfo['delete']);
+        $this->assertEquals(999, $commentInfo['blog']);
+        $this->assertEquals(4, $commentInfo['user']);
+        $this->assertEquals('Uploader', $commentInfo['name']);
+        $this->assertEquals('2012-10-31 13:56:47', $commentInfo['date']);
+        $this->assertEquals('192.168.1.2', $commentInfo['ip']);
+        $this->assertEquals('msaperst@gmail.com', $commentInfo['email']);
+        $this->assertEquals('awesome post', $commentInfo['comment']);
+        $this->assertTrue($commentInfo['delete']);
     }
 
     public function testDeleteNoAccess() {
         $comment = new Comment(999);
         try {
             $comment->delete();
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("User not authorized to delete comment", $e->getMessage());
         }
         $this->assertEquals(2, $this->sql->getRowCount("SELECT * FROM `blog_comments` WHERE `blog_comments`.`blog` = 999;"));

@@ -30,8 +30,8 @@ if ($user->isLoggedIn()) {
 }
 
 // update our mysql database
-$sql->executeStatement("DELETE FROM `favorites` WHERE `user` = '$userId' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';" );
+$sql->executeStatement("DELETE FROM `favorites` WHERE `user` = '$userId' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';");
 // get our new favorite count for the album
-echo $sql->getRowCount( "SELECT * FROM `favorites` WHERE `user` = '$userId' AND `album` = '{$album->getId()}';" );
+echo $sql->getRowCount("SELECT * FROM `favorites` WHERE `user` = '$userId' AND `album` = '{$album->getId()}';");
 $sql->disconnect();
 exit ();

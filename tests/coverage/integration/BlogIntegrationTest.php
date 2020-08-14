@@ -22,7 +22,7 @@ class BlogIntegrationTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ('999', 29)");
         $this->sql->executeStatement("INSERT INTO `blog_texts` (`blog`, `contentGroup`, `text`) VALUES ('999', '2', 'Some blog text')");
         $oldmask = umask(0);
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01',0777, true);
+        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01', 0777, true);
         touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg', 0777);
         umask($oldmask);
@@ -56,7 +56,7 @@ class BlogIntegrationTest extends TestCase {
     public function testBlankBlogId() {
         try {
             new Blog("");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Blog id can not be blank", $e->getMessage());
         }
     }
@@ -64,7 +64,7 @@ class BlogIntegrationTest extends TestCase {
     public function testLetterBlogId() {
         try {
             new Blog("a");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Blog id does not match any blog posts", $e->getMessage());
         }
     }
@@ -72,7 +72,7 @@ class BlogIntegrationTest extends TestCase {
     public function testBadBlogId() {
         try {
             new Blog(9999);
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Blog id does not match any blog posts", $e->getMessage());
         }
     }
@@ -80,7 +80,7 @@ class BlogIntegrationTest extends TestCase {
     public function testBadStringBlogId() {
         try {
             new Blog("9999");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Blog id does not match any blog posts", $e->getMessage());
         }
     }
@@ -98,7 +98,7 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals('Sample Blog', $blogInfo['title']);
         $this->assertNull($blogInfo['safe_title']);
         $this->assertEquals('January 1st, 2031', $blogInfo['date']);
-        $this->assertEquals('',$blogInfo['preview']);
+        $this->assertEquals('', $blogInfo['preview']);
         $this->assertEquals('0', $blogInfo['offset']);
         $this->assertEquals('0', $blogInfo['active']);
         $this->assertEquals(0, $blogInfo['twitter']);
@@ -115,7 +115,7 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals('Sample Blog', $blogInfo['title']);
         $this->assertNull($blogInfo['safe_title']);
         $this->assertEquals('January 1st, 2031', $blogInfo['date']);
-        $this->assertEquals('',$blogInfo['preview']);
+        $this->assertEquals('', $blogInfo['preview']);
         $this->assertEquals('0', $blogInfo['offset']);
         $this->assertEquals('0', $blogInfo['active']);
         $this->assertEquals(0, $blogInfo['twitter']);
@@ -158,7 +158,7 @@ class BlogIntegrationTest extends TestCase {
         $blog = new Blog(999);
         try {
             $blog->delete();
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("User not authorized to delete blog post", $e->getMessage());
         }
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;"));

@@ -95,7 +95,7 @@ class GetUserTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("User id does not match any users", (string)$response->getBody());
     }
-    
+
     public function testUser() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'

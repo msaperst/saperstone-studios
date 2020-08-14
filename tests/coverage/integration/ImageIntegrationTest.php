@@ -184,7 +184,7 @@ class ImageIntegrationTest extends TestCase {
         $image = new Image(new Album(999), 2);
         try {
             $image->delete();
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("User not authorized to delete image", $e->getMessage());
         }
         $this->assertEquals(2, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 999;"));

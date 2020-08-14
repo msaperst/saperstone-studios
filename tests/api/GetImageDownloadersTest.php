@@ -149,7 +149,7 @@ class GetImageDownloadersTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Image id can not be blank", (string)$response->getBody());
     }
-    
+
     public function testAlbumImageOne() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'

@@ -6,8 +6,6 @@ $sql = new Sql ();
 $user = new User ($sql);
 $api = new Api ($sql, $user);
 
-$userId = $user->getIdentifier();
-
 try {
     $album = new Album($_GET['album']);
 } catch (Exception $e) {
@@ -24,7 +22,7 @@ try {
     exit();
 }
 
-$favorite = $sql->getRow("SELECT * FROM `favorites` WHERE `user` = '$userId' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';");
+$favorite = $sql->getRow("SELECT * FROM `favorites` WHERE `user` = '{$user->getIdentifier()}' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';");
 if ($favorite ['user']) {
     echo 1;
 } else {

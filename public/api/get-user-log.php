@@ -20,6 +20,6 @@ if (!$user_info ['id']) {
     exit ();
 }
 
-echo json_encode($sql->getRows("SELECT user_logs.*, albums.name FROM user_logs LEFT JOIN albums ON user_logs.album = albums.id WHERE user = $id" ));
+echo json_encode($sql->getRows("SELECT user_logs.*, albums.name FROM user_logs LEFT JOIN albums ON user_logs.album = albums.id WHERE user = $id"));
 $sql->disconnect();
 exit ();

@@ -25,17 +25,17 @@ try {
 }
 
 // empty out our old cart for this image
-$sql->executeStatement( "DELETE FROM `cart` WHERE `user` = '{$user->getId()}' AND `album` = '{$album->getId()}' and `image` = '{$image->getId()}'" );
+$sql->executeStatement("DELETE FROM `cart` WHERE `user` = '{$user->getId()}' AND `album` = '{$album->getId()}' and `image` = '{$image->getId()}'");
 
 // for each product, add it back in
 if (isset ($_POST ['products']) && is_array($_POST ['products'])) {
     foreach ($_POST ['products'] as $product => $count) {
         $product = ( int )$product;
         $count = ( int )$count;
-        $sql->executeStatement( "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '{$user->getId()}', '{$album->getId()}', '{$image->getId()}', '$product', '$count');" );
+        $sql->executeStatement("INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '{$user->getId()}', '{$album->getId()}', '{$image->getId()}', '$product', '$count');");
     }
 }
 
-echo $sql->getRow( "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '{$user->getId()}';" )['total'];
+echo $sql->getRow("SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '{$user->getId()}';")['total'];
 $sql->disconnect();
 exit ();

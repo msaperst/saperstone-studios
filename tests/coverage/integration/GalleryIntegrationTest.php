@@ -21,7 +21,7 @@ class GalleryIntegrationTest extends TestCase {
     public function testBlankGalleryId() {
         try {
             new Gallery("");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Gallery id can not be blank", $e->getMessage());
         }
     }
@@ -29,7 +29,7 @@ class GalleryIntegrationTest extends TestCase {
     public function testLetterGalleryId() {
         try {
             new Gallery("a");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
     }
@@ -37,7 +37,7 @@ class GalleryIntegrationTest extends TestCase {
     public function testBadGalleryId() {
         try {
             new Gallery(9999);
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
     }
@@ -45,7 +45,7 @@ class GalleryIntegrationTest extends TestCase {
     public function testBadStringGalleryId() {
         try {
             new Gallery("9999");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
     }

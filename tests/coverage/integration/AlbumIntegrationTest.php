@@ -57,7 +57,7 @@ class AlbumIntegrationTest extends TestCase {
     public function testBlankAlbumId() {
         try {
             new Album("");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Album id can not be blank", $e->getMessage());
         }
     }
@@ -65,7 +65,7 @@ class AlbumIntegrationTest extends TestCase {
     public function testLetterAlbumId() {
         try {
             new Album("a");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Album id does not match any albums", $e->getMessage());
         }
     }
@@ -73,7 +73,7 @@ class AlbumIntegrationTest extends TestCase {
     public function testBadAlbumId() {
         try {
             new Album(9999);
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Album id does not match any albums", $e->getMessage());
         }
     }
@@ -81,7 +81,7 @@ class AlbumIntegrationTest extends TestCase {
     public function testBadStringAlbumId() {
         try {
             new Album("9999");
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("Album id does not match any albums", $e->getMessage());
         }
     }
@@ -276,7 +276,7 @@ class AlbumIntegrationTest extends TestCase {
         $album = new Album(999);
         try {
             $album->delete();
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals("User not authorized to delete album", $e->getMessage());
         }
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `albums` WHERE `albums`.`id` = 999;"));

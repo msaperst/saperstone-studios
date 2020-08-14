@@ -18,7 +18,7 @@ if (!$product_info ['id']) {
     exit ();
 }
 
-$options = array_column( $sql->getRows( "SELECT opt FROM product_options WHERE product_type = '$type';" ), 'opt' );
+$options = array_column($sql->getRows("SELECT opt FROM product_options WHERE product_type = '$type';"), 'opt');
 echo json_encode($options);
 $sql->disconnect();
 exit ();
