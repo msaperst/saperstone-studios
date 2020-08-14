@@ -20,8 +20,14 @@ try {
     exit();
 }
 
-if ($album->canUserAccess()) {
+if (!$album->canUserAccess()) {
     echo 0;
+    $sql->disconnect();
+    exit();
+}
+
+if ($album->canUserGetData()) {
+    echo 1;
     $sql->disconnect();
     exit();
 }

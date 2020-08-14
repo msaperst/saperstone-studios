@@ -20,6 +20,18 @@ try {
     exit();
 }
 
+if (!$album->canUserAccess()) {
+    echo 0;
+    $sql->disconnect();
+    exit();
+}
+
+if ($album->canUserGetData()) {
+    echo 1;
+    $sql->disconnect();
+    exit();
+}
+
 try {
     $image = new Image($album, $_GET['image']);
 } catch (Exception $e) {
