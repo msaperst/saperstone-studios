@@ -208,5 +208,4 @@ class LoginTest extends TestCase {
         $this->assertStringStartsWith(date("Y-m-d H:i"), $userInfo['lastLogin']);
         //TODO - cookie set
     }
-
 }

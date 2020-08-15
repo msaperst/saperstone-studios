@@ -3,23 +3,18 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$currentUser = new CurrentUser ($sql);
+$api = new Api ($sql, $currentUser);
+$sql->disconnect();
 
 $api->forceAdmin();
 
-$id = $api->retrievePostInt('id', 'User id');
-if (is_array($id)) {
-    echo $id['error'];
+try {
+    $user = new User($_POST['id']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
-$users_details = $sql->getRow("SELECT * FROM users WHERE id = $id;");
-if (!$users_details ['id']) {
-    echo "User id does not match any users";
-    $sql->disconnect();
-    exit ();
-}
 
-$sql->executeStatement("DELETE FROM users WHERE id='$id';");
-$sql->disconnect();
+$user->delete();
 exit ();

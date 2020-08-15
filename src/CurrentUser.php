@@ -3,7 +3,7 @@
 require_once "autoloader.php";
 
 class CurrentUser {
-    private $user_details = NULL;
+    private $user = NULL;
     private $sql;
     private $session;
 
@@ -18,20 +18,24 @@ class CurrentUser {
             $hash = $_SESSION ['hash'];
         }
         if ($hash != NULL) {
-            $this->user_details = $sql->getRow("SELECT * FROM users WHERE hash='{$hash}';");
+            try{
+                $this->user = new User($sql->getRow("SELECT * FROM users WHERE hash='{$hash}';")['id']);
+            } catch ( Exception $e) {
+                $this->user =NULL;
+            }
         }
     }
 
     function isLoggedIn() {
-        if ($this->user_details != NULL) {
+        if ($this->user != NULL) {
             return true;
         }
         return false;
     }
 
     function getId() {
-        if ($this->isLoggedIn() && $this->user_details ['id']) {
-            return $this->user_details ['id'];
+        if ($this->user != NULL) {
+            return $this->user->getId();
         }
         return "";
     }
@@ -45,15 +49,15 @@ class CurrentUser {
     }
 
     function getUser() {
-        if ($this->isLoggedIn() && $this->user_details ['usr']) {
-            return $this->user_details ['usr'];
+        if ($this->user != NULL) {
+            return $this->user->getUsr();
         }
         return "";
     }
 
     function getRole() {
-        if ($this->isLoggedIn() && $this->user_details ['role']) {
-            return $this->user_details ['role'];
+        if ($this->user != NULL) {
+            return $this->user->getRole();
         }
         return "";
     }
@@ -63,38 +67,31 @@ class CurrentUser {
     }
 
     function getFirstName() {
-        if ($this->isLoggedIn() && $this->user_details ['firstName']) {
-            return $this->user_details ['firstName'];
+        if ($this->user != NULL) {
+            return $this->user->getFirstName();
         }
         return "";
     }
 
     function getLastName() {
-        if ($this->isLoggedIn() && $this->user_details ['lastName']) {
-            return $this->user_details ['lastName'];
+        if ($this->user != NULL) {
+            return $this->user->getLastName();
         }
         return "";
     }
 
     function getName() {
-        $name = "";
-        if ($this->isLoggedIn()) {
-            if ($this->user_details ['firstName']) {
-                $name .= $this->user_details ['firstName'];
-            }
-            if ($this->user_details ['lastName']) {
-                if ($name != "") {
-                    $name .= " ";
-                }
-                $name .= $this->user_details ['lastName'];
-            }
+        $name = $this->getFirstName();
+        if( $this->getLastName() != "" && $name != "") {
+            $name .= " ";
         }
+        $name .= $this->getLastName();
         return $name;
     }
 
     function getEmail() {
-        if ($this->isLoggedIn() && $this->user_details ['email']) {
-            return $this->user_details ['email'];
+        if ($this->user != NULL) {
+            return $this->user->getEmail();
         }
         return "";
     }
@@ -124,5 +121,3 @@ class CurrentUser {
         }
     }
 }
-
-?>
