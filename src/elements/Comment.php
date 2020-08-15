@@ -52,7 +52,7 @@ class Comment {
     }
 
     function canUserGetData() {
-        $user = new User($this->sql);
+        $user = new CurrentUser($this->sql);
         // only admin users and the user who created the comment can get all data
         return ($this->user != NULL && $this->user == $user->getId()) || $user->isAdmin();
     }

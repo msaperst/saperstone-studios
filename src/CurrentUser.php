@@ -2,7 +2,7 @@
 
 require_once "autoloader.php";
 
-class User {
+class CurrentUser {
     private $user_details = NULL;
     private $sql;
     private $session;

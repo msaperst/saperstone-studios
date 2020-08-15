@@ -58,7 +58,7 @@ class Image {
     }
 
     function canUserGetData() {
-        $user = new User($this->sql);
+        $user = new CurrentUser($this->sql);
         if ($this->album != NULL) {
             $album = new Album($this->album);
             // only admin users and uploader users who own the album can get all data

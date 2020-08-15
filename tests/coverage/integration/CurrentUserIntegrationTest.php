@@ -4,11 +4,11 @@ namespace coverage\integration;
 
 use PHPUnit\Framework\TestCase;
 use Sql;
-use User;
+use CurrentUser;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-class UserIntegrationTest extends TestCase {
+class CurrentUserIntegrationTest extends TestCase {
 
     private $sql;
 
@@ -21,7 +21,7 @@ class UserIntegrationTest extends TestCase {
     }
 
     public function testNoUser() {
-        $user = new User ($this->sql);
+        $user = new CurrentUser ($this->sql);
         $this->assertFalse($user->isLoggedIn());
         $this->assertEquals('', $user->getId());
         $this->assertEquals('', $user->getIdentifier());
@@ -36,21 +36,21 @@ class UserIntegrationTest extends TestCase {
 
     public function testBadSessionUser() {
         $_SESSION ['hash'] = "1234567890abcdef1234567890abcdef";
-        $user = new User ($this->sql);
+        $user = new CurrentUser ($this->sql);
         unset($_SESSION ['hash']);
         $this->assertFalse($user->isLoggedIn());
     }
 
     public function testBadCookieUser() {
         $_COOKIE ['hash'] = "1234567890abcdef1234567890abcdef";
-        $user = new User ($this->sql);
+        $user = new CurrentUser ($this->sql);
         unset($_COOKIE ['hash']);
         $this->assertFalse($user->isLoggedIn());
     }
 
     public function testAdminUser() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-        $user = new User ($this->sql);
+        $user = new CurrentUser ($this->sql);
         unset($_SESSION ['hash']);
         $this->assertTrue($user->isLoggedIn());
         $this->assertEquals(1, $user->getId());
@@ -66,7 +66,7 @@ class UserIntegrationTest extends TestCase {
 
     public function testDownloadUser() {
         $_COOKIE ['hash'] = "5510b5e6fffd897c234cafe499f76146";
-        $user = new User ($this->sql);
+        $user = new CurrentUser ($this->sql);
         unset($_COOKIE ['hash']);
         $this->assertTrue($user->isLoggedIn());
         $this->assertEquals(3, $user->getId());
@@ -82,7 +82,7 @@ class UserIntegrationTest extends TestCase {
 
     public function testUploadUser() {
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
-        $user = new User ($this->sql);
+        $user = new CurrentUser ($this->sql);
         unset($_SESSION ['hash']);
         $this->assertTrue($user->isLoggedIn());
         $this->assertEquals(4, $user->getId());
@@ -97,7 +97,7 @@ class UserIntegrationTest extends TestCase {
     }
 
     public function testGeneratePassword() {
-        $user = new User ($this->sql);
+        $user = new CurrentUser ($this->sql);
         $this->assertEquals(20, strlen($user->generatePassword()));
         $this->assertEquals(1, preg_match("/^([a-zA-Z0-9]{20})$/", $user->generatePassword()));
     }

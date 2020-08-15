@@ -3,7 +3,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new User ($sql);
+$user = new CurrentUser ($sql);
 $user->forceAdmin();
 $categories = $sql->getRows( "SELECT * FROM `tags`;" );
 $sql->disconnect();

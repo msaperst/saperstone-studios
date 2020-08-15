@@ -18,7 +18,7 @@ if (! $details ['title']) {
     $errors->throw404();
 }
 
-$user = new User ($sql);
+$user = new CurrentUser ($sql);
 $sql->disconnect();
 
 if (! $user->isAdmin () && ! $details ['active']) {

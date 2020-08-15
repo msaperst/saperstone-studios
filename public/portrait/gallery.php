@@ -23,7 +23,7 @@ if (sizeof ( $children ) == 0) {
     $errors->throw404();
 }
 
-$user = new User($sql);
+$user = new CurrentUser($sql);
 
 $parent = $details ['title'];
 if ($details ['parent'] != NULL) {

@@ -13,7 +13,7 @@ if (! isset ( $_GET ['album'] ) || $_GET ['album'] == "") {
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new User ($sql);
+$user = new CurrentUser ($sql);
 $album_info = $sql->getRow( "SELECT * FROM `albums` WHERE id = '" . $album . "';" );
 // if the album doesn't exist, throw a 404 error
 if (! $album_info ['name']) {

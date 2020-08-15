@@ -1,7 +1,7 @@
 <?php
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $navSql = new Sql ();
-$navUser = new User ($navSql);
+$navUser = new CurrentUser ($navSql);
 $navSql->disconnect();
 ?>
 

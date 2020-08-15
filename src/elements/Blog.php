@@ -69,7 +69,7 @@ class Blog {
     }
 
     function delete() {
-        $user = new User($this->sql);
+        $user = new CurrentUser($this->sql);
         if (!$user->isAdmin()) {
             throw new Exception("User not authorized to delete blog post");
         }

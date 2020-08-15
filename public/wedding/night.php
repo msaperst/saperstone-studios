@@ -3,7 +3,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new User ($sql);
+$user = new CurrentUser ($sql);
 $images = $sql->getRows( "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = 12;" );
 $sql->disconnect();
 ?>

@@ -18,7 +18,7 @@ if (! $details ['id']) {
     $errors->throw404();
 }
 
-$user = new User($sql);
+$user = new CurrentUser($sql);
 
 $children = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '$what';" );
 $parent = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '" . $details ['parent'] . "';" );

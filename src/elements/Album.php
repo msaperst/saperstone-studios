@@ -59,7 +59,7 @@ class Album {
     }
 
     function canUserGetData() {
-        $user = new User($this->sql);
+        $user = new CurrentUser($this->sql);
         // only admin users and uploader users who own the album can get all data
         return ($user->isAdmin() || ($user->getRole() == "uploader" && $user->getId() == $this->owner));
     }
@@ -80,7 +80,7 @@ class Album {
     }
 
     function canUserAccess() {
-        $user = new User($this->sql);
+        $user = new CurrentUser($this->sql);
         if ($this->canUserGetData()) {
             // you can access your own stuff
             return true;

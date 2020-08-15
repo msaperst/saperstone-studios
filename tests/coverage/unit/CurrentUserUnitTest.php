@@ -4,16 +4,16 @@ namespace coverage\unit;
 
 use PHPUnit\Framework\TestCase;
 use Sql;
-use User;
+use CurrentUser;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-class UserUnitTest extends TestCase {
+class CurrentUserUnitTest extends TestCase {
 
     public function testNotLoggedIn() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertFalse($user->isLoggedIn());
     }
 
@@ -22,7 +22,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "id" => ""
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertFalse($user->isLoggedIn());
     }
 
@@ -32,7 +32,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "id" => ""
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_COOKIE['hash']);
         $this->assertTrue($user->isLoggedIn());
     }
@@ -43,7 +43,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "id" => ""
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertTrue($user->isLoggedIn());
     }
@@ -52,7 +52,7 @@ class UserUnitTest extends TestCase {
         $_COOKIE['hash'] = "123";
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_COOKIE['hash']);
         $this->assertFalse($user->isLoggedIn());
     }
@@ -60,7 +60,7 @@ class UserUnitTest extends TestCase {
     public function testNotLoggedInGetId() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals("", $user->getId());
     }
 
@@ -70,7 +70,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "id" => 5
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("5", $user->getId());
     }
@@ -79,7 +79,7 @@ class UserUnitTest extends TestCase {
         $_SESSION['hash'] = "123";
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(array());
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("", $user->getId());
     }
@@ -87,7 +87,7 @@ class UserUnitTest extends TestCase {
     public function testNotLoggedInGetIdentifier() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals("", $user->getIdentifier());
     }
 
@@ -97,7 +97,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "id" => 5
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("5", $user->getIdentifier());
     }
@@ -105,7 +105,7 @@ class UserUnitTest extends TestCase {
     public function testNotLoggedInGetUsr() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals("", $user->getUser());
     }
 
@@ -115,7 +115,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "usr" => "Max"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("Max", $user->getUser());
     }
@@ -124,7 +124,7 @@ class UserUnitTest extends TestCase {
         $_SESSION['hash'] = "123";
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(array());
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("", $user->getUser());
     }
@@ -132,7 +132,7 @@ class UserUnitTest extends TestCase {
     public function testNotLoggedInGetRole() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals("", $user->getRole());
     }
 
@@ -142,7 +142,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "role" => "awesome"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("awesome", $user->getRole());
     }
@@ -151,7 +151,7 @@ class UserUnitTest extends TestCase {
         $_SESSION['hash'] = "123";
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(array());
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("", $user->getRole());
     }
@@ -159,7 +159,7 @@ class UserUnitTest extends TestCase {
     public function testNotLoggedInIsAdmin() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertFalse($user->isAdmin());
     }
 
@@ -169,7 +169,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "role" => "awesome"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertFalse($user->isAdmin());
     }
@@ -180,7 +180,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "role" => "admin"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertTrue($user->isAdmin());
     }
@@ -188,7 +188,7 @@ class UserUnitTest extends TestCase {
     public function testNotLoggedInGetFirstName() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals("", $user->getFirstName());
     }
 
@@ -198,7 +198,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "firstName" => "Max"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("Max", $user->getFirstName());
     }
@@ -207,7 +207,7 @@ class UserUnitTest extends TestCase {
         $_SESSION['hash'] = "123";
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(array());
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("", $user->getFirstName());
     }
@@ -215,7 +215,7 @@ class UserUnitTest extends TestCase {
     public function testNotLoggedInGetLastName() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals("", $user->getLastName());
     }
 
@@ -225,7 +225,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "lastName" => "Saperstone"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("Saperstone", $user->getLastName());
     }
@@ -234,7 +234,7 @@ class UserUnitTest extends TestCase {
         $_SESSION['hash'] = "123";
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(array());
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("", $user->getLastName());
     }
@@ -242,7 +242,7 @@ class UserUnitTest extends TestCase {
     public function testGetNameNothing() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals("", $user->getName());
     }
 
@@ -253,7 +253,7 @@ class UserUnitTest extends TestCase {
             "firstName" => "Max",
             "lastName" => NULL
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("Max", $user->getName());
     }
@@ -265,7 +265,7 @@ class UserUnitTest extends TestCase {
             "firstName" => "Max",
             "lastName" => ""
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("Max", $user->getName());
     }
@@ -277,7 +277,7 @@ class UserUnitTest extends TestCase {
             "firstName" => NULL,
             "lastName" => "Saperstone"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("Saperstone", $user->getName());
     }
@@ -289,7 +289,7 @@ class UserUnitTest extends TestCase {
             "firstName" => "",
             "lastName" => "Saperstone"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("Saperstone", $user->getName());
     }
@@ -301,7 +301,7 @@ class UserUnitTest extends TestCase {
             "firstName" => "Max",
             "lastName" => "Saperstone"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("Max Saperstone", $user->getName());
     }
@@ -309,7 +309,7 @@ class UserUnitTest extends TestCase {
     public function testNotLoggedInGetEmail() {
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(NULL);
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals("", $user->getEmail());
     }
 
@@ -319,7 +319,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "email" => "msaperst+sstest@gmail.com"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("msaperst+sstest@gmail.com", $user->getEmail());
     }
@@ -328,7 +328,7 @@ class UserUnitTest extends TestCase {
         $_SESSION['hash'] = "123";
         $mockSql = $this->createMock(Sql::class);
         $mockSql->method("getRow")->willReturn(array());
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertEquals("", $user->getEmail());
     }
@@ -339,7 +339,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "role" => "admin"
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertNull($user->forceAdmin());
     }
@@ -350,7 +350,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "id" => ""
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         unset($_SESSION['hash']);
         $this->assertNull($user->forceLogin());
     }
@@ -360,7 +360,7 @@ class UserUnitTest extends TestCase {
         $mockSql->method("getRow")->willReturn(array(
             "id" => ""
         ));
-        $user = new User($mockSql);
+        $user = new CurrentUser($mockSql);
         $this->assertEquals(20, strlen($user->generatePassword()));
         $this->assertEquals(1, preg_match("/^([a-zA-Z0-9]{20})$/", $user->generatePassword()));
     }

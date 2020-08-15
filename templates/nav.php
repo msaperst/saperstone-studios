@@ -5,7 +5,7 @@ $height_offset = 10;
 $DOCUMENT_ROOT = "DOCUMENT_ROOT";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $navSql = new Sql ();
-$navUser = new User($navSql);
+$navUser = new CurrentUser($navSql);
 $string = new Strings ();
 $query = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
 if ($navSql->getRowCount ( $query )) {
