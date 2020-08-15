@@ -39,8 +39,8 @@ class ImageIntegrationTest extends TestCase {
 
     public function tearDown() {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 899;");
-        $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 898;");
-        $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 899;");
+        $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`id` = 898;");
+        $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`id` = 899;");
         $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`id` = 898;");
         $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`id` = 899;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
@@ -215,9 +215,10 @@ class ImageIntegrationTest extends TestCase {
     public function testDeleteGallery() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $image = new Image(new Gallery(1), 898);
+        $currentImages = $this->sql->getRowCount("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;");
         $image->delete();
         unset($_SESSION ['hash']);
-        $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;"));
+        $this->assertEquals($currentImages-1, $this->sql->getRowCount("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;"));
         $this->assertEquals(0, $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;")['sequence']);
         $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
