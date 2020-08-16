@@ -101,6 +101,11 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals(4, $album->getOwner());
     }
 
+    public function testGetLocation() {
+        $album = new Album('899');
+        $this->assertEquals('sample', $album->getLocation());
+    }
+
     public function testAllDataLoaded() {
         date_default_timezone_set("America/New_York");
         $album = new Album(899);

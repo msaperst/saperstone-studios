@@ -54,6 +54,10 @@ class Album {
         return $this->owner;
     }
 
+    public function getLocation() {
+        return $this->location;
+    }
+
     function getDataArray() {
         return $this->raw;
     }

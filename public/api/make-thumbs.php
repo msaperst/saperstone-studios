@@ -6,62 +6,39 @@ $sql = new Sql ();
 $user = new CurrentUser ($sql);
 $api = new Api ($sql, $user);
 
-$id = "";
-if (isset ($_POST ['id']) && $_POST ['id'] != "") {
-    $id = ( int )$_POST ['id'];
-} else {
-    if (!isset ($_POST ['id'])) {
-        echo "Album id is required!";
-    } elseif ($_POST ['id'] != "") {
-        echo "Album id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
-    }
-    $conn->disconnect();
+$api->forceLoggedIn();
+
+try {
+    $album = new Album($_POST['id']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    $sql->disconnect();
+    exit();
+}
+
+if (!$album->canUserGetData()) {
+    header('HTTP/1.0 403 Unauthorized');
+    $sql->disconnect();
     exit ();
 }
 
-$sql = "SELECT * FROM albums WHERE id = $id;";
-$album_info = $sql->getRow($sql);
-if (!$album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect();
-    exit ();
-}
-// only admin users and uploader users who own the album can make updates
-if (!($user->isAdmin() || ($user->getRole() == "uploader" && $user->getId() == $album_info ['owner']))) {
-    header('HTTP/1.0 401 Unauthorized');
-    if ($user->isLoggedIn()) {
-        echo "You do not have appropriate rights to perform this action";
-    }
-    $conn->disconnect();
-    exit ();
-}
-
-$markup = "";
-if (isset ($_POST ['markup'])) {
-    $markup = $sql->escapeString($_POST ['markup']);
-} else {
-    echo "Markup is required!";
-    $conn->disconnect();
-    exit ();
+$markup = $api->retrievePostString('markup', 'Markup');
+if (is_array($markup)) {
+    echo $markup['error'];
+    $sql->disconnect();
+    exit();
 }
 if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
-    echo "Markup is not a valid option!";
-    $conn->disconnect();
+    echo "Markup is not valid";
+    $sql->disconnect();
     exit ();
 }
 
 if (!$user->isAdmin()) {
     // update our user records table
-    mysqli_query($conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, $id );");
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, {$album->getId()} );");
 }
+$sql->disconnect();
 
-$sql = "SELECT * FROM albums WHERE id = $id;";
-$result = mysqli_query($conn->db, $sql);
-$album_info = mysqli_fetch_assoc($result);
-
-system(dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh $id $markup " . $album_info ['location'] . " > /dev/null 2>&1 &");
-
-$conn->disconnect();
+system(dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh {$album->getId()} $markup {$album->getLocation()} > /dev/null 2>&1 &");
 exit ();
