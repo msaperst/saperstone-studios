@@ -8,20 +8,18 @@ $api = new Api ($sql, $user);
 
 $api->forceAdmin();
 
-$post = 0;
-if (isset ($_POST ['post'])) {
-    $post = ( int )$_POST ['post'];
-} else {
-    echo "No blog post provided";
-    exit ();
+try {
+    $blog = new Blog($_POST['post']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    $sql->disconnect();
+    exit();
 }
 
-$sql = "UPDATE `blog_details` SET `active` = '1' WHERE `id` = '$post';";
-mysqli_query($conn->db, $sql);
+$sql->executeStatement("UPDATE `blog_details` SET `active` = '1' WHERE `id` = '{$blog->getId()}';");
+$sql->disconnect();
 
 $sm = new SocialMedia ();
 $sm->generateRSS();
-$sm->publishBlogToTwitter($post);
-
-$conn->disconnect();
+$sm->publishBlogToTwitter($blog);
 exit ();

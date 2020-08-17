@@ -77,9 +77,11 @@ RUN cd /var/www/resources && \
         mv stream\?q\=PHP_BrowsCapINI php_browscap.ini
 ## install/configure twitter plugin
 RUN cd /var/www/resources && \
-        wget --quiet https://github.com/jublonet/codebird-php/archive/${TWITTER_VERSION}.tar.gz && \
+        wget --quiet https://github.com/jublo/codebird-php/archive/${TWITTER_VERSION}.tar.gz && \
         tar -xf ${TWITTER_VERSION}.tar.gz && \
-        rm ${TWITTER_VERSION}.tar.gz
+        rm ${TWITTER_VERSION}.tar.gz && \
+        rm codebird-php-${TWITTER_VERSION}/*.* && \
+        rm -r codebird-php-${TWITTER_VERSION}/test
 
 # try setting the timezone
 ARG TZ=America/New_York

@@ -15,7 +15,7 @@ class BlogIntegrationTest extends TestCase {
     public function setUp() {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('898', 'Sample Blog', '2031-01-01', '', 0)");
-        $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('899', 'Sample Blog', '2031-01-01', '', 0)");
+        $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('899', 'Sample Blog', '2031-01-01', '/some/img', 0)");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES (898, 899, NULL, 'Anna', '2012-10-31 09:56:47', '68.98.132.164', 'annad@annadbruce.com', 'hehehehehe this rules!')");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES (899, 899, 4, 'Uploader', '2012-10-31 13:56:47', '192.168.1.2', 'msaperst@gmail.com', 'awesome post')");
         $this->sql->executeStatement("INSERT INTO `blog_images` (`blog`, `contentGroup`, `location`, `width`, `height`, `left`, `top`) VALUES ('899', '1', 'posts/2031/01/01/sample.jpg', 300, 400, 0, 0)");
@@ -90,6 +90,21 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals(899, $blog->getId());
     }
 
+    public function testGetTitle() {
+        $blog = new Blog('899');
+        $this->assertEquals('Sample Blog', $blog->getTitle());
+    }
+
+    public function testGetPreview() {
+        $blog = new Blog('899');
+        $this->assertEquals('/some/img', $blog->getPreview());
+    }
+
+    public function testGetTwitter() {
+        $blog = new Blog('899');
+        $this->assertEquals(0, $blog->getTwitter());
+    }
+
     public function testAllDataLoadedMinimal() {
         date_default_timezone_set("America/New_York");
         $blog = new Blog(898);
@@ -115,7 +130,7 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals('Sample Blog', $blogInfo['title']);
         $this->assertNull($blogInfo['safe_title']);
         $this->assertEquals('January 1st, 2031', $blogInfo['date']);
-        $this->assertEquals('', $blogInfo['preview']);
+        $this->assertEquals('/some/img', $blogInfo['preview']);
         $this->assertEquals('0', $blogInfo['offset']);
         $this->assertEquals('0', $blogInfo['active']);
         $this->assertEquals(0, $blogInfo['twitter']);

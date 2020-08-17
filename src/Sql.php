@@ -5,9 +5,10 @@ class Sql {
     private $mysqli;
 
     function __construct() {
-        $this->mysqli = new mysqli (getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
-        if ($this->mysqli->connect_errno) {
-            throw new Exception("Failed to connect to MySQL: " . $this->mysqli->connect_error);
+        try {
+            $this->mysqli = new mysqli (getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
+        } catch ( Exception $e) {
+            throw new Exception("Failed to connect to MySQL: " . $e);
         }
         $this->connected = true;
     }
@@ -65,13 +66,16 @@ class Sql {
 
     function executeStatement($statement) {
         if (!$this->connected) {
-            throw new Exception("Not connected, unable to execute statement: '" . $statement . "'");
+            throw new Exception("Not connected, unable to execute statement: '$statement'");
         }
         $this->mysqli->query($statement);
         return $this->mysqli->insert_id;
     }
 
     function getEnumValues($table, $field) {
+        if (!$this->connected) {
+            return array();
+        }
         $type = $this->mysqli->query("SHOW COLUMNS FROM {$table} WHERE Field = '{$field}'")->fetch_assoc()['Type'];
         preg_match("/^enum\(\'(.*)\'\)$/", $type, $matches);
         return explode("','", $matches[1]);

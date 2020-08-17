@@ -64,6 +64,18 @@ class Blog {
         return $this->id;
     }
 
+    function getTitle() {
+        return $this->title;
+    }
+
+    function getPreview() {
+        return $this->preview;
+    }
+
+    public function getTwitter() {
+        return $this->twitter;
+    }
+
     function getDataArray() {
         return $this->raw;
     }
