@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceAdmin();
 
@@ -40,6 +39,7 @@ if (isset ($_POST ['deposit']) && $_POST ['deposit'] != "") {
     $deposit = floatval(str_replace('$', '', $_POST ['deposit']));
 }
 
+$sql = new Sql ();
 $address = $number = $email = $date = $location = $details = $invoice = 'NULL';
 if (isset ($_POST ['address']) && $_POST ['address'] != "") {
     $address = "'" . $sql->escapeString($_POST ['address']) . "'";
@@ -71,12 +71,12 @@ if (isset ($_POST ['invoice']) && $_POST ['invoice'] != "") {
     $invoice = "'" . $sql->escapeString($_POST ['invoice']) . "'";
 }
 
-$last_id = $sql->executeStatement("INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,
+$lastId = $sql->executeStatement("INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,
         `session`, `details`, `amount`, `deposit`, `invoice`, `content`) 
-        VALUES ('$link','$type','$name',$address,$number,$email,$date,$location,'$session',$details,
+        VALUES ('','$type','$name',$address,$number,$email,$date,$location,'$session',$details,
         $amount,$deposit,$invoice,'$content');");
-$link = md5($last_id . $type . $name . $session);
-$sql->executeStatement("UPDATE `contracts` SET `link` = '$link' WHERE `id` = $last_id;");
+$link = md5($lastId . $type . $name . $session);
+$sql->executeStatement("UPDATE `contracts` SET `link` = '$link' WHERE `id` = $lastId;");
 
 if (isset ($_POST ['lineItems']) && !empty($_POST ['lineItems'])) {
     foreach ($_POST ['lineItems'] as $lineItem) {
@@ -89,10 +89,9 @@ if (isset ($_POST ['lineItems']) && !empty($_POST ['lineItems'])) {
             $unit = "'" . $sql->escapeString($lineItem ['unit']) . "'";
         }
         $sql->executeStatement("INSERT INTO `contract_line_items` (`contract`, `item`, `amount`, `unit`)
-                VALUES ($last_id, $item, $amount, $unit);");
+                VALUES ($lastId, $item, $amount, $unit);");
     }
 }
-echo $last_id;
+echo $lastId;
 $sql->disconnect();
 exit ();
-?>

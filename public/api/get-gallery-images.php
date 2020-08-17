@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $response = array();
 $start = 0;
@@ -24,6 +23,7 @@ if (isset ($_GET ['howMany'])) {
     $howMany = ( int )$_GET ['howMany'];
 }
 
+$sql = new Sql();
 $response = $sql->getRows("SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = '{$gallery->getId()}' ORDER BY `sequence` LIMIT $start,$howMany;");
 echo json_encode($response);
 $sql->disconnect();

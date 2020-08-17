@@ -3,7 +3,7 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql();
-$systemUser = new CurrentUser ($sql);
+$systemUser = User::fromSystem();
 
 // determine our user
 if ($systemUser->isLoggedIn()) {

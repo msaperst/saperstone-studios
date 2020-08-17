@@ -3,14 +3,15 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 // TODO - NEED TO CHANGE BACK, JUST GOOD FOR TESTING!!!
 $to = "Contact <msaperst+sstest@gmail.com>";
 if (isset ($_POST ['to']) && $_POST ['to'] != "") {
     $to = $sql->escapeString($_POST ['to']);
 }
+$sql->disconnect();
 
 $name = $api->retrievePostString('name', 'Name');
 if (is_array($name)) {
@@ -32,7 +33,6 @@ if (is_array($message)) {
     echo $message['error'];
     exit();
 }
-$sql->disconnect();
 
 $referrer = "";
 if (isset ($_SERVER ['HTTP_REFERER'])) {

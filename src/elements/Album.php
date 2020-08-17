@@ -4,7 +4,6 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Album {
 
-    private $sql;
     private $raw;
     private $id;
     private $name;
@@ -23,11 +22,11 @@ class Album {
         } elseif ($id == "") {
             throw new Exception("Album id can not be blank");
         }
-        $this->sql = new Sql();
+        $sql = new Sql();
         $id = (int)$id;
-        $this->raw = $this->sql->getRow("SELECT * FROM albums WHERE id = $id;");
+        $this->raw = $sql->getRow("SELECT * FROM albums WHERE id = $id;");
         if (!$this->raw ['id']) {
-            $this->sql->disconnect();
+            $sql->disconnect();
             throw new Exception("Album id does not match any albums");
         }
         $this->id = $this->raw['id'];
@@ -39,7 +38,8 @@ class Album {
         $this->code = $this->raw['code'];
         $this->owner = $this->raw['owner'];      //TODO - change this to a user class
         $this->images = $this->raw['images'];    //TODO - change this to an array of matching images
-        $this->users = array_column($this->sql->getRows("SELECT user FROM albums_for_users WHERE album = {$this->id};"), 'user');
+        $this->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = {$this->id};"), 'user');
+        $sql->disconnect();
     }
 
     function getId() {
@@ -63,7 +63,7 @@ class Album {
     }
 
     function canUserGetData() {
-        $user = new CurrentUser($this->sql);
+        $user = User::fromSystem();
         // only admin users and uploader users who own the album can get all data
         return ($user->isAdmin() || ($user->getRole() == "uploader" && $user->getId() == $this->owner));
     }
@@ -84,7 +84,7 @@ class Album {
     }
 
     function canUserAccess() {
-        $user = new CurrentUser($this->sql);
+        $user = User::fromSystem();
         if ($this->canUserGetData()) {
             // you can access your own stuff
             return true;
@@ -103,9 +103,11 @@ class Album {
         if (!$this->canUserGetData()) {
             throw new Exception("User not authorized to delete album");
         }
-        $this->sql->executeStatement("DELETE FROM albums WHERE id='{$this->id}';");
-        $this->sql->executeStatement("DELETE FROM album_images WHERE album='{$this->id}';");
-        $this->sql->executeStatement("DELETE FROM albums_for_users WHERE album='{$this->id}';");
+        $sql = new Sql();
+        $sql->executeStatement("DELETE FROM albums WHERE id='{$this->id}';");
+        $sql->executeStatement("DELETE FROM album_images WHERE album='{$this->id}';");
+        $sql->executeStatement("DELETE FROM albums_for_users WHERE album='{$this->id}';");
+        $sql->disconnect();
         if ($this->location != "") {
             system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $this->location));
         }

@@ -3,18 +3,15 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
+$user = User::fromSystem();
 $user->forceAdmin();
 $errors = new Errors();
 
-$post;
 $title = "";
 $date = date ( "Y-m-d" );
 $tags = [ ];
 $content = [ ];
 $images = [ ];
-$preview;
-$offset;
 $location = "../tmp";
 // if no album is set, throw a 404 error
 if (isset ( $_GET ['p'] )) {

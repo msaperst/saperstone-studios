@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $start = 0;
 
@@ -12,6 +11,7 @@ if (isset ($_GET ['start'])) {
     $start = ( int )$_GET ['start'];
 }
 
+$sql = new Sql();
 $query = "SELECT * FROM `blog_details` WHERE `active` ORDER BY `date` DESC LIMIT $start,1;";
 if (isset ($_GET ['tag'])) {
     $query = "SELECT DISTINCT blog FROM blog_tags AS a1";

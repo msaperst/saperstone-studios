@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceAdmin();
 
@@ -19,10 +18,10 @@ if (isset ($_GET ['album']) && $_GET ['album'] != "") {
     } else {
         echo "Some other Album id error occurred!";
     }
-    $conn->disconnect();
     exit ();
 }
 
+$sql = new Sql ();
 $keyword = "";
 if (isset ($_GET ['keyword'])) {
     $keyword = $sql->escapeString($_GET ['keyword']);

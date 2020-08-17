@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceAdmin();
 
@@ -19,10 +18,10 @@ if (isset ($_POST ['post']) && $_POST ['post'] != "") {
     } else {
         echo "Some other Post id error occurred!";
     }
-    $conn->disconnect();
     exit ();
 }
 
+$sql = new Sql ();
 $sql = "SELECT * FROM blog_details WHERE id = $id;";
 $blog_details = $sql->getRow($sql);
 if (!$blog_details ['id']) {
@@ -36,6 +35,7 @@ if (isset ($_POST ['title']) && $_POST ['title'] != "") {
     $title = $sql->escapeString($_POST ['title']);
 } else {
     echo "No title was provided";
+    $sql->disconnect();
     exit ();
 }
 
@@ -44,6 +44,7 @@ if (isset ($_POST ['date']) && $_POST ['date'] != "") {
     $date = $sql->escapeString($_POST ['date']);
 } else {
     echo "No date was provided";
+    $sql->disconnect();
     exit ();
 }
 
@@ -126,10 +127,11 @@ if (isset ($_POST ['content'])) {
             }
         } else {
             echo "You provided some bad content";
+            $sql->disconnect();
             exit ();
         }
     }
 }
 
-$conn->disconnect();
+$sql->disconnect();
 exit ();

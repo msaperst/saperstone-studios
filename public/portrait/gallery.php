@@ -23,7 +23,7 @@ if (sizeof ( $children ) == 0) {
     $errors->throw404();
 }
 
-$user = new CurrentUser($sql);
+$user = User::fromSystem();
 
 $parent = $details ['title'];
 if ($details ['parent'] != NULL) {
@@ -47,8 +47,7 @@ if ($parent == 'Product') {
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
+        $rand = "?" . Strings::randomString ();
         ?>
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">

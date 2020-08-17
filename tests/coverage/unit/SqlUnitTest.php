@@ -25,20 +25,4 @@ class SqlUnitTest extends TestCase {
             putenv("DB_HOST=$DB_HOST");
         }
     }
-
-    public function testCantConnect() {
-        $DB_NAME = getenv('DB_NAME');
-        putenv('DB_NAME=baddb');
-        try {
-            new Sql();
-        } catch (Exception $e) {
-            $this->assertEquals('Failed to connect to MySQL: mysqli::__construct(): (HY000/1044): Access denied for user \'saperstone-studios\'@\'%\' to database \'baddb\'
-
-/home/max/workspace/saperstone-studios/src/Sql.php:9
-/home/max/workspace/saperstone-studios/tests/coverage/unit/SqlUnitTest.php:33
-', $e->getMessage());
-        } finally {
-            putenv("DB_NAME=$DB_NAME");
-        }
-    }
 }

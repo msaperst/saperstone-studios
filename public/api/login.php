@@ -2,10 +2,10 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser($sql);
-$api = new Api($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api();
 
+$sql = new Sql ();
 if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
     // note the logout
     $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );");
@@ -24,7 +24,6 @@ if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
 }
 
 if ($_POST ['submit'] == 'Login') {
-
     $username = $api->retrievePostString('username', 'Username');
     if (is_array($username)) {
         echo $username['error'];
@@ -54,7 +53,7 @@ if ($_POST ['submit'] == 'Login') {
             setcookie('hash', $row ['hash'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
             setcookie('usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
         }
-        $systemUser = new CurrentUser($sql);
+        $systemUser = User::fromSystem();
         $sql->executeStatement("UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE id='{$systemUser->getId()}';");
         $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
     } elseif ($row ['usr']) {

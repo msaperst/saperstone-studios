@@ -2,10 +2,10 @@
 
 namespace coverage\integration;
 
-use User;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use User;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
@@ -27,7 +27,7 @@ class UserIntegrationTest extends TestCase {
 
     public function testNullUserId() {
         try {
-            new User(NULL);
+            User::withId(NULL);
         } catch (Exception $e) {
             $this->assertEquals("User id is required", $e->getMessage());
         }
@@ -35,7 +35,7 @@ class UserIntegrationTest extends TestCase {
 
     public function testBlankUserId() {
         try {
-            new User("");
+            User::withId("");
         } catch (Exception $e) {
             $this->assertEquals("User id can not be blank", $e->getMessage());
         }
@@ -43,7 +43,7 @@ class UserIntegrationTest extends TestCase {
 
     public function testLetterUserId() {
         try {
-            new User("a");
+            User::withId("a");
         } catch (Exception $e) {
             $this->assertEquals("User id does not match any users", $e->getMessage());
         }
@@ -51,7 +51,7 @@ class UserIntegrationTest extends TestCase {
 
     public function testBadUserId() {
         try {
-            new User(8999);
+            User::withId(8999);
         } catch (Exception $e) {
             $this->assertEquals("User id does not match any users", $e->getMessage());
         }
@@ -59,49 +59,49 @@ class UserIntegrationTest extends TestCase {
 
     public function testBadStringUserId() {
         try {
-            new User("8999");
+            User::withId("8999");
         } catch (Exception $e) {
             $this->assertEquals("User id does not match any users", $e->getMessage());
         }
     }
 
     public function testGetId() {
-        $user = new User('899');
+        $user = User::withId('899');
         $this->assertEquals(899, $user->getId());
     }
 
     public function testGetUsr() {
-        $user = new User('899');
-        $this->assertEquals('test', $user->getUsr());
+        $user = User::withId('899');
+        $this->assertEquals('test', $user->getUsername());
     }
 
     public function testGetHash() {
-        $user = new User('899');
+        $user = User::withId('899');
         $this->assertEquals('12345', $user->getHash());
     }
 
     public function testGetRole() {
-        $user = new User('899');
+        $user = User::withId('899');
         $this->assertEquals('downloader', $user->getRole());
     }
 
     public function testGetFirstName() {
-        $user = new User('899');
+        $user = User::withId('899');
         $this->assertEquals('test', $user->getFirstName());
     }
 
     public function testGetLastName() {
-        $user = new User('899');
+        $user = User::withId('899');
         $this->assertEquals('user', $user->getLastName());
     }
 
     public function testGetEmail() {
-        $user = new User('899');
+        $user = User::withId('899');
         $this->assertEquals('test@example.com', $user->getEmail());
     }
 
     public function testAllData() {
-        $user = new User(899);
+        $user = User::withId(899);
         $userInfo = $user->getDataArray();
         $this->assertEquals(899, $userInfo['id']);
         $this->assertEquals('test', $userInfo['usr']);
@@ -118,7 +118,7 @@ class UserIntegrationTest extends TestCase {
     }
 
     public function testDeleteNoAccess() {
-        $user = new User(899);
+        $user = User::withId(899);
         try {
             $user->delete();
         } catch (Exception $e) {
@@ -129,9 +129,483 @@ class UserIntegrationTest extends TestCase {
 
     public function testDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-        $user = new User(899);
+        $user = User::withId(899);
         $user->delete();
         unset($_SESSION ['hash']);
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `users` WHERE `users`.`id` = 899;"));
+    }
+
+
+    public function testNoUser() {
+        $user = User::fromSystem();
+        $this->assertFalse($user->isLoggedIn());
+        $this->assertEquals('', $user->getId());
+        $this->assertEquals('', $user->getIdentifier());
+        $this->assertEquals('', $user->getUsername());
+        $this->assertEquals('', $user->getRole());
+        $this->assertFalse($user->isAdmin());
+        $this->assertEquals('', $user->getFirstName());
+        $this->assertEquals('', $user->getLastName());
+        $this->assertEquals('', $user->getName());
+        $this->assertEquals('', $user->getEmail());
+    }
+
+    public function testBadSessionUser() {
+        $_SESSION ['hash'] = "1234567890abcdef1234567890abcdef";
+        try {
+            User::fromSystem();
+        } catch (Exception $e) {
+            $this->assertEquals('Invalid user token provided', $e->getMessage());
+        } finally {
+            unset($_SESSION ['hash']);
+        }
+    }
+
+    public function testBadCookieUser() {
+        $_COOKIE ['hash'] = "1234567890abcdef1234567890abcdef";
+        try {
+            User::fromSystem();
+        } catch (Exception $e) {
+            $this->assertEquals('Invalid user token provided', $e->getMessage());
+        } finally {
+            unset($_COOKIE ['hash']);
+        }
+    }
+
+    public function testAdminUser() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $user = User::fromSystem();
+        unset($_SESSION ['hash']);
+        $this->assertTrue($user->isLoggedIn());
+        $this->assertEquals(1, $user->getId());
+        $this->assertEquals(1, $user->getIdentifier());
+        $this->assertEquals('msaperst', $user->getUsername());
+        $this->assertEquals('admin', $user->getRole());
+        $this->assertTrue($user->isAdmin());
+        $this->assertEquals('Max', $user->getFirstName());
+        $this->assertEquals('Saperstone', $user->getLastName());
+        $this->assertEquals('Max Saperstone', $user->getName());
+        $this->assertEquals('msaperst@gmail.com', $user->getEmail());
+    }
+
+    public function testDownloadUser() {
+        $_COOKIE ['hash'] = "5510b5e6fffd897c234cafe499f76146";
+        $user = User::fromSystem();
+        unset($_COOKIE ['hash']);
+        $this->assertTrue($user->isLoggedIn());
+        $this->assertEquals(3, $user->getId());
+        $this->assertEquals(3, $user->getIdentifier());
+        $this->assertEquals('downloader', $user->getUsername());
+        $this->assertEquals('downloader', $user->getRole());
+        $this->assertFalse($user->isAdmin());
+        $this->assertEquals('Download', $user->getFirstName());
+        $this->assertEquals('User', $user->getLastName());
+        $this->assertEquals('Download User', $user->getName());
+        $this->assertEquals('email@example.org', $user->getEmail());
+    }
+
+    public function testUploadUser() {
+        $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
+        $user = User::fromSystem();
+        unset($_SESSION ['hash']);
+        $this->assertTrue($user->isLoggedIn());
+        $this->assertEquals(4, $user->getId());
+        $this->assertEquals(4, $user->getIdentifier());
+        $this->assertEquals('uploader', $user->getUsername());
+        $this->assertEquals('uploader', $user->getRole());
+        $this->assertFalse($user->isAdmin());
+        $this->assertEquals('Upload', $user->getFirstName());
+        $this->assertEquals('User', $user->getLastName());
+        $this->assertEquals('Upload User', $user->getName());
+        $this->assertEquals('uploader@example.org', $user->getEmail());
+    }
+
+    public function testGeneratePassword() {
+        $user = User::fromSystem();
+        $this->assertEquals(20, strlen($user->generatePassword()));
+        $this->assertEquals(1, preg_match("/^([a-zA-Z0-9]{20})$/", $user->generatePassword()));
+    }
+
+    public function testNewUserNoUsername() {
+        try {
+            User::withParams(array());
+        } catch (Exception $e) {
+            $this->assertEquals('Username is required', $e->getMessage());
+        }
+    }
+
+    public function testNewUserBlankUsername() {
+        $params = [
+            'username' => ''
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Username can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testNewUserUsernameToShort() {
+        $params = [
+            'username' => '123'
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Username is not valid: it must be at least 5 characters, and contain only letters numbers and underscores', $e->getMessage());
+        }
+    }
+
+    public function testNewUserUsernameBadChars() {
+        $params = [
+            'username' => '123$5K{;'
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Username is not valid: it must be at least 5 characters, and contain only letters numbers and underscores', $e->getMessage());
+        }
+    }
+
+    public function testNewUserUsernameDuplicate() {
+        $params = [
+            'username' => 'msaperst'
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('That username already exists in the system', $e->getMessage());
+        }
+    }
+
+    public function testNewUserNoEmail() {
+        $params = [
+            'username' => 'testUser'
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Email is required', $e->getMessage());
+        }
+    }
+
+    public function testNewUserBlankEmail() {
+        $params = [
+            'username' => 'testUser',
+            'email' => ''
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Email can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testNewUserInvalidEmail() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'max@max'
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Email is not valid', $e->getMessage());
+        }
+    }
+
+    public function testNewUserDuplicateEmail() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'msaperst@gmail.com'
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('That email already exists in the system: try logging in with it', $e->getMessage());
+        }
+    }
+
+    public function testNewUserNoPassword() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Password is required', $e->getMessage());
+        }
+    }
+
+    public function testNewUserBlankPassword() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => ''
+        ];
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Password can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testNewUserAdminPasswordNotNeeded() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+        ];
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $user = User::withParams($params);
+        unset($_SESSION['hash']);
+        $this->assertEquals(20, strlen($user->getPassword()));
+    }
+
+    public function testNewUserBasics() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => '12345'
+        ];
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $user = User::withParams($params);
+        unset($_SESSION['hash']);
+        $this->assertEquals('12345', $user->getPassword());
+    }
+
+    public function testNewUserDownloaderDefaultRole() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => '12345'
+        ];
+        $user = User::withParams($params);
+        $this->assertEquals('downloader', $user->getRole());
+    }
+
+    public function testNewUserOnlyAdminCanSetAdmin() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => '12345',
+            'role' => 'admin'
+        ];
+        $user = User::withParams($params);
+        $this->assertEquals('downloader', $user->getRole());
+    }
+
+    public function testNewUserAdminCanSetAdmin() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'role' => 'admin'
+        ];
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $user = User::withParams($params);
+        unset($_SESSION['hash']);
+        $this->assertEquals('admin', $user->getRole());
+    }
+
+    public function testNewUserAdminCantSetBadRole() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'role' => 'administrator'
+        ];
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        try {
+            User::withParams($params);
+        } catch (Exception $e) {
+            unset($_SESSION['hash']);
+            $this->assertEquals('Role is not valid', $e->getMessage());
+        }
+    }
+
+    public function testNewUserActiveDefault() {
+        try {
+            $params = [
+                'username' => 'testUser',
+                'email' => 'test@example.org',
+                'password' => '12345'
+            ];
+            $user = User::withParams($params);
+            $id = $user->create();
+            $this->assertEquals(1, $user->getDataArray()['active']);
+        } finally {
+            $this->sql->executeStatement("DELETE FROM `users` WHERE `id` = $id;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `users` AUTO_INCREMENT = $count;");
+        }
+    }
+
+    public function testNewUserOnlyAdminCanSetInactive() {
+        try {
+            $params = [
+                'username' => 'testUser',
+                'email' => 'test@example.org',
+                'password' => '12345',
+                'active' => '0'
+            ];
+            $user = User::withParams($params);
+            $id = $user->create();
+            $this->assertEquals(1, $user->getDataArray()['active']);
+        } finally {
+            $this->sql->executeStatement("DELETE FROM `users` WHERE `id` = $id;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `users` AUTO_INCREMENT = $count;");
+        }
+    }
+
+    public function testNewUserAdminCanSetInactive() {
+        try {
+            $params = [
+                'username' => 'testUser',
+                'email' => 'test@example.org',
+                'password' => '12345',
+                'active' => '0'
+            ];
+            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+            $user = User::withParams($params);
+            unset($_SESSION['hash']);
+            $id = $user->create();
+            $this->assertEquals(0, $user->getDataArray()['active']);
+        } finally {
+            $this->sql->executeStatement("DELETE FROM `users` WHERE `id` = $id;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `users` AUTO_INCREMENT = $count;");
+        }
+    }
+
+    public function testNewUserDefaultNoName() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => '12345',
+        ];
+        $user = User::withParams($params);
+        $this->assertEquals('', $user->getName());
+    }
+
+    public function testNewUserFirstName() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => '12345',
+            'firstName' => 'Max'
+        ];
+        $user = User::withParams($params);
+        $this->assertEquals('Max', $user->getName());
+    }
+
+    public function testNewUserLastName() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => '12345',
+            'lastName' => 'Saperstone'
+        ];
+        $user = User::withParams($params);
+        $this->assertEquals('Saperstone', $user->getName());
+    }
+
+    public function testNewUserName() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => '12345',
+            'firstName' => 'Max',
+            'lastName' => 'Saperstone'
+        ];
+        $user = User::withParams($params);
+        $this->assertEquals('Max Saperstone', $user->getName());
+    }
+
+    public function testNewUserHash() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'test@example.org',
+            'password' => '12345'
+        ];
+        $user = User::withParams($params);
+        $this->assertEquals(md5('testUser12345'), $user->getHash());
+    }
+
+    public function testNewUserFromAdmin() {
+        date_default_timezone_set("America/New_York");
+        try {
+            $params = [
+                'username' => 'testUser',
+                'email' => 'test@example.org',
+                'password' => '12345'
+            ];
+            $_COOKIE ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+            $user = User::withParams($params);
+            $id = $user->create();
+            $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = $id ORDER BY time DESC");
+            $this->assertEquals($id, $userLogs['user']);
+//            $this->assertEquals('Created', $userLogs['action']);
+            $this->assertNull($userLogs['what']);
+            $this->assertNull($userLogs['album']);
+            $this->assertEquals($id, $user->getId());
+            $userDetails = $user->getDataArray();
+            $this->assertEquals($id, $userDetails['id']);
+            $this->assertEquals('testUser', $userDetails['usr']);
+            $this->assertEquals(md5('12345'), $userDetails['pass']);
+            $this->assertEquals('', $userDetails['firstName']);
+            $this->assertEquals('', $userDetails['lastName']);
+            $this->assertEquals('test@example.org', $userDetails['email']);
+            $this->assertEquals('downloader', $userDetails['role']);
+            $this->assertEquals(md5('testUser12345'), $userDetails['hash']);
+            $this->assertEquals(1, $userDetails['active']);
+            $this->assertStringStartsWith(date("Y-m-d H:i"), $userDetails['created']);
+            $this->assertNull($userDetails['lastLogin']);
+            $this->assertNull($userDetails['resetKey']);
+        } finally {
+            unset($_COOKIE['hash']);
+            $this->sql->executeStatement("DELETE FROM `users` WHERE `id` = $id;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `users` AUTO_INCREMENT = $count;");
+        }
+    }
+
+    public function testNewUser() {
+        date_default_timezone_set("America/New_York");
+        try {
+            $params = [
+                'username' => 'testUser',
+                'email' => 'test@example.org',
+                'password' => '12345'
+            ];
+            $user = User::withParams($params);
+            $id = $user->create();
+            $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = $id ORDER BY time DESC");
+            $this->assertEquals($id, $userLogs['user']);
+//            $this->assertEquals('Registered', $userLogs['action']);
+            $this->assertNull($userLogs['what']);
+            $this->assertNull($userLogs['album']);
+            $this->assertEquals($id, $user->getId());
+            $userDetails = $user->getDataArray();
+            $this->assertEquals($id, $userDetails['id']);
+            $this->assertEquals('testUser', $userDetails['usr']);
+            $this->assertEquals(md5('12345'), $userDetails['pass']);
+            $this->assertEquals('', $userDetails['firstName']);
+            $this->assertEquals('', $userDetails['lastName']);
+            $this->assertEquals('test@example.org', $userDetails['email']);
+            $this->assertEquals('downloader', $userDetails['role']);
+            $this->assertEquals(md5('testUser12345'), $userDetails['hash']);
+            $this->assertEquals(1, $userDetails['active']);
+            $this->assertStringStartsWith(date("Y-m-d H:i"), $userDetails['created']);
+            $this->assertNull($userDetails['lastLogin']);
+            $this->assertNull($userDetails['resetKey']);
+        } finally {
+            $this->sql->executeStatement("DELETE FROM `users` WHERE `id` = $id;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `users` AUTO_INCREMENT = $count;");
+        }
     }
 }

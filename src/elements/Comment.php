@@ -4,7 +4,6 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Comment {
 
-    private $sql;
     private $raw;
     private $id;
     private $blog;
@@ -22,11 +21,11 @@ class Comment {
         } elseif ($id == "") {
             throw new Exception("Comment id can not be blank");
         }
-        $this->sql = new Sql();
+        $sql = new Sql();
         $id = (int)$id;
-        $this->raw = $this->sql->getRow("SELECT * FROM blog_comments WHERE id = $id;");
+        $this->raw = $sql->getRow("SELECT * FROM blog_comments WHERE id = $id;");
         if (!$this->raw ['id']) {
-            $this->sql->disconnect();
+            $sql->disconnect();
             throw new Exception("Comment id does not match any comments");
         }
         $this->id = $this->raw['id'];
@@ -41,6 +40,7 @@ class Comment {
             $this->delete = true;
             $this->raw['delete'] = true;
         }
+        $sql->disconnect();
     }
 
     function getId() {
@@ -52,7 +52,7 @@ class Comment {
     }
 
     function canUserGetData() {
-        $user = new CurrentUser($this->sql);
+        $user = User::fromSystem();
         // only admin users and the user who created the comment can get all data
         return ($this->user != NULL && $this->user == $user->getId()) || $user->isAdmin();
     }
@@ -61,6 +61,8 @@ class Comment {
         if (!$this->canUserGetData()) {
             throw new Exception("User not authorized to delete comment");
         }
-        $this->sql->executeStatement("DELETE FROM blog_comments WHERE id={$this->id};");
+        $sql = new Sql();
+        $sql->executeStatement("DELETE FROM blog_comments WHERE id={$this->id};");
+        $sql->disconnect();
     }
 }

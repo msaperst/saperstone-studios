@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $code = $api->retrieveGetString('code', 'Album code');
 if (is_array($code)) {
@@ -12,6 +11,7 @@ if (is_array($code)) {
     exit();
 }
 
+$sql = new Sql();
 $r = $sql->getRow("SELECT * FROM albums WHERE code = '$code';");
 if ($r ['id']) {
     $_SESSION ["searched"] [$r ['id']] = md5("album" . $code);

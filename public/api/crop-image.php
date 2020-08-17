@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceAdmin();
 
@@ -15,7 +14,6 @@ if (is_array($image)) {
 }
 if (!file_exists($_POST['image'])) {
     echo "Image does not exist";
-    $sql->disconnect();
     exit ();
 }
 
@@ -53,7 +51,6 @@ system("mogrify -density 72 \"$image\"");
 if (getimagesize($image) [1] < ($height - 1)) {
     echo "Cropped image is smaller than the required image";
     unlink($image);
-    $sql->disconnect();
     exit ();
 }
 
@@ -65,6 +62,4 @@ $filePath = dirname($image);
 $fileName = basename($image);
 rename($image, "$filePath/" . substr($fileName, 4));
 
-$sql->disconnect();
 exit ();
-?>

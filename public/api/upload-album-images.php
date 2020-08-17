@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $id = "";
 if (isset ($_POST ['album']) && $_POST ['album'] != "") {
@@ -17,10 +16,10 @@ if (isset ($_POST ['album']) && $_POST ['album'] != "") {
     } else {
         echo "Some other Album id error occurred!";
     }
-    $conn->disconnect();
     exit ();
 }
 
+$sql = new Sql ();
 $sql = "SELECT * FROM albums WHERE id = $id;";
 $album_info = $sql->getRow($sql);
 if (!$album_info ['id']) {

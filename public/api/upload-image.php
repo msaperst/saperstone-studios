@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceAdmin();
 
@@ -16,7 +15,9 @@ if (isset ($_FILES ["myfile"])) {
     // If Any browser does not support serializing of multiple files using FormData()
     // single file
     if (!is_array($_FILES ["myfile"] ["name"])) {
+        $sql = new Sql ();
         $location = $sql->escapeString($_POST ['location']);
+        $sql->disconnect();
         $filePath = dirname($location);
         $fileName = basename($location);
         move_uploaded_file($_FILES ["myfile"] ["tmp_name"], "$filePath/tmp_$fileName");

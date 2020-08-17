@@ -92,7 +92,7 @@ class CreateUserTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
-                'username' => 'Max'
+                'username' => 'MaxMax'
             ],
             'cookies' => $cookieJar
         ]);
@@ -106,7 +106,7 @@ class CreateUserTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
-                'username' => 'Max',
+                'username' => 'MaxMax',
                 'email' => ''
             ],
             'cookies' => $cookieJar
@@ -121,7 +121,7 @@ class CreateUserTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
-                'username' => 'Max',
+                'username' => 'MaxMax',
                 'email' => 'max@max'
             ],
             'cookies' => $cookieJar
@@ -136,45 +136,45 @@ class CreateUserTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
-                'username' => 'Max',
+                'username' => 'MaxMax',
                 'email' => 'msaperst@gmail.com'
             ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("We already have an account on file for that email address", (string)$response->getBody());
+        $this->assertEquals("That email already exists in the system: try logging in with it", (string)$response->getBody());
     }
 
-    public function testNoRole() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/create-user.php', [
-            'form_params' => [
-                'username' => 'Max',
-                'email' => 'msaperst+sstest@gmail.com'
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Role is required", (string)$response->getBody());
-    }
+//    public function testNoRole() {
+//        $cookieJar = CookieJar::fromArray([
+//            'hash' => '1d7505e7f434a7713e84ba399e937191'
+//        ], getenv('DB_HOST'));
+//        $response = $this->http->request('POST', 'api/create-user.php', [
+//            'form_params' => [
+//                'username' => 'MaxMax',
+//                'email' => 'msaperst+sstest@gmail.com'
+//            ],
+//            'cookies' => $cookieJar
+//        ]);
+//        $this->assertEquals(200, $response->getStatusCode());
+//        $this->assertEquals("Role is required", (string)$response->getBody());
+//    }
 
-    public function testBlankRole() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/create-user.php', [
-            'form_params' => [
-                'username' => 'Max',
-                'email' => 'msaperst+sstest@gmail.com',
-                'role' => ''
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Role can not be blank", (string)$response->getBody());
-    }
+//    public function testBlankRole() {
+//        $cookieJar = CookieJar::fromArray([
+//            'hash' => '1d7505e7f434a7713e84ba399e937191'
+//        ], getenv('DB_HOST'));
+//        $response = $this->http->request('POST', 'api/create-user.php', [
+//            'form_params' => [
+//                'username' => 'MaxMax',
+//                'email' => 'msaperst+sstest@gmail.com',
+//                'role' => ''
+//            ],
+//            'cookies' => $cookieJar
+//        ]);
+//        $this->assertEquals(200, $response->getStatusCode());
+//        $this->assertEquals("Role can not be blank", (string)$response->getBody());
+//    }
 
     public function testBadRole() {
         $cookieJar = CookieJar::fromArray([
@@ -182,7 +182,7 @@ class CreateUserTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
-                'username' => 'Max',
+                'username' => 'MaxMax',
                 'email' => 'msaperst+sstest@gmail.com',
                 'role' => 'awesome'
             ],
@@ -202,24 +202,24 @@ class CreateUserTest extends TestCase {
 
             $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
-                    'username' => 'Max',
+                    'username' => 'MaxMax',
                     'email' => 'msaperst+sstest@gmail.com',
                     'role' => 'downloader'
                 ],
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $userId = $response->getBody();
+            $userId = (string)$response->getBody();
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = $userId;");
             $this->assertEquals($userId, $userDetails['id']);
-            $this->assertEquals('Max', $userDetails['usr']);
+            $this->assertEquals('MaxMax', $userDetails['usr']);
             $this->assertNotEquals('', $userDetails['pass']);
             $this->assertEquals('', $userDetails['firstName']);
             $this->assertEquals('', $userDetails['lastName']);
             $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
-            $this->assertEquals(md5('Maxdownloader'), $userDetails['hash']);
-            $this->assertEquals(0, $userDetails['active']);
+            $this->assertEquals(32, strlen($userDetails['hash']));
+            $this->assertEquals(1, $userDetails['active']);
             $this->assertStringStartsWith($date, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
@@ -241,12 +241,12 @@ class CreateUserTest extends TestCase {
 
             $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
-                    'username' => 'Max',
+                    'username' => 'MaxMax',
                     'email' => 'msaperst+sstest@gmail.com',
                     'role' => 'downloader',
                     'firstName' => 'Max',
                     'lastName' => 'Saperstone',
-                    'active' => 1,
+                    'active' => 0,
                 ],
                 'cookies' => $cookieJar
             ]);
@@ -254,14 +254,14 @@ class CreateUserTest extends TestCase {
             $userId = $response->getBody();
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = $userId;");
             $this->assertEquals($userId, $userDetails['id']);
-            $this->assertEquals('Max', $userDetails['usr']);
+            $this->assertEquals('MaxMax', $userDetails['usr']);
             $this->assertNotEquals('', $userDetails['pass']);
             $this->assertEquals('Max', $userDetails['firstName']);
             $this->assertEquals('Saperstone', $userDetails['lastName']);
             $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
-            $this->assertEquals(md5('Maxdownloader'), $userDetails['hash']);
-            $this->assertEquals(1, $userDetails['active']);
+            $this->assertEquals(32, strlen($userDetails['hash']));
+            $this->assertEquals(0, $userDetails['active']);
             $this->assertStringStartsWith($date, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);

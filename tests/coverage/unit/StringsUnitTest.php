@@ -8,24 +8,19 @@ use Strings;
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class StringsUnitTest extends TestCase {
-    private $string;
-
-    protected function setUp() {
-        $this->string = new Strings ();
-    }
 
     public function testRandomNegativeLength() {
-        $result = $this->string->randomString(-1);
+        $result = Strings::randomString(-1);
         $this->assertEquals(0, strlen($result));
     }
 
     public function testRandomBadInput() {
-        $result = $this->string->randomString('a');
+        $result = Strings::randomString('a');
         $this->assertEquals(0, strlen($result));
     }
 
     public function testRandomNoInput() {
-        $result = $this->string->randomString();
+        $result = Strings::randomString();
         $this->assertEquals(10, strlen($result));
     }
 
@@ -62,54 +57,54 @@ class StringsUnitTest extends TestCase {
      * @dataProvider lengthRandomDataProvider
      */
     public function testRandomGoodInput($length) {
-        $result = $this->string->randomString($length);
+        $result = Strings::randomString($length);
         $this->assertEquals($length, strlen($result));
     }
 
     public function testRandomOutputVal() {
-        $result = $this->string->randomString(99999);
+        $result = Strings::randomString(99999);
         $this->assertEquals(1, preg_match('/^[a-zA-Z0-9]+$/', $result));
     }
 
     public function testHTMLEmpty() {
-        $result = $this->string->textToHTML("");
+        $result = Strings::textToHTML("");
         $this->assertEquals("", $result);
     }
 
     public function testHTMLSpaces() {
-        $result = $this->string->textToHTML("      ");
+        $result = Strings::textToHTML("      ");
         $this->assertEquals("      ", $result);
     }
 
     public function testHTMLTab() {
-        $result = $this->string->textToHTML("\t");
+        $result = Strings::textToHTML("\t");
         $this->assertEquals("&nbsp;&nbsp;&nbsp;&nbsp;", $result);
     }
 
     public function testHTMLTabAndTest() {
-        $result = $this->string->textToHTML("Hello\tWorld");
+        $result = Strings::textToHTML("Hello\tWorld");
         $this->assertEquals("Hello&nbsp;&nbsp;&nbsp;&nbsp;World", $result);
     }
 
     public function testHTMLNewline() {
-        $result = $this->string->textToHTML("\n");
+        $result = Strings::textToHTML("\n");
         $this->assertEquals("<br/>", $result);
     }
 
     public function testHTMLNewlineAndText() {
-        $result = $this->string->textToHTML("Hello\nWorld");
+        $result = Strings::textToHTML("Hello\nWorld");
         $this->assertEquals("Hello<br/>World", $result);
     }
 
     public function testCommaSingle() {
-        $result = $this->string->commaSeparate(array(
+        $result = Strings::commaSeparate(array(
             "hello"
         ));
         $this->assertEquals("hello", $result);
     }
 
     public function testCommaTwo() {
-        $result = $this->string->commaSeparate(array(
+        $result = Strings::commaSeparate(array(
             "hello",
             "world"
         ));
@@ -117,7 +112,7 @@ class StringsUnitTest extends TestCase {
     }
 
     public function testCommaThree() {
-        $result = $this->string->commaSeparate(array(
+        $result = Strings::commaSeparate(array(
             "hello",
             "there",
             "world"
@@ -126,7 +121,7 @@ class StringsUnitTest extends TestCase {
     }
 
     public function testCommaFour() {
-        $result = $this->string->commaSeparate(array(
+        $result = Strings::commaSeparate(array(
             "hello",
             "there",
             "my",
@@ -136,52 +131,52 @@ class StringsUnitTest extends TestCase {
     }
 
     public function testStartsWithGood() {
-        $result = $this->string->startsWith("Max", "M");
+        $result = Strings::startsWith("Max", "M");
         $this->assertTrue($result);
     }
 
     public function testStartsWithWholeWord() {
-        $result = $this->string->startsWith("Max", "Max");
+        $result = Strings::startsWith("Max", "Max");
         $this->assertTrue($result);
     }
 
     public function testStartsWithBad() {
-        $result = $this->string->startsWith("Max", "Leigh");
+        $result = Strings::startsWith("Max", "Leigh");
         $this->assertFalse($result);
     }
 
     public function testStartsWithBadCase() {
-        $result = $this->string->startsWith("Max", "m");
+        $result = Strings::startsWith("Max", "m");
         $this->assertFalse($result);
     }
 
     public function testEndsWithGood() {
-        $result = $this->string->endsWith("Max", "x");
+        $result = Strings::endsWith("Max", "x");
         $this->assertTrue($result);
     }
 
     public function testEndsWithWholeWord() {
-        $result = $this->string->endsWith("Max", "Max");
+        $result = Strings::endsWith("Max", "Max");
         $this->assertTrue($result);
     }
 
     public function testEndsWithEmail() {
-        $result = $this->string->endsWith("Max@saperstonestudios.com", "@saperstonestudios.com");
+        $result = Strings::endsWith("Max@saperstonestudios.com", "@saperstonestudios.com");
         $this->assertTrue($result);
     }
 
     public function testEndsWithBad() {
-        $result = $this->string->endsWith("Max", "Leigh");
+        $result = Strings::endsWith("Max", "Leigh");
         $this->assertFalse($result);
     }
 
     public function testEndsWithBadCase() {
-        $result = $this->string->endsWith("Max", "X");
+        $result = Strings::endsWith("Max", "X");
         $this->assertFalse($result);
     }
 
     public function testEndsWithNoSearch() {
-        $result = $this->string->endsWith("Max", "");
+        $result = Strings::endsWith("Max", "");
         $this->assertTrue($result);
     }
 }

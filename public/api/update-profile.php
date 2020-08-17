@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceLoggedIn();
 
@@ -13,6 +12,7 @@ $lastName = "";
 $curPass = "";
 $email = "";
 
+$sql = new Sql ();
 if (isset ($_POST ['email']) && filter_var($_POST ['email'], FILTER_VALIDATE_EMAIL)) {
     $email = $sql->escapeString($_POST ['email']);
 } else {

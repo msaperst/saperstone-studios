@@ -4,8 +4,6 @@ $session = new Session();
 $session->initialize();
 $sql = new Sql ();
 
-$string = new Strings ();
-
 $emailA = "";
 if (isset ($_POST ['email'])) {
     $emailA = $sql->escapeString($_POST ['email']);
@@ -15,7 +13,7 @@ if (isset ($_POST ['email'])) {
 }
 
 if (filter_var($emailA, FILTER_VALIDATE_EMAIL)) {
-    $resetCode = $string->randomString(8);
+    $resetCode = Strings::randomString(8);
     mysqli_query($conn->db, "UPDATE users SET resetKey='$resetCode' WHERE email='$emailA';");
     $row = $sql->getRow("SELECT firstName, lastName FROM users WHERE email='$emailA';");
     $name = "";
@@ -30,7 +28,7 @@ if (filter_var($emailA, FILTER_VALIDATE_EMAIL)) {
         $subject = "Reset Key For Saperstone Studios Account";
         $text = "You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.\n\n";
         $text .= "\t$resetCode";
-        $html = "<html><body>" . $string->textToHTML($text) . "</body></html>";
+        $html = "<html><body>" . Strings::textToHTML($text) . "</body></html>";
         $from = "noreply@saperstonestudios.com";
         $to = "$name <$emailA>";
 

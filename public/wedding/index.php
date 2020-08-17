@@ -3,7 +3,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
+$user = User::fromSystem();
 $images = $sql->getRows( "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.title = 'Wedding';" );
 $sql->disconnect();
 ?>
@@ -18,8 +18,7 @@ $sql->disconnect();
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
+        $rand = "?" . Strings::randomString ();
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php

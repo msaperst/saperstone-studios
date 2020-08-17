@@ -1,12 +1,12 @@
 <?php
 
+//TODO - redo this by throwing errors?
+
 class Api {
-    private $sql;
     private $user;
 
-    function __construct($sql, $user) {
-        $this->sql = $sql;
-        $this->user = $user;
+    function __construct() {
+        $this->user = User::fromSystem();
     }
 
     private function retrievePost($variable, $variableName, $type) {
@@ -18,7 +18,10 @@ class Api {
                     return floatval(str_replace('$', '', $_POST [$variable]));
                 case "string":
                 default:
-                    return $this->sql->escapeString($_POST [$variable]);
+                    $sql = new Sql();
+                    $escaped = $sql->escapeString($_POST [$variable]);
+                    $sql->disconnect();
+                    return $escaped;
             }
         } else {
             if (!isset ($_POST [$variable])) {
@@ -26,14 +29,16 @@ class Api {
             } else {
                 $error = "$variableName can not be blank";
             }
-            $this->sql->disconnect();
             return array('error' => $error);
         }
     }
 
     function retrieveValidatedPost($variable, $variableName, $validation) {
         if (isset ($_POST [$variable]) && filter_var($_POST [$variable], $validation)) {
-            return $this->sql->escapeString($_POST [$variable]);
+            $sql = new Sql();
+            $escaped = $sql->escapeString($_POST [$variable]);
+            $sql->disconnect();
+            return $escaped;
         } else {
             if (!isset ($_POST [$variable])) {
                 $error = "$variableName is required";
@@ -42,14 +47,15 @@ class Api {
             } else {
                 $error = "$variableName is not valid";
             }
-            $this->sql->disconnect();
             return array('error' => $error);
         }
     }
 
     function retrievePostDateTime($variable, $variableName, $format) {
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
-            $date = $this->sql->escapeString($_POST [$variable]);
+            $sql = new Sql();
+            $date = $sql->escapeString($_POST [$variable]);
+            $sql->disconnect();
             $d = DateTime::createFromFormat($format, $date);
             if (!($d && $d->format($format) === $date)) {
                 $error = "$variableName is not the correct format";
@@ -63,7 +69,6 @@ class Api {
                 $error = "$variableName can not be blank";
             }
         }
-        $this->sql->disconnect();
         return array('error' => $error);
     }
 
@@ -88,7 +93,10 @@ class Api {
                     return floatval(str_replace('$', '', $_GET [$variable]));
                 case "string":
                 default:
-                    return $this->sql->escapeString($_GET [$variable]);
+                $sql = new Sql();
+                $escaped = $sql->escapeString($_GET [$variable]);
+                $sql->disconnect();
+                return $escaped;
             }
         } else {
             if (!isset ($_GET [$variable])) {
@@ -96,7 +104,6 @@ class Api {
             } else {
                 $error = "$variableName can not be blank";
             }
-            $this->sql->disconnect();
             return array('error' => $error);
         }
     }
@@ -117,7 +124,6 @@ class Api {
         if (!$this->user->isLoggedIn()) {
             header('HTTP/1.0 401 Unauthorized');
             echo "You must be logged in to perform this action";
-            $this->sql->disconnect();
             exit ();
         }
     }
@@ -128,10 +134,7 @@ class Api {
             if ($this->user->isLoggedIn()) {
                 echo "You do not have appropriate rights to perform this action";
             }
-            $this->sql->disconnect();
             exit ();
         }
     }
 }
-
-?>

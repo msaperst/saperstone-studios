@@ -2,15 +2,16 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api();
 
 $id = $api->retrievePostInt('id', 'Contract id');
 if (is_array($id)) {
     echo $id['error'];
     exit();
 }
+
+$sql = new Sql ();
 $contract_info = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
 if (!$contract_info ['id']) {
     echo "Contract id does not match any contracts";
@@ -21,42 +22,49 @@ if (!$contract_info ['id']) {
 $name = $api->retrievePostString('name', 'Contract contact name');
 if (is_array($name)) {
     echo $name['error'];
+    $sql->disconnect();
     exit();
 }
 
 $address = $api->retrievePostString('address', 'Contract contact address');
 if (is_array($address)) {
     echo $address['error'];
+    $sql->disconnect();
     exit();
 }
 
 $number = $api->retrievePostString('number', 'Contract contact number');
 if (is_array($number)) {
     echo $number['error'];
+    $sql->disconnect();
     exit();
 }
 
 $emailA = $api->retrieveValidatedPost('email', 'Contract contact email', FILTER_VALIDATE_EMAIL);
 if (is_array($emailA)) {
     echo $emailA['error'];
+    $sql->disconnect();
     exit();
 }
 
 $signature = $api->retrievePostString('signature', 'Contract signature');
 if (is_array($signature)) {
     echo $signature['error'];
+    $sql->disconnect();
     exit();
 }
 
 $initial = $api->retrievePostString('initial', 'Contract initials');
 if (is_array($initial)) {
     echo $initial['error'];
+    $sql->disconnect();
     exit();
 }
 
 $content = $api->retrievePostString('content', 'Contract content');
 if (is_array($content)) {
     echo $content['error'];
+    $sql->disconnect();
     exit();
 }
 

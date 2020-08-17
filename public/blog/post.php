@@ -2,7 +2,6 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $errors = new Errors();
 
-$post;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['p'] )) {
     $errors->throw404();
@@ -17,10 +16,9 @@ $details = $sql->getRow( "SELECT * FROM `blog_details` WHERE id = '$post';" );
 if (! $details ['title']) {
     $errors->throw404();
 }
-
-$user = new CurrentUser ($sql);
 $sql->disconnect();
 
+$user = User::fromSystem();
 if (! $user->isAdmin () && ! $details ['active']) {
     $errors->throw404();
 }

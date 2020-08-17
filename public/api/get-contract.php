@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceAdmin();
 
@@ -13,6 +12,8 @@ if (is_array($id)) {
     echo $id['error'];
     exit();
 }
+
+$sql = new Sql();
 $contract_info = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
 if (!$contract_info ['id']) {
     echo "Contract id does not match any contracts";

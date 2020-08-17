@@ -6,12 +6,10 @@ require_once 'autoloader.php';
 require_once(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'codebird-php-3.1.0' . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'codebird.php');
 
 class SocialMedia {
-    private $sql;
     private $session;
     private $cb;
 
     function __construct() {
-        $this->sql = new Sql ();
         $this->session = new Session();
         Codebird::setConsumerKey("8DQvx2b18QkSCARsUJs1KDnvp", "fiFRlU4uZfLkyu24yqEB1jcUiprETciiUI4VaSAUlKjkie3GlA");
         $this->cb = Codebird::getInstance();
@@ -33,11 +31,14 @@ class SocialMedia {
         fwrite($feed, "    <language>en</language>\n");
         fwrite($feed, "\n");
 
-        foreach ($this->sql->getRows('SELECT * FROM `blog_details` WHERE `active` ORDER BY `date` DESC;') as $r) {
+        $sql = new Sql();
+        $blogs = $sql->getRows('SELECT * FROM `blog_details` WHERE `active` ORDER BY `date` DESC;');
+        $sql->disconnect();
+        foreach ($blogs as $blog) {
             fwrite($feed, "    <item>\n");
-            fwrite($feed, "      <title>" . htmlspecialchars($r['title']) . "</title>\n");
-            fwrite($feed, "      <link>$url/blog/post.php?p={$r['id']}</link>\n");
-            fwrite($feed, "      <guid>$url/blog/post.php?p={$r['id']}</guid>\n");
+            fwrite($feed, "      <title>" . htmlspecialchars($blog['title']) . "</title>\n");
+            fwrite($feed, "      <link>$url/blog/post.php?p={$blog['id']}</link>\n");
+            fwrite($feed, "      <guid>$url/blog/post.php?p={$blog['id']}</guid>\n");
             fwrite($feed, "    </item>\n");
             fwrite($feed, "\n");
         }
@@ -62,7 +63,9 @@ class SocialMedia {
             'status' => "{$blog->getTitle()}\n$link",
             'media_ids' => $mediaId
         ));
-        $this->sql->executeStatement("UPDATE `blog_details` SET `twitter` = '{$reply->id}' WHERE id={$blog->getId()};");
+        $sql = new Sql();
+        $sql->executeStatement("UPDATE `blog_details` SET `twitter` = '{$reply->id}' WHERE id={$blog->getId()};");
+        $sql->disconnect();
     }
 
     function removeBlogFromTwitter(Blog $blog) {

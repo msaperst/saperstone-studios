@@ -2,11 +2,11 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 // check if fields passed are empty
+$sql = new Sql ();
 if (isset ($_POST ['name']) && $_POST ['name'] != "") {
     $name = $sql->escapeString($_POST ['name']);
 }
@@ -40,6 +40,7 @@ $resolution = "";
 if (isset ($_POST ['resolution']) && $_POST ['resolution'] != "") {
     $resolution = $sql->escapeString($_POST ['resolution']);
 }
+$sql->disconnect();
 
 $IP = $session->getClientIP();
 $geo_info = json_decode(file_get_contents("http://ipinfo.io/$IP/json"));

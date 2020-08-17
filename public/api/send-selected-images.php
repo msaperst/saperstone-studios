@@ -2,12 +2,12 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $userId = $systemUser->getIdentifier();
 
+$sql = new Sql ();
 if (isset ($_POST ['what'])) {
     $what = $sql->escapeString($_POST ['what']);
 } else {
@@ -62,9 +62,10 @@ $comment = "";
 if (isset ($_POST ['comment'])) {
     $comment = $sql->escapeString($_POST ['comment']);
 }
+$sql->disconnect();
 
 // send email
-$systemUser = new CurrentUser ($sql);
+$systemUser = User::fromSystem();
 $from = "Selects <selects@saperstonestudios.com>";
 $to = "Selects <selects@saperstonestudios.com>";
 $subject = "Selects Have Been Made";
@@ -99,5 +100,4 @@ if ($emailA != "") {
     $email->sendEmail();
 }
 
-$conn->disconnect();
 exit ();

@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $what = $api->retrievePostString('what', 'What to download');
 if (is_array($what)) {
@@ -20,6 +19,7 @@ try {
 }
 
 // check for album access
+$sql = new Sql();
 $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE user = '0' AND album = '{$album->getId()}';");
 if (!$systemUser->isLoggedIn() && !$isAlbumDownloadable) {
     header('HTTP/1.0 401 Unauthorized');

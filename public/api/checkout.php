@@ -22,7 +22,7 @@ $response = array();
 
 // get our user information
 $sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
+$systemUser = User::fromSystem();
 if (!$systemUser->isLoggedIn()) {
     $response ['error'] = "You must be logged in to submit your order";
     echo json_encode($response);

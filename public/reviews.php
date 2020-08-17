@@ -3,9 +3,8 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
+$user = User::fromSystem();
 $errors = new Errors();
-$where;
 
 if (isset ( $_GET ['c'] )) {
     $category = ( int ) $_GET ['c'];
@@ -29,8 +28,7 @@ $sql->disconnect();
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
+        $rand = "?" . Strings::randomString ();
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php

@@ -2,9 +2,7 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$user = new CurrentUser ($sql);
-$sql->disconnect();
+$user = User::fromSystem();
 ?>
 
 <!DOCTYPE html>
@@ -18,8 +16,7 @@ $sql->disconnect();
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
+        $rand = "?" . Strings::randomString ();
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php

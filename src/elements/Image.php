@@ -4,7 +4,6 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Image {
 
-    private $sql;
     private $raw;
     private $id;
     private $album = NULL;
@@ -23,20 +22,20 @@ class Image {
         } elseif ($sequence == "") {
             throw new Exception("Image id can not be blank");
         }
-        $this->sql = new Sql();
+        $sql = new Sql();
         $sequence = (int)$sequence;
         if ($container instanceof Album) {
-            $this->raw = $this->sql->getRow("SELECT * FROM album_images WHERE album = {$container->getId()} AND sequence = $sequence;");
+            $this->raw = $sql->getRow("SELECT * FROM album_images WHERE album = {$container->getId()} AND sequence = $sequence;");
             $this->album = $this->raw['album'];
         } elseif ($container instanceof Gallery) {
-            $this->raw = $this->sql->getRow("SELECT * FROM gallery_images WHERE gallery = {$container->getId()} AND id = $sequence;");  //TODO should align the JS on this and albums
+            $this->raw = $sql->getRow("SELECT * FROM gallery_images WHERE gallery = {$container->getId()} AND id = $sequence;");  //TODO should align the JS on this and albums
             $this->gallery = $this->raw['gallery'];
         } else {
-            $this->sql->disconnect();
+            $sql->disconnect();
             throw new Exception("Parent (album or gallery) is required");
         }
         if (!$this->raw ['id']) {
-            $this->sql->disconnect();
+            $sql->disconnect();
             throw new Exception("Image id does not match any images");
         }
         $this->id = $this->raw['id'];
@@ -47,6 +46,7 @@ class Image {
         $this->width = $this->raw['width'];
         $this->height = $this->raw['height'];
         $this->active = $this->raw['active'];
+        $sql->disconnect();
     }
 
     function getId() {
@@ -58,7 +58,7 @@ class Image {
     }
 
     function canUserGetData() {
-        $user = new CurrentUser($this->sql);
+        $user = User::fromSystem();
         if ($this->album != NULL) {
             $album = new Album($this->album);
             // only admin users and uploader users who own the album can get all data
@@ -72,21 +72,23 @@ class Image {
         if (!$this->canUserGetData()) {
             throw new Exception("User not authorized to delete image");
         }
+        $sql = new Sql();
         if ($this->album != NULL) {
             // if we're in an album, delete from the table
-            $this->sql->executeStatement("DELETE FROM album_images WHERE album='{$this->album}' AND id='{$this->getId()}';");
-            $this->sql->executeStatement("UPDATE albums SET images = images - 1 WHERE id='{$this->album}';");
+            $sql->executeStatement("DELETE FROM album_images WHERE album='{$this->album}' AND id='{$this->getId()}';");
+            $sql->executeStatement("UPDATE albums SET images = images - 1 WHERE id='{$this->album}';");
             // need to re-sequence images in mysql table
-            $this->sql->executeStatement("SET @seq:=-1;");
-            $this->sql->executeStatement("UPDATE album_images SET sequence=(@seq:=@seq+1) WHERE album='{$this->album}' ORDER BY `sequence`;");
+            $sql->executeStatement("SET @seq:=-1;");
+            $sql->executeStatement("UPDATE album_images SET sequence=(@seq:=@seq+1) WHERE album='{$this->album}' ORDER BY `sequence`;");
         }
         if ($this->gallery != NULL) {
             // if we're in a gallery, delete from the table
-            $this->sql->executeStatement("DELETE FROM gallery_images WHERE gallery='{$this->gallery}' AND id='{$this->getId()}';");
+            $sql->executeStatement("DELETE FROM gallery_images WHERE gallery='{$this->gallery}' AND id='{$this->getId()}';");
             // need to re-sequence images in mysql table
-            $this->sql->executeStatement("SET @seq:=-1;");
-            $this->sql->executeStatement("UPDATE gallery_images SET sequence=(@seq:=@seq+1) WHERE gallery='{$this->gallery}' ORDER BY `sequence`;");
+            $sql->executeStatement("SET @seq:=-1;");
+            $sql->executeStatement("UPDATE gallery_images SET sequence=(@seq:=@seq+1) WHERE gallery='{$this->gallery}' ORDER BY `sequence`;");
         }
+        $sql->disconnect();
 
         // remove the file
         if ($this->location != "") {

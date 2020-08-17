@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceAdmin();
 
@@ -13,6 +12,7 @@ if (is_array($id)) {
     echo $id['error'];
     exit();
 }
+$sql = new Sql();
 $product_details = $sql->getRow("SELECT * FROM product_types WHERE id = $id;");
 if (!$product_details ['id']) {
     echo "Product id does not match any products";
@@ -25,4 +25,3 @@ $sql->executeStatement("DELETE FROM products WHERE product_type='$id';");
 $sql->executeStatement("DELETE FROM product_options WHERE product_type='$id';");
 $sql->disconnect();
 exit ();
-?>

@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $api->forceAdmin();
 
@@ -16,7 +15,7 @@ if (isset ($_POST ['post'])) {
     exit ();
 }
 
-$date;
+$sql = new Sql ();
 if (isset ($_POST ['date'])) {
     $date = $sql->escapeString($_POST ['date']);
 } else {
@@ -24,7 +23,6 @@ if (isset ($_POST ['date'])) {
     exit ();
 }
 
-$time;
 if (isset ($_POST ['time'])) {
     $time = $sql->escapeString($_POST ['time']);
 } else {
@@ -43,5 +41,5 @@ $command = "UPDATE \`" . getenv('DB_NAME') . "\`.\`blog_details\` SET \`active\`
 $command = "mysql -h " . getenv('DB_HOST') . " -P " . getenv('DB_PORT') . " -u " . getenv('DB_USER') . " -p" . getenv('DB_PASS') . " -e \"$command\"";
 system("nohup bash -c 'sleep $howLong; $command' > /dev/null 2>&1 &");
 
-$conn->disconnect();
+$sql->disconnect();
 exit ();

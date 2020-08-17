@@ -4,7 +4,6 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Gallery {
 
-    private $sql;
     private $raw;
     private $id;
     private $parent;
@@ -19,11 +18,11 @@ class Gallery {
         } elseif ($id == "") {
             throw new Exception("Gallery id can not be blank");
         }
-        $this->sql = new Sql();
+        $sql = new Sql();
         $id = (int)$id;
-        $this->raw = $this->sql->getRow("SELECT * FROM galleries WHERE id = $id;");
+        $this->raw = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
         if (!$this->raw ['id']) {
-            $this->sql->disconnect();
+            $sql->disconnect();
             throw new Exception("Gallery id does not match any galleries");
         }
         $this->id = $this->raw['id'];
@@ -35,6 +34,7 @@ class Gallery {
         $this->title = $this->raw['title'];
         $this->comment = $this->raw['comment'];
         $this->images = array();    //TODO - change this to an array of matching images
+        $sql->disconnect();
     }
 
     function getId() {

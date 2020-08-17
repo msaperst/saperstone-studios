@@ -1,7 +1,7 @@
 <?php
 
 class Strings {
-    function randomString($length = 10) {
+    static function randomString($length = 10) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';
@@ -11,12 +11,12 @@ class Strings {
         return $randomString;
     }
 
-    function textToHTML($text) {
+    static function textToHTML($text) {
         $text = str_replace("\n", "<br/>", $text);
         return str_replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;", $text);
     }
 
-    function commaSeparate($strings) {
+    static function commaSeparate($strings) {
         $last = array_slice($strings, -1);
         $first = join(', ', array_slice($strings, 0, -1));
         $both = array_filter(array_merge(array(
@@ -25,12 +25,12 @@ class Strings {
         return join(' and ', $both);
     }
 
-    function startsWith($haystack, $needle) {
+    static function startsWith($haystack, $needle) {
         $length = strlen($needle);
         return (substr($haystack, 0, $length) === $needle);
     }
 
-    function endsWith($haystack, $needle) {
+    static function endsWith($haystack, $needle) {
         $length = strlen($needle);
         if ($length == 0) {
             return true;
@@ -38,5 +38,3 @@ class Strings {
         return (substr($haystack, -$length) === $needle);
     }
 }
-
-?>

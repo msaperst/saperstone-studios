@@ -8,7 +8,6 @@ class Email {
 
     private $email_user_creds = 'EMAIL_USER';
     private $email_pass_creds = 'EMAIL_PASS';
-    private $string;
     private $headers;
     private $message;
     private $smtp;
@@ -16,8 +15,7 @@ class Email {
     private $myFile;
 
     function __construct($to, $from, $subject) {
-        $this->string = new Strings();
-        if ($this->string->endsWith($to, "@saperstonestudios.com>")) {
+        if (Strings::endsWith($to, "@saperstonestudios.com>")) {
             // in order to ensure LA gets these sent emails in her inbox, we'll send them from her ss gmail instead of @ss domain if they're to and from her
             $this->email_user_creds = 'EMAIL_USER_X';
             $this->email_pass_creds = 'EMAIL_PASS_X';

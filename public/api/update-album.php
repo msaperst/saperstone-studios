@@ -2,9 +2,8 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$systemUser = new CurrentUser ($sql);
-$api = new Api ($sql, $systemUser);
+$systemUser = User::fromSystem();
+$api = new Api ();
 
 $id = "";
 if (isset ($_POST ['id']) && $_POST ['id'] != "") {
@@ -17,7 +16,6 @@ if (isset ($_POST ['id']) && $_POST ['id'] != "") {
     } else {
         echo "Some other Album id error occurred!";
     }
-    $conn->disconnect();
     exit ();
 }
 
@@ -25,13 +23,11 @@ $sql = "SELECT * FROM albums WHERE id = $id;";
 $album_info = $sql->getRow($sql);
 if (!$album_info ['id']) {
     echo "That ID doesn't match any albums";
-    $conn->disconnect();
     exit ();
 }
 // only admin users and uploader users who own the album can make updates
 if (!($systemUser->isAdmin() || ($systemUser->getRole() == "uploader" && $systemUser->getId() == $album_info ['owner']))) {
     header('HTTP/1.0 401 Unauthorized');
-    $conn->disconnect();
     exit ();
 }
 
@@ -40,6 +36,7 @@ $description = "";
 $date = "NULL";
 $code = "";
 
+$sql = new Sql ();
 if (isset ($_POST ['name'])) {
     $name = $sql->escapeString($_POST ['name']);
 }

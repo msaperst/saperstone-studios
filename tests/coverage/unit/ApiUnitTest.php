@@ -13,14 +13,7 @@ class ApiUnitTest extends TestCase {
     private $api;
 
     public function setUp() {
-        $mockSql = $this->createMock(Sql::class);
-        $mockSql->method("disconnect")->willReturn(NULL);
-        $mockSql->method("escapeString")->with($this->anything())->will($this->returnCallback(
-            function ($entityName) {
-                return $entityName;
-            }
-        ));
-        $this->api = new Api($mockSql, null);
+        $this->api = new Api();
     }
 
     public function testRetrievePostIntNotSet() {
@@ -75,12 +68,6 @@ class ApiUnitTest extends TestCase {
         unset($_POST);
     }
 
-    public function testRetrievePostString() {
-        $_POST['bar'] = "foo";
-        $this->assertEquals('foo', $this->api->retrievePostString('bar', 'Foo'));
-        unset($_POST);
-    }
-
     public function testRetrieveValidatedPostNotSet() {
         $this->assertEquals(array('error' => "Foo is required"), $this->api->retrieveValidatedPost('bar', 'Foo', NULL));
     }
@@ -103,12 +90,6 @@ class ApiUnitTest extends TestCase {
         unset($_POST);
     }
 
-    public function testRetrieveValidatedPost() {
-        $_POST['bar'] = "msaperst+sstest@gmail.com";
-        $this->assertEquals("msaperst+sstest@gmail.com", $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_EMAIL));
-        unset($_POST);
-    }
-
     public function testRetrievePostDateTimeNotSet() {
         $this->assertEquals(array('error' => "Foo is required"), $this->api->retrievePostDateTime('bar', 'Foo', NULL));
     }
@@ -116,24 +97,6 @@ class ApiUnitTest extends TestCase {
     public function testRetrievePostDateTimeBlank() {
         $_POST['bar'] = "";
         $this->assertEquals(array('error' => "Foo can not be blank"), $this->api->retrievePostDateTime('bar', 'Foo', NULL));
-        unset($_POST);
-    }
-
-    public function testRetrievePostDateTimeNullFormat() {
-        $_POST['bar'] = "foo";
-        $this->assertEquals(array('error' => "Foo is not the correct format"), $this->api->retrievePostDateTime('bar', 'Foo', NULL));
-        unset($_POST);
-    }
-
-    public function testRetrievePostDateTimeBadFormat() {
-        $_POST['bar'] = "foo";
-        $this->assertEquals(array('error' => "Foo is not the correct format"), $this->api->retrievePostDateTime('bar', 'Foo', 'Y-m-d'));
-        unset($_POST);
-    }
-
-    public function testRetrievePostDateTime() {
-        $_POST['bar'] = "2020-01-01";
-        $this->assertEquals("2020-01-01", $this->api->retrievePostDateTime('bar', 'Foo', 'Y-m-d'));
         unset($_POST);
     }
 
@@ -186,12 +149,6 @@ class ApiUnitTest extends TestCase {
     public function testRetrieveGetFloatMoney() {
         $_GET['bar'] = "$12.245";
         $this->assertEquals(12.245, $this->api->retrieveGetFloat('bar', 'Foo'));
-        unset($_GET);
-    }
-
-    public function testRetrieveGetString() {
-        $_GET['bar'] = "foo";
-        $this->assertEquals('foo', $this->api->retrieveGetString('bar', 'Foo'));
         unset($_GET);
     }
 }

@@ -2,8 +2,6 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $errors = new Errors();
 
-$categories;
-$where;
 // if no album is set, throw a 404 error
 if (! isset ( $_GET ['t'] )) {
     $errors->throw404();
@@ -14,7 +12,6 @@ if (! isset ( $_GET ['t'] )) {
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$string = new Strings ();
 $tags = $sql->getRows( "SELECT tag FROM `tags` WHERE $where" );
 if (empty ( $tags )) {
     $errors->throw404();
@@ -42,12 +39,12 @@ $sql->disconnect ();
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center"><?php echo $string->commaSeparate($tags); ?> Blog Posts</h1>
+                <h1 class="page-header text-center"><?php echo Strings::commaSeparate($tags); ?> Blog Posts</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/blog/categories.php">Categories</a></li>
-                    <li class="active"><?php echo $string->commaSeparate($tags); ?></li>
+                    <li class="active"><?php echo Strings::commaSeparate($tags); ?></li>
                 </ol>
             </div>
         </div>
