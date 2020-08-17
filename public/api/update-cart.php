@@ -3,13 +3,13 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $api->forceLoggedIn();
 
 // empty out our old cart for this image
-$sql = "DELETE FROM `cart` WHERE `user` = '{$user->getId()}';";
+$sql = "DELETE FROM `cart` WHERE `user` = '{$systemUser->getId()}';";
 mysqli_query($conn->db, $sql);
 
 // for each product, add it back in
@@ -19,12 +19,12 @@ if (isset ($_POST ['images']) && is_array($_POST ['images'])) {
         $image = ( int )$image ['image'];
         $product = ( int )$image ['product'];
         $count = ( int )$image ['count'];
-        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '{$user->getId()}', '$album', '$image', '$product', '$count');";
+        $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '{$systemUser->getId()}', '$album', '$image', '$product', '$count');";
         mysqli_query($conn->db, $sql);
     }
 }
 
-$sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '{$user->getId()}';";
+$sql = "SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '{$systemUser->getId()}';";
 $result = $sql->getRow($sql);
 echo $result ['total'];
 

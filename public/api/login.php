@@ -3,12 +3,12 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser($sql);
-$api = new Api($sql, $user);
+$systemUser = new CurrentUser($sql);
+$api = new Api($sql, $systemUser);
 
-if ($user->isLoggedIn() && $_POST ['submit'] == 'Logout') {
+if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
     // note the logout
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );");
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );");
     $sql->disconnect();
 
     // remove any stored login
@@ -54,9 +54,9 @@ if ($_POST ['submit'] == 'Login') {
             setcookie('hash', $row ['hash'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
             setcookie('usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
         }
-        $user = new CurrentUser($sql);
-        $sql->executeStatement("UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE id='{$user->getId()}';");
-        $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
+        $systemUser = new CurrentUser($sql);
+        $sql->executeStatement("UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE id='{$systemUser->getId()}';");
+        $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
     } elseif ($row ['usr']) {
         echo 'Sorry, you account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.';
         $sql->disconnect();

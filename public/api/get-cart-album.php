@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $api->forceLoggedIn();
 
@@ -16,7 +16,7 @@ try {
     exit();
 }
 
-$result = $sql->getRows("SELECT * FROM `cart` JOIN `album_images` ON `cart`.`image` = `album_images`.`id` AND `cart`.`album` = `album_images`.`album` JOIN `products` ON `cart`.`product` = `products`.`id` JOIN `product_types` ON `products`.`product_type` = `product_types`.`id` WHERE `cart`.`user` = '{$user->getId()}' AND `cart`.`album` = '{$album->getId()}';");
+$result = $sql->getRows("SELECT * FROM `cart` JOIN `album_images` ON `cart`.`image` = `album_images`.`id` AND `cart`.`album` = `album_images`.`album` JOIN `products` ON `cart`.`product` = `products`.`id` JOIN `product_types` ON `products`.`product_type` = `product_types`.`id` WHERE `cart`.`user` = '{$systemUser->getId()}' AND `cart`.`album` = '{$album->getId()}';");
 $cart = array();
 foreach ($result as $r) {
     unset ($r ['cost']);

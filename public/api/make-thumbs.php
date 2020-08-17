@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $api->forceLoggedIn();
 
@@ -34,9 +34,9 @@ if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
     exit ();
 }
 
-if (!$user->isAdmin()) {
+if (!$systemUser->isAdmin()) {
     // update our user records table
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, {$album->getId()} );");
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, {$album->getId()} );");
 }
 $sql->disconnect();
 

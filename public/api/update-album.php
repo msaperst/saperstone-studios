@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $id = "";
 if (isset ($_POST ['id']) && $_POST ['id'] != "") {
@@ -29,7 +29,7 @@ if (!$album_info ['id']) {
     exit ();
 }
 // only admin users and uploader users who own the album can make updates
-if (!($user->isAdmin() || ($user->getRole() == "uploader" && $user->getId() == $album_info ['owner']))) {
+if (!($systemUser->isAdmin() || ($systemUser->getRole() == "uploader" && $systemUser->getId() == $album_info ['owner']))) {
     header('HTTP/1.0 401 Unauthorized');
     $conn->disconnect();
     exit ();
@@ -55,7 +55,7 @@ if (isset ($_POST ['code']) && $_POST ['code'] != "") {
 
 $sql = "UPDATE albums SET name='$name', description='$description', date=$date, code=NULL WHERE id='$id';";
 mysqli_query($conn->db, $sql);
-if (isset ($_POST ['code']) && $_POST ['code'] != "" && $user->isAdmin()) {
+if (isset ($_POST ['code']) && $_POST ['code'] != "" && $systemUser->isAdmin()) {
     $code = $sql->escapeString($_POST ['code']);
     $codeExist = mysqli_num_rows(mysqli_query($conn->db, "SELECT * FROM `albums` WHERE code = '$code';"));
     if (!$codeExist) {

@@ -3,10 +3,10 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
-if ($user->isAdmin()) {
+if ($systemUser->isAdmin()) {
     echo 1;
     $sql->disconnect();
     exit ();
@@ -40,7 +40,7 @@ try {
     exit();
 }
 
-$shareable = $sql->getRow("SELECT * FROM `share_rights` WHERE ( `user` = '{$user->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
+$shareable = $sql->getRow("SELECT * FROM `share_rights` WHERE ( `user` = '{$systemUser->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
 if ($shareable ['album']) {
     echo 1;
 } else {

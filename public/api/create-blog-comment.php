@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 try {
     $blog = new Blog($_POST['post']);
@@ -30,8 +30,8 @@ if (is_array($message)) {
     exit();
 }
 
-if ($user->getId() != "") {
-    $user = "'" . $user->getId() . "'";
+if ($systemUser->getId() != "") {
+    $user = "'" . $systemUser->getId() . "'";
 } else {
     $user = 'NULL';
 }

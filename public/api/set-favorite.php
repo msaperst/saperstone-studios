@@ -3,10 +3,10 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
-$userId = $user->getIdentifier();
+$userId = $systemUser->getIdentifier();
 
 try {
     $album = new Album($_POST['album']);
@@ -24,9 +24,9 @@ try {
     exit();
 }
 
-if ($user->isLoggedIn()) {
+if ($systemUser->isLoggedIn()) {
     // update our user records table
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '{$image->getId()}', {$album->getId()} );");
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '{$image->getId()}', {$album->getId()} );");
 }
 
 // update our mysql database

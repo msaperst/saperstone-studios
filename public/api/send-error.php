@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 // check if fields passed are empty
 if (isset ($_POST ['name']) && $_POST ['name'] != "") {
@@ -58,10 +58,10 @@ $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page $referrer.<br/>";
 $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action.<br/>";
 $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before.<br/><br/>";
 
-if ($user->isLoggedIn()) {
-    $id = $user->getId();
-    $name = $user->getName();
-    $email = $user->getEmail();
+if ($systemUser->isLoggedIn()) {
+    $id = $systemUser->getId();
+    $name = $systemUser->getName();
+    $email = $systemUser->getEmail();
     $html .= "<strong>User Id</strong>: $id<br/>";
     $html .= "<strong>Name</strong>: $name<br/>";
     $html .= "<strong>Email</strong>: <a href='mailto:$email'>$email</a><br/>";
@@ -73,10 +73,10 @@ $text .= "\t\tSomeone got a $error on page $page.\n";
 $text .= "\t\tThey came from page $referrer.\n";
 $text .= "\t\tYou might want to look into this or take action.\n";
 $text .= "\t\tUser information is collected before.\n\n";
-if ($user->isLoggedIn()) {
-    $id = $user->getId();
-    $name = $user->getName();
-    $email = $user->getEmail();
+if ($systemUser->isLoggedIn()) {
+    $id = $systemUser->getId();
+    $name = $systemUser->getName();
+    $email = $systemUser->getEmail();
     $text .= "User Id: $id\n";
     $text .= "Name: $name\n";
     $text .= "Email: $email\n";

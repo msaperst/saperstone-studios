@@ -22,14 +22,12 @@ $response = array();
 
 // get our user information
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-if (!$user->isLoggedIn()) {
+$systemUser = new CurrentUser ($sql);
+if (!$systemUser->isLoggedIn()) {
     $response ['error'] = "You must be logged in to submit your order";
     echo json_encode($response);
     $sql->disconnect();
     exit ();
-} else {
-    $user = $user->getId();
 }
 
 // retrieve all of our sent information

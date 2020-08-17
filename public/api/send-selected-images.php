@@ -3,14 +3,10 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
-if (!$user->isLoggedIn()) {
-    $userId = $session->getClientIP();
-} else {
-    $userId = $user->getId();
-}
+$userId = $systemUser->getIdentifier();
 
 if (isset ($_POST ['what'])) {
     $what = $sql->escapeString($_POST ['what']);
@@ -39,7 +35,7 @@ if (!$album_info ['name']) {
 
 $selected = array();
 if ($what == "favorites") {
-    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$user' AND favorites.album = '$album';";
+    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$systemUser' AND favorites.album = '$album';";
     $result = mysqli_query($conn->db, $sql);
     $desired = array();
     while ($r = mysqli_fetch_assoc($result)) {
@@ -68,7 +64,7 @@ if (isset ($_POST ['comment'])) {
 }
 
 // send email
-$user = new CurrentUser ($sql);
+$systemUser = new CurrentUser ($sql);
 $from = "Selects <selects@saperstonestudios.com>";
 $to = "Selects <selects@saperstonestudios.com>";
 $subject = "Selects Have Been Made";

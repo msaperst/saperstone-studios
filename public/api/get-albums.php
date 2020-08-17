@@ -3,17 +3,16 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $api->forceLoggedIn();
 
 $response = array();
-if ($user->isAdmin()) {
+if ($systemUser->isAdmin()) {
     $query = "SELECT * FROM albums;";
-} else {
-    $id = $user->getId();
-    $query = "SELECT albums.* FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '$id' GROUP BY albums.id;";
+} else {;
+    $query = "SELECT albums.* FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '{$systemUser->getId()}' GROUP BY albums.id;";
 }
 $sanitizedAlbums = array();
 $albums = $sql->getRows($query);

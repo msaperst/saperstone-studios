@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $what = $api->retrievePostString('what', 'What to download');
 if (is_array($what)) {
@@ -21,18 +21,18 @@ try {
 
 // check for album access
 $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE user = '0' AND album = '{$album->getId()}';");
-if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
+if (!$systemUser->isLoggedIn() && !$isAlbumDownloadable) {
     header('HTTP/1.0 401 Unauthorized');
     $sql->disconnect();
     exit ();
 }
 
-$userid = $user->getIdentifier();
+$userId = $systemUser->getIdentifier();
 
 //TODO - might need to ensure that the user has access to the album
 // determine what the user can download
 $downloadable = array();
-foreach ($sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '" . $user->getId() . "' OR `user` = '0';") as $r) {
+foreach ($sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '" . $systemUser->getId() . "' OR `user` = '0';") as $r) {
     if ($r ['album'] == "*" || ($r ['album'] == $album->getId() && $r ['image'] == "*")) {
         $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = {$album->getId()};"));
     } elseif ($r ['album'] == $album->getId()) {
@@ -46,14 +46,14 @@ $desired = array();
 if ($what == "all") {
     $desired = $sql->getRows("SELECT album_images.* FROM album_images WHERE album = '{$album->getId()}';");
 } elseif ($what == "favorites") {
-    $desired = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$userid' AND favorites.album = '{$album->getId()}';");
+    $desired = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$userId' AND favorites.album = '{$album->getId()}';");
 } else {
     $desired = $sql->getRows("SELECT * FROM album_images WHERE album = '{$album->getId()}' AND sequence = '" . (int)$what . "';");
 }
 
 // determine what we will download
 $available = array();
-if ($user->isAdmin()) {    // if we're an admin, we can download all files
+if ($systemUser->isAdmin()) {    // if we're an admin, we can download all files
     $available = $desired;
 } else {    // check to see which files we want to download, we can download
     foreach ($desired as $file) {
@@ -99,7 +99,7 @@ $response ['file'] = $myFile;
 echo json_encode($response);
 
 // update our user records table
-$sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode("\n", $image_array) . "', {$album->getId()} );");
+$sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode("\n", $image_array) . "', {$album->getId()} );");
 $sql->disconnect();
 
 // send email
@@ -113,10 +113,10 @@ $html .= "<p>Downloads have been made from the <a href='" . $session->getBaseURL
 $text .= "Downloads have been made from the {$album->getName()} album at " . $session->getBaseURL() . "/user/album.php?album={$album->getId()}\n\n";
 $html .= "<p><ul><li>" . implode("</li><li>", $image_array) . "</li></ul></p><br/>";
 $text .= implode("\n", $image_array) . "\n\n";
-$html .= "<p><strong>Name</strong>: " . $user->getName() . "<br/>";
-$text .= "Name: " . $user->getName() . "\n";
-$html .= "<strong>Email</strong>: <a href='mailto:" . $user->getEmail() . "'>" . $user->getEmail() . "</a><br/>";
-$text .= "Email: " . $user->getEmail() . "\n";
+$html .= "<p><strong>Name</strong>: " . $systemUser->getName() . "<br/>";
+$text .= "Name: " . $systemUser->getName() . "\n";
+$html .= "<strong>Email</strong>: <a href='mailto:" . $systemUser->getEmail() . "'>" . $systemUser->getEmail() . "</a><br/>";
+$text .= "Email: " . $systemUser->getEmail() . "\n";
 $html .= $email->getUserInfoHtml();
 $text .= $email->getUserInfoText();
 $html .= "</body></html>";

@@ -3,13 +3,13 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 // ensure we are logged in appropriately
-if (!$user->isAdmin() && $user->getRole() != "uploader") {
+if (!$systemUser->isAdmin() && $systemUser->getRole() != "uploader") {
     header('HTTP/1.0 401 Unauthorized');
-    if ($user->isLoggedIn()) {
+    if ($systemUser->isLoggedIn()) {
         echo "You do not have appropriate rights to perform this action";
     }
     $sql->disconnect();
@@ -53,10 +53,10 @@ if (!mkdir("../albums/$location", 0755, true)) {
     exit ();
 }
 
-$last_id = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', $date, '$location', '" . $user->getId() . "');");
-if ($user->getRole() == "uploader") {
-    $sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $user->getId() . "', '$last_id');");
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );");
+$last_id = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', $date, '$location', '" . $systemUser->getId() . "');");
+if ($systemUser->getRole() == "uploader") {
+    $sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $systemUser->getId() . "', '$last_id');");
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );");
 }
 echo $last_id;
 $sql->disconnect();

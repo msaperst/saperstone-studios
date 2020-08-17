@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $id = "";
 if (isset ($_POST ['album']) && $_POST ['album'] != "") {
@@ -29,9 +29,9 @@ if (!$album_info ['id']) {
     exit ();
 }
 // only admin users and uploader users who own the album can make updates
-if (!($user->isAdmin() || ($user->getRole() == "uploader" && $user->getId() == $album_info ['owner']))) {
+if (!($systemUser->isAdmin() || ($systemUser->getRole() == "uploader" && $systemUser->getId() == $album_info ['owner']))) {
     header('HTTP/1.0 401 Unauthorized');
-    if ($user->isLoggedIn()) {
+    if ($systemUser->isLoggedIn()) {
         echo "You do not have appropriate rights to perform this action";
     }
     $conn->disconnect();
@@ -75,8 +75,8 @@ if (isset ($_FILES ["myfile"])) {
         $size = getimagesize($output_dir . $fileName);
         $sql = "INSERT INTO `album_images` (`album`, `title`, `sequence`, `location`, `width`, `height`) VALUES ('$id', '$img', '$next_seq', '/albums/" . $album_info ['location'] . "/$img', '" . $size [0] . "', '" . $size [1] . "');";
         mysqli_query($conn->db, $sql);
-        if (!$user->isAdmin()) {
-            mysqli_query($conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Added Image', $next_seq, $id );");
+        if (!$systemUser->isAdmin()) {
+            mysqli_query($conn->db, "INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Added Image', $next_seq, $id );");
         }
         // update the image count
         $sql = "UPDATE `albums` SET `images` = images + 1 WHERE id='$id';";

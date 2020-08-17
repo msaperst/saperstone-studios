@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $start = 0;
 $howMany = 999999999999999999;
@@ -17,7 +17,7 @@ if (isset ($_GET ['howMany'])) {
 }
 
 $whereClause = "WHERE blog_details.active = 1";
-if ($user->isAdmin() && isset ($_GET ['a']) && $_GET ['a']) {
+if ($systemUser->isAdmin() && isset ($_GET ['a']) && $_GET ['a']) {
     $whereClause = "";
 }
 

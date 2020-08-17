@@ -3,11 +3,12 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $api->forceAdmin();
 
+//TODO - match with register-user reqs
 $username = $api->retrievePostString('username', 'Username');
 if (is_array($username)) {
     echo $username['error'];
@@ -57,7 +58,7 @@ if (isset ($_POST ['active'])) {
     $active = ( int )$_POST ['active'];
 }
 
-$password = $user->generatePassword();
+$password = $systemUser->generatePassword();
 
 echo $sql->executeStatement("INSERT INTO users ( usr, pass, firstName, lastName, email, role, active, hash ) VALUES ('$username', '$password', '$firstName', '$lastName', '$email', '$role', '$active', '" . md5($username . $role) . "' );");
 $sql->disconnect();

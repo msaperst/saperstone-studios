@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 $code = $api->retrieveGetString('code', 'Album code');
 if (is_array($code)) {
@@ -31,10 +31,10 @@ if ($r ['id']) {
     exit ();
 }
 
-if ($user->isLoggedIn() && isset ($_GET ['albumAdd']) && $_GET ['albumAdd'] == 1) {
-    $s = $sql->getRow("SELECT * FROM albums_for_users WHERE user = '" . $user->getId() . "' AND album = '" . $r ['id'] . "';");
+if ($systemUser->isLoggedIn() && isset ($_GET ['albumAdd']) && $_GET ['albumAdd'] == 1) {
+    $s = $sql->getRow("SELECT * FROM albums_for_users WHERE user = '" . $systemUser->getId() . "' AND album = '" . $r ['id'] . "';");
     if (!$s ['user']) {
-        $sql->executeStatement("INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . $user->getId() . "', '" . $r ['id'] . "' );");
+        $sql->executeStatement("INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . $systemUser->getId() . "', '" . $r ['id'] . "' );");
     }
 }
 

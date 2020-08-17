@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api ($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api ($sql, $systemUser);
 
 try {
     $album = new Album($_GET['album']);
@@ -22,7 +22,7 @@ try {
     exit();
 }
 
-$favorite = $sql->getRow("SELECT * FROM `favorites` WHERE `user` = '{$user->getIdentifier()}' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';");
+$favorite = $sql->getRow("SELECT * FROM `favorites` WHERE `user` = '{$systemUser->getIdentifier()}' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';");
 if ($favorite ['user']) {
     echo 1;
 } else {

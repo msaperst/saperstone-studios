@@ -3,8 +3,8 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$user = new CurrentUser ($sql);
-$api = new Api($sql, $user);
+$systemUser = new CurrentUser ($sql);
+$api = new Api($sql, $systemUser);
 
 $id = $api->retrievePostInt('id', 'Contract id');
 if (is_array($id)) {
