@@ -9,8 +9,8 @@ class User {
     private $username;
     private $md5Pass;
     private $password;
-    private $firstName;
-    private $lastName;
+    private $firstName = '';
+    private $lastName = '';
     private $email;
     private $role;
     private $hash;
@@ -142,7 +142,6 @@ class User {
             $user->active = '1';
         }
         //optional values
-        $user->firstName = $user->lastName = "";
         if (isset ($params ['firstName'])) {
             $user->firstName = $sql->escapeString($params ['firstName']);
         }

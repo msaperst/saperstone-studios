@@ -21,7 +21,7 @@ class GetProductOptionsTest extends TestCase {
     public function testNoProduct() {
         $response = $this->http->request('GET', 'api/get-product-options.php');
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type is required", (string)$response->getBody());
+        $this->assertEquals("Product id is required", (string)$response->getBody());
     }
 
     public function testBlankProduct() {
@@ -31,7 +31,7 @@ class GetProductOptionsTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type can not be blank", (string)$response->getBody());
+        $this->assertEquals("Product id can not be blank", (string)$response->getBody());
     }
 
     public function testLetterProduct() {
@@ -41,7 +41,7 @@ class GetProductOptionsTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type does not match any products", (string)$response->getBody());
+        $this->assertEquals("Product id does not match any products", (string)$response->getBody());
     }
 
     public function testBadProduct() {
@@ -51,7 +51,7 @@ class GetProductOptionsTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type does not match any products", (string)$response->getBody());
+        $this->assertEquals("Product id does not match any products", (string)$response->getBody());
     }
 
     public function testProductOptionsNone() {

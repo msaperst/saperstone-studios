@@ -180,7 +180,7 @@ class CreateContractTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $contractId = $response->getBody();
+            $contractId = (string)$response->getBody();
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = $contractId;");
             $this->assertEquals($contractId, $contractDetails['id']);
             $this->assertEquals(md5($contractId . "weddingMaxMaxMaxfunsies"), $contractDetails['link']);
@@ -290,8 +290,8 @@ class CreateContractTest extends TestCase {
             $this->assertEquals('hugs', $contractLineItems[0]['unit']);
             $this->assertEquals($contractId, $contractLineItems[1]['contract']);
             $this->assertEquals(12.45, $contractLineItems[1]['amount']);
-            $this->assertNull($contractLineItems[1]['item']);
-            $this->assertNull($contractLineItems[1]['unit']);
+            $this->assertEquals('', $contractLineItems[1]['item']);
+            $this->assertEquals('', $contractLineItems[1]['unit']);
         } finally {
             $this->sql->executeStatement("DELETE FROM `contracts` WHERE `contracts`.`id` = $contractId;");
             $this->sql->executeStatement("DELETE FROM `contract_line_items` WHERE `contract_line_items`.`contract` = $contractId;");

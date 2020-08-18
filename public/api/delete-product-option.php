@@ -7,9 +7,10 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$type = $api->retrievePostInt('type', 'Product type');
-if (is_array($type)) {
-    echo $type['error'];
+try {
+    $type = ProductType::withId($_POST['type']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
@@ -20,6 +21,6 @@ if (is_array($option)) {
 }
 
 $sql = new Sql();
-$sql->executeStatement("DELETE FROM `product_options` WHERE `product_type` = '$type' AND `opt` = '$option';");
+$sql->executeStatement("DELETE FROM `product_options` WHERE `product_type` = '{$type->getId()}' AND `opt` = '$option';");
 $sql->disconnect();
 exit ();

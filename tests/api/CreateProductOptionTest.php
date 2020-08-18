@@ -55,7 +55,7 @@ class CreateProductOptionTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type is required", (string)$response->getBody());
+        $this->assertEquals("Product id is required", (string)$response->getBody());
     }
 
     public function testBlankType() {
@@ -69,7 +69,21 @@ class CreateProductOptionTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type can not be blank", (string)$response->getBody());
+        $this->assertEquals("Product id can not be blank", (string)$response->getBody());
+    }
+
+    public function testBadType() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/create-product-option.php', [
+            'form_params' => [
+                'type' => '999'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Product id does not match any products", (string)$response->getBody());
     }
 
     public function testNoName() {
@@ -108,19 +122,19 @@ class CreateProductOptionTest extends TestCase {
             ], getenv('DB_HOST'));
             $response = $this->http->request('POST', 'api/create-product-option.php', [
                 'form_params' => [
-                    'type' => '999',
+                    'type' => '1',
                     'option' => 'explosion'
                 ],
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
             $this->assertEquals('', (string)$response->getBody());
-            $productOptionDetails = $this->sql->getRows("SELECT * FROM `product_options` WHERE `product_options`.`product_type` = 999;");
+            $productOptionDetails = $this->sql->getRows("SELECT * FROM `product_options` WHERE `product_options`.opt = 'explosion';");
             $this->assertEquals(1, sizeOf($productOptionDetails));
-            $this->assertEquals(999, $productOptionDetails[0]['product_type']);
+            $this->assertEquals(1, $productOptionDetails[0]['product_type']);
             $this->assertEquals('explosion', $productOptionDetails[0]['opt']);
         } finally {
-            $this->sql->executeStatement("DELETE FROM `product_options` WHERE `product_options`.`product_type` = 999;");
+            $this->sql->executeStatement("DELETE FROM `product_options` WHERE `product_options`.`opt` = 'explosion';");
         }
     }
 }

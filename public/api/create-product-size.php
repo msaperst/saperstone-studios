@@ -7,9 +7,10 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$type = $api->retrievePostInt('type', 'Product type');
-if (is_array($type)) {
-    echo $type['error'];
+try {
+    $type = ProductType::withId($_POST['type']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
@@ -32,6 +33,6 @@ if (is_array($price)) {
 }
 
 $sql = new Sql ();
-echo $sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (NULL, '$type', '$size', '$price', '$cost');");
+echo $sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (NULL, '{$type->getId()}', '$size', '$price', '$cost');");
 $sql->disconnect();
 exit ();

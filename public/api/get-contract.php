@@ -7,21 +7,12 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$id = $api->retrieveGetInt('id', 'Contract id');
-if (is_array($id)) {
-    echo $id['error'];
+try {
+    $contract = Contract::withId($_GET['id']);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
-$sql = new Sql();
-$contract_info = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
-if (!$contract_info ['id']) {
-    echo "Contract id does not match any contracts";
-    $sql->disconnect();
-    exit ();
-}
-
-$contract_info ['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = $id;");
-echo json_encode($contract_info);
-$sql->disconnect();
+echo json_encode($contract->getDataArray());
 exit ();

@@ -55,7 +55,7 @@ class CreateProductSizeTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type is required", (string)$response->getBody());
+        $this->assertEquals("Product id is required", (string)$response->getBody());
     }
 
     public function testBlankType() {
@@ -69,7 +69,7 @@ class CreateProductSizeTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product type can not be blank", (string)$response->getBody());
+        $this->assertEquals("Product id can not be blank", (string)$response->getBody());
     }
 
     public function testNoSize() {
