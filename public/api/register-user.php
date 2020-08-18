@@ -12,6 +12,7 @@ try {
     exit();
 }
 $lastId = $user->create();
+echo $lastId;
 
 $_SESSION ['usr'] = $user->getUsername();
 $_SESSION ['hash'] = $user->getHash();
@@ -34,7 +35,7 @@ $sql->disconnect();
 
 $to = "{$user->getName()} <{$user->getEmail()}>";
 $from = "noreply@saperstonestudios.com";
-$subject = "Thank You for Registering with Saperstone Studios";
+$subject = "Thank you for Registering with Saperstone Studios";
 $email = new Email($to, $from, $subject);
 $text = "Congratulations for registering an account with Saperstone Studios. ";
 $text .= "You can login and access the site at https://saperstonestudios.com.";
