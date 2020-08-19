@@ -5,15 +5,13 @@ $session->initialize();
 $systemUser = User::fromSystem();
 $api = new Api();
 
-$sql = new Sql ();
 if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
+    $sql = new Sql ();
     // note the logout
     $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );");
     $sql->disconnect();
 
     // remove any stored login
-    unset($_COOKIE['hash']);
-    unset($_COOKIE['usr']);
     setcookie('hash', null, -1, '/');
     setcookie('usr', null, -1, '/');
 
@@ -27,45 +25,26 @@ if ($_POST ['submit'] == 'Login') {
     $username = $api->retrievePostString('username', 'Username');
     if (is_array($username)) {
         echo $username['error'];
-        $sql->disconnect();
         exit();
     }
     $password = $api->retrievePostString('password', 'Password');
     if (is_array($password)) {
         echo $password['error'];
-        $sql->disconnect();
         exit();
-    } else {
-        $password = md5($password);
     }
-    $remember = ( int )$_POST ['rememberMe'];
 
-    $row = $sql->getRow("SELECT * FROM users WHERE usr='$username' AND pass='$password'");
-    if ($row ['usr'] && $row ['active']) {  // If everything is OK login
+    try {
+        $user = User::fromLogin($username, $password);
+    } catch (Exception $e) {
+        echo "Credentials do not match our records";
+        exit();
+    }
 
-        $_SESSION ['usr'] = $row ['usr'];   // store our login data
-        $_SESSION ['hash'] = $row ['hash'];
-
-        $preferences = json_decode($_COOKIE['CookiePreferences']);
-        if ($remember && is_array($preferences) && in_array("preferences", $preferences)) {    //if we should be remembered, and cookies are allowed
-            $_COOKIE ['hash'] = $row ['hash'];
-            $_COOKIE ['usr'] = $row ['usr'];
-            setcookie('hash', $row ['hash'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-            setcookie('usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-        }
-        $systemUser = User::fromSystem();
-        $sql->executeStatement("UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE id='{$systemUser->getId()}';");
-        $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
-    } elseif ($row ['usr']) {
+    if (!$user->isActive()) {
         echo 'Sorry, you account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.';
-        $sql->disconnect();
-        exit();
-    } else {
-        echo 'Credentials do not match our records';
-        $sql->disconnect();
         exit();
     }
+    $user->login(boolval(( int )$_POST ['rememberMe']));
 }
 
-$sql->disconnect();
 exit ();

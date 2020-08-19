@@ -154,6 +154,22 @@ class User {
         return $user;
     }
 
+    static function fromReset($email, $code) {
+        $sql = new Sql();
+        $row = $sql->getRow("SELECT * FROM users WHERE email='$email' AND resetKey='$code';");
+        $user = User::withId($row['id']);
+        $sql->disconnect();
+        return $user;
+    }
+
+    static function fromLogin($username, $password) {
+        $sql = new Sql();
+        $row = $sql->getRow("SELECT * FROM users WHERE usr='$username' AND pass='" . md5($password) . "';");
+        $user = User::withId($row['id']);
+        $sql->disconnect();
+        return $user;
+    }
+
     function isLoggedIn() {
         return $this->isLoggedIn;
     }
@@ -180,6 +196,10 @@ class User {
 
     function getHash() {
         return $this->hash;
+    }
+
+    function isActive() {
+        return boolval($this->active);
     }
 
     function getRole() {
@@ -228,9 +248,9 @@ class User {
 
     function create() {
         $sql = new Sql();
-        $lastId = $sql->executeStatement( "INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('{$this->username}', '{$this->md5Pass}', '{$this->firstName}', '{$this->lastName}', '{$this->email}', '{$this->role}', '{$this->active}', '{$this->hash}');" );
+        $lastId = $sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('{$this->username}', '{$this->md5Pass}', '{$this->firstName}', '{$this->lastName}', '{$this->email}', '{$this->role}', '{$this->active}', '{$this->hash}');");
         $systemUser = User::fromSystem();
-        if( !$systemUser->isAdmin()) {
+        if (!$systemUser->isAdmin()) {
             $message = 'Registered';
         } else {
             $message = 'Created';
@@ -252,6 +272,33 @@ class User {
         $sql = new Sql();
         $sql->executeStatement("DELETE FROM users WHERE id='{$this->id}';");
         $sql->disconnect();
+    }
+
+    function login($rememberMe) {
+        if (!$this->active) {
+            return;
+        }
+        $session = new Session();
+        $session->initialize();
+        $_SESSION ['usr'] = $this->username;
+        $_SESSION ['hash'] = $this->hash;
+
+        if( isset( $_COOKIE['CookiePreferences'] )) {
+            $preferences = json_decode($_COOKIE['CookiePreferences']);
+            if ($rememberMe && is_array($preferences) && in_array("preferences", $preferences)) {
+                // remember the user if prompted
+                if(!headers_sent()) {
+                    setcookie('hash', $this->hash, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+                    setcookie('usr', $this->username, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+                }
+            }
+        }
+        $sql = new Sql();
+        $sql->executeStatement("UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE id={$this->id};");
+        $user = self::withId($this->id);
+        $this->lastLogin = $user->lastLogin;
+        $this->raw = $user->getDataArray();
+        $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
     }
 
     function forceAdmin() {

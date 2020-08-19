@@ -240,7 +240,11 @@ if (isset ($setECResponse)) {
     $email = new Email($to, $from, $subject);
     $email->setHtml($full_HTML);
     $email->setHtml($full_text);
-    $email->sendEmail();
+    try {
+        $email->sendEmail();
+    } catch (Exception $e) {
+        echo $e->getMessage();
+    }
 
     // gather our response information from paypal, and return it
     $response ['response'] = get_object_vars($setECResponse);

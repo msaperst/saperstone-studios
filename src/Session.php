@@ -6,7 +6,7 @@ class Session {
     }
 
     function initialize() {
-        if (session_status() != PHP_SESSION_ACTIVE) {
+        if (session_status() != PHP_SESSION_ACTIVE && !headers_sent()) {
             // Starting the session
             session_name('session');
             // Making the cookie live for 2 weeks

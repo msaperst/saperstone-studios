@@ -84,7 +84,11 @@ $html .= "</body></html>";
 
 $email->setHtml($html);
 $email->setText($text);
-$email->sendEmail();
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    //apparently do nothing
+}
 
 // send a separate one to the user
 if ($emailA != "") {
@@ -97,7 +101,11 @@ if ($emailA != "") {
 
     $email->setHtml($html);
     $email->setText($text);
-    $email->sendEmail();
+    try {
+        $email->sendEmail();
+    } catch (Exception $e) {
+        //apparently do nothing
+    }
 }
 
 exit ();

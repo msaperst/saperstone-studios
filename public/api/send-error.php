@@ -86,5 +86,9 @@ $text .= $email->getUserInfoText();
 
 $email->setHtml($html);
 $email->setText($text);
-$email->sendEmail();
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    //apparently do nothing
+}
 exit ();

@@ -67,4 +67,8 @@ foreach ( $output as $line ) {
 
 $email->setText($text);
 $email->setHtml($html);
-echo $email->sendEmail();
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    echo $e->getMessage();
+}

@@ -5,8 +5,7 @@ $height_offset = 10;
 $DOCUMENT_ROOT = "DOCUMENT_ROOT";
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $navSql = new Sql ();
-$navUser = new CurrentUser($navSql);
-$string = new Strings ();
+$navUser = User::fromSystem();
 $query = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
 if ($navSql->getRowCount ( $query )) {
     ?>
@@ -15,7 +14,7 @@ if ($navSql->getRowCount ( $query )) {
     <?php
 }
 foreach ( $navSql->getRows( $query ) as $row ) {
-    if (! isset ( $_COOKIE ["announcement-" . $row ['id']] ) && $string->startsWith($_SERVER['REQUEST_URI'],$row['path'])) {
+    if (! isset ( $_COOKIE ["announcement-" . $row ['id']] ) && Strings::startsWith($_SERVER['REQUEST_URI'],$row['path'])) {
            $height_offset += 60;
         ?>
 <div
@@ -78,7 +77,7 @@ if ($navSql->getRowCount ( $query )) {
                 } elseif ($navUser->isAdmin ()) {
                     ?>
                 <li class="dropdown"><a href="javascript:void(0);"
-            class="dropdown-toggle" data-toggle="dropdown"><?php echo $navUser->getUser (); ?><strong
+            class="dropdown-toggle" data-toggle="dropdown"><?php echo $navUser->getUsername(); ?><strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="/user/users.php">Manage Users</a></li>
@@ -94,7 +93,7 @@ if ($navSql->getRowCount ( $query )) {
                 } else {
                     ?>
                 <li class="dropdown"><a href="javascript:void(0);"
-            class="dropdown-toggle" data-toggle="dropdown"><?php echo $navUser->getUser (); ?><strong
+            class="dropdown-toggle" data-toggle="dropdown"><?php echo $navUser->getUsername(); ?><strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <li><a href="/user/index.php">View Albums</a></li>

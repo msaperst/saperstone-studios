@@ -24,8 +24,6 @@ session_start();
 
 $_SESSION ['usr'] = $user->getUsername();
 $_SESSION ['hash'] = $user->getHash();
-unset($_COOKIE['hash']);
-unset($_COOKIE['usr']);
 setcookie('hash', null, -1, '/');
 setcookie('usr', null, -1, '/');
 exit ();

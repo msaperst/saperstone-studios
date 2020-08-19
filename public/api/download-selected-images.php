@@ -123,7 +123,11 @@ $html .= "</body></html>";
 
 $email->setHtml($html);
 $email->setText($text);
-$email->sendEmail();
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    //apparently do nothing...
+}
 exit();
 
 // our function to see if an array of files contains the expected file

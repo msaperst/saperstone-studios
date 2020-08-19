@@ -119,7 +119,11 @@ $html .= "</body></html>";
 $email->setHtml($html);
 $email->setText($text);
 $email->addAttachment($file);
-$email->sendEmail();
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    //apparently do nothing
+}
 
 // now send to LAS
 $to = "Contracts <contracts@saperstonestudios.com>";
@@ -141,6 +145,10 @@ $html .= "</body></html>";
 $email->setHtml($html);
 $email->setText($text);
 $email->addAttachment($file);
-$email->sendEmail();
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    //apparently do nothing
+}
 
 exit ();

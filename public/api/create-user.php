@@ -36,5 +36,9 @@ $html .= "For security reasons, once logged in, we recommend you <a href='https:
 $html .= "</html></body>";
 $email->setText($text);
 $email->setHtml($html);
-$email->sendEmail();
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
 exit ();

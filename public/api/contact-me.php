@@ -62,7 +62,11 @@ $text .= "\n\t\t$message";
 
 $email->setHtml($html);
 $email->setText($text);
-$email->sendEmail();
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    //apparently do nothing...
+}
 
 // also send confirmation to user
 $subject = "Thank you for contacting Saperstone Studios";
@@ -74,13 +78,13 @@ $to = "$name <$emailA>";
 $email = new Email($to, $from, $subject);
 $email->setHtml($html);
 $email->setText($text);
-$error = $email->sendEmail();
-
-if ($error == NULL) {
-    echo "Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.";
-} else {
-    error_log($error);
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    error_log($e->getMessage());
     echo "There was a problem submitting your message. Please try <a class='gen' href=''>reloading</a> the page and resubmitting it, or <a class='gen' href='mailto:contact@saperstonestudios.com'>contact us</a> to resolve the issue.";
+    exit();
 }
 
+echo "Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.";
 exit ();

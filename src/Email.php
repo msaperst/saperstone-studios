@@ -72,7 +72,9 @@ class Email {
             } else {
                 $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
             }
-            $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
+            if(isset( $geo_info->hostname) ) {
+                $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
+            }
         }
         $html .= "<strong>Browser</strong>: " . $browser->getBrowser() . " " . $browser->getVersion() . "<br/>";
         $html .= "<strong>Resolution</strong>: $resolution<br/>";
@@ -100,10 +102,12 @@ class Email {
             } else {
                 $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
             }
-            $text .= "Hostname: " . $geo_info->hostname . "\n";
+            if(isset( $geo_info->hostname) ) {
+                $text .= "Hostname: " . $geo_info->hostname . "\n";
+            }
         }
         $text .= "Browser: " . $browser->getBrowser() . " " . $browser->getVersion() . "\n";
-        $text .= "Resolution: $resolution";
+        $text .= "Resolution: $resolution\n";
         $text .= "OS: " . $browser->getPlatform() . "\n";
         $text .= "Full UA: " . $_SERVER ['HTTP_USER_AGENT'] . "\n";
         return $text;
@@ -125,9 +129,7 @@ class Email {
         fclose($fh);
 
         if (PEAR::isError($mail)) {
-            return $mail->getMessage();
-        } else {
-            return NULL;
+            throw new Exception( $mail->getMessage() );
         }
     }
 }

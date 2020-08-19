@@ -14,7 +14,7 @@ class UserIntegrationTest extends TestCase {
 
     public function setUp() {
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `users` (`id`, `usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `hash`, `active`, `created`, `lastLogin`, `resetKey`) VALUES (899, 'test', 'user', 'test', 'user', 'test@example.com', 'downloader', '12345', '0', '2020-01-01 10:10:10', '2020-01-01 20:10:10', '123')");
+        $this->sql->executeStatement("INSERT INTO `users` (`id`, `usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `hash`, `active`, `created`, `lastLogin`, `resetKey`) VALUES (899, 'test', '" . md5('user') . "', 'test', 'user', 'test@example.com', 'downloader', '12345', '0', '2020-01-01 10:10:10', '2020-01-01 20:10:10', '123')");
     }
 
     public function tearDown() {
@@ -65,6 +65,32 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    public function testFromResetNoMatch() {
+        try {
+            User::fromReset(NULL, '123');
+        } catch (Exception $e) {
+            $this->assertEquals('User id is required', $e->getMessage());
+        }
+    }
+
+    public function testFromResetMatch() {
+        $user = User::fromReset('test@example.com', '123');
+        $this->assertEquals(899, $user->getId());
+    }
+
+    public function testFromLoginNoMatch() {
+        try {
+            User::fromLogin('hey', '123');
+        } catch (Exception $e) {
+            $this->assertEquals('User id is required', $e->getMessage());
+        }
+    }
+
+    public function testFromLoginMatch() {
+        $user = User::fromLogin('test', 'user');
+        $this->assertEquals(899, $user->getId());
+    }
+
     public function testGetId() {
         $user = User::withId('899');
         $this->assertEquals(899, $user->getId());
@@ -78,6 +104,16 @@ class UserIntegrationTest extends TestCase {
     public function testGetHash() {
         $user = User::withId('899');
         $this->assertEquals('12345', $user->getHash());
+    }
+
+    public function testGetActiveFalse() {
+        $user = User::withId('899');
+        $this->assertFalse($user->isActive());
+    }
+
+    public function testGetActiveTrue() {
+        $user = User::withId('1');
+        $this->assertTrue($user->isActive());
     }
 
     public function testGetRole() {
@@ -105,7 +141,7 @@ class UserIntegrationTest extends TestCase {
         $userInfo = $user->getDataArray();
         $this->assertEquals(899, $userInfo['id']);
         $this->assertEquals('test', $userInfo['usr']);
-        $this->assertEquals('user', $userInfo['pass']);
+        $this->assertEquals(md5('user'), $userInfo['pass']);
         $this->assertEquals('test', $userInfo['firstName']);
         $this->assertEquals('user', $userInfo['lastName']);
         $this->assertEquals('test@example.com', $userInfo['email']);
@@ -606,6 +642,90 @@ class UserIntegrationTest extends TestCase {
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
             $count++;
             $this->sql->executeStatement("ALTER TABLE `users` AUTO_INCREMENT = $count;");
+        }
+    }
+
+    public function testInactiveUser() {
+        $user = User::withId(899);
+        $user->login(false);
+        $userInfo = $user->getDataArray();
+        $this->assertStringStartsNotWith(date('Y-m-d'), $userInfo['lastLogin']);
+        //TODO - check no session
+        //TODO - check no cookies
+    }
+
+    public function testActiveUser() {
+        date_default_timezone_set("America/New_York");
+        $user = User::withId(4);
+        $user->login(false);
+        $userInfo = $user->getDataArray();
+        $this->assertEquals(date('Y-m-d H:i:s'), $userInfo['lastLogin']);
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+        $this->assertEquals('Logged In', $log['action']);
+        //TODO - check session
+        //TODO - check no cookies
+    }
+
+    public function testRememberMeNoCookies() {
+        date_default_timezone_set("America/New_York");
+        $user = User::withId(4);
+        $user->login(true);
+        $userInfo = $user->getDataArray();
+        $this->assertEquals(date('Y-m-d H:i:s'), $userInfo['lastLogin']);
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+        $this->assertEquals('Logged In', $log['action']);
+        //TODO - check session
+        //TODO - check no cookies
+    }
+
+    public function testRememberMeNoArray() {
+        try {
+            $_COOKIE['CookiePreferences'] = '';
+            date_default_timezone_set("America/New_York");
+            $user = User::withId(4);
+            $user->login(true);
+            $userInfo = $user->getDataArray();
+            $this->assertEquals(date('Y-m-d H:i:s'), $userInfo['lastLogin']);
+            $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+            $this->assertEquals('Logged In', $log['action']);
+            //TODO - check session
+            //TODO - check no cookies
+        } finally {
+            unset($_COOKIE['CookiePreferences']);
+        }
+    }
+
+    public function testRememberMeNoPreferences() {
+        try {
+            $_COOKIE['CookiePreferences'] = '["analytics"]';
+            date_default_timezone_set("America/New_York");
+            $user = User::withId(4);
+            $user->login(true);
+            $userInfo = $user->getDataArray();
+            $this->assertEquals(date('Y-m-d H:i:s'), $userInfo['lastLogin']);
+            $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+            $this->assertEquals('Logged In', $log['action']);
+            //TODO - check session
+            //TODO - check no cookies
+        } finally {
+            unset($_COOKIE['CookiePreferences']);
+        }
+    }
+
+    public function testRememberMe() {
+        try {
+            $_COOKIE['CookiePreferences'] = '["preferences", "analytics"]';
+            date_default_timezone_set("America/New_York");
+            $user = User::withId(4);
+            $user->login(true);
+            $userInfo = $user->getDataArray();
+            $this->assertEquals(date('Y-m-d H:i:s'), $userInfo['lastLogin']);
+            $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+            $this->assertEquals('Logged In', $log['action']);
+            //TODO - check session
+            //TODO - check cookies
+        } finally {
+            unset($_COOKIE['CookiePreferences']);
         }
     }
 }

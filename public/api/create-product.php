@@ -13,5 +13,5 @@ try {
     exit();
 }
 
-$productType->create();
+echo $productType->create();
 exit ();

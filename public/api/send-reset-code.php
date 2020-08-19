@@ -35,7 +35,11 @@ if (filter_var($emailA, FILTER_VALIDATE_EMAIL)) {
         $email = new Email($to, $from, $subject);
         $email->setText($text);
         $email->setHtml($html);
-        $email->sendEmail();
+        try {
+            $email->sendEmail();
+        } catch (Exception $e) {
+            //apparently do nothing
+        }
     }
 
     $conn->disconnect();
