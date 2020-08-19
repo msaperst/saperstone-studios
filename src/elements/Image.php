@@ -95,7 +95,7 @@ class Image {
             system("rm -f " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . $this->location));
             $parts = explode("/", $this->location);
             array_splice($parts, count($parts) - 1, 0, "full");
-            system("rm -f " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public'. implode("/", $parts)));
+            system("rm -f " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . implode("/", $parts)));
         }
     }
 }

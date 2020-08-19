@@ -207,7 +207,7 @@ class Contract {
         $lastId = $sql->executeStatement("INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,`session`, `details`, `amount`, `deposit`, `invoice`, `content`) VALUES ('','{$this->type}','{$this->name}',$address,$number,$email,$date,$location,'{$this->session}',$details, {$this->amount},{$this->deposit},$invoice,'{$this->content}');");
         $link = md5($lastId . $this->type . $this->name . $this->session);
         $sql->executeStatement("UPDATE `contracts` SET `link` = '$link' WHERE `id` = $lastId;");
-        foreach($this->lineItems as $lineItem) {
+        foreach ($this->lineItems as $lineItem) {
             /* @var $lineItem LineItem */
             $lineItem->setContract($lastId);
             $lineItem->create();

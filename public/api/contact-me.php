@@ -13,24 +13,31 @@ if (isset ($_POST ['to']) && $_POST ['to'] != "") {
 }
 $sql->disconnect();
 
-$name = $api->retrievePostString('name', 'Name');
-if (is_array($name)) {
-    echo $name['error'];
+try {
+    $name = $api->retrievePostString('name', 'Name');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
-$phone = $api->retrievePostString('phone', 'Phone number');
-if (is_array($phone)) {
-    echo $phone['error'];
+
+try {
+    $phone = $api->retrievePostString('phone', 'Phone number');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
-$emailA = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
-if (is_array($emailA)) {
-    echo $emailA['error'];
+
+try {
+    $emailA = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
-$message = $api->retrievePostString('message', 'Message');
-if (is_array($message)) {
-    echo $message['error'];
+
+try {
+    $message = $api->retrievePostString('message', 'Message');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

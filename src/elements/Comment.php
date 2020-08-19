@@ -36,7 +36,7 @@ class Comment {
         $this->ip = $this->raw['ip'];
         $this->email = $this->raw['email'];
         $this->comment = $this->raw['comment'];
-        if( $this->canUserGetData() ) {
+        if ($this->canUserGetData()) {
             $this->delete = true;
             $this->raw['delete'] = true;
         }

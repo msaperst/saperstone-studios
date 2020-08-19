@@ -5,9 +5,10 @@ $session->initialize();
 $systemUser = User::fromSystem();
 $api = new Api();
 
-$id = $api->retrievePostInt('id', 'Contract id');
-if (is_array($id)) {
-    echo $id['error'];
+try {
+    $id = $api->retrievePostInt('id', 'Contract id');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
@@ -19,54 +20,62 @@ if (!$contract_info ['id']) {
     exit ();
 }
 
-$name = $api->retrievePostString('name', 'Contract contact name');
-if (is_array($name)) {
-    echo $name['error'];
+try {
+    $name = $api->retrievePostString('name', 'Contract contact name');
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
     exit();
 }
 
-$address = $api->retrievePostString('address', 'Contract contact address');
-if (is_array($address)) {
-    echo $address['error'];
+try {
+    $address = $api->retrievePostString('address', 'Contract contact address');
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
     exit();
 }
 
-$number = $api->retrievePostString('number', 'Contract contact number');
-if (is_array($number)) {
-    echo $number['error'];
+try {
+    $number = $api->retrievePostString('number', 'Contract contact number');
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
     exit();
 }
 
-$emailA = $api->retrieveValidatedPost('email', 'Contract contact email', FILTER_VALIDATE_EMAIL);
-if (is_array($emailA)) {
-    echo $emailA['error'];
+try {
+    $emailA = $api->retrieveValidatedPost('email', 'Contract contact email', FILTER_VALIDATE_EMAIL);
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
     exit();
 }
 
-$signature = $api->retrievePostString('signature', 'Contract signature');
-if (is_array($signature)) {
-    echo $signature['error'];
+try {
+    $signature = $api->retrievePostString('signature', 'Contract signature');
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
     exit();
 }
 
-$initial = $api->retrievePostString('initial', 'Contract initials');
-if (is_array($initial)) {
-    echo $initial['error'];
+try {
+    $initial = $api->retrievePostString('initial', 'Contract initials');
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
     exit();
 }
 
-$content = $api->retrievePostString('content', 'Contract content');
-if (is_array($content)) {
-    echo $content['error'];
+try {
+    $content = $api->retrievePostString('content', 'Contract content');
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
     exit();
 }
+
 
 $contract_info = $sql->getRow("SELECT * FROM `contracts` WHERE `id` = $id");
 $file = "../user/contracts/$name - " . date('Y-m-d') . " - " . ucfirst($contract_info ['type']) . " Contract.pdf";

@@ -5,9 +5,10 @@ $session->initialize();
 $systemUser = User::fromSystem();
 $api = new Api ();
 
-$what = $api->retrievePostString('what', 'What to download');
-if (is_array($what)) {
-    echo json_encode($what);
+try {
+    $what = $api->retrievePostString('what', 'What to download');
+} catch (Exception $e) {
+    echo json_encode(array('error' => $e->getMessage()));
     exit();
 }
 

@@ -22,14 +22,17 @@ if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
 }
 
 if ($_POST ['submit'] == 'Login') {
-    $username = $api->retrievePostString('username', 'Username');
-    if (is_array($username)) {
-        echo $username['error'];
+    try {
+        $username = $api->retrievePostString('username', 'Username');
+    } catch (Exception $e) {
+        echo $e->getMessage();
         exit();
     }
-    $password = $api->retrievePostString('password', 'Password');
-    if (is_array($password)) {
-        echo $password['error'];
+
+    try {
+        $password = $api->retrievePostString('password', 'Password');
+    } catch (Exception $e) {
+        echo $e->getMessage();
         exit();
     }
 

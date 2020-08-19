@@ -50,11 +50,11 @@ class Blog {
         }
         $this->raw['content'] = $this->content;    //putting the content back in
         // comments
-        foreach( $sql->getRows("SELECT * FROM `blog_comments` WHERE blog = $id ORDER BY date desc;") as $comment) {
+        foreach ($sql->getRows("SELECT * FROM `blog_comments` WHERE blog = $id ORDER BY date desc;") as $comment) {
             $this->comments[] = new Comment($comment['id']);
         }
         $this->raw['comments'] = array();      //putting the comments back in
-        foreach( $this->comments as $comment) {
+        foreach ($this->comments as $comment) {
             $this->raw['comments'][] = $comment->getDataArray();
         }
         $sql->disconnect();

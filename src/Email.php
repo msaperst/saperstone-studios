@@ -72,7 +72,7 @@ class Email {
             } else {
                 $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
             }
-            if(isset( $geo_info->hostname) ) {
+            if (isset($geo_info->hostname)) {
                 $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
             }
         }
@@ -102,7 +102,7 @@ class Email {
             } else {
                 $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
             }
-            if(isset( $geo_info->hostname) ) {
+            if (isset($geo_info->hostname)) {
                 $text .= "Hostname: " . $geo_info->hostname . "\n";
             }
         }
@@ -129,7 +129,7 @@ class Email {
         fclose($fh);
 
         if (PEAR::isError($mail)) {
-            throw new Exception( $mail->getMessage() );
+            throw new Exception($mail->getMessage());
         }
     }
 }

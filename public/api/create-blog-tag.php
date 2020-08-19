@@ -7,9 +7,10 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$tag = $api->retrievePostString('tag', 'Blog tag');
-if (is_array($tag)) {
-    echo $tag['error'];
+try {
+    $tag = $api->retrievePostString('tag', 'Blog tag');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

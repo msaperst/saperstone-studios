@@ -14,9 +14,10 @@ try {
     exit();
 }
 
-$option = $api->retrievePostString('option', 'Product option');
-if (is_array($option)) {
-    echo $option['error'];
+try {
+    $option = $api->retrievePostString('option', 'Product option');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

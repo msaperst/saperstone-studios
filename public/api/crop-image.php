@@ -7,9 +7,10 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$image = $api->retrievePostString('image', 'Image');
-if (is_array($image)) {
-    echo $image['error'];
+try {
+    $image = $api->retrievePostString('image', 'Image');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 if (!file_exists($_POST['image'])) {
@@ -17,21 +18,24 @@ if (!file_exists($_POST['image'])) {
     exit ();
 }
 
-$maxWidth = $api->retrievePostInt('max-width', 'Image max-width');
-if (is_array($maxWidth)) {
-    echo $maxWidth['error'];
+try {
+    $maxWidth = $api->retrievePostInt('max-width', 'Image max-width');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
-$top = $api->retrievePostInt('top', 'Image top');
-if (is_array($top)) {
-    echo $top['error'];
+try {
+    $top = $api->retrievePostInt('top', 'Image top');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
-$bottom = $api->retrievePostInt('bottom', 'Image bottom');
-if (is_array($bottom)) {
-    echo $bottom['error'];
+try {
+    $bottom = $api->retrievePostInt('bottom', 'Image bottom');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

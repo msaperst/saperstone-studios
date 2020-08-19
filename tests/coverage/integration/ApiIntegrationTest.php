@@ -3,6 +3,7 @@
 namespace coverage\integration;
 
 use Api;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -13,8 +14,7 @@ class ApiIntegrationTest extends TestCase {
     private $api;
 
     public function setUp() {
-        $sql = new Sql();
-        $this->api = new Api($sql, null);
+        $this->api = new Api();
     }
 
     public function testRetrievePostString() {
@@ -43,13 +43,21 @@ class ApiIntegrationTest extends TestCase {
 
     public function testRetrieveValidatedPostNullFormat() {
         $_POST['bar'] = "foo";
-        $this->assertEquals(array('error' => "Foo is not valid"), $this->api->retrieveValidatedPost('bar', 'Foo', NULL));
+        try {
+            $this->api->retrieveValidatedPost('bar', 'Foo', NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("Foo is not valid", $e->getMessage());
+        }
         unset($_POST);
     }
 
     public function testRetrieveValidatedPostBadFormat() {
         $_POST['bar'] = "foo";
-        $this->assertEquals(array('error' => "Foo is not valid"), $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_BOOLEAN));
+        try {
+            $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_BOOLEAN);
+        } catch (Exception $e) {
+            $this->assertEquals("Foo is not valid", $e->getMessage());
+        }
         unset($_POST);
     }
 
@@ -61,13 +69,21 @@ class ApiIntegrationTest extends TestCase {
 
     public function testRetrievePostDateTimeNullFormat() {
         $_POST['bar'] = "foo";
-        $this->assertEquals(array('error' => "Foo is not the correct format"), $this->api->retrievePostDateTime('bar', 'Foo', NULL));
+        try {
+            $this->api->retrievePostDateTime('bar', 'Foo', NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("Foo is not the correct format", $e->getMessage());
+        }
         unset($_POST);
     }
 
     public function testRetrievePostDateTimeBadFormat() {
         $_POST['bar'] = "foo";
-        $this->assertEquals(array('error' => "Foo is not the correct format"), $this->api->retrievePostDateTime('bar', 'Foo', 'Y-m-d'));
+        try {
+            $this->api->retrievePostDateTime('bar', 'Foo', 'Y-m-d');
+        } catch (Exception $e) {
+            $this->assertEquals("Foo is not the correct format", $e->getMessage());
+        }
         unset($_POST);
     }
 

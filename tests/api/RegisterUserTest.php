@@ -126,7 +126,7 @@ class RegisterUserTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $userId = (string)$response->getBody();
+            $userId = $response->getBody();
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = $userId;");
             $this->assertEquals($userId, $userDetails['id']);
             $this->assertEquals('MaxMax', $userDetails['usr']);
@@ -140,8 +140,9 @@ class RegisterUserTest extends TestCase {
             $this->assertStringStartsWith($date, $userDetails['created']);
             $this->assertStringStartsWith($date, $userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
-            $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 1;");
-            $this->assertEquals('Logged In', $log['action']);
+            $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 2;");
+            $this->assertEquals('Logged In', $log[0]['action']);
+            $this->assertEquals('Registered', $log[1]['action']);
         } finally {
             $this->sql->executeStatement("DELETE FROM `users` WHERE `users`.`id` = $userId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
@@ -164,7 +165,7 @@ class RegisterUserTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $userId = $response->getBody();
+            $userId = (string)$response->getBody();
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = $userId;");
             $this->assertEquals($userId, $userDetails['id']);
             $this->assertEquals('MaxMax', $userDetails['usr']);
@@ -178,8 +179,9 @@ class RegisterUserTest extends TestCase {
             $this->assertStringStartsWith($date, $userDetails['created']);
             $this->assertStringStartsWith($date, $userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
-            $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 1;");
-            $this->assertEquals('Logged In', $log['action']);
+            $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 2;");
+            $this->assertEquals('Logged In', $log[0]['action']);
+            $this->assertEquals('Registered', $log[1]['action']);
         } finally {
             $this->sql->executeStatement("DELETE FROM `users` WHERE `users`.`id` = $userId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];

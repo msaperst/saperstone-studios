@@ -19,11 +19,13 @@ if (!$album->canUserGetData()) {
     exit ();
 }
 
-$markup = $api->retrievePostString('markup', 'Markup');
-if (is_array($markup)) {
-    echo $markup['error'];
+try {
+    $markup = $api->retrievePostString('markup', 'Markup');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
+
 if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
     echo "Markup is not valid";
     exit ();

@@ -7,15 +7,17 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$title = $api->retrievePostString('title', 'Blog title');
-if (is_array($title)) {
-    echo $title['error'];
+try {
+    $title = $api->retrievePostString('title', 'Blog title');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
-$date = $api->retrievePostDateTime('date', 'Blog date', 'Y-m-d');
-if (is_array($date)) {
-    echo $date['error'];
+try {
+    $date = $api->retrievePostDateTime('date', 'Blog date', 'Y-m-d');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

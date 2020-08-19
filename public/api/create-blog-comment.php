@@ -23,9 +23,10 @@ if (isset ($_POST ['email']) && $_POST ['email'] != "") {
     $email = $sql->escapeString($_POST ['email']);
 }
 
-$message = $api->retrievePostString('message', 'Message');
-if (is_array($message)) {
-    echo $message['error'];
+try {
+    $message = $api->retrievePostString('message', 'Message');
+} catch (Exception $e) {
+    echo $e->getMessage();
     $sql->disconnect();
     exit();
 }

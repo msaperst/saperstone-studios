@@ -8,21 +8,24 @@ if (is_array($email)) {
     exit();
 }
 
-$code = $api->retrievePostString('code', 'Code');
-if (is_array($code)) {
-    echo $code['error'];
+try {
+    $code = $api->retrievePostString('code', 'Code');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
-$password = $api->retrievePostString('password', 'Password');
-if (is_array($password)) {
-    echo $password['error'];
+try {
+    $password = $api->retrievePostString('password', 'Password');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
-$passwordConfirm = $api->retrievePostString('passwordConfirm', 'Password confirmation');
-if (is_array($passwordConfirm)) {
-    echo $passwordConfirm['error'];
+try {
+    $passwordConfirm = $api->retrievePostString('passwordConfirm', 'Password confirmation');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

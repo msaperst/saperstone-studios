@@ -25,11 +25,10 @@ class Api {
             }
         } else {
             if (!isset ($_POST [$variable])) {
-                $error = "$variableName is required";
+                throw new Exception("$variableName is required");
             } else {
-                $error = "$variableName can not be blank";
+                throw new Exception("$variableName can not be blank");
             }
-            return array('error' => $error);
         }
     }
 
@@ -41,13 +40,12 @@ class Api {
             return $escaped;
         } else {
             if (!isset ($_POST [$variable])) {
-                $error = "$variableName is required";
+                throw new Exception("$variableName is required");
             } elseif ($_POST [$variable] == "") {
-                $error = "$variableName can not be blank";
+                throw new Exception("$variableName can not be blank");
             } else {
-                $error = "$variableName is not valid";
+                throw new Exception("$variableName is not valid");
             }
-            return array('error' => $error);
         }
     }
 
@@ -58,18 +56,17 @@ class Api {
             $sql->disconnect();
             $d = DateTime::createFromFormat($format, $date);
             if (!($d && $d->format($format) === $date)) {
-                $error = "$variableName is not the correct format";
+                throw new Exception("$variableName is not the correct format");
             } else {
                 return $date;
             }
         } else {
             if (!isset ($_POST [$variable])) {
-                $error = "$variableName is required";
+                throw new Exception("$variableName is required");
             } else {
-                $error = "$variableName can not be blank";
+                throw new Exception("$variableName can not be blank");
             }
         }
-        return array('error' => $error);
     }
 
     function retrievePostInt($variable, $variableName) {
@@ -93,18 +90,17 @@ class Api {
                     return floatval(str_replace('$', '', $_GET [$variable]));
                 case "string":
                 default:
-                $sql = new Sql();
-                $escaped = $sql->escapeString($_GET [$variable]);
-                $sql->disconnect();
-                return $escaped;
+                    $sql = new Sql();
+                    $escaped = $sql->escapeString($_GET [$variable]);
+                    $sql->disconnect();
+                    return $escaped;
             }
         } else {
             if (!isset ($_GET [$variable])) {
-                $error = "$variableName is required";
+                throw new Exception("$variableName is required");
             } else {
-                $error = "$variableName can not be blank";
+                throw new Exception($error = "$variableName can not be blank");
             }
-            return array('error' => $error);
         }
     }
 

@@ -27,7 +27,7 @@ class Gallery {
         }
         $this->id = $this->raw['id'];
         $this->parent = $this->raw['parent'];
-        if( $this->parent != NULL ) {
+        if ($this->parent != NULL) {
             $this->parent = new Gallery($this->parent);
         }
         $this->image = $this->raw['image'];

@@ -14,21 +14,25 @@ try {
     exit();
 }
 
-$size = $api->retrievePostString('size', 'Product size');
-if (is_array($size)) {
-    echo $size['error'];
+try {
+    $size = $api->retrievePostString('size', 'Product size');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
-$cost = $api->retrievePostFloat('cost', 'Product cost');
-if (is_array($cost)) {
-    echo $cost['error'];
+
+try {
+    $cost = $api->retrievePostFloat('cost', 'Product cost');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
-$price = $api->retrievePostFloat('price', 'Product price');
-if (is_array($price)) {
-    echo $price['error'];
+try {
+    $price = $api->retrievePostFloat('price', 'Product price');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

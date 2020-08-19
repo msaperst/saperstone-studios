@@ -7,9 +7,10 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$id = $api->retrievePostInt('id', 'Product size');
-if (is_array($id)) {
-    echo $id['error'];
+try {
+    $id = $api->retrievePostInt('id', 'Product size');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

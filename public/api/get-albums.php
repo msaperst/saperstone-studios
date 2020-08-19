@@ -10,7 +10,8 @@ $api->forceLoggedIn();
 $response = array();
 if ($systemUser->isAdmin()) {
     $query = "SELECT * FROM albums;";
-} else {;
+} else {
+    ;
     $query = "SELECT albums.* FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '{$systemUser->getId()}' GROUP BY albums.id;";
 }
 $sanitizedAlbums = array();

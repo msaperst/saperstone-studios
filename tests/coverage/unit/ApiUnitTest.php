@@ -3,8 +3,8 @@
 namespace coverage\unit;
 
 use Api;
+use Exception;
 use PHPUnit\Framework\TestCase;
-use Sql;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
@@ -17,12 +17,20 @@ class ApiUnitTest extends TestCase {
     }
 
     public function testRetrievePostIntNotSet() {
-        $this->assertEquals(array('error' => 'Foo is required'), $this->api->retrievePostInt('bar', 'Foo'));
+        try {
+            $this->api->retrievePostInt('bar', 'Foo');
+        } catch (Exception $e) {
+            $this->assertEquals('Foo is required', $e->getMessage());
+        }
     }
 
     public function testRetrievePostIntBlank() {
         $_POST['bar'] = "";
-        $this->assertEquals(array('error' => 'Foo can not be blank'), $this->api->retrievePostInt('bar', 'Foo'));
+        try {
+            $this->api->retrievePostInt('bar', 'Foo');
+        } catch (Exception $e) {
+            $this->assertEquals('Foo can not be blank', $e->getMessage());
+        }
         unset($_POST);
     }
 
@@ -69,44 +77,76 @@ class ApiUnitTest extends TestCase {
     }
 
     public function testRetrieveValidatedPostNotSet() {
-        $this->assertEquals(array('error' => "Foo is required"), $this->api->retrieveValidatedPost('bar', 'Foo', NULL));
+        try {
+            $this->api->retrieveValidatedPost('bar', 'Foo', NULL);
+        } catch (Exception $e) {
+            $this->assertEquals('Foo is required', $e->getMessage());
+        }
     }
 
     public function testRetrieveValidatedPostBlank() {
         $_POST['bar'] = "";
-        $this->assertEquals(array('error' => "Foo can not be blank"), $this->api->retrieveValidatedPost('bar', 'Foo', NULL));
+        try {
+            $this->api->retrieveValidatedPost('bar', 'Foo', NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("Foo can not be blank", $e->getMessage());
+        }
         unset($_POST);
     }
 
     public function testRetrieveValidatedPostNullValidation() {
         $_POST['bar'] = "foo";
-        $this->assertEquals(array('error' => "Foo is not valid"), $this->api->retrieveValidatedPost('bar', 'Foo', NULL));
+        try {
+            $this->api->retrieveValidatedPost('bar', 'Foo', NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("Foo is not valid", $e->getMessage());
+        }
         unset($_POST);
     }
 
     public function testRetrieveValidatedPostBadFormat() {
         $_POST['bar'] = "foo";
-        $this->assertEquals(array('error' => "Foo is not valid"), $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_BOOLEAN));
+        try {
+            $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_BOOLEAN);
+        } catch (Exception $e) {
+            $this->assertEquals("Foo is not valid", $e->getMessage());
+        }
         unset($_POST);
     }
 
     public function testRetrievePostDateTimeNotSet() {
-        $this->assertEquals(array('error' => "Foo is required"), $this->api->retrievePostDateTime('bar', 'Foo', NULL));
+        try {
+            $this->api->retrievePostDateTime('bar', 'Foo', NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("Foo is required", $e->getMessage());
+        }
     }
 
     public function testRetrievePostDateTimeBlank() {
         $_POST['bar'] = "";
-        $this->assertEquals(array('error' => "Foo can not be blank"), $this->api->retrievePostDateTime('bar', 'Foo', NULL));
+        try {
+            $this->api->retrievePostDateTime('bar', 'Foo', NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("Foo can not be blank", $e->getMessage());
+        }
         unset($_POST);
     }
 
     public function testRetrieveGetIntNotSet() {
-        $this->assertEquals(array('error' => 'Foo is required'), $this->api->retrieveGetInt('bar', 'Foo'));
+        try {
+            $this->api->retrieveGetInt('bar', 'Foo');
+        } catch (Exception $e) {
+            $this->assertEquals("Foo is required", $e->getMessage());
+        }
     }
 
     public function testRetrieveGetIntBlank() {
         $_GET['bar'] = "";
-        $this->assertEquals(array('error' => 'Foo can not be blank'), $this->api->retrieveGetInt('bar', 'Foo'));
+        try {
+            $this->api->retrieveGetInt('bar', 'Foo');
+        } catch (Exception $e) {
+            $this->assertEquals("Foo can not be blank", $e->getMessage());
+        }
         unset($_GET);
     }
 

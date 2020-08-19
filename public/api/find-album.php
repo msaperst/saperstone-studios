@@ -5,9 +5,10 @@ $session->initialize();
 $systemUser = User::fromSystem();
 $api = new Api ();
 
-$code = $api->retrieveGetString('code', 'Album code');
-if (is_array($code)) {
-    echo $code['error'];
+try {
+    $code = $api->retrieveGetString('code', 'Album code');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

@@ -14,9 +14,10 @@ try {
     exit();
 }
 
-$email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
-if (is_array($email)) {
-    echo $email['error'];
+try {
+    $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 

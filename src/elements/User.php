@@ -275,7 +275,7 @@ class User {
     }
 
     function login($rememberMe) {
-        if (!$this->active) {
+        if (!$this->isActive()) {
             return;
         }
         $session = new Session();
@@ -283,11 +283,11 @@ class User {
         $_SESSION ['usr'] = $this->username;
         $_SESSION ['hash'] = $this->hash;
 
-        if( isset( $_COOKIE['CookiePreferences'] )) {
+        if (isset($_COOKIE['CookiePreferences'])) {
             $preferences = json_decode($_COOKIE['CookiePreferences']);
             if ($rememberMe && is_array($preferences) && in_array("preferences", $preferences)) {
                 // remember the user if prompted
-                if(!headers_sent()) {
+                if (!headers_sent()) {
                     setcookie('hash', $this->hash, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
                     setcookie('usr', $this->username, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
                 }
@@ -299,6 +299,7 @@ class User {
         $this->lastLogin = $user->lastLogin;
         $this->raw = $user->getDataArray();
         $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
+        $sql->disconnect();
     }
 
     function forceAdmin() {

@@ -18,9 +18,10 @@ $name = "";
 $description = "";
 $date = "NULL";
 // confirm we have an album name
-$name = $api->retrievePostString('name', 'Album name');
-if (is_array($name)) {
-    echo $name['error'];
+try {
+    $name = $api->retrievePostString('name', 'Album name');
+} catch (Exception $e) {
+    echo $e->getMessage();
     exit();
 }
 
