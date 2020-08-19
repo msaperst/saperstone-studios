@@ -32,7 +32,7 @@ class ContractIntegrationTest extends TestCase {
     public function testWithIdNoContractId() {
         try {
             Contract::withId(NULL);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract id is required', $e->getMessage());
         }
     }
@@ -40,7 +40,7 @@ class ContractIntegrationTest extends TestCase {
     public function testWithIdBlankContractId() {
         try {
             Contract::withId("");
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract id can not be blank', $e->getMessage());
         }
     }
@@ -48,7 +48,7 @@ class ContractIntegrationTest extends TestCase {
     public function testWithIdBadContractId() {
         try {
             Contract::withId(998);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract id does not match any contracts', $e->getMessage());
         }
     }
@@ -92,7 +92,7 @@ class ContractIntegrationTest extends TestCase {
     public function testWithParamNotArrayType() {
         try {
             Contract::withParams(NULL);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract type is required', $e->getMessage());
         }
     }
@@ -100,7 +100,7 @@ class ContractIntegrationTest extends TestCase {
     public function testWithParamNoType() {
         try {
             Contract::withParams(array());
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract type is required', $e->getMessage());
         }
     }
@@ -111,7 +111,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract type can not be blank', $e->getMessage());
         }
     }
@@ -122,7 +122,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract type is not valid', $e->getMessage());
         }
     }
@@ -133,7 +133,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract name is required', $e->getMessage());
         }
     }
@@ -145,7 +145,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract name can not be blank', $e->getMessage());
         }
     }
@@ -157,7 +157,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract session is required', $e->getMessage());
         }
     }
@@ -170,7 +170,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract session can not be blank', $e->getMessage());
         }
     }
@@ -183,7 +183,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract content is required', $e->getMessage());
         }
     }
@@ -197,7 +197,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract content can not be blank', $e->getMessage());
         }
     }
@@ -212,7 +212,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract email is not valid', $e->getMessage());
         }
     }
@@ -227,7 +227,7 @@ class ContractIntegrationTest extends TestCase {
         ];
         try {
             Contract::withParams($params);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Contract date is not the correct format', $e->getMessage());
         }
     }

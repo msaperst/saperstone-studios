@@ -218,7 +218,7 @@ class ImageIntegrationTest extends TestCase {
         $currentImages = $this->sql->getRowCount("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;");
         $image->delete();
         unset($_SESSION ['hash']);
-        $this->assertEquals($currentImages-1, $this->sql->getRowCount("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;"));
+        $this->assertEquals($currentImages - 1, $this->sql->getRowCount("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;"));
         $this->assertEquals(0, $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;")['sequence']);
         $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }

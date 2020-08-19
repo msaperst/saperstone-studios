@@ -5,7 +5,6 @@ namespace coverage\integration;
 use Api;
 use Exception;
 use PHPUnit\Framework\TestCase;
-use Sql;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 

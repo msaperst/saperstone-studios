@@ -34,7 +34,7 @@ class LineItemIntegrationTest extends TestCase {
             $this->assertEquals(2, $lineItems[0]['item']);
             $this->assertEquals(3.00, $lineItems[0]['amount']);
             $this->assertEquals('foo', $lineItems[0]['unit']);
-        }finally {
+        } finally {
             $sql->executeStatement("DELETE FROM contract_line_items WHERE contract = 999");
             $sql->disconnect();
         }

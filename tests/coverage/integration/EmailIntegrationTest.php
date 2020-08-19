@@ -3,7 +3,6 @@
 namespace coverage\integration;
 
 use Email;
-use Exception;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
