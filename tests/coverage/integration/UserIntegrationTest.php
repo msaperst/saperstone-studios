@@ -659,7 +659,7 @@ class UserIntegrationTest extends TestCase {
         $user = User::withId(4);
         $user->login(false);
         $userInfo = $user->getDataArray();
-        $this->assertEquals(date('Y-m-d H:i:s'), $userInfo['lastLogin']);
+        $this->assertStringStartsWith(date('Y-m-d H:i'), $userInfo['lastLogin']);
         $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         //TODO - check session
