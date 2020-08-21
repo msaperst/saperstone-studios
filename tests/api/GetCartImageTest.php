@@ -200,11 +200,7 @@ class GetCartImageTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $cartDetails = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeOf($cartDetails));
-        $this->assertEquals(1, $cartDetails[0]['user']);
-        $this->assertEquals(997, $cartDetails[0]['album']);
-        $this->assertEquals(995, $cartDetails[0]['image']);
         $this->assertEquals(1, $cartDetails[0]['product']);
-        $this->assertEquals(2, $cartDetails[0]['count']);
     }
 
     public function testGetCartComplex() {
@@ -221,10 +217,6 @@ class GetCartImageTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $cartDetails = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeOf($cartDetails));
-        $this->assertEquals(1, $cartDetails[0]['user']);
-        $this->assertEquals(999, $cartDetails[0]['album']);
-        $this->assertEquals(999, $cartDetails[0]['image']);
         $this->assertEquals(23, $cartDetails[0]['product']);
-        $this->assertEquals(1, $cartDetails[0]['count']);
     }
 }

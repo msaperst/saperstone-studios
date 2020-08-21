@@ -12,6 +12,6 @@ $keyword = "";
 if (isset ($_GET ['keyword'])) {
     $keyword = $sql->escapeString($_GET ['keyword']);
 }
-echo json_encode($sql->getRows( "SELECT * FROM albums WHERE `name` COLLATE UTF8_GENERAL_CI LIKE '%$keyword%'" ));
+echo json_encode($sql->getRows( "SELECT id, name FROM albums WHERE `name` COLLATE UTF8_GENERAL_CI LIKE '%$keyword%'" ));
 $sql->disconnect();
 exit ();

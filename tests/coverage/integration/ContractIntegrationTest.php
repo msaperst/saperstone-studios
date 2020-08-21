@@ -56,6 +56,7 @@ class ContractIntegrationTest extends TestCase {
     public function testWithIdGetDataArray() {
         $contract = Contract::withId(999);
         $contractInfo = $contract->getDataArray();
+        $this->assertEquals(19, sizeOf($contractInfo));
         $this->assertEquals('999', $contractInfo['id']);
         $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractInfo['link']);
         $this->assertEquals('commercial', $contractInfo['type']);
@@ -87,6 +88,16 @@ class ContractIntegrationTest extends TestCase {
     public function testGetId() {
         $contract = Contract::withId(999);
         $this->assertEquals(999, $contract->getId());
+    }
+
+    public function testGetBasicData() {
+        $contract = Contract::withId(999);
+        $contractInfo = $contract->getDataBasic();
+        $this->assertEquals(4, sizeOf($contractInfo));
+        $this->assertEquals('999', $contractInfo['id']);
+        $this->assertEquals('commercial', $contractInfo['type']);
+        $this->assertEquals('MaxMaxMax', $contractInfo['name']);
+        $this->assertEquals('Some session', $contractInfo['session']);
     }
 
     public function testWithParamNotArrayType() {

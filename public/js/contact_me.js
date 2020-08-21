@@ -52,7 +52,7 @@ $(function() {
                                     $('#contactForm').trigger("reset");
                                     $('#contactForm button').prop("disabled",false);
                                 },
-                                error : function() {
+                                error : function() {    //TODO - check for a failure returned
                                     // Fail message
                                     $('#success').html("<div class='alert alert-danger'>");
                                     $('#success > .alert-danger').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;").append("</button>");

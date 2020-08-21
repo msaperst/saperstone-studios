@@ -19,7 +19,7 @@ if (!$album->canUserGetData()) {
     exit ();
 }
 
-$albumInfo = $album->getDataArray();
+$albumInfo = $album->getDataBasic();
 $albumInfo ['date'] = substr($albumInfo ['date'], 0, 10);
 if ($albumInfo ['code'] == NULL) {
     $albumInfo ['code'] = "";

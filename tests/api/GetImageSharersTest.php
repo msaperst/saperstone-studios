@@ -181,14 +181,8 @@ class GetImageSharersTest extends TestCase {
         $downloaders = json_decode($response->getBody(), true);
         $this->assertEquals(3, sizeof($downloaders));
         $this->assertEquals(2, $downloaders[0]['user']);
-        $this->assertEquals(999, $downloaders[0]['album']);
-        $this->assertEquals('*', $downloaders[0]['image']);
         $this->assertEquals(3, $downloaders[1]['user']);
-        $this->assertEquals(999, $downloaders[1]['album']);
-        $this->assertEquals('998', $downloaders[1]['image']);
         $this->assertEquals(0, $downloaders[2]['user']);
-        $this->assertEquals(999, $downloaders[2]['album']);
-        $this->assertEquals('998', $downloaders[2]['image']);
     }
 
     public function testAlbumImageThree() {
@@ -206,10 +200,6 @@ class GetImageSharersTest extends TestCase {
         $downloaders = json_decode($response->getBody(), true);
         $this->assertEquals(2, sizeof($downloaders));
         $this->assertEquals(2, $downloaders[0]['user']);
-        $this->assertEquals(999, $downloaders[0]['album']);
-        $this->assertEquals('*', $downloaders[0]['image']);
         $this->assertEquals(3, $downloaders[1]['user']);
-        $this->assertEquals(999, $downloaders[1]['album']);
-        $this->assertEquals('999', $downloaders[1]['image']);
     }
 }

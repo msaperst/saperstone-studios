@@ -15,8 +15,7 @@ try {
 }
 
 $sql = new Sql();
-$actions = $sql->getRows("SELECT user_logs.*, users.usr FROM user_logs LEFT JOIN users ON user_logs.user = users.id WHERE album = {$album->getId()}");
+$actions = $sql->getRows("SELECT user_logs.time, user_logs.action, user_logs.what, users.usr FROM user_logs LEFT JOIN users ON user_logs.user = users.id WHERE album = {$album->getId()}");
 echo json_encode($actions);
 $sql->disconnect();
 exit ();
-?>

@@ -106,10 +106,22 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals('sample', $album->getLocation());
     }
 
+    public function testBasicDataLoaded() {
+        date_default_timezone_set("America/New_York");
+        $album = new Album(899);
+        $albumInfo = $album->getDataBasic();
+        $this->assertEquals(4, sizeOf($albumInfo));
+        $this->assertEquals('sample-album', $albumInfo['name']);
+        $this->assertEquals('sample album for testing', $albumInfo['description']);
+        $this->assertStringStartsWith(date("Y-m-d H:i"), $albumInfo['date']);
+        $this->assertEquals('123', $albumInfo['code']);
+    }
+
     public function testAllDataLoaded() {
         date_default_timezone_set("America/New_York");
         $album = new Album(899);
         $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
         $this->assertEquals(899, $albumInfo['id']);
         $this->assertEquals('sample-album', $albumInfo['name']);
         $this->assertEquals('sample album for testing', $albumInfo['description']);

@@ -78,32 +78,23 @@ class GetGalleryImagesTest extends TestCase {
         $galleryImages = json_decode($response->getBody(), true);
         $this->assertEquals(3, sizeOf($galleryImages));
         $this->assertEquals(997, $galleryImages[0]['id']);
-        $this->assertEquals(999, $galleryImages[0]['gallery']);
         $this->assertEquals('', $galleryImages[0]['title']);
         $this->assertEquals(1, $galleryImages[0]['sequence']);
-        $this->assertEquals('', $galleryImages[0]['caption']);
         $this->assertEquals('', $galleryImages[0]['location']);
         $this->assertEquals(300, $galleryImages[0]['width']);
         $this->assertEquals(400, $galleryImages[0]['height']);
-        $this->assertEquals(1, $galleryImages[0]['active']);
         $this->assertEquals(998, $galleryImages[1]['id']);
-        $this->assertEquals(999, $galleryImages[1]['gallery']);
         $this->assertEquals('', $galleryImages[1]['title']);
         $this->assertEquals(2, $galleryImages[1]['sequence']);
-        $this->assertEquals('', $galleryImages[1]['caption']);
         $this->assertEquals('', $galleryImages[1]['location']);
         $this->assertEquals(300, $galleryImages[1]['width']);
         $this->assertEquals(400, $galleryImages[1]['height']);
-        $this->assertEquals(1, $galleryImages[1]['active']);
         $this->assertEquals(999, $galleryImages[2]['id']);
-        $this->assertEquals(999, $galleryImages[2]['gallery']);
         $this->assertEquals('', $galleryImages[2]['title']);
         $this->assertEquals(3, $galleryImages[2]['sequence']);
-        $this->assertEquals('', $galleryImages[2]['caption']);
         $this->assertEquals('', $galleryImages[2]['location']);
         $this->assertEquals(300, $galleryImages[2]['width']);
         $this->assertEquals(400, $galleryImages[2]['height']);
-        $this->assertEquals(1, $galleryImages[2]['active']);
     }
 
     public function testGallerySecond() {
@@ -118,14 +109,11 @@ class GetGalleryImagesTest extends TestCase {
         $galleryImages = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeof($galleryImages));
         $this->assertEquals(998, $galleryImages[0]['id']);
-        $this->assertEquals(999, $galleryImages[0]['gallery']);
         $this->assertEquals('', $galleryImages[0]['title']);
         $this->assertEquals(2, $galleryImages[0]['sequence']);
-        $this->assertEquals('', $galleryImages[0]['caption']);
         $this->assertEquals('', $galleryImages[0]['location']);
         $this->assertEquals(300, $galleryImages[0]['width']);
         $this->assertEquals(400, $galleryImages[0]['height']);
-        $this->assertEquals(1, $galleryImages[0]['active']);
     }
 
     public function testGalleryNone() {

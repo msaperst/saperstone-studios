@@ -123,31 +123,9 @@ class GetContractTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $contractInfo = json_decode($response->getBody(), true);
         $this->assertEquals('998', $contractInfo['id']);
-        $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractInfo['link']);
         $this->assertEquals('commercial', $contractInfo['type']);
         $this->assertEquals('MaxMaxMax', $contractInfo['name']);
-        $this->assertEquals('Address', $contractInfo['address']);
-        $this->assertEquals('1234567890', $contractInfo['number']);
-        $this->assertEquals('email-address', $contractInfo['email']);
-        $this->assertEquals('2021-10-13', $contractInfo['date']);
         $this->assertEquals('Some session', $contractInfo['session']);
-        $this->assertStringStartsWith('Up to one hour photo session to include:', $contractInfo['details']);
-        $this->assertEquals('0.00', $contractInfo['amount']);
-        $this->assertEquals('0.00', $contractInfo['deposit']);
-        $this->assertEquals('nope!', $contractInfo['invoice']);
-        $this->assertStringStartsWith('    <h2>Saperstone Studios LLC. Commercial Contract</h2>', $contractInfo['content']);
-        $this->assertNull($contractInfo['signature']);
-        $this->assertNull($contractInfo['initial']);
-        $this->assertNull($contractInfo['file']);
-        $this->assertEquals(2, sizeof($contractInfo['lineItems']));
-        $this->assertEquals(998, $contractInfo['lineItems'][0]['contract']);
-        $this->assertEquals('Hugs', $contractInfo['lineItems'][0]['item']);
-        $this->assertEquals(20.00, $contractInfo['lineItems'][0]['amount']);
-        $this->assertEquals('with arms', $contractInfo['lineItems'][0]['unit']);
-        $this->assertEquals(998, $contractInfo['lineItems'][1]['contract']);
-        $this->assertEquals('Kisses', $contractInfo['lineItems'][1]['item']);
-        $this->assertEquals(50.00, $contractInfo['lineItems'][1]['amount']);
-        $this->assertEquals('with lips', $contractInfo['lineItems'][1]['unit']);
     }
 
     public function testContractSigned() {
@@ -163,21 +141,8 @@ class GetContractTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $contractInfo = json_decode($response->getBody(), true);
         $this->assertEquals('999', $contractInfo['id']);
-        $this->assertEquals('735870e9bd79af1904a0a2eb453430ed', $contractInfo['link']);
         $this->assertEquals('wedding', $contractInfo['type']);
         $this->assertEquals('Max Saperstone', $contractInfo['name']);
-        $this->assertEquals("5012 Whisper Willow Dr\r\nFairfax, VA 22030", $contractInfo['address']);
-        $this->assertEquals('(571) 245-3351', $contractInfo['number']);
-        $this->assertEquals('msaperst+sstest@gmail.com', $contractInfo['email']);
-        $this->assertEquals('1983-10-13', $contractInfo['date']);
         $this->assertEquals('Platinum Package', $contractInfo['session']);
-        $this->assertStringStartsWith("800+ color managed and retouched images with print release\r\n9 hours of wedding day coverage\r\n2nd photographer", $contractInfo['details']);
-        $this->assertEquals('4300.00', $contractInfo['amount']);
-        $this->assertEquals('2000.00', $contractInfo['deposit']);
-        $this->assertEquals('bullshit ;)', $contractInfo['invoice']);
-        $this->assertStringStartsWith("    <h2>Saperstone Studios LLC. Wedding Contract</h2><p>\n", $contractInfo['content']);
-        $this->assertStringStartsWith('data:image/png;base64,', $contractInfo['signature']);
-        $this->assertStringStartsWith('data:image/png;base64,', $contractInfo['initial']);
-        $this->assertEquals('../user/contracts/Max Saperstone - 2020-08-10 - Wedding Contract.pdf', $contractInfo['file']);
     }
 }

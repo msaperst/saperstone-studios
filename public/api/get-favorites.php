@@ -7,10 +7,12 @@ $api = new Api ();
 
 $sql = new Sql();
 $userId = $systemUser->getIdentifier();
-$results = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$userId';");
+$results = $sql->getRows("SELECT album_images.album, album_images.sequence, album_images.location FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$userId';");
 $favorites = array();
 foreach ($results as $r) {
-    $favorites [$r ['album']] [] = $r;
+    $album = $r ['album'];
+    unset($r['album']);
+    $favorites [$album] [] = $r;
 }
 
 if (isset ($_GET ['album'])) {

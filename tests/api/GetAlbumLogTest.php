@@ -123,17 +123,13 @@ class GetAlbumLogTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $albumInfo = json_decode($response->getBody(), true);
         $this->assertEquals(2, sizeOf($albumInfo));
-        $this->assertEquals(0, $albumInfo[0]['user']);
         $this->assertEquals('2020-01-01 12:00:00', $albumInfo[0]['time']);
         $this->assertEquals('some action', $albumInfo[0]['action']);
         $this->assertEquals(0, $albumInfo[0]['what']);
-        $this->assertEquals(999, $albumInfo[0]['album']);
         $this->assertEquals('<i>All Users</i>', $albumInfo[0]['usr']);
-        $this->assertEquals(1, $albumInfo[1]['user']);
         $this->assertEquals('2020-01-01 13:00:00', $albumInfo[1]['time']);
         $this->assertEquals('some other action', $albumInfo[1]['action']);
         $this->assertEquals('something', $albumInfo[1]['what']);
-        $this->assertEquals(999, $albumInfo[1]['album']);
         $this->assertEquals('msaperst', $albumInfo[1]['usr']);
     }
 }

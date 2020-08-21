@@ -11,6 +11,5 @@ try {
     echo $e->getMessage();
     exit();
 }
-
 echo json_encode($blog->getDataArray());
 exit ();

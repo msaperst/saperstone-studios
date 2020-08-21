@@ -67,22 +67,8 @@ class SearchAlbumsTest extends TestCase {
         $this->assertTrue(2 <= sizeof($albums));
         $this->assertEquals(998, $albums[sizeof($albums) - 2]['id']);
         $this->assertEquals("sample-album-yeah", $albums[sizeof($albums) - 2]['name']);
-        $this->assertEquals("sample album for testing", $albums[sizeof($albums) - 2]['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albums[sizeof($albums) - 2]['date']);
-        $this->assertNull($albums[sizeof($albums) - 2]['lastAccessed']);
-        $this->assertEquals("sample", $albums[sizeof($albums) - 2]['location']);
-        $this->assertNull($albums[sizeof($albums) - 2]['code']);
-        $this->assertEquals(5, $albums[sizeof($albums) - 2]['owner']);
-        $this->assertEquals(0, $albums[sizeof($albums) - 2]['images']);
         $this->assertEquals(999, $albums[sizeof($albums) - 1]['id']);
         $this->assertEquals("sample-album", $albums[sizeof($albums) - 1]['name']);
-        $this->assertEquals("sample album for testing", $albums[sizeof($albums) - 1]['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albums[sizeof($albums) - 1]['date']);
-        $this->assertNull($albums[sizeof($albums) - 1]['lastAccessed']);
-        $this->assertEquals("sample", $albums[sizeof($albums) - 1]['location']);
-        $this->assertEquals('123', $albums[sizeof($albums) - 1]['code']);
-        $this->assertEquals(4, $albums[sizeof($albums) - 1]['owner']);
-        $this->assertEquals(0, $albums[sizeof($albums) - 1]['images']);
     }
 
     public function testKeywordBlank() {
@@ -101,22 +87,9 @@ class SearchAlbumsTest extends TestCase {
         $this->assertTrue(2 <= sizeof($albums));
         $this->assertEquals(998, $albums[sizeof($albums) - 2]['id']);
         $this->assertEquals("sample-album-yeah", $albums[sizeof($albums) - 2]['name']);
-        $this->assertEquals("sample album for testing", $albums[sizeof($albums) - 2]['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albums[sizeof($albums) - 2]['date']);
-        $this->assertNull($albums[sizeof($albums) - 2]['lastAccessed']);
-        $this->assertEquals("sample", $albums[sizeof($albums) - 2]['location']);
-        $this->assertNull($albums[sizeof($albums) - 2]['code']);
-        $this->assertEquals(5, $albums[sizeof($albums) - 2]['owner']);
-        $this->assertEquals(0, $albums[sizeof($albums) - 2]['images']);
+
         $this->assertEquals(999, $albums[sizeof($albums) - 1]['id']);
         $this->assertEquals("sample-album", $albums[sizeof($albums) - 1]['name']);
-        $this->assertEquals("sample album for testing", $albums[sizeof($albums) - 1]['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albums[sizeof($albums) - 1]['date']);
-        $this->assertNull($albums[sizeof($albums) - 1]['lastAccessed']);
-        $this->assertEquals("sample", $albums[sizeof($albums) - 1]['location']);
-        $this->assertEquals('123', $albums[sizeof($albums) - 1]['code']);
-        $this->assertEquals(4, $albums[sizeof($albums) - 1]['owner']);
-        $this->assertEquals(0, $albums[sizeof($albums) - 1]['images']);
     }
 
     public function testKeyword() {
@@ -135,22 +108,8 @@ class SearchAlbumsTest extends TestCase {
         $this->assertTrue(2 <= sizeof($albums));
         $this->assertEquals(998, $albums[sizeof($albums) - 2]['id']);
         $this->assertEquals("sample-album-yeah", $albums[sizeof($albums) - 2]['name']);
-        $this->assertEquals("sample album for testing", $albums[sizeof($albums) - 2]['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albums[sizeof($albums) - 2]['date']);
-        $this->assertNull($albums[sizeof($albums) - 2]['lastAccessed']);
-        $this->assertEquals("sample", $albums[sizeof($albums) - 2]['location']);
-        $this->assertNull($albums[sizeof($albums) - 2]['code']);
-        $this->assertEquals(5, $albums[sizeof($albums) - 2]['owner']);
-        $this->assertEquals(0, $albums[sizeof($albums) - 2]['images']);
         $this->assertEquals(999, $albums[sizeof($albums) - 1]['id']);
         $this->assertEquals("sample-album", $albums[sizeof($albums) - 1]['name']);
-        $this->assertEquals("sample album for testing", $albums[sizeof($albums) - 1]['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albums[sizeof($albums) - 1]['date']);
-        $this->assertNull($albums[sizeof($albums) - 1]['lastAccessed']);
-        $this->assertEquals("sample", $albums[sizeof($albums) - 1]['location']);
-        $this->assertEquals('123', $albums[sizeof($albums) - 1]['code']);
-        $this->assertEquals(4, $albums[sizeof($albums) - 1]['owner']);
-        $this->assertEquals(0, $albums[sizeof($albums) - 1]['images']);
     }
 
     public function testKeywords() {
@@ -169,13 +128,6 @@ class SearchAlbumsTest extends TestCase {
         $this->assertEquals(1, sizeof($albums));
         $this->assertEquals(998, $albums[0]['id']);
         $this->assertEquals("sample-album-yeah", $albums[0]['name']);
-        $this->assertEquals("sample album for testing", $albums[0]['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albums[0]['date']);
-        $this->assertNull($albums[0]['lastAccessed']);
-        $this->assertEquals("sample", $albums[0]['location']);
-        $this->assertNull($albums[0]['code']);
-        $this->assertEquals(5, $albums[0]['owner']);
-        $this->assertEquals(0, $albums[0]['images']);
     }
 
     public function testTooKeyword() {

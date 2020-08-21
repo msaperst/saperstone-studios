@@ -14,5 +14,5 @@ try {
     exit();
 }
 
-echo json_encode($contract->getDataArray());
+echo json_encode($contract->getDataBasic());
 exit ();

@@ -127,15 +127,10 @@ class GetAlbumTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $albumInfo = json_decode($response->getBody(), true);
-        $this->assertEquals(998, $albumInfo['id']);
         $this->assertEquals('sample-album', $albumInfo['name']);
         $this->assertEquals('sample album for testing', $albumInfo['description']);
         $this->assertEquals(date("Y-m-d"), $albumInfo['date']);
-        $this->assertNull($albumInfo['lastAccessed']);
-        $this->assertEquals('sample', $albumInfo['location']);
         $this->assertEquals('', $albumInfo['code']);
-        $this->assertEquals(5, $albumInfo['owner']);
-        $this->assertEquals(0, $albumInfo['images']);
     }
 
     public function testUploaderCanGetOwnAlbum() {
@@ -150,15 +145,9 @@ class GetAlbumTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $albumInfo = json_decode($response->getBody(), true);
-        $this->assertEquals(999, $albumInfo['id']);
         $this->assertEquals('sample-album', $albumInfo['name']);
         $this->assertEquals('sample album for testing', $albumInfo['description']);
         $this->assertEquals(date("Y-m-d"), $albumInfo['date']);
-        $this->assertNull($albumInfo['lastAccessed']);
-        $this->assertEquals('sample', $albumInfo['location']);
-        $this->assertEquals('123', $albumInfo['code']);
-        $this->assertEquals(4, $albumInfo['owner']);
-        $this->assertEquals(0, $albumInfo['images']);
     }
 }
 

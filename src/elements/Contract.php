@@ -170,6 +170,14 @@ class Contract {
         return $this->id;
     }
 
+    /**
+     * Only return basic information
+     * id, type, name, session
+     */
+    function getDataBasic() {
+        return array_diff_key($this->raw, ['link'=>'', 'address'=>'', 'number'=>'', 'email'=>'', 'date'=>'', 'location'=>'', 'details'=>'', 'amount'=>'', 'deposit'=>'', 'invoice'=>'', 'content'=>'', 'signature'=>'', 'initial'=>'', 'file'=>'', 'lineItems'=>'']);
+    }
+
     function getDataArray() {
         return $this->raw;
     }

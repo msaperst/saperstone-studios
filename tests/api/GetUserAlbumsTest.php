@@ -131,9 +131,7 @@ class GetUserAlbumsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $albums = json_decode($response->getBody(), true);
         $this->assertEquals(2, sizeof($albums));
-        $this->assertEquals(1, $albums[0]['user']);
         $this->assertEquals(998, $albums[0]['album']);
-        $this->assertEquals(1, $albums[1]['user']);
         $this->assertEquals(999, $albums[1]['album']);
     }
 }

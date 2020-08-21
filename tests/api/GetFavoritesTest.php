@@ -71,25 +71,11 @@ class GetFavoritesTest extends TestCase {
         $favorites = json_decode($response->getBody(), true);
         $this->assertEquals(2, sizeof($favorites));
         $this->assertEquals(1, sizeof($favorites[997]));
-        $this->assertEquals(997, $favorites[997][0]['id']);
-        $this->assertEquals(997, $favorites[997][0]['album']);
-        $this->assertEquals('file1', $favorites[997][0]['title']);
         $this->assertEquals(1, $favorites[997][0]['sequence']);
-        $this->assertEquals('', $favorites[997][0]['caption']);
         $this->assertEquals('/albums/sample/file1', $favorites[997][0]['location']);
-        $this->assertEquals(600, $favorites[997][0]['width']);
-        $this->assertEquals(400, $favorites[997][0]['height']);
-        $this->assertEquals(1, $favorites[997][0]['active']);
         $this->assertEquals(1, sizeof($favorites[998]));
-        $this->assertEquals(998, $favorites[998][0]['id']);
-        $this->assertEquals(998, $favorites[998][0]['album']);
-        $this->assertEquals('file1', $favorites[998][0]['title']);
         $this->assertEquals(1, $favorites[998][0]['sequence']);
-        $this->assertEquals('', $favorites[998][0]['caption']);
         $this->assertEquals('/albums/sample/file1', $favorites[998][0]['location']);
-        $this->assertEquals(600, $favorites[998][0]['width']);
-        $this->assertEquals(400, $favorites[998][0]['height']);
-        $this->assertEquals(1, $favorites[998][0]['active']);
     }
 
     public function testUnAuthUserFavoritesAlbum() {
@@ -119,15 +105,8 @@ class GetFavoritesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $favorites = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeof($favorites));
-        $this->assertEquals(997, $favorites[0]['id']);
-        $this->assertEquals(997, $favorites[0]['album']);
-        $this->assertEquals('file1', $favorites[0]['title']);
         $this->assertEquals(1, $favorites[0]['sequence']);
-        $this->assertEquals('', $favorites[0]['caption']);
         $this->assertEquals('/albums/sample/file1', $favorites[0]['location']);
-        $this->assertEquals(600, $favorites[0]['width']);
-        $this->assertEquals(400, $favorites[0]['height']);
-        $this->assertEquals(1, $favorites[0]['active']);
     }
 
     public function testAuthUserNoFavorites() {
@@ -173,25 +152,11 @@ class GetFavoritesTest extends TestCase {
         $favorites = json_decode($response->getBody(), true);
         $this->assertEquals(2, sizeof($favorites));
         $this->assertEquals(1, sizeof($favorites[997]));
-        $this->assertEquals(997, $favorites[997][0]['id']);
-        $this->assertEquals(997, $favorites[997][0]['album']);
-        $this->assertEquals('file1', $favorites[997][0]['title']);
         $this->assertEquals(1, $favorites[997][0]['sequence']);
-        $this->assertEquals('', $favorites[997][0]['caption']);
         $this->assertEquals('/albums/sample/file1', $favorites[997][0]['location']);
-        $this->assertEquals(600, $favorites[997][0]['width']);
-        $this->assertEquals(400, $favorites[997][0]['height']);
-        $this->assertEquals(1, $favorites[997][0]['active']);
         $this->assertEquals(1, sizeof($favorites[998]));
-        $this->assertEquals(998, $favorites[998][0]['id']);
-        $this->assertEquals(998, $favorites[998][0]['album']);
-        $this->assertEquals('file1', $favorites[998][0]['title']);
         $this->assertEquals(1, $favorites[998][0]['sequence']);
-        $this->assertEquals('', $favorites[998][0]['caption']);
         $this->assertEquals('/albums/sample/file1', $favorites[998][0]['location']);
-        $this->assertEquals(600, $favorites[998][0]['width']);
-        $this->assertEquals(400, $favorites[998][0]['height']);
-        $this->assertEquals(1, $favorites[998][0]['active']);
     }
 
     public function testAuthUserFavoritesAlbum() {
@@ -228,15 +193,8 @@ class GetFavoritesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $favorites = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeof($favorites));
-        $this->assertEquals(997, $favorites[0]['id']);
-        $this->assertEquals(997, $favorites[0]['album']);
-        $this->assertEquals('file1', $favorites[0]['title']);
         $this->assertEquals(1, $favorites[0]['sequence']);
-        $this->assertEquals('', $favorites[0]['caption']);
         $this->assertEquals('/albums/sample/file1', $favorites[0]['location']);
-        $this->assertEquals(600, $favorites[0]['width']);
-        $this->assertEquals(400, $favorites[0]['height']);
-        $this->assertEquals(1, $favorites[0]['active']);
     }
 }
 

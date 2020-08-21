@@ -58,6 +58,14 @@ class Album {
         return $this->location;
     }
 
+    /**
+     * Only return basic information
+     * name, description, date, code
+     */
+    function getDataBasic() {
+        return array_diff_key($this->raw, ['id'=>'', 'lastAccessed'=>'', 'location'=>'', 'owner'=>'', 'images'=>'']);
+    }
+
     function getDataArray() {
         return $this->raw;
     }

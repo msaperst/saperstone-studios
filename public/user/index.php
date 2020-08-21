@@ -4,7 +4,7 @@ $session = new Session();
 $session->initialize();
 $sql = new Sql ();
 $user = User::fromSystem();
-$user->forceAdmin();
+$user->forceLogIn();
 
 ?>
 

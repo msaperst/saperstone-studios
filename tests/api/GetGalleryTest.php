@@ -108,11 +108,7 @@ class GetGalleryTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $gallery = json_decode($response->getBody(), true);
-        $this->assertEquals(1, $gallery['id']);
-        $this->assertNull($gallery['parent']);
-        $this->assertNull($gallery['image']);
         $this->assertEquals('Portrait', $gallery['title']);
-        $this->assertNull($gallery['comment']);
     }
 
     public function testComplexGallery() {
@@ -127,11 +123,7 @@ class GetGalleryTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $gallery = json_decode($response->getBody(), true);
-        $this->assertEquals(29, $gallery['id']);
-        $this->assertEquals(28, $gallery['parent']);
-        $this->assertEquals('story-grid.jpg', $gallery['image']);
         $this->assertEquals('Story Grids', $gallery['title']);
-        $this->assertEquals('Hate making sure your prints are evenly spaced once hung on the wall?  Then this is the art product for you.  Each story grid comes with a paper template to hang on the wall.  Your template indicates where to place metal pegs which then make up a grid system on your wall.  Simply slip the prints onto the metal pegs and voila! Evenly spaced prints! These collages range in overall sizes from 2\' x 3\' all the way up to 4.5\' x 2\' or beyond and are totally customizable. Images are printed on either metal or a lustre photographic paper, your choice.', $gallery['comment']);
     }
 }
 

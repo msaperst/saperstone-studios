@@ -231,6 +231,14 @@ class User {
         return $this->email;
     }
 
+    /**
+     * Only return basic information
+     * id, usr, firstName, lastName, email, resetKey, active, role
+     */
+    function getDataBasic() {
+        return array_diff_key($this->raw, ['pass'=>'', 'hash'=>'', 'created'=>'', 'lastLogin'=>'']);
+    }
+
     function getDataArray() {
         return $this->raw;
     }

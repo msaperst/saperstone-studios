@@ -136,9 +136,24 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('test@example.com', $user->getEmail());
     }
 
+    public function testBasicData() {
+        $user = User::withId(899);
+        $userInfo = $user->getDataBasic();
+        $this->assertEquals(8, sizeof($userInfo));
+        $this->assertEquals(899, $userInfo['id']);
+        $this->assertEquals('test', $userInfo['usr']);
+        $this->assertEquals('test', $userInfo['firstName']);
+        $this->assertEquals('user', $userInfo['lastName']);
+        $this->assertEquals('test@example.com', $userInfo['email']);
+        $this->assertEquals('downloader', $userInfo['role']);
+        $this->assertEquals(0, $userInfo['active']);
+        $this->assertEquals('123', $userInfo['resetKey']);
+    }
+
     public function testAllData() {
         $user = User::withId(899);
         $userInfo = $user->getDataArray();
+        $this->assertEquals(12, sizeof($userInfo));
         $this->assertEquals(899, $userInfo['id']);
         $this->assertEquals('test', $userInfo['usr']);
         $this->assertEquals(md5('user'), $userInfo['pass']);

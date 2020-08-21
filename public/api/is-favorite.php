@@ -20,7 +20,7 @@ try {
 }
 
 $sql = new Sql ();
-$favorite = $sql->getRow("SELECT * FROM `favorites` WHERE `user` = '{$systemUser->getIdentifier()}' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';");
+$favorite = $sql->getRow("SELECT user FROM `favorites` WHERE `user` = '{$systemUser->getIdentifier()}' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';");
 if ($favorite ['user']) {
     echo 1;
 } else {

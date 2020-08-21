@@ -24,7 +24,7 @@ if (isset ($_GET ['howMany'])) {
 }
 
 $sql = new Sql();
-$response = $sql->getRows("SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = '{$gallery->getId()}' ORDER BY `sequence` LIMIT $start,$howMany;");
+$response = $sql->getRows("SELECT gallery_images.id, gallery_images.sequence, gallery_images.height, gallery_images.width, gallery_images.location, gallery_images.title FROM `gallery_images` WHERE gallery_images.gallery = '{$gallery->getId()}' ORDER BY `sequence` LIMIT $start,$howMany;");
 echo json_encode($response);
 $sql->disconnect();
 exit ();

@@ -9,10 +9,9 @@ $api->forceLoggedIn();
 
 $response = array();
 if ($systemUser->isAdmin()) {
-    $query = "SELECT * FROM albums;";
+    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums.lastAccessed, albums.code FROM albums;";
 } else {
-    ;
-    $query = "SELECT albums.* FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '{$systemUser->getId()}' GROUP BY albums.id;";
+    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '{$systemUser->getId()}' GROUP BY albums.id;";
 }
 $sanitizedAlbums = array();
 $sql = new Sql();

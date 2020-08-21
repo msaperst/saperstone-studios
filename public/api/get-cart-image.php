@@ -22,7 +22,7 @@ try {
 }
 
 $sql = new Sql();
-$cart = $sql->getRows("SELECT * FROM `cart` WHERE `user` = '{$systemUser->getId()}' AND `album` = '{$album->getId()}' and `image` = '{$image->getId()}'");
+$cart = $sql->getRows("SELECT cart.product FROM `cart` WHERE `user` = '{$systemUser->getId()}' AND `album` = '{$album->getId()}' and `image` = '{$image->getId()}'");
 echo json_encode($cart);
 $sql->disconnect();
 exit ();

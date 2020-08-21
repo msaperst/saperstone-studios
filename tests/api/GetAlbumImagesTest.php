@@ -112,15 +112,11 @@ class GetAlbumImagesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $albumImages = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeOf($albumImages));
-        $this->assertEquals(996, $albumImages[0]['id']);
-        $this->assertEquals(998, $albumImages[0]['album']);
         $this->assertEquals('', $albumImages[0]['title']);
         $this->assertEquals(1, $albumImages[0]['sequence']);
-        $this->assertEquals('', $albumImages[0]['caption']);
         $this->assertEquals('', $albumImages[0]['location']);
         $this->assertEquals(300, $albumImages[0]['width']);
         $this->assertEquals(400, $albumImages[0]['height']);
-        $this->assertEquals(1, $albumImages[0]['active']);
     }
 
     public function testViewAll() {
@@ -136,33 +132,21 @@ class GetAlbumImagesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $albumImages = json_decode($response->getBody(), true);
         $this->assertEquals(3, sizeOf($albumImages));
-        $this->assertEquals(997, $albumImages[0]['id']);
-        $this->assertEquals(999, $albumImages[0]['album']);
         $this->assertEquals('', $albumImages[0]['title']);
         $this->assertEquals(1, $albumImages[0]['sequence']);
-        $this->assertEquals('', $albumImages[0]['caption']);
         $this->assertEquals('', $albumImages[0]['location']);
         $this->assertEquals(300, $albumImages[0]['width']);
         $this->assertEquals(400, $albumImages[0]['height']);
-        $this->assertEquals(1, $albumImages[0]['active']);
-        $this->assertEquals(998, $albumImages[1]['id']);
-        $this->assertEquals(999, $albumImages[1]['album']);
         $this->assertEquals('', $albumImages[1]['title']);
         $this->assertEquals(2, $albumImages[1]['sequence']);
-        $this->assertEquals('', $albumImages[1]['caption']);
         $this->assertEquals('', $albumImages[1]['location']);
         $this->assertEquals(300, $albumImages[1]['width']);
         $this->assertEquals(400, $albumImages[1]['height']);
-        $this->assertEquals(1, $albumImages[1]['active']);
-        $this->assertEquals(999, $albumImages[2]['id']);
-        $this->assertEquals(999, $albumImages[2]['album']);
         $this->assertEquals('', $albumImages[2]['title']);
         $this->assertEquals(3, $albumImages[2]['sequence']);
-        $this->assertEquals('', $albumImages[2]['caption']);
         $this->assertEquals('', $albumImages[2]['location']);
         $this->assertEquals(300, $albumImages[2]['width']);
         $this->assertEquals(400, $albumImages[2]['height']);
-        $this->assertEquals(1, $albumImages[2]['active']);
     }
 
     public function testViewSecond() {
@@ -180,15 +164,11 @@ class GetAlbumImagesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $albumImages = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeOf($albumImages));
-        $this->assertEquals(999, $albumImages[0]['id']);
-        $this->assertEquals(999, $albumImages[0]['album']);
         $this->assertEquals('', $albumImages[0]['title']);
         $this->assertEquals(3, $albumImages[0]['sequence']);
-        $this->assertEquals('', $albumImages[0]['caption']);
         $this->assertEquals('', $albumImages[0]['location']);
         $this->assertEquals(300, $albumImages[0]['width']);
         $this->assertEquals(400, $albumImages[0]['height']);
-        $this->assertEquals(1, $albumImages[0]['active']);
     }
 
     public function testUnAuthCorrectCode() {

@@ -35,7 +35,7 @@ try {
 }
 
 $sql = new Sql ();
-$downloadable = $sql->getRow("SELECT * FROM `download_rights` WHERE ( `user` = '{$systemUser->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
+$downloadable = $sql->getRow("SELECT album FROM `download_rights` WHERE ( `user` = '{$systemUser->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
 if ($downloadable ['album']) {
     echo 1;
 } else {

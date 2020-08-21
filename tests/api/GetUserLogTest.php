@@ -131,7 +131,6 @@ class GetUserLogTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $log = json_decode($response->getBody(), true);
-        $this->assertTrue(key_exists('user', $log[0]));
         $this->assertTrue(key_exists('time', $log[0]));
         $this->assertTrue(key_exists('action', $log[0]));
         $this->assertTrue(key_exists('what', $log[0]));

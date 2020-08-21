@@ -16,6 +16,6 @@ try {
 
 //TODO - update this once Image class is completed
 $sql = new Sql();
-echo json_encode($sql->getRow("SELECT galleries.*, COUNT(gallery_images.gallery) AS 'images' FROM galleries LEFT JOIN gallery_images ON galleries.id = gallery_images.gallery WHERE galleries.id = {$gallery->getId()} GROUP BY galleries.id;"));
+echo json_encode($sql->getRow("SELECT title FROM galleries WHERE galleries.id = {$gallery->getId()}"));
 $sql->disconnect();
 exit ();

@@ -14,5 +14,5 @@ try {
     exit();
 }
 
-echo json_encode($user->getDataArray());
+echo json_encode($user->getDataBasic());
 exit();

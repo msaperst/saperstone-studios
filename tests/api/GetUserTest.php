@@ -110,15 +110,11 @@ class GetUserTest extends TestCase {
         $user = json_decode($response->getBody(), true);
         $this->assertEquals(2, $user['id']);
         $this->assertEquals('lsaperst', $user['usr']);
-        $this->assertEquals('99cac6be874ee7b7087a09bc6dbc527b', $user['pass']);
         $this->assertEquals('Leigh Ann', $user['firstName']);
         $this->assertEquals('Saperstone', $user['lastName']);
         $this->assertEquals('la@saperstonestudios.com', $user['email']);
         $this->assertEquals('admin', $user['role']);
-        $this->assertEquals('398702d7c97b7fcf8aa31379bab01828', $user['hash']);
         $this->assertEquals(1, $user['active']);
-        $this->assertTrue(key_exists('created', $user));
-        $this->assertTrue(key_exists('lastLogin', $user));
         $this->assertNull($user['resetKey']);
     }
 }

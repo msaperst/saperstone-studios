@@ -15,7 +15,7 @@ try {
 }
 
 $sql = new Sql();
-$users = $sql->getRows("SELECT * FROM albums_for_users WHERE album = {$album->getId()}");
+$users = $sql->getRows("SELECT albums_for_users.user FROM albums_for_users WHERE album = {$album->getId()}");
 echo json_encode($users);
 $sql->disconnect();
 exit ();
