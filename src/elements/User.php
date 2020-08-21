@@ -157,17 +157,22 @@ class User {
     static function fromReset($email, $code) {
         $sql = new Sql();
         $row = $sql->getRow("SELECT * FROM users WHERE email='$email' AND resetKey='$code';");
-        $user = User::withId($row['id']);
         $sql->disconnect();
-        return $user;
+        return User::withId($row['id']);
     }
 
     static function fromLogin($username, $password) {
         $sql = new Sql();
         $row = $sql->getRow("SELECT * FROM users WHERE usr='$username' AND pass='" . md5($password) . "';");
-        $user = User::withId($row['id']);
         $sql->disconnect();
-        return $user;
+        return User::withId($row['id']);
+    }
+
+    static function fromEmail($email) {
+        $sql = new Sql();
+        $row = $sql->getRow("SELECT * FROM users WHERE email='$email';");
+        $sql->disconnect();
+        return User::withId($row['id']);
     }
 
     function isLoggedIn() {
@@ -308,6 +313,14 @@ class User {
         $this->raw = $user->getDataArray();
         $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
         $sql->disconnect();
+    }
+
+    function setResetCode() {
+        $sql = new Sql();
+        $resetCode = Strings::randomString(8);
+        $sql->executeStatement("UPDATE users SET resetKey='$resetCode' WHERE id={$this->id};");
+        $sql->disconnect();
+        return $resetCode;
     }
 
     function forceAdmin() {

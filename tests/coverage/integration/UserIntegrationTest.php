@@ -91,6 +91,19 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals(899, $user->getId());
     }
 
+    public function testFromEmailNoMatch() {
+        try {
+            User::fromEmail('random@email.com');
+        } catch (Exception $e) {
+            $this->assertEquals('User id is required', $e->getMessage());
+        }
+    }
+
+    public function testFromEmailMatch() {
+        $user = User::fromEmail('msaperst@gmail.com');
+        $this->assertEquals(1, $user->getId());
+    }
+
     public function testGetId() {
         $user = User::withId('899');
         $this->assertEquals(899, $user->getId());
@@ -741,6 +754,16 @@ class UserIntegrationTest extends TestCase {
             //TODO - check cookies
         } finally {
             unset($_COOKIE['CookiePreferences']);
+        }
+    }
+
+    public function testSetResetCode() {
+        try {
+            $user = User::withId(4);
+            $code = $user->setResetCode();
+            $this->assertEquals($code, $this->sql->getRow("SELECT * FROM users WHERE id = 4;")['resetKey']);
+        } finally {
+            $this->sql->executeStatement("UPDATE users SET resetKey=NULL WHERE id=4;");
         }
     }
 }

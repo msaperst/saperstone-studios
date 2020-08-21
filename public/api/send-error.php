@@ -5,46 +5,26 @@ $session->initialize();
 $systemUser = User::fromSystem();
 $api = new Api ();
 
-// check if fields passed are empty
-$sql = new Sql ();
-if (isset ($_POST ['name']) && $_POST ['name'] != "") {
-    $name = $sql->escapeString($_POST ['name']);
+try {
+    $error = $api->retrievePostString('error', 'Error');
+} catch ( Exception $e ) {
+    echo $e->getMessage();
+    exit();
 }
 
-if (isset ($_POST ['email']) && $_POST ['email'] != "") {
-    $email = $sql->escapeString($_POST ['email']);
+try {
+    $page = $api->retrievePostString('page', 'Page');
+} catch ( Exception $e ) {
+    echo $e->getMessage();
+    exit();
 }
 
-if (isset ($_POST ['error']) && $_POST ['error'] != "") {
-    $error = $sql->escapeString($_POST ['error']);
-} else {
-    echo "Error is required";
-    exit ();
+try {
+    $referrer = $api->retrievePostString('referrer', 'Referral');
+} catch ( Exception $e ) {
+    echo $e->getMessage();
+    exit();
 }
-
-if (isset ($_POST ['page']) && $_POST ['page'] != "") {
-    $page = $sql->escapeString($_POST ['page']);
-} else {
-    echo "A page is required";
-    exit ();
-}
-
-if (isset ($_POST ['referrer']) && $_POST ['referrer'] != "") {
-    $referrer = $sql->escapeString($_POST ['referrer']);
-} else {
-    echo "A referrer is required";
-    exit ();
-}
-
-$resolution = "";
-if (isset ($_POST ['resolution']) && $_POST ['resolution'] != "") {
-    $resolution = $sql->escapeString($_POST ['resolution']);
-}
-$sql->disconnect();
-
-$IP = $session->getClientIP();
-$geo_info = json_decode(file_get_contents("http://ipinfo.io/$IP/json"));
-$browser = new Browser ();
 
 // create email body and send it
 $to = "Webmaster <msaperst@gmail.com>";
@@ -60,12 +40,9 @@ $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take
 $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before.<br/><br/>";
 
 if ($systemUser->isLoggedIn()) {
-    $id = $systemUser->getId();
-    $name = $systemUser->getName();
-    $email = $systemUser->getEmail();
-    $html .= "<strong>User Id</strong>: $id<br/>";
-    $html .= "<strong>Name</strong>: $name<br/>";
-    $html .= "<strong>Email</strong>: <a href='mailto:$email'>$email</a><br/>";
+    $html .= "<strong>User Id</strong>: {$systemUser->getId()}<br/>";
+    $html .= "<strong>Name</strong>: {$systemUser->getName()}<br/>";
+    $html .= "<strong>Email</strong>: <a href='mailto:{$systemUser->getEmail()}'>{$systemUser->getEmail()}</a><br/>";
 }
 $html .= $email->getUserInfoHtml();
 
@@ -75,12 +52,9 @@ $text .= "\t\tThey came from page $referrer.\n";
 $text .= "\t\tYou might want to look into this or take action.\n";
 $text .= "\t\tUser information is collected before.\n\n";
 if ($systemUser->isLoggedIn()) {
-    $id = $systemUser->getId();
-    $name = $systemUser->getName();
-    $email = $systemUser->getEmail();
-    $text .= "User Id: $id\n";
-    $text .= "Name: $name\n";
-    $text .= "Email: $email\n";
+    $text .= "User Id: {$systemUser->getId()}\n";
+    $text .= "Name: {$systemUser->getName()}\n";
+    $text .= "Email: {$systemUser->getEmail()}\n";
 }
 $text .= $email->getUserInfoText();
 
