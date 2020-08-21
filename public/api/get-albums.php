@@ -11,16 +11,18 @@ $response = array();
 if ($systemUser->isAdmin()) {
     $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums.lastAccessed, albums.code FROM albums;";
 } else {
-    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '{$systemUser->getId()}' GROUP BY albums.id;";
+    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums_for_users.album FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = '{$systemUser->getId()}' GROUP BY albums.id;";
 }
 $sanitizedAlbums = array();
 $sql = new Sql();
 $albums = $sql->getRows($query);
 foreach ($albums as $album) {
-    if ($album ['date'] != null) {
+    if ($album ['date'] != NULL) {
         $album ['date'] = substr($album ['date'], 0, 10);
     }
-    array_push($sanitizedAlbums, $album);
+    if ($album['id'] != NULL) {
+        array_push($sanitizedAlbums, $album);
+    }
 }
 echo "{\"data\":" . json_encode($sanitizedAlbums) . "}";
 $sql->disconnect();

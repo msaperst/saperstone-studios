@@ -56,27 +56,34 @@ class GetAlbumsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $albums = json_decode($response->getBody(), true)['data'];
         $this->assertTrue(3 <= sizeOf($albums));  //there may be more depending on other things in the test DB
-        $this->assertEquals(997, $albums[sizeOf($albums)-3]['id']);
-        $this->assertEquals('sample-album', $albums[sizeOf($albums)-3]['name']);
-        $this->assertEquals('sample album for testing', $albums[sizeOf($albums)-3]['description']);
-        $this->assertEquals(date('Y-m-d'), $albums[sizeOf($albums)-3]['date']);
-        $this->assertEquals(0, $albums[sizeOf($albums)-3]['images']);
-        $this->assertEquals(0, $albums[sizeOf($albums)-3]['lastAccessed']);
-        $this->assertEquals(1234, $albums[sizeOf($albums)-3]['code']);
-        $this->assertEquals(998, $albums[sizeOf($albums)-2]['id']);
-        $this->assertEquals('sample-album', $albums[sizeOf($albums)-2]['name']);
-        $this->assertEquals('sample album for testing', $albums[sizeOf($albums)-2]['description']);
-        $this->assertEquals(date('Y-m-d'), $albums[sizeOf($albums)-2]['date']);
-        $this->assertEquals(0, $albums[sizeOf($albums)-2]['images']);
-        $this->assertEquals(0, $albums[sizeOf($albums)-2]['lastAccessed']);
-        $this->assertEquals('', $albums[sizeOf($albums)-2]['code']);
-        $this->assertEquals(999, $albums[sizeOf($albums)-1]['id']);
-        $this->assertEquals('sample-album', $albums[sizeOf($albums)-1]['name']);
-        $this->assertEquals('sample album for testing', $albums[sizeOf($albums)-1]['description']);
-        $this->assertEquals(date('Y-m-d'), $albums[sizeOf($albums)-1]['date']);
-        $this->assertEquals(0, $albums[sizeOf($albums)-1]['images']);
-        $this->assertEquals(0, $albums[sizeOf($albums)-1]['lastAccessed']);
-        $this->assertEquals(123, $albums[sizeOf($albums)-1]['code']);
+        //need to find our albums...
+        $id = 0;
+        for( $id; $id < sizeof($albums); $id++) {
+            if( $albums[$id]['id'] == 997) {
+                break;
+            }
+        }
+        $this->assertEquals(997, $albums[$id]['id']);
+        $this->assertEquals('sample-album', $albums[$id]['name']);
+        $this->assertEquals('sample album for testing', $albums[$id]['description']);
+        $this->assertEquals(date('Y-m-d'), $albums[$id]['date']);
+        $this->assertEquals(0, $albums[$id]['images']);
+        $this->assertEquals(0, $albums[$id]['lastAccessed']);
+        $this->assertEquals(1234, $albums[$id]['code']);
+        $this->assertEquals(998, $albums[$id+1]['id']);
+        $this->assertEquals('sample-album', $albums[$id+1]['name']);
+        $this->assertEquals('sample album for testing', $albums[$id+1]['description']);
+        $this->assertEquals(date('Y-m-d'), $albums[$id+1]['date']);
+        $this->assertEquals(0, $albums[$id+1]['images']);
+        $this->assertEquals(0, $albums[$id+1]['lastAccessed']);
+        $this->assertEquals('', $albums[$id+1]['code']);
+        $this->assertEquals(999, $albums[$id+2]['id']);
+        $this->assertEquals('sample-album', $albums[$id+2]['name']);
+        $this->assertEquals('sample album for testing', $albums[$id+2]['description']);
+        $this->assertEquals(date('Y-m-d'), $albums[$id+2]['date']);
+        $this->assertEquals(0, $albums[$id+2]['images']);
+        $this->assertEquals(0, $albums[$id+2]['lastAccessed']);
+        $this->assertEquals(123, $albums[$id+2]['code']);
     }
 
     public function testUploaderUser() {
