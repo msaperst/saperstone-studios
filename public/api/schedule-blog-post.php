@@ -7,39 +7,35 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$post = 0;
-if (isset ($_POST ['post'])) {
-    $post = ( int )$_POST ['post'];
-} else {
-    echo "No blog post provided";
-    exit ();
+try {
+    $blog = new Blog($_POST ['post']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
+}
+try {
+    $date = $api->retrievePostDateTime('date', 'Publish date', 'Y-m-d');
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-$sql = new Sql ();
-if (isset ($_POST ['date'])) {
-    $date = $sql->escapeString($_POST ['date']);
-} else {
-    echo "No publish date provided";
-    exit ();
+try {
+    $time = $api->retrievePostDateTime('time', 'Publish time', 'H:i');
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-if (isset ($_POST ['time'])) {
-    $time = $sql->escapeString($_POST ['time']);
-} else {
-    echo "No publish time provided";
-    exit ();
-}
 $today = new DateTime ();
 $scheduled = new DateTime ("$date $time");
 $howLong = $scheduled->getTimestamp() - $today->getTimestamp();
 if ($howLong <= 0) {
-    echo "This time is not in the future, please select a future time to schedule this post.";
+    echo "This time is not in the future, please select a future time to schedule this post";
     exit ();
 }
 
-$command = "UPDATE \`" . getenv('DB_NAME') . "\`.\`blog_details\` SET \`active\` = '1' WHERE \`id\` = '$post';";
+$command = "UPDATE \`" . getenv('DB_NAME') . "\`.\`blog_details\` SET \`active\` = '1' WHERE \`id\` = '{$blog->getId()}';";
 $command = "mysql -h " . getenv('DB_HOST') . " -P " . getenv('DB_PORT') . " -u " . getenv('DB_USER') . " -p" . getenv('DB_PASS') . " -e \"$command\"";
 system("nohup bash -c 'sleep $howLong; $command' > /dev/null 2>&1 &");
-
-$sql->disconnect();
 exit ();
