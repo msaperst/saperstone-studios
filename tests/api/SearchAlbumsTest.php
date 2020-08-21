@@ -65,10 +65,6 @@ class SearchAlbumsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $albums = json_decode($response->getBody(), true);
         $this->assertTrue(2 <= sizeof($albums));
-        $this->assertEquals(998, $albums[sizeof($albums) - 2]['id']);
-        $this->assertEquals("sample-album-yeah", $albums[sizeof($albums) - 2]['name']);
-        $this->assertEquals(999, $albums[sizeof($albums) - 1]['id']);
-        $this->assertEquals("sample-album", $albums[sizeof($albums) - 1]['name']);
     }
 
     public function testKeywordBlank() {
@@ -85,11 +81,6 @@ class SearchAlbumsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $albums = json_decode($response->getBody(), true);
         $this->assertTrue(2 <= sizeof($albums));
-        $this->assertEquals(998, $albums[sizeof($albums) - 2]['id']);
-        $this->assertEquals("sample-album-yeah", $albums[sizeof($albums) - 2]['name']);
-
-        $this->assertEquals(999, $albums[sizeof($albums) - 1]['id']);
-        $this->assertEquals("sample-album", $albums[sizeof($albums) - 1]['name']);
     }
 
     public function testKeyword() {
@@ -99,17 +90,17 @@ class SearchAlbumsTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/search-albums.php', [
             'query' => [
-                'keyword' => 'sample'
+                'keyword' => 'sample-album'
             ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $albums = json_decode($response->getBody(), true);
         $this->assertTrue(2 <= sizeof($albums));
-        $this->assertEquals(998, $albums[sizeof($albums) - 2]['id']);
-        $this->assertEquals("sample-album-yeah", $albums[sizeof($albums) - 2]['name']);
-        $this->assertEquals(999, $albums[sizeof($albums) - 1]['id']);
-        $this->assertEquals("sample-album", $albums[sizeof($albums) - 1]['name']);
+        $this->assertEquals(998, $albums[0]['id']);
+        $this->assertEquals("sample-album-yeah", $albums[0]['name']);
+        $this->assertEquals(999, $albums[1]['id']);
+        $this->assertEquals("sample-album", $albums[1]['name']);
     }
 
     public function testKeywords() {
