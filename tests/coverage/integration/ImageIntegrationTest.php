@@ -20,7 +20,7 @@ class ImageIntegrationTest extends TestCase {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('899', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (898, '899', '', '1', '', '/albums/sample/sample.jpg', '300', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (899, '899', '', '2', '', '', '300', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (899, '899', 'sample', '2', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (898, '1', '', '1', '', '/albums/sample/sample.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (899, '1', '', '1', '', '', '300', '400', '1');");
         $oldmask = umask(0);
@@ -122,6 +122,11 @@ class ImageIntegrationTest extends TestCase {
         $this->assertEquals(898, $image->getId());
     }
 
+    public function testGetTitle() {
+        $image = new Image(new Album(899), '2');
+        $this->assertEquals('sample', $image->getTitle());
+    }
+
     public function testCanUserGetDataAlbumNobody() {
         $image = new Image(new Album(899), 1);
         $this->assertFalse($image->canUserGetData());
@@ -173,7 +178,7 @@ class ImageIntegrationTest extends TestCase {
         $this->assertEquals(899, $imageInfo['id']);
         $this->assertFalse(isset($imageInfo['gallery']));
         $this->assertEquals(899, $imageInfo['album']);
-        $this->assertEquals('', $imageInfo['title']);
+        $this->assertEquals('sample', $imageInfo['title']);
         $this->assertEquals(2, $imageInfo['sequence']);
         $this->assertEquals('', $imageInfo['caption']);
         $this->assertEquals('', $imageInfo['location']);

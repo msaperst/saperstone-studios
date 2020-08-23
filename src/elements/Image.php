@@ -53,6 +53,10 @@ class Image {
         return $this->id;
     }
 
+    function getTitle() {
+        return $this->title;
+    }
+
     function getDataArray() {
         return $this->raw;
     }

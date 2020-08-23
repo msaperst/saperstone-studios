@@ -5,58 +5,52 @@ $session->initialize();
 $systemUser = User::fromSystem();
 $api = new Api ();
 
-$userId = $systemUser->getIdentifier();
+try {
+    $album = new Album($_POST ['album']);
+} catch (Exception $e) {
+    echo json_encode(array('err' => $e->getMessage()));
+    exit();
+}
 
-$sql = new Sql ();
-if (isset ($_POST ['what'])) {
-    $what = $sql->escapeString($_POST ['what']);
-} else {
-    $response ['err'] = "Need to provide what you desire to download";
-    echo json_encode($response);
-    $conn->disconnect();
+if (!$album->canUserAccess()) {
+    header('HTTP/1.0 403 Unauthorized');
     exit ();
 }
 
-if (isset ($_POST ['album'])) {
-    $album = $sql->escapeString($_POST ['album']);
-} else {
-    echo "No album was provided. Please refresh this page and resubmit this request.";
-    $conn->disconnect();
-    exit ();
-}
-$sql = "SELECT * FROM `albums` WHERE id = '$album';";
-$album_info = $sql->getRow($sql);
-// if the album doesn't exist, throw a 404 error
-if (!$album_info ['name']) {
-    echo "The provided album does not exist. Please refresh this page and resubmit this request.";
-    $conn->disconnect();
-    exit ();
+try {
+    $what = $api->retrievePostString('what', 'What to select');
+} catch (Exception $e) {
+    echo json_encode(array('err' => $e->getMessage()));
+    exit();
 }
 
-$selected = array();
+$sql = new Sql();
 if ($what == "favorites") {
-    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$systemUser' AND favorites.album = '$album';";
-    $result = mysqli_query($conn->db, $sql);
-    $desired = array();
-    while ($r = mysqli_fetch_assoc($result)) {
-        $selected [] = $r ['title'];
+    $selected = array_column($sql->getRows("SELECT album_images.title FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '{$systemUser->getIdentifier()}' AND favorites.album = '{$album->getId()}';"), 'title');
+    if (empty($selected)) {
+        echo json_encode(array('err' => "You have not selected any favorites"));
+        $sql->disconnect();
+        exit();
     }
 } else {
-    $sql = "SELECT * FROM album_images WHERE album = '$album' AND sequence = '$what';";
-    $result = mysqli_query($conn->db, $sql);
-    $desired = array();
-    while ($r = mysqli_fetch_assoc($result)) {
-        $selected [] = $r ['title'];
+    try {
+        $image = new Image($album, $what);
+    } catch (Exception $e) {
+        echo json_encode(array('err' => $e->getMessage()));
+        $sql->disconnect();
+        exit();
     }
+    $selected = array($image->getTitle());
 }
 
-$name = "";
+$name = $link = "Someone";
 if (isset ($_POST ['name'])) {
     $name = $sql->escapeString($_POST ['name']);
 }
 $emailA = "";
-if (isset ($_POST ['emailA'])) {
-    $emailA = $sql->escapeString($_POST ['emailA']);
+if (isset ($_POST ['email'])) {
+    $emailA = $sql->escapeString($_POST ['email']);
+    $link = "<a href='mailto:$emailA'>$name</a>";
 }
 $comment = "";
 if (isset ($_POST ['comment'])) {
@@ -67,15 +61,20 @@ $sql->disconnect();
 // send email
 $systemUser = User::fromSystem();
 $from = "Selects <selects@saperstonestudios.com>";
-$to = "Selects <selects@saperstonestudios.com>";
+//$to = "Selects <selects@saperstonestudios.com>";  //TODO - fix once done testing
+$to = "Max <msaperst+sstest@gmail.com>";
 $subject = "Selects Have Been Made";
 $email = new Email($to, $from, $subject);
 
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
 $text = "This is an automatically generated message from Saperstone Studios\n\n";
-$html .= "<p><a href='mailto:$emailA'>$name</a> has made a selection from the <a href='" . $session->getBaseURL() . "/user/album.php?album=" . $album_info ['id'] . "' target='_blank'>" . $album_info ['name'] . "</a> album</p>";
-$text .= "$name has made a selection from the " . $album_info ['name'] . " album at " . $session->getBaseURL() . "/user/album.php?album=" . $album_info ['id'] . ". Their email address is $emailA\n\n";
+$html .= "<p>$link has made a selection from the <a href='" . $session->getBaseURL() . "/user/album.php?album={$album->getId()}' target='_blank'>{$album->getName()}</a> album</p>";
+$text .= "$name has made a selection from the {$album->getName()} album at " . $session->getBaseURL() . "/user/album.php?album={$album->getId()}.";
+if ($emailA != "") {
+    $text .= "Their email address is $emailA";
+}
+$text .= "\n\n";
 $html .= "<p><ul><li>" . implode("</li><li>", $selected) . "</li></ul></p><br/>";
 $text .= implode("\n", $selected) . "\n\n";
 $html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$comment</p>";
