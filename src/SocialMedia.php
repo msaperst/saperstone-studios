@@ -58,14 +58,16 @@ class SocialMedia {
         ));
         // and collect their IDs
         $mediaId = $reply->media_id_string;
-        // next send our message and the image
-        $reply = $this->cb->statuses_update(array(
-            'status' => "{$blog->getTitle()}\n$link",
-            'media_ids' => $mediaId
-        ));
-        $sql = new Sql();
-        $sql->executeStatement("UPDATE `blog_details` SET `twitter` = '{$reply->id}' WHERE id={$blog->getId()};");
-        $sql->disconnect();
+        if( $mediaId != NULL && $mediaId > 0) {
+            // next send our message and the image
+            $reply = $this->cb->statuses_update(array(
+                'status' => "{$blog->getTitle()}\n$link",
+                'media_ids' => $mediaId
+            ));
+            $sql = new Sql();
+            $sql->executeStatement("UPDATE `blog_details` SET `twitter` = '{$reply->id}' WHERE id={$blog->getId()};");
+            $sql->disconnect();
+        }
     }
 
     function removeBlogFromTwitter(Blog $blog) {

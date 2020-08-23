@@ -90,6 +90,31 @@ class ContractIntegrationTest extends TestCase {
         $this->assertEquals(999, $contract->getId());
     }
 
+    public function testGetType() {
+        $contract = Contract::withId(999);
+        $this->assertEquals('commercial', $contract->getType());
+    }
+
+    public function testGetName() {
+        $contract = Contract::withId(999);
+        $this->assertEquals('MaxMaxMax', $contract->getName());
+    }
+
+    public function testGetEmail() {
+        $contract = Contract::withId(999);
+        $this->assertEquals('email-address', $contract->getEmail());
+    }
+
+    public function testGetDeposit() {
+        $contract = Contract::withId(999);
+        $this->assertEquals(0, $contract->getDeposit());
+    }
+
+    public function testGetInvoice() {
+        $contract = Contract::withId(999);
+        $this->assertEquals('nope!', $contract->getInvoice());
+    }
+
     public function testGetBasicData() {
         $contract = Contract::withId(999);
         $contractInfo = $contract->getDataBasic();
@@ -336,6 +361,253 @@ class ContractIntegrationTest extends TestCase {
         } finally {
             $this->sql->executeStatement("DELETE FROM contracts WHERE id = $contractId");
             $this->sql->executeStatement("DELETE FROM contract_line_items WHERE contract = $contractId");
+        }
+    }
+
+    public function testSignContractNull() {
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign(null);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact name is required', $e->getMessage());
+        }
+    }
+
+    public function testSignContractNoName() {
+        $params = array();
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact name is required', $e->getMessage());
+        }
+    }
+
+    public function testSignContractBlankName() {
+        $params = [
+            'name' => ''
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact name can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testSignContractNoAddress() {
+        $params = [
+            'name' => 'EleMax'
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact address is required', $e->getMessage());
+        }
+    }
+
+    public function testSignContractBlankAddress() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => ''
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact address can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testSignContractNoNumber() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street'
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact number is required', $e->getMessage());
+        }
+    }
+
+    public function testSignContractBlankNumber() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => ''
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact number can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testSignContractNoEmail() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345'
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact email is required', $e->getMessage());
+        }
+    }
+
+    public function testSignContractBlankEmail() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345',
+            'email' => ''
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact email can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testSignContractBadEmail() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345',
+            'email' => 'max#max'
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract contact email is not valid', $e->getMessage());
+        }
+    }
+
+    public function testSignContractNoSignature() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345',
+            'email' => 'msaperst+sstest@gmail.com'
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract signature is required', $e->getMessage());
+        }
+    }
+
+    public function testSignContractBlankSignature() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345',
+            'email' => 'msaperst+sstest@gmail.com',
+            'signature' => ''
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract signature can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testSignContractNoInitials() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345',
+            'email' => 'msaperst+sstest@gmail.com',
+            'signature' => 'something'
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract initials are required', $e->getMessage());
+        }
+    }
+
+    public function testSignContractBlankInitials() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345',
+            'email' => 'msaperst+sstest@gmail.com',
+            'signature' => 'something',
+            'initial' => ''
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract initials can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testSignContractNoContent() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345',
+            'email' => 'msaperst+sstest@gmail.com',
+            'signature' => 'something',
+            'initial' => 'MAS'
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract content is required', $e->getMessage());
+        }
+    }
+
+    public function testSignContractBlankContent() {
+        $params = [
+            'name' => 'EleMax',
+            'address' => '123 Street',
+            'number' => '12345',
+            'email' => 'msaperst+sstest@gmail.com',
+            'signature' => 'something',
+            'initial' => 'MAS',
+            'content' => ''
+        ];
+        try {
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract content can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testSignContract() {
+        mkdir( dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' );
+        try {
+            $params = [
+                'name' => 'EleMax',
+                'address' => '123 Street',
+                'number' => '12345',
+                'email' => 'msaperst+sstest@gmail.com',
+                'signature' => 'something',
+                'initial' => 'MAS',
+                'content' => 'some contract content'
+            ];
+            $contract = Contract::withId(999);
+            $contractFile = $contract->sign($params);
+            $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . $contractFile));
+            $this->assertEquals('/user/contracts/EleMax - 2020-08-23 - Commercial Contract.pdf', $contractFile);
+        } finally {
+            system( 'rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' );
         }
     }
 }

@@ -170,6 +170,26 @@ class Contract {
         return $this->id;
     }
 
+    function getType() {
+        return $this->type;
+    }
+
+    function getName() {
+        return $this->name;
+    }
+
+    function getEmail() {
+        return $this->email;
+    }
+
+    function getDeposit() {
+        return $this->deposit;
+    }
+
+    function getInvoice() {
+        return $this->invoice;
+    }
+
     /**
      * Only return basic information
      * id, type, name, session
@@ -226,5 +246,102 @@ class Contract {
         $this->link = $contract->link;
         $this->raw = $contract->getDataArray();
         return $lastId;
+    }
+
+    function sign($params) {
+        $sql = new Sql();
+        //contract name
+        if (!isset ($params['name'])) {
+            $sql->disconnect();
+            throw new Exception("Contract contact name is required");
+        } elseif ($params['name'] == "") {
+            $sql->disconnect();
+            throw new Exception("Contract contact name can not be blank");
+        }
+        $this->name = $sql->escapeString($params['name']);
+        //contract address
+        if (!isset ($params['address'])) {
+            $sql->disconnect();
+            throw new Exception("Contract contact address is required");
+        } elseif ($params['address'] == "") {
+            $sql->disconnect();
+            throw new Exception("Contract contact address can not be blank");
+        }
+        $this->address = $sql->escapeString($params['address']);
+        //contract number
+        if (!isset ($params['number'])) {
+            $sql->disconnect();
+            throw new Exception("Contract contact number is required");
+        } elseif ($params['number'] == "") {
+            $sql->disconnect();
+            throw new Exception("Contract contact number can not be blank");
+        }
+        $this->number = $sql->escapeString($params['number']);
+        //contract email
+        if (!isset ($params['email'])) {
+            $sql->disconnect();
+            throw new Exception("Contract contact email is required");
+        } elseif ($params['email'] == "") {
+            $sql->disconnect();
+            throw new Exception("Contract contact email can not be blank");
+        } elseif (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
+            $sql->disconnect();
+            throw new Exception("Contract contact email is not valid");
+        }
+        $this->email = $sql->escapeString($params['email']);
+        //contract signature
+        if (!isset ($params['signature'])) {
+            $sql->disconnect();
+            throw new Exception("Contract signature is required");
+        } elseif ($params['signature'] == "") {
+            $sql->disconnect();
+            throw new Exception("Contract signature can not be blank");
+        }
+        $this->signature = $sql->escapeString($params['signature']);
+        //contract initial
+        if (!isset ($params['initial'])) {
+            $sql->disconnect();
+            throw new Exception("Contract initials are required");
+        } elseif ($params['initial'] == "") {
+            $sql->disconnect();
+            throw new Exception("Contract initials can not be blank");
+        }
+        $this->initial = $sql->escapeString($params['initial']);
+        //contract content
+        if (!isset ($params['content'])) {
+            $sql->disconnect();
+            throw new Exception("Contract content is required");
+        } elseif ($params['content'] == "") {
+            $sql->disconnect();
+            throw new Exception("Contract content can not be blank");
+        }
+        $this->content = $sql->escapeString($params['content']);
+
+        //set up our file
+        $file = DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' . DIRECTORY_SEPARATOR . $this->name . ' - ' . date('Y-m-d') . ' - ' . ucfirst($this->type) . ' Contract.pdf';
+        $sql->executeStatement("UPDATE `contracts` SET `name` = '{$this->name}', `address` = '{$this->address}', `number` = '{$this->number}',
+        `email` = '{$this->email}', `signature` = '{$this->signature}', `initial` = '{$this->initial}', `content` = '{$this->content}', 
+        `file` = '$file' WHERE `id` = {$this->id};");
+        $sql->disconnect();
+
+        // sanitize out content
+        $content = str_replace("\\n", '', $this->content);
+        $content = str_replace("\\\"", '"', $content);
+        $content = str_replace("\\'", '\'', $content);
+
+        // look at some formatting
+        $customCSS = file_get_contents(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'mpdf.css');
+        // setup our footer
+        $footer = "<div align='left'><u>LAS</u>/<img src='{$this->initial}' style='height:20px; vertical-align:text-bottom;' /></div>";
+
+        // create/save pdf
+        require dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'autoload.php';
+        $mpdf = new \Mpdf\Mpdf();
+        $mpdf->SetHTMLFooter($footer);
+        $mpdf->WriteHTML($customCSS, 1);
+        $mpdf->WriteHTML($content);
+        $mpdf->Output(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . $file);
+
+        return $file;
     }
 }

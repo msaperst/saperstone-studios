@@ -6,120 +6,35 @@ $systemUser = User::fromSystem();
 $api = new Api();
 
 try {
-    $id = $api->retrievePostInt('id', 'Contract id');
+    $contract = Contract::withId($_POST['id']);
 } catch (Exception $e) {
     echo $e->getMessage();
-    exit();
-}
-
-$sql = new Sql ();
-$contract_info = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
-if (!$contract_info ['id']) {
-    echo "Contract id does not match any contracts";
-    $sql->disconnect();
-    exit ();
-}
-
-try {
-    $name = $api->retrievePostString('name', 'Contract contact name');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    $sql->disconnect();
     exit();
 }
 
 try {
-    $address = $api->retrievePostString('address', 'Contract contact address');
+    $file = $contract->sign($_POST);
 } catch (Exception $e) {
     echo $e->getMessage();
-    $sql->disconnect();
     exit();
 }
-
-try {
-    $number = $api->retrievePostString('number', 'Contract contact number');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    $sql->disconnect();
-    exit();
-}
-
-try {
-    $emailA = $api->retrieveValidatedPost('email', 'Contract contact email', FILTER_VALIDATE_EMAIL);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    $sql->disconnect();
-    exit();
-}
-
-try {
-    $signature = $api->retrievePostString('signature', 'Contract signature');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    $sql->disconnect();
-    exit();
-}
-
-try {
-    $initial = $api->retrievePostString('initial', 'Contract initials');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    $sql->disconnect();
-    exit();
-}
-
-try {
-    $content = $api->retrievePostString('content', 'Contract content');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    $sql->disconnect();
-    exit();
-}
-
-
-$contract_info = $sql->getRow("SELECT * FROM `contracts` WHERE `id` = $id");
-$file = "../user/contracts/$name - " . date('Y-m-d') . " - " . ucfirst($contract_info ['type']) . " Contract.pdf";
-$sql->executeStatement("UPDATE `contracts` SET `name` = '$name', `address` = '$address', `number` = '$number',
-        `email` = '$emailA', `signature` = '$signature', `initial` = '$initial', `content` = '$content', 
-        `file` = '$file' WHERE `id` = $id;");
-$contract_info = $sql->getRow("SELECT * FROM `contracts` WHERE `id` = $id");
-$sql->disconnect();
-
-// sanitize out content
-$content = str_replace("\\n", '', $content);
-$content = str_replace("\\\"", '"', $content);
-$content = str_replace("\\'", '\'', $content);
-
-// look at some formatting
-$customCSS = file_get_contents('../css/mpdf.css');
-
-// setup our footer
-$footer = "<div align='left'><u>LAS</u>/<img src='$initial' style='height:20px; vertical-align:text-bottom;' /></div>";
-
-// create/save pdf
-require dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "resources/autoload.php";
-$mpdf = new \Mpdf\Mpdf();
-$mpdf->SetHTMLFooter($footer);
-$mpdf->WriteHTML($customCSS, 1);
-$mpdf->WriteHTML($content);
-$mpdf->Output($file);
 
 // email out pdf
 $from = "Contracts <contracts@saperstonestudios.com>";
-$to = "$name <$emailA>";
-$subject = "Saperstone Studios " . ucfirst($contract_info ['type']) . " Contract";
+$to = "{$contract->getName()} <{$contract->getEmail()}>";
+$subject = "Saperstone Studios " . ucfirst($contract->getType()) . " Contract";
 $email = new Email($to, $from, $subject);
 
 $html = "<html><body>";
 $html .= "<p>Thank you for signing your contract. ";
 $text = "Thank you for signing your contract. ";
-if ($contract_info ['deposit'] > 0) {
-    $html .= "Please note you have a $" . $contract_info ['deposit'] . " deposit due. ";
-    $text .= "Please note you have a $" . $contract_info ['deposit'] . " deposit due. ";
+if ($contract->getDeposit() > 0) {
+    $html .= "Please note you have a \${$contract->getDeposit()} deposit due. ";
+    $text .= "Please note you have a \${$contract->getDeposit()} deposit due. ";
 }
-if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
-    $html .= "You can pay your invoice online <a href='" . $contract_info ['invoice'] . "' target='_blank'>here</a>.";
-    $text .= "You can pay your invoice online at " . $contract_info ['invoice'] . ".";
+if ($contract->getInvoice() != NULL && $contract->getInvoice() != "") {
+    $html .= "You can pay your invoice online <a href='{$contract->getInvoice()}' target='_blank'>here</a>.";
+    $text .= "You can pay your invoice online at {$contract->getInvoice()}.";
 }
 $html .= "</p>";
 $text .= "\n\n";
@@ -127,7 +42,7 @@ $html .= "</body></html>";
 
 $email->setHtml($html);
 $email->setText($text);
-$email->addAttachment($file);
+$email->addAttachment(dirname(__DIR__) . $file);
 try {
     $email->sendEmail();
 } catch (Exception $e) {
@@ -135,17 +50,18 @@ try {
 }
 
 // now send to LAS
-$to = "Contracts <contracts@saperstonestudios.com>";
+//$to = "Contracts <contracts@saperstonestudios.com>";
+$to = "Test <msaperst+sstest@gmail.com>";    //TODO - fix this once done testing it out
 $email = new Email($to, $from, $subject);
 
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
 $text = "This is an automatically generated message from Saperstone Studios\n\n";
-$html .= "<p>$name has signed their contract, this is a copy of it for your records. ";
-$text .= "$name has signed their contract, this is a copy of it for your records. ";
-if ($contract_info ['deposit'] > 0) {
-    $html .= "Don't forget that they have a $" . $contract_info ['deposit'] . " deposit due. ";
-    $text .= "Don't forget that they have a $" . $contract_info ['deposit'] . " deposit due. ";
+$html .= "<p>{$contract->getName()} has signed their contract, this is a copy of it for your records. ";
+$text .= "{$contract->getName()} has signed their contract, this is a copy of it for your records. ";
+if ($contract->getDeposit() > 0) {
+    $html .= "Don't forget that they have a \${$contract->getDeposit()} deposit due. ";
+    $text .= "Don't forget that they have a \${$contract->getDeposit()} deposit due. ";
 }
 $html .= "</p>";
 $text .= "\n\n";
@@ -153,7 +69,7 @@ $html .= "</body></html>";
 
 $email->setHtml($html);
 $email->setText($text);
-$email->addAttachment($file);
+$email->addAttachment(dirname(__DIR__) . $file);
 try {
     $email->sendEmail();
 } catch (Exception $e) {
