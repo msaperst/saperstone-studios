@@ -1,27 +1,35 @@
-# [Start Bootstrap](http://startbootstrap.com/) - [Modern Business](http://startbootstrap.com/template-overviews/modern-business/)
+# Saperstone Studios Website
+Something about how awesome this is
+## How to use
+Something about running tests, checking coverage, pipeline, docker, etc
+## TODO
+* Add google reviews on footer: https://hughesfioretti.com/, just on index/details page? main landing, about, contact
 
-[Modern Business](http://startbootstrap.com/template-overviews/modern-business/) is a multipurpose, full website template for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/). This template includes 17 unique HTML pages and a working PHP contact form.
-
-## Getting Started
-
-To use this template, choose one of the following options to get started:
-* Download the latest release on Start Bootstrap
-* Fork this repository on GitHub
-
-## Bugs and Issues
-
-Have a bug or an issue with this template? [Open a new issue](https://github.com/IronSummitMedia/startbootstrap-modern-business/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](http://startbootstrap.com/template-overviews/modern-business/).
-
-## Creator
-
-Start Bootstrap was created by and is maintained by **David Miller**, Managing Parter at [Iron Summit Media Strategies](http://www.ironsummitmedia.com/).
-
-* https://twitter.com/davidmillerskt
-* https://github.com/davidtmiller
-
-Start Bootstrap is based on the [Bootstrap](http://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
-
-## Copyright and License
-
-Copyright 2013-2015 Iron Summit Media Strategies, LLC. Code released under the [Apache 2.0](https://github.com/IronSummitMedia/startbootstrap-modern-business/blob/gh-pages/LICENSE) license.
-
+Turn what to wear into a gallery?
+left and right controls for galleries
+Unable to delete multiple images from gallery/album
+Set albums to use id (static) instead of sequence
+Fix album delete to use ID
+Convert API calls into function calls - this can then be unit tested ;)
+Align two verticals as horizontal for slideshow
+Allow dragging and dropping of text area to breakup images in blog
+Fix color of LA's face
+* email notification of invalid login
+* email on error pages
+* logs of download user actions
+	still need it for cart
+* indicate which albums don't have thumbnails made of them
+* make album codes unique - OR - bring them to multiple albums
+run zap
+	set cookie to be secure
+	fix incomplete cache control
+run openscap
+run twistlock
+ceremony and reception venue are not saved when editing contract
+fix inability to share images on pinterest
+unable to download/view images on ipad/iphone
+* unable to drag text areas on blog
+cents aren't properly saved in db for price/deposit on contracts
+** simplify *.conf files
+*** resort images in albums based on file names
+*** hash for viewing images in album (make sharing particular ones easier)

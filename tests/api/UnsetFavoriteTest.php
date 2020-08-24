@@ -9,7 +9,7 @@ use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-class SetFavoriteTest extends TestCase {
+class UnsetFavoriteTest extends TestCase {
     private $http;
     private $sql;
 
@@ -38,7 +38,7 @@ class SetFavoriteTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -49,7 +49,7 @@ class SetFavoriteTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => ''
             ],
@@ -63,7 +63,7 @@ class SetFavoriteTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 'a'
             ],
@@ -77,7 +77,7 @@ class SetFavoriteTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 9999
             ],
@@ -91,7 +91,7 @@ class SetFavoriteTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 999
             ],
@@ -105,7 +105,7 @@ class SetFavoriteTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 999,
                 'image' => ''
@@ -120,7 +120,7 @@ class SetFavoriteTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 999,
                 'image' => '999'
@@ -131,43 +131,26 @@ class SetFavoriteTest extends TestCase {
         $this->assertEquals("Image id does not match any images", (string)$response->getBody());
     }
 
-    public function testSetFavoriteUnauth() {
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+    public function testUnsetFavoriteUnauth() {
+        $this->http->request('POST', 'api/set-favorite.php', [
+            'form_params' => [
+                'album' => 999,
+                'image' => '0'
+            ]
+        ]);
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 999,
                 'image' => '0'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("1", (string)$response->getBody());
+        $this->assertEquals("0", (string)$response->getBody());
         $images = $this->sql->getRows("SELECT * FROM `favorites` WHERE `favorites`.`album` = 999;");
-        $this->assertEquals(1, sizeOf($images));
-        $this->assertTrue(filter_var($images[0]['user'], FILTER_VALIDATE_IP) !== false);
-        $this->assertEquals(999, $images[0]['album']);
-        $this->assertEquals('999', $images[0]['image']);
+        $this->assertEquals(0, sizeOf($images));
     }
 
-    public function testSetFavoriteAuth() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
-            'form_params' => [
-                'album' => 999,
-                'image' => '0'
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("1", (string)$response->getBody());
-        $images = $this->sql->getRows("SELECT * FROM `favorites` WHERE `favorites`.`album` = 999;");
-        $this->assertEquals(1, sizeOf($images));
-        $this->assertEquals(1, $images[0]['user']);
-        $this->assertEquals(999, $images[0]['album']);
-        $this->assertEquals('999', $images[0]['image']);
-    }
-
-    public function testSetFavoriteSet() {
+    public function testUnsetFavoriteAuth() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -178,7 +161,7 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $response = $this->http->request('POST', 'api/set-favorite.php', [
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 999,
                 'image' => '0'
@@ -186,11 +169,25 @@ class SetFavoriteTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("1", (string)$response->getBody());
+        $this->assertEquals("0", (string)$response->getBody());
         $images = $this->sql->getRows("SELECT * FROM `favorites` WHERE `favorites`.`album` = 999;");
-        $this->assertEquals(1, sizeOf($images));
-        $this->assertEquals(1, $images[0]['user']);
-        $this->assertEquals(999, $images[0]['album']);
-        $this->assertEquals('999', $images[0]['image']);
+        $this->assertEquals(0, sizeOf($images));
+    }
+
+    public function testUnsetFavoriteNotSet() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/unset-favorite.php', [
+            'form_params' => [
+                'album' => 999,
+                'image' => '0'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("0", (string)$response->getBody());
+        $images = $this->sql->getRows("SELECT * FROM `favorites` WHERE `favorites`.`album` = 999;");
+        $this->assertEquals(0, sizeOf($images));
     }
 }
