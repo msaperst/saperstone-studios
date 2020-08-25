@@ -1,13 +1,9 @@
 <?php
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-$session = new Session();
-$session->initialize();
 $systemUser = User::fromSystem();
-$api = new Api ();
 
 $sql = new Sql();
-$userId = $systemUser->getIdentifier();
-$results = $sql->getRows("SELECT album_images.album, album_images.sequence, album_images.location FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$userId';");
+$results = $sql->getRows("SELECT album_images.album, album_images.sequence, album_images.location FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '{$systemUser->getIdentifier()}';");
 $favorites = array();
 foreach ($results as $r) {
     $album = $r ['album'];

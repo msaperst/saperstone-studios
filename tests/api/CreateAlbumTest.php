@@ -175,24 +175,4 @@ class CreateAlbumTest extends TestCase {
             $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = $albumId;");
         }
     }
-
-    public function testCantCreateFolder() {
-        rename(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/tmp_albums');
-        try {
-            date_default_timezone_set("America/New_York");
-            $cookieJar = CookieJar::fromArray([
-                'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], getenv('DB_HOST'));
-            $response = $this->http->request('POST', 'api/create-album.php', [
-                'form_params' => array(
-                    'name' => 'Sample Album'
-                ),
-                'cookies' => $cookieJar
-            ]);
-            $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals("<br />\n<b>Warning</b>:  mkdir(): File exists in <b>/var/www/src/elements/Album.php</b> on line <b>163</b><br />\nmkdir(): File exists <br/>Unable to create album", (string)$response->getBody());
-        } finally {
-            rename(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/tmp_albums', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums');
-        }
-    }
 }
