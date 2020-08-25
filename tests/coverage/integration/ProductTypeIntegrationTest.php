@@ -117,8 +117,21 @@ class ProductTypeIntegrationTest extends TestCase {
         }
     }
 
+    public function testWithParamsNoAccess() {
+        try {
+            $params = [
+                'category' => 'signature',
+                'name' => 'name'
+            ];
+            $product = ProductType::withParams($params);
+            $product->create();
+        } catch (Exception $e) {
+            $this->assertEquals('User not authorized to create product type', $e->getMessage());
+        }
+    }
+
     public function testWithParamsGetDataArray() {
-        $sql = new Sql();
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         try {
             $params = [
                 'category' => 'signature',
@@ -126,18 +139,40 @@ class ProductTypeIntegrationTest extends TestCase {
             ];
             $product = ProductType::withParams($params);
             $productId = $product->create();
+            unset($_SESSION['hash']);
             $productTypeInfo = $product->getDataArray();
             $this->assertEquals($productId, $productTypeInfo['id']);
             $this->assertEquals('signature', $productTypeInfo['category']);
             $this->assertEquals('name', $productTypeInfo['name']);
         } finally {
+            $sql = new Sql();
+            $sql->executeStatement("DELETE FROM product_types WHERE id = $productId");
+            $sql->disconnect();
+        }
+    }
+
+    public function testCreateNoPermissionsDelete() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        try {
+            $params = [
+                'category' => 'signature',
+                'name' => 'name'
+            ];
+            $product = ProductType::withParams($params);
+            $productId = $product->create();
+            unset($_SESSION['hash']);
+            $product->delete();
+        } catch (Exception $e) {
+            $this->assertEquals('User not authorized to delete product type', $e->getMessage());
+        } finally {
+            $sql = new Sql();
             $sql->executeStatement("DELETE FROM product_types WHERE id = $productId");
             $sql->disconnect();
         }
     }
 
     public function testCreateDelete() {
-        $sql = new Sql();
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         try {
             $params = [
                 'category' => 'signature',
@@ -146,11 +181,12 @@ class ProductTypeIntegrationTest extends TestCase {
             $product = ProductType::withParams($params);
             $productId = $product->create();
             $product->delete();
+            unset($_SESSION['hash']);
+            $sql = new Sql();
             $this->assertEquals(0, $sql->getRowCount("SELECT * FROM product_types WHERE id = $productId"));
         } finally {
             $sql->executeStatement("DELETE FROM product_types WHERE id = $productId");
             $sql->disconnect();
         }
     }
-
 }

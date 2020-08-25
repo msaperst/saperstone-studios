@@ -8,7 +8,7 @@ $api = new Api ();
 $api->forceLoggedIn();
 
 try {
-    $album = new Album($_POST['album']);
+    $album = Album::withId($_POST['album']);
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

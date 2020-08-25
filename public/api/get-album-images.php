@@ -9,7 +9,7 @@ $start = 0;
 $howMany = 999999999999999999;
 
 try {
-    $album = new Album($_GET['albumId']);
+    $album = Album::withId($_GET['albumId']);
 } catch (Exception $e) {
     echo json_encode(array('error' => $e->getMessage()));
     exit();

@@ -118,37 +118,37 @@ class ImageIntegrationTest extends TestCase {
     }
 
     public function testGetId() {
-        $image = new Image(new Album(899), '1');
+        $image = new Image(Album::withId(899), '1');
         $this->assertEquals(898, $image->getId());
     }
 
     public function testGetTitle() {
-        $image = new Image(new Album(899), '2');
+        $image = new Image(Album::withId(899), '2');
         $this->assertEquals('sample', $image->getTitle());
     }
 
     public function testCanUserGetDataAlbumNobody() {
-        $image = new Image(new Album(899), 1);
+        $image = new Image(Album::withId(899), 1);
         $this->assertFalse($image->canUserGetData());
     }
 
     public function testCanUserGetDataAlbumAdmin() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-        $image = new Image(new Album(899), 1);
+        $image = new Image(Album::withId(899), 1);
         $this->assertTrue($image->canUserGetData());
         unset($_SESSION['hash']);
     }
 
     public function testCanUserGetDataAlbumOwner() {
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
-        $image = new Image(new Album(899), 1);
+        $image = new Image(Album::withId(899), 1);
         $this->assertTrue($image->canUserGetData());
         unset($_SESSION['hash']);
     }
 
     public function testCanUserGetDataAlbumOtherUser() {
         $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
-        $image = new Image(new Album(899), 1);
+        $image = new Image(Album::withId(899), 1);
         $this->assertFalse($image->canUserGetData());
         unset($_SESSION['hash']);
     }
@@ -173,7 +173,7 @@ class ImageIntegrationTest extends TestCase {
     }
 
     public function testAllDataLoaded() {
-        $image = new Image(new Album(899), 2);
+        $image = new Image(Album::withId(899), 2);
         $imageInfo = $image->getDataArray();
         $this->assertEquals(899, $imageInfo['id']);
         $this->assertFalse(isset($imageInfo['gallery']));
@@ -188,7 +188,7 @@ class ImageIntegrationTest extends TestCase {
     }
 
     public function testDeleteNoAccess() {
-        $image = new Image(new Album(899), 2);
+        $image = new Image(Album::withId(899), 2);
         try {
             $image->delete();
         } catch (Exception $e) {
@@ -200,7 +200,7 @@ class ImageIntegrationTest extends TestCase {
 
     public function testDeleteNoLocation() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-        $image = new Image(new Album(899), 2);
+        $image = new Image(Album::withId(899), 2);
         $image->delete();
         unset($_SESSION ['hash']);
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
@@ -208,7 +208,7 @@ class ImageIntegrationTest extends TestCase {
 
     public function testDeleteAlbum() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-        $image = new Image(new Album(899), 1);
+        $image = new Image(Album::withId(899), 1);
         $image->delete();
         unset($_SESSION ['hash']);
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));

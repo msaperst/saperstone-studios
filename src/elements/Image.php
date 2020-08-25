@@ -64,7 +64,7 @@ class Image {
     function canUserGetData() {
         $user = User::fromSystem();
         if ($this->album != NULL) {
-            $album = new Album($this->album);
+            $album = Album::withId($this->album);
             // only admin users and uploader users who own the album can get all data
             return ($user->isAdmin() || (NULL != $this->album && $user->getRole() == "uploader" && $user->getId() == $album->getOwner()));
         } else {

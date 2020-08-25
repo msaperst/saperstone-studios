@@ -277,7 +277,24 @@ class ContractIntegrationTest extends TestCase {
                 'content' => 'WEDDING CONTENT!!!'
             ];
             $contract = Contract::withParams($params);
+            $contract->create();
+        } catch (Exception $e) {
+            $this->assertEquals('User not authorized to create contract', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsBasicNoPermissions() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        try {
+            $params = [
+                'type' => 'wedding',
+                'name' => 'Max',
+                'session' => 'photos',
+                'content' => 'WEDDING CONTENT!!!'
+            ];
+            $contract = Contract::withParams($params);
             $contractId = $contract->create();
+            unset($_SESSION['hash']);
             $contractInfo = $contract->getDataArray();
             $this->assertEquals('1000', $contractInfo['id']);
             $this->assertEquals('30c1cceb0af8ae67a398bc9dc063c7d2', $contractInfo['link']);
@@ -303,6 +320,7 @@ class ContractIntegrationTest extends TestCase {
     }
 
     public function testWithParamsFullGetDataArray() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         try {
             $params = [
                 'type' => 'wedding',
@@ -331,6 +349,7 @@ class ContractIntegrationTest extends TestCase {
             ];
             $contract = Contract::withParams($params);
             $contractId = $contract->create();
+            unset($_SESSION['hash']);
             $contractInfo = $contract->getDataArray();
             $this->assertEquals('1000', $contractInfo['id']);
             $this->assertEquals('0486b5e99b2af4e1cdc3ac3f1c442879', $contractInfo['link']);
@@ -591,6 +610,7 @@ class ContractIntegrationTest extends TestCase {
     }
 
     public function testSignContract() {
+        date_default_timezone_set("America/New_York");
         mkdir( dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' );
         try {
             $params = [
@@ -605,7 +625,7 @@ class ContractIntegrationTest extends TestCase {
             $contract = Contract::withId(999);
             $contractFile = $contract->sign($params);
             $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . $contractFile));
-            $this->assertEquals('/user/contracts/EleMax - 2020-08-23 - Commercial Contract.pdf', $contractFile);
+            $this->assertEquals('/user/contracts/EleMax - ' . date( 'Y-m-d') . ' - Commercial Contract.pdf', $contractFile);
         } finally {
             system( 'rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' );
         }

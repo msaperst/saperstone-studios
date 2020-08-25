@@ -69,6 +69,10 @@ class ProductType {
     }
 
     function create() {
+        $user = User::fromSystem();
+        if(!$user->isAdmin()) {
+            throw new Exception("User not authorized to create product type");
+        }
         $sql = new Sql();
         $lastId = $sql->executeStatement("INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (NULL, '{$this->category}', '{$this->name}');");
         $sql->disconnect();
@@ -79,6 +83,10 @@ class ProductType {
     }
 
     function delete() {
+        $user = User::fromSystem();
+        if(!$user->isAdmin()) {
+            throw new Exception("User not authorized to delete product type");
+        }
         $sql = new Sql();
         $sql->executeStatement("DELETE FROM product_types WHERE id='{$this->id}';");
         $sql->executeStatement("DELETE FROM products WHERE product_type='{$this->id}';");

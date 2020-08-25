@@ -11,7 +11,7 @@ if ($systemUser->isAdmin()) {
 }
 
 try {
-    $album = new Album($_GET['album']);
+    $album = Album::withId($_GET['album']);
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

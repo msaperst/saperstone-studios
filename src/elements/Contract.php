@@ -203,6 +203,10 @@ class Contract {
     }
 
     function create() {
+        $user = User::fromSystem();
+        if(!$user->isAdmin()) {
+            throw new Exception("User not authorized to create contract");
+        }
         $sql = new Sql();
         $address = "NULL";
         if ($this->address != NULL) {

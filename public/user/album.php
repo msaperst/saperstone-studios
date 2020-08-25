@@ -801,7 +801,7 @@ footer {
     <!-- Script to Activate the Gallery -->
     <script>
         $('[data-toggle="tooltip"]').tooltip();
-        var album = new Album( "<?php echo $album_info['id']; ?>", 4, <?php echo count($images); ?> );
+        var album = Album::withId( "<?php echo $album_info['id']; ?>", 4, <?php echo count($images); ?> );
         
          var loaded = 0;
         $(window,document).on("scroll resize", function(){

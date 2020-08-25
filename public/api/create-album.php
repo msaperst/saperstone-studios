@@ -14,50 +14,11 @@ if (!$systemUser->isAdmin() && $systemUser->getRole() != "uploader") {
     exit ();
 }
 
-$name = "";
-$description = "";
-$date = "NULL";
-// confirm we have an album name
 try {
-    $name = $api->retrievePostString('name', 'Album name');
+    $album = Album::withParams($_POST);
+    echo $album->create();
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
 }
-
-$sql = new Sql ();
-// sanitize our inputs
-if (isset ($_POST ['description'])) {
-    $description = $sql->escapeString($_POST ['description']);
-}
-if (isset ($_POST ['date']) && $_POST ['date'] != "") {
-    $date = $sql->escapeString($_POST ['date']);
-    $format = 'Y-m-d';
-    $d = DateTime::createFromFormat($format, $date);
-    if (!($d && $d->format($format) === $date)) {
-        echo "Album date is not the correct format";
-        $sql->disconnect();
-        exit ();
-    }
-    $date = "'" . $date . "'";
-}
-
-// generate our location for the files
-$location = preg_replace("/[^A-Za-z0-9]/", '', $name);
-$location = $location . "_" . time();
-if (!mkdir("../albums/$location", 0755, true)) {
-    $error = error_get_last();
-    echo $error ['message'] . "<br/>";
-    echo "Unable to create album";
-    $sql->disconnect();
-    exit ();
-}
-
-$last_id = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$name', '$description', $date, '$location', '" . $systemUser->getId() . "');");
-if ($systemUser->getRole() == "uploader") {
-    $sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES ('" . $systemUser->getId() . "', '$last_id');");
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $last_id );");
-}
-echo $last_id;
-$sql->disconnect();
 exit ();
