@@ -7,7 +7,7 @@ $user = User::fromSystem();
 $errors = new Errors();
 
 if (isset ( $_GET ['c'] )) {
-    $category = ( int ) $_GET ['c'];
+    $category = (int) $_GET ['c'];
     $details = $sql->getRow( "SELECT * FROM `review_types` WHERE id = '$category';" );
     if (! $details ['name']) {
         $errors->throw404();

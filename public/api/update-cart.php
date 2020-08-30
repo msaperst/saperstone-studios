@@ -15,10 +15,10 @@ mysqli_query($conn->db, $sql);
 // for each product, add it back in
 if (isset ($_POST ['images']) && is_array($_POST ['images'])) {
     foreach ($_POST ['images'] as $image) {
-        $album = ( int )$image ['album'];
-        $image = ( int )$image ['image'];
-        $product = ( int )$image ['product'];
-        $count = ( int )$image ['count'];
+        $album = (int)$image ['album'];
+        $image = (int)$image ['image'];
+        $product = (int)$image ['product'];
+        $count = (int)$image ['count'];
         $sql = "INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '{$systemUser->getId()}', '$album', '$image', '$product', '$count');";
         mysqli_query($conn->db, $sql);
     }

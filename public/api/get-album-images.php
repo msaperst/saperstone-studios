@@ -17,10 +17,10 @@ if (!$album->canUserAccess()) {
 }
 
 if (isset ($_GET ['start'])) {
-    $start = ( int )$_GET ['start'];
+    $start = (int)$_GET ['start'];
 }
 if (isset ($_GET ['howMany'])) {
-    $howMany = ( int )$_GET ['howMany'];
+    $howMany = (int)$_GET ['howMany'];
 }
 
 $sql = new Sql();

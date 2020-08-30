@@ -8,7 +8,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 if (isset ($_POST ['id'])) {
-    $id = ( int )$_POST ['id'];
+    $id = (int)$_POST ['id'];
 } else {
     echo "ID is not provided";
     exit ();

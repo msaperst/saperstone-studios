@@ -6,10 +6,10 @@ $start = 0;
 $howMany = 999999999999999999;
 
 if (isset ($_GET ['start'])) {
-    $start = ( int )$_GET ['start'];
+    $start = (int)$_GET ['start'];
 }
 if (isset ($_GET ['howMany'])) {
-    $howMany = ( int )$_GET ['howMany'];
+    $howMany = (int)$_GET ['howMany'];
 }
 $sql = new Sql ();
 if (isset ($_GET ['searchTerm'])) {

@@ -6,7 +6,7 @@ $systemUser = User::fromSystem();
 $api = new Api ();
 
 try {
-    $blog = new Blog($_POST['post']);
+    $blog = Blog::withId($_POST['post']);
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

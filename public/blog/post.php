@@ -2,11 +2,11 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $errors = new Errors();
 
-// if no album is set, throw a 404 error
+// if no blog is set, throw a 404 error - TODO - use new blog object
 if (! isset ( $_GET ['p'] )) {
     $errors->throw404();
 } else {
-    $post = ( int ) $_GET ['p'];
+    $post = (int) $_GET ['p'];
 }
 
 $session = new Session();

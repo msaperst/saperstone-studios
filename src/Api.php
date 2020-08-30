@@ -13,7 +13,7 @@ class Api {
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
             switch ($type) {
                 case "int":
-                    return ( int )$_POST [$variable];
+                    return (int)$_POST [$variable];
                 case "float":
                     return floatval(str_replace('$', '', $_POST [$variable]));
                 case "string":
@@ -85,7 +85,7 @@ class Api {
         if (isset ($_GET [$variable]) && $_GET [$variable] != "") {
             switch ($type) {
                 case "int":
-                    return ( int )$_GET [$variable];
+                    return (int)$_GET [$variable];
                 case "float":
                     return floatval(str_replace('$', '', $_GET [$variable]));
                 case "string":

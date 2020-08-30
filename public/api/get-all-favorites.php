@@ -7,7 +7,7 @@ $api->forceAdmin();
 $sql = new Sql();
 $user_favs = array();
 if (isset ($_GET ['album'])) {
-    $album = ( int )$_GET ['album'];
+    $album = (int)$_GET ['album'];
     $users = $sql->getRows("SELECT DISTINCT `favorites`.`user` FROM `favorites` WHERE `favorites`.`album` = $album;");
     foreach ($users as $user) {
         $images = $sql->getRows("SELECT album_images.sequence, album_images.location, album_images.title, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id LEFT JOIN users ON favorites.user = users.id WHERE `favorites`.`album` = $album && `favorites`.`user` = '" . $user['user'] . "';");

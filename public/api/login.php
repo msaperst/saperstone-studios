@@ -1,6 +1,8 @@
 <?php
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
+$session = new Session();
+$session->initialize();
 $api = new Api();
 
 if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
@@ -45,7 +47,7 @@ if ($_POST ['submit'] == 'Login') {
         echo 'Sorry, you account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.';
         exit();
     }
-    $user->login(boolval(( int )$_POST ['rememberMe']));
+    $user->login(boolval((int)$_POST ['rememberMe']));
 }
 
 exit ();

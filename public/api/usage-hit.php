@@ -9,11 +9,11 @@ $api->forceAdmin();
 
 $length = 1;
 if (isset ($_GET ['length']) && $_GET ['length'] != "") {
-    $length = ( int )$_GET ['length'];
+    $length = (int)$_GET ['length'];
 }
 $start = -1 * $length;
 if (isset ($_GET ['start']) && $_GET ['start'] != "") {
-    $start = ( int )$_GET ['start'];
+    $start = (int)$_GET ['start'];
 }
 
 $noAdmin = "";

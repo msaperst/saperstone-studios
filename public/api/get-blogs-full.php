@@ -4,7 +4,7 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 $start = 0;
 
 if (isset ($_GET ['start'])) {
-    $start = ( int )$_GET ['start'];
+    $start = (int)$_GET ['start'];
 }
 
 $sql = new Sql();
@@ -36,7 +36,7 @@ $blogDetails = $sql->getRow($query);
 $sql->disconnect();
 
 try {
-    $blog = new Blog($blogDetails ['id']);
+    $blog = Blog::withId($blogDetails ['id']);
 } catch (Exception $e) {
     exit();
 }

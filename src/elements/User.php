@@ -137,7 +137,7 @@ class User {
         $user->md5Pass = md5($user->password);
         //sets if the user as active - only an admin can make a user inactive
         if ($systemUser->isAdmin() && isset($params['active'])) {
-            $user->active = ( int )$params['active'];
+            $user->active = (int)$params['active'];
         } else {
             $user->active = '1';
         }

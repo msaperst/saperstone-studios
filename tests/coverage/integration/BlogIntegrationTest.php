@@ -25,6 +25,13 @@ class BlogIntegrationTest extends TestCase {
         mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01', 0777, true);
         touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg', 0777);
+        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp', 0777, true);
+        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample.jpg');
+        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample1.jpg');
+        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample2.jpg');
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample.jpg', 0777);
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample1.jpg', 0777);
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample2.jpg', 0777);
         umask($oldmask);
     }
 
@@ -43,11 +50,12 @@ class BlogIntegrationTest extends TestCase {
         $this->sql->executeStatement("ALTER TABLE `blog_comments` AUTO_INCREMENT = $count;");
         $this->sql->disconnect();
         system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts'));
+        system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp'));
     }
 
     public function testNullBlogId() {
         try {
-            new Blog(NULL);
+            Blog::withId(NULL);
         } catch (Exception $e) {
             $this->assertEquals("Blog id is required", $e->getMessage());
         }
@@ -55,7 +63,7 @@ class BlogIntegrationTest extends TestCase {
 
     public function testBlankBlogId() {
         try {
-            new Blog("");
+            Blog::withId("");
         } catch (Exception $e) {
             $this->assertEquals("Blog id can not be blank", $e->getMessage());
         }
@@ -63,7 +71,7 @@ class BlogIntegrationTest extends TestCase {
 
     public function testLetterBlogId() {
         try {
-            new Blog("a");
+            Blog::withId("a");
         } catch (Exception $e) {
             $this->assertEquals("Blog id does not match any blog posts", $e->getMessage());
         }
@@ -71,7 +79,7 @@ class BlogIntegrationTest extends TestCase {
 
     public function testBadBlogId() {
         try {
-            new Blog(8999);
+            Blog::withId(8999);
         } catch (Exception $e) {
             $this->assertEquals("Blog id does not match any blog posts", $e->getMessage());
         }
@@ -79,35 +87,40 @@ class BlogIntegrationTest extends TestCase {
 
     public function testBadStringBlogId() {
         try {
-            new Blog("8999");
+            Blog::withId("8999");
         } catch (Exception $e) {
             $this->assertEquals("Blog id does not match any blog posts", $e->getMessage());
         }
     }
 
     public function testGetId() {
-        $blog = new Blog('899');
+        $blog = Blog::withId('899');
         $this->assertEquals(899, $blog->getId());
     }
 
     public function testGetTitle() {
-        $blog = new Blog('899');
+        $blog = Blog::withId('899');
         $this->assertEquals('Sample Blog', $blog->getTitle());
     }
 
     public function testGetPreview() {
-        $blog = new Blog('899');
+        $blog = Blog::withId('899');
         $this->assertEquals('/some/img', $blog->getPreview());
     }
 
+    public function testGetLocation() {
+        $blog = Blog::withId('899');
+        $this->assertEquals('/some', $blog->getLocation());
+    }
+
     public function testGetTwitter() {
-        $blog = new Blog('899');
+        $blog = Blog::withId('899');
         $this->assertEquals(0, $blog->getTwitter());
     }
 
     public function testAllDataLoadedMinimal() {
         date_default_timezone_set("America/New_York");
-        $blog = new Blog(898);
+        $blog = Blog::withId(898);
         $blogInfo = $blog->getDataArray();
         $this->assertEquals(898, $blogInfo['id']);
         $this->assertEquals('Sample Blog', $blogInfo['title']);
@@ -124,7 +137,7 @@ class BlogIntegrationTest extends TestCase {
 
     public function testAllDataLoaded() {
         date_default_timezone_set("America/New_York");
-        $blog = new Blog(899);
+        $blog = Blog::withId(899);
         $blogInfo = $blog->getDataArray();
         $this->assertEquals(899, $blogInfo['id']);
         $this->assertEquals('Sample Blog', $blogInfo['title']);
@@ -169,8 +182,394 @@ class BlogIntegrationTest extends TestCase {
         $this->assertNull($blogInfo['comments'][1]['user']);
     }
 
+    public function testWithParamsNullParams() {
+        try {
+            Blog::withParams(NULL);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog title is required', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsNoTitle() {
+        try {
+            Blog::withParams(array());
+        } catch (Exception $e) {
+            $this->assertEquals('Blog title is required', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsBlankTitle() {
+        $params = [
+            'title' => ''
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog title can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsNoDate() {
+        $params = [
+            'title' => 'Some Album'
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog date is required', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsBlankDate() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => ''
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog date can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsBadDate() {
+        $params = [
+            'title' => 'Sample Album',
+            'date' => 'some date'
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog date is not the correct format', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsNoPreviewImage() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01'
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog preview image is required', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsEmptyPreviewImage() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => ''
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog preview image is required', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsArrayPreviewImage() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => array()
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog preview image is required', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsBlankPreviewImage() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => ''
+            ]
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog preview image can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsNoContent() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '/some/img'
+            ]
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog content is required', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsBlankContent() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '/some/img'
+            ],
+            'content' => ''
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog content can not be empty', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsEmptyContent() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '/some/img'
+            ],
+            'content' => array()
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog content can not be empty', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsStillEmptyContent() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '/some/img'
+            ],
+            'content' => [
+                array()
+            ]
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog content is not the correct format', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsNoContentType() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '/some/img'
+            ],
+            'content' => [
+                [
+                    'text' => '123'
+                ]
+            ]
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog content is not the correct format', $e->getMessage());
+        }
+    }
+
+    public function testWithParamsBadContentType() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '/some/img'
+            ],
+            'content' => [
+                [
+                    'type' => '123'
+                ]
+            ]
+        ];
+        try {
+            Blog::withParams($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Blog content is not the correct format', $e->getMessage());
+        }
+    }
+
+    public function testCreateNoAccess() {
+        $blog = Blog::withId(899);
+        try {
+            $blog->create();
+        } catch (Exception $e) {
+            $this->assertEquals("User not authorized to create blog post", $e->getMessage());
+        }
+    }
+
+//    public function testWithParamsBadFolder() {
+//        try {
+//            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+//            rename(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp_blog');
+//            $blog = Blog::withId(899);
+//            $blog->create();
+//        } catch (Exception $e) {
+//            $this->assertEquals('mkdir(): No such file or directory<br/>Unable to create album', $e->getMessage());
+//        } finally {
+//            unset($_SESSION['hash']);
+//            rename(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp_blog', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog');
+//        }
+//    }
+
+    public function testCreateSimpleBlog() {
+        $params = [
+            'title' => 'Some Album',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '../tmp/sample.jpg'
+            ],
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'some sample text',
+                    'group' => 1
+                ]
+            ]
+        ];
+        try {
+            $blog = Blog::withParams($params);
+            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+            $blogId = $blog->create();
+            $blogDetails = $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
+            $this->assertEquals($blogId, $blogDetails['id']);
+            $this->assertEquals("Some Album", $blogDetails['title']);
+            $this->assertNull($blogDetails['safe_title']);
+            $this->assertEquals("2020-01-01", $blogDetails['date']);
+            $this->assertEquals("posts/2020/01/01/preview_image-$blogId.jpg", $blogDetails['preview']);
+            $this->assertEquals("0", $blogDetails['offset']);
+            $this->assertEquals("0", $blogDetails['active']);
+            $this->assertEquals("0", $blogDetails['twitter']);
+            $blogTexts = $this->sql->getRows("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
+            $this->assertEquals(1, sizeof($blogTexts));
+            $this->assertEquals($blogId, $blogTexts[0]['blog']);
+            $this->assertEquals(1, $blogTexts[0]['contentGroup']);
+            $this->assertEquals('some sample text', $blogTexts[0]['text']);
+            $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;"));
+            $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;"));
+            $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "public/blog/posts/2020/01/01/preview_image-$blogId.jpg"));
+        } finally {
+            // cleanup
+            unset($_SESSION['hash']);
+            $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
+        }
+    }
+
+    public function testCreateComplexBlog() {
+        $params = [
+            'title' => 'Sample Blog',
+            'date' => '2030-01-01',
+            'preview' => [
+                'img' => '../tmp/sample.jpg',
+                'offset' => '33px'
+            ],
+            'tags' => [
+                "4", "2"
+            ],
+            'content' => [
+                1 => [
+                    'group' => 1,
+                    'type' => 'images',
+                    'imgs' => [
+                        0 => [
+                            'location' => '../tmp/sample1.jpg',
+                            'top' => '0px',
+                            'left' => '0px',
+                            'width' => '1140px',
+                            'height' => '647px',
+                        ],
+                        1 => [
+                            'location' => '../tmp/sample2.jpg',
+                            'top' => '647px',
+                            'left' => '0px',
+                            'width' => '1140px',
+                            'height' => '647px',
+                        ]
+                    ]
+                ],
+                2 => [
+                    'group' => 2,
+                    'type' => 'text',
+                    'text' => 'Some blog text'
+                ]
+            ]
+        ];
+        try {
+            $blog = Blog::withParams($params);
+            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+            $blogId = $blog->create();
+            $blogDetails = $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
+            $this->assertEquals($blogId, $blogDetails['id']);
+            $this->assertEquals("Sample Blog", $blogDetails['title']);
+            $this->assertNull($blogDetails['safe_title']);
+            $this->assertEquals("2030-01-01", $blogDetails['date']);
+            $this->assertEquals("posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview']);
+            $this->assertEquals("33", $blogDetails['offset']);
+            $this->assertEquals("0", $blogDetails['active']);
+            $this->assertEquals("0", $blogDetails['twitter']);
+            $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
+            $this->assertEquals(2, sizeof($blogImages));
+            $this->assertEquals($blogId, $blogImages[0]['blog']);
+            $this->assertEquals(1, $blogImages[0]['contentGroup']);
+            $this->assertEquals('posts/2030/01/01/sample1.jpg', $blogImages[0]['location']);
+            $this->assertEquals('1140', $blogImages[0]['width']);
+            $this->assertEquals('647', $blogImages[0]['height']);
+            $this->assertEquals('0', $blogImages[0]['left']);
+            $this->assertEquals('0', $blogImages[0]['top']);
+            $this->assertEquals($blogId, $blogImages[1]['blog']);
+            $this->assertEquals(1, $blogImages[1]['contentGroup']);
+            $this->assertEquals('posts/2030/01/01/sample2.jpg', $blogImages[1]['location']);
+            $this->assertEquals('1140', $blogImages[1]['width']);
+            $this->assertEquals('647', $blogImages[1]['height']);
+            $this->assertEquals('0', $blogImages[1]['left']);
+            $this->assertEquals('647', $blogImages[1]['top']);
+            $blogTags = $this->sql->getRows("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
+            $this->assertEquals(2, sizeOf($blogTags));
+            $this->assertEquals($blogId, $blogTags[0]['blog']);
+            $this->assertEquals(4, $blogTags[0]['tag']);
+            $this->assertEquals($blogId, $blogTags[1]['blog']);
+            $this->assertEquals(2, $blogTags[1]['tag']);
+            $blogTexts = $this->sql->getRow("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
+            $this->assertEquals($blogId, $blogTexts['blog']);
+            $this->assertEquals(2, $blogTexts['contentGroup']);
+            $this->assertEquals('Some blog text', $blogTexts['text']);
+            $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "public/blog/posts/2030/01/01/preview_image-$blogId.jpg"));
+            $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "public/blog/posts/2030/01/01/sample1.jpg"));
+            $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "public/blog/posts/2030/01/01/sample2.jpg"));
+        } finally {
+            // cleanup
+            unset($_SESSION['hash']);
+            $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
+        }
+    }
+
     public function testDeleteNoAccess() {
-        $blog = new Blog(899);
+        $blog = Blog::withId(899);
         try {
             $blog->delete();
         } catch (Exception $e) {
@@ -186,7 +585,7 @@ class BlogIntegrationTest extends TestCase {
 
     public function testDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-        $blog = new Blog(899);
+        $blog = Blog::withId(899);
         $blog->delete();
         unset($_SESSION ['hash']);
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 899;"));

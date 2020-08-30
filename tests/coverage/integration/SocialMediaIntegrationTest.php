@@ -132,10 +132,10 @@ class SocialMediaIntegrationTest extends TestCase {
         $_SERVER['SERVER_PORT'] = "90";
         try {
             $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('999', 'Sample Blog', '2032-01-01', 'flower.jpeg', 0, 0)");
-            $socialMedia->publishBlogToTwitter(new Blog(999));
+            $socialMedia->publishBlogToTwitter(Blog::withId(999));
             $this->assertNotEquals(0, $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;")['twitter']);
         } finally {
-            $socialMedia->removeBlogFromTwitter(new Blog(999));
+            $socialMedia->removeBlogFromTwitter(Blog::withId(999));
             unset($_SERVER['SERVER_NAME']);
             unset($_SERVER['SERVER_PORT']);
         }

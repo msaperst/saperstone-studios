@@ -3,11 +3,11 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $errors = new Errors();
 
 $album;
-// if no album is set, throw a 404 error
+// if no album is set, throw a 404 error - TODO use new album object
 if (! isset ( $_GET ['album'] ) || $_GET ['album'] == "") {
     $errors->throw404();
 } else {
-    $album = ( int ) $_GET ['album'];
+    $album = (int) $_GET ['album'];
 }
 
 $session = new Session();

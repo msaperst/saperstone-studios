@@ -12,7 +12,7 @@ foreach ($results as $r) {
 }
 
 if (isset ($_GET ['album'])) {
-    $album = ( int )$_GET ['album'];
+    $album = (int)$_GET ['album'];
     if (isset ($favorites [$album])) {
         $favorites = $favorites [$album];
     } else {

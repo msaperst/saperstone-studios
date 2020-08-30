@@ -9,7 +9,7 @@ $api->forceAdmin();
 
 $id = "";
 if (isset ($_POST ['id']) && $_POST ['id'] != "") {
-    $id = ( int )$_POST ['id'];
+    $id = (int)$_POST ['id'];
 } else {
     if (!isset ($_POST ['id'])) {
         echo "Gallery ID is required!";

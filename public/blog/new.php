@@ -13,9 +13,9 @@ $tags = [ ];
 $content = [ ];
 $images = [ ];
 $location = "../tmp";
-// if no album is set, throw a 404 error
+// if no blog is set, throw a 404 error - TODO - use new blog object!
 if (isset ( $_GET ['p'] )) {
-    $post = ( int ) $_GET ['p'];
+    $post = (int) $_GET ['p'];
     $details = $sql->getRow( "SELECT * FROM `blog_details` WHERE id = '$post';" );
     if (! $details ['title']) {
         $errors->throw404();

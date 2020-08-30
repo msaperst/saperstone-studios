@@ -2,7 +2,7 @@
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 try {
-    $blog = new Blog($_GET['post']);
+    $blog = Blog::withId($_GET['post']);
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

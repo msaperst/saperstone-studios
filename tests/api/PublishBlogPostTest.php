@@ -130,7 +130,7 @@ class PublishBlogPostTest extends TestCase {
             $this->assertNotEquals(0, $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;")['twitter']);
         } finally {
             $socialMedia = new SocialMedia();
-            $socialMedia->removeBlogFromTwitter(new Blog(999));
+            $socialMedia->removeBlogFromTwitter(Blog::withId(999));
         }
     }
 }

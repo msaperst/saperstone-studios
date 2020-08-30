@@ -7,27 +7,11 @@ $api = new Api ();
 
 $api->forceAdmin();
 
-$id = "";
-if (isset ($_POST ['post']) && $_POST ['post'] != "") {
-    $id = ( int )$_POST ['post'];
-} else {
-    if (!isset ($_POST ['post'])) {
-        echo "Post id is required!";
-    } elseif ($_POST ['post'] != "") {
-        echo "Post id cannot be blank!";
-    } else {
-        echo "Some other Post id error occurred!";
-    }
-    exit ();
-}
-
-$sql = new Sql ();
-$sql = "SELECT * FROM blog_details WHERE id = $id;";
-$blog_details = $sql->getRow($sql);
-if (!$blog_details ['id']) {
-    echo "That ID doesn't match any posts";
-    $conn->disconnect();
-    exit ();
+try {
+    $blog = Blog::withId($_POST ['post']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
 $title = "";
@@ -50,10 +34,10 @@ if (isset ($_POST ['date']) && $_POST ['date'] != "") {
 
 $previewOffset = 0;
 if (isset ($_POST ['preview'] ['offset'])) {
-    $previewOffset = ( int )$_POST ['preview'] ['offset'];
+    $previewOffset = (int)$_POST ['preview'] ['offset'];
 }
 
-// set our gaurenteed blog information
+// set our guaranteed blog information
 $sql = "UPDATE `blog_details` SET `title` = '$title', `date` = '$date', `offset` = '$previewOffset' WHERE `id` = $id;";
 mysqli_query($conn->db, $sql);
 
@@ -84,7 +68,7 @@ if (isset ($_POST ['preview'] ['img']) && $_POST ['preview'] ['img'] != "") {
 if (isset ($_POST ['active'])) {
     $sql = "SELECT active FROM `blog_details` WHERE `id` = $id;";
     $was_active = mysqli_fetch_assoc(mysqli_query($conn->db, $sql)) ['active'];
-    $active = ( int )$_POST ['active'];
+    $active = (int)$_POST ['active'];
     $sql = "UPDATE `blog_details` SET `active` = '$active' WHERE `id` = $id;";
     mysqli_query($conn->db, $sql);
     if (!$was_active && $active) {
@@ -106,17 +90,17 @@ if (isset ($_POST ['content'])) {
     foreach ($_POST ['content'] as $content) {
         if ($content ['type'] == "text") {
             $text = $sql->escapeString($content ['text']);
-            $group = ( int )$content ['group'];
+            $group = (int)$content ['group'];
             $sql = "INSERT INTO `blog_texts` ( `blog`, `contentGroup`, `text` ) VALUES ('$id', '$group', '$text');";
             mysqli_query($conn->db, $sql);
         } elseif ($content ['type'] == "images") {
-            $group = ( int )$content ['group'];
+            $group = (int)$content ['group'];
             foreach ($content ['imgs'] as $img) {
                 $location = $sql->escapeString($img ['location']);
-                $top = ( int )$img ['top'];
-                $left = ( int )$img ['left'];
-                $width = ( int )$img ['width'];
-                $height = ( int )$img ['height'];
+                $top = (int)$img ['top'];
+                $left = (int)$img ['left'];
+                $width = (int)$img ['width'];
+                $height = (int)$img ['height'];
 
                 rename("$location", "$storage_dir/" . basename($location));
                 system("mogrify -resize ${width}x \"$storage_dir/" . basename($location) . "\"");

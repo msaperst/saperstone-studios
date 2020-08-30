@@ -7,7 +7,7 @@ $api = new Api ();
 
 $id = "";
 if (isset ($_POST ['album']) && $_POST ['album'] != "") {
-    $id = ( int )$_POST ['album'];
+    $id = (int)$_POST ['album'];
 } else {
     if (!isset ($_POST ['album'])) {
         echo "Album id is required!";
