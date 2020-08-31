@@ -96,6 +96,11 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals('sample-album', $album->getName());
     }
 
+    public function testGetDescription() {
+        $album = Album::withId('899');
+        $this->assertEquals('sample album for testing', $album->getDescription());
+    }
+
     public function testGetOwner() {
         $album = Album::withId('899');
         $this->assertEquals(4, $album->getOwner());
@@ -653,7 +658,7 @@ class AlbumIntegrationTest extends TestCase {
             ];
             $album = Album::withId(898);
             $album->update($params);
-        } catch ( Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Album code already exists', $e->getMessage());
             $albumInfo = $album->getDataArray();
             $this->assertEquals(9, sizeOf($albumInfo));

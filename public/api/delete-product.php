@@ -6,13 +6,7 @@ $api->forceAdmin();
 
 try {
     $type = ProductType::withId($_POST['id']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
-$type->delete();
+    $type->delete();
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

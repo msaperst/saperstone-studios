@@ -611,7 +611,7 @@ class ContractIntegrationTest extends TestCase {
 
     public function testSignContract() {
         date_default_timezone_set("America/New_York");
-        mkdir( dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' );
+        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts');
         try {
             $params = [
                 'name' => 'EleMax',
@@ -625,9 +625,9 @@ class ContractIntegrationTest extends TestCase {
             $contract = Contract::withId(999);
             $contractFile = $contract->sign($params);
             $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . $contractFile));
-            $this->assertEquals('/user/contracts/EleMax - ' . date( 'Y-m-d') . ' - Commercial Contract.pdf', $contractFile);
+            $this->assertEquals('/user/contracts/EleMax - ' . date('Y-m-d') . ' - Commercial Contract.pdf', $contractFile);
         } finally {
-            system( 'rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' );
+            system('rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts');
         }
     }
 }

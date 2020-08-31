@@ -6,17 +6,10 @@ $api->forceLoggedIn();
 
 try {
     $album = Album::withId($_POST['id']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-if (!$album->canUserGetData()) {
-    header('HTTP/1.0 403 Unauthorized');
-    exit ();
-}
-
-try {
+    if (!$album->canUserGetData()) {
+        header('HTTP/1.0 403 Unauthorized');
+        exit ();
+    }
     $album->delete();
 } catch (Exception $e) {
     echo $e->getMessage();

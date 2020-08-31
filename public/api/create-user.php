@@ -6,11 +6,11 @@ $api->forceAdmin();
 
 try {
     $user = User::withParams($_POST);
+    echo $user->create();
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
 }
-echo $user->create();
 
 $to = "{$user->getName()} <{$user->getEmail()}>";
 $from = "noreply@saperstonestudios.com";

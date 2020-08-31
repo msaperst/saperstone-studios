@@ -58,7 +58,7 @@ class SocialMedia {
         ));
         // and collect their IDs
         $mediaId = $reply->media_id_string;
-        if( $mediaId != NULL && $mediaId > 0) {
+        if ($mediaId != NULL && $mediaId > 0) {
             // next send our message and the image
             $reply = $this->cb->statuses_update(array(
                 'status' => "{$blog->getTitle()}\n$link",

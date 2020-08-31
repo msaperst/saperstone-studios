@@ -3,11 +3,11 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 
 try {
     $user = User::withParams($_POST);
+    $lastId = $user->create();
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
 }
-$lastId = $user->create();
 echo $lastId;
 
 sleep(1);   //put in a sleep, otherwise there will be a conflict in the user log

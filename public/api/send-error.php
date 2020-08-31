@@ -5,21 +5,21 @@ $api = new Api ();
 
 try {
     $error = $api->retrievePostString('error', 'Error');
-} catch ( Exception $e ) {
+} catch (Exception $e) {
     echo $e->getMessage();
     exit();
 }
 
 try {
     $page = $api->retrievePostString('page', 'Page');
-} catch ( Exception $e ) {
+} catch (Exception $e) {
     echo $e->getMessage();
     exit();
 }
 
 try {
     $referrer = $api->retrievePostString('referrer', 'Referral');
-} catch ( Exception $e ) {
+} catch (Exception $e) {
     echo $e->getMessage();
     exit();
 }

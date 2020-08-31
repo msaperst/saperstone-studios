@@ -139,15 +139,15 @@ class SearchAlbumUsersTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true);
         $this->assertEquals(3, sizeOf($users));
-        $this->assertEquals(1,$users[0]['id']);
-        $this->assertEquals('msaperst',$users[0]['usr']);
-        $this->assertEquals('admin',$users[0]['role']);
-        $this->assertEquals(3,$users[1]['id']);
-        $this->assertEquals('downloader',$users[1]['usr']);
-        $this->assertEquals('downloader',$users[1]['role']);
-        $this->assertEquals(4,$users[2]['id']);
-        $this->assertEquals('uploader',$users[2]['usr']);
-        $this->assertEquals('uploader',$users[2]['role']);
+        $this->assertEquals(1, $users[0]['id']);
+        $this->assertEquals('msaperst', $users[0]['usr']);
+        $this->assertEquals('admin', $users[0]['role']);
+        $this->assertEquals(3, $users[1]['id']);
+        $this->assertEquals('downloader', $users[1]['usr']);
+        $this->assertEquals('downloader', $users[1]['role']);
+        $this->assertEquals(4, $users[2]['id']);
+        $this->assertEquals('uploader', $users[2]['usr']);
+        $this->assertEquals('uploader', $users[2]['role']);
     }
 
     public function testKeywordBlankUsers() {
@@ -164,15 +164,15 @@ class SearchAlbumUsersTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true);
         $this->assertEquals(3, sizeOf($users));
-        $this->assertEquals(1,$users[0]['id']);
-        $this->assertEquals('msaperst',$users[0]['usr']);
-        $this->assertEquals('admin',$users[0]['role']);
-        $this->assertEquals(3,$users[1]['id']);
-        $this->assertEquals('downloader',$users[1]['usr']);
-        $this->assertEquals('downloader',$users[1]['role']);
-        $this->assertEquals(4,$users[2]['id']);
-        $this->assertEquals('uploader',$users[2]['usr']);
-        $this->assertEquals('uploader',$users[2]['role']);
+        $this->assertEquals(1, $users[0]['id']);
+        $this->assertEquals('msaperst', $users[0]['usr']);
+        $this->assertEquals('admin', $users[0]['role']);
+        $this->assertEquals(3, $users[1]['id']);
+        $this->assertEquals('downloader', $users[1]['usr']);
+        $this->assertEquals('downloader', $users[1]['role']);
+        $this->assertEquals(4, $users[2]['id']);
+        $this->assertEquals('uploader', $users[2]['usr']);
+        $this->assertEquals('uploader', $users[2]['role']);
     }
 
     public function testKeywordUsers() {
@@ -189,15 +189,15 @@ class SearchAlbumUsersTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true);
         $this->assertEquals(3, sizeOf($users));
-        $this->assertEquals(1,$users[0]['id']);
-        $this->assertEquals('msaperst',$users[0]['usr']);
-        $this->assertEquals('admin',$users[0]['role']);
-        $this->assertEquals(3,$users[1]['id']);
-        $this->assertEquals('downloader',$users[1]['usr']);
-        $this->assertEquals('downloader',$users[1]['role']);
-        $this->assertEquals(4,$users[2]['id']);
-        $this->assertEquals('uploader',$users[2]['usr']);
-        $this->assertEquals('uploader',$users[2]['role']);
+        $this->assertEquals(1, $users[0]['id']);
+        $this->assertEquals('msaperst', $users[0]['usr']);
+        $this->assertEquals('admin', $users[0]['role']);
+        $this->assertEquals(3, $users[1]['id']);
+        $this->assertEquals('downloader', $users[1]['usr']);
+        $this->assertEquals('downloader', $users[1]['role']);
+        $this->assertEquals(4, $users[2]['id']);
+        $this->assertEquals('uploader', $users[2]['usr']);
+        $this->assertEquals('uploader', $users[2]['role']);
     }
 
     public function testKeywordsUsers() {
@@ -214,12 +214,12 @@ class SearchAlbumUsersTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true);
         $this->assertEquals(2, sizeOf($users));
-        $this->assertEquals(3,$users[0]['id']);
-        $this->assertEquals('downloader',$users[0]['usr']);
-        $this->assertEquals('downloader',$users[0]['role']);
-        $this->assertEquals(4,$users[1]['id']);
-        $this->assertEquals('uploader',$users[1]['usr']);
-        $this->assertEquals('uploader',$users[1]['role']);
+        $this->assertEquals(3, $users[0]['id']);
+        $this->assertEquals('downloader', $users[0]['usr']);
+        $this->assertEquals('downloader', $users[0]['role']);
+        $this->assertEquals(4, $users[1]['id']);
+        $this->assertEquals('uploader', $users[1]['usr']);
+        $this->assertEquals('uploader', $users[1]['role']);
     }
 
     public function testTooKeyword() {

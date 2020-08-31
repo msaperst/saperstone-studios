@@ -13,12 +13,6 @@ try {
 
 try {
     $image = new Image($album, $_POST['image']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $image->delete();
 } catch (Exception $e) {
     echo $e->getMessage();

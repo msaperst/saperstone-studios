@@ -6,12 +6,6 @@ $api->forceAdmin();
 
 try {
     $blog = Blog::withParams($_POST);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     echo $blog->create();
 } catch (Exception $e) {
     echo $e->getMessage();

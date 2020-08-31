@@ -6,12 +6,6 @@ $api->forceAdmin();
 
 try {
     $productType = ProductType::withParams($_POST);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     echo $productType->create();
 } catch (Exception $e) {
     echo $e->getMessage();

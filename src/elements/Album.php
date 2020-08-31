@@ -93,6 +93,10 @@ class Album {
         return $this->name;
     }
 
+    function getDescription() {
+        return $this->description;
+    }
+
     public function getOwner() {
         return $this->owner;
     }
@@ -162,7 +166,7 @@ class Album {
         $this->location = $location;
         try {
             mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $location, 0755);
-        } catch (Exception $e ) {
+        } catch (Exception $e) {
             $sql->disconnect();
             throw new Exception($e->getMessage() . "<br/>Unable to create album");
         }
@@ -180,10 +184,10 @@ class Album {
 
     function update($params) {
         $user = User::fromSystem();
-        self::setVals($this, $params);
         if (!$this->canUserGetData()) {
             throw new Exception("User not authorized to update album");
         }
+        self::setVals($this, $params);
         $sql = new Sql();
         $sql->executeStatement("UPDATE albums SET name='{$this->name}', description='{$this->description}', date={$this->date}, code=NULL WHERE id='{$this->getId()}';");
         $this->raw = $sql->getRow("SELECT * FROM albums WHERE id = {$this->getId()};");

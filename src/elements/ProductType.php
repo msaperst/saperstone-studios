@@ -70,7 +70,7 @@ class ProductType {
 
     function create() {
         $user = User::fromSystem();
-        if(!$user->isAdmin()) {
+        if (!$user->isAdmin()) {
             throw new Exception("User not authorized to create product type");
         }
         $sql = new Sql();
@@ -84,7 +84,7 @@ class ProductType {
 
     function delete() {
         $user = User::fromSystem();
-        if(!$user->isAdmin()) {
+        if (!$user->isAdmin()) {
             throw new Exception("User not authorized to delete product type");
         }
         $sql = new Sql();

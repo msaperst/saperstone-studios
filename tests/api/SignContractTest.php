@@ -299,7 +299,7 @@ class SignContractTest extends TestCase {
             $this->assertEquals('MAS', $contractDetails['initial']);
             $this->assertEquals('/user/contracts/EleMax - 2020-08-23 - Commercial Contract.pdf', $contractDetails['file']);
         } finally {
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'],5));
+            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         }
     }
 }

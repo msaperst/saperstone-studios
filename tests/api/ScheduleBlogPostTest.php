@@ -2,14 +2,12 @@
 
 namespace api;
 
-use Blog;
 use DateInterval;
 use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
-use SocialMedia;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
@@ -240,7 +238,7 @@ class ScheduleBlogPostTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $blogDetails = $this->sql->getRow("SELECT * FROM blog_details WHERE id = 999");
         $this->assertEquals(0, $blogDetails['active']);
-        sleep( 120 );
+        sleep(120);
         $blogDetails = $this->sql->getRow("SELECT * FROM blog_details WHERE id = 999");
         $this->assertEquals(1, $blogDetails['active']);
     }

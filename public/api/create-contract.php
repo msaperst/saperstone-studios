@@ -6,12 +6,6 @@ $api->forceAdmin();
 
 try {
     $contract = Contract::withParams($_POST);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     echo $contract->create();
 } catch (Exception $e) {
     echo $e->getMessage();

@@ -6,11 +6,6 @@ $api->forceAdmin();
 
 try {
     $blog = Blog::withId($_POST['post']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-try {
     $blog->delete();
 } catch (Exception $e) {
     echo $e->getMessage();

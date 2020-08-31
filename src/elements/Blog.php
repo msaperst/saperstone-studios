@@ -16,6 +16,7 @@ class Blog {
     private $tags = array();
     private $comments = array();
     private $content = array();
+    private $directory = '';
 
     function __construct() {
     }
@@ -176,12 +177,12 @@ class Blog {
         }
 
         // move and resize our preview image
-        $storage_dir = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $this->date);
-        if (!is_dir($storage_dir)) {
-            mkdir($storage_dir, 0755, true);
+        $this->directory = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $this->date);
+        if (!is_dir($this->directory)) {
+            mkdir($this->directory, 0755, true);
         }
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview, $storage_dir . DIRECTORY_SEPARATOR . 'preview_image.jpg');
-        $this->preview = $storage_dir . DIRECTORY_SEPARATOR . 'preview_image.jpg';
+        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview, $this->directory . DIRECTORY_SEPARATOR . 'preview_image.jpg');
+        $this->preview = $this->directory . DIRECTORY_SEPARATOR . 'preview_image.jpg';
         system("mogrify -resize 360x \"{$this->preview}\"");
         system("mogrify -density 72 \"{$this->preview}\"");
 
@@ -190,8 +191,8 @@ class Blog {
         $blogId = $sql->executeStatement("INSERT INTO `blog_details` ( `title`, `date`, `preview`, `offset` ) VALUES ('{$this->title}', '{$this->date}', '{$this->preview}', '{$this->offset}' );");
         $this->id = $blogId;
         // update our preview image with the blog post id
-        rename("$storage_dir/preview_image.jpg", "$storage_dir/preview_image-$blogId.jpg");
-        $this->preview = substr($storage_dir . DIRECTORY_SEPARATOR . "preview_image-$blogId.jpg", strlen(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
+        rename("{$this->directory}/preview_image.jpg", "{$this->directory}/preview_image-$blogId.jpg");
+        $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-$blogId.jpg", strlen(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
         $sql->executeStatement("UPDATE `blog_details` SET `preview` = '{$this->preview}' WHERE `id` = $blogId;");
 
         //create our content
@@ -208,6 +209,69 @@ class Blog {
         $blog = self::withId($blogId);
         $this->raw = $blog->getDataArray();
         return $blogId;
+    }
+
+    function update($params) {
+        $user = User::fromSystem();
+        if (!$user->isAdmin()) {
+            throw new Exception("User not authorized to update blog post");
+        }
+        $this->offset = 0;  //resetting our default offset
+        if (!isset($params['preview']) || !isset($params['preview']['img']) || $params['preview']['img'] == '') {
+            //ensuring we still have a preview image
+            $params['preview']['img'] = $this->preview;
+        } else {
+            //setup our new image
+            $sql = new Sql();
+            copy($sql->escapeString($params['preview']['img']), $this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg");
+            system("mogrify -resize 360x \"{$this->directory}" . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg\"");
+            system("mogrify -density 72 \"{$this->directory}" . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg\"");
+            $sql->disconnect();
+        }
+        if (!isset($params['content']) || empty($params['content'])) {
+            //ensuring we still have some content image
+            $params['content'] = $this->content;
+        }
+        self::setVals($this, $params);
+        $sql = new Sql();
+
+        // update our basic information
+        $sql->executeStatement("UPDATE `blog_details` SET `title` = '{$this->title}', `date` = '{$this->date}', `offset` = '{$this->offset}' WHERE `id` = {$this->id};");
+
+        // update our tags
+        $sql->executeStatement("DELETE FROM blog_tags WHERE blog='{$this->id}';");
+        foreach ($this->tags as $tag) {
+            $sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ({$this->id}, $tag)");
+        }
+
+        // update our status
+        $originalStatus = $this->active;
+        if (isset ($params ['active'])) {
+            $this->active = (int)$params ['active'];
+            if ($this->active != $originalStatus) {
+                // if we have a change in status
+                $sql->executeStatement("UPDATE `blog_details` SET `active` = '{$this->active}' WHERE `id` = {$this->id};");
+                $socialMedia = new SocialMedia ();
+                $socialMedia->generateRSS();
+                if ($this->active == 1) {
+                    // if we just published it
+                    $socialMedia->publishBlogToTwitter($this);
+                } else {
+                    // if we're archiving it
+                    $socialMedia->removeBlogFromTwitter($this);
+                }
+            }
+        }
+
+        // update our content
+        $sql->executeStatement("DELETE FROM blog_texts WHERE blog='{$this->id}';");
+        $sql->executeStatement("DELETE FROM blog_images WHERE blog='{$this->id}';");
+        foreach ($this->content as $content) {
+            $content->setBlog($this);
+            $content->create();
+        }
+
+        $sql->disconnect();
     }
 
     function delete() {

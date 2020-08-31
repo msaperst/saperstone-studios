@@ -11,7 +11,6 @@ try {
     exit();
 }
 
-//TODO - update this once Image class is completed
 $sql = new Sql();
 echo json_encode($sql->getRow("SELECT title FROM galleries WHERE galleries.id = {$gallery->getId()}"));
 $sql->disconnect();

@@ -241,7 +241,7 @@ class User {
      * id, usr, firstName, lastName, email, resetKey, active, role
      */
     function getDataBasic() {
-        return array_diff_key($this->raw, ['pass'=>'', 'hash'=>'', 'created'=>'', 'lastLogin'=>'']);
+        return array_diff_key($this->raw, ['pass' => '', 'hash' => '', 'created' => '', 'lastLogin' => '']);
     }
 
     function getDataArray() {

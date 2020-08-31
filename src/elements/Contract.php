@@ -195,7 +195,7 @@ class Contract {
      * id, type, name, session
      */
     function getDataBasic() {
-        return array_diff_key($this->raw, ['link'=>'', 'address'=>'', 'number'=>'', 'email'=>'', 'date'=>'', 'location'=>'', 'details'=>'', 'amount'=>'', 'deposit'=>'', 'invoice'=>'', 'content'=>'', 'signature'=>'', 'initial'=>'', 'file'=>'', 'lineItems'=>'']);
+        return array_diff_key($this->raw, ['link' => '', 'address' => '', 'number' => '', 'email' => '', 'date' => '', 'location' => '', 'details' => '', 'amount' => '', 'deposit' => '', 'invoice' => '', 'content' => '', 'signature' => '', 'initial' => '', 'file' => '', 'lineItems' => '']);
     }
 
     function getDataArray() {
@@ -204,7 +204,7 @@ class Contract {
 
     function create() {
         $user = User::fromSystem();
-        if(!$user->isAdmin()) {
+        if (!$user->isAdmin()) {
             throw new Exception("User not authorized to create contract");
         }
         $sql = new Sql();

@@ -6,13 +6,7 @@ $api->forceAdmin();
 
 try {
     $user = User::withId($_POST['id']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
-$user->delete();
+    $user->delete();
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

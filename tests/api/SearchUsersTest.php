@@ -53,7 +53,7 @@ class SearchUsersTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true);
-        $this->assertTrue( 5 <= sizeOf($users));
+        $this->assertTrue(5 <= sizeOf($users));
         $this->assertEquals(0, $users[0]['id']);
         $this->assertEquals('<i>All Users</i>', $users[0]['usr']);
         $this->assertEquals('admin', $users[0]['role']);
@@ -84,7 +84,7 @@ class SearchUsersTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true);
-        $this->assertTrue( 5 <= sizeOf($users));
+        $this->assertTrue(5 <= sizeOf($users));
         $this->assertEquals(0, $users[0]['id']);
         $this->assertEquals('<i>All Users</i>', $users[0]['usr']);
         $this->assertEquals('admin', $users[0]['role']);
@@ -115,7 +115,7 @@ class SearchUsersTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true);
-        $this->assertTrue( 5 <= sizeOf($users));
+        $this->assertTrue(5 <= sizeOf($users));
         $this->assertEquals(0, $users[0]['id']);
         $this->assertEquals('<i>All Users</i>', $users[0]['usr']);
         $this->assertEquals('admin', $users[0]['role']);
@@ -146,7 +146,7 @@ class SearchUsersTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true);
-        $this->assertTrue( 2 <= sizeOf($users));
+        $this->assertTrue(2 <= sizeOf($users));
         $this->assertEquals(3, $users[0]['id']);
         $this->assertEquals('downloader', $users[0]['usr']);
         $this->assertEquals('downloader', $users[0]['role']);
