@@ -33,3 +33,5 @@ cents aren't properly saved in db for price/deposit on contracts
 ** simplify *.conf files
 *** resort images in albums based on file names
 *** hash for viewing images in album (make sharing particular ones easier)
+*** get rid of WWW all places
+*** forward www to regular

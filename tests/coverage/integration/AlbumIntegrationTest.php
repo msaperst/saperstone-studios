@@ -475,19 +475,25 @@ class AlbumIntegrationTest extends TestCase {
 
     public function testUpdateNullParams() {
         try {
+            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
             $album = Album::withId(899);
             $album->update(NULL);
         } catch (Exception $e) {
             $this->assertEquals('Album name is required', $e->getMessage());
+        } finally {
+            unset($_SESSION['hash']);
         }
     }
 
     public function testUpdateNoName() {
         try {
+            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
             $album = Album::withId(899);
             $album->update(array());
         } catch (Exception $e) {
             $this->assertEquals('Album name is required', $e->getMessage());
+        } finally {
+            unset($_SESSION['hash']);
         }
     }
 
@@ -496,10 +502,13 @@ class AlbumIntegrationTest extends TestCase {
             'name' => ''
         ];
         try {
+            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
             $album = Album::withId(899);
             $album->update($params);
         } catch (Exception $e) {
             $this->assertEquals('Album name can not be blank', $e->getMessage());
+        } finally {
+            unset($_SESSION['hash']);
         }
     }
 
@@ -509,10 +518,13 @@ class AlbumIntegrationTest extends TestCase {
             'date' => 'some date'
         ];
         try {
+            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
             $album = Album::withId(899);
             $album->update($params);
         } catch (Exception $e) {
             $this->assertEquals('Album date is not the correct format', $e->getMessage());
+        } finally {
+            unset($_SESSION['hash']);
         }
     }
 

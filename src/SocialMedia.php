@@ -67,12 +67,18 @@ class SocialMedia {
             $sql = new Sql();
             $sql->executeStatement("UPDATE `blog_details` SET `twitter` = '{$reply->id}' WHERE id={$blog->getId()};");
             $sql->disconnect();
+            return $reply->id;
         }
+        return 0;
     }
 
     function removeBlogFromTwitter(Blog $blog) {
         $this->cb->statuses_destroy_ID([
             'id' => $blog->getTwitter()
         ]);
+        $sql = new Sql();
+        $sql->executeStatement("UPDATE `blog_details` SET `twitter` = '0' WHERE id={$blog->getId()};");
+        $sql->disconnect();
+        return 0;
     }
 }
