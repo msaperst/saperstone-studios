@@ -263,6 +263,7 @@ class SignContractTest extends TestCase {
     }
 
     public function testSignContract() {
+        date_default_timezone_set("America/New_York");
         try {
             $response = $this->http->request('POST', 'api/sign-contract.php', [
                 'form_params' => [
@@ -297,7 +298,7 @@ class SignContractTest extends TestCase {
             $this->assertEquals('some contract content', $contractDetails['content']);
             $this->assertEquals('something', $contractDetails['signature']);
             $this->assertEquals('MAS', $contractDetails['initial']);
-            $this->assertEquals('/user/contracts/EleMax - 2020-08-23 - Commercial Contract.pdf', $contractDetails['file']);
+            $this->assertEquals('/user/contracts/EleMax - ' . date('Y-m-d') . ' - Commercial Contract.pdf', $contractDetails['file']);
         } finally {
             unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         }
