@@ -5,20 +5,10 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $id = $api->retrievePostInt('id', 'Product size');
+    $product = Product::withId($_POST['id']);
+    $product->delete();
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
 }
-
-$sql = new Sql();
-$product_details = $sql->getRow("SELECT * FROM products WHERE id = $id;");
-if (!$product_details ['id']) {
-    echo "Product size does not match any products";
-    $sql->disconnect();
-    exit ();
-}
-
-$sql->executeStatement("DELETE FROM products WHERE id='$id';");
-$sql->disconnect();
 exit ();

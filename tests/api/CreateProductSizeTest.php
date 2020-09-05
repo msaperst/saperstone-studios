@@ -55,7 +55,7 @@ class CreateProductSizeTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product id is required", (string)$response->getBody());
+        $this->assertEquals("Product type is required", (string)$response->getBody());
     }
 
     public function testBlankType() {
@@ -69,7 +69,7 @@ class CreateProductSizeTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product id can not be blank", (string)$response->getBody());
+        $this->assertEquals("Product type can not be blank", (string)$response->getBody());
     }
 
     public function testNoSize() {
@@ -101,37 +101,6 @@ class CreateProductSizeTest extends TestCase {
         $this->assertEquals("Product size can not be blank", (string)$response->getBody());
     }
 
-    public function testNoCost() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/create-product-size.php', [
-            'form_params' => [
-                'type' => '1',
-                'size' => '1x1'
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product cost is required", (string)$response->getBody());
-    }
-
-    public function testBlankCost() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/create-product-size.php', [
-            'form_params' => [
-                'type' => '1',
-                'size' => '1x1',
-                'cost' => ''
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product cost can not be blank", (string)$response->getBody());
-    }
-
     public function testNoPrice() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -140,7 +109,6 @@ class CreateProductSizeTest extends TestCase {
             'form_params' => [
                 'type' => '1',
                 'size' => '1x1',
-                'cost' => '12.456'
             ],
             'cookies' => $cookieJar
         ]);
@@ -156,13 +124,45 @@ class CreateProductSizeTest extends TestCase {
             'form_params' => [
                 'type' => '1',
                 'size' => '1x1',
-                'cost' => '$12.56',
                 'price' => ''
             ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Product price can not be blank", (string)$response->getBody());
+    }
+
+    public function testNoCost() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/create-product-size.php', [
+            'form_params' => [
+                'type' => '1',
+                'size' => '1x1',
+                'price' => 12.1234
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Product cost is required", (string)$response->getBody());
+    }
+
+    public function testBlankCost() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/create-product-size.php', [
+            'form_params' => [
+                'type' => '1',
+                'size' => '1x1',
+                'price' => 12.1234,
+                'cost' => ''
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Product cost can not be blank", (string)$response->getBody());
     }
 
     public function testProductSize() {
@@ -180,7 +180,7 @@ class CreateProductSizeTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $productId = $response->getBody();
+            $productId = (string) $response->getBody();
             $productSizeDetails = $this->sql->getRow("SELECT * FROM `products` WHERE `products`.`id` = $productId;");
             $this->assertEquals($productId, $productSizeDetails['id']);
             $this->assertEquals(1, $productSizeDetails['product_type']);

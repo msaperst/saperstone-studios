@@ -17,7 +17,7 @@ class DeleteProductSizeTest extends TestCase {
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (999, '999', '12x19', 100, 10)");
+        $this->sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (999, '1', '12x19', 100, 10)");
     }
 
     public function tearDown() {
@@ -60,7 +60,7 @@ class DeleteProductSizeTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product size is required", (string)$response->getBody());
+        $this->assertEquals("Product id is required", (string)$response->getBody());
     }
 
     public function testBlankProductSize() {
@@ -74,7 +74,7 @@ class DeleteProductSizeTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product size can not be blank", (string)$response->getBody());
+        $this->assertEquals("Product id can not be blank", (string)$response->getBody());
     }
 
     public function testLetterProductSize() {
@@ -88,7 +88,7 @@ class DeleteProductSizeTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product size does not match any products", (string)$response->getBody());
+        $this->assertEquals("Product id does not match any products", (string)$response->getBody());
     }
 
     public function testBadProductSize() {
@@ -102,7 +102,7 @@ class DeleteProductSizeTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product size does not match any products", (string)$response->getBody());
+        $this->assertEquals("Product id does not match any products", (string)$response->getBody());
     }
 
     public function testDeleteProductSize() {
