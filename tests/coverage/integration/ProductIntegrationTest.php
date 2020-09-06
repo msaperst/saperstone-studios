@@ -13,7 +13,6 @@ class ProductIntegrationTest extends TestCase {
 
     public function tearDown() {
         $sql = new Sql();
-        
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `products`;")['count'];
         $count++;
         $sql->executeStatement("ALTER TABLE `products` AUTO_INCREMENT = $count;");

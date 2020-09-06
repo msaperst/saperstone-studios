@@ -268,7 +268,7 @@ class ContractIntegrationTest extends TestCase {
         }
     }
 
-    public function testWithParamsBasicGetDataArray() {
+    public function testWithParamsBasicNoPermissions() {
         try {
             $params = [
                 'type' => 'wedding',
@@ -283,7 +283,7 @@ class ContractIntegrationTest extends TestCase {
         }
     }
 
-    public function testWithParamsBasicNoPermissions() {
+    public function testWithParamsBasicGetDataArray() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         try {
             $params = [
@@ -380,6 +380,118 @@ class ContractIntegrationTest extends TestCase {
         } finally {
             $this->sql->executeStatement("DELETE FROM contracts WHERE id = $contractId");
             $this->sql->executeStatement("DELETE FROM contract_line_items WHERE contract = $contractId");
+        }
+    }
+
+    public function testUpdateBasicNoPermissions() {
+        try {
+            $params = [
+                'type' => 'wedding',
+                'name' => 'Max',
+                'session' => 'photos',
+                'content' => 'WEDDING CONTENT!!!'
+            ];
+            $contract = Contract::withId(999);
+            $contract->update($params);
+        } catch (Exception $e) {
+            $this->assertEquals('User not authorized to update contract', $e->getMessage());
+        }
+    }
+
+    public function testUpdateBasicGetDataArray() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        try {
+            $params = [
+                'type' => 'wedding',
+                'name' => 'Max',
+                'session' => 'photos',
+                'content' => 'WEDDING CONTENT!!!'
+            ];
+            $contract = Contract::withId(999);
+            $contract->update($params);
+            $contractInfo = $contract->getDataArray();
+            $this->assertEquals('999', $contractInfo['id']);
+            $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractInfo['link']);
+            $this->assertEquals('wedding', $contractInfo['type']);
+            $this->assertEquals('Max', $contractInfo['name']);
+            $this->assertEquals('Address', $contractInfo['address']);
+            $this->assertEquals('1234567890', $contractInfo['number']);
+            $this->assertEquals('email-address', $contractInfo['email']);
+            $this->assertEquals('2021-10-13', $contractInfo['date']);
+            $this->assertEquals('photos', $contractInfo['session']);
+            $this->assertStringStartsWith('Up to one hour photo session to include:', $contractInfo['details']);
+            $this->assertEquals('0.00', $contractInfo['amount']);
+            $this->assertEquals('0.00', $contractInfo['deposit']);
+            $this->assertEquals('nope!', $contractInfo['invoice']);
+            $this->assertEquals('WEDDING CONTENT!!!', $contractInfo['content']);
+            $this->assertNull($contractInfo['signature']);
+            $this->assertNull($contractInfo['initial']);
+            $this->assertNull($contractInfo['file']);
+            $this->assertEquals(0, sizeof($contractInfo['lineItems']));
+        } finally {
+            unset($_SESSION['hash']);
+        }
+    }
+
+    public function testUpdateFullGetDataArray() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        try {
+            $params = [
+                'type' => 'wedding',
+                'name' => 'MaxMaxMax',
+                'session' => 'funsies',
+                'content' => 'my awesome contract!',
+                'amount' => '$25.25',
+                'deposit' => 9.267,
+                'address' => '123 Seasame Street',
+                'number' => '12345 F Off',
+                'email' => 'msaperst+sstest@gmail.com',
+                'date' => '2020-12-01',
+                'location' => 'Universal Studios',
+                'details' => 'None you care about',
+                'invoice' => 'link here!!!',
+                'lineItems' => [
+                    0 => [
+                        'amount' => 12.0,
+                        'item' => 'snuggles',
+                        'unit' => 'hugs'
+                    ],
+                    1 => [
+                        'amount' => '$12.45'
+                    ]
+                ]
+            ];
+            $contract = Contract::withId(999);
+            $contract->update($params);
+            $contractInfo = $contract->getDataArray();
+            $this->assertEquals('999', $contractInfo['id']);
+            $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractInfo['link']);
+            $this->assertEquals('wedding', $contractInfo['type']);
+            $this->assertEquals('MaxMaxMax', $contractInfo['name']);
+            $this->assertEquals('123 Seasame Street', $contractInfo['address']);
+            $this->assertEquals('12345 F Off', $contractInfo['number']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $contractInfo['email']);
+            $this->assertEquals('2020-12-01', $contractInfo['date']);
+            $this->assertEquals('funsies', $contractInfo['session']);
+            $this->assertEquals('None you care about', $contractInfo['details']);
+            $this->assertEquals('25.25', $contractInfo['amount']);
+            $this->assertEquals('9.27', $contractInfo['deposit']);
+            $this->assertEquals('link here!!!', $contractInfo['invoice']);
+            $this->assertEquals('my awesome contract!', $contractInfo['content']);
+            $this->assertNull($contractInfo['signature']);
+            $this->assertNull($contractInfo['initial']);
+            $this->assertNull($contractInfo['file']);
+            $this->assertEquals(2, sizeof($contractInfo['lineItems']));
+            $this->assertEquals(999, $contractInfo['lineItems'][0]['contract']);
+            $this->assertEquals('snuggles', $contractInfo['lineItems'][0]['item']);
+            $this->assertEquals(12, $contractInfo['lineItems'][0]['amount']);
+            $this->assertEquals('hugs', $contractInfo['lineItems'][0]['unit']);
+            $this->assertEquals(999, $contractInfo['lineItems'][1]['contract']);
+            $this->assertEquals('', $contractInfo['lineItems'][1]['item']);
+            $this->assertEquals(12.45, $contractInfo['lineItems'][1]['amount']);
+            $this->assertEquals('', $contractInfo['lineItems'][1]['unit']);
+        } finally {
+            unset($_SESSION['hash']);
         }
     }
 
@@ -627,6 +739,31 @@ class ContractIntegrationTest extends TestCase {
             $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . $contractFile));
             $this->assertEquals('/user/contracts/EleMax - ' . date('Y-m-d') . ' - Commercial Contract.pdf', $contractFile);
         } finally {
+            system('rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts');
+        }
+    }
+
+    public function testUpdateAlreadySigned() {
+        date_default_timezone_set("America/New_York");
+        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts');
+        try {
+            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+            $params = [
+                'name' => 'EleMax',
+                'address' => '123 Street',
+                'number' => '12345',
+                'email' => 'msaperst+sstest@gmail.com',
+                'signature' => 'something',
+                'initial' => 'MAS',
+                'content' => 'some contract content'
+            ];
+            $contract = Contract::withId(999);
+            $contract->sign($params);
+            $contract->update($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract has already been signed, unable to update', $e->getMessage());
+        } finally {
+            unset($_SESSION ['hash']);
             system('rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts');
         }
     }

@@ -69,7 +69,10 @@ class Contract {
     }
 
     static function withParams($params) {
-        $contract = new Contract();
+        return self::setVals(new Contract(), $params);
+    }
+
+    private static function setVals(Contract $contract, $params) {
         $sql = new Sql();
         //contract type
         if (!isset ($params['type'])) {
@@ -118,17 +121,17 @@ class Contract {
             $contract->deposit = floatval(str_replace('$', '', $params ['deposit']));
         }
         if (isset ($params ['address']) && $params ['address'] != "") {
-            $contract->address = "'" . $sql->escapeString($params ['address']) . "'";
+            $contract->address = $sql->escapeString($params ['address']);
         }
         if (isset ($params ['number']) && $params ['number'] != "") {
-            $contract->number = "'" . $sql->escapeString($params ['number']) . "'";
+            $contract->number = $sql->escapeString($params ['number']);
         }
         if (isset ($params ['email']) && $params ['email'] != "") {
             if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
                 $sql->disconnect();
                 throw new Exception("Contract email is not valid");
             }
-            $contract->email = "'" . $sql->escapeString($params ['email']) . "'";
+            $contract->email = $sql->escapeString($params ['email']);
         }
         if (isset ($params ['date']) && $params ['date'] != "") {
             $date = $sql->escapeString($params ['date']);
@@ -138,17 +141,19 @@ class Contract {
                 $sql->disconnect();
                 throw new Exception("Contract date is not the correct format");
             }
-            $contract->date = "'" . $date . "'";
+            $contract->date = $date;
         }
         if (isset ($params ['location']) && $params ['location'] != "") {
-            $contract->location = "'" . $sql->escapeString($params ['location']) . "'";
+            $contract->location = $sql->escapeString($params ['location']);
         }
         if (isset ($params ['details']) && $params ['details'] != "") {
-            $contract->details = "'" . $sql->escapeString($params ['details']) . "'";
+            $contract->details = $sql->escapeString($params ['details']);
         }
         if (isset ($params ['invoice']) && $params ['invoice'] != "") {
-            $contract->invoice = "'" . $sql->escapeString($params ['invoice']) . "'";
+            $contract->invoice = $sql->escapeString($params ['invoice']);
         }
+        // our line items
+        $contract->lineItems = array();
         if (isset ($params ['lineItems']) && !empty($params ['lineItems'])) {
             foreach ($params ['lineItems'] as $lineItem) {
                 $amount = floatval(str_replace('$', '', $lineItem ['amount']));
@@ -159,7 +164,7 @@ class Contract {
                 if (isset ($lineItem ['unit']) && $lineItem ['unit'] != "") {
                     $unit = $sql->escapeString($lineItem ['unit']);
                 }
-                $contract->lineItems[] = new LineItem(NULL, $item, $amount, $unit);
+                $contract->lineItems[] = new LineItem($contract->getId(), $item, $amount, $unit);
             }
         }
         $sql->disconnect();
@@ -207,35 +212,8 @@ class Contract {
         if (!$user->isAdmin()) {
             throw new Exception("User not authorized to create contract");
         }
+        list($address, $number, $email, $date, $location, $details, $invoice) = $this->nullify();
         $sql = new Sql();
-        $address = "NULL";
-        if ($this->address != NULL) {
-            $address = $this->address;
-        }
-        $number = "NULL";
-        if ($this->number != NULL) {
-            $number = $this->number;
-        }
-        $email = "NULL";
-        if ($this->email != NULL) {
-            $email = $this->email;
-        }
-        $date = "NULL";
-        if ($this->date != NULL) {
-            $date = $this->date;
-        }
-        $location = "NULL";
-        if ($this->location != NULL) {
-            $location = $this->location;
-        }
-        $details = "NULL";
-        if ($this->details != NULL) {
-            $details = $this->details;
-        }
-        $invoice = "NULL";
-        if ($this->invoice != NULL) {
-            $invoice = $this->invoice;
-        }
         $lastId = $sql->executeStatement("INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,`session`, `details`, `amount`, `deposit`, `invoice`, `content`) VALUES ('','{$this->type}','{$this->name}',$address,$number,$email,$date,$location,'{$this->session}',$details, {$this->amount},{$this->deposit},$invoice,'{$this->content}');");
         $link = md5($lastId . $this->type . $this->name . $this->session);
         $sql->executeStatement("UPDATE `contracts` SET `link` = '$link' WHERE `id` = $lastId;");
@@ -250,6 +228,28 @@ class Contract {
         $this->link = $contract->link;
         $this->raw = $contract->getDataArray();
         return $lastId;
+    }
+
+    function update($params) {
+        $user = User::fromSystem();
+        if (!$user->isAdmin()) {
+            throw new Exception("User not authorized to update contract");
+        }
+        if ($this->signature != NULL) {
+            throw new Exception("Contract has already been signed, unable to update");
+        }
+        self::setVals($this, $params);
+        list($address, $number, $email, $date, $location, $details, $invoice) = $this->nullify();
+        $sql = new Sql();
+        $sql->executeStatement("UPDATE `contracts` SET `type` = '{$this->type}', `name` = '{$this->name}', `address` = $address, `number` = $number, `email` = $email, `date` = $date, `location` = $location, `session` = '{$this->session}', `details` = $details, `amount` = {$this->amount}, `deposit` = {$this->deposit}, `invoice` = $invoice, `content` = '{$this->content}' WHERE `id` = {$this->id};");
+        $sql->executeStatement("DELETE FROM `contract_line_items` WHERE `contract` = {$this->id};");
+        foreach ($this->lineItems as $lineItem) {
+            /* @var $lineItem LineItem */
+            $lineItem->create();
+        }
+        $this->raw = $sql->getRow("SELECT * FROM contracts WHERE id = {$this->getId()};");
+        $this->raw['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = {$this->id};");
+        $sql->disconnect();
     }
 
     function sign($params) {
@@ -347,5 +347,40 @@ class Contract {
         $mpdf->Output(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . $file);
 
         return $file;
+    }
+
+    /**
+     * @return array
+     */
+    private function nullify(): array {
+        $address = "NULL";
+        if ($this->address != NULL) {
+            $address = "'{$this->address}'";
+        }
+        $number = "NULL";
+        if ($this->number != NULL) {
+            $number = "'{$this->number}'";
+        }
+        $email = "NULL";
+        if ($this->email != NULL) {
+            $email = "'{$this->email}'";
+        }
+        $date = "NULL";
+        if ($this->date != NULL) {
+            $date = "'{$this->date}'";
+        }
+        $location = "NULL";
+        if ($this->location != NULL) {
+            $location = "'{$this->location}'";
+        }
+        $details = "NULL";
+        if ($this->details != NULL) {
+            $details = "'{$this->details}'";
+        }
+        $invoice = "NULL";
+        if ($this->invoice != NULL) {
+            $invoice = "'{$this->invoice}'";
+        }
+        return array($address, $number, $email, $date, $location, $details, $invoice);
     }
 }
