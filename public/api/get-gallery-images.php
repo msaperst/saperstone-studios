@@ -6,7 +6,7 @@ $start = 0;
 $howMany = 999999999999999999;
 
 try {
-    $gallery = new Gallery($_GET['gallery']);
+    $gallery = Gallery::withId($_GET['gallery']);
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

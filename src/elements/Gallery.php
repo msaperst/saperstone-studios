@@ -12,29 +12,38 @@ class Gallery {
     private $comment;
     private $images = array();
 
-    function __construct($id) {
+    function __construct() {
+    }
+
+    static function withId($id) {
         if (!isset ($id)) {
             throw new Exception("Gallery id is required");
         } elseif ($id == "") {
             throw new Exception("Gallery id can not be blank");
         }
+        $gallery = new Gallery();
         $sql = new Sql();
         $id = (int)$id;
-        $this->raw = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
-        if (!$this->raw ['id']) {
+        $gallery->raw = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
+        if (!$gallery->raw ['id']) {
             $sql->disconnect();
             throw new Exception("Gallery id does not match any galleries");
         }
-        $this->id = $this->raw['id'];
-        $this->parent = $this->raw['parent'];
-        if ($this->parent != NULL) {
-            $this->parent = new Gallery($this->parent);
+        $gallery->id = $gallery->raw['id'];
+        $gallery->parent = $gallery->raw['parent'];
+        if ($gallery->parent != NULL) {
+            $gallery->parent = Gallery::withId($gallery->parent);
         }
-        $this->image = $this->raw['image'];
-        $this->title = $this->raw['title'];
-        $this->comment = $this->raw['comment'];
-        $this->images = array();    //TODO - change this to an array of matching images
+        $gallery->image = $gallery->raw['image'];
+        $gallery->title = $gallery->raw['title'];
+        $gallery->comment = $gallery->raw['comment'];
+        $gallery->images = array();    //TODO - change this to an array of matching images
         $sql->disconnect();
+        return $gallery;
+    }
+
+    static function withParams($params) {
+        throw new Exception('Not yet implemented');
     }
 
     function getId() {
@@ -47,5 +56,15 @@ class Gallery {
 
     function getParent() {
         return $this->parent;
+    }
+
+    function update($params) {
+        $sql = new Sql();
+        if (isset ($params ['title'])) {
+            $this->title = $sql->escapeString($params ['title']);
+        }
+        $sql->executeStatement("UPDATE galleries SET title='{$this->title}' WHERE id='{$this->id}';");
+        $this->raw = $sql->getRow("SELECT * FROM galleries WHERE id = {$this->id};");
+        $sql->disconnect();
     }
 }

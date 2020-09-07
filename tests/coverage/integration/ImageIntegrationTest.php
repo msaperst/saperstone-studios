@@ -55,7 +55,7 @@ class ImageIntegrationTest extends TestCase {
 
     public function testNullImageSequence() {
         try {
-            new Image(new Gallery(2), NULL);
+            new Image(Gallery::withId(2), NULL);
         } catch (Exception $e) {
             $this->assertEquals("Image id is required", $e->getMessage());
         }
@@ -63,7 +63,7 @@ class ImageIntegrationTest extends TestCase {
 
     public function testBlankImageSequence() {
         try {
-            new Image(new Gallery(2), "");
+            new Image(Gallery::withId(2), "");
         } catch (Exception $e) {
             $this->assertEquals("Image id can not be blank", $e->getMessage());
         }
@@ -71,7 +71,7 @@ class ImageIntegrationTest extends TestCase {
 
     public function testLetterImageSequence() {
         try {
-            new Image(new Gallery(2), "a");
+            new Image(Gallery::withId(2), "a");
         } catch (Exception $e) {
             $this->assertEquals("Image id does not match any images", $e->getMessage());
         }
@@ -79,7 +79,7 @@ class ImageIntegrationTest extends TestCase {
 
     public function testBadImageSequence() {
         try {
-            new Image(new Gallery(2), 8999);
+            new Image(Gallery::withId(2), 8999);
         } catch (Exception $e) {
             $this->assertEquals("Image id does not match any images", $e->getMessage());
         }
@@ -87,7 +87,7 @@ class ImageIntegrationTest extends TestCase {
 
     public function testBadStringImageSequence() {
         try {
-            new Image(new Gallery(2), "8999");
+            new Image(Gallery::withId(2), "8999");
         } catch (Exception $e) {
             $this->assertEquals("Image id does not match any images", $e->getMessage());
         }
@@ -154,20 +154,20 @@ class ImageIntegrationTest extends TestCase {
     }
 
     public function testCanUserGetDataGalleryNobody() {
-        $image = new Image(new Gallery(1), 899);
+        $image = new Image(Gallery::withId(1), 899);
         $this->assertFalse($image->canUserGetData());
     }
 
     public function testCanUserGetDataGalleryAdmin() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-        $image = new Image(new Gallery(1), 899);
+        $image = new Image(Gallery::withId(1), 899);
         $this->assertTrue($image->canUserGetData());
         unset($_SESSION['hash']);
     }
 
     public function testCanUserGetDataGalleryOtherUser() {
         $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
-        $image = new Image(new Gallery(1), 899);
+        $image = new Image(Gallery::withId(1), 899);
         $this->assertFalse($image->canUserGetData());
         unset($_SESSION['hash']);
     }
@@ -219,7 +219,7 @@ class ImageIntegrationTest extends TestCase {
 
     public function testDeleteGallery() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-        $image = new Image(new Gallery(1), 898);
+        $image = new Image(Gallery::withId(1), 898);
         $currentImages = $this->sql->getRowCount("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;");
         $image->delete();
         unset($_SESSION ['hash']);

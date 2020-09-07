@@ -5,6 +5,7 @@ namespace coverage\integration;
 use Exception;
 use Gallery;
 use PHPUnit\Framework\TestCase;
+use Sql;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
@@ -12,7 +13,7 @@ class GalleryIntegrationTest extends TestCase {
 
     public function testNullGalleryId() {
         try {
-            new Gallery(NULL);
+            Gallery::withId(NULL);
         } catch (Exception $e) {
             $this->assertEquals("Gallery id is required", $e->getMessage());
         }
@@ -20,7 +21,7 @@ class GalleryIntegrationTest extends TestCase {
 
     public function testBlankGalleryId() {
         try {
-            new Gallery("");
+            Gallery::withId("");
         } catch (Exception $e) {
             $this->assertEquals("Gallery id can not be blank", $e->getMessage());
         }
@@ -28,7 +29,7 @@ class GalleryIntegrationTest extends TestCase {
 
     public function testLetterGalleryId() {
         try {
-            new Gallery("a");
+            Gallery::withId("a");
         } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
@@ -36,7 +37,7 @@ class GalleryIntegrationTest extends TestCase {
 
     public function testBadGalleryId() {
         try {
-            new Gallery(8999);
+            Gallery::withId(8999);
         } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
@@ -44,19 +45,19 @@ class GalleryIntegrationTest extends TestCase {
 
     public function testBadStringGalleryId() {
         try {
-            new Gallery("8999");
+            Gallery::withId("8999");
         } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
     }
 
     public function testGetId() {
-        $gallery = new Gallery('1');
+        $gallery = Gallery::withId('1');
         $this->assertEquals(1, $gallery->getId());
     }
 
     public function testAllDataLoadedNoParent() {
-        $gallery = new Gallery(1);
+        $gallery = Gallery::withId(1);
         $galleryInfo = $gallery->getDataArray();
         $this->assertEquals(1, $galleryInfo['id']);
         $this->assertNull($galleryInfo['parent']);
@@ -66,7 +67,7 @@ class GalleryIntegrationTest extends TestCase {
     }
 
     public function testAllDataLoadedParent() {
-        $gallery = new Gallery(2);
+        $gallery = Gallery::withId(2);
         $galleryInfo = $gallery->getDataArray();
         $this->assertEquals(2, $galleryInfo['id']);
         $this->assertEquals(1, $galleryInfo['parent']);
@@ -76,17 +77,56 @@ class GalleryIntegrationTest extends TestCase {
     }
 
     public function testGetParentNoParent() {
-        $gallery = new Gallery(1);
+        $gallery = Gallery::withId(1);
         $this->assertNull($gallery->getParent());
     }
 
     public function testGetParentParent() {
-        $gallery = new Gallery(2);
+        $gallery = Gallery::withId(2);
         $parent = $gallery->getParent()->getDataArray();
         $this->assertEquals(1, $parent['id']);
         $this->assertNull($parent['parent']);
         $this->assertNull($parent['image']);
         $this->assertEquals('Portrait', $parent['title']);
         $this->assertNull($parent['comment']);
+    }
+
+    public function testUpdateNull() {
+        $gallery = Gallery::withId(1);
+        $gallery->update(NULL);
+        $galleryInfo = $gallery->getDataArray();
+        $this->assertEquals(1, $galleryInfo['id']);
+        $this->assertNull($galleryInfo['parent']);
+        $this->assertNull($galleryInfo['image']);
+        $this->assertEquals('Portrait', $galleryInfo['title']);
+        $this->assertNull($galleryInfo['comment']);
+    }
+
+    public function testUpdateNothing() {
+        $gallery = Gallery::withId(1);
+        $gallery->update(['x' => 2]);
+        $galleryInfo = $gallery->getDataArray();
+        $this->assertEquals(1, $galleryInfo['id']);
+        $this->assertNull($galleryInfo['parent']);
+        $this->assertNull($galleryInfo['image']);
+        $this->assertEquals('Portrait', $galleryInfo['title']);
+        $this->assertNull($galleryInfo['comment']);
+    }
+
+    public function testUpdateTitle() {
+        try {
+            $gallery = Gallery::withId(1);
+            $gallery->update(['title' => 'New Title']);
+            $galleryInfo = $gallery->getDataArray();
+            $this->assertEquals(1, $galleryInfo['id']);
+            $this->assertNull($galleryInfo['parent']);
+            $this->assertNull($galleryInfo['image']);
+            $this->assertEquals('New Title', $galleryInfo['title']);
+            $this->assertNull($galleryInfo['comment']);
+        } finally {
+            $sql = new Sql();
+            $sql->executeStatement("UPDATE galleries SET title='Portrait' WHERE id='1';");
+            $sql->disconnect();
+        }
     }
 }

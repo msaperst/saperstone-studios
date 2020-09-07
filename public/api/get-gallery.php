@@ -5,7 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $gallery = new Gallery($_GET['id']);
+    $gallery = Gallery::withId($_GET['id']);
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
