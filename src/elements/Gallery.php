@@ -50,11 +50,68 @@ class Gallery {
         return $this->id;
     }
 
+    function getTitle() {
+        return $this->title;
+    }
+
+    function getComment() {
+        return $this->comment;
+    }
+
+    function getImage() {
+        return $this->image;
+    }
+
+    function getNav() {
+        $nav = $this->getTitle();
+        $mostParent = $this->parent;
+        while ($mostParent != NULL) {
+            $nav = $mostParent->getTitle();
+            $mostParent = $mostParent->parent;
+        }
+        return strtolower($nav);
+    }
+
+    function getBreadcrumbs() {
+        $nav[0] = [ 'title' => $this->getTitle(), 'link' => 'gallery.php?w=' . $this->id ];
+        $mostParent = $this->parent;
+        while ($mostParent != NULL) {
+            $nav[] = ['title' => $mostParent->getTitle(), 'link' => 'gallery.php?w=' . $mostParent->getId()];
+            $mostParent = $mostParent->parent;
+        }
+        for( $i = sizeof($nav)-1; $i>= 0; $i--) {
+            if ($nav[$i]['title'] == 'Product') {
+                $crumbs[] = ['title' => 'Products', 'link' => 'products.php'];
+                $crumbs[] = ['title' => 'Gallery', 'link' => $nav[sizeof($nav)-2]['link']];
+            } else {
+                $crumbs[] = ['title' => $nav[$i]['title'], 'link' => $nav[$i]['link'] ];
+            }
+            if ($i == sizeof($nav)-1 && $this->crumbsHasProduct($nav)) {
+                $crumbs[] = ['title' => 'Services', 'link' =>'details.php'];
+            }
+            if ($i == sizeof($nav)-1 && !$this->crumbsHasProduct($nav)) {
+                $crumbs[] = ['title' => 'Gallery', 'link' => $nav[sizeof($nav)-1]['link']];
+            }
+        }
+        $crumbs[0]['link'] = 'index.php';
+        $crumbs[sizeof($crumbs)-1]['link'] = '';
+        return $crumbs;
+    }
+
+    private function crumbsHasProduct($nav) {
+        foreach( $nav as $n) {
+            if( $n['title'] == 'Product') {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function getDataArray() {
         return $this->raw;
     }
 
-    function getParent() {
+    function getParent(): Gallery {
         return $this->parent;
     }
 

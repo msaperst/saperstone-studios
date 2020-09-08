@@ -2,33 +2,16 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $errors = new Errors();
 
-$what;
-// if no gallery is set, throw a 404 error - TODO - use new Gallery object
-if (! isset ( $_GET ['w'] )) {
+try {
+    $gallery = Gallery::withId($_GET ['w']);
+} catch (Exception $e) {
     $errors->throw404();
-} else {
-    $what = (int) $_GET ['w'];
 }
 
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$details = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '$what';" );
-if (! $details ['id']) {
-    $errors->throw404();
-}
-
 $user = User::fromSystem();
-
-$children = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '$what';" );
-$parent = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '" . $details ['parent'] . "';" );
-if ($parent ['parent'] != NULL) {
-    $grandparent = $sql->getRow( "SELECT * FROM `galleries` WHERE id = '" . $parent ['parent'] . "';" );
-}
-if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
-    $greatgrandparent = $sql->getRow( "SELECT `title` FROM `galleries` WHERE id = " . $grandparent ['parent'] . ";" ) ['title'];
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -51,16 +34,11 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
 <body>
 
     <?php
-    $nav = strtolower ( $parent ['title'] );
-    if ($parent ['parent'] != NULL && $grandparent ['title'] != "Product") {
-        $nav = strtolower ( $grandparent ['title'] );
-    } elseif ($parent ['parent'] != NULL && $grandparent ['title'] == "Product") {
-        $nav = strtolower ( $greatgrandparent );
-    }
+    $nav = $gallery->getNav();
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
     
     // get our gallery images
-    $images = $sql->getRows( "SELECT * FROM `gallery_images` WHERE gallery = '$what' ORDER BY `sequence`;" );
+    $images = $sql->getRows( "SELECT * FROM `gallery_images` WHERE gallery = '{$gallery->getId()}' ORDER BY `sequence`;" );
     $sql->disconnect ();
     ?>
     
@@ -70,38 +48,16 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
+                <h1 class="page-header text-center"><?php echo $gallery->getTitle(); ?> Gallery</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php"><?php echo ucfirst($nav); ?></a></li>
-                    <?php
-                    if ($parent ['parent'] != NULL && $parent ['title'] != 'Product' && $grandparent ['title'] != "Product") {
-                        ?>
-                        <li><a
-                        href="gallery.php?w=<?php echo $parent ['parent']; ?>">Gallery</a></li>
-                    <li><a href='gallery.php?w=<?php echo $parent ['id']; ?>'><?php echo $parent ['title']; ?></a></li>
-                        <?php
-                    } elseif ($parent ['parent'] != NULL && $parent ['title'] == 'Product') {
-                        ?>
-                        <li><a href='details.php'>Details</a></li>
-                    <li><a href='products.php'>Products</a></li>
-                    <li><a href="gallery.php?w=<?php echo $details ['parent']; ?>">Gallery</a></li>
-                        <?php
-                    } elseif ($parent ['parent'] != NULL && $grandparent ['title'] == 'Product') {
-                        ?>
-                        <li><a href='details.php'>Details</a></li>
-                    <li><a href='products.php'>Products</a></li>
-                    <li><a href="gallery.php?w=<?php echo $parent ['parent']; ?>">Gallery</a></li>
-                    <li><a href="gallery.php?w=<?php echo $details ['parent']; ?>"><?php echo $parent['title']; ?></a></li>
-                        <?php
-                    } else {
-                        ?>
-                        <li><a
-                        href="gallery.php?w=<?php echo $parent ['id']; ?>">Gallery</a></li>
-                        <?php
-                    }
-                    ?>
-                    <li class="active"><?php echo $details['title']; ?></li>
+                    <?php foreach( $gallery->getBreadcrumbs() as $breadcrumb ) {
+                        if( $breadcrumb['link'] != '' ) {
+                            echo "<li><a href='{$breadcrumb['link']}'>{$breadcrumb['title']}</a></li>";
+                        } else {
+                            echo "<li class='active'>{$breadcrumb['title']}</li>";
+                        }
+                    } ?>
                     <?php
                     if ($user->isAdmin ()) {
                         ?>
@@ -133,11 +89,11 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
         <!-- /.row -->
         
         <?php
-        if ($details ['comment'] != NULL) {
+        if ($gallery->getComment() != NULL) {
             ?>
         <div class="row">
             <div class="col-lg-12">
-                <p><?php echo $details['comment']; ?></p>
+                <p><?php echo $gallery->getComment(); ?></p>
             </div>
         </div>
         <?php
@@ -159,19 +115,19 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
     <!-- /.container -->
 
     <!-- Slideshow Modal -->
-    <div id="<?php echo str_replace(" ","-",$details['title']); ?>"
+    <div id="<?php echo str_replace(" ","-",$gallery->getTitle()); ?>"
         class="modal fade modal-carousel" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><?php echo $details['title']; ?> Gallery</h4>
+                    <h4 class="modal-title"><?php echo $gallery->getTitle(); ?> Gallery</h4>
                 </div>
                 <div class="modal-body">
                     <!-- Carousel -->
                     <div
-                        id="<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
+                        id="<?php echo str_replace(" ","-",$gallery->getTitle()); ?>-carousel"
                         class="carousel slide carousel-three-by-two">
                         <!-- Indicators -->
                         <ol class="carousel-indicators">
@@ -181,7 +137,7 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
                             if ($num == 0) {
                                 $class = " class='active'";
                             }
-                            echo "<li data-target='#" . str_replace ( " ", "-", $details ['title'] ) . "-carousel' data-slide-to='$num'$class></li>";
+                            echo "<li data-target='#" . str_replace ( " ", "-", $gallery->getTitle() ) . "-carousel' data-slide-to='$num'$class></li>";
                         }
                         ?>
                     </ol>
@@ -195,7 +151,7 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
                                 $active_class = " active";
                             }
                             echo "<div class='item$active_class'>";
-                            echo "    <div class='contain' gallery-id='$what' image-id='" . $image ['id'] . "' sequence='" . $image ['sequence'] . "'";
+                            echo "    <div class='contain' gallery-id='{$gallery->getId()}' image-id='" . $image ['id'] . "' sequence='" . $image ['sequence'] . "'";
                             echo "        alt='" . $image ['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
                             echo "    <div class='carousel-caption'>";
                             echo "        <h2>" . $image ['caption'] . "</h2>";
@@ -207,10 +163,10 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
 
                         <!-- Controls -->
                         <a class="left carousel-control"
-                            href="#<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
+                            href="#<?php echo str_replace(" ","-",$gallery->getTitle()); ?>-carousel"
                             data-slide="prev"> <span class="icon-prev"></span>
                         </a> <a class="right carousel-control"
-                            href="#<?php echo str_replace(" ","-",$details['title']); ?>-carousel"
+                            href="#<?php echo str_replace(" ","-",$gallery->getTitle()); ?>-carousel"
                             data-slide="next"> <span class="icon-next"></span>
                         </a>
                     </div>
@@ -252,7 +208,7 @@ if (isset ( $grandparent ) && $grandparent ['title'] == "Product") {
     <script>
         var loaded = 0;
         var total = <?php echo count($images); ?>;
-        var gallery = new Gallery( <?php echo $what; ?>, "<?php echo str_replace(" ","-",$details['title']); ?>", total );
+        var gallery = new Gallery( <?php echo $gallery->getId(); ?>, "<?php echo str_replace(" ","-",$gallery->getTitle()); ?>", total );
 
         $(window,document).on("scroll resize", function(){
             if( $('footer').isOnScreen() && loaded < total ) {
