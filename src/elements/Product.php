@@ -37,7 +37,10 @@ class Product {
     }
 
     static function withParams($params) {
-        $product = new Product();
+        return self::setVals(new Product(), $params);
+    }
+
+    static function setVals($product, $params) {
         $sql = new Sql();
         //product type
         if (!isset ($params['type'])) {
@@ -99,6 +102,18 @@ class Product {
         $product = self::withId($lastId);
         $this->raw = $product->getDataArray();
         return $lastId;
+    }
+
+    function update($params) {
+        $user = User::fromSystem();
+        if (!$user->isAdmin()) {
+            throw new Exception("User not authorized to update product");
+        }
+        self::setVals($this, $params);
+        $sql = new Sql();
+        $sql->executeStatement("UPDATE `products` SET `product_type` = '{$this->type->getId()}', `size` = '{$this->size}', `cost` = '{$this->cost}' , `price` = '{$this->price}' WHERE `products`.`id` = {$this->id};");
+        $this->raw = $sql->getRow("SELECT * FROM products WHERE id = {$this->getId()};");
+        $sql->disconnect();
     }
 
     function delete() {

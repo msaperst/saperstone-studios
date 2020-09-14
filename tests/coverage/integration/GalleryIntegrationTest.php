@@ -52,6 +52,14 @@ class GalleryIntegrationTest extends TestCase {
         }
     }
 
+    public function testWithParams() {
+        try {
+            Gallery::withParams(NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("Not yet implemented", $e->getMessage());
+        }
+    }
+
     public function testGetId() {
         $gallery = Gallery::withId('1');
         $this->assertEquals(1, $gallery->getId());
