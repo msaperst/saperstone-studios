@@ -205,6 +205,56 @@ class UpdateProfileTest extends TestCase {
         $this->assertEquals("Current password does not match our records", (string)$response->getBody());
     }
 
+    public function testNoPasswordConfirm() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-profile.php', [
+            'form_params' => [
+                'email' => 'uploader@example.org',
+                'curPass' => 'password',
+                'password' => '1234'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Password confirmation is required", (string)$response->getBody());
+    }
+
+    public function testBlankPasswordConfirm() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-profile.php', [
+            'form_params' => [
+                'email' => 'uploader@example.org',
+                'curPass' => 'password',
+                'password' => '1234',
+                'passwordConfirm' => ''
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Password confirmation can not be blank", (string)$response->getBody());
+    }
+
+    public function testBadPasswordConfirm() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-profile.php', [
+            'form_params' => [
+                'email' => 'uploader@example.org',
+                'curPass' => 'password',
+                'password' => '1234',
+                'passwordConfirm' => '123'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Password does not match password confirmation", (string)$response->getBody());
+    }
+
     public function testUpdateUserPassword() {
         try {
             $cookieJar = CookieJar::fromArray([
@@ -214,7 +264,8 @@ class UpdateProfileTest extends TestCase {
                 'form_params' => [
                     'email' => 'uploader@example.org',
                     'curPass' => 'password',
-                    'password' => 'newpassword'
+                    'password' => 'newpassword',
+                    'passwordConfirm' => 'newpassword'
                 ],
                 'cookies' => $cookieJar
             ]);

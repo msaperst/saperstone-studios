@@ -190,6 +190,39 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('123', $userInfo['resetKey']);
     }
 
+    public function testUpdatePasswordNoAccess() {
+        $user = User::withId(899);
+        try {
+            $user->updatePassword(NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("User not authorized to update user", $e->getMessage());
+        }
+    }
+
+    public function testUpdatePasswordNoPassword() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $user = User::withId(899);
+        try {
+            $user->updatePassword(NULL);
+        } catch (Exception $e) {
+            $this->assertEquals("Password is required", $e->getMessage());
+        } finally {
+            unset( $_SESSION ['hash'] );
+        }
+    }
+
+    public function testUpdatePasswordBlankPassword() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $user = User::withId(899);
+        try {
+            $user->updatePassword([ 'password' => '']);
+        } catch (Exception $e) {
+            $this->assertEquals("Password can not be blank", $e->getMessage());
+        } finally {
+            unset( $_SESSION ['hash'] );
+        }
+    }
+
     public function testDeleteNoAccess() {
         $user = User::withId(899);
         try {
@@ -999,11 +1032,65 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    public function testNoPasswordConfirmation() {
+        $params = [
+            'email' => 'uploader@example.org',
+            'password' => 'newpassword',
+            'curPass' => 'password'
+        ];
+        try {
+            $_COOKIE ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
+            $user = User::withId(4);
+            $user->update($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Password confirmation is required', $e->getMessage());
+        } finally {
+            unset( $_COOKIE ['hash']);
+        }
+    }
+
+    public function testBlankPasswordConfirmation() {
+        $params = [
+            'email' => 'uploader@example.org',
+            'password' => 'newpassword',
+            'curPass' => 'password',
+            'passwordConfirm' => ''
+        ];
+        try {
+            $_COOKIE ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
+            $user = User::withId(4);
+            $user->update($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Password confirmation can not be blank', $e->getMessage());
+        } finally {
+            unset( $_COOKIE ['hash']);
+        }
+    }
+
+    public function testBadPasswordConfirmation() {
+        $params = [
+            'email' => 'uploader@example.org',
+            'password' => 'newpassword',
+            'curPass' => 'password',
+            'passwordConfirm' => '123'
+        ];
+        try {
+            $_COOKIE ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
+            $user = User::withId(4);
+            $user->update($params);
+        } catch (Exception $e) {
+            $this->assertEquals('Password does not match password confirmation', $e->getMessage());
+        } finally {
+            unset( $_COOKIE ['hash']);
+        }
+    }
+
     public function testUpdateUserPasswordDoesMatch() {
         sleep( 1 );
         $params = [
             'email' => 'uploader@example.org',
             'password' => 'newpassword',
+            'passwordConfirm' => 'newpassword',
             'curPass' => 'password'
         ];
         try {
@@ -1037,6 +1124,7 @@ class UserIntegrationTest extends TestCase {
         $params = [
             'email' => 'uploader@example.org',
             'password' => 'newpassword',
+            'passwordConfirm' => 'newpassword',
         ];
         try {
             $_COOKIE ['hash'] = "1d7505e7f434a7713e84ba399e937191";

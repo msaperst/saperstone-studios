@@ -296,26 +296,51 @@ class User {
 
         //password is optional, but if it is set, current password must be passed, and must match
         if (isset ($params ['password']) && $params ['password'] != "") {
-            //if admin or correct current password provided, able to reset password
-            if (!$systemUser->isAdmin() && !isset ($params ['curPass'])) {
-                $sql->disconnect();
-                throw new Exception("Current password is required");
-            } elseif (!$systemUser->isAdmin() && $params ['curPass'] == "") {
-                $sql->disconnect();
-                throw new Exception("Current password can not be blank");
-            } elseif (!$systemUser->isAdmin() && $sql->getRowCount("SELECT * FROM users WHERE id = '{$systemUser->getId()}' AND pass = '" . md5($sql->escapeString($params ['curPass'])) . "'") == 0) {
-                $sql->disconnect();
-                throw new Exception("Current password does not match our records");
-            }
-            $this->password = $sql->escapeString($params ['password']);
-            $this->md5Pass = md5($this->password);
-            $sql->executeStatement("UPDATE users SET pass='{$this->md5Pass}' WHERE id='{$this->getId()}';");
+            $this->updatePassword($params);
         }
         //TODO - admin used to be able to change username, can't do that any longer
         //must be unique from all other users
         $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL );");
         $sql->disconnect();
         $this->raw = self::withId($this->id)->getDataArray();
+    }
+
+    function updatePassword($params) {
+        $systemUser = User::fromSystem();
+        if (!$systemUser->isAdmin() && $systemUser->getId() != $this->getId()) {
+            throw new Exception("User not authorized to update user");
+        }
+        if (!isset ($params['password'])) {
+            throw new Exception("Password is required");
+        } elseif ($params['password'] == "") {
+            throw new Exception("Password can not be blank");
+        }
+        $sql = new Sql();
+        //if admin or correct current password provided, able to reset password
+        if (!$systemUser->isAdmin() && !isset ($params ['curPass'])) {
+            $sql->disconnect();
+            throw new Exception("Current password is required");
+        } elseif (!$systemUser->isAdmin() && $params ['curPass'] == "") {
+            $sql->disconnect();
+            throw new Exception("Current password can not be blank");
+        } elseif (!$systemUser->isAdmin() && $sql->getRowCount("SELECT * FROM users WHERE id = '{$systemUser->getId()}' AND pass = '" . md5($sql->escapeString($params ['curPass'])) . "'") == 0) {
+            $sql->disconnect();
+            throw new Exception("Current password does not match our records");
+        }
+        // need to ensure repeated password matches
+        if (!isset ($params['passwordConfirm'])) {
+            $sql->disconnect();
+            throw new Exception("Password confirmation is required");
+        } elseif ($params['passwordConfirm'] == "") {
+            $sql->disconnect();
+            throw new Exception("Password confirmation can not be blank");
+        } elseif ($params['passwordConfirm'] != $params ['password']) {
+            $sql->disconnect();
+            throw new Exception("Password does not match password confirmation");
+        }
+        $this->password = $sql->escapeString($params ['password']);
+        $this->md5Pass = md5($this->password);
+        $sql->executeStatement("UPDATE users SET pass='{$this->md5Pass}' WHERE id='{$this->getId()}';");
     }
 
     function delete() {

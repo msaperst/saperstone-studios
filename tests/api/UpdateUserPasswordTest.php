@@ -10,7 +10,7 @@ use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-class UpdateUserTest extends TestCase {
+class UpdateUserPasswordTest extends TestCase {
     private $http;
     private $sql;
 
@@ -26,7 +26,7 @@ class UpdateUserTest extends TestCase {
 
     public function testNotLoggedIn() {
         try {
-            $this->http->request('POST', 'api/update-user.php');
+            $this->http->request('POST', 'api/update-user-password.php');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -38,7 +38,7 @@ class UpdateUserTest extends TestCase {
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));
         try {
-            $this->http->request('POST', 'api/update-user.php', [
+            $this->http->request('POST', 'api/update-user-password.php', [
                 'cookies' => $cookieJar
             ]);
         } catch (ClientException $e) {
@@ -51,7 +51,7 @@ class UpdateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
+        $response = $this->http->request('POST', 'api/update-user-password.php', [
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -62,7 +62,7 @@ class UpdateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
+        $response = $this->http->request('POST', 'api/update-user-password.php', [
             'form_params' => [
                 'id' => ''
             ],
@@ -76,7 +76,7 @@ class UpdateUserTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
+        $response = $this->http->request('POST', 'api/update-user-password.php', [
             'form_params' => [
                 'id' => '999'
             ],
@@ -86,90 +86,43 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("User id does not match any users", (string)$response->getBody());
     }
 
-    public function testNoEmail() {
+    public function testNoPassword() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
+        $response = $this->http->request('POST', 'api/update-user-password.php', [
             'form_params' => [
                 'id' => '4'
             ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is required", (string)$response->getBody());
+        $this->assertEquals("Password is required", (string)$response->getBody());
     }
 
-    public function testBlankEmail() {
+    public function testBlankPassword() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
+        $response = $this->http->request('POST', 'api/update-user-password.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => ''
+                'password' => ''
             ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email can not be blank", (string)$response->getBody());
+        $this->assertEquals("Password can not be blank", (string)$response->getBody());
     }
 
-    public function testBadEmail() {
+    public function testNoPasswordConfirm() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
+        $response = $this->http->request('POST', 'api/update-user-password.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'max@max'
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is not valid", (string)$response->getBody());
-    }
-
-    public function testDuplicateEmail() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
-            'form_params' => [
-                'id' => '4',
-                'email' => 'msaperst@gmail.com'
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("That email already exists in the system: try logging in with it", (string)$response->getBody());
-    }
-
-    public function testBadRole() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
-            'form_params' => [
-                'id' => '4',
-                'email' => 'msaperst+sstest@gmail.com',
-                'role' => 'awesome'
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Role is not valid", (string)$response->getBody());
-    }
-
-    public function testNoPassConfirmation() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
-            'form_params' => [
-                'id' => '4',
-                'email' => 'msaperst+sstest@gmail.com',
-                'password' => 'awesome'
+                'password' => 'newpassword'
             ],
             'cookies' => $cookieJar
         ]);
@@ -177,15 +130,14 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Password confirmation is required", (string)$response->getBody());
     }
 
-    public function testBlankPassConfirmation() {
+    public function testBlankPasswordConfirmation() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
+        $response = $this->http->request('POST', 'api/update-user-password.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'msaperst+sstest@gmail.com',
-                'password' => 'awesome',
+                'password' => 'newpassword',
                 'passwordConfirm' => ''
             ],
             'cookies' => $cookieJar
@@ -194,16 +146,15 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Password confirmation can not be blank", (string)$response->getBody());
     }
 
-    public function testBadPassConfirmation() {
+    public function testBadPasswordConfirmation() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-user.php', [
+        $response = $this->http->request('POST', 'api/update-user-password.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'msaperst+sstest@gmail.com',
-                'password' => 'awesome',
-                'passwordConfirm' => 'awsome'
+                'password' => 'newpassword',
+                'passwordConfirm' => 'newpasword'
             ],
             'cookies' => $cookieJar
         ]);
@@ -211,54 +162,14 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Password does not match password confirmation", (string)$response->getBody());
     }
 
-    public function testNoExtras() {
+    public function testReset() {
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
-            $response = $this->http->request('POST', 'api/update-user.php', [
+            $response = $this->http->request('POST', 'api/update-user-password.php', [
                 'form_params' => [
                     'id' => '4',
-                    'email' => 'msaperst+sstest@gmail.com',
-                ],
-                'cookies' => $cookieJar
-            ]);
-            $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals('', (string) $response->getBody());
-            $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = 4;");
-            $this->assertEquals(4, $userDetails['id']);
-            $this->assertEquals('uploader', $userDetails['usr']);
-            $this->assertEquals(md5('password'), $userDetails['pass']);
-            $this->assertEquals('Upload', $userDetails['firstName']);
-            $this->assertEquals('User', $userDetails['lastName']);
-            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
-            $this->assertEquals('uploader', $userDetails['role']);
-            $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
-            $this->assertEquals(1, $userDetails['active']);
-            $this->assertNull($userDetails['resetKey']);
-            $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC");
-            $this->assertEquals(4, $userLogs['user']);
-            $this->assertEquals('Updated User', $userLogs['action']);
-            $this->assertNull($userLogs['what']);
-            $this->assertNull($userLogs['album']);
-        } finally {
-            $this->sql->executeStatement("UPDATE users SET pass = '5f4dcc3b5aa765d61d8327deb882cf99', firstName = 'Upload', lastName = 'User', email = 'uploader@example.org', role = 'uploader', hash = 'c90788c0e409eac6a95f6c6360d8dbf7', active = 1 WHERE id = 4;");
-        }
-    }
-
-    public function testAllData() {
-        try {
-            $cookieJar = CookieJar::fromArray([
-                'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], getenv('DB_HOST'));
-            $response = $this->http->request('POST', 'api/update-user.php', [
-                'form_params' => [
-                    'id' => '4',
-                    'email' => 'uploader@example.org',
-                    'role' => 'downloader',
-                    'firstName' => 'Max',
-                    'lastName' => 'Saperstone',
-                    'active' => 0,
                     'password' => 'newpassword',
                     'passwordConfirm' => 'newpassword'
                 ],
@@ -270,12 +181,12 @@ class UpdateUserTest extends TestCase {
             $this->assertEquals(4, $userDetails['id']);
             $this->assertEquals('uploader', $userDetails['usr']);
             $this->assertEquals(md5('newpassword'), $userDetails['pass']);
-            $this->assertEquals('Max', $userDetails['firstName']);
-            $this->assertEquals('Saperstone', $userDetails['lastName']);
+            $this->assertEquals('Upload', $userDetails['firstName']);
+            $this->assertEquals('User', $userDetails['lastName']);
             $this->assertEquals('uploader@example.org', $userDetails['email']);
-            $this->assertEquals('downloader', $userDetails['role']);
+            $this->assertEquals('uploader', $userDetails['role']);
             $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
-            $this->assertEquals(0, $userDetails['active']);
+            $this->assertEquals(1, $userDetails['active']);
             $this->assertNull($userDetails['resetKey']);
             $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC");
             $this->assertEquals(4, $userLogs['user']);
