@@ -46,7 +46,7 @@ $user->forceLogIn();
                     </div>
                     <div class="col-md-10">
                         <input type="text" class="form-control" id="profile-username"
-                            placeholder="Username" value="<?php echo $user->getUser(); ?>"
+                            placeholder="Username" value="<?php echo $user->getUsername(); ?>"
                             required disabled />
                     </div>
                 </div>

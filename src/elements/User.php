@@ -12,9 +12,9 @@ class User {
     private $firstName = '';
     private $lastName = '';
     private $email;
-    private $role;
+    private $role = 'downloader';
     private $hash;
-    private $active;
+    private $active = 1;
     private $created;
     private $lastLogin;
     private $resetKey;
@@ -22,6 +22,7 @@ class User {
 
     function __construct() {
         $this->session = new Session();
+        $this->session->initialize();
     }
 
     static function fromSystem() {
@@ -94,32 +95,7 @@ class User {
             throw new Exception ("That username already exists in the system");
         }
         $user->username = $sql->escapeString($params ['username']);
-        //verify email properly provided
-        if (!isset ($params['email'])) {
-            $sql->disconnect();
-            throw new Exception("Email is required");
-        } elseif ($params['email'] == "") {
-            $sql->disconnect();
-            throw new Exception("Email can not be blank");
-        } elseif (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
-            $sql->disconnect();
-            throw new Exception("Email is not valid");
-        } elseif ($sql->getRowCount("SELECT * FROM users WHERE email = '" . $sql->escapeString($params ['email']) . "'") > 0) {
-            $sql->disconnect();
-            throw new Exception ("That email already exists in the system: try logging in with it");
-        }
-        $user->email = $sql->escapeString($params['email']);
-        //setting role - admin users can provide different role
-        if ($systemUser->isAdmin() && isset($params['role']) && $params['role'] != "") {
-            $enums = $sql->getEnumValues('users', 'role');
-            if (!in_array($params['role'], $enums)) {
-                $sql->disconnect();
-                throw new Exception("Role is not valid");
-            }
-            $user->role = $sql->escapeString($params['role']);
-        } else {
-            $user->role = 'downloader';
-        }
+        $user = self::setBasicValues($user, $params);
         //set the password - admins are not expected to provide one, but could
         if (isset($params['password']) && $params['password'] != "") {
             $user->password = $sql->escapeString($params['password']);
@@ -135,11 +111,46 @@ class User {
             }
         }
         $user->md5Pass = md5($user->password);
+        // some common values
+        $sql->disconnect();
+        $user->hash = md5($user->username . $user->password);
+        return $user;
+    }
+
+    private static function setBasicValues(User $user, $params) {
+        $systemUser = User::fromSystem();
+        $sql = new Sql();
+        $id = 0;
+        if ($user->id != NULL) {
+            $id = $user->id;
+        }
+        //verify email properly provided
+        if (!isset ($params['email'])) {
+            $sql->disconnect();
+            throw new Exception("Email is required");
+        } elseif ($params['email'] == "") {
+            $sql->disconnect();
+            throw new Exception("Email can not be blank");
+        } elseif (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
+            $sql->disconnect();
+            throw new Exception("Email is not valid");
+        } elseif ($sql->getRowCount("SELECT * FROM users WHERE email = '" . $sql->escapeString($params ['email']) . "' && id != $id") > 0) {
+            $sql->disconnect();
+            throw new Exception ("That email already exists in the system: try logging in with it");
+        }
+        $user->email = $sql->escapeString($params['email']);
         //sets if the user as active - only an admin can make a user inactive
         if ($systemUser->isAdmin() && isset($params['active'])) {
             $user->active = (int)$params['active'];
-        } else {
-            $user->active = '1';
+        }
+        //setting role - admin users can provide different role
+        if ($systemUser->isAdmin() && isset($params['role']) && $params['role'] != "") {
+            $enums = $sql->getEnumValues('users', 'role');
+            if (!in_array($params['role'], $enums)) {
+                $sql->disconnect();
+                throw new Exception("Role is not valid");
+            }
+            $user->role = $sql->escapeString($params['role']);
         }
         //optional values
         if (isset ($params ['firstName'])) {
@@ -148,9 +159,6 @@ class User {
         if (isset ($params ['lastName'])) {
             $user->lastName = $sql->escapeString($params ['lastName']);
         }
-        // some common values
-        $sql->disconnect();
-        $user->hash = md5($user->username . $user->password);
         return $user;
     }
 
@@ -275,6 +283,39 @@ class User {
         $this->created = $user->created;
         $this->raw = $user->getDataArray();
         return $lastId;
+    }
+
+    function update($params) {
+        $systemUser = User::fromSystem();
+        if (!$systemUser->isAdmin() && $systemUser->getId() != $this->getId()) {
+            throw new Exception("User not authorized to update user");
+        }
+        self::setBasicValues($this, $params);
+        $sql = new Sql();
+        $sql->executeStatement("UPDATE users SET firstName='{$this->firstName}', lastName='{$this->lastName}', email='{$this->email}', role='{$this->role}', active='{$this->active}' WHERE id='{$this->getId()}';");
+
+        //password is optional, but if it is set, current password must be passed, and must match
+        if (isset ($params ['password']) && $params ['password'] != "") {
+            //if admin or correct current password provided, able to reset password
+            if (!$systemUser->isAdmin() && !isset ($params ['curPass'])) {
+                $sql->disconnect();
+                throw new Exception("Current password is required");
+            } elseif (!$systemUser->isAdmin() && $params ['curPass'] == "") {
+                $sql->disconnect();
+                throw new Exception("Current password can not be blank");
+            } elseif (!$systemUser->isAdmin() && $sql->getRowCount("SELECT * FROM users WHERE id = '{$systemUser->getId()}' AND pass = '" . md5($sql->escapeString($params ['curPass'])) . "'") == 0) {
+                $sql->disconnect();
+                throw new Exception("Current password does not match our records");
+            }
+            $this->password = $sql->escapeString($params ['password']);
+            $this->md5Pass = md5($this->password);
+            $sql->executeStatement("UPDATE users SET pass='{$this->md5Pass}' WHERE id='{$this->getId()}';");
+        }
+        //TODO - admin used to be able to change username, can't do that any longer
+        //must be unique from all other users
+        $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL );");
+        $sql->disconnect();
+        $this->raw = self::withId($this->id)->getDataArray();
     }
 
     function delete() {

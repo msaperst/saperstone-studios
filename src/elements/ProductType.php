@@ -36,7 +36,7 @@ class ProductType {
         return self::setVals(new ProductType(), $params);
     }
 
-    static function setVals($productType, $params) {
+    private static function setVals(ProductType $productType, $params) {
         $sql = new Sql();
         //product category
         if (!isset ($params['category'])) {

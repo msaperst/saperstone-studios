@@ -40,7 +40,7 @@ class Product {
         return self::setVals(new Product(), $params);
     }
 
-    static function setVals($product, $params) {
+    private static function setVals(Product $product, $params) {
         $sql = new Sql();
         //product type
         if (!isset ($params['type'])) {
