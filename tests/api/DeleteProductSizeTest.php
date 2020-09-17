@@ -22,7 +22,7 @@ class DeleteProductSizeTest extends TestCase {
 
     public function tearDown() {
         $this->http = NULL;
-        $this->sql->executeStatement("DELETE FROM `products` WHERE `products`.`product_type` = 999;");
+        $this->sql->executeStatement("DELETE FROM `products` WHERE `products`.`id` = 999;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `products`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `products` AUTO_INCREMENT = $count;");
