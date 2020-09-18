@@ -42,17 +42,32 @@ class File {
 
     function upload($location) {
         $this->location = $location;
+        if (!is_dir($location)) {
+            mkdir($location, 0755, true);
+        }
         $files = array();
         foreach ($this->files as $file) {
-            move_uploaded_file($file['tmp_name'], $location . $file['name']);
+            $x = move_uploaded_file($file['tmp_name'], $location . $file['name']);
             $files[] = $file['name'];
         }
         $this->files = $files;
         return $this->files;
     }
 
-    function forceImageSize($width, $height) {
-
+    function resize($width, $height) {
+        foreach ($this->files as $file) {
+            $size = getimagesize($this->location . $file);
+            if ($size [0] < $width) { //verify the width
+                unlink($this->location . $file);
+                throw new Exception("Image does not meet the minimum width requirements of {$width}px. Image is {$size[0]} x {$size[1]}");
+            } elseif ($size [1] < $height) {//verify the height
+                unlink($this->location . $file);
+                throw new Exception("Image does not meet the minimum height requirements of {$height}px. Image is {$size[0]} x {$size[1]}");
+            } else {
+                system("mogrify -resize {$width}x{$height} \"{$this->location}{$file}\"");
+                system("mogrify -density 72 \"{$this->location}{$file}\"");
+            }
+        }
     }
 
     function addToDatabase($database, $parent, $parentId, $parentCol, $locationPrefix) {

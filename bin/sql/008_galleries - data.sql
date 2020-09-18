@@ -4,7 +4,9 @@
 
 LOCK TABLES `galleries` WRITE;
 /*!40000 ALTER TABLE `galleries` DISABLE KEYS */;
--- INSERT IGNORE INTO `galleries` VALUES (0, NULL, NULL, 'Leigh Ann');
+INSERT IGNORE INTO `galleries` VALUES (999, NULL, NULL, 'Leigh Ann', NULL);
+UPDATE `galleries` SET `id` = '0' WHERE `galleries`.`id` = 999;
+ALTER TABLE `albums` AUTO_INCREMENT = 1;
 INSERT IGNORE INTO `galleries` VALUES (1, NULL, NULL, 'Portrait', NULL);
 INSERT IGNORE INTO `galleries` VALUES (2, 1, 'maternity.jpg', 'Maternity', NULL);
 INSERT IGNORE INTO `galleries` VALUES (3, 1, 'newborn.jpg', 'Newborn', NULL);

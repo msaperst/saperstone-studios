@@ -57,8 +57,8 @@ class SocialMedia {
             'media' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $blog->getPreview()
         ));
         // and collect their IDs
-        $mediaId = $reply->media_id_string;
-        if ($mediaId != NULL && $mediaId > 0) {
+        if (property_exists($reply, 'media_id_string') && $reply->media_id_string != NULL && $reply->media_id_string > 0) {
+            $mediaId = $reply->media_id_string;
             // next send our message and the image
             $reply = $this->cb->statuses_update(array(
                 'status' => "{$blog->getTitle()}\n$link",

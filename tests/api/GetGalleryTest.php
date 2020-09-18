@@ -74,7 +74,7 @@ class GetGalleryTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-gallery.php', [
             'query' => [
-                'id' => 'a'
+                'id' => '546fchgj78'
             ],
             'cookies' => $cookieJar
         ]);

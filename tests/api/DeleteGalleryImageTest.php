@@ -98,7 +98,7 @@ class DeleteGalleryImageTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
             'form_params' => [
-                'gallery' => 'a'
+                'gallery' => '546fchgj78'
             ],
             'cookies' => $cookieJar
         ]);

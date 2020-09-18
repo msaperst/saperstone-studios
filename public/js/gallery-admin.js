@@ -183,7 +183,7 @@ function editGallery(id) {
                     },
                     onSuccess : function(files, data, xhr, pd) {
                         data = JSON.parse(data);
-                        if ($.isPlainObject(data)) {
+                        if ($.isArray(data)) {
                             pd.statusbar.remove();
                             $.each(files, function() {
                                 total++;

@@ -51,7 +51,7 @@ class GetGalleryImagesTest extends TestCase {
     public function testLetterGalleryId() {
         $response = $this->http->request('GET', 'api/get-gallery-images.php', [
             'query' => [
-                'gallery' => 'a'
+                'gallery' => '546fchgj78'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());

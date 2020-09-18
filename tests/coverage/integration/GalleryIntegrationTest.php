@@ -30,7 +30,7 @@ class GalleryIntegrationTest extends TestCase {
 
     public function testLetterGalleryId() {
         try {
-            Gallery::withId("a");
+            Gallery::withId("546fchgj78");
         } catch (Exception $e) {
             $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
         }
@@ -460,6 +460,41 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertNull($parent['image']);
         $this->assertEquals('Portrait', $parent['title']);
         $this->assertNull($parent['comment']);
+    }
+
+    public function testGetImageLocation() {
+        $gallery = Gallery::withId(0);
+        $this->assertEquals('/img/main/leigh-ann/', $gallery->getImageLocation());
+    }
+
+    public function testGetBasicImageLocation() {
+        $gallery = Gallery::withId(2);
+        $this->assertEquals('/portrait/img/maternity/', $gallery->getImageLocation());
+    }
+
+    public function testGetNestedImageLocation() {
+        $gallery = Gallery::withId(13);
+        $this->assertEquals('/portrait/img/newborn/favorites/', $gallery->getImageLocation());
+    }
+
+    public function testGetNestedWImageLocation() {
+        $gallery = Gallery::withId(18);
+        $this->assertEquals('/wedding/img/surprise-proposals/dc-mall/', $gallery->getImageLocation());
+    }
+
+    public function testGetVeryNestedImageLocation() {
+        $gallery = Gallery::withId(46);
+        $this->assertEquals('/wedding/img/product/heirloom-albums/signature-albums/', $gallery->getImageLocation());
+    }
+
+    public function testGetSpecialImageLocation() {
+        $gallery = Gallery::withId(16);
+        $this->assertEquals('/img/main/home-studio/', $gallery->getImageLocation());
+    }
+
+    public function testGetProductImageLocation() {
+        $gallery = Gallery::withId(29);
+        $this->assertEquals('/portrait/img/product/story-grids/', $gallery->getImageLocation());
     }
 
     public function testUpdateNull() {
