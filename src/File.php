@@ -47,7 +47,7 @@ class File {
         }
         $files = array();
         foreach ($this->files as $file) {
-            $x = move_uploaded_file($file['tmp_name'], $location . $file['name']);
+            move_uploaded_file($file['tmp_name'], $location . $file['name']);
             $files[] = $file['name'];
         }
         $this->files = $files;
@@ -63,7 +63,7 @@ class File {
             } elseif ($size [1] < $height) {//verify the height
                 unlink($this->location . $file);
                 throw new Exception("Image does not meet the minimum height requirements of {$height}px. Image is {$size[0]} x {$size[1]}");
-            } else {
+            } elseif ( $width > 0 && $height > 0 ) {
                 system("mogrify -resize {$width}x{$height} \"{$this->location}{$file}\"");
                 system("mogrify -density 72 \"{$this->location}{$file}\"");
             }

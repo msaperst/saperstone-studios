@@ -345,4 +345,24 @@ class FileIntegrationTest extends TestCase {
             unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
         }
     }
+
+    public function testDontResize() {
+        try {
+            $params = [
+                'error' => '0',
+                'name' => 'sample.jpeg',
+                'tmp_name' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+            ];
+            $file = new File($params);
+            $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
+            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $file->resize(800, 0);
+            $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
+            $size = getimagesize(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $this->assertEquals(1600, $size[0]);
+            $this->assertEquals(1200, $size[1]);
+        } finally {
+            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+        }
+    }
 }

@@ -198,5 +198,8 @@ class UploadGalleryImagesTest extends TestCase {
         $this->assertEquals(760, $images[0]['height']);
         $this->assertEquals(1, $images[0]['active']);
         $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg'));
+        $size = getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg');
+        $this->assertEquals(1013, $size[0]);
+        $this->assertEquals(760, $size[1]);
     }
 }

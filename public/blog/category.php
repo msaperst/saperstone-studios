@@ -12,11 +12,11 @@ if (! isset ( $_GET ['t'] )) {
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$tags = $sql->getRows( "SELECT tag FROM `tags` WHERE $where" );
+$tags = array_column($sql->getRows( "SELECT tag FROM `tags` WHERE $where" ), 'tag');
 if (empty ( $tags )) {
     $errors->throw404();
 }
-$posts = $sql->getRows( "SELECT * FROM `blog_tags` WHERE " . str_replace ( $where, "id", "tag" ) );
+$postCount = $sql->getRowCount( "SELECT * FROM `blog_tags` WHERE " . str_replace ( $where, "id", "tag" ) );
 $sql->disconnect ();
 ?>
 
@@ -65,11 +65,11 @@ $sql->disconnect ();
 
     <!-- Script to Activate the Gallery -->
     <script>
-        var postsFull = new PostsFull( <?php echo count($posts); ?>, <?php echo "[" . implode($categories,",") . "]"; ?> );
+        var postsFull = new PostsFull( <?php echo $postCount; ?>, <?php echo "[" . implode($categories,",") . "]"; ?> );
         
         var loaded = 0;
         $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() && loaded < <?php echo count($posts); ?> ) {
+            if( $('footer').isOnScreen() && loaded < <?php echo $postCount; ?> ) {
                 loaded = postsFull.loadPosts();
             }
         });
