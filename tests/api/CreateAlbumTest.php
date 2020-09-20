@@ -158,8 +158,8 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals(1, sizeOf($albumsForUsers));
             $this->assertEquals($albumId, $albumsForUsers[0]['album']);
             $this->assertEquals(4, $albumsForUsers[0]['user']);
-            $userLogs = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user_logs`.`album` = $albumId;");
-            $this->assertEquals(1, sizeOf($userLogs));
+            $userLogs = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user_logs`.`album` = $albumId ORDER BY time DESC;");
+            $this->assertTrue(1 <= sizeOf($userLogs));
             $this->assertEquals(4, $userLogs[0]['user']);
             $this->assertStringStartsWith(date("Y-m-d H:i"), $userLogs[0]['time']);
             $this->assertEquals('Created Album', $userLogs[0]['action']);

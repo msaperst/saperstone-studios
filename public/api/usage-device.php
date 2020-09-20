@@ -1,8 +1,5 @@
 <?php
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-$session = new Session();
-$session->initialize();
-$systemUser = User::fromSystem();
 $api = new Api ();
 
 $api->forceAdmin();
@@ -13,9 +10,6 @@ if (isset ($_GET ['noadmin']) && $_GET ['noadmin'] == "1") {
 }
 
 $sql = new Sql ();
-$sql = "SELECT SUM(usage.isTablet) as tablet,SUM(usage.isMobile) as mobile,COUNT(*)-SUM(usage.isTablet)-SUM(usage.isMobile) as desktop FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE `usage`.`isRobot` = 0 $noAdmin;";
-$result = $sql->getRow($sql);
-echo json_encode($result);
-
-$conn->disconnect();
+echo json_encode($sql->getRow("SELECT SUM(usage.isTablet) as tablet,SUM(usage.isMobile) as mobile,COUNT(*)-SUM(usage.isTablet)-SUM(usage.isMobile) as desktop FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE `usage`.`isRobot` = 0 $noAdmin;"));
+$sql->disconnect();
 exit ();

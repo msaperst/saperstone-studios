@@ -1,8 +1,5 @@
 <?php
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
-$session = new Session();
-$session->initialize();
-$systemUser = User::fromSystem();
 $api = new Api ();
 
 $api->forceAdmin();
@@ -22,14 +19,11 @@ if (isset ($_GET ['noadmin']) && $_GET ['noadmin'] == "1") {
 }
 
 $sql = new Sql ();
-$sql = "SELECT DATE(usage.time) as date,COUNT(DATE(usage.time)) AS count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE DATE(usage.time) > (CURDATE() + INTERVAL $start DAY) AND DATE(usage.time) <= (CURDATE() + INTERVAL " . ($start + $length) . " DAY) AND `usage`.`isRobot` = 0 $noAdmin GROUP BY DATE(usage.time);";
-$result = mysqli_query($conn->db, $sql);
 $response = array();
-while ($r = mysqli_fetch_assoc($result)) {
+foreach ($sql->getRows("SELECT DATE(usage.time) as date,COUNT(DATE(usage.time)) AS count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE DATE(usage.time) > (CURDATE() + INTERVAL $start DAY) AND DATE(usage.time) <= (CURDATE() + INTERVAL " . ($start + $length) . " DAY) AND `usage`.`isRobot` = 0 $noAdmin GROUP BY DATE(usage.time);") as $r) {
     $date = explode('-', $r ['date']);
     $response [$date [0] . "," . $date [1] . "," . $date [2]] = $r ['count'];
 }
 echo json_encode($response);
-
-$conn->disconnect();
+$sql->disconnect();
 exit ();
