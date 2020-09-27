@@ -7,7 +7,7 @@ $api->forceAdmin();
 try {
     $album = Album::withId($_POST ['album']);
     $image = new Image($album, $_POST ['image']);
-} catch( Exception $e) {
+} catch (Exception $e) {
     echo $e->getMessage();
     exit();
 }

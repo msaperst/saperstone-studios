@@ -129,6 +129,7 @@ function updateProfile() {
         lastName : $('#profile-lastname').val(),
         curPass : $('#profile-current-password').length ? $('#profile-current-password').val() : "",
         password : $('#profile-password').val().length ? $('#profile-password').val() : "",
+        passwordConfirm : $('#profile-confirm-password').val().length ? $('#profile-confirm-password').val() : "",
         email : $('#profile-email').val(),
         rememberMe : $('#profile-remember').is(':checked') ? 1 : 0,
     }).done(function(data) {

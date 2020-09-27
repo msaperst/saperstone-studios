@@ -248,7 +248,6 @@ class ProductIntegrationTest extends TestCase {
             ];
             $product = Product::withParams($params);
             $productId = $product->create();
-            unset($_SESSION['hash']);
             $productInfo = $product->getDataArray();
             $this->assertEquals($productId, $productInfo['id']);
             $this->assertEquals('1', $productInfo['product_type']);
@@ -256,8 +255,50 @@ class ProductIntegrationTest extends TestCase {
             $this->assertEquals(12.23, $productInfo['price']);
             $this->assertEquals('12.50', $productInfo['cost']);
         } finally {
+            unset($_SESSION['hash']);
             $sql = new Sql();
             $sql->executeStatement("DELETE FROM products WHERE id = $productId");
+            $sql->disconnect();
+        }
+    }
+
+    public function testUpdateNoPermissions() {
+        try {
+            $product = Product::withId(1);
+            $product->update(array());
+        } catch (Exception $e) {
+            $this->assertEquals('User not authorized to update product', $e->getMessage());
+        }
+    }
+
+    public function testUpdate() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        try {
+            $params = [
+                'type' => '1',
+                'size' => '1x1',
+                'price' => '$12.2345',
+                'cost' => '12.5'
+            ];
+            $product = Product::withId(1);
+            $product->update($params);
+            $productInfo = $product->getDataArray();
+            $this->assertEquals(1, $productInfo['id']);
+            $this->assertEquals('1', $productInfo['product_type']);
+            $this->assertEquals('1x1', $productInfo['size']);
+            $this->assertEquals(12.23, $productInfo['price']);
+            $this->assertEquals('12.50', $productInfo['cost']);
+            $sql = new Sql();
+            $productInfo = $sql->getRow("SELECT * FROM products WHERE id = 1");
+            $this->assertEquals(1, $productInfo['id']);
+            $this->assertEquals('1', $productInfo['product_type']);
+            $this->assertEquals('1x1', $productInfo['size']);
+            $this->assertEquals(12.23, $productInfo['price']);
+            $this->assertEquals('12.50', $productInfo['cost']);
+        } finally {
+            unset($_SESSION['hash']);
+            $sql = new Sql();
+            $sql->executeStatement("UPDATE `products` SET `product_type` = '1', `size` = '12x12', `cost` = '100' , `price` = '300' WHERE `products`.`id` = 1;");
             $sql->disconnect();
         }
     }

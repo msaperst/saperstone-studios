@@ -18,14 +18,14 @@ class Gallery {
     static function withId($id) {
         if (!isset ($id)) {
             throw new Exception("Gallery id is required");
-        } elseif ($id == "") {
+        } elseif ($id === "") {
             throw new Exception("Gallery id can not be blank");
         }
         $gallery = new Gallery();
         $sql = new Sql();
         $id = (int)$id;
         $gallery->raw = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
-        if (!$gallery->raw ['id']) {
+        if (!$gallery->raw ['title']) {
             $sql->disconnect();
             throw new Exception("Gallery id does not match any galleries");
         }
@@ -113,6 +113,22 @@ class Gallery {
 
     function getParent(): Gallery {
         return $this->parent;
+    }
+
+    function getImageLocation() {
+        $location = $this->title . DIRECTORY_SEPARATOR;
+        $mostParent = $this->parent;
+        while ($mostParent != NULL) {
+            if( $mostParent->parent == NULL ) {
+                $location = 'img' . DIRECTORY_SEPARATOR . $location;
+            }
+            $location = $mostParent->getTitle() . DIRECTORY_SEPARATOR . $location;
+            $mostParent = $mostParent->parent;
+        }
+        if ($location == $this->title . DIRECTORY_SEPARATOR) {
+            $location = "img/main/" . $location;
+        }
+        return DIRECTORY_SEPARATOR . str_replace(" ", "-", strtolower($location));
     }
 
     function update($params) {

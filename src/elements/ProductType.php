@@ -33,7 +33,10 @@ class ProductType {
     }
 
     static function withParams($params) {
-        $productType = new ProductType();
+        return self::setVals(new ProductType(), $params);
+    }
+
+    private static function setVals(ProductType $productType, $params) {
         $sql = new Sql();
         //product category
         if (!isset ($params['category'])) {
@@ -80,6 +83,18 @@ class ProductType {
         $productType = self::withId($lastId);
         $this->raw = $productType->getDataArray();
         return $lastId;
+    }
+
+    function update($params) {
+        $user = User::fromSystem();
+        if (!$user->isAdmin()) {
+            throw new Exception("User not authorized to update product type");
+        }
+        self::setVals($this, $params);
+        $sql = new Sql();
+        $sql->executeStatement("UPDATE `product_types` SET `category` = '{$this->category}', `name` = '{$this->name}' WHERE `product_types`.`id` = {$this->id};");
+        $this->raw = $sql->getRow("SELECT * FROM product_types WHERE id = {$this->getId()};");
+        $sql->disconnect();
     }
 
     function delete() {

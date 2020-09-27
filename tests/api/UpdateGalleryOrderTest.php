@@ -89,7 +89,7 @@ class UpdateGalleryOrderTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/update-gallery-order.php', [
             'form_params' => [
-                'id' => 'ajgn9ol'
+                'id' => '546fchgj78'
             ],
             'cookies' => $cookieJar
         ]);

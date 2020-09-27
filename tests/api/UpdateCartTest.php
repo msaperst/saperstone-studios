@@ -29,7 +29,7 @@ class UpdateCartTest extends TestCase {
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `user` = '3';");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
-        $this->sql->executeStatement("DELETE FROM `products` WHERE `products`.`product_type` = 999;");
+        $this->sql->executeStatement("DELETE FROM `products` WHERE `products`.`id` = 999;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");

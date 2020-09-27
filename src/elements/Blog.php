@@ -245,7 +245,6 @@ class Blog {
         }
 
         $sql = new Sql();
-
         // update our basic information
         $sql->executeStatement("UPDATE `blog_details` SET `title` = '{$this->title}', `date` = '{$this->date}', `offset` = '{$this->offset}' WHERE `id` = {$this->id};");
 

@@ -151,6 +151,41 @@ class ProductTypeIntegrationTest extends TestCase {
         }
     }
 
+    public function testUpdateNoPermissions() {
+        try {
+            $product = ProductType::withId(1);
+            $product->update(array());
+        } catch (Exception $e) {
+            $this->assertEquals('User not authorized to update product type', $e->getMessage());
+        }
+    }
+
+    public function testUpdate() {
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        try {
+            $params = [
+                'category' => 'signature',
+                'name' => 'name'
+            ];
+            $productType = ProductType::withId(1);
+            $productType->update($params);
+            $productTypeInfo = $productType->getDataArray();
+            $this->assertEquals(1, $productTypeInfo['id']);
+            $this->assertEquals('signature', $productTypeInfo['category']);
+            $this->assertEquals('name', $productTypeInfo['name']);
+            $sql = new Sql();
+            $productTypeInfo = $sql->getRow("SELECT * FROM product_types WHERE id = 1");
+            $this->assertEquals(1, $productTypeInfo['id']);
+            $this->assertEquals('signature', $productTypeInfo['category']);
+            $this->assertEquals('name', $productTypeInfo['name']);
+        } finally {
+            unset($_SESSION['hash']);
+            $sql = new Sql();
+            $sql->executeStatement("UPDATE `product_types` SET `category` = 'signature', `name` = 'Acrylic Prints' WHERE `id` = 1;");
+            $sql->disconnect();
+        }
+    }
+
     public function testCreateNoPermissionsDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         try {
