@@ -535,12 +535,4 @@ class GalleryIntegrationTest extends TestCase {
             $sql->disconnect();
         }
     }
-
-    public function testWithParams() {
-        try {
-            Gallery::withParams(null);
-        } catch (Exception $e) {
-            $this->assertEquals('Not yet implemented', $e->getMessage());
-        }
-    }
 }
