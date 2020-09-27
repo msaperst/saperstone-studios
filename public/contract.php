@@ -5,7 +5,6 @@ $session->initialize();
 $errors = new Errors();
 $sql = new Sql ();
 
-$contract_link;
 // if no contract is set, throw a 404 error
 if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "") {
     $errors->throw404();

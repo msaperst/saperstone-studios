@@ -21,7 +21,7 @@
     "coverage-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3406; resources/phpunit/phpunit/phpunit tests/coverage/ --log-junit reports/cov-junit.xml --testdox-html reports/cov-results.html --coverage-clover reports/cov-clover.xml --coverage-html reports/cov-coverage --whitelist src/",
     "api-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; resources/phpunit/phpunit/phpunit tests/api/ --log-junit reports/api-junit.xml --testdox-html reports/api-results.html",
     "ui-pre-test": "docker run -d -p 4444:4444 -v /dev/shm:/dev/shm selenium/standalone-$BROWSER",
-    "ui-test": "export DB_HOST=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; resources/phpunit/phpunit/phpunit tests/ui/ --log-junit reports/ui-$BROWSER/ui-junit.xml --testdox-html reports/ui-$BROWSER/ui-results.html",
+    "ui-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; resources/phpunit/phpunit/phpunit tests/ui/ --log-junit reports/ui-$BROWSER/ui-junit.xml --testdox-html reports/ui-$BROWSER/ui-results.html",
     "ui-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=selenium/standalone-$BROWSER --format=\"{{.ID}}\"))"
   }
 }
