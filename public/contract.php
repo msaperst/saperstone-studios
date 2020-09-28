@@ -3,22 +3,12 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $session = new Session();
 $session->initialize();
 $errors = new Errors();
-$sql = new Sql ();
 
-// if no contract is set, throw a 404 error
-if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "") {
-    $errors->throw404();
-} else {
-    $contract_link = $sql->escapeString( $_GET ['c'] );
-}
-
-$contract_info = $sql->getRow( "SELECT * FROM `contracts` WHERE link = '" . $contract_link . "';" );
-$sql->disconnect();
-// if the contract doesn't exist, throw a 404 error
-if (! $contract_info ['link']) {
+try {
+    $contract = Contract::withLink($_GET ['c']);
+} catch (Exception $e) {
     $errors->throw404();
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,19 +40,19 @@ if (! $contract_info ['link']) {
         <!-- /.row -->
 
         <input type='hidden' id='contract-id'
-            value='<?php echo $contract_info['id']; ?>' />
+            value='<?php echo $contract->getId(); ?>' />
 
         <?php
             // if the contract is already signed
-            if ($contract_info ['file']) {
+            if ($contract->isSigned()) {
         ?>
-        <embed src='<?php echo substr( $contract_info['file'], 2 ); ?>' type="application/pdf" width="100%" height="600px" />
+        <embed src='<?php echo substr( $contract->getFile(), 2 ); ?>' type="application/pdf" width="100%" height="600px" />
         <?php
             } else {
         ?>
 
         <div id='contract'>
-        <?php echo $contract_info['content']; ?>
+        <?php echo $contract->getContent(); ?>
         </div>
 
         <hr />
@@ -76,14 +66,10 @@ if (! $contract_info ['link']) {
             </div>
             <div id='contract-messages' class="col-md-8 text-center">
                 <?php
-                if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
+                if ($contract->getInvoice() != NULL && $contract->getInvoice() != "") {
                     ?>
                     <a target='_blank'
-                    href='
-                    <?php
-                    echo $contract_info ['invoice'];
-                    ?>
-                    '>Paypal Invoice Link</a>
+                    href='<?php echo $contract->getInvoice(); ?>'>Paypal Invoice Link</a>
                     <?php
                 }
                 ?>

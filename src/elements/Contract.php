@@ -1,5 +1,7 @@
 <?php
 
+use Mpdf\Mpdf;
+
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Contract {
@@ -28,20 +30,11 @@ class Contract {
     function __construct() {
     }
 
-    static function withId($id) {
-        if (!isset ($id)) {
-            throw new Exception("Contract id is required");
-        } elseif ($id == "") {
-            throw new Exception("Contract id can not be blank");
-        }
-        $contract = new Contract();
-        $id = (int)$id;
-        $sql = new Sql();
-        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
-        if (!$contract->raw ['id']) {
-            $sql->disconnect();
-            throw new Exception("Contract id does not match any contracts");
-        }
+    /**
+     * @param Contract $contract
+     * @param Sql $sql
+     */
+    private static function setRawData(Contract $contract) {
         $contract->id = $contract->raw['id'];
         $contract->link = $contract->raw['link'];
         $contract->type = $contract->raw['type'];
@@ -60,11 +53,47 @@ class Contract {
         $contract->signature = $contract->raw['signature'];
         $contract->initial = $contract->raw['initial'];
         $contract->file = $contract->raw['file'];
+        $sql = new Sql();
         $contract->raw['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = {$contract->id};");
         $sql->disconnect();
         foreach ($contract->raw['lineItems'] as $lineItem) {
             $contract->lineItems[] = new LineItem($lineItem['contract'], $lineItem['item'], $lineItem['amount'], $lineItem['unit']);
         }
+    }
+
+    static function withId($id) {
+        if (!isset ($id)) {
+            throw new Exception("Contract id is required");
+        } elseif ($id == "") {
+            throw new Exception("Contract id can not be blank");
+        }
+        $contract = new Contract();
+        $id = (int)$id;
+        $sql = new Sql();
+        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
+        $sql->disconnect();
+        if (!$contract->raw ['id']) {
+            throw new Exception("Contract id does not match any contracts");
+        }
+        self::setRawData($contract);
+        return $contract;
+    }
+
+    static function withLink($link) {
+        if (!isset ($link)) {
+            throw new Exception("Contract link is required");
+        } elseif ($link == "") {
+            throw new Exception("Contract link can not be blank");
+        }
+        $contract = new Contract();
+        $sql = new Sql();
+        $link = $sql->escapeString($link);
+        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE link = '$link';");
+        $sql->disconnect();
+        if (!$contract->raw ['id']) {
+            throw new Exception("Contract link does not match any contracts");
+        }
+        self::setRawData($contract);
         return $contract;
     }
 
@@ -193,6 +222,18 @@ class Contract {
 
     function getInvoice() {
         return $this->invoice;
+    }
+
+    function getFile() {
+        return $this->file;
+    }
+
+    function getContent() {
+        return $this->content;
+    }
+
+    function isSigned() {
+        return (bool)($this->file != NULL && $this->signature != NULL);
     }
 
     /**
@@ -340,7 +381,7 @@ class Contract {
 
         // create/save pdf
         require dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'autoload.php';
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new Mpdf();
         $mpdf->SetHTMLFooter($footer);
         $mpdf->WriteHTML($customCSS, 1);
         $mpdf->WriteHTML($content);
