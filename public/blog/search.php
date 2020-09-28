@@ -5,9 +5,8 @@ $session->initialize();
 $sql = new Sql ();
 $errors = new Errors();
 
-$search;
 // if no album is set, throw a 404 error
-if (! isset ( $_GET ['s'] )) {
+if (! isset ( $_GET ['s'] ) || $_GET ['s'] == '' ) {
     $errors->throw404();
 } else {
     $search = $sql->escapeString( $_GET ['s'] );

@@ -3,7 +3,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $errors = new Errors();
 
 // if no album is set, throw a 404 error
-if (! isset ( $_GET ['t'] )) {
+if (! isset ( $_GET ['t'] ) || $_GET ['t'] == "") {
     $errors->throw404();
 } else {
     $categories = array_map ( 'intval', explode ( ',', $_GET ['t'] ) );

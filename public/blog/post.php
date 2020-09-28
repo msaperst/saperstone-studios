@@ -2,24 +2,16 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $errors = new Errors();
 
-// if no blog is set, throw a 404 error - TODO - use new blog object
-if (! isset ( $_GET ['p'] )) {
+try {
+    $blog = Blog::withId($_GET ['p']);
+} catch (Exception $e) {
     $errors->throw404();
-} else {
-    $post = (int) $_GET ['p'];
 }
 
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
-$details = $sql->getRow( "SELECT * FROM `blog_details` WHERE id = '$post';" );
-if (! $details ['title']) {
-    $errors->throw404();
-}
-$sql->disconnect();
-
 $user = User::fromSystem();
-if (! $user->isAdmin () && ! $details ['active']) {
+if (! $user->isAdmin () && ! $blog->isActive()) {
     $errors->throw404();
 }
 ?>
@@ -118,7 +110,7 @@ if (! $user->isAdmin () && ! $details ['active']) {
                     <h2 class='text-left'></h2>
                 </div>
                 <div class="col-md-6 text-right">
-                    <button post-id="<?php echo $post; ?>" id="post-comment-submit"
+                    <button post-id="<?php echo $blog->getId(); ?>" id="post-comment-submit"
                         class="btn btn-success disabled" style="margin-top: 20px;"
                         disabled>Submit Comment</button>
                 </div>
@@ -137,7 +129,7 @@ if (! $user->isAdmin () && ! $details ['active']) {
 
     <!-- Script to Activate the Gallery -->
     <script>
-        new PostFull( <?php echo $post; ?> );
+        new PostFull( <?php echo $blog->getId(); ?> );
     </script>
 
 </body>

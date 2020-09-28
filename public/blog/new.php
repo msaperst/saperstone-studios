@@ -2,43 +2,27 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
 $user = User::fromSystem();
 $user->forceAdmin();
 $errors = new Errors();
 
 $title = "";
 $date = date ( "Y-m-d" );
-$tags = [ ];
-$content = [ ];
-$images = [ ];
 $location = "../tmp";
 // if no blog is set, throw a 404 error - TODO - use new blog object!
 if (isset ( $_GET ['p'] )) {
-    $post = (int) $_GET ['p'];
-    $details = $sql->getRow( "SELECT * FROM `blog_details` WHERE id = '$post';" );
-    if (! $details ['title']) {
+    try {
+        $blog = Blog::withId($_GET ['p']);
+        $title = $blog->getTitle();
+        $date = $blog->getDate();
+        $content = $blog->getDataArray()['content'];
+        ksort ( $content );
+        $location = $blog->getLocation();
+    } catch (Exception $e) {
         $errors->throw404();
-    } else {
-        $title = $details ['title'];
-        $date = $details ['date'];
-        $preview = $details ['preview'];
-        $offset = $details ['offset'];
-        $location = dirname ( $preview );
-        // determine our tags
-        $tags = $sql->getRows( "SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = $post;" );
-        // get our content
-        foreach( $sql->getRows( "SELECT * FROM `blog_images` WHERE blog = $post;" ) as $s ) {
-            $images [] = basename ( $s ['location'] );
-            $content [$s ['contentGroup']] ['type'] = 'images';
-            $content [$s ['contentGroup']] [] = $s;
-        }
-        foreach( $sql->getRows( "SELECT * FROM `blog_texts` WHERE blog = $post;" ) as $s ) {
-            $s ['type'] = 'text';
-            $content [$s ['contentGroup']] = $s;
-        }
     }
 }
+$sql = new Sql ();
 $categories = $sql->getRows( "SELECT * FROM `tags`;" );
 $sql->disconnect();
 ?>
@@ -82,7 +66,7 @@ $sql->disconnect();
                 <em class="fa fa-pencil-square-o"></em> Edit Post
             </button>
             <?php
-            if (isset ( $post )) {
+            if (isset ( $blog )) {
                 ?>
             <button id="update-post" type="button"
                 class="btn btn-warning">
@@ -99,7 +83,7 @@ $sql->disconnect();
             ?>
             <br />
             <?php
-            if (! isset ( $post )) {
+            if (! isset ( $blog )) {
                 ?>
             <button id="schedule-post" type="button"
                 class="btn btn-success">
@@ -109,7 +93,7 @@ $sql->disconnect();
                 <em class="fa fa-send"></em> Publish Post
             </button>
             <?php
-            } elseif (! $details ['active']) {
+            } elseif (! $blog->isActive()) {
                 ?>
             <button id="schedule-saved-post" type="button"
                 class="btn btn-success">
@@ -137,16 +121,16 @@ $sql->disconnect();
                 style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'>
                 <option></option>
                 <?php
-                if (isset ( $post )) {
-                    foreach ( $images as $image ) {
+                if (isset ( $blog )) {
+                    foreach ( $blog->getImages() as $image ) {
                         echo "<option>$image</option>";
                     }
                 }
                 ?>
             </select>
             <?php
-            if (isset ( $post )) {
-                echo "<img src='$preview' style='width:300px; top:${offset}px;'>";
+            if (isset ( $blog )) {
+                echo "<img src='{$blog->getPreview()}' style='width:300px; top:{$blog->getOffset()}px;'>";
             }
             ?>
         </div>
@@ -159,7 +143,7 @@ $sql->disconnect();
         <div class="row">
             <div class="col-lg-12">
                 <?php
-                if (isset ( $post )) {
+                if (isset ( $blog )) {
                     ?>
                 <h1 class="page-header text-center">Edit Your Blog Post</h1>
                 <?php
@@ -174,7 +158,7 @@ $sql->disconnect();
                     <li><a href="/">Home</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <?php
-                    if (isset ( $post )) {
+                    if (isset ( $blog )) {
                         ?>
                     <li class="active">Edit Post</li>
                     <?php
@@ -190,7 +174,7 @@ $sql->disconnect();
         <!-- /.row -->
 
         <!-- Post Section -->
-        <div class="row" id="post" post-location="<?php echo $location; ?>"<?php if( isset( $post ) ) { echo " post-id='$post'"; } ?>">
+        <div class="row" id="post" post-location="<?php echo $location; ?>"<?php if( isset( $blog ) ) { echo " post-id='{$blog->getId()}'"; } ?>">
             <div class="col-lg-12">
                 <strong><input id='post-title-input'
                     class='form-control input-lg text-center' type='text'
@@ -245,14 +229,13 @@ $sql->disconnect();
     <script>
         $(document).ready(function() {
             <?php
-            if (isset ( $post )) {
-                foreach ( $tags as $tag ) {
+            if (isset ( $blog )) {
+                foreach ( $blog->getTags() as $tag ) {
                     ?>
             $('#post-tags-select').val(<?php echo $tag; ?>);
             addTag($('#post-tags-select'));
             <?php
                 }
-                ksort ( $content );
                 foreach ( $content as $block ) {
                     if ($block ['type'] == "text") {
                         ?>

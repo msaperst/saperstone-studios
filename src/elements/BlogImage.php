@@ -53,6 +53,10 @@ class BlogImage {
         $sql->disconnect();
     }
 
+    function getLocation() {
+        return $this->location;
+    }
+
     function setBlog(Blog $blog) {
         $this->blog = $blog;
     }

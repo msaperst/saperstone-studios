@@ -75,6 +75,7 @@ class BasicPagesLoadTest extends TestBase {
             $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
         } finally {
             $sql->executeStatement("DELETE FROM `contracts` WHERE id = 999");
+            $sql->disconnect();
         }
     }
 

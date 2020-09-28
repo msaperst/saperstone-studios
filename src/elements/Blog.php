@@ -173,8 +173,20 @@ class Blog {
         return $this->title;
     }
 
+    function getDate() {
+        return $this->date;
+    }
+
     function getPreview() {
         return $this->preview;
+    }
+
+    function getOffset() {
+        return $this->offset;
+    }
+
+    function getTags() {
+        return $this->tags;
     }
 
     function getLocation() {
@@ -185,8 +197,23 @@ class Blog {
         return $this->twitter;
     }
 
+    public function getImages() {
+        $images = array();
+        foreach( $this->content as $content ) {
+            /** @var BlogImage $content */
+            if( $content instanceof BlogImage ) {
+                $images[] = $content->getLocation();
+            }
+        }
+        return $images;
+    }
+
     function getDataArray() {
         return $this->raw;
+    }
+
+    function isActive() {
+        return (bool) $this->active;
     }
 
     function create() {
