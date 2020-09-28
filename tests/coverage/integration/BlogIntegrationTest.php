@@ -104,9 +104,30 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals('Sample Blog', $blog->getTitle());
     }
 
+    public function testGetDate() {
+        $blog = Blog::withId('899');
+        $this->assertEquals('January 1st, 2031', $blog->getDate());
+    }
+
     public function testGetPreview() {
         $blog = Blog::withId('899');
         $this->assertEquals('/some/img', $blog->getPreview());
+    }
+
+    public function testGetOffset() {
+        $blog = Blog::withId('899');
+        $this->assertEquals(0, $blog->getOffset());
+    }
+
+    public function testGetTags() {
+        $blog = Blog::withId('899');
+        $tags = [
+            0 => [
+                'id' => '29',
+                'tag' => 'Tea Ceremony'
+            ]
+        ];
+        $this->assertEquals($tags, $blog->getTags());
     }
 
     public function testGetLocation() {
@@ -117,6 +138,22 @@ class BlogIntegrationTest extends TestCase {
     public function testGetTwitter() {
         $blog = Blog::withId('899');
         $this->assertEquals(0, $blog->getTwitter());
+    }
+
+    public function testGetImages() {
+        $blog = Blog::withId('899');
+        $this->assertEquals(['posts/2031/01/01/sample.jpg'], $blog->getImages());
+    }
+
+    public function testIsActiveFalse() {
+        $blog = Blog::withId('899');
+        $this->assertFalse($blog->isActive());
+    }
+
+    public function testisActiveTrue() {
+        $this->sql->executeStatement("UPDATE blog_details SET active = 1 WHERE id = 899;");
+        $blog = Blog::withId('899');
+        $this->assertTrue($blog->isActive());
     }
 
     public function testAllDataLoadedMinimal() {
@@ -545,6 +582,61 @@ class BlogIntegrationTest extends TestCase {
         } finally {
             // cleanup
             unset($_SESSION['hash']);
+            $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
+            $this->sql->executeStatement("DELETE FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
+        }
+    }
+
+    public function testGetImagesMultiple() {
+        $params = [
+            'title' => 'Sample Blog',
+            'date' => '2030-01-01',
+            'preview' => [
+                'img' => '../tmp/sample.jpg',
+                'offset' => '33px'
+            ],
+            'tags' => [
+                "4", "2"
+            ],
+            'content' => [
+                1 => [
+                    'group' => 1,
+                    'type' => 'images',
+                    'imgs' => [
+                        0 => [
+                            'location' => '../tmp/sample1.jpg',
+                            'top' => '0px',
+                            'left' => '0px',
+                            'width' => '1140px',
+                            'height' => '647px',
+                        ],
+                        1 => [
+                            'location' => '../tmp/sample2.jpg',
+                            'top' => '647px',
+                            'left' => '0px',
+                            'width' => '1140px',
+                            'height' => '647px',
+                        ]
+                    ]
+                ],
+                2 => [
+                    'group' => 2,
+                    'type' => 'text',
+                    'text' => 'Some blog text'
+                ]
+            ]
+        ];
+        try {
+            $blog = Blog::withParams($params);
+            $this->assertEquals(['../tmp/sample1.jpg','../tmp/sample2.jpg'], $blog->getImages());
+        } finally {
+            // cleanup
+            $blogId = $blog->getId();
             $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
             $this->sql->executeStatement("DELETE FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
             $this->sql->executeStatement("DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");

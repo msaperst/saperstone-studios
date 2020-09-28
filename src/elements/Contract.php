@@ -363,10 +363,10 @@ class Contract {
         $this->content = $sql->escapeString($params['content']);
 
         //set up our file
-        $file = DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' . DIRECTORY_SEPARATOR . $this->name . ' - ' . date('Y-m-d') . ' - ' . ucfirst($this->type) . ' Contract.pdf';
+        $this->file = DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' . DIRECTORY_SEPARATOR . $this->name . ' - ' . date('Y-m-d') . ' - ' . ucfirst($this->type) . ' Contract.pdf';
         $sql->executeStatement("UPDATE `contracts` SET `name` = '{$this->name}', `address` = '{$this->address}', `number` = '{$this->number}',
         `email` = '{$this->email}', `signature` = '{$this->signature}', `initial` = '{$this->initial}', `content` = '{$this->content}', 
-        `file` = '$file' WHERE `id` = {$this->id};");
+        `file` = '{$this->file}' WHERE `id` = {$this->id};");
         $sql->disconnect();
 
         // sanitize out content
@@ -385,9 +385,8 @@ class Contract {
         $mpdf->SetHTMLFooter($footer);
         $mpdf->WriteHTML($customCSS, 1);
         $mpdf->WriteHTML($content);
-        $mpdf->Output(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . $file);
-
-        return $file;
+        $mpdf->Output(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . $this->file);
+        return $this->file;
     }
 
     /**

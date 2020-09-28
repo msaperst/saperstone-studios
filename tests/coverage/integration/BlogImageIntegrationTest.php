@@ -225,4 +225,27 @@ class BlogImageIntegrationTest extends TestCase {
             unset($_SESSION ['hash']);
         }
     }
+
+    public function testGetLocation() {
+        try {
+            $oldmask = umask(0);
+            mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp', 0777, true);
+            copy(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample.jpg');
+            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample.jpg', 0777);
+            umask($oldmask);
+            $params = [
+                'top' => '0',
+                'left' => 0,
+                'width' => 1000,
+                'height' => 1000,
+                'location' => '../tmp/sample.jpg'
+            ];
+            $blogImage = new BlogImage(new Blog(), 1, $params);
+            $this->assertEquals('../tmp/sample.jpg', $blogImage->getLocation());
+        } finally {
+            $this->sql->executeStatement("DELETE FROM blog_images WHERE blog = 899");
+            system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts'));
+            system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp'));
+        }
+    }
 }

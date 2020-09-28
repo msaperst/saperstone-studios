@@ -53,8 +53,64 @@ class ContractIntegrationTest extends TestCase {
         }
     }
 
+    public function testWithLinkNoContractLink() {
+        try {
+            Contract::withLink(NULL);
+        } catch (Exception $e) {
+            $this->assertEquals('Contract link is required', $e->getMessage());
+        }
+    }
+
+    public function testWithLinkBlankContractLink() {
+        try {
+            Contract::withLink("");
+        } catch (Exception $e) {
+            $this->assertEquals('Contract link can not be blank', $e->getMessage());
+        }
+    }
+
+    public function testWithLinkBadContractLink() {
+        try {
+            Contract::withLink('badlink');
+        } catch (Exception $e) {
+            $this->assertEquals('Contract link does not match any contracts', $e->getMessage());
+        }
+    }
+
     public function testWithIdGetDataArray() {
         $contract = Contract::withId(999);
+        $contractInfo = $contract->getDataArray();
+        $this->assertEquals(19, sizeOf($contractInfo));
+        $this->assertEquals('999', $contractInfo['id']);
+        $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractInfo['link']);
+        $this->assertEquals('commercial', $contractInfo['type']);
+        $this->assertEquals('MaxMaxMax', $contractInfo['name']);
+        $this->assertEquals('Address', $contractInfo['address']);
+        $this->assertEquals('1234567890', $contractInfo['number']);
+        $this->assertEquals('email-address', $contractInfo['email']);
+        $this->assertEquals('2021-10-13', $contractInfo['date']);
+        $this->assertEquals('Some session', $contractInfo['session']);
+        $this->assertStringStartsWith('Up to one hour photo session to include:', $contractInfo['details']);
+        $this->assertEquals('0.00', $contractInfo['amount']);
+        $this->assertEquals('0.00', $contractInfo['deposit']);
+        $this->assertEquals('nope!', $contractInfo['invoice']);
+        $this->assertStringStartsWith('    <h2>Saperstone Studios LLC. Commercial Contract</h2>', $contractInfo['content']);
+        $this->assertNull($contractInfo['signature']);
+        $this->assertNull($contractInfo['initial']);
+        $this->assertNull($contractInfo['file']);
+        $this->assertEquals(2, sizeof($contractInfo['lineItems']));
+        $this->assertEquals(999, $contractInfo['lineItems'][0]['contract']);
+        $this->assertEquals('Hugs', $contractInfo['lineItems'][0]['item']);
+        $this->assertEquals(20.00, $contractInfo['lineItems'][0]['amount']);
+        $this->assertEquals('with arms', $contractInfo['lineItems'][0]['unit']);
+        $this->assertEquals(999, $contractInfo['lineItems'][1]['contract']);
+        $this->assertEquals('Kisses', $contractInfo['lineItems'][1]['item']);
+        $this->assertEquals(50.00, $contractInfo['lineItems'][1]['amount']);
+        $this->assertEquals('with lips', $contractInfo['lineItems'][1]['unit']);
+    }
+
+    public function testWithLinkGetDataArray() {
+        $contract = Contract::withLink('8e07fb32bf072e1825df8290a7bcdc57');
         $contractInfo = $contract->getDataArray();
         $this->assertEquals(19, sizeOf($contractInfo));
         $this->assertEquals('999', $contractInfo['id']);
@@ -113,6 +169,21 @@ class ContractIntegrationTest extends TestCase {
     public function testGetInvoice() {
         $contract = Contract::withId(999);
         $this->assertEquals('nope!', $contract->getInvoice());
+    }
+
+    public function testGetFile() {
+        $contract = Contract::withId(999);
+        $this->assertNull($contract->getFile());
+    }
+
+    public function testGetContent() {
+        $contract = Contract::withId(999);
+        $this->assertStringStartsWith('    <h2>Saperstone Studios LLC. Commercial Contract</h2>', $contract->getContent());
+    }
+
+    public function testGetSignedFalse() {
+        $contract = Contract::withId(999);
+        $this->assertFalse($contract->isSigned());
     }
 
     public function testGetBasicData() {
@@ -723,8 +794,8 @@ class ContractIntegrationTest extends TestCase {
 
     public function testSignContract() {
         date_default_timezone_set("America/New_York");
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts');
         try {
+            mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts');
             $params = [
                 'name' => 'EleMax',
                 'address' => '123 Street',
@@ -738,6 +809,7 @@ class ContractIntegrationTest extends TestCase {
             $contractFile = $contract->sign($params);
             $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . $contractFile));
             $this->assertEquals('/user/contracts/EleMax - ' . date('Y-m-d') . ' - Commercial Contract.pdf', $contractFile);
+            $this->assertTrue($contract->isSigned());
         } finally {
             system('rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts');
         }

@@ -29,7 +29,6 @@ class TestBase extends TestCase {
     }
 
     protected function acceptCookies() {
-
         $cookie = new Cookie('CookiePreferences', '["preferences","analytics"]');
         $this->driver->manage()->addCookie($cookie);
     }
