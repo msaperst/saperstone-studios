@@ -14,7 +14,7 @@ if (isset ( $_GET ['p'] )) {
     try {
         $blog = Blog::withId($_GET ['p']);
         $title = $blog->getTitle();
-        $date = $blog->getDate();
+        $date = date('Y-m-d',strtotime($blog->getDate()));
         $content = $blog->getDataArray()['content'];
         ksort ( $content );
         $location = $blog->getLocation();
