@@ -29,12 +29,12 @@ $session->initialize();
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center">Retouch</h1>
+                <h1 class="page-header text-center">Portrait Retouch</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Portraits</a></li>
                     <li><a href="retouch.php">Retouch</a></li>
-                    <li class="active">Retouch</li>
+                    <li class="active">Portrait Retouch</li>
                 </ol>
             </div>
         </div>

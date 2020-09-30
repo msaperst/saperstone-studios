@@ -2,7 +2,6 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
 $user = User::fromSystem();
 ?>
 
@@ -36,11 +35,11 @@ $user = User::fromSystem();
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center">Portrait Session Details</h1>
+                <h1 class="page-header text-center">Portrait Session Frequently Asked Questions</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Portraits</a></li>
-                    <li class="active">Details</li>
+                    <li class="active">FAQs</li>
                 </ol>
             </div>
         </div>
