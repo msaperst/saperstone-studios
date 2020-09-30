@@ -91,30 +91,30 @@ $sql->disconnect();
                     $style = " align='left' style='margin: 0px 20px 20px 0px;'";
                 }
                 ?>
-            <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <img src="<?php echo $review['image1']; echo $rand; ?>" width="100%"
-                        alt="<?php echo $review['image1']; ?>">
+            <div class="review-holder">
+                <div class="col-xs-6">
+                    <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                        <img src="<?php echo $review['image1']; echo $rand; ?>" width="100%"
+                            alt="<?php echo $review['image1']; ?>">
+                    </div>
                 </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <img src="<?php echo $review['image2']; echo $rand; ?>" width="100%"
-                        alt="<?php echo $review['image2']; ?>">
+                <div class="col-xs-6">
+                    <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                        <img src="<?php echo $review['image2']; echo $rand; ?>" width="100%"
+                            alt="<?php echo $review['image2']; ?>">
+                    </div>
                 </div>
-            </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+                <div class="col-xs-12" style="padding-top: 20px;">
+                    <blockquote>
+                        <p>
+                            <?php echo $review['quote']; ?>
+                        </p>
+                        <footer><?php echo $review['client']; ?><br /> <em><?php echo $review['event']; ?></em>
+                        </footer>
 
-                <blockquote>
-                    <p>
-                        <?php echo $review['quote']; ?>
-                    
-                    </p>
-                    <footer><?php echo $review['client']; ?><br /> <em><?php echo $review['event']; ?></em>
-                    </footer>
-
-                </blockquote>
-                <hr />
+                    </blockquote>
+                    <hr />
+                </div>
             </div>
             <?php
                 $counter ++;

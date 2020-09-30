@@ -93,7 +93,7 @@ $user = User::fromSystem();
             ?>
         <div class="row">
             <div class="col-lg-12">
-                <p><?php echo $gallery->getComment(); ?></p>
+                <p id="gallery-comment"><?php echo $gallery->getComment(); ?></p>
             </div>
         </div>
         <?php
