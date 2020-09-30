@@ -78,6 +78,7 @@ class PortraitPagesLoadTest extends TestBase {
     public function testStudioPage() {
         $this->driver->get($this->baseUrl . 'portrait/studio.php');
         $this->assertEquals('Home Studio', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+        $this->assertEquals('Home Portrait Details Studio', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 

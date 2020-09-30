@@ -71,6 +71,7 @@ class CommercialPagesLoadTest extends TestBase {
     public function testStudioPage() {
         $this->driver->get($this->baseUrl . 'commercial/studio.php');
         $this->assertEquals('Home Studio', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+        $this->assertEquals('Home Commercial Details Studio', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
