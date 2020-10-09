@@ -2,11 +2,10 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
 $user = User::fromSystem();
 $user->forceAdmin();
 
-$contract;
+$contract = array();
 $contract ['name'] = "";
 $contract ['date'] = "";
 $contract ['address'] = "";
@@ -27,9 +26,10 @@ $contract ['reception-number'] = "";
 $contract ['reception-email'] = "";
 // get the id if set, and pull these values
 if (isset ( $_GET ['id'] )) {
+    $sql = new Sql ();
     $contract = $sql->getRow( "SELECT * FROM contracts WHERE id = {$_GET['id']};" );
+    $sql->disconnect ();
 }
-$sql->disconnect ();
 ?>
 
 <div>

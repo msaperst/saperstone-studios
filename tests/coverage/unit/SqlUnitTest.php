@@ -16,7 +16,7 @@ class SqlUnitTest extends TestCase {
         try {
             new Sql();
         } catch (Exception $e) {
-            $this->assertStringStartsWith('Failed to connect to MySQL: mysqli::__construct(): php_network_getaddresses: getaddrinfo failed: Name or service not known', $e->getMessage());
+            $this->assertStringStartsWith('Failed to connect to MySQL: mysqli::__construct(): php_network_getaddresses: getaddrinfo failed:', $e->getMessage());
         } finally {
             putenv("DB_HOST=$DB_HOST");
         }

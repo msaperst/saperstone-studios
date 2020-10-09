@@ -14,8 +14,8 @@ if (!$album->canUserAccess()) {
 
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
 $user = User::fromSystem();
+$sql = new Sql ();
 
 // update our last accessed
 if (!$user->isAdmin()) {
@@ -192,7 +192,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                             <div class="tooltip-wrapper disabled"
                                  data-toggle="tooltip" data-placement="top"
                                  title="Login or create an account for this feature.">
-                            <button type="button" class="btn btn-default" disabled>
+                            <button id="downloadable-image-btn"
+                                    type="button" class="btn btn-default" disabled>
                                 <em class="fa fa-download"></em> Download
                             </button>
                         </div>
@@ -215,7 +216,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                             <div class="tooltip-wrapper disabled"
                                  data-toggle="tooltip" data-placement="top"
                                  title="Login or create an account for this feature.">
-                            <button type="button" class="btn btn-default" disabled>
+                            <button id="shareable-image-btn"
+                                    type="button" class="btn btn-default" disabled>
                                 <em class="fa fa-share"></em> Share
                             </button>
                         </div>
@@ -322,7 +324,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                             <div class="tooltip-wrapper disabled"
                                  data-toggle="tooltip" data-placement="top"
                                  title="Login or create an account for this feature.">
-                            <button type="button" class="btn btn-default" disabled>
+                            <button id="downloadable-favorites-btn"
+                                    type="button" class="btn btn-default" disabled>
                                 <em class="fa fa-download"></em> Download Favorites
                             </button>
                         </div>
@@ -340,7 +343,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                             <div class="tooltip-wrapper disabled"
                                  data-toggle="tooltip" data-placement="top"
                                  title="Login or create an account for this feature.">
-                            <button type="button" class="btn btn-default" disabled>
+                            <button id="shareable-favorites-btn"
+                                    type="button" class="btn btn-default" disabled>
                                 <em class="fa fa-share"></em> Share Favorites
                             </button>
                         </div>
@@ -645,7 +649,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         class="tooltip-wrapper disabled" data-toggle="tooltip"
                         data-placement="top"
                         title="Login or create an account for this feature.">
-                    <button type="button" class="btn btn-default" disabled>
+                    <button id="downloadable-all-btn"
+                            type="button" class="btn btn-default" disabled>
                         <em class="fa fa-download"></em> Download All
                     </button>
                 </div></span>
@@ -665,7 +670,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         class="tooltip-wrapper disabled" data-toggle="tooltip"
                         data-placement="top"
                         title="Login or create an account for this feature.">
-                    <button type="button" class="btn btn-default" disabled>
+                    <button id="shareable-all-btn"
+                            type="button" class="btn btn-default" disabled>
                         <em class="fa fa-share"></em> Share All
                     </button>
                 </div></span>

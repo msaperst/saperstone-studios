@@ -248,7 +248,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('', $user->getId());
         $this->assertEquals('', $user->getIdentifier());
         $this->assertEquals('', $user->getUsername());
-        $this->assertEquals('downloader', $user->getRole());
+        $this->assertEquals('', $user->getRole());
         $this->assertFalse($user->isAdmin());
         $this->assertEquals('', $user->getFirstName());
         $this->assertEquals('', $user->getLastName());

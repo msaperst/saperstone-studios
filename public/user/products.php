@@ -2,10 +2,9 @@
 require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-$sql = new Sql ();
 $user = User::fromSystem();
 $user->forceAdmin();
-
+$sql = new Sql ();
 ?>
 
 <!DOCTYPE html>

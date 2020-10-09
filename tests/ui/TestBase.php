@@ -34,7 +34,11 @@ class TestBase extends TestCase {
     }
 
     protected function adminLogin() {
-        $cookie = new Cookie('hash', '1d7505e7f434a7713e84ba399e937191');
+        $this->loginAs('1d7505e7f434a7713e84ba399e937191');
+    }
+
+    protected function loginAs($hash) {
+        $cookie = new Cookie('hash', $hash);
         $this->driver->manage()->addCookie($cookie);
     }
 }

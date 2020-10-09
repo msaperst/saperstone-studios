@@ -12,9 +12,9 @@ class User {
     private $firstName = '';
     private $lastName = '';
     private $email;
-    private $role = 'downloader';
+    private $role = '';
     private $hash;
-    private $active = 1;
+    private $active;
     private $created;
     private $lastLogin;
     private $resetKey;
@@ -140,10 +140,16 @@ class User {
         }
         $user->email = $sql->escapeString($params['email']);
         //sets if the user as active - only an admin can make a user inactive
+        if( $user->active == '' ) {
+            $user->active = 1;
+        }
         if ($systemUser->isAdmin() && isset($params['active'])) {
             $user->active = (int)$params['active'];
         }
         //setting role - admin users can provide different role
+        if( $user->role == '' ) {
+            $user->role = 'downloader';
+        }
         if ($systemUser->isAdmin() && isset($params['role']) && $params['role'] != "") {
             $enums = $sql->getEnumValues('users', 'role');
             if (!in_array($params['role'], $enums)) {
