@@ -20,7 +20,7 @@ class AlbumPageLoadTest extends TestBase {
     public function setUp() {
         parent::setUp();
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('9999', 'sample-album', 'sample album for testing', 'sample', 1, '1234');");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('9999', 'sample-album', 'sample album for testing', 'sample', 1, '2345');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (997, '9999', '', '1', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '9999', '', '2', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (9999, '9999', '', '3', '', '', '300', '400', '1');");
@@ -88,7 +88,7 @@ class AlbumPageLoadTest extends TestBase {
 
     public function testAlbumLoadsSearchedFor() {
         $this->driver->get($this->baseUrl);
-        $searched [9999] = md5("album1234");
+        $searched [9999] = md5("album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
@@ -138,7 +138,7 @@ class AlbumPageLoadTest extends TestBase {
 
     public function testAlbumGuestToolBar() {
         $this->driver->get($this->baseUrl);
-        $searched [9999] = md5("album1234");
+        $searched [9999] = md5("album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
@@ -165,7 +165,7 @@ class AlbumPageLoadTest extends TestBase {
 
     public function testSlideShowButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [9999] = md5("album1234");
+        $searched [9999] = md5("album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
@@ -230,7 +230,7 @@ class AlbumPageLoadTest extends TestBase {
 
     public function testFavoritesButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [9999] = md5("album1234");
+        $searched [9999] = md5("album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
@@ -287,7 +287,7 @@ class AlbumPageLoadTest extends TestBase {
 
     public function testCartModalGuest() {
         $this->driver->get($this->baseUrl);
-        $searched [9999] = md5("album1234");
+        $searched [9999] = md5("album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
@@ -313,7 +313,7 @@ class AlbumPageLoadTest extends TestBase {
 
     public function testSubmitModalGuest() {
         $this->driver->get($this->baseUrl);
-        $searched [9999] = md5("album1234");
+        $searched [9999] = md5("album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
@@ -341,7 +341,7 @@ class AlbumPageLoadTest extends TestBase {
 
     public function testButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [9999] = md5("album1234");
+        $searched [9999] = md5("album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
