@@ -212,7 +212,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                         }
                                     }
                                 }
-                                sh "composer coverage-test"
+                                sh "COMPOSER_PROCESS_TIMEOUT=600 composer coverage-test"
                             } finally {
                                 junit 'reports/cov-junit.xml'
                                 publishHTML([

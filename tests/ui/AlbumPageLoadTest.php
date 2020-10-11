@@ -20,18 +20,18 @@ class AlbumPageLoadTest extends TestBase {
     public function setUp() {
         parent::setUp();
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 1, '1234');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (997, '999', '', '1', '', '', '300', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '2', '', '', '300', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '3', '', '', '300', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('9999', 'sample-album', 'sample album for testing', 'sample', 1, '1234');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (997, '9999', '', '1', '', '', '300', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '9999', '', '2', '', '', '300', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (9999, '9999', '', '3', '', '', '300', '400', '1');");
 
         $this->wait = new WebDriverWait($this->driver, 5);
     }
 
     public function tearDown() {
-        $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
-        $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
-        $this->sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;");
+        $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 9999;");
+        $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 9999;");
+        $this->sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 9999;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
@@ -61,19 +61,19 @@ class AlbumPageLoadTest extends TestBase {
     }
 
     public function testAlbumLoadsForAdmin() {
-        $this->sql->executeStatement("UPDATE albums SET owner = 4 WHERE id = 999;");
+        $this->sql->executeStatement("UPDATE albums SET owner = 4 WHERE id = 9999;");
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertEquals('sample-album sample album for testing', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
     public function testAlbumLoadsForOwner() {
-        $this->sql->executeStatement("UPDATE albums SET owner = 4 WHERE id = 999;");
+        $this->sql->executeStatement("UPDATE albums SET owner = 4 WHERE id = 9999;");
         $this->driver->get($this->baseUrl);
         $this->loginAs('c90788c0e409eac6a95f6c6360d8dbf7');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertEquals('sample-album sample album for testing', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
@@ -81,76 +81,76 @@ class AlbumPageLoadTest extends TestBase {
     public function testAlbumLoadsForNoOne() {
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
     public function testAlbumLoadsSearchedFor() {
         $this->driver->get($this->baseUrl);
-        $searched [999] = md5("album1234");
+        $searched [9999] = md5("album1234");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertEquals('sample-album sample album for testing', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
     public function testAlbumLoadsInList() {
-        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '999');");
+        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '9999');");
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertEquals('sample-album sample album for testing', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
     public function testAlbumUpdatesLastAccessed() {
         date_default_timezone_set("America/New_York");
-        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '999');");
+        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '9999');");
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $this->sql->getRow("SELECT lastAccessed FROM albums WHERE id = 999;")['lastAccessed']);
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
+        $this->assertStringStartsWith(date('Y-m-d H:i:'), $this->sql->getRow("SELECT lastAccessed FROM albums WHERE id = 9999;")['lastAccessed']);
     }
 
     public function testAlbumLogsAccessed() {
         date_default_timezone_set("America/New_York");
-        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '999');");
+        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '9999');");
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` ORDER BY time DESC");
         $this->assertEquals(3, $userLogs['user']);
         $this->assertStringStartsWith(date('Y-m-d H:i:'), $userLogs['time']);
         $this->assertEquals('Visited Album', $userLogs['action']);
         $this->assertNull($userLogs['what']);
-        $this->assertEquals(999, $userLogs['album']);
+        $this->assertEquals(9999, $userLogs['album']);
     }
 
     public function testAlbumAdminToolBar() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertEquals('Home Albums sample-album', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('edit-album-btn'))->isDisplayed());
     }
 
     public function testAlbumGuestToolBar() {
         $this->driver->get($this->baseUrl);
-        $searched [999] = md5("album1234");
+        $searched [9999] = md5("album1234");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertEquals('Home sample-album', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('edit-album-btn'))));
     }
 
     public function testNoImages() {
-        $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
+        $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 9999;");
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('notify-email'))->isDisplayed());
         $this->assertEquals('msaperst@gmail.com', $this->driver->findElement(WebDriverBy::id('notify-email'))->getAttribute('value'));
     }
@@ -158,17 +158,17 @@ class AlbumPageLoadTest extends TestBase {
     public function testSlideShowModal() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
-        $this->assertEquals('999', $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
+        $this->assertEquals('9999', $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
 //        $this->assertEquals('sample-album sample album for testing', $this->driver->findElement(WebDriverBy::id('album'))->findElement(WebDriverBy::className('modal-title'))->getText());
     }
 
     public function testSlideShowButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [999] = md5("album1234");
+        $searched [9999] = md5("album1234");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $actions = new WebDriverActions($this->driver);
         $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
@@ -186,7 +186,7 @@ class AlbumPageLoadTest extends TestBase {
     public function testSlideShowButtonsAdminUser() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $actions = new WebDriverActions($this->driver);
         $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
@@ -202,10 +202,10 @@ class AlbumPageLoadTest extends TestBase {
     }
 
     public function testSlideShowButtonsDownloaderUser() {
-        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '999');");
+        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '9999');");
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $actions = new WebDriverActions($this->driver);
         $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
@@ -223,17 +223,17 @@ class AlbumPageLoadTest extends TestBase {
     public function testFavoritesModal() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
-        $this->assertEquals('999', $this->driver->findElement(WebDriverBy::id('favorites'))->getAttribute('album-id'));
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
+        $this->assertEquals('9999', $this->driver->findElement(WebDriverBy::id('favorites'))->getAttribute('album-id'));
 //        $this->assertEquals('sample-album', $this->driver->findElement(WebDriverBy::id('favorites'))->findElement(WebDriverBy::className('modal-title'))->getText());
     }
 
     public function testFavoritesButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [999] = md5("album1234");
+        $searched [9999] = md5("album1234");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('favorites'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('favorites-all-title'))));
@@ -246,7 +246,7 @@ class AlbumPageLoadTest extends TestBase {
     public function testFavoritesButtonsAdminUser() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('favorites'))));
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('favorites-all-title'))->isDisplayed());
@@ -257,10 +257,10 @@ class AlbumPageLoadTest extends TestBase {
     }
 
     public function testFavoritesButtonsDownloaderUser() {
-        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '999');");
+        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '9999');");
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('favorites'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('favorites-all-title'))));
@@ -273,24 +273,24 @@ class AlbumPageLoadTest extends TestBase {
     public function testCartImageModal() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
-        $this->assertEquals('999', $this->driver->findElement(WebDriverBy::id('cart-image'))->getAttribute('album-id'));
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
+        $this->assertEquals('9999', $this->driver->findElement(WebDriverBy::id('cart-image'))->getAttribute('album-id'));
         $this->assertEquals(4, sizeof($this->driver->findElement(WebDriverBy::id('cart-image'))->findElement(WebDriverBy::className('nav-tabs'))->findElements(WebDriverBy::tagName('li'))));
     }
 
     public function testCartModal() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
-        $this->assertEquals('999', $this->driver->findElement(WebDriverBy::id('cart'))->getAttribute('album-id'));
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
+        $this->assertEquals('9999', $this->driver->findElement(WebDriverBy::id('cart'))->getAttribute('album-id'));
     }
 
     public function testCartModalGuest() {
         $this->driver->get($this->baseUrl);
-        $searched [999] = md5("album1234");
+        $searched [9999] = md5("album1234");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertEquals('', $this->driver->findElement(WebDriverBy::id('cart-name'))->getAttribute('value'));
         $this->assertEquals('', $this->driver->findElement(WebDriverBy::id('cart-email'))->getAttribute('value'));
     }
@@ -298,7 +298,7 @@ class AlbumPageLoadTest extends TestBase {
     public function testCartModalAdmin() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->driver->findElement(WebDriverBy::id('cart-btn'))->click();
         $this->assertEquals('Max Saperstone', $this->driver->findElement(WebDriverBy::id('cart-name'))->getAttribute('value'));
         $this->assertEquals('msaperst@gmail.com', $this->driver->findElement(WebDriverBy::id('cart-email'))->getAttribute('value'));
@@ -307,16 +307,16 @@ class AlbumPageLoadTest extends TestBase {
     public function testSubmitModal() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
-        $this->assertEquals('999', $this->driver->findElement(WebDriverBy::id('submit'))->getAttribute('album-id'));
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
+        $this->assertEquals('9999', $this->driver->findElement(WebDriverBy::id('submit'))->getAttribute('album-id'));
     }
 
     public function testSubmitModalGuest() {
         $this->driver->get($this->baseUrl);
-        $searched [999] = md5("album1234");
+        $searched [9999] = md5("album1234");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $actions = new WebDriverActions($this->driver);
         $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
@@ -329,7 +329,7 @@ class AlbumPageLoadTest extends TestBase {
     public function testSubmitModalAdmin() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $actions = new WebDriverActions($this->driver);
         $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
@@ -341,10 +341,10 @@ class AlbumPageLoadTest extends TestBase {
 
     public function testButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [999] = md5("album1234");
+        $searched [9999] = md5("album1234");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('downloadable-all-btn'))->isEnabled());
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('shareable-all-btn'))->isEnabled());
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('cart-btn'))->isEnabled());
@@ -354,7 +354,7 @@ class AlbumPageLoadTest extends TestBase {
     public function testButtonsAdminUser() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('downloadable-all-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('shareable-all-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('cart-btn'))->isEnabled());
@@ -362,10 +362,10 @@ class AlbumPageLoadTest extends TestBase {
     }
 
     public function testButtonsDownloaderUser() {
-        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '999');");
+        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '9999');");
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=999');
+        $this->driver->get($this->baseUrl . 'user/album.php?album=9999');
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('downloadable-all-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('shareable-all-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('cart-btn'))->isEnabled());
