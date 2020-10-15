@@ -71,7 +71,7 @@ if ($navSql->getRowCount ( $query )) {
                   <?php
                 if (! $navUser->isLoggedIn ()) {
                     ?>
-                <li><a href="javascript:void(0);" data-toggle="modal"
+                <li><a id="login-menu-item" href="javascript:void(0);" data-toggle="modal"
             data-target="#login-modal"><em class="fa fa-sign-in"></em> Login</a></li>
                 <?php
                 } elseif ($navUser->isAdmin ()) {

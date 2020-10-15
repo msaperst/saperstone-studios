@@ -277,7 +277,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                 }
                                 sh 'export BROWSER=chrome; composer ui-pre-test;'
                                 sh 'sleep 20'
-                                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-test;'
+                                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-basic-test;'
                             } finally {
                                 sh 'export BROWSER=chrome; composer ui-post-test;'
                                 junit 'reports/ui-chrome/ui-junit.xml'

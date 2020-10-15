@@ -1,0 +1,10 @@
+default:
+  suites:
+    default:
+      contexts:
+        - BaseFeatureContext
+        - LoginFeatureContext
+  formatters:
+    pretty: true
+#    junit: [~/reports/behat]
+

@@ -145,7 +145,7 @@ class LoginTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('Sorry, you account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.', (string)$response->getBody());
+        $this->assertEquals('Sorry, your account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.', (string)$response->getBody());
         $this->sql->executeStatement("UPDATE `users` SET `active` = '1' WHERE `users`.`id` = 1;");
     }
 

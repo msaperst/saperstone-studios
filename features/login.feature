@@ -5,16 +5,16 @@ Feature: System Authentication
 
   Scenario: Login as a good user
     Given an enabled user account exists
-    When I log in to the site using credentials
+    When I log in to the site
     Then I see my user name displayed
 
   Scenario: Login as a disabled user
     Given a disabled user account exists
-    When I log in to the site using credentials
+    When I log in to the site
     Then I see an error message indicating my account has been disabled
 
   Scenario: Login as a bad user
-    When I log in to the site using credentials
+    When I log in to the site
     Then I see an error message indicating my credentials aren't valid
 
   Scenario Outline: Login with incomplete credentials
@@ -26,10 +26,14 @@ Feature: System Authentication
       |          | password |
       | username |          |
 
+  Scenario: Unable to 'Remember Me'
+    When I try to login to the site
+    Then I see that there is no option to remember me
+
   Scenario: Able to 'Remember Me'
     Given an enabled user account exists
-    When I remember my credentials
-    And I log in to the site using credentials
+    And I have cookies enabled
+    When I stay logged in to the site
     Then I see my user name displayed
     And I see a cookie with my credentials
 

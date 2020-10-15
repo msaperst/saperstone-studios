@@ -44,7 +44,7 @@ if ($_POST ['submit'] == 'Login') {
     }
 
     if (!$user->isActive()) {
-        echo 'Sorry, you account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.';
+        echo 'Sorry, your account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.';
         exit();
     }
     $user->login(boolval((int)$_POST ['rememberMe']));
