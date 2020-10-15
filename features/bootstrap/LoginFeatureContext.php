@@ -1,7 +1,9 @@
 <?php
 
+use Behat\Gherkin\Node\TableNode;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
 use PHPUnit\Framework\Assert;
 use ui\models\Login;
 
@@ -23,10 +25,10 @@ class LoginFeatureContext extends BaseFeatureContext {
     }
 
     /**
-     * @Given /^I have cookies enabled$/
+     * @Given /^I have cookies disabled$/
      */
-    public function iHaveCookiesEnabled() {
-        $cookie = new Cookie('CookiePreferences', '["preferences","analytics"]');
+    public function iHaveCookiesDisabled() {
+        $cookie = new Cookie('CookiePreferences', '[]');
         $this->driver->manage()->addCookie($cookie);
         $this->driver->navigate()->refresh();
     }
@@ -106,9 +108,42 @@ class LoginFeatureContext extends BaseFeatureContext {
     }
 
     /**
+     * @When /^I request a reset key$/
+     */
+    public function iRequestAResetKey() {
+        $login = new Login($this->driver, $this->wait);
+        $login->requestResetKey($this->user->getEmail());
+    }
+
+    /**
+     * @When /^I submit email "([^"]*)" for reset$/
+     */
+    public function iSubmitEmailForReset($email) {
+        $login = new Login($this->driver, $this->wait);
+        $login->requestResetKey($email);
+    }
+
+    /**
+     * @When /^I submit reset credentials$/
+     */
+    public function iSubmitInNewCredentials() {
+        $login = new Login($this->driver, $this->wait);
+        $login->requestResetPassword($this->user->getEmail(), User::withId($this->user->getId())->getDataBasic()['resetKey'], $this->user->getPassword(), $this->user->getPassword());
+    }
+
+    /**
+     * @When /^I submit "([^"]*)" "([^"]*)" "([^"]*)" "([^"]*)" reset credentials$/
+     */
+    public function iSubmitCredentials($email, $code, $password, $confirm) {
+        $login = new Login($this->driver, $this->wait);
+        $login->requestResetPassword($email, $code, $password, $confirm);
+    }
+
+    /**
      * @Then I see my user name displayed
      */
     public function iSeeMyUserNameDisplayed() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText($this->user->getUsername())));
         Assert::assertTrue($this->driver->findElement(WebDriverBy::linkText($this->user->getUsername()))->isDisplayed());
     }
 
@@ -140,7 +175,21 @@ Credentials do not match our records', $this->driver->findElement(WebDriverBy::c
      */
     public function iSeeAnErrorMessageIndicatingAllFieldsNeedToBeFilledIn() {
         Assert::assertStringEndsWith('can not be blank', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+    }
 
+    /**
+     * @Then /^I see an error message indicating invalid field values$/
+     */
+    public function iSeeAnErrorMessageIndicatingInvalidFieldValues() {
+        Assert::assertStringEndsWith('is not valid', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+    }
+
+    /**
+     * @Then /^I see an error message indicating passwords do not match$/
+     */
+    public function iSeeAnErrorMessageIndicatingPasswordsDoNotMatch() {
+        Assert::assertEquals('×
+Password and confirmation do not match', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
     }
 
     /**
@@ -163,7 +212,7 @@ Credentials do not match our records', $this->driver->findElement(WebDriverBy::c
     }
 
     /**
-     * @Given /^I don't see a cookie with my credentials$/
+     * @Then /^I don't see a cookie with my credentials$/
      */
     public function iDonTSeeACookieWithMyCredentials() {
         $cookies = $this->driver->manage()->getCookies();
@@ -171,5 +220,15 @@ Credentials do not match our records', $this->driver->findElement(WebDriverBy::c
             Assert::assertNotEquals('hash', $cookie->getName());
             Assert::assertNotEquals('usr', $cookie->getName());
         }
+    }
+
+    /**
+     * @Then /^I can enter in new credentials$/
+     */
+    public function iCanEnterInNewCredentials() {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('forgot-password-reset-password'))));
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('forgot-password-code'))->isDisplayed());
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('forgot-password-new-password'))->isDisplayed());
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('forgot-password-new-password-confirm'))->isDisplayed());
     }
 }

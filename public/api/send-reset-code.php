@@ -12,7 +12,7 @@ try {
 try {
     $user = User::fromEmail($email);
 } catch (Exception $e) {
-    echo "Unable to find that email address in our records";
+    echo "Credentials do not match our records";
     exit();
 }
 

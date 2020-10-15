@@ -32,13 +32,16 @@ class BaseFeatureContext implements Context {
         } else {
             $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::chrome());
         }
-        $this->wait = new WebDriverWait($this->driver, 5);
+        $this->wait = new WebDriverWait($this->driver, 10);
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
         $this->user = new User();
 
         $this->driver->get($this->baseUrl);
-        $cookie = new Cookie('CookiePreferences', '[]');
+        $cookie = new Cookie('CookiePreferences', '["preferences","analytics"]');
         $this->driver->manage()->addCookie($cookie);
+        $cookie = new Cookie('CookieShow', 'true');
+        $this->driver->manage()->addCookie($cookie);
+        $this->driver->navigate()->refresh();
     }
 
     /**

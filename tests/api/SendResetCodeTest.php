@@ -48,11 +48,11 @@ class SendResetCodeTest extends TestCase {
     public function testBadEmail() {
         $response = $this->http->request('POST', 'api/send-reset-code.php', [
             'form_params' => [
-                'email' => 'Unable to find that email address in our records'
+                'email' => 'msap@gmail.com'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Email is not valid", $response->getBody());
+        $this->assertEquals("Credentials do not match our records", (string) $response->getBody());
     }
 
     public function testSendResetCode() {

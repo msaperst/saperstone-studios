@@ -6,6 +6,7 @@ namespace ui\models;
 
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use User;
 
 class Login {
     private $driver;
@@ -35,5 +36,27 @@ class Login {
         $this->driver->findElement(WebDriverBy::linkText($username))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('logout-button'))));
         $this->driver->findElement(WebDriverBy::id('logout-button'))->click();
+    }
+
+    public function openResetPassword() {
+        $this->openLogin();
+        $this->driver->findElement(WebDriverBy::id('login-forgot-password'))->click();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('forgot-password-submit'))));
+    }
+
+    public function requestResetKey($email) {
+        $this->openResetPassword();
+        $this->driver->findElement(WebDriverBy::id('forgot-password-email'))->sendKeys($email);
+        $this->driver->findElement(WebDriverBy::id('forgot-password-submit'))->click();
+    }
+
+    public function requestResetPassword($email, $code, $password, $confirm) {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('forgot-password-reset-password'))));
+        $this->driver->findElement(WebDriverBy::id('forgot-password-email'))->clear();
+        $this->driver->findElement(WebDriverBy::id('forgot-password-email'))->sendKeys($email);
+        $this->driver->findElement(WebDriverBy::id('forgot-password-code'))->sendKeys($code);
+        $this->driver->findElement(WebDriverBy::id('forgot-password-new-password'))->sendKeys($password);
+        $this->driver->findElement(WebDriverBy::id('forgot-password-new-password-confirm'))->sendKeys($confirm);
+        $this->driver->findElement(WebDriverBy::id('forgot-password-reset-password'))->click();
     }
 }

@@ -391,6 +391,9 @@ class User {
         $sql = new Sql();
         $resetCode = Strings::randomString(8);
         $sql->executeStatement("UPDATE users SET resetKey='$resetCode' WHERE id={$this->id};");
+        $user = self::withId($this->id);
+        $this->resetKey = $resetCode;
+        $this->raw = $user->getDataArray();
         $sql->disconnect();
         return $resetCode;
     }

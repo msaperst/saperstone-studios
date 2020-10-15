@@ -807,6 +807,7 @@ class UserIntegrationTest extends TestCase {
             $user = User::withId(4);
             $code = $user->setResetCode();
             $this->assertEquals($code, $this->sql->getRow("SELECT * FROM users WHERE id = 4;")['resetKey']);
+            $this->assertEquals($code, $user->getDataBasic()['resetKey']);
         } finally {
             $this->sql->executeStatement("UPDATE users SET resetKey=NULL WHERE id=4;");
         }
