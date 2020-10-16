@@ -4,6 +4,9 @@ default:
       contexts:
         - BaseFeatureContext
         - LoginFeatureContext
+        - NavigationFeatureContext
+        - RegistrationFeatureContext
+        - AlbumFeatureContext
   formatters:
     pretty: true
     junit:

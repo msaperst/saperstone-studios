@@ -39,7 +39,7 @@ class TemplatesLoadTest extends TestBase {
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::className('alert-warning'))));
     }
 
-    public function testAccouncementBadTime() {
+    public function testAnnouncementBadTime() {
         try {
             $sql = new Sql();
             $sql->executeStatement("INSERT INTO `announcements` (`id`, `message`, `path`, `start`, `end`, `dismissible`) VALUES (999, '<a href=\'/blog/post.php?p=458\'>Information Regarding Covid-19</a>', '/', '2000-07-23 00:00:00', '2000-12-31 00:00:00', 1);");
@@ -50,10 +50,11 @@ class TemplatesLoadTest extends TestBase {
             $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `announcements`;")['count'];
             $count++;
             $sql->executeStatement("ALTER TABLE `announcements` AUTO_INCREMENT = $count;");
+            $sql->disconnect();
         }
     }
 
-    public function testAccouncementGoodTime() {
+    public function testAnnouncementGoodTime() {
         try {
             $sql = new Sql();
             $sql->executeStatement("INSERT INTO `announcements` (`id`, `message`, `path`, `start`, `end`, `dismissible`) VALUES (999, '<a href=\'/blog/post.php?p=458\'>Information Regarding Covid-19</a>', '/', '2000-07-23 00:00:00', '3000-12-31 00:00:00', 1);");
@@ -64,10 +65,11 @@ class TemplatesLoadTest extends TestBase {
             $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `announcements`;")['count'];
             $count++;
             $sql->executeStatement("ALTER TABLE `announcements` AUTO_INCREMENT = $count;");
+            $sql->disconnect();
         }
     }
 
-    public function testAccouncementDismissed() {
+    public function testAnnouncementDismissed() {
         try {
             $sql = new Sql();
             $sql->executeStatement("INSERT INTO `announcements` (`id`, `message`, `path`, `start`, `end`, `dismissible`) VALUES (999, '<a href=\'/blog/post.php?p=458\'>Information Regarding Covid-19</a>', '/', '2000-07-23 00:00:00', '3000-12-31 00:00:00', 1);");
@@ -81,10 +83,11 @@ class TemplatesLoadTest extends TestBase {
             $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `announcements`;")['count'];
             $count++;
             $sql->executeStatement("ALTER TABLE `announcements` AUTO_INCREMENT = $count;");
+            $sql->disconnect();
         }
     }
 
-    public function testAccouncementDomain() {
+    public function testAnnouncementDomain() {
         try {
             $sql = new Sql();
             $sql->executeStatement("INSERT INTO `announcements` (`id`, `message`, `path`, `start`, `end`, `dismissible`) VALUES (999, '<a href=\'/blog/post.php?p=458\'>Information Regarding Covid-19</a>', '/portrait', '2000-07-23 00:00:00', '3000-12-31 00:00:00', 1);");
@@ -97,6 +100,7 @@ class TemplatesLoadTest extends TestBase {
             $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `announcements`;")['count'];
             $count++;
             $sql->executeStatement("ALTER TABLE `announcements` AUTO_INCREMENT = $count;");
+            $sql->disconnect();
         }
     }
 

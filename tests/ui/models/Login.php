@@ -1,11 +1,10 @@
 <?php
 
-
 namespace ui\models;
-
 
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\WebDriverKeys;
 use User;
 
 class Login {
@@ -20,6 +19,15 @@ class Login {
     public function openLogin() {
         $this->driver->findElement(WebDriverBy::id('login-menu-item'))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('login-modal'))));
+    }
+
+    public function loginKeyboard($username, $password, $rememberMe) {
+        $this->openLogin();
+        if( $rememberMe ) {
+            $this->driver->findElement(WebDriverBy::id('login-remember'))->click();
+        }
+        $this->driver->findElement(WebDriverBy::id('login-user'))->sendKeys($username);
+        $this->driver->findElement(WebDriverBy::id('login-pass'))->sendKeys($password)->sendKeys(WebDriverKeys::ENTER);
     }
 
     public function login($username, $password, $rememberMe) {

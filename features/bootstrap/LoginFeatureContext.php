@@ -1,33 +1,38 @@
 <?php
 
-use Behat\Gherkin\Node\TableNode;
+use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 use ui\models\Login;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'BaseFeatureContext.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'ui' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Login.php';
 
-class LoginFeatureContext extends BaseFeatureContext {
+class LoginFeatureContext implements Context {
 
-    /**
-     * @BeforeScenario
-     */
-    public function setupUser() {
-        $params = [
-            'username' => 'testUser',
-            'email' => 'test@example.org',
-            'password' => '12345'
-        ];
-        $this->user = User::withParams($params);
+    private $environment;
+
+    private $driver;
+    private $user;
+    private $wait;
+
+    /** @BeforeScenario */
+    public function gatherContexts(BeforeScenarioScope $scope) {
+        $this->environment = $scope->getEnvironment();
+        $this->driver = $this->environment->getContext('BaseFeatureContext')->getDriver();
+        $this->wait = new WebDriverWait($this->driver, 20);
+        $this->user = $this->environment->getContext('BaseFeatureContext')->getUser();
     }
 
     /**
      * @Given /^I have cookies disabled$/
      */
     public function iHaveCookiesDisabled() {
+        $this->driver->manage()->deleteAllCookies();
         $cookie = new Cookie('CookiePreferences', '[]');
         $this->driver->manage()->addCookie($cookie);
         $this->driver->navigate()->refresh();
@@ -47,13 +52,14 @@ class LoginFeatureContext extends BaseFeatureContext {
     public function aDisabledUserAccountExists() {
         $params = [
             'username' => 'testUser',
-            'email' => 'test@example.org',
+            'email' => 'msaperst+sstest@gmail.com',
             'password' => '12345',
             'active' => '0'
         ];
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $this->user = User::withParams($params);
         unset($_SESSION['hash']);
+        $this->environment->getContext('BaseFeatureContext')->setUser($this->user);
         $this->user->create();
     }
 
@@ -61,6 +67,7 @@ class LoginFeatureContext extends BaseFeatureContext {
      * @Given /^I am logged in with saved credentials$/
      */
     public function iAmLoggedInWithSavedCredentials() {
+        $this->driver->manage()->deleteCookieNamed('hash');
         $cookie = new Cookie('hash', $this->user->getHash());
         $this->driver->manage()->addCookie($cookie);
         $this->driver->navigate()->refresh();
@@ -81,6 +88,14 @@ class LoginFeatureContext extends BaseFeatureContext {
     public function iLogInToTheSite() {
         $login = new Login($this->driver, $this->wait);
         $login->login($this->user->getUsername(), $this->user->getPassword(), false);
+    }
+
+    /**
+     * @When /^I log in to the site by typing$/
+     */
+    public function iLogInToTheSiteByTyping() {
+        $login = new Login($this->driver, $this->wait);
+        $login->loginKeyboard($this->user->getUsername(), $this->user->getPassword(), false);
     }
 
     /**
@@ -113,6 +128,15 @@ class LoginFeatureContext extends BaseFeatureContext {
     public function iRequestAResetKey() {
         $login = new Login($this->driver, $this->wait);
         $login->requestResetKey($this->user->getEmail());
+    }
+
+    /**
+     * @When /^I have a reset key$/
+     */
+    public function iHaveAResetKey() {
+        $login = new Login($this->driver, $this->wait);
+        $login->openResetPassword();
+        $this->driver->findElement(WebDriverBy::id('forgot-password-prev-code'))->click();
     }
 
     /**
@@ -155,6 +179,14 @@ class LoginFeatureContext extends BaseFeatureContext {
     }
 
     /**
+     * @Then /^I see an info message indicating I successfully logged in$/
+     */
+    public function iSeeAnInfoMessageIndicatingISuccessfullyLoggedIn() {
+        Assert::assertEquals('×
+Successfully Logged In. Please wait as you are redirected.', $this->driver->findElement(WebDriverBy::className('alert-info'))->getText());
+    }
+
+    /**
      * @Then /^I see an error message indicating my account has been disabled$/
      */
     public function iSeeAnErrorMessageIndicatingMyAccountHasBeenDisabled() {
@@ -193,10 +225,10 @@ Password and confirmation do not match', $this->driver->findElement(WebDriverBy:
     }
 
     /**
-     * @Then /^I see that there is no option to remember me$/
+     * @Then /^I see that there is no logon option to remember me$/
      */
     public function iSeeThatThereIsNoOptionToRememberMe() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('login-remember'))->isDisplayed());
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('login-remember-span'))->isDisplayed());
     }
 
     /**
@@ -216,7 +248,7 @@ Password and confirmation do not match', $this->driver->findElement(WebDriverBy:
      */
     public function iDonTSeeACookieWithMyCredentials() {
         $cookies = $this->driver->manage()->getCookies();
-        foreach( $cookies as $cookie) {
+        foreach ($cookies as $cookie) {
             Assert::assertNotEquals('hash', $cookie->getName());
             Assert::assertNotEquals('usr', $cookie->getName());
         }
@@ -230,5 +262,13 @@ Password and confirmation do not match', $this->driver->findElement(WebDriverBy:
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('forgot-password-code'))->isDisplayed());
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('forgot-password-new-password'))->isDisplayed());
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('forgot-password-new-password-confirm'))->isDisplayed());
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('forgot-password-remember-span'))->isDisplayed());
+    }
+
+    /**
+     * @Then /^I see that there is no reset option to remember me$/
+     */
+    public function iSeeThatThereIsNoResetOptionToRememberMe() {
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('forgot-password-remember-span'))->isDisplayed());
     }
 }

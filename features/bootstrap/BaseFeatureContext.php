@@ -2,12 +2,10 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
-use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\WebDriverWait;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
@@ -17,26 +15,35 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY
 class BaseFeatureContext implements Context {
 
     protected $driver;
-    protected $wait;
     protected $baseUrl;
     protected $user;
-    private $currentScenario;
+
+    public function getDriver() {
+        return $this->driver;
+    }
+
+    public function getUser() {
+        return $this->user;
+    }
+
+    public function getBaseUrl() {
+        return $this->baseUrl;
+    }
+
+    public function setUser(User $user) {
+        $this->user = $user;
+    }
 
     /**
-     * Initializes context.
-     *
-     * Every scenario gets its own context instance.
-     * You can also pass arbitrary arguments to the
-     * context constructor through behat.yml.
+     * @BeforeScenario
      */
-    public function __construct() {
+    public function setupUser(BeforeScenarioScope $scope) {
         $host = 'http://127.0.0.1:4444/wd/hub';
         if (getenv('BROWSER') == 'firefox') {
             $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::firefox());
         } else {
             $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::chrome());
         }
-        $this->wait = new WebDriverWait($this->driver, 10);
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
         $this->user = new User();
 
@@ -46,6 +53,13 @@ class BaseFeatureContext implements Context {
         $cookie = new Cookie('CookieShow', 'true');
         $this->driver->manage()->addCookie($cookie);
         $this->driver->navigate()->refresh();
+
+        $params = [
+            'username' => 'testUser',
+            'email' => 'msaperst+sstest@gmail.com',
+            'password' => '12345'
+        ];
+        $this->user = User::withParams($params);
     }
 
     /**
