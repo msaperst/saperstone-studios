@@ -46,7 +46,7 @@ Feature: System Authentication
     Given an enabled user account exists
     And I am logged in with saved credentials
     When I logout
-    Then I don't my user name displayed
+    Then I don't see my user name displayed
     And I don't see a cookie with my credentials
 
   Scenario: Able to enter reset credentials

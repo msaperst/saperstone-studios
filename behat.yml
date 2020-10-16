@@ -6,5 +6,15 @@ default:
         - LoginFeatureContext
   formatters:
     pretty: true
-#    junit: [~/reports/behat]
-
+    junit:
+      output_path: '%paths.base%/reports/behat'
+    html:
+      output_path: '%paths.base%/reports/behat'
+  extensions:
+    emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension:
+      name: html
+      renderer: Twig,Behat2
+      file_name: index
+      print_args: true
+      print_outp: true
+      loop_break: true

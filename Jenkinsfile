@@ -263,36 +263,44 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                 ])
                             }
                         }
-                    },
-                    "Chrome UI Tests": {
-                        stage('Run Chrome UI Tests') {
-                            try {
-                                timeout(60) {
-                                    waitUntil {
-                                        script {
-                                            def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
-                                            return (r.trim() == '200');
-                                        }
-                                    }
-                                }
-                                sh 'export BROWSER=chrome; composer ui-pre-test;'
-                                sh 'sleep 20'
-                                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-basic-test;'
-                            } finally {
-                                sh 'export BROWSER=chrome; composer ui-post-test;'
-                                junit 'reports/ui-chrome/ui-junit.xml'
-                                publishHTML([
-                                        allowMissing         : false,
-                                        alwaysLinkToLastBuild: true,
-                                        keepAll              : true,
-                                        reportDir            : 'reports/ui-chrome/',
-                                        reportFiles          : 'ui-results.html',
-                                        reportName           : 'Chrome Test Results Report'
-                                ])
-                            }
-                        }
                     }
             )
+        }
+        stage('Run Chrome Basic Tests') {
+            try {
+                sh 'export BROWSER=chrome; composer ui-pre-test;'
+                sh 'sleep 20'
+                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-basic-test;'
+            } finally {
+                sh 'export BROWSER=chrome; composer ui-post-test;'
+                junit 'reports/ui-chrome/ui-junit.xml'
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/ui-chrome/',
+                        reportFiles          : 'ui-results.html',
+                        reportName           : 'Chrome Basic Test Results Report'
+                ])
+            }
+        }
+        stage('Run Chrome BDD Tests') {
+            try {
+                sh 'export BROWSER=chrome; composer ui-pre-test;'
+                sh 'sleep 20'
+                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-complex-test;'
+            } finally {
+                sh 'export BROWSER=chrome; composer ui-post-test;'
+                junit 'reports/behat/default.xml'
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/behat/',
+                        reportFiles          : 'index.html',
+                        reportName           : 'Chrome Behat Test Results Report'
+                ])
+            }
         }
         stage('Publish Containers') {
             withCredentials([

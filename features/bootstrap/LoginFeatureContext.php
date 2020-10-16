@@ -148,9 +148,9 @@ class LoginFeatureContext extends BaseFeatureContext {
     }
 
     /**
-     * @Then /^I don't my user name displayed$/
+     * @Then /^I don't see my user name displayed$/
      */
-    public function iDonTMyUserNameDisplayed() {
+    public function iDonTSeeMyUserNameDisplayed() {
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::linkText($this->user->getUsername()))));
     }
 

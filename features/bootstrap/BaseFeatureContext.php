@@ -1,6 +1,9 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\AfterScenarioScope;
+use Behat\Behat\Hook\Scope\AfterStepScope;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -17,6 +20,7 @@ class BaseFeatureContext implements Context {
     protected $wait;
     protected $baseUrl;
     protected $user;
+    private $currentScenario;
 
     /**
      * Initializes context.
@@ -47,11 +51,12 @@ class BaseFeatureContext implements Context {
     /**
      * @AfterScenario
      */
-    public function cleanup() {
-        $this->driver->takeScreenshot(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . "ui-" . getenv('BROWSER') . DIRECTORY_SEPARATOR . "sample.png");
+    public function cleanup(AfterScenarioScope $scope) {
+        $scenarioName = $scope->getFeature()->getTitle() . ' : ' . $scope->getScenario()->getTitle() . ' : ' . $scope->getScenario()->getLine();
+        $this->driver->takeScreenshot(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . 'behat' . DIRECTORY_SEPARATOR . $scenarioName . '.png');
         $this->driver->quit();
         // if we created a new user
-        if( $this->user->getId() != '') {
+        if ($this->user->getId() != '') {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
             $this->user->delete();
             unset($_SESSION ['hash']);
