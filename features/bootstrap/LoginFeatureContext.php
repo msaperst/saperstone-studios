@@ -45,7 +45,6 @@ class LoginFeatureContext implements Context {
         $this->user->create();
     }
 
-
     /**
      * @Given /^a disabled user account exists$/
      */

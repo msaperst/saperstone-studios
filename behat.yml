@@ -7,6 +7,7 @@ default:
         - NavigationFeatureContext
         - RegistrationFeatureContext
         - AlbumFeatureContext
+        - RetouchFeatureContext
   formatters:
     pretty: true
     junit:
