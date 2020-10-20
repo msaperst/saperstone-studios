@@ -1,4 +1,4 @@
-Feature: System Administration
+Feature: Retouch
   As a user of the website
   I want to see image transformations
   So that I can be wowed by Leigh Ann's skill

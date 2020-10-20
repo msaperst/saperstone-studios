@@ -15,19 +15,25 @@ class TestBase extends TestCase {
     protected $baseUrl;
     protected $copyright = 'Copyright © Saperstone Studios 2020';
 
+    public static function setUpBeforeClass() {
+        // setup our logging
+        $reportDir = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . "ui-" . getenv('BROWSER') . DIRECTORY_SEPARATOR;
+        $reportFile = $reportDir . 'index.html';
+        if( !file_exists($reportDir)) {
+            mkdir($reportDir);
+        }
+        if( !file_exists($reportFile) ) {
+            $output = fopen($reportFile, 'w');
+            fwrite($output, str_replace('$PAGE_TITLE', getenv('BROWSER') . ' Page Load Tests', file_get_contents('https://gist.githubusercontent.com/msaperst/24d9a7d2e8f3e6ff1df26e5492a1b726/raw/1ede7c7c23ddb97153a464931e6bbf39cc737231/gistfile1.txt')));
+            fwrite($output, '<h1 align="center">' . getenv('BROWSER') . ' Page Load Tests</h1>');
+            fclose($output);
+        }
+    }
+
     public function setUp() {
         //setup our logging
         $this->reportDir = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . "ui-" . getenv('BROWSER') . DIRECTORY_SEPARATOR;
         $this->reportFile = $this->reportDir . 'index.html';
-        if( !file_exists($this->reportDir)) {
-            mkdir($this->reportDir);
-        }
-        if( !file_exists($this->reportFile) ) {
-            $output = fopen( $this->reportFile, 'w' );
-            fwrite($output, str_replace('$PAGE_TITLE', getenv('BROWSER') . ' Page Load Tests', file_get_contents('https://raw.githubusercontent.com/msaperst/saperstone-studios/feature/sqlRework/tests/resources/uiTestResultTemplate.html?token=AAURJLORMB3GDR6SI5RQRQC7R4ZDK')));
-            fwrite($output, '<h1 align="center">' . getenv('BROWSER') . ' Page Load Tests</h1>');
-            fclose($output);
-        }
         //setup our browser
         $host = 'http://127.0.0.1:4444/wd/hub';
         if (getenv('BROWSER') == 'firefox') {
