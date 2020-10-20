@@ -344,6 +344,14 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         reportFiles          : 'index.html',
                         reportName           : 'Chrome Behat Test Results Report'
                 ])
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/behat-chrome/',
+                        reportFiles          : 'index.html',
+                        reportName           : 'Chrome Behat Test Results Screenshot Report'
+                ])
             }
         }
         stage('Publish Containers') {
