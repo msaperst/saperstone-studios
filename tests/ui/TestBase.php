@@ -24,7 +24,7 @@ class TestBase extends TestCase {
         }
         if( !file_exists($this->reportFile) ) {
             $output = fopen( $this->reportFile, 'w' );
-            fwrite($output, file_get_contents('https://raw.githubusercontent.com/msaperst/saperstone-studios/feature/sqlRework/tests/resources/uiTestResultTemplate.html'));
+            fwrite($output, str_replace('$PAGE_TITLE', getenv('BROWSER') . ' Page Load Tests', file_get_contents('https://raw.githubusercontent.com/msaperst/saperstone-studios/feature/sqlRework/tests/resources/uiTestResultTemplate.html?token=AAURJLORMB3GDR6SI5RQRQC7R4ZDK')));
             fwrite($output, '<h1 align="center">' . getenv('BROWSER') . ' Page Load Tests</h1>');
             fclose($output);
         }
