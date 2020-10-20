@@ -11,9 +11,9 @@ class SocialMedia {
 
     function __construct() {
         $this->session = new Session();
-        Codebird::setConsumerKey("8DQvx2b18QkSCARsUJs1KDnvp", "fiFRlU4uZfLkyu24yqEB1jcUiprETciiUI4VaSAUlKjkie3GlA");
+        Codebird::setConsumerKey(getenv('CONSUMER_KEY'), getenv('CONSUMER_SECRET'));
         $this->cb = Codebird::getInstance();
-        $this->cb->setToken("291879421-eRCel3CGfQWUgtxnYUdolozLiHGbmqJYVJAzUmVB", "1WjoGMCkoI47OHPEBTVEwXrk9V8N6kPa8pczMInka0fvm");
+        $this->cb->setToken(getenv('TOKEN'), getenv('TOKEN_SECRET'));
     }
 
     function generateRSS() {

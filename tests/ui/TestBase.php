@@ -9,11 +9,39 @@ use PHPUnit\Framework\TestCase;
 
 class TestBase extends TestCase {
 
+    private $reportDir;
+    private $reportFile;
     protected $driver;
     protected $baseUrl;
     protected $copyright = 'Copyright © Saperstone Studios 2020';
 
     public function setUp() {
+        //setup our logging
+        $this->reportDir = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . "ui-" . getenv('BROWSER') . DIRECTORY_SEPARATOR;
+        $this->reportFile = $this->reportDir . 'index.html';
+        if( !file_exists($this->reportDir)) {
+            mkdir($this->reportDir);
+        }
+        if( !file_exists($this->reportFile) ) {
+            $output = fopen( $this->reportFile, 'w' );
+            fwrite($output, '<html lang="en">
+  <head>
+    <title>' . getenv('BROWSER') . ' Page Load Tests</title>
+    <style>.r0 { color: green; } .r1 { color: yellow; } .r3 { color: orangered } .r4 { color: red } </style>
+    <script>function toggleImg(e) { 
+        n = e.nextSibling;
+        if (n.style.display === "none") {
+            n.style.display = "block";
+        } else {
+            n.style.display = "none";
+        }
+    }</script>
+  </head>
+  <body>
+    <h1 align="center">' . getenv('BROWSER') . ' Page Load Tests</h1>');
+            fclose($output);
+        }
+        //setup our browser
         $host = 'http://127.0.0.1:4444/wd/hub';
         if (getenv('BROWSER') == 'firefox') {
             $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::firefox());
@@ -24,12 +52,18 @@ class TestBase extends TestCase {
     }
 
     public function tearDown() {
-        $this->driver->takeScreenshot(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . "ui-" . getenv('BROWSER') . DIRECTORY_SEPARATOR . "{$this->getName()}.png");
+        $screenshot = $this->driver->takeScreenshot();
+        $this->driver->takeScreenshot( $this->reportDir . $this->getName() . '.png');
         $this->driver->quit();
+        $output = fopen( $this->reportFile, 'a' );
+        fwrite($output, '<p><h2 class="r' . $this->getStatus() . '" style="cursor: pointer;" onclick="toggleImg(this)">' . $this->getName() . '</h2><img style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
+        fclose($output);
     }
 
     protected function acceptCookies() {
         $cookie = new Cookie('CookiePreferences', '["preferences","analytics"]');
+        $this->driver->manage()->addCookie($cookie);
+        $cookie = new Cookie('CookieShow', 'true');
         $this->driver->manage()->addCookie($cookie);
     }
 

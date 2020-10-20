@@ -91,6 +91,22 @@ node() {
                 string(
                         credentialsId: 'paypal-signature',
                         variable: 'paypalSignature'
+                ),
+                string(
+                        credentialsId: 'twitter-consumer-key',
+                        variable: 'twitterConsumerKey'
+                ),
+                string(
+                        credentialsId: 'twitter-consumer-secret',
+                        variable: 'twitterConsumerSecret'
+                ),
+                string(
+                        credentialsId: 'twitter-token',
+                        variable: 'twitterToken'
+                ),
+                string(
+                        credentialsId: 'twitter-token-secret',
+                        variable: 'twitterTokenSecret'
                 )
         ]) {
             stage('Setup env File') {
@@ -114,6 +130,12 @@ EMAIL_USER=${emailUser}\n\
 EMAIL_PASS=${emailPass}\n\
 EMAIL_USER_X=${emailUserX}\n\
 EMAIL_PASS_X=${emailPassX}\n\
+\n\
+# twitter information\n\
+CONSUMER_KEY=${twitterConsumerKey}\n\
+CONSUMER_SECRET=${twitterConsumerSecret}\n\
+TOKEN=${twitterToken}\n\
+TOKEN_SECRET=${twitterTokenSecret}\n\
 \n\
 # paypal information\n\
 PAYPAL_USERNAME=${paypalUser}\n\
@@ -294,7 +316,15 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         keepAll              : true,
                         reportDir            : 'reports/ui-chrome/',
                         reportFiles          : 'ui-results.html',
-                        reportName           : 'Chrome Basic Test Results Report'
+                        reportName           : 'Chrome Basic Test Results Simple Report'
+                ])
+                publishHTML([
+                        allowMissing         : false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll              : true,
+                        reportDir            : 'reports/ui-chrome/',
+                        reportFiles          : 'index.html',
+                        reportName           : 'Chrome Basic Test Results Screenshot Report'
                 ])
             }
         }
