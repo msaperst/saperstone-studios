@@ -73,5 +73,9 @@ services:
       EMAIL_PASS: ${EMAIL_PASS}
       EMAIL_USER_X: ${EMAIL_USER_X}
       EMAIL_PASS_X: ${EMAIL_PASS_X}
+      CONSUMER_KEY: ${CONSUMER_KEY}
+      CONSUMER_SECRET: ${CONSUMER_SECRET}
+      TOKEN: ${TOKEN}
+      TOKEN_SECRET: ${TOKEN_SECRET}
 volumes:
   mysql:
