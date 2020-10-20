@@ -126,8 +126,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 sh "composer integration-pre-test"
                 sh "composer integration-test"
             } catch (Exception e) {
-                def file = new File('reports/it-junit.xml')
-                if( fileContains( 'reports/it-junit.xml', 'testsuite name=\\"tests/coverage/integration/\\".* errors=\\"0\\" failures=\\"3\\" skipped=\\"0\\"') &&
+                if( fileContains( 'reports/it-junit.xml', 'testsuite name=\\"tests/coverage/integration/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
                      fileContains( 'reports/it-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
                      echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
                  } else {
@@ -221,6 +220,13 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                     }
                                 }
                                 sh "COMPOSER_PROCESS_TIMEOUT=600 composer coverage-test"
+                            } catch (Exception e) {
+                                if( fileContains( 'reports/cov-junit.xml', 'testsuite name=\\"tests/coverage/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
+                                     fileContains( 'reports/cov-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
+                                     echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
+                                 } else {
+                                    throw e
+                                 }
                             } finally {
                                 junit 'reports/cov-junit.xml'
                                 publishHTML([
