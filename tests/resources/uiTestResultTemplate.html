@@ -1,0 +1,19 @@
+<html lang="en">
+<head>
+    <title>' . getenv('BROWSER') . ' Page Load Tests</title>
+    <style>
+        .r0 { color: green; }
+        .r1 { color: yellow; }
+        .r3 { color: orangered }
+        .r4 { color: red }
+    </style>
+    <script>function toggleImg(e) {
+        var n = e.nextSibling;
+        if (n.style.display === "none") {
+            n.style.display = "block";
+        } else {
+            n.style.display = "none";
+        }
+    }</script>
+</head>
+<body>

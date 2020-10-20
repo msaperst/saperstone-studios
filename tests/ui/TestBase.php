@@ -24,21 +24,8 @@ class TestBase extends TestCase {
         }
         if( !file_exists($this->reportFile) ) {
             $output = fopen( $this->reportFile, 'w' );
-            fwrite($output, '<html lang="en">
-  <head>
-    <title>' . getenv('BROWSER') . ' Page Load Tests</title>
-    <style>.r0 { color: green; } .r1 { color: yellow; } .r3 { color: orangered } .r4 { color: red } </style>
-    <script>function toggleImg(e) { 
-        n = e.nextSibling;
-        if (n.style.display === "none") {
-            n.style.display = "block";
-        } else {
-            n.style.display = "none";
-        }
-    }</script>
-  </head>
-  <body>
-    <h1 align="center">' . getenv('BROWSER') . ' Page Load Tests</h1>');
+            fwrite($output, file_get_contents('https://raw.githubusercontent.com/msaperst/saperstone-studios/feature/sqlRework/tests/resources/uiTestResultTemplate.html'));
+            fwrite($output, '<h1 align="center">' . getenv('BROWSER') . ' Page Load Tests</h1>');
             fclose($output);
         }
         //setup our browser
