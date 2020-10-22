@@ -2,6 +2,7 @@
 
 namespace ui\models;
 
+use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
@@ -46,5 +47,16 @@ class Album {
         $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code)->sendKeys(WebDriverKeys::ENTER);
     }
 
-
+    public function openSlideShow($imgNum) {
+        $galleryClass = WebDriverBy::className('gallery');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($galleryClass));
+        $ourGalleryImage = $this->driver->findElements($galleryClass)[$imgNum];
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($ourGalleryImage));
+        $actions = new WebDriverActions($this->driver);
+        $actions->moveToElement($ourGalleryImage)->perform();
+        $ourGalleryImageInfo = $this->driver->findElements(WebDriverBy::className('info'))[$imgNum];
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($ourGalleryImageInfo));
+        $ourGalleryImageInfo->click();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
+    }
 }

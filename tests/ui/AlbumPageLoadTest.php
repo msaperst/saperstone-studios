@@ -3,13 +3,14 @@
 namespace ui;
 
 use Facebook\WebDriver\Cookie;
-use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Sql;
+use ui\models\Album;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestBase.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class AlbumPageLoadTest extends TestBase {
@@ -169,11 +170,8 @@ class AlbumPageLoadTest extends TestBase {
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $actions = new WebDriverActions($this->driver);
-        $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
-        $this->driver->findElement(WebDriverBy::className('info'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
+        $album = new Album($this->driver, $this->wait);
+        $album->openSlideShow(0);
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('downloadable-image-btn'))->isEnabled());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('not-downloadable-image-btn'))));
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('shareable-image-btn'))->isEnabled());
@@ -187,11 +185,8 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $actions = new WebDriverActions($this->driver);
-        $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
-        $this->driver->findElement(WebDriverBy::className('info'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
+        $album = new Album($this->driver, $this->wait);
+        $album->openSlideShow(0);
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('downloadable-image-btn'))->isEnabled());
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('not-downloadable-image-btn'))->isDisplayed());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('shareable-image-btn'))->isEnabled());
@@ -206,11 +201,8 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $actions = new WebDriverActions($this->driver);
-        $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
-        $this->driver->findElement(WebDriverBy::className('info'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
+        $album = new Album($this->driver, $this->wait);
+        $album->openSlideShow(0);
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('downloadable-image-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('not-downloadable-image-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('shareable-image-btn'))->isEnabled());
@@ -317,11 +309,6 @@ class AlbumPageLoadTest extends TestBase {
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $actions = new WebDriverActions($this->driver);
-        $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
-        $this->driver->findElement(WebDriverBy::className('info'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
         $this->assertEquals('', $this->driver->findElement(WebDriverBy::id('submit-name'))->getAttribute('value'));
         $this->assertEquals('', $this->driver->findElement(WebDriverBy::id('submit-email'))->getAttribute('value'));
     }
@@ -330,11 +317,6 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $actions = new WebDriverActions($this->driver);
-        $actions->moveToElement($this->driver->findElement(WebDriverBy::className('gallery')))->perform();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('info'))));
-        $this->driver->findElement(WebDriverBy::className('info'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
         $this->assertEquals('Max Saperstone', $this->driver->findElement(WebDriverBy::id('submit-name'))->getAttribute('value'));
         $this->assertEquals('msaperst@gmail.com', $this->driver->findElement(WebDriverBy::id('submit-email'))->getAttribute('value'));
     }
