@@ -49,7 +49,7 @@ class TestBase extends TestCase {
         $this->driver->takeScreenshot( $this->reportDir . $this->getName() . '.png');
         $this->driver->quit();
         $output = fopen( $this->reportFile, 'a' );
-        fwrite($output, '<p><h2 class="r' . $this->getStatus() . '" style="cursor: pointer;" onclick="toggleImg(this)">' . $this->getName() . '</h2><img style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
+        fwrite($output, '<p><div style="cursor: pointer;" onclick="toggleImg(this)"><h2 class="r' . $this->getStatus() . '">' . $this->getName() . '</h2>' . $this->getStatusMessage(). '</div><img style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
         fclose($output);
     }
 

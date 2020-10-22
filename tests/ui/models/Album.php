@@ -59,4 +59,9 @@ class Album {
         $ourGalleryImageInfo->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
     }
+
+    public function openFavorites() {
+        $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('favorites'))));
+    }
 }

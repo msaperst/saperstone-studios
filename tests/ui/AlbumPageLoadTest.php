@@ -203,6 +203,7 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
         $album = new Album($this->driver, $this->wait);
         $album->openSlideShow(0);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('not-downloadable-image-btn')));
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('downloadable-image-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('not-downloadable-image-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('shareable-image-btn'))->isEnabled());
@@ -226,8 +227,8 @@ class AlbumPageLoadTest extends TestBase {
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('favorites'))));
+        $album = new Album($this->driver, $this->wait);
+        $album->openFavorites();
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('favorites-all-title'))));
         $this->assertEquals('btn btn-default', $this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->getAttribute('class'));
         $this->assertEquals('btn btn-default', $this->driver->findElement(WebDriverBy::id('shareable-favorites-btn'))->getAttribute('class'));
@@ -239,8 +240,8 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('favorites'))));
+        $album = new Album($this->driver, $this->wait);
+        $album->openFavorites();
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('favorites-all-title'))->isDisplayed());
         $this->assertEquals('btn btn-default btn-action btn-success', $this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->getAttribute('class'));
         $this->assertEquals('btn btn-default btn-action btn-success', $this->driver->findElement(WebDriverBy::id('shareable-favorites-btn'))->getAttribute('class'));
@@ -253,8 +254,8 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('favorites'))));
+        $album = new Album($this->driver, $this->wait);
+        $album->openFavorites();
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('favorites-all-title'))));
         $this->assertEquals('btn btn-default btn-action btn-success', $this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->getAttribute('class'));
         $this->assertEquals('btn btn-default btn-action btn-success', $this->driver->findElement(WebDriverBy::id('shareable-favorites-btn'))->getAttribute('class'));
