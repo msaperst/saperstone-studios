@@ -249,6 +249,7 @@ class NavigationFeatureContext implements Context {
      * @Then /^I am taken to the "([^"]*)" page$/
      */
     public function iAmTakenToThePage($page) {
+        $this->wait->until(WebDriverExpectedCondition::urlIs($this->baseUrl . $page));
         Assert::assertEquals($this->baseUrl . $page, $this->driver->getCurrentUrl());
     }
 

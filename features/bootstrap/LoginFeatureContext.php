@@ -174,6 +174,7 @@ class LoginFeatureContext implements Context {
      * @Then /^I don't see my user name displayed$/
      */
     public function iDonTSeeMyUserNameDisplayed() {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('login-menu-item'))));
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::linkText($this->user->getUsername()))));
     }
 

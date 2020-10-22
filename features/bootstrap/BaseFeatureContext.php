@@ -21,6 +21,7 @@ class BaseFeatureContext implements Context {
     private $driver;
     private $baseUrl;
     private $user;
+    private $deleteUser = true;
 
     public function getDriver() {
         return $this->driver;
@@ -36,6 +37,10 @@ class BaseFeatureContext implements Context {
 
     public function setUser(User $user) {
         $this->user = $user;
+    }
+
+    public function dontDeleteUser() {
+        $this->deleteUser = false;
     }
 
     /**
@@ -79,6 +84,8 @@ class BaseFeatureContext implements Context {
         // setup a basic user
         $params = [
             'username' => 'testUser',
+            'firstName' => 'test',
+            'lastName' => 'user',
             'email' => 'msaperst+sstest@gmail.com',
             'password' => '12345'
         ];
@@ -98,7 +105,7 @@ class BaseFeatureContext implements Context {
         fwrite($output, '<p><h2 class="r' . $scope->getTestResult()->getResultCode() . '" style="cursor: pointer;" onclick="toggleImg(this)">' . $scenarioName . '</h2><img style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
         fclose($output);
         // if we created a new user
-        if ($this->user->getId() != '') {
+        if ($this->user->getId() != '' && $this->deleteUser) {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
             $this->user->delete();
             unset($_SESSION ['hash']);

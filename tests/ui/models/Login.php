@@ -5,7 +5,6 @@ namespace ui\models;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
-use User;
 
 class Login {
     private $driver;
