@@ -19,7 +19,7 @@ class UserContractsLoadTest extends TestBase {
         $this->adminLogin();
         $this->driver->get($this->baseUrl . 'user/contract/commercial.php');
         $this->assertEquals('Saperstone Studios LLC. Commercial Contract', $this->driver->findElement(WebDriverBy::tagName('h2'))->getText());
-        $this->assertEquals(15, sizeof($this->driver->findElements(WebDriverBy::tagName('p'))));
+        $this->assertEquals(16, sizeof($this->driver->findElements(WebDriverBy::tagName('p'))));
     }
 
     public function testContractorContract() {
@@ -45,7 +45,7 @@ class UserContractsLoadTest extends TestBase {
         $this->adminLogin();
         $this->driver->get($this->baseUrl . 'user/contract/event.php');
         $this->assertEquals('Saperstone Studios LLC. Event Contract', $this->driver->findElement(WebDriverBy::tagName('h2'))->getText());
-        $this->assertEquals(16, sizeof($this->driver->findElements(WebDriverBy::tagName('p'))));
+        $this->assertEquals(17, sizeof($this->driver->findElements(WebDriverBy::tagName('p'))));
     }
 
     public function testPartnershipContract() {
@@ -84,6 +84,6 @@ class UserContractsLoadTest extends TestBase {
         $this->adminLogin();
         $this->driver->get($this->baseUrl . 'user/contract/wedding.php');
         $this->assertEquals('Saperstone Studios LLC. Wedding Contract', $this->driver->findElement(WebDriverBy::tagName('h2'))->getText());
-        $this->assertEquals(16, sizeof($this->driver->findElements(WebDriverBy::tagName('p'))));
+        $this->assertEquals(17, sizeof($this->driver->findElements(WebDriverBy::tagName('p'))));
     }
 }
