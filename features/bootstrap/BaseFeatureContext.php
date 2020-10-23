@@ -8,6 +8,7 @@ use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
@@ -65,15 +66,21 @@ class BaseFeatureContext implements Context {
     public function setupUser(BeforeScenarioScope $scope) {
         $this->reportDir = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'reports' . DIRECTORY_SEPARATOR . "behat-" . getenv('BROWSER') . DIRECTORY_SEPARATOR;
         $this->reportFile = $this->reportDir . 'index.html';
+
         // setup our webdriver instance
         $host = 'http://127.0.0.1:4444/wd/hub';
         if (getenv('BROWSER') == 'firefox') {
-            $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::firefox());
+            $desiredCapabilities = DesiredCapabilities::firefox();
         } else {
-            $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::chrome());
+            $desiredCapabilities = DesiredCapabilities::chrome();
         }
+        if (getenv('PROXY') != NULL) {
+            $desiredCapabilities->setCapability(WebDriverCapabilityType::PROXY, ['proxyType' => 'MANUAL', 'httpProxy' => getenv('PROXY'), 'ftpProxy' => NULL, 'sslProxy' => NULL, 'noProxy' => NULL]);
+        }
+        $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
         $this->user = new User();
+
         // setup some basic cookies in the browser
         $this->driver->get($this->baseUrl);
         $cookie = new Cookie('CookiePreferences', '["preferences","analytics"]');
@@ -81,6 +88,7 @@ class BaseFeatureContext implements Context {
         $cookie = new Cookie('CookieShow', 'true');
         $this->driver->manage()->addCookie($cookie);
         $this->driver->navigate()->refresh();
+
         // setup a basic user
         $params = [
             'username' => 'testUser',

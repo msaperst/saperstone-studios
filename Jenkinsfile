@@ -228,7 +228,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Clean Up') {
             sh "composer clean"
         }
-        stage('Functional Tests') {
+        stage('API Tests') {
             parallel(
                     "Coverage Tests": {
                         stage('Run Coverage Tests') {
@@ -305,7 +305,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Run Chrome Basic Tests') {
             try {
                 sh 'export BROWSER=chrome; composer ui-pre-test;'
-                sh 'sleep 20'
+                sh 'sleep 20'   // TODO - this instead https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
                 sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-basic-test;'
             } finally {
                 sh 'export BROWSER=chrome; composer ui-post-test;'
@@ -328,32 +328,65 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 ])
             }
         }
-        stage('Run Chrome BDD Tests') {
-            try {
-                sh 'export BROWSER=chrome; composer ui-pre-test;'
-                sh 'sleep 20'
-                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-complex-test;'
-            } finally {
-                sh 'export BROWSER=chrome; composer ui-post-test;'
-                junit 'reports/behat/default.xml'
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/behat/',
-                        reportFiles          : 'index.html',
-                        reportName           : 'Chrome Behat Test Results Report'
-                ])
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/behat-chrome/',
-                        reportFiles          : 'index.html',
-                        reportName           : 'Chrome Behat Test Results Screenshot Report'
-                ])
+        parallel(
+            'Execute Chrome BDD Tests': {
+                try {
+                    stage('Start ZAP') {
+                        startZap(
+                                host: "localhost",
+                                port: 9092,
+                                zapHome: "/snap/bin/zaproxy"
+                        )
+                    }
+                    stage('Run Chrome BDD Tests') {
+                        try {
+                            sh 'export BROWSER=chrome; composer ui-pre-test;'
+                            sh 'sleep 20'   // TODO - this instead https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
+                            sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-complex-test;'
+                        } finally {
+                            sh 'export BROWSER=chrome; composer ui-post-test;'
+                            junit 'reports/behat/default.xml'
+                            publishHTML([
+                                    allowMissing         : false,
+                                    alwaysLinkToLastBuild: true,
+                                    keepAll              : true,
+                                    reportDir            : 'reports/behat/',
+                                    reportFiles          : 'index.html',
+                                    reportName           : 'Chrome Behat Test Results Report'
+                            ])
+                            publishHTML([
+                                    allowMissing         : false,
+                                    alwaysLinkToLastBuild: true,
+                                    keepAll              : true,
+                                    reportDir            : 'reports/behat-chrome/',
+                                    reportFiles          : 'index.html',
+                                    reportName           : 'Chrome Behat Test Results Screenshot Report'
+                            ])
+                        }
+                    }
+                } finally {
+                    stage('Get ZAP Results') {
+                        sh 'mkdir -p results/zap'
+                        sh 'wget -q -O results/zap/report.html http://localhost:9092/OTHER/core/other/htmlreport'
+                        sh 'wget -q -O results/zap/report.xml http://localhost:9092/OTHER/core/other/xmlreport'
+                        publishHTML([
+                                allowMissing         : false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll              : true,
+                                reportDir            : 'results/zap',
+                                reportFiles          : 'report.html',
+                                reportName           : 'ZAP Report'
+                        ])
+                        archiveZap()
+                    }
+                }
+            },
+            'Monitor Network Traffic': {
+                stage('Zap Monitoring') {
+                    sh 'Monitoring traffic'
+                }
             }
-        }
+        )
         stage('Publish Containers') {
             withCredentials([
                     usernamePassword(
