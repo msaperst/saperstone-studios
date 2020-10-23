@@ -294,6 +294,21 @@ Office Photos:
         incidental, indirect, consequential or punitive damages hereunder.
     </p>
     <p>
+        <strong>COVID-19.</strong> All events and activities as part of Session
+        must abide by local, state, and/or federal public health
+        regulations and guidelines; e.g. capacity limitations, social distance
+        requirements, mask usage, etc. Photographer reserves the right to
+        discontinue coverage if Session is deemed unsafe or in violation of
+        current local, state and/or federal public health regulations and
+        guidelines. If the event is postponed/canceled due to COVID-19, the
+        Client's deposit is not refunded, however, may be put towards a future
+        event or photography session, subject to Photographer availability.
+        Photographer reserves the right to send subcontractor familiar
+        with Photographer process and style. All pre and post activities
+        will still be performed by Photographer; e.g. scheduling, reviews,
+        post processing, image delivery, etc.
+    </p>
+    <p>
         <strong>Permissions.</strong> Client shall be solely responsible for
         obtaining all permissions and consent of persons whose photographs are
         taken and of owners of property and indemnify Photographer from any

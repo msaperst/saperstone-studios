@@ -87,7 +87,8 @@ $navUser = User::fromSystem();
 <!-- Google Analytics -->
 <?php
 $preferences = json_decode( $_COOKIE['CookiePreferences'] );
-if (isset ( $_SERVER ['HTTPS'] ) && $_SERVER ['HTTPS'] == "on" && in_array( "analytics", $preferences ) ) {
+$server = 'saperstonestudios.com';
+if (isset ( $_SERVER ['HTTP_X_FORWARDED_HOST'] ) && substr($_SERVER ['HTTP_X_FORWARDED_HOST'], -strlen($server)) === $server && in_array( "analytics", $preferences ) ) {
     ?>
 <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
