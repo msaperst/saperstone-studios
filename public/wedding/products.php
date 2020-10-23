@@ -106,7 +106,14 @@
             
             for($i = 0; $i < count ( $products ); $i ++) {
                 $product = $products [$i];
-                
+
+                $sql = "SELECT * FROM `galleries` WHERE parent = '" . $product ['id'] . "';";
+                $subproducts = array ();
+                $result = mysqli_query ( $conn->db, $sql );
+                while ( $r = mysqli_fetch_assoc ( $result ) ) {
+                    $subproducts [] = $r;
+                }
+
                 $padding = "";
                 if (count ( $products ) % 3 == 1 && $i == (count ( $products ) - 1)) {
                     $padding = "col-sm-offset-4 ";
@@ -125,7 +132,17 @@
                             width="100%" />
                         <div class="overlay">
                             <br /> <br /> <br /> <a class="info"
-                                href="galleries.php?w=<?php echo $product['id']; ?>">See More</a>
+                                <?php
+                                if (sizeof ( $subproducts ) == 0) {
+                                ?>
+                                                    href="galleries.php?w=<?php echo $product['id']; ?>">See More</a>
+                            <?php
+                            } else {
+                                ?>
+                                href="gallery.php?w=<?php echo $product['id']; ?>">See More</a>
+                                <?php
+                            }
+                            ?>
                         </div>
                     </div>
                 </div>
