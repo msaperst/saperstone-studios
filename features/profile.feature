@@ -1,4 +1,4 @@
-Feature: System Administration
+Feature: Profile Administration
   As a user of the website
   I want to be able to manage my own user
   So that I can update my information as needed
@@ -240,5 +240,3 @@ Feature: System Administration
     When I update my user
     Then I see a success message indicating my user was updated
     And my user information is updated
-
-    #TODO - fix issue with admin being able to update their own password without old password - security issue!
