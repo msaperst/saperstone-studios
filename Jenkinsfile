@@ -335,7 +335,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         startZap(
                                 host: "localhost",
                                 port: 9092,
-                                zapHome: "/snap/bin/zaproxy"
+                                zapHome: "/opt/zap"
                         )
                     }
                     stage('Run Chrome BDD Tests') {
@@ -383,7 +383,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             },
             'Monitor Network Traffic': {
                 stage('Zap Monitoring') {
-                    sh 'Monitoring traffic'
+                    echo 'Monitoring traffic'
                 }
             }
         )
