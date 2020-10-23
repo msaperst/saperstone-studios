@@ -47,12 +47,6 @@ function validateInput() {
         $('#update-profile-email-message').empty();
     }
 
-    //the logic that we need for password
-    //empty pass - no markup on profile
-    //           - error on registration
-    //mismatch   - error on confirm, message on confirm
-    //
-
     if( $('#profile-password').val() === "" && window.location.href.endsWith("/register.php")) {
         $('#update-profile-password-message').empty().append("A password is required").addClass('error');
         setError($('#profile-password'));
@@ -103,8 +97,11 @@ function validateInput() {
             $('#update-profile-current-password-message').empty().append("Please confirm old password to set new password");
             setError($('#profile-current-password'));
             allGood = false
-        } else {
+        } else if ($('#profile-password').val() === "" && $('#profile-confirm-password').val() === "") {
             setBlank($('#profile-current-password'));
+            $('#update-profile-current-password-message').empty();
+        } else {
+            setSuccess($('#profile-current-password'));
             $('#update-profile-current-password-message').empty();
         }
     }
@@ -150,10 +147,12 @@ function updateProfile() {
         rememberMe : $('#profile-remember').is(':checked') ? 1 : 0,
     }).done(function(data) {
         if ($.isNumeric(data) && data !== '0') {
-            $('#update-profile-message').append("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your profile information was successfully updated.</div>");
+            $('#update-profile-message').append("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your user was successfully created.</div>");
             if (!$('#profile-current-password').length) {
                 location.reload();
             }
+        } else if (data === "") {
+            $('#update-profile-message').append("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your profile information was successfully updated.</div>");
         } else {
             $('#update-profile-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }

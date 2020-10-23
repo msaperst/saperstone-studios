@@ -3,6 +3,7 @@
 namespace ui\models;
 
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverKeys;
 use User;
 
 class Registration {
@@ -15,33 +16,48 @@ class Registration {
     }
 
     public function enterUserNameInfo($username) {
-        $this->driver->findElement(WebDriverBy::id('profile-username'))->clear();
-        $this->driver->findElement(WebDriverBy::id('profile-username'))->sendKeys($username);
+        $this->driver->findElement(WebDriverBy::id('profile-username'))
+            ->clear()
+            ->sendKeys($username);
+    }
+
+    public function enterCurrentPasswordInfo($password) {
+        $this->driver->findElement(WebDriverBy::id('profile-current-password'))
+            ->clear()
+            ->sendKeys($password);
     }
 
     public function enterPasswordInfo($password) {
-        $this->driver->findElement(WebDriverBy::id('profile-password'))->clear();
-        $this->driver->findElement(WebDriverBy::id('profile-password'))->sendKeys($password);
+        $this->driver->findElement(WebDriverBy::id('profile-password'))
+            ->clear()
+            ->sendKeys($password);
     }
 
     public function enterConfirmInfo($password) {
-        $this->driver->findElement(WebDriverBy::id('profile-confirm-password'))->clear();
-        $this->driver->findElement(WebDriverBy::id('profile-confirm-password'))->sendKeys($password);
+        $this->driver->findElement(WebDriverBy::id('profile-confirm-password'))
+            ->clear()
+            ->sendKeys($password);
     }
 
     public function enterFirstNameInfo($firstName) {
-        $this->driver->findElement(WebDriverBy::id('profile-firstname'))->clear();
-        $this->driver->findElement(WebDriverBy::id('profile-firstname'))->sendKeys($firstName);
+        $this->driver->findElement(WebDriverBy::id('profile-firstname'))
+            ->clear()
+            ->sendKeys($firstName)
+            ->sendKeys(WebDriverKeys::TAB);
     }
 
     public function enterLastNameInfo($lastName) {
-        $this->driver->findElement(WebDriverBy::id('profile-lastname'))->clear();
-        $this->driver->findElement(WebDriverBy::id('profile-lastname'))->sendKeys($lastName);
+        $this->driver->findElement(WebDriverBy::id('profile-lastname'))
+            ->clear()
+            ->sendKeys($lastName)
+            ->sendKeys(WebDriverKeys::TAB);
     }
 
     public function enterEmailInfo($email) {
-        $this->driver->findElement(WebDriverBy::id('profile-email'))->clear();
-        $this->driver->findElement(WebDriverBy::id('profile-email'))->sendKeys($email);
+        $this->driver->findElement(WebDriverBy::id('profile-email'))
+            ->clear()
+            ->sendKeys(WebDriverKeys::BACKSPACE)
+            ->sendKeys($email);
     }
 
     public function enterMyUserInfo(User $user) {
@@ -74,5 +90,18 @@ class Registration {
         $this->driver->findElement(WebDriverBy::id('update-profile'))->click();
         //need to save off this user key
         return User::fromLogin($username, $password);
+    }
+
+    public function updateUserInfo($currentPassword, $password, $confirmPassword, $firstName, $lastName, $email) {
+        $this->enterCurrentPasswordInfo($currentPassword);
+        $this->enterPasswordInfo($password);
+        $this->enterConfirmInfo($confirmPassword);
+        $this->enterFirstNameInfo($firstName);
+        $this->enterLastNameInfo($lastName);
+        $this->enterEmailInfo($email);
+    }
+
+    public function updateMyUser() {
+        $this->driver->findElement(WebDriverBy::id('update-profile'))->click();
     }
 }
