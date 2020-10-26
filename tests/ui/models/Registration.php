@@ -3,6 +3,7 @@
 namespace ui\models;
 
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use User;
 
@@ -72,6 +73,8 @@ class Registration {
     public function registerMyUser(User $user) {
         $this->enterMyUserInfo($user);
         $this->driver->findElement(WebDriverBy::id('update-profile'))->click();
+        // waiting for the next page to load, so we can ensure the user is created
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText($user->getUsername())));
         //need to save off this user key
         return User::fromEmail($user->getEmail());
     }

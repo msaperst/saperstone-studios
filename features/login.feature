@@ -52,9 +52,9 @@ Feature: System Authentication
   Scenario: Logout keeps you on unauth pages
     Given an enabled user account exists
     And I am logged in with saved credentials
-    And I am on the "portraits" page
+    And I am on the "portrait/" page
     When I logout
-    Then I am taken to the "portraits" page
+    Then I am taken to the "portrait/" page
 
   Scenario: Logout returns to homepage on auth pages
     Given an enabled user account exists

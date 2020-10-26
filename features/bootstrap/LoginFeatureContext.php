@@ -151,6 +151,7 @@ class LoginFeatureContext implements Context {
      */
     public function iSubmitInNewCredentials() {
         $login = new Login($this->driver, $this->wait);
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-info')));
         $login->requestResetPassword($this->user->getEmail(), User::withId($this->user->getId())->getDataBasic()['resetKey'], $this->user->getPassword(), $this->user->getPassword());
     }
 
@@ -174,7 +175,7 @@ class LoginFeatureContext implements Context {
      * @Then /^I don't see my user name displayed$/
      */
     public function iDonTSeeMyUserNameDisplayed() {
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('login-menu-item'))));
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('login-menu-item')));
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::linkText($this->user->getUsername()))));
     }
 
@@ -182,6 +183,7 @@ class LoginFeatureContext implements Context {
      * @Then /^I see an info message indicating I successfully logged in$/
      */
     public function iSeeAnInfoMessageIndicatingISuccessfullyLoggedIn() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-info')));
         Assert::assertEquals('×
 Successfully Logged In. Please wait as you are redirected.', $this->driver->findElement(WebDriverBy::className('alert-info'))->getText());
     }
@@ -190,6 +192,7 @@ Successfully Logged In. Please wait as you are redirected.', $this->driver->find
      * @Then /^I see an error message indicating my account has been disabled$/
      */
     public function iSeeAnErrorMessageIndicatingMyAccountHasBeenDisabled() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
         Assert::assertEquals('×
 Sorry, your account has been deactivated. Please contact our webmaster to get this resolved.', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
     }
@@ -198,6 +201,7 @@ Sorry, your account has been deactivated. Please contact our webmaster to get th
      * @Then /^I see an error message indicating my credentials aren't valid$/
      */
     public function iSeeAnErrorMessageIndicatingMyCredentialsArenTValid() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
         Assert::assertEquals('×
 Credentials do not match our records', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
     }
@@ -206,6 +210,7 @@ Credentials do not match our records', $this->driver->findElement(WebDriverBy::c
      * @Then /^I see an error message indicating all fields need to be filled in$/
      */
     public function iSeeAnErrorMessageIndicatingAllFieldsNeedToBeFilledIn() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
         Assert::assertStringEndsWith('can not be blank', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
     }
 
@@ -213,6 +218,7 @@ Credentials do not match our records', $this->driver->findElement(WebDriverBy::c
      * @Then /^I see an error message indicating invalid field values$/
      */
     public function iSeeAnErrorMessageIndicatingInvalidFieldValues() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
         Assert::assertStringEndsWith('is not valid', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
     }
 
@@ -220,6 +226,7 @@ Credentials do not match our records', $this->driver->findElement(WebDriverBy::c
      * @Then /^I see an error message indicating passwords do not match$/
      */
     public function iSeeAnErrorMessageIndicatingPasswordsDoNotMatch() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
         Assert::assertEquals('×
 Password and confirmation do not match', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
     }

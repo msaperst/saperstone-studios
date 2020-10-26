@@ -118,6 +118,7 @@ class BaseFeatureContext implements Context {
             $this->user->delete();
             unset($_SESSION ['hash']);
             $sql = new Sql();
+            //$sql->executeStatement("DELETE FROM users WHERE usr = 'testUser';");
             $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
             $count++;
             $sql->executeStatement("ALTER TABLE `users` AUTO_INCREMENT = $count;");
