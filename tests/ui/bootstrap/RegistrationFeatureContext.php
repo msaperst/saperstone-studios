@@ -1,15 +1,18 @@
 <?php
 
+namespace ui\bootstrap;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Exception;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
-use ui\models\Registration;
+use Sql;
+use ui\load\models\Registration;
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'BaseFeatureContext.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'ui' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
 
 class RegistrationFeatureContext implements Context {
 
@@ -30,10 +33,10 @@ class RegistrationFeatureContext implements Context {
     /** @BeforeScenario */
     public function gatherContexts(BeforeScenarioScope $scope) {
         $this->environment = $scope->getEnvironment();
-        $this->driver = $this->environment->getContext('BaseFeatureContext')->getDriver();
+        $this->driver = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
         $this->wait = new WebDriverWait($this->driver, 10);
-        $this->baseUrl = $this->environment->getContext('BaseFeatureContext')->getBaseUrl();
-        $this->user = $this->environment->getContext('BaseFeatureContext')->getUser();
+        $this->baseUrl = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getBaseUrl();
+        $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
     }
 
     /**
@@ -57,9 +60,9 @@ class RegistrationFeatureContext implements Context {
         $register = new Registration($this->driver, $this->wait);
         try {
             $user = $register->registerMyUser($this->user);
-            $this->environment->getContext('BaseFeatureContext')->setUser($user);
+            $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($user);
         } catch(Exception $e) {
-            $this->environment->getContext('BaseFeatureContext')->dontDeleteUser();
+            $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->dontDeleteUser();
         }
     }
 
@@ -70,9 +73,9 @@ class RegistrationFeatureContext implements Context {
         $register = new Registration($this->driver, $this->wait);
         try {
             $user = $register->registerAUser($username, $password, $confirmPassword, $firstName, $lastName, $email);
-            $this->environment->getContext('BaseFeatureContext')->setUser($user);
+            $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($user);
         } catch(Exception $e) {
-            $this->environment->getContext('BaseFeatureContext')->dontDeleteUser();
+            $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->dontDeleteUser();
         }
     }
 

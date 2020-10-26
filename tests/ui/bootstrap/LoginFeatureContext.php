@@ -1,5 +1,7 @@
 <?php
 
+namespace ui\bootstrap;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Cookie;
@@ -7,10 +9,10 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
-use ui\models\Login;
+use ui\load\models\Login;
+use User;
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'BaseFeatureContext.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'ui' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Login.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Login.php';
 
 class LoginFeatureContext implements Context {
 
@@ -23,9 +25,9 @@ class LoginFeatureContext implements Context {
     /** @BeforeScenario */
     public function gatherContexts(BeforeScenarioScope $scope) {
         $this->environment = $scope->getEnvironment();
-        $this->driver = $this->environment->getContext('BaseFeatureContext')->getDriver();
+        $this->driver = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
         $this->wait = new WebDriverWait($this->driver, 20);
-        $this->user = $this->environment->getContext('BaseFeatureContext')->getUser();
+        $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
     }
 
     /**
@@ -58,7 +60,7 @@ class LoginFeatureContext implements Context {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $this->user = User::withParams($params);
         unset($_SESSION['hash']);
-        $this->environment->getContext('BaseFeatureContext')->setUser($this->user);
+        $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($this->user);
         $this->user->create();
     }
 

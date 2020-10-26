@@ -1,5 +1,7 @@
 <?php
 
+namespace ui\bootstrap;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Interactions\WebDriverActions;
@@ -16,9 +18,9 @@ class RetouchFeatureContext implements Context {
     /** @BeforeScenario */
     public function gatherContexts(BeforeScenarioScope $scope) {
         $environment = $scope->getEnvironment();
-        $this->driver = $environment->getContext('BaseFeatureContext')->getDriver();
+        $this->driver = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
         $this->wait = new WebDriverWait($this->driver, 10);
-        $this->baseUrl = $environment->getContext('BaseFeatureContext')->getBaseUrl();
+        $this->baseUrl = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getBaseUrl();
     }
 
     /**

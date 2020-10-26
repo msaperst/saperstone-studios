@@ -1,6 +1,6 @@
 <?php
 
-namespace ui\models;
+namespace ui\load\models;
 
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;

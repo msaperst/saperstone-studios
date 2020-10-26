@@ -1,7 +1,8 @@
 <?php
 
+namespace ui\bootstrap;
+
 use Behat\Behat\Context\Context;
-use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\WebDriverBy;
@@ -9,11 +10,11 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
-use ui\models\Album;
+use Sql;
+use ui\load\models\Album;
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'BaseFeatureContext.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'ui' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'ui' . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
 
 class NavigationFeatureContext implements Context {
 
@@ -24,9 +25,9 @@ class NavigationFeatureContext implements Context {
     /** @BeforeScenario */
     public function gatherContexts(BeforeScenarioScope $scope) {
         $environment = $scope->getEnvironment();
-        $this->driver = $environment->getContext('BaseFeatureContext')->getDriver();
+        $this->driver = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
         $this->wait = new WebDriverWait($this->driver, 10);
-        $this->baseUrl = $environment->getContext('BaseFeatureContext')->getBaseUrl();
+        $this->baseUrl = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getBaseUrl();
     }
 
     /**

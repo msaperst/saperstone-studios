@@ -1,6 +1,6 @@
 <?php
 
-namespace ui\models;
+namespace ui\load\models;
 
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\WebDriverBy;

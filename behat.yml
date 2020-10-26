@@ -1,13 +1,16 @@
 default:
+  autoload:
+    '': '%paths.base%/tests/ui/bootstrap'
   suites:
     default:
+      paths: [ '%paths.base%/tests/ui/behat' ]
       contexts:
-        - BaseFeatureContext
-        - LoginFeatureContext
-        - NavigationFeatureContext
-        - RegistrationFeatureContext
-        - AlbumFeatureContext
-        - RetouchFeatureContext
+        - ui\bootstrap\BaseFeatureContext
+        - ui\bootstrap\LoginFeatureContext
+        - ui\bootstrap\NavigationFeatureContext
+        - ui\bootstrap\RegistrationFeatureContext
+        - ui\bootstrap\AlbumFeatureContext
+        - ui\bootstrap\RetouchFeatureContext
   formatters:
     pretty: true
     junit:

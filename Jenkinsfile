@@ -305,24 +305,28 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Run Chrome Basic Tests') {
             try {
                 sh 'export BROWSER=chrome; composer ui-pre-test;'
-                sh 'sleep 20'   // TODO - this instead https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
+                sh '''while ! curl -sSL "http://localhost:4444/wd/hub/status" 2>&1 \
+                              | jq -r '.value.ready' 2>&1 | grep "true" >/dev/null; do
+                          echo 'Waiting for the Grid'
+                          sleep 1
+                      done'''   // from https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
                 sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-basic-test;'
             } finally {
                 sh 'export BROWSER=chrome; composer ui-post-test;'
-                junit 'reports/ui-chrome/ui-junit.xml'
+                junit 'reports/ui/junit.xml'
                 publishHTML([
                         allowMissing         : false,
                         alwaysLinkToLastBuild: true,
                         keepAll              : true,
-                        reportDir            : 'reports/ui-chrome/',
-                        reportFiles          : 'ui-results.html',
+                        reportDir            : 'reports/ui/',
+                        reportFiles          : 'results.html',
                         reportName           : 'Chrome Basic Test Results Simple Report'
                 ])
                 publishHTML([
                         allowMissing         : false,
                         alwaysLinkToLastBuild: true,
                         keepAll              : true,
-                        reportDir            : 'reports/ui-chrome/',
+                        reportDir            : 'reports/ui/',
                         reportFiles          : 'index.html',
                         reportName           : 'Chrome Basic Test Results Screenshot Report'
                 ])
@@ -341,7 +345,12 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     stage('Run Chrome BDD Tests') {
                         try {
                             sh 'export BROWSER=chrome; composer ui-pre-test;'
-                            sh 'sleep 20'   // TODO - this instead https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
+                            sh 'composer dump-autoload'
+                            sh '''while ! curl -sSL "http://localhost:4444/wd/hub/status" 2>&1 \
+                                          | jq -r '.value.ready' 2>&1 | grep "true" >/dev/null; do
+                                      echo 'Waiting for the Grid'
+                                      sleep 1
+                                  done'''   // from https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
                             sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-complex-test;'
                         } finally {
                             sh 'export BROWSER=chrome; composer ui-post-test;'
@@ -358,8 +367,8 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                     allowMissing         : false,
                                     alwaysLinkToLastBuild: true,
                                     keepAll              : true,
-                                    reportDir            : 'reports/behat-chrome/',
-                                    reportFiles          : 'index.html',
+                                    reportDir            : 'reports/behat/',
+                                    reportFiles          : 'screenshots.html',
                                     reportName           : 'Chrome Behat Test Results Screenshot Report'
                             ])
                         }
