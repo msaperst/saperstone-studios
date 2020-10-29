@@ -376,8 +376,8 @@ function submitPost() {
         message : $('#post-comment-message').val()
     }).done(function(data) {
         if ($.isNumeric(data) && data !== '0') {
-            let current_datetime = new Date()
-            let formatted_date = current_datetime.getFullYear() + "-" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) + " " + appendLeadingZeroes(current_datetime.getHours()) + ":" + appendLeadingZeroes(current_datetime.getMinutes()) + ":" + appendLeadingZeroes(current_datetime.getSeconds())
+            var current_datetime = new Date();
+            var formatted_date = current_datetime.getFullYear() + "-" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) + " " + appendLeadingZeroes(current_datetime.getHours()) + ":" + appendLeadingZeroes(current_datetime.getMinutes()) + ":" + appendLeadingZeroes(current_datetime.getSeconds());
             var comment = {
                     id: data,
                     delete: Boolean($('#my-user-id').val()),
