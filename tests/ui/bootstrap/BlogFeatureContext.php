@@ -6,27 +6,37 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Comment;
 use Exception;
-use Facebook\WebDriver\Interactions\WebDriverActions;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
+use ui\models\Blog;
 use Sql;
+use User;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Blog.php';
 
 class BlogFeatureContext implements Context {
-
-    private $driver;
-    private $wait;
-    private $baseUrl;
-    private $user;
-
-    private $tag = '';
 
     /**
      * @var Sql
      */
     private $sql;
+    /**
+     * @var RemoteWebDriver
+     */
+    private $driver;
+    /**
+     * @var WebDriverWait
+     */
+    private $wait;
+    /**
+     * @var User
+     */
+    private $user;
+    private $baseUrl;
+    private $tag = '';
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -143,43 +153,32 @@ class BlogFeatureContext implements Context {
     }
 
     /**
-     * @When /^I scroll to the bottom of the page$/
-     */
-    public function iScrollToTheBottomOfThePage() {
-        $this->driver->executeScript("window.scrollTo(0, document.body.scrollHeight)");
-    }
-
-    /**
      * @When /^I try to leave the comment "([^"]*)"$/
      */
     public function iTryToLeaveTheComment($comment) {
-        $this->driver->findElement(WebDriverBy::id('post-comment-message'))->sendKeys($comment);
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->fillOutCommentForm(NULL, NULL, $comment);
     }
 
     /**
      * @When /^I leave the comment "([^"]*)"$/
      */
     public function iLeaveTheComment($comment) {
-        $this->iTryToLeaveTheComment($comment);
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('post-comment-submit')));
-        $this->driver->findElement(WebDriverBy::id('post-comment-submit'))->click();
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->leaveComment(NULL, NULL, $comment);
     }
 
     /**
      * @When /^I delete the "([^"]*)" comment$/
      */
     public function iDeleteTheComment($ord) {
-        $commentHolder = $this->driver->findElement(WebDriverBy::id('post-comments'));
-        $blocks = $commentHolder->findElements(WebDriverBy::tagName('blockquote'));
-        $commentBlockSize = $blocks[intval($ord) - 1]->getSize();
-        $action = new WebDriverActions($this->driver);
-        $action->moveToElement($blocks[intval($ord) - 1], intval($commentBlockSize->getWidth() * 0.5 - 5), intval($commentBlockSize->getHeight() * -0.5 + 5))->click()->perform();
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('btn-danger')));
-        $this->driver->findElement(WebDriverBy::className('btn-danger'))->click();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('btn-danger'))));
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->deleteComment($ord);
     }
 
     private function verifyBlogPost($start) {
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->waitForPostToLoad($start);
         $pullPost = $start;
         do {
             $details = $this->sql->getRow("SELECT * FROM blog_details ORDER BY date DESC LIMIT $pullPost,1;");
@@ -187,7 +186,6 @@ class BlogFeatureContext implements Context {
             $pullPost++;
         } while ($this->tag != '' && !in_array($this->tag, $tags));
         $tags = join(', ', array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'tag'));
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($start * 2 + 1) . ')')));
         $allPosts = $this->driver->findElements(WebDriverBy::cssSelector('#post-content > div'));
         $postContent = $allPosts[$start * 2];    // using times two due to the extra row for sharing
         Assert::assertEquals($details['title'], $postContent->findElement(WebDriverBy::tagName('h2'))->getText());
@@ -199,6 +197,8 @@ class BlogFeatureContext implements Context {
     }
 
     private function verifyBlogPreview($start) {
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->waitForPreviewToLoad($start);
         $s = $start * 3;
         $details = $this->sql->getRows("SELECT * FROM blog_details ORDER BY date DESC LIMIT $s,3;");
         for ($i = 0; $i < 3; $i++) {
@@ -228,14 +228,17 @@ class BlogFeatureContext implements Context {
      * @Then /^I see all of the categories displayed$/
      */
     public function iSeeAllOfTheCategoriesDisplayed() {
-        Assert::assertEquals($this->sql->getRowCount("SELECT DISTINCT tag FROM `blog_tags`"), sizeof($this->driver->findElements(WebDriverBy::cssSelector('#tag-cloud > span'))));
+        $count = $this->sql->getRowCount("SELECT DISTINCT tag FROM `blog_tags`");
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("#tag-cloud > span:nth-child($count)")));
+        Assert::assertEquals($count, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#tag-cloud > span'))));
     }
 
     /**
-     * @Then /^I see the full blog post (\d+)$/
+     * @Then /^I see the full blog post$/
      * @param $blog
      */
-    public function iSeeTheFullBlogPost($blog) {
+    public function iSeeTheFullBlogPost() {
+        $blog = $this->driver->findElement(WebDriverBy::id('post-comment-submit'))->getAttribute('post-id');
         $details = $this->sql->getRow("SELECT * FROM blog_details WHERE id = $blog;");
         $tags = join(', ', array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'tag'));
         Assert::assertEquals($details['title'], $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
@@ -247,15 +250,17 @@ class BlogFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see post (\d+)'s comments$/
+     * @Then /^I see the blog post's comments$/
      * @param $count
      */
-    public function iSeeComments($blog) {
-        $commentHolder = $this->driver->findElement(WebDriverBy::id('post-comments'));
-        $comments = $this->sql->getRows("SELECT * FROM blog_comments WHERE blog = $blog ORDER BY date DESC");
-        $blocks = $commentHolder->findElements(WebDriverBy::tagName('blockquote'));
+    public function iSeeComments() {
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->waitForCommentsToLoad();
+        $commentHolder = $blog->getCommentHolder();
+        $blocks = $blog->getCommentBlocks();
+        $comments = $this->sql->getRows("SELECT * FROM blog_comments WHERE blog = {$blog->getBlogId()} ORDER BY date DESC");
         Assert::assertStringStartsWith(sizeof($comments) . ' Comment', $commentHolder->findElement(WebDriverBy::className('text-left'))->getText());
-        Assert::assertEquals(sizeof($blocks), sizeof($comments));
+        Assert::assertEquals(sizeof($comments), sizeof($blocks));
         for ($i = 0; $i < sizeof($blocks); $i++) {
             $block = $blocks[$i];
             Assert::assertEquals($comments[$i]['comment'], $block->findElement(WebDriverBy::tagName('p'))->getText());

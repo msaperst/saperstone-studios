@@ -8,7 +8,7 @@ $(document).ready(function() {
 });
 
 function getLink( data ) {
-    return window.location.protocol + '//' + window.location.hostname + '/blog/post.php?p=' + data.id;
+    return '/blog/post.php?p=' + data.id;
 }
 
 function loadPostPreview(k, v) {

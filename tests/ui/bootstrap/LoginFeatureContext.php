@@ -5,11 +5,12 @@ namespace ui\bootstrap;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
-use ui\load\models\Login;
+use ui\load\Login;
 use User;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Login.php';
@@ -18,9 +19,18 @@ class LoginFeatureContext implements Context {
 
     private $environment;
 
+    /**
+     * @var RemoteWebDriver
+     */
     private $driver;
-    private $user;
+    /**
+     * @var WebDriverWait
+     */
     private $wait;
+    /**
+     * @var User
+     */
+    private $user;
 
     /** @BeforeScenario */
     public function gatherContexts(BeforeScenarioScope $scope) {

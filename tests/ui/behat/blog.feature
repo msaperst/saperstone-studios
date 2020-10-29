@@ -45,11 +45,11 @@ Feature: Blog
 
   Scenario: Full Blog Post Displayed
     Given I am on the "blog/post.php?p=999" page
-    Then I see the full blog post 999
+    Then I see the full blog post
 
   Scenario: Full Blog Post View Comments
     Given I am on the "blog/post.php?p=999" page
-    Then I see post 999's comments
+    Then I see the blog post's comments
 
   Scenario: Only message required to leave comment
     Given I am on the "blog/post.php?p=999" page
@@ -71,14 +71,14 @@ Feature: Blog
   Scenario: Anonymous user can leave comment
     Given I am on the "blog/post.php?p=999" page
     When I leave the comment "This is a great post"
-    Then I see post 999's comments
+    Then I see the blog post's comments
 
   Scenario: User can leave comment
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the "blog/post.php?p=999" page
     When I leave the comment "This is a great post"
-    Then I see post 999's comments
+    Then I see the blog post's comments
 
   Scenario: Anonymous User Can't Delete Comment
     Given I am on the "blog/post.php?p=999" page
@@ -101,13 +101,13 @@ Feature: Blog
     And I have left the comment "This is a great post" on blog 999
     And I am on the "blog/post.php?p=999" page
     When I delete the "1st" comment
-    Then I see post 999's comments
+    Then I see the blog post's comments
 
   Scenario: Admin Can Delete Any Comment
     Given I am logged in with admin credentials
     And I am on the "blog/post.php?p=999" page
     When I delete the "2nd" comment
-    Then I see post 999's comments
+    Then I see the blog post's comments
 
   Scenario: User Can Delete Own New Comment
     Given an enabled user account exists
@@ -115,4 +115,4 @@ Feature: Blog
     Given I am on the "blog/post.php?p=999" page
     When I leave the comment "This is a great post"
     And I delete the "1st" comment
-    Then I see post 999's comments
+    Then I see the blog post's comments

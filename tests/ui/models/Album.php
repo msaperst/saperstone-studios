@@ -1,14 +1,22 @@
 <?php
 
-namespace ui\load\models;
+namespace ui\models;
 
 use Facebook\WebDriver\Interactions\WebDriverActions;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
+use Facebook\WebDriver\WebDriverWait;
 
 class Album {
+    /**
+     * @var RemoteWebDriver
+     */
     private $driver;
+    /**
+     * @var WebDriverWait
+     */
     private $wait;
 
     public function __construct($driver, $wait) {

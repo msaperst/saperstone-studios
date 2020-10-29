@@ -5,13 +5,20 @@ namespace ui\bootstrap;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Interactions\WebDriverActions;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 
 class RetouchFeatureContext implements Context {
 
+    /**
+     * @var RemoteWebDriver
+     */
     private $driver;
+    /**
+     * @var WebDriverWait
+     */
     private $wait;
     private $baseUrl;
 

@@ -23,16 +23,22 @@ class BaseFeatureContext implements Context {
 
     const reportDir = __DIR__ . '/../../../reports/behat/';
     const reportFile = BaseFeatureContext::reportDir . 'screenshots.html';
+    /**
+     * @var RemoteWebDriver
+     */
     private $driver;
     private $baseUrl;
+    /**
+     * @var User
+     */
     private $user;
     private $deleteUser = true;
 
-    public function getDriver() {
+    public function getDriver(): RemoteWebDriver {
         return $this->driver;
     }
 
-    public function getUser() {
+    public function getUser(): User {
         return $this->user;
     }
 

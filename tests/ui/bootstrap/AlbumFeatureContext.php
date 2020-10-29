@@ -4,17 +4,28 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 use Sql;
+use User;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
 
 class AlbumFeatureContext implements Context {
 
+    /**
+     * @var RemoteWebDriver
+     */
     private $driver;
-    private $user;
+    /**
+     * @var WebDriverWait
+     */
     private $wait;
+    /**
+     * @var User
+     */
+    private $user;
     private $baseUrl;
 
     /** @BeforeScenario */

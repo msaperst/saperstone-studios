@@ -5,20 +5,27 @@ namespace ui\bootstrap;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 use Sql;
-use ui\load\models\Album;
+use ui\models\Album;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
 
 class NavigationFeatureContext implements Context {
 
+    /**
+     * @var RemoteWebDriver
+     */
     private $driver;
+    /**
+     * @var WebDriverWait
+     */
     private $wait;
     private $baseUrl;
 
@@ -82,6 +89,13 @@ class NavigationFeatureContext implements Context {
      */
     public function iReloadThePage() {
         $this->driver->navigate()->refresh();
+    }
+
+    /**
+     * @When /^I scroll to the bottom of the page$/
+     */
+    public function iScrollToTheBottomOfThePage() {
+        $this->driver->executeScript("window.scrollTo(0, document.body.scrollHeight)");
     }
 
     /**
