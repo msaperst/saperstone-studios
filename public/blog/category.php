@@ -16,7 +16,7 @@ $tags = array_column($sql->getRows( "SELECT tag FROM `tags` WHERE $where" ), 'ta
 if (empty ( $tags )) {
     $errors->throw404();
 }
-$postCount = $sql->getRowCount( "SELECT * FROM `blog_tags` WHERE " . str_replace ( $where, "id", "tag" ) );
+$postCount = $sql->getRowCount( "SELECT * FROM `blog_tags` WHERE " . str_replace ( "id", "tag", $where ) );
 $sql->disconnect ();
 ?>
 

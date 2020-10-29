@@ -22,7 +22,7 @@ PostsFull.prototype.loadPosts = function() {
         loadPost(data, "<h2>");
         
         // when we done, see if we need to load more
-        if ($('footer').isOnScreen()) {
+        if ($('footer').isOnScreen() && Posts.loaded < Posts.totalImages) {
             PostsFull.loadPosts();
         }
     }, "json");

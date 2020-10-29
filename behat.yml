@@ -11,6 +11,7 @@ default:
         - ui\bootstrap\RegistrationFeatureContext
         - ui\bootstrap\AlbumFeatureContext
         - ui\bootstrap\RetouchFeatureContext
+        - ui\bootstrap\BlogFeatureContext
   formatters:
     pretty: true
     junit:

@@ -59,7 +59,7 @@ class Blog {
         }
         // comments
         foreach ($sql->getRows("SELECT * FROM `blog_comments` WHERE blog = $id ORDER BY date desc;") as $comment) {
-            $blog->comments[] = new Comment($comment['id']);
+            $blog->comments[] = Comment::withId($comment['id']);
         }
         $blog->raw['comments'] = array();      //putting the comments back in
         foreach ($blog->comments as $comment) {

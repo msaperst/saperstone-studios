@@ -5,7 +5,7 @@ $api = new Api ();
 $api->forceLoggedIn();
 
 try {
-    $comment = new Comment($_POST['comment']);
+    $comment = Comment::withId($_POST['comment']);
     // check our user permissions
     if (!$comment->canUserGetData()) {
         header('HTTP/1.0 403 Unauthorized');

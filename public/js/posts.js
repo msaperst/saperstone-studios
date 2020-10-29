@@ -25,7 +25,7 @@ Posts.prototype.loadImages = function() {
             loadPostPreview(k, v);
         });
         // when we done, see if we need to load more
-        if ($('footer').isOnScreen()) {
+        if ($('footer').isOnScreen() && Posts.loaded < Posts.totalImages) {
             Posts.loadImages();
         }
     }, "json");

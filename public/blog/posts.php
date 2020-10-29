@@ -3,7 +3,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$posts = $sql->getRows( "SELECT * FROM `blog_details` WHERE active = 1;" );
+$posts = $sql->getRows( "SELECT * FROM `blog_details` WHERE active = 1 ORDER BY date DESC;" );
 $sql->disconnect();
 ?>
 

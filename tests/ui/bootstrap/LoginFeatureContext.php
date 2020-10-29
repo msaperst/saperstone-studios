@@ -74,6 +74,15 @@ class LoginFeatureContext implements Context {
         $this->driver->navigate()->refresh();
     }
 
+    /**
+     * @Given /^I am logged in with admin credentials$/
+     */
+    public function iAmLoggedInWithAdminCredentials() {
+        $this->driver->manage()->deleteCookieNamed('hash');
+        $cookie = new Cookie('hash', '1d7505e7f434a7713e84ba399e937191');
+        $this->driver->manage()->addCookie($cookie);
+        $this->driver->navigate()->refresh();
+    }
 
     /**
      * @When /^I try to login to the site$/

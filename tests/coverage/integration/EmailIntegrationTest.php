@@ -10,6 +10,17 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . 
 
 class EmailIntegrationTest extends TestCase {
 
+    public function testSendEmailMakeDirectory() {
+        system('mv /var/www/logs /var/www/logs-bkp');
+        try {
+            new Email('msaperst+sstest@gmail.com', 'la@saperstonestudios.com', 'test');
+            $this->assertTrue(true);
+        } finally {
+            system('rm -rf mv /var/www/logs');
+            system('mv /var/www/logs-bkp /var/www/logs');
+        }
+    }
+
     public function testSendEmailWithAttachment() {
         $email = new Email('msaperst+sstest@gmail.com', 'la@saperstonestudios.com', 'test');
         $email->setHtml("<b>Test</b> Email");
