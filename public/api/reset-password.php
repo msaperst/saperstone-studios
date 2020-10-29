@@ -4,26 +4,8 @@ $api = new Api();
 
 try {
     $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $code = $api->retrievePostString('code', 'Code');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $password = $api->retrievePostString('password', 'Password');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $passwordConfirm = $api->retrievePostString('passwordConfirm', 'Password confirmation');
 } catch (Exception $e) {
     echo $e->getMessage();

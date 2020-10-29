@@ -180,6 +180,10 @@ $user = User::fromSystem();
                             class="btn btn-default btn-danger btn-action">
                             <em class="fa fa-trash"></em> Delete
                         </button>
+                        <button id="edit-image-btn" type="button"
+                            class="btn btn-default btn-info btn-action">
+                            <em class="fa fa-pencil"></em> Edit
+                        </button>
                         <?php
                         }
                         ?>

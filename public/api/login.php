@@ -24,12 +24,6 @@ if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
 if ($_POST ['submit'] == 'Login') {
     try {
         $username = $api->retrievePostString('username', 'Username');
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        exit();
-    }
-
-    try {
         $password = $api->retrievePostString('password', 'Password');
     } catch (Exception $e) {
         echo $e->getMessage();

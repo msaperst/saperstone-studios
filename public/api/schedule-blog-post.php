@@ -6,18 +6,7 @@ $api->forceAdmin();
 
 try {
     $blog = Blog::withId($_POST ['post']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-try {
     $date = $api->retrievePostDateTime('date', 'Publish date', 'Y-m-d');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $time = $api->retrievePostDateTime('time', 'Publish time', 'H:i');
 } catch (Exception $e) {
     echo $e->getMessage();

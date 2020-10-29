@@ -3,12 +3,6 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' .
 
 try {
     $contract = Contract::withId($_POST['id']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $file = $contract->sign($_POST);
 } catch (Exception $e) {
     echo $e->getMessage();

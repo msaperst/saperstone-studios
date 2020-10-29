@@ -6,12 +6,6 @@ $api->forceAdmin();
 
 try {
     $gallery = Gallery::withId($_POST['gallery']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $image = new Image($gallery, $_POST['image']);
     $image->delete();
 } catch (Exception $e) {

@@ -127,6 +127,11 @@ class ImageIntegrationTest extends TestCase {
         $this->assertEquals('sample', $image->getTitle());
     }
 
+    public function testGetLocation() {
+        $image = new Image(Album::withId(899), '1');
+        $this->assertEquals('/albums/sample/sample.jpg', $image->getLocation());
+    }
+
     public function testCanUserGetDataAlbumNobody() {
         $image = new Image(Album::withId(899), 1);
         $this->assertFalse($image->canUserGetData());

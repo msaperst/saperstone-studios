@@ -10,7 +10,7 @@ use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-class DeleteGalleryImageTest extends TestCase {
+class UpdateGalleryImageTest extends TestCase {
     private $http;
     private $sql;
 
@@ -41,12 +41,13 @@ class DeleteGalleryImageTest extends TestCase {
         $count++;
         $this->sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
         system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
+        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
         $this->sql->disconnect();
     }
 
     public function testNotLoggedIn() {
         try {
-            $this->http->request('POST', 'api/delete-gallery-image.php');
+            $this->http->request('POST', 'api/update-gallery-image.php');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -58,7 +59,7 @@ class DeleteGalleryImageTest extends TestCase {
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));
         try {
-            $this->http->request('POST', 'api/delete-gallery-image.php', [
+            $this->http->request('POST', 'api/update-gallery-image.php', [
                 'cookies' => $cookieJar
             ]);
         } catch (ClientException $e) {
@@ -71,7 +72,7 @@ class DeleteGalleryImageTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -82,7 +83,7 @@ class DeleteGalleryImageTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'form_params' => [
                 'gallery' => ''
             ],
@@ -96,7 +97,7 @@ class DeleteGalleryImageTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'form_params' => [
                 'gallery' => '546fchgj78'
             ],
@@ -110,7 +111,7 @@ class DeleteGalleryImageTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'form_params' => [
                 'gallery' => 9999
             ],
@@ -124,7 +125,7 @@ class DeleteGalleryImageTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'form_params' => [
                 'gallery' => 999
             ],
@@ -138,7 +139,7 @@ class DeleteGalleryImageTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'form_params' => [
                 'gallery' => 999,
                 'image' => ''
@@ -153,7 +154,7 @@ class DeleteGalleryImageTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'form_params' => [
                 'gallery' => 999,
                 'image' => '1234'
@@ -164,11 +165,11 @@ class DeleteGalleryImageTest extends TestCase {
         $this->assertEquals("Image id does not match any images", (string)$response->getBody());
     }
 
-    public function testDeleteImage1() {
+    public function testNoTitle() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/delete-gallery-image.php', [
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'form_params' => [
                 'gallery' => 999,
                 'image' => 998
@@ -176,18 +177,114 @@ class DeleteGalleryImageTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", (string)$response->getBody());
-        $images = $this->sql->getRows("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 999;");
-        $this->assertEquals(1, sizeOf($images));
-        $this->assertEquals(999, $images[0]['id']);
-        $this->assertEquals(999, $images[0]['gallery']);
-        $this->assertEquals('', $images[0]['title']);
-        $this->assertEquals(0, $images[0]['sequence']);
-        $this->assertEquals('', $images[0]['caption']);
-        $this->assertEquals('/portrait/img/sample/sample2.jpg', $images[0]['location']);
-        $this->assertEquals(300, $images[0]['width']);
-        $this->assertEquals(400, $images[0]['height']);
-        $this->assertEquals(1, $images[0]['active']);
-        $this->assertFalse(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg'));
+        $this->assertEquals("Title is required", (string)$response->getBody());
     }
+
+    public function testBlankTitle() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 998,
+                'title' => ''
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Title can not be blank", (string)$response->getBody());
+    }
+
+    public function testNoFilename() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 998,
+                'title' => 'sample'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Filename is required", (string)$response->getBody());
+    }
+
+    public function testBlankFilename() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 998,
+                'title' => 'sample',
+                'filename' => ''
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Filename can not be blank", (string)$response->getBody());
+    }
+
+    public function testUpdateSimple() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 998,
+                'title' => 'sample',
+                'filename' => '/portrait/img/x.jpg'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+        $image = $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 998;");
+        $this->assertEquals(998, $image['id']);
+        $this->assertEquals(999, $image['gallery']);
+        $this->assertEquals('sample', $image['title']);
+        $this->assertEquals(0, $image['sequence']);
+        $this->assertEquals('', $image['caption']);
+        $this->assertEquals('/portrait/img/x.jpg', $image['location']);
+        $this->assertEquals(300, $image['width']);
+        $this->assertEquals(400, $image['height']);
+        $this->assertEquals(1, $image['active']);
+        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
+    }
+
+    public function testUpdateComplex() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 998,
+                'title' => '"\'123$!?',
+                'caption' => 'I like dirt',
+                'filename' => '/portrait/img/x.jpg'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+        $image = $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 998;");
+        $this->assertEquals(998, $image['id']);
+        $this->assertEquals(999, $image['gallery']);
+        $this->assertEquals('"\'123$!?', $image['title']);
+        $this->assertEquals(0, $image['sequence']);
+        $this->assertEquals('I like dirt', $image['caption']);
+        $this->assertEquals('/portrait/img/x.jpg', $image['location']);
+        $this->assertEquals(300, $image['width']);
+        $this->assertEquals(400, $image['height']);
+        $this->assertEquals(1, $image['active']);
+        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
+    }
+
+
 }

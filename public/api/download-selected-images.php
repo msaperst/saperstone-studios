@@ -7,17 +7,12 @@ $api = new Api ();
 
 try {
     $what = $api->retrievePostString('what', 'What to download');
-} catch (Exception $e) {
-    echo json_encode(array('error' => $e->getMessage()));
-    exit();
-}
-
-try {
     $album = Album::withId($_POST['album']);
 } catch (Exception $e) {
     echo json_encode(array('error' => $e->getMessage()));
     exit();
 }
+
 
 // check for album access
 $sql = new Sql();

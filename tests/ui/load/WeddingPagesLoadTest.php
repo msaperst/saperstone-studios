@@ -84,6 +84,7 @@ class WeddingPagesLoadTest extends TestBase {
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('save-gallery-btn'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('sort-gallery-btn'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('delete-image-btn'))));
+        $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('edit-image-btn'))));
     }
 
     public function testGalleriesAdmin() {
@@ -94,6 +95,7 @@ class WeddingPagesLoadTest extends TestBase {
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('save-gallery-btn'))->isDisplayed());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('sort-gallery-btn'))->isDisplayed());
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('delete-image-btn'))->isDisplayed());
+        $this->assertFalse($this->driver->findElement(WebDriverBy::id('edit-image-btn'))->isDisplayed());
     }
 
     public function testGalleriesPage17() {

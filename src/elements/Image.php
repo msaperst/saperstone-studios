@@ -57,6 +57,10 @@ class Image {
         return $this->title;
     }
 
+    function getLocation() {
+        return $this->location;
+    }
+
     function getDataArray() {
         return $this->raw;
     }

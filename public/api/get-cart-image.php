@@ -7,12 +7,6 @@ $api->forceLoggedIn();
 
 try {
     $album = Album::withId($_GET['album']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $image = new Image($album, $_GET['image']);
 } catch (Exception $e) {
     echo $e->getMessage();

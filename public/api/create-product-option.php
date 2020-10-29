@@ -6,12 +6,6 @@ $api->forceAdmin();
 
 try {
     $type = ProductType::withId($_POST['type']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $option = $api->retrievePostString('option', 'Product option');
 } catch (Exception $e) {
     echo $e->getMessage();

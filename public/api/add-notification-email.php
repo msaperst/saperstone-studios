@@ -5,12 +5,6 @@ $api = new Api ();
 
 try {
     $album = Album::withId($_POST['album']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
 } catch (Exception $e) {
     echo $e->getMessage();

@@ -12,26 +12,8 @@ $sql->disconnect();
 
 try {
     $name = $api->retrievePostString('name', 'Name');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $phone = $api->retrievePostString('phone', 'Phone number');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $emailA = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $message = $api->retrievePostString('message', 'Message');
 } catch (Exception $e) {
     echo $e->getMessage();

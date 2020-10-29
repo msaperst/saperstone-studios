@@ -6,12 +6,6 @@ $userId = $systemUser->getIdentifier();
 
 try {
     $album = Album::withId($_POST['album']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $image = new Image($album, $_POST['image']);
 } catch (Exception $e) {
     echo $e->getMessage();

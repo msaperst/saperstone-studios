@@ -17,19 +17,7 @@ if (!file_exists($_POST['image'])) {
 
 try {
     $maxWidth = $api->retrievePostInt('max-width', 'Image max-width');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $top = $api->retrievePostInt('top', 'Image top');
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
-
-try {
     $bottom = $api->retrievePostInt('bottom', 'Image bottom');
 } catch (Exception $e) {
     echo $e->getMessage();
