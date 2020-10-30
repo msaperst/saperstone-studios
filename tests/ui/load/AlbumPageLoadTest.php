@@ -7,7 +7,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Sql;
-use ui\load\models\Album;
+use ui\models\Album;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestBase.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
