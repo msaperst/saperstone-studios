@@ -2,11 +2,13 @@
 
 namespace api;
 
+use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SaveStatsTest extends TestCase {
@@ -25,7 +27,6 @@ class SaveStatsTest extends TestCase {
     }
 
     public function testSimpleSave() {
-        date_default_timezone_set("America/New_York");
         $response = $this->http->request('GET', 'api/save-stats.php');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
@@ -34,7 +35,7 @@ class SaveStatsTest extends TestCase {
         $this->assertTrue(filter_var($usage['ip'], FILTER_VALIDATE_IP) !== false);
         $this->assertNull($usage['latitude']);
         $this->assertNull($usage['longitude']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $usage['time']);
+        CustomAsserts::timeWithin(2, $usage['time']);
         $this->assertEquals('unknown', $usage['browser']);
         $this->assertEquals('unknown', $usage['version']);
         $this->assertEquals('unknown', $usage['os']);
@@ -50,7 +51,6 @@ class SaveStatsTest extends TestCase {
     }
 
     public function testComplexSave() {
-        date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));
@@ -67,7 +67,7 @@ class SaveStatsTest extends TestCase {
         $this->assertTrue(filter_var($usage['ip'], FILTER_VALIDATE_IP) !== false);
         $this->assertNull($usage['latitude']);
         $this->assertNull($usage['longitude']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $usage['time']);
+        CustomAsserts::timeWithin(2, $usage['time']);
         $this->assertEquals('unknown', $usage['browser']);
         $this->assertEquals('unknown', $usage['version']);
         $this->assertEquals('unknown', $usage['os']);
@@ -83,7 +83,6 @@ class SaveStatsTest extends TestCase {
     }
 
     public function testBadResolutionSave() {
-        date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -100,7 +99,7 @@ class SaveStatsTest extends TestCase {
         $this->assertTrue(filter_var($usage['ip'], FILTER_VALIDATE_IP) !== false);
         $this->assertNull($usage['latitude']);
         $this->assertNull($usage['longitude']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $usage['time']);
+        CustomAsserts::timeWithin(2, $usage['time']);
         $this->assertEquals('unknown', $usage['browser']);
         $this->assertEquals('unknown', $usage['version']);
         $this->assertEquals('unknown', $usage['os']);

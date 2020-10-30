@@ -2,11 +2,13 @@
 
 namespace api;
 
+use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateBlogCommentTest extends TestCase {
@@ -90,7 +92,6 @@ class CreateBlogCommentTest extends TestCase {
     }
 
     public function testLoggedInUser() {    //no other data
-        date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -109,7 +110,7 @@ class CreateBlogCommentTest extends TestCase {
         $this->assertEquals(999, $blogComment['blog']);
         $this->assertEquals(1, $blogComment['user']);
         $this->assertEquals('', $blogComment['name']);
-        $this->assertStringStartsWith(date("Y-m-d H:i"), $blogComment['date']);
+        CustomAsserts::timeWithin(2, $blogComment['date']);
         $this->assertTrue(filter_var($blogComment['ip'], FILTER_VALIDATE_IP) !== false);
         $this->assertEquals('', $blogComment['email']);
         $this->assertEquals('I love your post!', $blogComment['comment']);
@@ -132,7 +133,7 @@ class CreateBlogCommentTest extends TestCase {
         $this->assertEquals(999, $blogComment['blog']);
         $this->assertNull($blogComment['user']);
         $this->assertEquals('MaxMaxMaxMax', $blogComment['name']);
-        $this->assertStringStartsWith(date("Y-m-d H:i"), $blogComment['date']);
+        CustomAsserts::timeWithin(2, $blogComment['date']);
         $this->assertTrue(filter_var($blogComment['ip'], FILTER_VALIDATE_IP) !== false);
         $this->assertEquals('123@example.com', $blogComment['email']);
         $this->assertEquals('I love your post!', $blogComment['comment']);

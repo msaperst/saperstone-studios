@@ -2,12 +2,14 @@
 
 namespace api;
 
+use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateUserTest extends TestCase {
@@ -193,8 +195,6 @@ class CreateUserTest extends TestCase {
     }
 
     public function testNoExtras() {
-        date_default_timezone_set("America/New_York");
-        $date = date("Y-m-d H:i");
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -220,7 +220,7 @@ class CreateUserTest extends TestCase {
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(32, strlen($userDetails['hash']));
             $this->assertEquals(1, $userDetails['active']);
-            $this->assertStringStartsWith($date, $userDetails['created']);
+            CustomAsserts::timeWithin(10, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
         } finally {
@@ -232,8 +232,6 @@ class CreateUserTest extends TestCase {
     }
 
     public function testAllData() {
-        date_default_timezone_set("America/New_York");
-        $date = date("Y-m-d H:i");
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -262,7 +260,7 @@ class CreateUserTest extends TestCase {
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(32, strlen($userDetails['hash']));
             $this->assertEquals(0, $userDetails['active']);
-            $this->assertStringStartsWith($date, $userDetails['created']);
+            CustomAsserts::timeWithin(10, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
         } finally {

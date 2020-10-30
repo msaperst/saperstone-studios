@@ -2,12 +2,14 @@
 
 namespace api;
 
+use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UpdateAlbumTest extends TestCase {
@@ -148,7 +150,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(998, $albumInfo['id']);
         $this->assertEquals('New Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albumInfo['date']);
+        CustomAsserts::timeWithin(2, $albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertEquals('', $albumInfo['code']);
@@ -174,7 +176,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(999, $albumInfo['id']);
         $this->assertEquals('Updated Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $albumInfo['date']);
+        CustomAsserts::timeWithin(2, $albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertNull($albumInfo['code']);
@@ -203,7 +205,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(999, $albumInfo['id']);
         $this->assertEquals('Updated Album', $albumInfo['name']);
         $this->assertEquals('some album information', $albumInfo['description']);
-        $this->assertStringStartsWith('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertNull($albumInfo['code']);
@@ -232,7 +234,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(999, $albumInfo['id']);
         $this->assertEquals('Updated Album', $albumInfo['name']);
         $this->assertEquals('some album information', $albumInfo['description']);
-        $this->assertStringStartsWith('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertEquals('456', $albumInfo['code']);
@@ -261,7 +263,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(998, $albumInfo['id']);
         $this->assertEquals('Updated Album', $albumInfo['name']);
         $this->assertEquals('some album information', $albumInfo['description']);
-        $this->assertStringStartsWith('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertNull($albumInfo['code']);

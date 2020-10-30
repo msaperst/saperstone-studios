@@ -2,11 +2,13 @@
 
 namespace api;
 
+use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class LoginTest extends TestCase {
@@ -150,7 +152,6 @@ class LoginTest extends TestCase {
     }
 
     public function testLoginSuccessfully() {
-        date_default_timezone_set("America/New_York");
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
                 'submit' => 'Login',
@@ -163,7 +164,7 @@ class LoginTest extends TestCase {
         $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 2 ORDER BY time DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 2;");
-        $this->assertStringStartsWith(date("Y-m-d H:i"), $userInfo['lastLogin']);
+        CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
         //TODO - cookie not set
     }
 
@@ -182,7 +183,7 @@ class LoginTest extends TestCase {
         $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 3 ORDER BY time DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 3;");
-        $this->assertStringStartsWith(date("Y-m-d H:i"), $userInfo['lastLogin']);
+        CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
         //TODO - cookie not set
     }
 
@@ -205,7 +206,7 @@ class LoginTest extends TestCase {
         $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 4;");
-        $this->assertStringStartsWith(date("Y-m-d H:i"), $userInfo['lastLogin']);
+        CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
         //TODO - cookie set
     }
 }

@@ -2,10 +2,12 @@
 
 namespace api;
 
+use CustomAsserts;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class RegisterUserTest extends TestCase {
@@ -115,8 +117,6 @@ class RegisterUserTest extends TestCase {
     }
 
     public function testNoExtras() {
-        date_default_timezone_set("America/New_York");
-        $date = date("Y-m-d H:i");
         try {
             $response = $this->http->request('POST', 'api/register-user.php', [
                 'form_params' => [
@@ -137,8 +137,8 @@ class RegisterUserTest extends TestCase {
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals('cf0339a5bc2feeee0aef1c553834276a', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
-            $this->assertStringStartsWith($date, $userDetails['created']);
-            $this->assertStringStartsWith($date, $userDetails['lastLogin']);
+            CustomAsserts::timeWithin(5, $userDetails['created']);
+            CustomAsserts::timeWithin(5, $userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
             $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 2;");
             $this->assertEquals('Logged In', $log[0]['action']);
@@ -152,8 +152,6 @@ class RegisterUserTest extends TestCase {
     }
 
     public function testAllData() {
-        date_default_timezone_set("America/New_York");
-        $date = date("Y-m-d H:i");
         try {
             $response = $this->http->request('POST', 'api/register-user.php', [
                 'form_params' => [
@@ -176,8 +174,8 @@ class RegisterUserTest extends TestCase {
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals('cd1b3237a8d22938f69578a8bef680c5', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
-            $this->assertStringStartsWith($date, $userDetails['created']);
-            $this->assertStringStartsWith($date, $userDetails['lastLogin']);
+            CustomAsserts::timeWithin(5, $userDetails['created']);
+            CustomAsserts::timeWithin(5, $userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
             $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 2;");
             $this->assertEquals('Logged In', $log[0]['action']);

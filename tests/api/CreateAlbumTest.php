@@ -2,12 +2,14 @@
 
 namespace api;
 
+use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateAlbumTest extends TestCase {
@@ -73,7 +75,6 @@ class CreateAlbumTest extends TestCase {
     }
 
     public function testBadDate() {
-        date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -90,7 +91,6 @@ class CreateAlbumTest extends TestCase {
 
     public function testJustAlbumName() {   // done as an admin
         try {
-            date_default_timezone_set("America/New_York");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -104,13 +104,14 @@ class CreateAlbumTest extends TestCase {
             $albumId = (string)$response->getBody();
             $this->assertEquals(1, preg_match("/^[\d]+$/", $albumId));
             $album = $this->sql->getRow("SELECT * FROM `albums` WHERE `albums`.`id` = $albumId;");
+            $albumLocation = $album['location'];
             $this->assertEquals($albumId, $album['id']);
             $this->assertEquals('Sample Album', $album['name']);
             $this->assertEquals('', $album['description']);
-            $this->assertStringStartsWith(date("Y-m-d H:i"), $album['date']);
+            CustomAsserts::timeWithin(2, $album['date']);
             $this->assertNull($album['lastAccessed']);
-            $albumLocation = $album['location'];
-            $this->assertStringStartsWith('SampleAlbum_' . substr(time(), 0, -1), $album['location']);
+            $this->assertStringStartsWith('SampleAlbum_', $album['location']);
+            CustomAsserts::timestampWithin(2, explode('_', $album['location'])[1]);
             $this->assertNull($album['code']);
             $this->assertEquals(1, $album['owner']);
             $this->assertEquals(0, $album['images']);
@@ -127,7 +128,6 @@ class CreateAlbumTest extends TestCase {
 
     public function testAllDetails() {      // done as an uploader
         try {
-            date_default_timezone_set("America/New_York");
             $cookieJar = CookieJar::fromArray([
                 'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
             ], getenv('DB_HOST'));
@@ -149,7 +149,8 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals('2020-07-28 00:00:00', $album['date']);
             $this->assertNull($album['lastAccessed']);
             $albumLocation = $album['location'];
-            $this->assertStringStartsWith('SampleAlbum_' . substr(time(), 0, -1), $album['location']);
+            $this->assertStringStartsWith('SampleAlbum_', $album['location']);
+            CustomAsserts::timestampWithin(2, explode('_', $album['location'])[1]);
             $this->assertNull($album['code']);
             $this->assertEquals(4, $album['owner']);
             $this->assertEquals(0, $album['images']);
@@ -161,7 +162,7 @@ class CreateAlbumTest extends TestCase {
             $userLogs = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user_logs`.`album` = $albumId ORDER BY time DESC;");
             $this->assertTrue(1 <= sizeOf($userLogs));
             $this->assertEquals(4, $userLogs[0]['user']);
-            $this->assertStringStartsWith(date("Y-m-d H:i"), $userLogs[0]['time']);
+            CustomAsserts::timeWithin(2, $userLogs[0]['time']);
             $this->assertEquals('Created Album', $userLogs[0]['action']);
             $this->assertNull($userLogs[0]['what']);
             $this->assertEquals($albumId, $userLogs[0]['album']);
