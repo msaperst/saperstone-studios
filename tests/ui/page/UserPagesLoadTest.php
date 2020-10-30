@@ -1,6 +1,6 @@
 <?php
 
-namespace ui\load;
+namespace ui\page;
 
 use Facebook\WebDriver\WebDriverBy;
 

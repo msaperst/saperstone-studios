@@ -302,7 +302,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     }
             )
         }
-        stage('Run Chrome Basic Tests') {
+        stage('Run Chrome Page Tests') {
             try {
                 sh 'export BROWSER=chrome; composer ui-pre-test;'
                 sh '''while ! curl -sSL "http://localhost:4444/wd/hub/status" 2>&1 \
@@ -310,7 +310,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                           echo 'Waiting for the Grid'
                           sleep 1
                       done'''   // from https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
-                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-basic-test;'
+                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-page-test;'
             } finally {
                 sh 'export BROWSER=chrome; composer ui-post-test;'
                 junit 'reports/ui/junit.xml'
@@ -320,7 +320,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         keepAll              : true,
                         reportDir            : 'reports/ui/',
                         reportFiles          : 'results.html',
-                        reportName           : 'Chrome Basic Test Results Simple Report'
+                        reportName           : 'Chrome Page Test Results Simple Report'
                 ])
                 publishHTML([
                         allowMissing         : false,
@@ -328,7 +328,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         keepAll              : true,
                         reportDir            : 'reports/ui/',
                         reportFiles          : 'index.html',
-                        reportName           : 'Chrome Basic Test Results Screenshot Report'
+                        reportName           : 'Chrome Page Test Results Screenshot Report'
                 ])
             }
         }
@@ -351,7 +351,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                       echo 'Waiting for the Grid'
                                       sleep 1
                                   done'''   // from https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
-                            sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-complex-test;'
+                            sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-behat-test;'
                         } finally {
                             sh 'export BROWSER=chrome; composer ui-post-test;'
                             junit 'reports/behat/default.xml'
