@@ -1,36 +1,16 @@
 def branch
 def version
-def refspecs
-def branchCheckout
 def dockerRepo = "victor:9086"
 def dockerRegistry = "${dockerRepo}/saperstone-studios"
 
 node() {
-    cleanWs()
     ansiColor('xterm') {
-        env.BRANCH_NAME = 'feature/sqlRework'       //TODO - clean me up!!!
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
         version = "$branch-${env.BUILD_NUMBER}"
-        env.PROJECT = "saperstone-studios"
-        if (env.CHANGE_ID) {
-            branchCheckout = "pr/${env.CHANGE_ID}"
-            refspecs = '+refs/pull/*/head:refs/remotes/origin/pr/*'
-        } else {
-            branchCheckout = env.BRANCH_NAME
-            refspecs = '+refs/heads/*:refs/remotes/origin/*'
-        }
-        cleanWs()
         stage('Checkout Code') { // for display purposes
-            // Get the test code from GitHub repository
-            checkout([
-                    $class           : 'GitSCM',
-                    branches         : [[name: "*/${branchCheckout}"]],
-                    userRemoteConfigs: [[
-                                                url          : 'git@github.com:msaperst/saperstone-studios.git',
-                                                refspec      : "${refspecs}",
-                                                credentialsId: 'github'
-                                        ]]
-            ])
+            cleanWs()
+            echo 'Pulling...' + branch
+            checkout scm
         }
         stage('Run Unit Tests') {
             try {
