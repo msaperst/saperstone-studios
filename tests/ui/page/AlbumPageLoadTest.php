@@ -2,6 +2,7 @@
 
 namespace ui\page;
 
+use CustomAsserts;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -11,6 +12,7 @@ use ui\models\Album;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestBase.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class AlbumPageLoadTest extends TestBase {
@@ -112,7 +114,7 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $this->sql->getRow("SELECT lastAccessed FROM albums WHERE id = 99999;")['lastAccessed']);
+        CustomAsserts::timeWithin(2, $this->sql->getRow("SELECT lastAccessed FROM albums WHERE id = 99999;")['lastAccessed']);
     }
 
     public function testAlbumLogsAccessed() {
@@ -123,7 +125,7 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
         $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` ORDER BY time DESC");
         $this->assertEquals(3, $userLogs['user']);
-        $this->assertStringStartsWith(date('Y-m-d H:i:'), $userLogs['time']);
+        CustomAsserts::timeWithin(2, $userLogs['time']);
         $this->assertEquals('Visited Album', $userLogs['action']);
         $this->assertNull($userLogs['what']);
         $this->assertEquals(99999, $userLogs['album']);

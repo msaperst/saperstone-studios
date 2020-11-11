@@ -9,7 +9,6 @@ node() {
         version = "$branch-${env.BUILD_NUMBER}"
         stage('Checkout Code') { // for display purposes
             cleanWs()
-            echo 'Pulling...' + branch
             checkout scm
         }
         stage('Run Unit Tests') {
@@ -401,40 +400,42 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             sh "docker system prune -a -f"
             sh "docker logout ${dockerRepo}"
         }
-        stage('Deploy to Production') {
-            timeout(time: 30, unit: 'MINUTES') {
-                input(
-                    message: 'Deploy To Production?',
-                    ok: 'Yes',
-                    parameters: [
-                        booleanParam(
-                            defaultValue: true,
-                            description: 'Should we deploy this out to production',
-                            name: 'Deploy?'
-                        )
-                    ]
+        if( branch == 'master' ) {
+            stage('Deploy to Production') {
+                timeout(time: 30, unit: 'MINUTES') {
+                    input(
+                        message: 'Deploy To Production?',
+                        ok: 'Yes',
+                        parameters: [
+                            booleanParam(
+                                defaultValue: true,
+                                description: 'Should we deploy this out to production',
+                                name: 'Deploy?'
+                            )
+                        ]
+                    )
+                }
+            }
+            stage('Copy Container to Walter') {
+                parallel(
+                        "PHP": {
+                            copyContainer(dockerRegistry, version,"php")
+                        },
+                        "PHP MyAdmin": {
+                            copyContainer(dockerRegistry, version,"php-myadmin")
+                        },
+                        "MySQL": {
+                            copyContainer(dockerRegistry, version,"mysql")
+                        }
                 )
             }
-        }
-        stage('Copy Container to Walter') {
-            parallel(
-                    "PHP": {
-                        copyContainer(dockerRegistry, version,"php")
-                    },
-                    "PHP MyAdmin": {
-                        copyContainer(dockerRegistry, version,"php-myadmin")
-                    },
-                    "MySQL": {
-                        copyContainer(dockerRegistry, version,"mysql")
-                    }
-            )
-        }
-        stage('Stand Up New Instance') {
-            sh "scp docker-compose-prod.yml 192.168.1.2:/var/www/ss-docker/"
-            sh "ssh 192.168.1.2 \"sed -i 's/latest/${version}/g'\" /var/www/ss-docker/docker-compose-prod.yml"
-            sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml stop'"
-            sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml up -d'"
-            sh "ssh 192.168.1.2 'docker system prune -a -f'"
+            stage('Stand Up New Instance') {
+                sh "scp docker-compose-prod.yml 192.168.1.2:/var/www/ss-docker/"
+                sh "ssh 192.168.1.2 \"sed -i 's/latest/${version}/g'\" /var/www/ss-docker/docker-compose-prod.yml"
+                sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml stop'"
+                sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml up -d'"
+                sh "ssh 192.168.1.2 'docker system prune -a -f'"
+            }
         }
     }
 }

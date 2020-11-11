@@ -97,7 +97,7 @@ class EmailIntegrationTest extends TestCase {
             $_SERVER["HTTP_USER_AGENT"] = '';
             $_SERVER["HTTP_CLIENT_IP"] = '5.82.134.1';
             $email = new Email('msaperst+sstest@gmail.com', 'la@saperstonestudios.com', 'test');
-            $this->assertEquals('<strong>Location</strong>: Şāmitah, Jazan Region - SA (estimated location based on IP: 5.82.134.1)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: <br/>', $email->getUserInfoHtml());
+            $this->assertEquals('<strong>Location</strong>: Jeddah, Mecca Region - SA (estimated location based on IP: 5.82.134.1)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: <br/>', $email->getUserInfoHtml());
         } finally {
             unset($_SERVER["HTTP_CLIENT_IP"]);
             unset($_SERVER["HTTP_USER_AGENT"]);
@@ -146,7 +146,7 @@ Full UA:
             $_SERVER["HTTP_USER_AGENT"] = '';
             $_SERVER["HTTP_CLIENT_IP"] = '5.82.134.1';
             $email = new Email('msaperst+sstest@gmail.com', 'la@saperstonestudios.com', 'test');
-            $this->assertEquals('Location: Şāmitah, Jazan Region - SA (estimated location based on IP: 5.82.134.1)
+            $this->assertEquals('Location: Jeddah, Mecca Region - SA (estimated location based on IP: 5.82.134.1)
 Browser: unknown unknown
 Resolution: 
 OS: unknown

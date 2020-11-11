@@ -2,11 +2,13 @@
 
 namespace coverage\integration;
 
+use CustomAsserts;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
 use User;
 
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UserIntegrationTest extends TestCase {
@@ -668,7 +670,7 @@ class UserIntegrationTest extends TestCase {
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(md5('testUser12345'), $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
-            $this->assertStringStartsWith(date("Y-m-d H:i"), $userDetails['created']);
+            CustomAsserts::timeWithin(2, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
         } finally {
@@ -707,7 +709,7 @@ class UserIntegrationTest extends TestCase {
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(md5('testUser12345'), $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
-            $this->assertStringStartsWith(date("Y-m-d H:i"), $userDetails['created']);
+            CustomAsserts::timeWithin(2, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
         } finally {
@@ -732,7 +734,7 @@ class UserIntegrationTest extends TestCase {
         $user = User::withId(4);
         $user->login(false);
         $userInfo = $user->getDataArray();
-        $this->assertStringStartsWith(date('Y-m-d H:i'), $userInfo['lastLogin']);
+        CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
         $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         //TODO - check session
@@ -744,7 +746,7 @@ class UserIntegrationTest extends TestCase {
         $user = User::withId(4);
         $user->login(true);
         $userInfo = $user->getDataArray();
-        $this->assertStringStartsWith(date('Y-m-d H:i'), $userInfo['lastLogin']);
+        CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
         $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         //TODO - check session
@@ -758,7 +760,7 @@ class UserIntegrationTest extends TestCase {
             $user = User::withId(4);
             $user->login(true);
             $userInfo = $user->getDataArray();
-            $this->assertStringStartsWith(date('Y-m-d H:i'), $userInfo['lastLogin']);
+            CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
             $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
             $this->assertEquals('Logged In', $log['action']);
             //TODO - check session
@@ -775,7 +777,7 @@ class UserIntegrationTest extends TestCase {
             $user = User::withId(4);
             $user->login(true);
             $userInfo = $user->getDataArray();
-            $this->assertStringStartsWith(date('Y-m-d H:i'), $userInfo['lastLogin']);
+            CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
             $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
             $this->assertEquals('Logged In', $log['action']);
             //TODO - check session
@@ -792,7 +794,7 @@ class UserIntegrationTest extends TestCase {
             $user = User::withId(4);
             $user->login(true);
             $userInfo = $user->getDataArray();
-            $this->assertStringStartsWith(date('Y-m-d H:i'), $userInfo['lastLogin']);
+            CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
             $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
             $this->assertEquals('Logged In', $log['action']);
             //TODO - check session

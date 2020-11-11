@@ -3,10 +3,12 @@
 namespace coverage\integration;
 
 use Comment;
+use CustomAsserts;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CommentIntegrationTest extends TestCase {
@@ -217,7 +219,7 @@ class CommentIntegrationTest extends TestCase {
             $this->assertEquals(899, $commentInfo['blog']);
             $this->assertNull($commentInfo['user']);
             $this->assertEquals('', $commentInfo['name']);
-            $this->assertStringStartsWith(date("Y-m-d H:i"), $commentInfo['date']);
+            CustomAsserts::timeWithin(2, $commentInfo['date']);
             $this->assertEquals('1.1.1.1', $commentInfo['ip']);
             $this->assertEquals('', $commentInfo['email']);
             $this->assertEquals('Some message', $commentInfo['comment']);
@@ -244,7 +246,7 @@ class CommentIntegrationTest extends TestCase {
             $this->assertEquals(899, $commentInfo['blog']);
             $this->assertNull($commentInfo['user']);
             $this->assertEquals('max', $commentInfo['name']);
-            $this->assertStringStartsWith(date("Y-m-d H:i"), $commentInfo['date']);
+            CustomAsserts::timeWithin(2, $commentInfo['date']);
             $this->assertEquals('1.1.1.1', $commentInfo['ip']);
             $this->assertEquals('max@max.max', $commentInfo['email']);
             $this->assertEquals('Some message', $commentInfo['comment']);
@@ -272,7 +274,7 @@ class CommentIntegrationTest extends TestCase {
             $this->assertEquals(899, $commentInfo['blog']);
             $this->assertEquals(1, $commentInfo['user']);
             $this->assertEquals('max', $commentInfo['name']);
-            $this->assertStringStartsWith(date("Y-m-d H:i"), $commentInfo['date']);
+            CustomAsserts::timeWithin(2, $commentInfo['date']);
             $this->assertEquals('1.1.1.1', $commentInfo['ip']);
             $this->assertEquals('max@max.max', $commentInfo['email']);
             $this->assertEquals('Some message', $commentInfo['comment']);
