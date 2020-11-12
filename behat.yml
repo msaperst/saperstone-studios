@@ -12,6 +12,7 @@ default:
         - ui\bootstrap\AlbumFeatureContext
         - ui\bootstrap\RetouchFeatureContext
         - ui\bootstrap\BlogFeatureContext
+        - ui\bootstrap\GalleryFeatureContext
   formatters:
     pretty: true
     junit:
