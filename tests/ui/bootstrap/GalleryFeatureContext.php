@@ -4,8 +4,10 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
@@ -34,6 +36,11 @@ class GalleryFeatureContext implements Context {
      */
     private $user;
     private $baseUrl;
+    /**
+     * The image we're interacting with
+     * @var RemoteWebElement
+     */
+    private $image;
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -47,7 +54,7 @@ class GalleryFeatureContext implements Context {
         $this->baseUrl = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getBaseUrl();
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ('999', '1', 'sample.jpg', 'Sample', NULL);");
-        for( $i = 0; $i <= 15; $i++) {
+        for ($i = 0; $i <= 15; $i++) {
             $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ((9999 + $i), '999', 'Image $i', $i, '', '/portrait/img/sample/sample.jpg', '400', '300', '1');");
         }
         $oldmask = umask(0);
@@ -76,7 +83,52 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
+     * @When /^I hover over image (\d+)$/
+     * @param $imgNum
+     */
+    public function iHoverOverImage($imgNum) {
+        $gallery = new Gallery($this->driver, $this->wait);
+        $this->image = $gallery->hoverOverImage($imgNum);
+    }
+
+
+    /**
+     * @When /^I view image (\d+)$/
+     * @param $imgNum
+     */
+    public function iViewImage($imgNum) {
+        $gallery = new Gallery($this->driver, $this->wait);
+        $gallery->openSlideShow($imgNum);
+    }
+
+    /**
+     * @When /^I advance to the next image$/
+     */
+    public function iAdvanceToTheNextImage() {
+        $gallery = new Gallery($this->driver, $this->wait);
+        $gallery->advanceToNextImage();
+    }
+
+    /**
+     * @When /^I advance to the previous image$/
+     */
+    public function iAdvanceToThePreviousImage() {
+        $gallery = new Gallery($this->driver, $this->wait);
+        $gallery->advanceToPreviousImage();
+    }
+
+    /**
+     * @When /^I skip to image (\d+)$/
+     * @param $img
+     */
+    public function iSkipToImage($img) {
+        $gallery = new Gallery($this->driver, $this->wait);
+        $gallery->advanceToImage($img);
+    }
+
+    /**
      * @Then /^I see the "([^"]*)" gallery images load$/
+     * @param $ord
      */
     public function iSeeTheGalleryImagesLoad($ord) {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -89,5 +141,21 @@ class GalleryFeatureContext implements Context {
         }
     }
 
+    /**
+     * @Then /^I see the info icon on image (\d+)$/
+     * @param $imgNum
+     */
+    public function iSeeTheInfoIconOnImage($imgNum) {
+        Assert::assertTrue($this->image->findElement(WebDriverBy::className('info'))->isDisplayed());
+    }
 
+    /**
+     * @Then /^I see image (\d+) in the preview modal$/
+     * @param $imgNum
+     */
+    public function iSeeImageInThePreviewModal($imgNum) {
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('Sample'))->isDisplayed());
+        $activeImage = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
+        Assert::assertEquals('Image ' . ($imgNum - 1), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'));
+    }
 }

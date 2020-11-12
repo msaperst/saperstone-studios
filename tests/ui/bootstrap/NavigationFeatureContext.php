@@ -4,6 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -170,6 +171,13 @@ class NavigationFeatureContext implements Context {
     public function iSearchForAlbumWithKeyboard($code) {
         $album = new Album($this->driver, $this->wait);
         $album->searchKeyboard($code, FALSE);
+    }
+
+    /**
+     * @When /^I wait for (\d+) seconds$/
+     */
+    public function iWaitForSeconds($seconds) {
+        sleep( $seconds );
     }
 
     /**
