@@ -60,9 +60,9 @@ $user = User::fromSystem();
                 </div>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">What to Wear?</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> What to Wear?</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>
                     Need a little help coordinating a winning outfit combo for the
                     group? Be sure to check out <a href="what-to-wear.php">what to wear</a>
@@ -70,9 +70,9 @@ $user = User::fromSystem();
                 </p>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">Turnaround time</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Turnaround time</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>
                     Please allow 2-3 weeks after your portrait session for images to be
                     completed. During this time I carefully <a href='retouch.php'>make
@@ -81,9 +81,9 @@ $user = User::fromSystem();
                 </p>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">What's Next?</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> What's Next?</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>
                     When I'm close to completing your images I will reach out and
                     schedule a time for you to visit my <a href="studio.php">home
@@ -108,9 +108,9 @@ $user = User::fromSystem();
                 </p>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">Come Prepared!</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Come Prepared!</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>As a visual person myself, I wouldn't be able to make decisions
                     in regard to prints on my walls without seeing it myself first. If
                     you have a particular wall you want to hang photos on in your home,
@@ -133,6 +133,9 @@ $user = User::fromSystem();
 
     </div>
     <!-- /.container -->
+
+    <!-- Content JavaScript -->
+    <script src="/js/dynamic-content.js"></script>
     
     <?php
     if ($user->isAdmin ()) {

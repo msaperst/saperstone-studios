@@ -181,6 +181,15 @@ class NavigationFeatureContext implements Context {
     }
 
     /**
+     * @When /^I click the "([^"]*)" content header$/
+     */
+    public function iClickTheContentHeader($ord) {
+        $headers = $this->driver->findElements(WebDriverBy::className('collapse-header'));
+        $headers[intval($ord)-1]->click();
+        $this->iWaitForSeconds(1);
+    }
+
+    /**
      * @Then /^I am not prompted to review the privacy policy$/
      */
     public function iAmNotPromptedToReviewThePrivacyPolicy() {
@@ -282,5 +291,21 @@ class NavigationFeatureContext implements Context {
     public function iSeeAnErrorMessageIndicatingNoAlbumExists() {
         Assert::assertEquals('×
 That code does not match any albums', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+    }
+
+    /**
+     * @Then /^I see the "([^"]*)" content collapsed$/
+     */
+    public function iSeeTheContentCollapsed($ord) {
+        $contents = $this->driver->findElements(WebDriverBy::className('collapse-content'));
+        Assert::assertFalse($contents[intval($ord)-1]->isDisplayed());
+    }
+
+    /**
+     * @Then /^I see the "([^"]*)" content expanded$/
+     */
+    public function iSeeTheContentExpanded($ord) {
+        $contents = $this->driver->findElements(WebDriverBy::className('collapse-content'));
+        Assert::assertTrue($contents[intval($ord)-1]->isDisplayed());
     }
 }

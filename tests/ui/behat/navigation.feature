@@ -89,3 +89,28 @@ Feature: System Navigation
     Given an album exists with code "34567"
     When I search for album "34567" with keyboard
     Then I am taken to the "user/album.php?album=99999" page
+
+  Scenario: Dynamic content starts collapsed
+    Given I am on the "portrait/faq.php" page
+    Then I see the "1st" content collapsed
+
+  Scenario: Able to expand dynamic content
+    Given I am on the "portrait/faq.php" page
+    When I click the "1st" content header
+    Then I see the "1st" content expanded
+
+  Scenario: Able to collapse dynamic content
+    Given I am on the "portrait/faq.php" page
+    When I click the "1st" content header
+    And I click the "1st" content header
+    Then I see the "1st" content collapsed
+
+  Scenario: Able to expand multiple dynamic content
+    Given I am on the "portrait/faq.php" page
+    When I click the "1st" content header
+    And I click the "2nd" content header
+    And I click the "3rd" content header
+    And I click the "2nd" content header
+    Then I see the "1st" content expanded
+    And I see the "2nd" content collapsed
+    And I see the "3rd" content expanded
