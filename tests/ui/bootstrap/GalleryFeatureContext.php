@@ -57,6 +57,7 @@ class GalleryFeatureContext implements Context {
         for ($i = 0; $i <= 15; $i++) {
             $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ((9999 + $i), '999', 'Image $i', $i, '', '/portrait/img/sample/sample.jpg', '400', '300', '1');");
         }
+        $this->sql->executeStatement("UPDATE `gallery_images` SET caption = 'sample caption' WHERE id = 10000");
         $oldmask = umask(0);
         mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
@@ -157,5 +158,23 @@ class GalleryFeatureContext implements Context {
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('Sample'))->isDisplayed());
         $activeImage = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
         Assert::assertEquals('Image ' . ($imgNum - 1), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'));
+    }
+
+    /**
+     * @Then /^I see the caption "([^"]*)" displayed$/
+     */
+    public function iSeeTheCaptionDisplayed($caption) {
+        $gallery = new Gallery($this->driver, $this->wait);
+        $img = $gallery->getSlideShowImage();
+        Assert::assertEquals($caption, $img->findElement(WebDriverBy::tagName('h2'))->getText());
+    }
+
+    /**
+     * @Then /^I do not see any captions$/
+     */
+    public function iDoNotSeeAnyCaptions() {
+        $gallery = new Gallery($this->driver, $this->wait);
+        $img = $gallery->getSlideShowImage();
+        Assert::assertEquals('', $img->findElement(WebDriverBy::tagName('h2'))->getText());
     }
 }

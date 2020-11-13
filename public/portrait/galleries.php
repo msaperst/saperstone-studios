@@ -128,7 +128,7 @@ $user = User::fromSystem();
                     <!-- Carousel -->
                     <div
                         id="<?php echo str_replace(" ","-",$gallery->getTitle()); ?>-carousel"
-                        class="carousel slide carousel-three-by-two">
+                        class="carousel slide carousel-three-by-two" data-pause="false" data-interval="false">
                         <!-- Indicators -->
                         <ol class="carousel-indicators">
                         <?php
@@ -218,6 +218,13 @@ $user = User::fromSystem();
             if( $('footer').isOnScreen() && loaded < total ) {
                 loaded = gallery.loadImages();
             }
+        });
+
+        $(document).ready(function() {
+            $('#<?php echo str_replace(" ","-",$gallery->getTitle()); ?>').carousel({
+                interval: false,
+                pause: "false",
+            });
         });
     </script>
 

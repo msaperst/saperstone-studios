@@ -5,6 +5,7 @@ namespace ui\models;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 
@@ -30,7 +31,7 @@ class Gallery {
 
     public function hoverOverImage($imgNum) {
         $col = ($imgNum - 1) % 4;
-        $row = intval($imgNum - 1 / 4);
+        $row = intval(($imgNum - 1) / 4);
         $this->waitForImagesToLoad($row + 1);
         $ourGalleryImage = $this->driver->findElement(WebDriverBy::cssSelector("#col-$col > div.gallery:nth-child(" . ($row + 1) . ")"));
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($ourGalleryImage));
@@ -48,23 +49,26 @@ class Gallery {
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id($slideShowId))));
     }
 
-    public function advanceToNextImage() {
+    public function getSlideShowImage() : WebDriverElement {
         $img = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($img));
+        return $img;
+    }
+
+    public function advanceToNextImage() {
+        $img = $this->getSlideShowImage();
         $this->driver->findElement(WebDriverBy::cssSelector('.right'))->click();
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($img)));
     }
 
     public function advanceToPreviousImage() {
-        $img = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($img));
+        $img = $this->getSlideShowImage();
         $this->driver->findElement(WebDriverBy::cssSelector('.left'))->click();
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($img)));
     }
 
     public function advanceToImage($imgNum) {
-        $img = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($img));
+        $img = $this->getSlideShowImage();
         $this->driver->findElement(WebDriverBy::cssSelector('.carousel-indicators > li:nth-child(' . $imgNum . ')'))->click();
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($img)));
     }

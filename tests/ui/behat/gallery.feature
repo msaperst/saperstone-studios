@@ -26,10 +26,10 @@ Feature: Gallery
     When I view image 6
     Then I see image 6 in the preview modal
 
-  Scenario: Modal automatically scrolls to the next image
+  Scenario: Modal does not automatically scroll to the next image
     When I view image 1
     And I wait for 5 seconds
-    Then I see image 2 in the preview modal
+    Then I see image 1 in the preview modal
 
   Scenario: Able to manually advance to next image
     When I view image 1
@@ -47,4 +47,9 @@ Feature: Gallery
     Then I see image 7 in the preview modal
 
   Scenario: Images with captions display captions
+    When I view image 2
+    Then I see the caption "sample caption" displayed
+
   Scenario: Images without captions do not display captions
+    When I view image 3
+    Then I do not see any captions
