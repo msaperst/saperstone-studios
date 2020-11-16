@@ -13,6 +13,7 @@ default:
         - ui\bootstrap\RetouchFeatureContext
         - ui\bootstrap\BlogFeatureContext
         - ui\bootstrap\GalleryFeatureContext
+        - ui\bootstrap\ContractFeatureContext
   formatters:
     pretty: true
     junit:
