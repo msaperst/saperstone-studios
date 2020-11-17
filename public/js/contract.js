@@ -63,7 +63,7 @@ function submitContract() {
             $('#contract-messages').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         } else {
             $('#contract-submit').remove();
-            $('#contract-messages').append("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for signing the contract. You will recieve a confirmation email with the final contract attached shortly.</div>");
+            $('#contract-messages').append("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for signing the contract. You will receive a confirmation email with the final contract attached shortly.</div>");
             setTimeout(function () {
                 location.reload(true);
              }, 10000);

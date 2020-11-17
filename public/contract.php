@@ -46,7 +46,7 @@ try {
             // if the contract is already signed
             if ($contract->isSigned()) {
         ?>
-        <embed src='<?php echo substr( $contract->getFile(), 2 ); ?>' type="application/pdf" width="100%" height="600px" />
+        <embed src='<?php echo $contract->getFile(); ?>' type="application/pdf" width="100%" height="600px" />
         <?php
             } else {
         ?>
