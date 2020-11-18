@@ -330,7 +330,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                       echo 'Waiting for the Grid'
                                       sleep 1
                                   done'''   // from https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
-                            sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-behat-test;'
+                            sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
                         } finally {
                             sh 'export BROWSER=chrome; composer ui-post-test;'
                             junit 'reports/behat/default.xml'

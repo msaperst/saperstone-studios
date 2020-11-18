@@ -107,7 +107,7 @@ $user = User::fromSystem();
                     </div>
                     <div id="success"></div>
                     <!-- For success/fail messages -->
-                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <button id="submit-contact-form" type="submit" class="btn btn-primary">Send Message</button>
                 </form>
             </div>
 

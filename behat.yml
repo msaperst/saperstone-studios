@@ -14,6 +14,7 @@ default:
         - ui\bootstrap\BlogFeatureContext
         - ui\bootstrap\GalleryFeatureContext
         - ui\bootstrap\ContractFeatureContext
+        - ui\bootstrap\ContactFeatureContext
   formatters:
     pretty: true
     junit:
