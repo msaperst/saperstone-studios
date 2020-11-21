@@ -28,7 +28,7 @@
     "coverage-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3406; resources/phpunit/phpunit/phpunit tests/coverage/ --log-junit reports/cov-junit.xml --testdox-html reports/cov-results.html --coverage-clover reports/cov-clover.xml --coverage-html reports/cov-coverage --whitelist src/",
     "api-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; resources/phpunit/phpunit/phpunit tests/api/ --log-junit reports/api-junit.xml --testdox-html reports/api-results.html",
     "ui-pre-test": "docker run -d -p 4444:4444 --network host -e TZ=America/New_York -v /dev/shm:/dev/shm selenium/standalone-$BROWSER",
-    "ui-pre-test-local": "java -Dwebdriver.chrome.driver=\"/home/max/.m2/repository/webdriver/chromedriver/linux64/85.0.4183.87/chromedriver\" -jar selenium-server-standalone-3.141.59.jar",
+    "ui-pre-test-local": "java -Dwebdriver.chrome.driver=\"/home/max/.m2/repository/webdriver/chromedriver/linux64/87.0.4280.20/chromedriver\" -jar selenium-server-standalone-3.141.59.jar",
     "ui-page-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; resources/phpunit/phpunit/phpunit tests/ui/page/ --log-junit reports/ui/junit.xml --testdox-html reports/ui/results.html",
     "ui-behat-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; resources/bin/behat",
     "ui-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=selenium/standalone-$BROWSER --format=\"{{.ID}}\"))"

@@ -44,7 +44,6 @@ class Album {
         }
         $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code);
         $this->driver->findElement(WebDriverBy::className('btn-success'))->click();
-
     }
 
     public function searchKeyboard($code, $save) {
@@ -53,6 +52,15 @@ class Album {
             $this->driver->findElement(WebDriverBy::id('find-album-add'))->click();
         }
         $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code)->sendKeys(WebDriverKeys::ENTER);
+    }
+
+    public function add($code) {
+        $this->driver->findElement(WebDriverBy::id('album-code'))->sendKeys($code);
+        $this->driver->findElement(WebDriverBy::id('album-code-add'))->click();
+    }
+
+    public function addKeyboard($code) {
+        $this->driver->findElement(WebDriverBy::id('album-code'))->sendKeys($code)->sendKeys(WebDriverKeys::ENTER);
     }
 
     public function openSlideShow($imgNum) {

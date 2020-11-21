@@ -71,22 +71,26 @@ Feature: System Navigation
   Scenario: Find album modal save option
     Given an enabled user account exists
     And I am logged in with saved credentials
-    And an album exists with code "good-code"
+    And album 99999 exists with code "good-code"
     When I search for and save album "good-code"
     Then I am taken to the "user/album.php?album=99999" page
-    And I see a cookie with my album
+    And I see a cookie with album 99999
+
+  Scenario: Error message for blank album code
+    When I search for album ""
+    Then I see an error message indicating album code required
 
   Scenario: Error message for bad album code
     When I search for album "bad-code"
     Then I see an error message indicating no album exists
 
   Scenario: Able to search for album
-    Given an album exists with code "good-code"
+    And album 99999 exists with code "good-code"
     When I search for album "good-code"
     Then I am taken to the "user/album.php?album=99999" page
 
   Scenario: Able to search for album with keyboard
-    Given an album exists with code "34567"
+    Given album 99999 exists with code "34567"
     When I search for album "34567" with keyboard
     Then I am taken to the "user/album.php?album=99999" page
 

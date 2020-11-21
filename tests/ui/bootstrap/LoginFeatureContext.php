@@ -4,6 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use CustomAsserts;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -13,6 +14,7 @@ use PHPUnit\Framework\Assert;
 use ui\models\Login;
 use User;
 
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Login.php';
 
 class LoginFeatureContext implements Context {
@@ -204,27 +206,21 @@ class LoginFeatureContext implements Context {
      * @Then /^I see an info message indicating I successfully logged in$/
      */
     public function iSeeAnInfoMessageIndicatingISuccessfullyLoggedIn() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-info')));
-        Assert::assertEquals('×
-Successfully Logged In. Please wait as you are redirected.', $this->driver->findElement(WebDriverBy::className('alert-info'))->getText());
+        CustomAsserts::infoMessage($this->driver, 'Successfully Logged In. Please wait as you are redirected.');
     }
 
     /**
      * @Then /^I see an error message indicating my account has been disabled$/
      */
     public function iSeeAnErrorMessageIndicatingMyAccountHasBeenDisabled() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
-        Assert::assertEquals('×
-Sorry, your account has been deactivated. Please contact our webmaster to get this resolved.', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+        CustomAsserts::errorMessage($this->driver, 'Sorry, your account has been deactivated. Please contact our webmaster to get this resolved.');
     }
 
     /**
      * @Then /^I see an error message indicating my credentials aren't valid$/
      */
     public function iSeeAnErrorMessageIndicatingMyCredentialsArenTValid() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
-        Assert::assertEquals('×
-Credentials do not match our records', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+        CustomAsserts::errorMessage($this->driver, 'Credentials do not match our records');
     }
 
     /**
@@ -247,9 +243,7 @@ Credentials do not match our records', $this->driver->findElement(WebDriverBy::c
      * @Then /^I see an error message indicating passwords do not match$/
      */
     public function iSeeAnErrorMessageIndicatingPasswordsDoNotMatch() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
-        Assert::assertEquals('×
-Password and confirmation do not match', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+        CustomAsserts::errorMessage($this->driver, 'Password and confirmation do not match');
     }
 
     /**

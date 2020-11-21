@@ -4,15 +4,15 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
+use CustomAsserts;
 use Exception;
-use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
-use Sql;
+
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 
 class ContactFeatureContext implements Context {
     /**
@@ -89,9 +89,7 @@ class ContactFeatureContext implements Context {
      * @Then /^I see a warning message indicating my message is being sent$/
      */
     public function iSeeAWarningMessageIndicatingMyMessageIsBeingSent() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::classname('alert-warning')));
-        Assert::assertEquals('×
-Sending your message.', $this->driver->findElement(WebDriverBy::className('alert-warning'))->getText(), '"' . $this->driver->findElement(WebDriverBy::className('alert-warning'))->getText() . '"');
+        CustomAsserts::warningMessage($this->driver, 'Sending your message.');
     }
 
     /**
@@ -106,8 +104,6 @@ Sending your message.', $this->driver->findElement(WebDriverBy::className('alert
      * @Then /^I see a success message indicating my message was sent$/
      */
     public function iSeeASuccessMessageIndicatingMyMessageWasSent() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::classname('alert-success')));
-        Assert::assertEquals('×
-Your message has been sent.', $this->driver->findElement(WebDriverBy::className('alert-success'))->getText(), $this->driver->findElement(WebDriverBy::className('alert-success'))->getText());
+        CustomAsserts::successMessage($this->driver, 'Your message has been sent.');
     }
 }

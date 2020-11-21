@@ -1,5 +1,8 @@
 <?php
 
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 
 class CustomAsserts {
@@ -35,5 +38,30 @@ class CustomAsserts {
         $time = str_replace('-', ':', $time);
         $time = preg_replace('/'.preg_quote(':', '/').'/', '-', $time, 2);
         self::timestampWithin($range, strtotime($time));
+    }
+
+    private static function checkMessage($driver, $type, $message) {
+        $successBy = WebDriverBy::classname("alert-$type");
+        $wait = new WebDriverWait($driver, 10);
+        $wait->until(WebDriverExpectedCondition::presenceOfElementLocated($successBy));
+        $actualMessage = $driver->findElement($successBy)->getText();
+        Assert::assertEquals("×
+$message", $actualMessage, $actualMessage);
+    }
+
+    public static function successMessage($driver, $message) {
+        self::checkMessage($driver, 'success', $message);
+    }
+
+    public static function warningMessage($driver, $message) {
+        self::checkMessage($driver, 'warning', $message);
+    }
+
+    public static function infoMessage($driver, $message) {
+        self::checkMessage($driver, 'info', $message);
+    }
+
+    public static function errorMessage($driver, $message) {
+        self::checkMessage($driver, 'danger', $message);
     }
 }

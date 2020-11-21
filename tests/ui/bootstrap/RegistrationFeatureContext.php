@@ -4,6 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -14,6 +15,7 @@ use Sql;
 use User;
 use ui\models\Registration;
 
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
 
 class RegistrationFeatureContext implements Context {
@@ -354,6 +356,7 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @Then /^the (register|update) button is disabled$/
+     * @throws Exception
      */
     public function theRegisterButtonIsDisabled() {
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('update-profile'))));
@@ -364,27 +367,21 @@ class RegistrationFeatureContext implements Context {
      * @Then /^I see an error message indicating username already exists$/
      */
     public function iSeeAnErrorMessageIndicatingUsernameAlreadyExists() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::classname('alert-danger')));
-        Assert::assertEquals('×
-That username already exists in the system', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+        CustomAsserts::errorMessage($this->driver, 'That username already exists in the system');
     }
 
     /**
      * @Then /^I see an error message indicating email already exists$/
      */
     public function iSeeAnErrorMessageIndicatingEmailAlreadyExists() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::classname('alert-danger')));
-        Assert::assertEquals('×
-That email already exists in the system: try logging in with it', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+        CustomAsserts::errorMessage($this->driver, 'That email already exists in the system: try logging in with it');
     }
 
     /**
      * @Then /^I see an error message indicating wrong password provided$/
      */
     public function iSeeAnErrorMessageIndicatingWrongPasswordProvided() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::classname('alert-danger')));
-        Assert::assertEquals('×
-Current password does not match our records', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+        CustomAsserts::errorMessage($this->driver, 'Current password does not match our records');
     }
 
     /**
@@ -398,9 +395,7 @@ Current password does not match our records', $this->driver->findElement(WebDriv
      * @Then /^I see a success message indicating my user was updated$/
      */
     public function iSeeASuccessMessageIndicatingMyUserWasUpdated() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::classname('alert-success')));
-        Assert::assertEquals('×
-Your profile information was successfully updated.', $this->driver->findElement(WebDriverBy::className('alert-success'))->getText());
+        CustomAsserts::successMessage($this->driver, 'Your profile information was successfully updated.');
     }
 
     /**

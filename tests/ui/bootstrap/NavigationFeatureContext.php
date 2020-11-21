@@ -286,14 +286,6 @@ class NavigationFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see an error message indicating no album exists$/
-     */
-    public function iSeeAnErrorMessageIndicatingNoAlbumExists() {
-        Assert::assertEquals('×
-That code does not match any albums', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
-    }
-
-    /**
      * @Then /^I see the "([^"]*)" content collapsed$/
      */
     public function iSeeTheContentCollapsed($ord) {

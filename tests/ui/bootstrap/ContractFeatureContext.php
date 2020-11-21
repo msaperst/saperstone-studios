@@ -4,6 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -12,6 +13,8 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 use Sql;
+
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 
 class ContractFeatureContext implements Context {
     /**
@@ -109,9 +112,7 @@ class ContractFeatureContext implements Context {
      * @Then /^I see a success message indicating my contract will be emailed to me$/
      */
     public function iSeeASuccessMessageIndicatingMyContractWillBeEmailedToMe() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::classname('alert-success')));
-        Assert::assertEquals('×
-Thank you for signing the contract. You will receive a confirmation email with the final contract attached shortly.', $this->driver->findElement(WebDriverBy::className('alert-success'))->getText());
+        CustomAsserts::successMessage($this->driver, 'Thank you for signing the contract. You will receive a confirmation email with the final contract attached shortly.');
     }
 
     /**
@@ -133,8 +134,6 @@ Thank you for signing the contract. You will receive a confirmation email with t
      * @Then /^I see an error message indicating an invalid email$/
      */
     public function iSeeAnErrorMessageIndicatingAnInvalidEmail() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::classname('alert-danger')));
-        Assert::assertEquals('×
-Contract contact email is not valid', $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText(), $this->driver->findElement(WebDriverBy::className('alert-danger'))->getText());
+        CustomAsserts::errorMessage($this->driver, 'Contract contact email is not valid');
     }
 }
