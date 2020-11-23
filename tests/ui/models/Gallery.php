@@ -48,7 +48,7 @@ class Gallery {
     }
 
     public function openSlideShow($imgNum) {
-        $slideShowId = substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8);
+        $slideShowId =  str_replace(" ","-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
         $this->justOpenSlideShow($imgNum);
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id($slideShowId))));
     }

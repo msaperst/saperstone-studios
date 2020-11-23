@@ -22,7 +22,9 @@ class RetouchFeatureContext implements Context {
     private $wait;
     private $baseUrl;
 
-    /** @BeforeScenario */
+    /** @BeforeScenario
+     * @param BeforeScenarioScope $scope
+     */
     public function gatherContexts(BeforeScenarioScope $scope) {
         $environment = $scope->getEnvironment();
         $this->driver = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
@@ -39,6 +41,7 @@ class RetouchFeatureContext implements Context {
 
     /**
      * @When /^I select the "([^"]*)" retouched thumbnail$/
+     * @param $ord
      */
     public function iSelectTheRetouchedThumbnail($ord) {
         $thumbs = $this->driver->findElements(WebDriverBy::className('col-lg-1'));
@@ -47,6 +50,7 @@ class RetouchFeatureContext implements Context {
 
     /**
      * @When /^I move the slider to (\d+)%$/
+     * @param $width
      */
     public function iMoveTheSliderTo($width) {
         $slider = $this->driver->findElement(WebDriverBy::name('slider'));
@@ -75,6 +79,7 @@ class RetouchFeatureContext implements Context {
 
     /**
      * @Then /^I see the "([^"]*)" original image$/
+     * @param $ord
      */
     public function iSeeTheOriginalImage($ord) {
         $thumbs = $this->driver->findElements(WebDriverBy::className('col-lg-1'));
@@ -86,6 +91,8 @@ class RetouchFeatureContext implements Context {
 
     /**
      * @Then /^I see (\d+)% of the "([^"]*)" retouched image$/
+     * @param $width
+     * @param $ord
      */
     public function iSeeOfTheRetouchedImage($width, $ord) {
         $thumbs = $this->driver->findElements(WebDriverBy::className('col-lg-1'));
@@ -100,6 +107,7 @@ class RetouchFeatureContext implements Context {
 
     /**
      * @Then /^I see the "([^"]*)" image comment$/
+     * @param $ord
      */
     public function iSeeTheImageComment($ord) {
         $thumbs = $this->driver->findElements(WebDriverBy::className('col-lg-1'));

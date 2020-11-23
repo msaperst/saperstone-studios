@@ -39,6 +39,7 @@ class AlbumFeatureContext implements Context {
      * @var RemoteWebElement
      */
     private $image;
+    private $albumIds = [];
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -56,42 +57,17 @@ class AlbumFeatureContext implements Context {
      */
     public function cleanup() {
         $sql = new Sql();
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99990;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99991;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99992;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99993;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99994;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99995;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99996;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99997;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99998;");
-        $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99999;");
+        foreach( $this->albumIds as $albumId) {
+            $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
+            $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = $albumId;");
+            $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
+        }
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99990;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99991;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99992;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99993;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99994;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99995;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99996;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99997;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99998;");
-        $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99999;");
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99990;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99991;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99992;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99993;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99994;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99995;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99996;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99997;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99998;");
-        $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99999;");
         $sql->disconnect();
     }
 
@@ -101,6 +77,7 @@ class AlbumFeatureContext implements Context {
      * @throws Exception
      */
     public function albumExists($albumId) {
+        $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1);");
         $sql->disconnect();
@@ -113,6 +90,7 @@ class AlbumFeatureContext implements Context {
      * @throws Exception
      */
     public function albumExistsWithCode($albumId, $albumCode) {
+        $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1, '$albumCode');");
         $sql->disconnect();
@@ -125,19 +103,20 @@ class AlbumFeatureContext implements Context {
      * @throws Exception
      */
     public function albumExistsWithImages($albumId, $images) {
+        $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1, '$images');");
         for ($i = 0; $i < $images; $i++) {
             $sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ((9999 + $i), '$albumId', 'Image $i', $i, '', '/albums/sample-album/sample.jpg', '400', '300', '1');");
         }
-        $oldmask = umask(0);
+        $oldMask = umask(0);
         if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
             mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
         }
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album/sample.jpg');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album/sample.jpg', 0777);
-        umask($oldmask);
+        umask($oldMask);
         $sql->disconnect();
     }
 
@@ -193,7 +172,7 @@ class AlbumFeatureContext implements Context {
         $code = $sql->getRow("SELECT * FROM `albums` WHERE `id` = $albumId;")['code'];
         $sql->disconnect();
         $cookie = $this->driver->manage()->getCookieNamed('searched');
-        Assert::assertEquals(md5('album' . $code), json_decode(urldecode($cookie->getValue()), true)[99999]);
+        Assert::assertEquals(md5('album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
     }
 
     /**

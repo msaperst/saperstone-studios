@@ -5,7 +5,8 @@ Feature: Gallery
   So that I see samples of photos
 
   Background:
-    Given I am on the "portrait/galleries.php?w=999" page
+    Given gallery 999 exists with 16 images
+    And I am on the "portrait/galleries.php?w=999" page
 
   Scenario: Gallery images load
     Then I see the "1st" gallery images load
@@ -47,7 +48,9 @@ Feature: Gallery
     Then I see gallery image 7 in the preview modal
 
   Scenario: Images with captions display captions
-    When I view gallery image 2
+    Given gallery 999 image 2 has captain "sample caption"
+    When I reload the page
+    And I view gallery image 2
     Then I see the gallery caption "sample caption" displayed
 
   Scenario: Images without captions do not display captions

@@ -4,6 +4,7 @@ Feature: Contract
   So that I can employ saperstone studios to do my bidding
 
   Background:
+    Given contract 99999 exists
     Given I am on the "contract.php?c=8e07fb32bf072e1825df8290a7bcdc57" page
 
   Scenario: Unable to sign contract without name

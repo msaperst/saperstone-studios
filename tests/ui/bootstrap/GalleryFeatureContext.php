@@ -12,16 +12,11 @@ use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 use Sql;
 use ui\models\Gallery;
-use User;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Gallery.php';
 
 class GalleryFeatureContext implements Context {
 
-    /**
-     * @var Sql
-     */
-    private $sql;
     /**
      * @var RemoteWebDriver
      */
@@ -30,11 +25,7 @@ class GalleryFeatureContext implements Context {
      * @var WebDriverWait
      */
     private $wait;
-    /**
-     * @var User
-     */
-    private $user;
-    private $baseUrl;
+    private $galleryIds = [];
     /**
      * The image we're interacting with
      * @var RemoteWebElement
@@ -48,15 +39,42 @@ class GalleryFeatureContext implements Context {
     public function gatherContexts(BeforeScenarioScope $scope) {
         $environment = $scope->getEnvironment();
         $this->driver = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
-        $this->user = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $this->wait = new WebDriverWait($this->driver, 10);
-        $this->baseUrl = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getBaseUrl();
-        $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ('999', '1', 'sample.jpg', 'Sample', NULL);");
-        for ($i = 0; $i <= 15; $i++) {
-            $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ((9999 + $i), '999', 'Image $i', $i, '', '/portrait/img/sample/sample.jpg', '400', '300', '1');");
+    }
+
+    /**
+     * @AfterScenario
+     * @throws Exception
+     */
+    public function cleanup() {
+        $sql = new Sql();
+        foreach($this->galleryIds as $galleryId) {
+            $sql->executeStatement("DELETE FROM `galleries` WHERE `galleries`.`id` = $galleryId;");
+            $sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`gallery` = $galleryId;");
         }
-        $this->sql->executeStatement("UPDATE `gallery_images` SET caption = 'sample caption' WHERE id = 10000");
+        $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `galleries`;")['count'];
+        $count++;
+        $sql->executeStatement("ALTER TABLE `galleries` AUTO_INCREMENT = $count;");
+        $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `gallery_images`;")['count'];
+        $count++;
+        $sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
+        $sql->disconnect();
+        system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
+    }
+
+    /**
+     * @Given /^gallery (\d+) exists with (\d+) images$/
+     * @param $galleryId
+     * @param $images
+     * @throws Exception
+     */
+    public function galleryExistsWithImages($galleryId, $images) {
+        $this->galleryIds[] = $galleryId;
+        $sql = new Sql();
+        $sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ($galleryId, '1', 'sample.jpg', 'Gallery $galleryId', NULL);");
+        for ($i = 0; $i < $images; $i++) {
+            $sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ((9999 + $i), '$galleryId', 'Image $i', $i, '', '/portrait/img/sample/sample.jpg', '400', '300', '1');");
+        }
         $oldmask = umask(0);
         if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample')) {
             mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
@@ -65,23 +83,20 @@ class GalleryFeatureContext implements Context {
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample.jpg');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample.jpg', 0777);
         umask($oldmask);
+        $sql->disconnect();
     }
 
     /**
-     * @AfterScenario
+     * @Given /^gallery (\d+) image (\d+) has captain "([^"]*)"$/
+     * @param $gallery
+     * @param $image
+     * @param $caption
      * @throws Exception
      */
-    public function cleanup() {
-        $this->sql->executeStatement("DELETE FROM `galleries` WHERE `galleries`.`id` = 999;");
-        $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`gallery` = 999;");
-        $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `galleries`;")['count'];
-        $count++;
-        $this->sql->executeStatement("ALTER TABLE `galleries` AUTO_INCREMENT = $count;");
-        $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `gallery_images`;")['count'];
-        $count++;
-        $this->sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
-        $this->sql->disconnect();
+    public function galleryImageHasCaptain($gallery, $image, $caption) {
+        $sql = new Sql();
+        $sql->executeStatement("UPDATE `gallery_images` SET caption = '$caption' WHERE `gallery` = $gallery AND sequence = " . ($image-1));
+        $sql->disconnect();
     }
 
     /**
@@ -156,18 +171,20 @@ class GalleryFeatureContext implements Context {
      * @param $imgNum
      */
     public function iSeeImageInThePreviewModal($imgNum) {
-        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('Sample'))->isDisplayed());
+        $slideShowId =  str_replace(" ","-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id($slideShowId))->isDisplayed());
         $activeImage = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
         Assert::assertEquals('Image ' . ($imgNum - 1), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'));
     }
 
     /**
      * @Then /^I see the gallery caption "([^"]*)" displayed$/
+     * @param $caption
      */
     public function iSeeTheCaptionDisplayed($caption) {
         $gallery = new Gallery($this->driver, $this->wait);
         $img = $gallery->getSlideShowImage();
-        Assert::assertEquals($caption, $img->findElement(WebDriverBy::tagName('h2'))->getText());
+        Assert::assertEquals($caption, $img->findElement(WebDriverBy::tagName('h2'))->getText(), $img->findElement(WebDriverBy::tagName('h2'))->getText());
     }
 
     /**

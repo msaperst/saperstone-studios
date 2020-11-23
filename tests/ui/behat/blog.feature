@@ -3,6 +3,18 @@ Feature: Blog
   I want to view blog posts and content
   So that I see latest pretty images
 
+  Background:
+    Given blog 2030 exists
+    And blog 2031 exists
+    And blog 2032 exists
+    And blog 2033 exists
+    And blog 2034 exists
+    And blog 2035 exists
+    And blog 2036 exists
+    And blog 2037 exists
+    And blog 2038 exists
+    And blog 2039 exists
+
   Scenario: Full Blog Displayed
     Given I am on the blog page
     Then I see the "1st" blog post load
@@ -44,20 +56,20 @@ Feature: Blog
     Then I see the "2nd" blog previews load
 
   Scenario: Full Blog Post Displayed
-    Given I am on the "blog/post.php?p=999" page
+    Given I am on the "blog/post.php?p=2039" page
     Then I see the full blog post
 
   Scenario: Full Blog Post View Comments
-    Given I am on the "blog/post.php?p=999" page
+    Given I am on the "blog/post.php?p=2039" page
     Then I see the blog post's comments
 
   Scenario: Only message required to leave comment
-    Given I am on the "blog/post.php?p=999" page
+    Given I am on the "blog/post.php?p=2039" page
     When I try to leave the comment "This is a great post"
     Then the submit comment button is enabled
 
-  Scenario Outline: Can't leave a comment with curseword
-    Given I am on the "blog/post.php?p=999" page
+  Scenario Outline: Can't leave a comment with curse word
+    Given I am on the "blog/post.php?p=2039" page
     When I try to leave the comment "<comment>"
     And the submit comment button is disabled
     Examples:
@@ -69,50 +81,50 @@ Feature: Blog
       | bitches need stiches         |
 
   Scenario: Anonymous user can leave comment
-    Given I am on the "blog/post.php?p=999" page
+    Given I am on the "blog/post.php?p=2039" page
     When I leave the comment "This is a great post"
     Then I see the blog post's comments
 
   Scenario: User can leave comment
     Given an enabled user account exists
     And I am logged in with saved credentials
-    And I am on the "blog/post.php?p=999" page
+    And I am on the "blog/post.php?p=2039" page
     When I leave the comment "This is a great post"
     Then I see the blog post's comments
 
   Scenario: Anonymous User Can't Delete Comment
-    Given I am on the "blog/post.php?p=999" page
+    Given I am on the "blog/post.php?p=2039" page
     Then I can not delete the "1st" comment
     And I can not delete the "2nd" comment
 
   Scenario: Anonymous User Can't Delete Own Comment
-    Given I am on the "blog/post.php?p=999" page
+    Given I am on the "blog/post.php?p=2039" page
     When I leave the comment "This is a great post"
     Then I can not delete the "1st" comment
 
   Scenario: User Can't Delete Comment
-    Given I am on the "blog/post.php?p=999" page
+    Given I am on the "blog/post.php?p=2039" page
     Then I can not delete the "1st" comment
     And I can not delete the "2nd" comment
 
   Scenario: User Can Delete Own Comment
     Given an enabled user account exists
     And I am logged in with saved credentials
-    And I have left the comment "This is a great post" on blog 999
-    And I am on the "blog/post.php?p=999" page
+    And I have left the comment "This is a great post" on blog 2039
+    And I am on the "blog/post.php?p=2039" page
     When I delete the "1st" comment
     Then I see the blog post's comments
 
   Scenario: Admin Can Delete Any Comment
     Given I am logged in with admin credentials
-    And I am on the "blog/post.php?p=999" page
+    And I am on the "blog/post.php?p=2039" page
     When I delete the "2nd" comment
     Then I see the blog post's comments
 
   Scenario: User Can Delete Own New Comment
     Given an enabled user account exists
     And I am logged in with saved credentials
-    Given I am on the "blog/post.php?p=999" page
+    Given I am on the "blog/post.php?p=2039" page
     When I leave the comment "This is a great post"
     And I delete the "1st" comment
     Then I see the blog post's comments

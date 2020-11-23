@@ -43,7 +43,9 @@ class RegistrationFeatureContext implements Context {
     private $email;
     private $username;
 
-    /** @BeforeScenario */
+    /** @BeforeScenario
+     * @param BeforeScenarioScope $scope
+     */
     public function gatherContexts(BeforeScenarioScope $scope) {
         $this->environment = $scope->getEnvironment();
         $this->driver = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
@@ -81,6 +83,12 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I register a user with "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)"$/
+     * @param $username
+     * @param $password
+     * @param $confirmPassword
+     * @param $firstName
+     * @param $lastName
+     * @param $email
      */
     public function iRegisterAUserWith($username, $password, $confirmPassword, $firstName, $lastName, $email) {
         $register = new Registration($this->driver, $this->wait);
@@ -94,6 +102,12 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I try to register a user with "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)"$/
+     * @param $username
+     * @param $password
+     * @param $confirmPassword
+     * @param $firstName
+     * @param $lastName
+     * @param $email
      */
     public function iTryToRegisterAUserWith($username, $password, $confirmPassword, $firstName, $lastName, $email) {
         $register = new Registration($this->driver, $this->wait);
@@ -102,6 +116,7 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I try to register a username of "([^"]*)"$/
+     * @param $username
      */
     public function iTryToRegisterAUsernameOf($username) {
         $register = new Registration($this->driver, $this->wait);
@@ -110,6 +125,7 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I try to set my password of "([^"]*)"$/
+     * @param $password
      */
     public function iTryToSetMyPasswordOf($password) {
         $register = new Registration($this->driver, $this->wait);
@@ -118,6 +134,8 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I try to (register|update to) a password of "([^"]*)"$/
+     * @param $x
+     * @param $password
      */
     public function iTryToRegisterAPasswordOf($x, $password) {
         $register = new Registration($this->driver, $this->wait);
@@ -126,6 +144,8 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I try to (register|update to) a password confirm of "([^"]*)"$/
+     * @param $x
+     * @param $password
      */
     public function iTryToRegisterAPasswordConfirmOf($x, $password) {
         $register = new Registration($this->driver, $this->wait);
@@ -134,6 +154,8 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I try to (register|update to) a first name of "([^"]*)"$/
+     * @param $x
+     * @param $firstName
      */
     public function iTryToRegisterAFirstNameOf($x, $firstName) {
         $register = new Registration($this->driver, $this->wait);
@@ -142,6 +164,8 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I try to (register|update to) a last name of "([^"]*)"$/
+     * @param $x
+     * @param $lastName
      */
     public function iTryToRegisterALastNameOf($x, $lastName) {
         $register = new Registration($this->driver, $this->wait);
@@ -150,6 +174,8 @@ class RegistrationFeatureContext implements Context {
 
     /**
      * @When /^I try to (register|update to) an email of "([^"]*)"$/
+     * @param $x
+     * @param $email
      */
     public function iTryToRegisterAnEmailOf($x, $email) {
         $register = new Registration($this->driver, $this->wait);

@@ -23,7 +23,6 @@ class ContactFeatureContext implements Context {
      * @var WebDriverWait
      */
     private $wait;
-    private $baseUrl;
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -33,11 +32,12 @@ class ContactFeatureContext implements Context {
         $environment = $scope->getEnvironment();
         $this->driver = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
         $this->wait = new WebDriverWait($this->driver, 10);
-        $this->baseUrl = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getBaseUrl();
     }
 
     /**
      * @When /^I provide "([^"]*)" for the contact "([^"]*)"$/
+     * @param $value
+     * @param $field
      */
     public function iProvideForTheContact($value, $field) {
         $this->driver->findElement(WebDriverBy::id($field))->clear()->sendKeys($value);
@@ -94,6 +94,7 @@ class ContactFeatureContext implements Context {
 
     /**
      * @Given /^the submit contact button is disabled$/
+     * @throws Exception
      */
     public function theSubmitContactButtonIsDisabled() {
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('submit-contact-form'))));
