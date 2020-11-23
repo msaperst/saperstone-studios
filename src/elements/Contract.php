@@ -72,7 +72,7 @@ class Contract {
         $sql = new Sql();
         $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
         $sql->disconnect();
-        if (!$contract->raw ['id']) {
+        if (!isset($contract->raw) || !isset($contract->raw['id'])) {
             throw new Exception("Contract id does not match any contracts");
         }
         self::setRawData($contract);
@@ -90,7 +90,7 @@ class Contract {
         $link = $sql->escapeString($link);
         $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE link = '$link';");
         $sql->disconnect();
-        if (!$contract->raw ['id']) {
+        if (!isset($contract->raw) || !isset($contract->raw['id'])) {
             throw new Exception("Contract link does not match any contracts");
         }
         self::setRawData($contract);

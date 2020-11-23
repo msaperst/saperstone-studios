@@ -29,7 +29,7 @@ class Album {
         $id = (int)$id;
         $sql = new Sql();
         $album->raw = $sql->getRow("SELECT * FROM albums WHERE id = $id;");
-        if (!$album->raw ['id']) {
+        if (!isset($album->raw) || !isset($album->raw['id'])) {
             $sql->disconnect();
             throw new Exception("Album id does not match any albums");
         }

@@ -23,7 +23,7 @@ class ProductType {
         $sql = new Sql();
         $productType->raw = $sql->getRow("SELECT * FROM product_types WHERE id = $id;");
         $sql->disconnect();
-        if (!$productType->raw ['id']) {
+        if (!isset($productType->raw) || !isset($productType->raw['id'])) {
             throw new Exception("Product id does not match any products");
         }
         $productType->id = $productType->raw['id'];

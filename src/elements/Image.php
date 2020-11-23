@@ -26,17 +26,21 @@ class Image {
         $sequence = (int)$sequence;
         if ($container instanceof Album) {
             $this->raw = $sql->getRow("SELECT * FROM album_images WHERE album = {$container->getId()} AND sequence = $sequence;");
+            if (!isset($this->raw) || !isset($this->raw['id'])) {
+                $sql->disconnect();
+                throw new Exception("Image id does not match any images");
+            }
             $this->album = $this->raw['album'];
         } elseif ($container instanceof Gallery) {
             $this->raw = $sql->getRow("SELECT * FROM gallery_images WHERE gallery = {$container->getId()} AND id = $sequence;");  //TODO should align the JS on this and albums
+            if (!isset($this->raw) || !isset($this->raw['id'])) {
+                $sql->disconnect();
+                throw new Exception("Image id does not match any images");
+            }
             $this->gallery = $this->raw['gallery'];
         } else {
             $sql->disconnect();
             throw new Exception("Parent (album or gallery) is required");
-        }
-        if (!$this->raw ['id']) {
-            $sql->disconnect();
-            throw new Exception("Image id does not match any images");
         }
         $this->id = $this->raw['id'];
         $this->title = $this->raw['title'];

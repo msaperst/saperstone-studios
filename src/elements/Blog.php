@@ -31,7 +31,7 @@ class Blog {
         $id = (int)$id;
         $sql = new Sql();
         $blog->raw = $sql->getRow("SELECT * FROM blog_details WHERE id = $id;");
-        if (!$blog->raw ['id']) {
+        if (!isset($blog->raw) || !isset($blog->raw['id'])) {
             $sql->disconnect();
             throw new Exception("Blog id does not match any blog posts");
         }

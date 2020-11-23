@@ -25,7 +25,7 @@ class Product {
         $sql = new Sql();
         $product->raw = $sql->getRow("SELECT * FROM products WHERE id = $id;");
         $sql->disconnect();
-        if (!$product->raw ['id']) {
+        if (!isset($product->raw) || !isset($product->raw['id'])) {
             throw new Exception("Product id does not match any products");
         }
         $product->id = $product->raw['id'];

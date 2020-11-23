@@ -25,7 +25,7 @@ class Gallery {
         $sql = new Sql();
         $id = (int)$id;
         $gallery->raw = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
-        if (!$gallery->raw ['title']) {
+        if (!isset($gallery->raw) || !isset($gallery->raw['id'])) {
             $sql->disconnect();
             throw new Exception("Gallery id does not match any galleries");
         }

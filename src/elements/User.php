@@ -58,7 +58,7 @@ class User {
         $sql = new Sql();
         $user->raw = $sql->getRow("SELECT * FROM users WHERE id = $id;");
         $sql->disconnect();
-        if (!$user->raw ['id']) {
+        if (!isset($user->raw) || !isset($user->raw['id']) || !$user->raw['id']) {
             throw new Exception("User id does not match any users");
         }
         $user->id = $user->raw['id'];

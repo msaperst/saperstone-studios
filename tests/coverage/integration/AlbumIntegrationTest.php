@@ -22,13 +22,12 @@ class AlbumIntegrationTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '899', '', '1', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '898');");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (1, '899');");
-        $oldmask = umask(0);
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums');
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample');
+        $oldMask = umask(0);
+        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777, true);
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777);
         touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg', 0777);
-        umask($oldmask);
+        umask($oldMask);
     }
 
     public function tearDown() {

@@ -28,7 +28,7 @@ class Comment {
         $id = (int)$id;
         $sql = new Sql();
         $comment->raw = $sql->getRow("SELECT * FROM blog_comments WHERE id = $id;");
-        if (!$comment->raw ['id']) {
+        if (!isset($comment->raw) || !isset($comment->raw['id'])) {
             $sql->disconnect();
             throw new Exception("Comment id does not match any comments");
         }
