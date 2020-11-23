@@ -85,7 +85,7 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @When /^I hover over image (\d+)$/
+     * @When /^I hover over gallery image (\d+)$/
      * @param $imgNum
      */
     public function iHoverOverImage($imgNum) {
@@ -95,7 +95,7 @@ class GalleryFeatureContext implements Context {
 
 
     /**
-     * @When /^I view image (\d+)$/
+     * @When /^I view gallery image (\d+)$/
      * @param $imgNum
      */
     public function iViewImage($imgNum) {
@@ -104,7 +104,7 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @When /^I advance to the next image$/
+     * @When /^I advance to the next gallery image$/
      */
     public function iAdvanceToTheNextImage() {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -112,7 +112,7 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @When /^I advance to the previous image$/
+     * @When /^I advance to the previous gallery image$/
      */
     public function iAdvanceToThePreviousImage() {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -120,7 +120,7 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @When /^I skip to image (\d+)$/
+     * @When /^I skip to gallery image (\d+)$/
      * @param $img
      */
     public function iSkipToImage($img) {
@@ -144,7 +144,7 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see the info icon on image (\d+)$/
+     * @Then /^I see the info icon on gallery image (\d+)$/
      * @param $imgNum
      */
     public function iSeeTheInfoIconOnImage($imgNum) {
@@ -152,7 +152,7 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see image (\d+) in the preview modal$/
+     * @Then /^I see gallery image (\d+) in the preview modal$/
      * @param $imgNum
      */
     public function iSeeImageInThePreviewModal($imgNum) {
@@ -162,7 +162,7 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see the caption "([^"]*)" displayed$/
+     * @Then /^I see the gallery caption "([^"]*)" displayed$/
      */
     public function iSeeTheCaptionDisplayed($caption) {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -171,7 +171,7 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I do not see any captions$/
+     * @Then /^I do not see any gallery captions$/
      */
     public function iDoNotSeeAnyCaptions() {
         $gallery = new Gallery($this->driver, $this->wait);

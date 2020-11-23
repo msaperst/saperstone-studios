@@ -92,7 +92,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
     <!-- /.row -->
 
     <!-- Services Section -->
-    <div id="album-thumbs" class="row">
+    <div id="album-thumbs" class="row image-grid">
         <?php
         if (count($images) > 0) {
             ?>

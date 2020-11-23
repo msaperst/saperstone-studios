@@ -4,9 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Testwork\Hook\Scope\AfterSuiteScope;
-use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
+use Exception;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -57,7 +55,7 @@ class BaseFeatureContext implements Context {
     /**
      * @BeforeSuite
      */
-    public static function setupTestReport(BeforeSuiteScope $scope) {
+    public static function setupTestReport() {
         // setup our logging
         if( !file_exists(BaseFeatureContext::reportDir)) {
             mkdir(BaseFeatureContext::reportDir);
@@ -70,8 +68,9 @@ class BaseFeatureContext implements Context {
 
     /**
      * @BeforeScenario
+     * @throws Exception
      */
-    public function setupUser(BeforeScenarioScope $scope) {
+    public function setupUser() {
         // setup our webdriver instance
         $host = 'http://127.0.0.1:4444/wd/hub';
         if (getenv('BROWSER') == 'firefox') {
@@ -107,6 +106,8 @@ class BaseFeatureContext implements Context {
 
     /**
      * @AfterScenario
+     * @param AfterScenarioScope $scope
+     * @throws Exception
      */
     public function cleanup(AfterScenarioScope $scope) {
         $scenarioName = $scope->getFeature()->getTitle() . ' : ' . $scope->getScenario()->getTitle() . ' : ' . $scope->getScenario()->getLine();
@@ -115,7 +116,7 @@ class BaseFeatureContext implements Context {
         $this->driver->quit();
         // log our screenshot
         $output = fopen( BaseFeatureContext::reportFile, 'a' );
-        fwrite($output, '<p><h2 class="r' . $scope->getTestResult()->getResultCode() . '" style="cursor: pointer;" onclick="toggleImg(this)">' . $scenarioName . '</h2><img style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
+        fwrite($output, '<p><h2 class="r' . $scope->getTestResult()->getResultCode() . '" style="cursor: pointer;" onclick="toggleImg(this)">' . $scenarioName . '</h2><img alt="screenshot" style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
         fclose($output);
         // if we created a new user
         if ($this->user->getId() != '' && $this->deleteUser) {
@@ -134,7 +135,7 @@ class BaseFeatureContext implements Context {
     /**
      * @AfterSuite
      */
-    public static function cleanupTestReport(AfterSuiteScope $scope) {
+    public static function cleanupTestReport() {
         // setup our logging
         $output = fopen( BaseFeatureContext::reportFile, 'a' );
         fwrite($output, '</body>');

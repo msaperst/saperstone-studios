@@ -5,6 +5,7 @@ namespace ui\models;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverWait;
@@ -18,10 +19,15 @@ class Album {
      * @var WebDriverWait
      */
     private $wait;
+    /**
+     * @var Gallery
+     */
+    private $gallery;
 
     public function __construct($driver, $wait) {
         $this->driver = $driver;
         $this->wait = $wait;
+        $this->gallery = new Gallery($this->driver, $this->wait);
     }
 
     public function waitForFinder() {
@@ -64,15 +70,7 @@ class Album {
     }
 
     public function openSlideShow($imgNum) {
-        $galleryClass = WebDriverBy::className('gallery');
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($galleryClass));
-        $ourGalleryImage = $this->driver->findElements($galleryClass)[$imgNum];
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($ourGalleryImage));
-        $actions = new WebDriverActions($this->driver);
-        $actions->moveToElement($ourGalleryImage)->perform();
-        $ourGalleryImageInfo = $this->driver->findElements(WebDriverBy::className('info'))[$imgNum];
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($ourGalleryImageInfo));
-        $ourGalleryImageInfo->click();
+        $this->gallery->justOpenSlideShow($imgNum);
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
     }
 
@@ -80,4 +78,30 @@ class Album {
         $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('favorites'))));
     }
+
+    public function waitForImagesToLoad($rows) {
+        $this->gallery->waitForImagesToLoad($rows);
+    }
+
+    public function hoverOverImage($imgNum): WebDriverElement {
+        return $this->gallery->hoverOverImage($imgNum);
+    }
+
+    public function advanceToNextImage() {
+        $this->gallery->advanceToNextImage();
+    }
+
+    public function advanceToPreviousImage() {
+        $this->gallery->advanceToPreviousImage();
+    }
+
+    public function advanceToImage($img) {
+        $this->gallery->advanceToImage($img);
+    }
+
+    public function getSlideShowImage() {
+        return $this->gallery->getSlideShowImage();
+    }
+
+
 }
