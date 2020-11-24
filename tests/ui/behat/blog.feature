@@ -1,3 +1,4 @@
+@blog
 Feature: Blog
   As a user
   I want to view blog posts and content
@@ -78,7 +79,7 @@ Feature: Blog
       | your a motherfucker          |
       | shove your face in a cuntpie |
       | don't be a bitch             |
-      | bitches need stiches         |
+      | bitches need stitches         |
 
   Scenario: Anonymous user can leave comment
     Given I am on the "blog/post.php?p=2039" page
