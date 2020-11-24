@@ -3,6 +3,7 @@
 namespace ui\page;
 
 use CustomAsserts;
+use Exception;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -20,6 +21,9 @@ class AlbumPageLoadTest extends TestBase {
     private $sql;
     private $wait;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         parent::setUp();
         $this->sql = new Sql();
@@ -31,6 +35,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->wait = new WebDriverWait($this->driver, 5);
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99999;");
@@ -63,6 +70,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAlbumLoadsForAdmin() {
         $this->sql->executeStatement("UPDATE albums SET owner = 4 WHERE id = 99999;");
         $this->driver->get($this->baseUrl);
@@ -72,6 +82,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAlbumLoadsForOwner() {
         $this->sql->executeStatement("UPDATE albums SET owner = 4 WHERE id = 99999;");
         $this->driver->get($this->baseUrl);
@@ -99,6 +112,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAlbumLoadsInList() {
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '99999');");
         $this->driver->get($this->baseUrl);
@@ -108,6 +124,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAlbumUpdatesLastAccessed() {
         date_default_timezone_set("America/New_York");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '99999');");
@@ -117,6 +136,9 @@ class AlbumPageLoadTest extends TestBase {
         CustomAsserts::timeWithin(2, $this->sql->getRow("SELECT lastAccessed FROM albums WHERE id = 99999;")['lastAccessed']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAlbumLogsAccessed() {
         date_default_timezone_set("America/New_York");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '99999');");
@@ -149,6 +171,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('edit-album-btn'))));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNoImages() {
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99999;");
         $this->driver->get($this->baseUrl);
@@ -198,6 +223,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('delete-image-btn'))->isEnabled());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSlideShowButtonsDownloaderUser() {
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '99999');");
         $this->driver->get($this->baseUrl);
@@ -251,6 +279,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('view-my-favorites-btn'))->isDisplayed());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFavoritesButtonsDownloaderUser() {
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '99999');");
         $this->driver->get($this->baseUrl);
@@ -346,6 +377,9 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('access-btn'))->isEnabled());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testButtonsDownloaderUser() {
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '99999');");
         $this->driver->get($this->baseUrl);

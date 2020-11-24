@@ -2,6 +2,7 @@
 
 namespace ui\page;
 
+use Exception;
 use Facebook\WebDriver\WebDriverBy;
 use Sql;
 
@@ -80,6 +81,9 @@ class BasicPagesLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testContractPageGoodC() {
         $sql = new Sql();
         try {
@@ -93,6 +97,9 @@ class BasicPagesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testContractPageIdSet() {
         $sql = new Sql();
         try {
@@ -105,6 +112,9 @@ class BasicPagesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testContractPageUnsignedLink() {
         $sql = new Sql();
         try {
@@ -123,6 +133,9 @@ class BasicPagesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testContractPageUnsignedNoLink() {
         $sql = new Sql();
         try {
@@ -140,6 +153,9 @@ class BasicPagesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testContractPageSigned() {
         $sql = new Sql();
         try {

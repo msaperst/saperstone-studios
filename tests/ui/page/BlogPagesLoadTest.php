@@ -2,6 +2,7 @@
 
 namespace ui\page;
 
+use Exception;
 use Facebook\WebDriver\WebDriverBy;
 use Sql;
 
@@ -107,6 +108,9 @@ class BlogPagesLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewPageAdminGoodPost() {
         $sql = new Sql();
         try {
@@ -140,6 +144,9 @@ class BlogPagesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewPageAdminGoodPostActive() {
         $sql = new Sql();
         try {
@@ -191,6 +198,9 @@ class BlogPagesLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testPostPageGoodP() {
         $sql = new Sql();
         try {
@@ -218,6 +228,9 @@ class BlogPagesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testPostPageGoodPAdmin() {
         $sql = new Sql();
         try {
@@ -266,6 +279,9 @@ class BlogPagesLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSearchPageGoodS() {
         $sql = new Sql();
         try {

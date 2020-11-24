@@ -2,6 +2,7 @@
 
 namespace ui\page;
 
+use Exception;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\WebDriverBy;
 use Sql;
@@ -39,6 +40,9 @@ class TemplatesLoadTest extends TestBase {
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::className('alert-warning'))));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAnnouncementBadTime() {
         try {
             $sql = new Sql();
@@ -54,6 +58,9 @@ class TemplatesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAnnouncementGoodTime() {
         try {
             $sql = new Sql();
@@ -69,6 +76,9 @@ class TemplatesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAnnouncementDismissed() {
         try {
             $sql = new Sql();
@@ -87,6 +97,9 @@ class TemplatesLoadTest extends TestBase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAnnouncementDomain() {
         try {
             $sql = new Sql();

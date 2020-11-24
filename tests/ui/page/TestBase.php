@@ -44,7 +44,7 @@ class TestBase extends TestCase {
         $this->driver->takeScreenshot( TestBase::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $this->getName() . '.png');
         $this->driver->quit();
         $output = fopen( TestBase::reportFile, 'a' );
-        fwrite($output, '<p><div style="cursor: pointer;" onclick="toggleImg(this)"><h2 class="r' . $this->getStatus() . '">' . $this->getName() . '</h2>' . $this->getStatusMessage(). '</div><img style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
+        fwrite($output, '<p><div style="cursor: pointer;" onclick="toggleImg(this)"><h2 class="r' . $this->getStatus() . '">' . $this->getName() . '</h2>' . $this->getStatusMessage(). '</div><img alt="screenshot" style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
         fclose($output);
     }
 
