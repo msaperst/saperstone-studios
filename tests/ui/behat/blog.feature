@@ -5,8 +5,7 @@ Feature: Blog
   So that I see latest pretty images
 
   Background:
-    Given blog 2030 exists
-    And blog 2031 exists
+    Given blog 2031 exists
     And blog 2032 exists
     And blog 2033 exists
     And blog 2034 exists
