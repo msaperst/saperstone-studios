@@ -4,6 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchCookieException;
@@ -61,6 +62,7 @@ class AlbumFeatureContext implements Context {
             $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
+            $sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`album` = $albumId;");
         }
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
@@ -141,6 +143,18 @@ class AlbumFeatureContext implements Context {
     public function albumImageHasCaptain($album, $image, $caption) {
         $sql = new Sql();
         $sql->executeStatement("UPDATE `album_images` SET caption = '$caption' WHERE `album` = $album AND sequence = " . ($image-1));
+        $sql->disconnect();
+    }
+
+    /**
+     * @Given /^album (\d+) image (\d+) is a favorite$/
+     * @param $album
+     * @param $image
+     */
+    public function albumImageIsAFavorite($album, $image) {
+        $sql = new Sql();
+        $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image-1))['id'];
+        $sql->executeStatement("INSERT INTO `favorites` VALUES( {$this->user->getId()}, $album, $img);");
         $sql->disconnect();
     }
 
@@ -258,6 +272,31 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @When /^I favorite the image$/
+     * @throws Exception
+     */
+    public function iFavoriteTheImage() {
+        $album = new Album($this->driver, $this->wait);
+        $album->favoriteImage();
+    }
+
+    /**
+     * @When /^I view my favorites$/
+     */
+    public function iViewMyFavorites() {
+        $album = new Album($this->driver, $this->wait);
+        $album->viewFavorites();
+    }
+
+    /**
+     * @Given /^I defavorite the image$/
+     */
+    public function iDefavoriteTheImage() {
+        $album = new Album($this->driver, $this->wait);
+        $album->unFavoriteImage();
+    }
+
+    /**
      * @Then /^I see the "([^"]*)" album images load$/
      * @param $ord
      */
@@ -308,5 +347,47 @@ class AlbumFeatureContext implements Context {
         $album = new Album($this->driver, $this->wait);
         $img = $album->getSlideShowImage();
         Assert::assertEquals('', $img->findElement(WebDriverBy::tagName('h2'))->getText());
+    }
+
+    /**
+     * @Then /^I see the image as a favorite$/
+     */
+    public function iSeeTheImageAsAFavorite() {
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('set-favorite-image-btn'))->isDisplayed());
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('unset-favorite-image-btn'))->isDisplayed());
+    }
+
+    /**
+     * @Then /^I see the favorite count is "([^"]*)"$/
+     * @param $favoriteCount
+     */
+    public function iSeeTheFavoriteCountIs($favoriteCount) {
+        Assert::assertEquals($favoriteCount, $this->driver->findElement(WebDriverBy::id('favorite-count'))->getText());
+    }
+
+    /**
+     * @Then /^I do not see the image as a favorite$/
+     */
+    public function iDoNotSeeTheImageAsAFavorite() {
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('set-favorite-image-btn'))->isDisplayed());
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('unset-favorite-image-btn'))->isDisplayed());
+    }
+
+    /**
+     * @Then /^I see (\d+) favorite[s]?$/
+     * @param $favorites
+     */
+    public function iSeeFavorites($favorites) {
+        Assert::assertEquals($favorites, sizeof($this->driver->findElements(WebDriverBy::className('img-favorite'))));
+    }
+
+    /**
+     * @Then /^I see album image (\d+) as a favorite$/
+     * @param $image
+     * @throws Exception
+     */
+    public function iSeeAlbumImageAsAFavorite($image) {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image-1) . "']"))));
+        Assert::assertTrue($this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image-1) . "']"))->isDisplayed());
     }
 }

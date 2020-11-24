@@ -2,6 +2,8 @@
 
 namespace ui\models;
 
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
@@ -102,6 +104,28 @@ class Album {
 
     public function getSlideShowImage() {
         return $this->gallery->getSlideShowImage();
+    }
+
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function favoriteImage() {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('set-favorite-image-btn')));
+        $this->driver->findElement(WebDriverBy::id('set-favorite-image-btn'))->click();
+    }
+
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function unFavoriteImage() {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('unset-favorite-image-btn')));
+        $this->driver->findElement(WebDriverBy::id('unset-favorite-image-btn'))->click();
+    }
+
+    public function viewFavorites() {
+        $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
     }
 
 
