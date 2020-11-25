@@ -4,10 +4,11 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchCookieException;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
@@ -17,6 +18,7 @@ use PHPUnit\Framework\Assert;
 use Sql;
 use ui\models\Album;
 use User;
+use ZipArchive;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
@@ -58,7 +60,7 @@ class AlbumFeatureContext implements Context {
      */
     public function cleanup() {
         $sql = new Sql();
-        foreach( $this->albumIds as $albumId) {
+        foreach ($this->albumIds as $albumId) {
             $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
@@ -108,16 +110,16 @@ class AlbumFeatureContext implements Context {
         $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1, '$images');");
-        for ($i = 0; $i < $images; $i++) {
-            $sql->executeStatement("INSERT INTO `album_images` (`album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$albumId', 'Image $i', $i, '', '/albums/sample-album/sample.jpg', '400', '300', '1');");
-        }
         $oldMask = umask(0);
         if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
             mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
         }
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album/sample.jpg');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album/sample.jpg', 0777);
+        for ($i = 0; $i < $images; $i++) {
+            $sql->executeStatement("INSERT INTO `album_images` (`album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$albumId', 'Image $i', $i, '', '/albums/sample-album/sample$i.jpg', '400', '300', '1');");
+            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg");
+            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg", 0777);
+        }
         umask($oldMask);
         $sql->disconnect();
     }
@@ -142,7 +144,7 @@ class AlbumFeatureContext implements Context {
      */
     public function albumImageHasCaptain($album, $image, $caption) {
         $sql = new Sql();
-        $sql->executeStatement("UPDATE `album_images` SET caption = '$caption' WHERE `album` = $album AND sequence = " . ($image-1));
+        $sql->executeStatement("UPDATE `album_images` SET caption = '$caption' WHERE `album` = $album AND sequence = " . ($image - 1));
         $sql->disconnect();
     }
 
@@ -150,11 +152,25 @@ class AlbumFeatureContext implements Context {
      * @Given /^album (\d+) image (\d+) is a favorite$/
      * @param $album
      * @param $image
+     * @throws Exception
      */
     public function albumImageIsAFavorite($album, $image) {
         $sql = new Sql();
-        $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image-1))['id'];
+        $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image - 1))['id'];
         $sql->executeStatement("INSERT INTO `favorites` VALUES( {$this->user->getId()}, $album, $img);");
+        $sql->disconnect();
+    }
+
+    /**
+     * @Given /^I have download rights for album (\d+) image (\d+)$/
+     * @param $album
+     * @param $image
+     * @throws Exception
+     */
+    public function iHaveDownloadRightsForAlbumImage($album, $image) {
+        $sql = new Sql();
+        $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image - 1))['id'];
+        $sql->executeStatement("INSERT INTO `download_rights` VALUES( {$this->user->getId()}, $album, $img);");
         $sql->disconnect();
     }
 
@@ -289,11 +305,42 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I defavorite the image$/
+     * @When /^I defavorite the image$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iDefavoriteTheImage() {
         $album = new Album($this->driver, $this->wait);
         $album->unFavoriteImage();
+    }
+
+    /**
+     * @When /^I remove favorite image (\d+)$/
+     * @param $image
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iRemoveFavoriteImage($image) {
+        $album = new Album($this->driver, $this->wait);
+        $album->removeFavorite($image);
+    }
+
+    /**
+     * @When /^I confirm my download$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iConfirmMyDownload() {
+        $album = new Album($this->driver, $this->wait);
+        $album->confirmDownload();
+    }
+
+    /**
+     * @When /^I download my favorites$/
+     */
+    public function iDownloadMyFavorites() {
+        $album = new Album($this->driver, $this->wait);
+        $album->downloadFavorites();
     }
 
     /**
@@ -384,10 +431,92 @@ class AlbumFeatureContext implements Context {
     /**
      * @Then /^I see album image (\d+) as a favorite$/
      * @param $image
-     * @throws Exception
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAlbumImageAsAFavorite($image) {
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image-1) . "']"))));
-        Assert::assertTrue($this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image-1) . "']"))->isDisplayed());
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image - 1) . "']"))));
+        Assert::assertTrue($this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image - 1) . "']"))->isDisplayed());
+    }
+
+    /**
+     * @Then /^the download favorites button is disabled$/
+     */
+    public function theDownloadFavoritesButtonIsDisabled() {
+        Assert::assertFalse($this->driver->findElement(WebDriverBy:: id('downloadable-favorites-btn'))->isEnabled());
+    }
+
+    /**
+     * @Then /^the share favorites button is disabled$/
+     */
+    public function theShareFavoritesButtonIsDisabled() {
+        Assert::assertFalse($this->driver->findElement(WebDriverBy:: id('shareable-favorites-btn'))->isEnabled());
+    }
+
+    /**
+     * @Then /^the submit favorites button is disabled$/
+     */
+    public function theSubmitFavoritesButtonIsDisabled() {
+        Assert::assertFalse($this->driver->findElement(WebDriverBy:: id('submit-favorites-btn'))->isEnabled());
+    }
+
+    /**
+     * @Then /^I see the download terms of service$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeTheDownloadTermsOfService() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('bootstrap-dialog-message')));
+        Assert::assertEquals('By downloading the selected files, you are agreeing to the right to copy, display, reproduce, enlarge and distribute said photographs taken by the Photographer in connection with the Services and in connection with the publication known as Saperstone Studios for personal use, and any reprints or reproductions, or excerpts thereof; all other rights are expressly reserved by and to Photographer.
+
+While usage in accordance with above policies of selected files on public social media sites and personal websites for non-profit purposes is acceptable, any use of selected files in any publication, display, exhibit or paid medium are not permitted without express consent from Photographer.
+
+Please note that only images you have expressly purchased rights to will be downloaded, even if additional images were selected for this download.',
+            $this->driver->findElement(WebDriverBy::className('bootstrap-dialog-message'))->getText(), $this->driver->findElement(WebDriverBy::className('bootstrap-dialog-message'))->getText());
+    }
+
+    /**
+     * @Then /^I see an error message indicating no files are available to download$/
+     */
+    public function iSeeAnErrorMessageIndicatingNoFilesAreAvailableToDownload() {
+        CustomAsserts::errorMessage($this->driver, 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.');
+    }
+
+    /**
+     * @Then /^I see an info message indicating download will start shortly$/
+     */
+    public function iSeeAnInfoMessageIndicatingDownloadWillStartShortly() {
+        CustomAsserts::infoMessage($this->driver, 'We are compressing your images for download. They should automatically start downloading shortly.');
+    }
+
+    /**
+     * @Then /^I see album (\d+) download with my favorites$/
+     * @param $album
+     */
+    public function iSeeAlbumDownloadWithMyFavorites($album) {
+        date_default_timezone_set('America/New_York');
+        $now = date("Y-m-d H-i-s");
+        $count = 0;
+        $filename = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads' . DIRECTORY_SEPARATOR . "Album $album $now.zip";
+        while (!file_exists($filename)) {
+            sleep(1);
+            $count++;
+            if ($count > 30) {
+                break;
+            }
+        }
+        Assert::assertTrue(file_exists($filename));
+        $za = new ZipArchive();
+        $za->open($filename);
+        $sql = new Sql();
+        $favs = array_column($sql->getRows("SELECT * FROM `download_rights` INNER JOIN `favorites` ON download_rights.user = favorites.user AND download_rights.album = favorites.album AND download_rights.image = favorites.image WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
+        Assert::assertEquals(sizeof($favs), $za->numFiles);
+        for($i = 0; $i < sizeof($favs); $i++) {
+            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND id = {$favs[$i]};")['location'];
+            $parts = explode('/', $imgLoc);
+            $img = $parts[sizeof($parts) - 1];
+            Assert::assertEquals($img, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
+        }
+        $sql->disconnect();
     }
 }

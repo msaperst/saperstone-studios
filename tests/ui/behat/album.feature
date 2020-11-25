@@ -1,3 +1,4 @@
+@album
 Feature: Album
   As a user
   I want to be able to view my album
@@ -81,7 +82,52 @@ Feature: Album
     And I see the favorite count is "1"
 
   Scenario: Able to remove favorite from favorites
+    Given album 99999 image 2 is a favorite
+    When I view my favorites
+    And I remove favorite image 2
+    Then I see 0 favorites
+    And I see the favorite count is ""
+
+  Scenario: Unable to do any actions when no favorites
+    When I view my favorites
+    Then the download favorites button is disabled
+    And the share favorites button is disabled
+    And the submit favorites button is disabled
+
   Scenario: Able to download favorites
+    Given album 99999 image 2 is a favorite
+    When I view my favorites
+    And I download my favorites
+    Then I see the download terms of service
+
+  Scenario: Unable to download favorites
+    Given album 99999 image 2 is a favorite
+    When I view my favorites
+    And I download my favorites
+    And I confirm my download
+    Then I see an error message indicating no files are available to download
+
+  Scenario: Download favorites
+    Given album 99999 image 2 is a favorite
+    And I have download rights for album 99999 image 2
+    When I view my favorites
+    And I download my favorites
+    And I confirm my download
+    Then I see an info message indicating download will start shortly
+    And I see album 99999 download with my favorites
+
+  Scenario: Download multiple favorites
+    Given album 99999 image 2 is a favorite
+    Given album 99999 image 4 is a favorite
+    Given album 99999 image 7 is a favorite
+    And I have download rights for album 99999 image 2
+    And I have download rights for album 99999 image 7
+    When I view my favorites
+    And I download my favorites
+    And I confirm my download
+    Then I see an info message indicating download will start shortly
+    And I see album 99999 download with my favorites
+
   Scenario: Unable to share favorites
   Scenario: Able to submit favorites
 

@@ -4,6 +4,7 @@ namespace ui\models;
 
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
+use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
@@ -128,5 +129,30 @@ class Album {
         $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
     }
 
+    /**
+     * @param $image
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function removeFavorite($image) {
+        $favorite = $this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image-1) . "']"));
+        sleep( 1 );
+        $action = new WebDriverActions($this->driver);
+        $action->moveToElement($favorite, intval($favorite->getSize()->getWidth() * 0.5 - 10), intval($favorite->getSize()->getHeight() * -0.5 + 10))->click()->perform();
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy:: cssSelector("li[image-id='" . ($image-1) . "']"))));
+    }
 
+    public function downloadFavorites() {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('downloadable-favorites-btn')));
+        $this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->click();
+    }
+
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function confirmDownload() {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.btn-success > .glyphicon-download-alt')));
+        $this->driver->findElement(WebDriverBy::cssSelector('.btn-success > .glyphicon-download-alt'))->click();
+    }
 }
