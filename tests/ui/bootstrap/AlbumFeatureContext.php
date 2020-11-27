@@ -65,6 +65,8 @@ class AlbumFeatureContext implements Context {
             $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`album` = $albumId;");
+            $sql->executeStatement("DELETE FROM `download_rights` WHERE `download_rights`.`album` = $albumId;");
+            $sql->executeStatement("DELETE FROM `share_rights` WHERE `share_rights`.`album` = $albumId;");
         }
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
@@ -171,6 +173,19 @@ class AlbumFeatureContext implements Context {
         $sql = new Sql();
         $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image - 1))['id'];
         $sql->executeStatement("INSERT INTO `download_rights` VALUES( {$this->user->getId()}, $album, $img);");
+        $sql->disconnect();
+    }
+
+    /**
+     * @Given /^I have share rights for album (\d+) image (\d+)$/
+     * @param $album
+     * @param $image
+     * @throws Exception
+     */
+    public function iHaveShareRightsForAlbumImage($album, $image) {
+        $sql = new Sql();
+        $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image - 1))['id'];
+        $sql->executeStatement("INSERT INTO `share_rights` VALUES( {$this->user->getId()}, $album, $img);");
         $sql->disconnect();
     }
 

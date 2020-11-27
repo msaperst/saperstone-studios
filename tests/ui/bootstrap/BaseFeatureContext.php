@@ -81,6 +81,7 @@ class BaseFeatureContext implements Context {
         if (getenv('PROXY') != NULL) {
             $desiredCapabilities->setCapability(WebDriverCapabilityType::PROXY, ['proxyType' => 'MANUAL', 'httpProxy' => getenv('PROXY'), 'ftpProxy' => NULL, 'sslProxy' => NULL, 'noProxy' => NULL]);
         }
+
         $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
         $this->user = new User();

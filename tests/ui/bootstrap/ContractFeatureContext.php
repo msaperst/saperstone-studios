@@ -46,7 +46,7 @@ class ContractFeatureContext implements Context {
         $sql = new Sql();
         foreach($this->contractIds as $contractId) {
             $contract = dirname(dirname(dirname(__DIR__))) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
-            if (file_exists("$contract")) {
+            if (file_exists("$contract") && !is_dir("$contract")) {
                 unlink("$contract");
             }
             $sql->executeStatement("DELETE FROM `contracts` WHERE `contracts`.`id` = $contractId;");
@@ -140,17 +140,20 @@ class ContractFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I the contract exists at "([^"]*)"$/
-     * @param $fileLocation
-     */
-    public function iTheContractExistsAt($fileLocation) {
-        Assert::assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . '/content/contracts/' . $fileLocation));
-    }
-
-    /**
      * @Then /^I see an error message indicating an invalid email$/
      */
     public function iSeeAnErrorMessageIndicatingAnInvalidEmail() {
         CustomAsserts::errorMessage($this->driver, 'Contract contact email is not valid');
+    }
+
+    /**
+     * @Given /^I the signed contract exists for (\d+)$/
+     * @param $contractId
+     */
+    public function iTheSignedContractExistsFor($contractId) {
+        $sql = new Sql();
+        $contract = dirname(dirname(dirname(__DIR__))) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
+        $sql->disconnect();
+        Assert::assertTrue(file_exists("$contract"));
     }
 }

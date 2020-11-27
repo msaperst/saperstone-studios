@@ -52,7 +52,7 @@ Feature: Contract
     And the submit contract button is not present
     And I see a success message indicating my contract will be emailed to me
     And I see the signed contract displayed
-    And I the contract exists at "Max - 2020-11-17 - Commercial Contract.pdf"
+    And I the signed contract exists for 99999
 
   Scenario: Unable to sign contract with bad email
     When I provide "Max" for the contract "name-signature"
