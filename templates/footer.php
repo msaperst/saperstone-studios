@@ -85,16 +85,15 @@ $preferences = json_decode( $_COOKIE['CookiePreferences'] );
 $server = 'saperstonestudios.com';
 if (isset ( $_SERVER ['HTTP_X_FORWARDED_HOST'] ) && substr($_SERVER ['HTTP_X_FORWARDED_HOST'], -strlen($server)) === $server && in_array( "analytics", $preferences ) ) {
     ?>
-<script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23617021-6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-    ga('create', 'UA-23617021-6', 'auto');
-    ga('send', 'pageview');
-
-</script>
+        gtag('config', 'UA-23617021-6');
+    </script>
 <?php
 }
 ?>
