@@ -2,9 +2,11 @@
 
 namespace api;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -14,6 +16,9 @@ class UpdateCartImageTest extends TestCase {
     private $http;
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
@@ -25,6 +30,9 @@ class UpdateCartImageTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (999, '1', '12x19', 100, 10)");
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `user` = '3';");
@@ -47,7 +55,7 @@ class UpdateCartImageTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/update-cart-image.php');
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody());
         }
@@ -213,7 +221,7 @@ class UpdateCartImageTest extends TestCase {
                 'album' => '999',
                 'image' => '3',
                 'products' => [
-                    'product' => '998'
+                    '999' => '1'
                 ]
             ],
             'cookies' => $cookieJar
@@ -249,7 +257,7 @@ class UpdateCartImageTest extends TestCase {
                 'album' => '999',
                 'image' => '3',
                 'products' => [
-                    '999' => '2',
+                    '1' => '2',
                 ]
             ],
             'cookies' => $cookieJar
@@ -261,7 +269,7 @@ class UpdateCartImageTest extends TestCase {
         $this->assertEquals(3, $cart[0]['user']);
         $this->assertEquals(999, $cart[0]['album']);
         $this->assertEquals(999, $cart[0]['image']);
-        $this->assertEquals(999, $cart[0]['product']);
+        $this->assertEquals(1, $cart[0]['product']);
         $this->assertEquals(2, $cart[0]['count']);
     }
 
@@ -274,8 +282,8 @@ class UpdateCartImageTest extends TestCase {
                 'album' => '999',
                 'image' => '3',
                 'products' => [
-                    '998' => '2',
-                    '999' => '1',
+                    '1' => '2',
+                    '6' => '1',
                 ]
             ],
             'cookies' => $cookieJar
@@ -287,12 +295,12 @@ class UpdateCartImageTest extends TestCase {
         $this->assertEquals(3, $cart[0]['user']);
         $this->assertEquals(999, $cart[0]['album']);
         $this->assertEquals(999, $cart[0]['image']);
-        $this->assertEquals(998, $cart[0]['product']);
+        $this->assertEquals(1, $cart[0]['product']);
         $this->assertEquals(2, $cart[0]['count']);
         $this->assertEquals(3, $cart[1]['user']);
         $this->assertEquals(999, $cart[1]['album']);
         $this->assertEquals(999, $cart[1]['image']);
-        $this->assertEquals(999, $cart[1]['product']);
+        $this->assertEquals(6, $cart[1]['product']);
         $this->assertEquals(1, $cart[1]['count']);
     }
 }

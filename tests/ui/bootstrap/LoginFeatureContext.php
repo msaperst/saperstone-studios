@@ -130,6 +130,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @When /^I log in to the site using credentials "([^"]*)" "([^"]*)"$/
+     * @param $username
+     * @param $password
      */
     public function iLogInToTheSiteUsingCredentials($username, $password) {
         $login = new Login($this->driver, $this->wait);

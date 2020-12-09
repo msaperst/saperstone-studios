@@ -184,7 +184,7 @@ $(document).ready(function() {
     });
     // update our cart
     $('.product-count input').change(function() {
-        updateCart();
+        updateCart($(this));
     });
     // show our cart review
     $('#cart-btn,#reviewOrder').click(function() {
@@ -304,7 +304,7 @@ function validateCartInput(ele) {
         }
     }
     // fix our submit button if no errors exist
-    if ($('#cart .has-error').length === 0) {
+    if ($('#cart .has-error').length === 0 && $('#cart-items > tr').length > 0) {
         $('#cart-submit').prop("disabled", false);
     } else {
         $('#cart-submit').prop("disabled", true);
@@ -413,17 +413,17 @@ function showCart() {
             var row = $('#cart-image tr[product-id="' + data[i].product + '"]');
             var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
             $('input', row).val(data[i].count);
-            $('.product-total', row).html("$" + price * data[i].count);
+            $('.product-total', row).html("$" + (Math.round(price * data[i].count * 100) / 100).toFixed(2));
         }
     }, "json");
 }
 
-function updateCart() {
+function updateCart(input) {
     var img = $('#album-carousel div.active div');
-    var row = $('.product-count input').closest('tr');
+    var row = input.closest('tr');
     var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
-    $('.product-total', row).html("$" + price * $('.product-count input').val());
-    if ($('.product-total', row).html() === "$0") {
+    $('.product-total', row).html("$" + (Math.round(price * input.val() * 100) / 100).toFixed(2));
+    if ($('.product-total', row).html() === "$0.00") {
         $('.product-total', row).html("--");
     }
     // update our database

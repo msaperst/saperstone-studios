@@ -4,7 +4,10 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Exception;
 use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -39,6 +42,7 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @AfterScenario
+     * @throws Exception
      */
     public function cleanup() {
         $sql = new Sql();
@@ -69,6 +73,7 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Given /^I am on the "([^"]*)" page$/
+     * @param $page
      */
     public function iAmOnThePage($page) {
         $this->driver->get($this->baseUrl . $page);
@@ -76,6 +81,7 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Given /^there is an announcement$/
+     * @throws Exception
      */
     public function thereIsAnAnnouncement() {
         $sql = new Sql();
@@ -107,6 +113,9 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I search for "([^"]*)" blog posts by typing$/
+     * @param $search
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSearchForBlogPostsByTyping($search) {
         $this->driver->findElement(WebDriverBy::linkText('Blog'))->click();
@@ -116,6 +125,9 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I search for "([^"]*)" blog posts$/
+     * @param $search
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSearchForBlogPosts($search) {
         $this->driver->findElement(WebDriverBy::linkText('Blog'))->click();
@@ -126,6 +138,7 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I append "([^"]*)" to my url$/
+     * @param $hash
      */
     public function iAppendToMyUrl($hash) {
         $currentURL = $this->driver->getCurrentURL();
@@ -134,6 +147,8 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I dismiss the announcement$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iDismissTheAnnouncement() {
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('announcement-999'))));
@@ -142,6 +157,8 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I try to search for an album$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iTryToSearchForAnAlbum() {
         $album = new Album($this->driver, $this->wait);
@@ -150,6 +167,9 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I search for album "([^"]*)"$/
+     * @param $code
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSearchForAlbum($code) {
         $album = new Album($this->driver, $this->wait);
@@ -158,6 +178,9 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I search for and save album "([^"]*)"$/
+     * @param $code
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSearchForAndSaveAlbum($code) {
         $album = new Album($this->driver, $this->wait);
@@ -166,6 +189,9 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I search for album "([^"]*)" with keyboard$/
+     * @param $code
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSearchForAlbumWithKeyboard($code) {
         $album = new Album($this->driver, $this->wait);
@@ -174,17 +200,19 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @When /^I wait for (\d+) seconds$/
+     * @param $seconds
      */
     public function iWaitForSeconds($seconds) {
-        sleep( $seconds );
+        sleep($seconds);
     }
 
     /**
      * @When /^I click the "([^"]*)" content header$/
+     * @param $ord
      */
     public function iClickTheContentHeader($ord) {
         $headers = $this->driver->findElements(WebDriverBy::className('collapse-header'));
-        $headers[intval($ord)-1]->click();
+        $headers[intval($ord) - 1]->click();
         $this->iWaitForSeconds(1);
     }
 
@@ -197,6 +225,8 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Then /^I am prompted to review the privacy policy$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iAmPromptedToReviewThePrivacyPolicy() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('bs-gdpr-cookies-modal')));
@@ -236,6 +266,7 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Then /^I see "([^"]*)" blog posts$/
+     * @param $search
      */
     public function iSeeBlogPosts($search) {
         Assert::assertEquals("Home Blog Search $search", $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
@@ -243,6 +274,8 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Then /^I see the find album modal$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeTheFindAlbumModal() {
         $album = new Album($this->driver, $this->wait);
@@ -252,6 +285,8 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Then /^I see that there is no option to save album$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeThatThereIsNoOptionToSaveAlbum() {
         $album = new Album($this->driver, $this->wait);
@@ -261,6 +296,8 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Then /^I see that there is an option to save album$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeThatThereIsAnOptionToSaveAlbum() {
         $album = new Album($this->driver, $this->wait);
@@ -270,6 +307,8 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Then /^I no longer see the announcement$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iNoLongerSeeTheAnnouncement() {
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('announcement-999'))));
@@ -278,6 +317,9 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Then /^I am taken to the "([^"]*)" page$/
+     * @param $page
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iAmTakenToThePage($page) {
         $this->wait->until(WebDriverExpectedCondition::urlIs($this->baseUrl . $page));
@@ -286,17 +328,19 @@ class NavigationFeatureContext implements Context {
 
     /**
      * @Then /^I see the "([^"]*)" content collapsed$/
+     * @param $ord
      */
     public function iSeeTheContentCollapsed($ord) {
         $contents = $this->driver->findElements(WebDriverBy::className('collapse-content'));
-        Assert::assertFalse($contents[intval($ord)-1]->isDisplayed());
+        Assert::assertFalse($contents[intval($ord) - 1]->isDisplayed());
     }
 
     /**
      * @Then /^I see the "([^"]*)" content expanded$/
+     * @param $ord
      */
     public function iSeeTheContentExpanded($ord) {
         $contents = $this->driver->findElements(WebDriverBy::className('collapse-content'));
-        Assert::assertTrue($contents[intval($ord)-1]->isDisplayed());
+        Assert::assertTrue($contents[intval($ord) - 1]->isDisplayed());
     }
 }

@@ -23,6 +23,14 @@ class Login {
         $this->wait = $wait;
     }
 
+    public function amILoggedIn() {
+        if( sizeof($this->driver->findElements(WebDriverBy::id('login-menu-item')))) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public function openLogin() {
         $this->driver->findElement(WebDriverBy::id('login-menu-item'))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('login-modal'))));
