@@ -124,6 +124,15 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         }
         stage('Run Integration Tests') {
             try {
+                withCredentials([
+                        usernamePassword(
+                                credentialsId: 'docker-hub',
+                                usernameVariable: 'dockerUser',
+                                passwordVariable: 'dockerPass'
+                        )
+                ]) {
+                    sh "docker login -u ${dockerUser} -p ${dockerPass}"
+                }
                 sh "composer integration-pre-test"
                 sh "composer integration-test"
             } catch (Exception e) {
@@ -135,6 +144,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                  }
             } finally {
                 sh "composer integration-post-test"
+                sh "docker logout"
                 junit 'reports/it-junit.xml'
                 publishHTML([
                         allowMissing         : false,
@@ -202,7 +212,17 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             )
         }
         stage('Launch Docker Container') {
+            withCredentials([
+                    usernamePassword(
+                            credentialsId: 'docker-hub',
+                            usernameVariable: 'dockerUser',
+                            passwordVariable: 'dockerPass'
+                    )
+            ]) {
+                sh "docker login -u ${dockerUser} -p ${dockerPass}"
+            }
             sh "docker-compose up --build -d"
+            sh "docker logout"
         }
         stage('Clean Up') {
             sh "composer clean"
@@ -283,6 +303,15 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         }
         stage('Run Chrome Page Tests') {
             try {
+                withCredentials([
+                        usernamePassword(
+                                credentialsId: 'docker-hub',
+                                usernameVariable: 'dockerUser',
+                                passwordVariable: 'dockerPass'
+                        )
+                ]) {
+                    sh "docker login -u ${dockerUser} -p ${dockerPass}"
+                }
                 sh 'export BROWSER=chrome; composer ui-pre-test;'
                 sh '''while ! curl -sSL "http://localhost:4444/wd/hub/status" 2>&1 \
                               | jq -r '.value.ready' 2>&1 | grep "true" >/dev/null; do
@@ -292,6 +321,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-page-test;'
             } finally {
                 sh 'export BROWSER=chrome; composer ui-post-test;'
+                sh 'docker logout'
                 junit 'reports/ui/junit.xml'
                 publishHTML([
                         allowMissing         : false,
@@ -323,6 +353,15 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     }
                     stage('Run Chrome BDD Tests') {
                         try {
+                            withCredentials([
+                                    usernamePassword(
+                                            credentialsId: 'docker-hub',
+                                            usernameVariable: 'dockerUser',
+                                            passwordVariable: 'dockerPass'
+                                    )
+                            ]) {
+                                sh "docker login -u ${dockerUser} -p ${dockerPass}"
+                            }
                             sh 'export BROWSER=chrome; composer ui-pre-test;'
                             sh 'composer dump-autoload'
                             sh '''while ! curl -sSL "http://localhost:4444/wd/hub/status" 2>&1 \
@@ -333,6 +372,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                             sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
                         } finally {
                             sh 'export BROWSER=chrome; composer ui-post-test;'
+                            sh 'docker logout'
                             junit 'reports/behat/default.xml'
                             publishHTML([
                                     allowMissing         : false,
