@@ -21,7 +21,12 @@ class Blog {
     function __construct() {
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return Blog
+     * @throws Exception
+     */
+    static function withId($id): Blog {
         if (!isset ($id)) {
             throw new Exception("Blog id is required");
         } elseif ($id == "") {
@@ -35,6 +40,7 @@ class Blog {
             $sql->disconnect();
             throw new Exception("Blog id does not match any blog posts");
         }
+        $blog->directory = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $blog->raw['date']);
         $blog->id = $blog->raw['id'];
         $blog->title = $blog->raw['title'];
         $blog->safeTitle = $blog->raw['safe_title'];
@@ -69,12 +75,23 @@ class Blog {
         return $blog;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return Blog
+     * @throws Exception
+     */
+    static function withParams($params): Blog {
         $blog = self::setBasicValues(new Blog(), $params);
         return self::setContent($blog, $params);
     }
 
-    private static function setBasicValues(Blog $blog, $params) {
+    /**
+     * @param Blog $blog
+     * @param $params
+     * @return Blog
+     * @throws Exception
+     */
+    private static function setBasicValues(Blog $blog, $params): Blog {
         $sql = new Sql();
         //blog title
         if (!isset ($params['title'])) {
@@ -119,7 +136,9 @@ class Blog {
         //directory to hold blog
         $blog->directory = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $blog->date);
         if (!is_dir($blog->directory)) {
-            mkdir($blog->directory, 0755, true);
+            $oldMask = umask(0);
+            mkdir($blog->directory, 0775, true);
+            umask($oldMask);
         }
         //blog tags
         $blog->tags = array();
@@ -133,7 +152,13 @@ class Blog {
         return $blog;
     }
 
-    private static function setContent(Blog $blog, $params) {
+    /**
+     * @param Blog $blog
+     * @param $params
+     * @return Blog
+     * @throws Exception
+     */
+    private static function setContent(Blog $blog, $params): Blog {
         $sql = new Sql();
         $blog->content = array();
         //blog content
@@ -181,23 +206,38 @@ class Blog {
         return $this->preview;
     }
 
-    function getOffset() {
+    /**
+     * @return int
+     */
+    function getOffset(): int {
         return $this->offset;
     }
 
-    function getTags() {
+    /**
+     * @return array
+     */
+    function getTags(): array {
         return $this->tags;
     }
 
-    function getLocation() {
+    /**
+     * @return string
+     */
+    function getLocation(): string {
         return dirname($this->preview);
     }
 
-    public function getTwitter() {
+    /**
+     * @return int
+     */
+    public function getTwitter(): int {
         return $this->twitter;
     }
 
-    public function getImages() {
+    /**
+     * @return array
+     */
+    public function getImages(): array {
         $images = array();
         foreach( $this->content as $content ) {
             /** @var BlogImage $content */
@@ -212,11 +252,18 @@ class Blog {
         return $this->raw;
     }
 
-    function isActive() {
+    /**
+     * @return bool
+     */
+    function isActive(): bool {
         return (bool) $this->active;
     }
 
-    function create() {
+    /**
+     * @return int
+     * @throws Exception
+     */
+    function create(): int {
         //check for access
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
@@ -254,6 +301,10 @@ class Blog {
         return $blogId;
     }
 
+    /**
+     * @param $params
+     * @throws Exception
+     */
     function update($params) {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
@@ -314,23 +365,55 @@ class Blog {
         $this->raw = self::withId($this->id)->getDataArray();
     }
 
+    /**
+     * @throws Exception
+     */
     function delete() {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
             throw new Exception("User not authorized to delete blog post");
         }
-        // delete our files
         $sql = new Sql();
         $images = $sql->getRows("SELECT * FROM blog_images WHERE blog='{$this->id}';");
-        foreach ($images as $image) {
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $image['location']);
-        }
-        //TODO - delete the folder if empty
+        //clean up our database
         $sql->executeStatement("DELETE FROM blog_details WHERE id='{$this->id}';");
         $sql->executeStatement("DELETE FROM blog_images WHERE blog='{$this->id}';");
         $sql->executeStatement("DELETE FROM blog_tags WHERE blog='{$this->id}';");
         $sql->executeStatement("DELETE FROM blog_texts WHERE blog='{$this->id}';");
         $sql->executeStatement("DELETE FROM blog_comments WHERE blog='{$this->id}';");
         $sql->disconnect();
+        // delete our files
+        foreach ($images as $image) {
+            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $image['location']);
+        }
+        unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview);
+        //delete the folder if empty
+        if( $this->dirIsEmpty($this->directory) ) {     //if the day folder is empty
+            rmdir($this->directory);
+            $monDir = substr($this->directory, 0, -3);
+            if( $this->dirIsEmpty($monDir) ) {     //if the month folder is empty
+                rmdir($monDir);
+                $yearDir = substr($monDir, 0, -3);
+                if( $this->dirIsEmpty($yearDir) ) {     //if the year folder is empty
+                    rmdir($yearDir);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $dir
+     * @return bool
+     */
+    function dirIsEmpty($dir): bool {
+        $handle = opendir($dir);
+        while (false !== ($entry = readdir($handle))) {
+            if ($entry != "." && $entry != "..") {
+                closedir($handle);
+                return FALSE;
+            }
+        }
+        closedir($handle);
+        return TRUE;
     }
 }

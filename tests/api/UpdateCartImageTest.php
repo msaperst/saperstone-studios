@@ -13,7 +13,13 @@ use Sql;
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UpdateCartImageTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
     /**
@@ -26,8 +32,6 @@ class UpdateCartImageTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, 123);");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '2', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '3', '', '', '300', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (998, '1', '12x19', 100, 10)");
-        $this->sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (999, '1', '12x19', 100, 10)");
     }
 
     /**
@@ -38,17 +42,12 @@ class UpdateCartImageTest extends TestCase {
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `user` = '3';");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
-        $this->sql->executeStatement("DELETE FROM `products` WHERE `products`.`id` = 998;");
-        $this->sql->executeStatement("DELETE FROM `products` WHERE `products`.`id` = 999;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `products`;")['count'];
-        $count++;
-        $this->sql->executeStatement("ALTER TABLE `products` AUTO_INCREMENT = $count;");
         $this->sql->disconnect();
     }
 

@@ -165,7 +165,9 @@ class Album {
         $location = $location . "_" . time();
         $this->location = $location;
         try {
-            mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $location, 0755);
+            $oldMask = umask(0);
+            mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $location, 0775);
+            umask($oldMask);
         } catch (Exception $e) {
             $sql->disconnect();
             throw new Exception($e->getMessage() . "<br/>Unable to create album");

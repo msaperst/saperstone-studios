@@ -43,7 +43,9 @@ class File {
     function upload($location) {
         $this->location = $location;
         if (!is_dir($location)) {
-            mkdir($location, 0755, true);
+            $oldMask = umask(0);
+            mkdir($location, 0775, true);
+            umask($oldMask);
         }
         $files = array();
         foreach ($this->files as $file) {

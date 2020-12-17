@@ -11,6 +11,13 @@ class BlogImage {
     private $width;
     private $height;
 
+    /**
+     * BlogImage constructor.
+     * @param Blog $blog
+     * @param $group
+     * @param $params
+     * @throws Exception
+     */
     function __construct(Blog $blog, $group, $params) {
         $this->blog = $blog;
         if (!isset ($group)) {
@@ -53,7 +60,7 @@ class BlogImage {
         $sql->disconnect();
     }
 
-    function getLocation() {
+    function getLocation(): string {
         return $this->location;
     }
 
@@ -61,6 +68,9 @@ class BlogImage {
         $this->blog = $blog;
     }
 
+    /**
+     * @throws Exception
+     */
     function create() {
         //check for access
         $user = User::fromSystem();
@@ -70,7 +80,9 @@ class BlogImage {
         // setup the image, and add it to the database
         $newLocation = $this->blog->getLocation() . DIRECTORY_SEPARATOR . basename($this->location);
         if (!is_dir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->blog->getLocation())) {
-            mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->blog->getLocation(), 0777, true);
+            $oldMask = umask(0);
+            mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->blog->getLocation(), 0775, true);
+            umask($oldMask);
         }
         rename(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->location, dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $newLocation);
         $fullLocation = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $newLocation;

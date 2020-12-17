@@ -11,21 +11,29 @@ use Sql;
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class BlogIntegrationTest extends TestCase {
+    /**
+     * @var Sql 
+     */
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('898', 'Sample Blog', '2031-01-01', '', 0)");
-        $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('899', 'Sample Blog', '2031-01-01', '/some/img', 0)");
+        $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('899', 'Sample Blog', '2031-01-01', 'posts/2031/01/01/preview-image-24.jpg', 0)");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES (898, 899, NULL, 'Anna', '2012-10-31 09:56:47', '68.98.132.164', 'annad@annadbruce.com', 'hehehehehe this rules!')");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES (899, 899, 4, 'Uploader', '2012-10-31 13:56:47', '192.168.1.2', 'msaperst@gmail.com', 'awesome post')");
         $this->sql->executeStatement("INSERT INTO `blog_images` (`blog`, `contentGroup`, `location`, `width`, `height`, `left`, `top`) VALUES ('899', '1', 'posts/2031/01/01/sample.jpg', 300, 400, 0, 0)");
         $this->sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ('899', 29)");
         $this->sql->executeStatement("INSERT INTO `blog_texts` (`blog`, `contentGroup`, `text`) VALUES ('899', '2', 'Some blog text')");
-        $oldmask = umask(0);
+        $oldMask = umask(0);
         mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01', 0777, true);
         touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg', 0777);
+        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/preview-image-24.jpg');
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/preview-image-24.jpg', 0777);
         mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp', 0777, true);
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample.jpg');
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample1.jpg');
@@ -33,9 +41,12 @@ class BlogIntegrationTest extends TestCase {
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample.jpg', 0777);
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample1.jpg', 0777);
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp/sample2.jpg', 0777);
-        umask($oldmask);
+        umask($oldMask);
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 898;");
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 899;");
@@ -54,6 +65,9 @@ class BlogIntegrationTest extends TestCase {
         system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp'));
     }
 
+    /**
+     *
+     */
     public function testNullBlogId() {
         try {
             Blog::withId(NULL);
@@ -94,31 +108,49 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetId() {
         $blog = Blog::withId('899');
         $this->assertEquals(899, $blog->getId());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetTitle() {
         $blog = Blog::withId('899');
         $this->assertEquals('Sample Blog', $blog->getTitle());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetDate() {
         $blog = Blog::withId('899');
         $this->assertEquals('January 1st, 2031', $blog->getDate());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetPreview() {
         $blog = Blog::withId('899');
-        $this->assertEquals('/some/img', $blog->getPreview());
+        $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blog->getPreview());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetOffset() {
         $blog = Blog::withId('899');
         $this->assertEquals(0, $blog->getOffset());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetTags() {
         $blog = Blog::withId('899');
         $tags = [
@@ -130,32 +162,50 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals($tags, $blog->getTags());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetLocation() {
         $blog = Blog::withId('899');
-        $this->assertEquals('/some', $blog->getLocation());
+        $this->assertEquals('posts/2031/01/01', $blog->getLocation());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetTwitter() {
         $blog = Blog::withId('899');
         $this->assertEquals(0, $blog->getTwitter());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetImages() {
         $blog = Blog::withId('899');
         $this->assertEquals(['posts/2031/01/01/sample.jpg'], $blog->getImages());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsActiveFalse() {
         $blog = Blog::withId('899');
         $this->assertFalse($blog->isActive());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testisActiveTrue() {
         $this->sql->executeStatement("UPDATE blog_details SET active = 1 WHERE id = 899;");
         $blog = Blog::withId('899');
         $this->assertTrue($blog->isActive());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAllDataLoadedMinimal() {
         date_default_timezone_set("America/New_York");
         $blog = Blog::withId(898);
@@ -173,6 +223,9 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals(array(), $blogInfo['content']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAllDataLoaded() {
         date_default_timezone_set("America/New_York");
         $blog = Blog::withId(899);
@@ -181,7 +234,7 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals('Sample Blog', $blogInfo['title']);
         $this->assertNull($blogInfo['safe_title']);
         $this->assertEquals('January 1st, 2031', $blogInfo['date']);
-        $this->assertEquals('/some/img', $blogInfo['preview']);
+        $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
         $this->assertEquals('0', $blogInfo['offset']);
         $this->assertEquals('0', $blogInfo['active']);
         $this->assertEquals(0, $blogInfo['twitter']);
@@ -340,7 +393,7 @@ class BlogIntegrationTest extends TestCase {
             'title' => 'Some Album',
             'date' => '2020-01-01',
             'preview' => [
-                'img' => '/some/img'
+                'img' => 'posts/2031/01/01/preview-image-24.jpg'
             ]
         ];
         try {
@@ -355,7 +408,7 @@ class BlogIntegrationTest extends TestCase {
             'title' => 'Some Album',
             'date' => '2020-01-01',
             'preview' => [
-                'img' => '/some/img'
+                'img' => 'posts/2031/01/01/preview-image-24.jpg'
             ],
             'content' => ''
         ];
@@ -371,7 +424,7 @@ class BlogIntegrationTest extends TestCase {
             'title' => 'Some Album',
             'date' => '2020-01-01',
             'preview' => [
-                'img' => '/some/img'
+                'img' => 'posts/2031/01/01/preview-image-24.jpg'
             ],
             'content' => array()
         ];
@@ -387,7 +440,7 @@ class BlogIntegrationTest extends TestCase {
             'title' => 'Some Album',
             'date' => '2020-01-01',
             'preview' => [
-                'img' => '/some/img'
+                'img' => 'posts/2031/01/01/preview-image-24.jpg'
             ],
             'content' => [
                 array()
@@ -405,7 +458,7 @@ class BlogIntegrationTest extends TestCase {
             'title' => 'Some Album',
             'date' => '2020-01-01',
             'preview' => [
-                'img' => '/some/img'
+                'img' => 'posts/2031/01/01/preview-image-24.jpg'
             ],
             'content' => [
                 [
@@ -425,7 +478,7 @@ class BlogIntegrationTest extends TestCase {
             'title' => 'Some Album',
             'date' => '2020-01-01',
             'preview' => [
-                'img' => '/some/img'
+                'img' => 'posts/2031/01/01/preview-image-24.jpg'
             ],
             'content' => [
                 [
@@ -440,6 +493,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateNoAccess() {
         $blog = Blog::withId(899);
         try {
@@ -449,6 +505,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateSimpleBlog() {
         $params = [
             'title' => 'Some Album',
@@ -498,6 +557,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCreateComplexBlog() {
         $params = [
             'title' => 'Sample Blog',
@@ -592,6 +654,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetImagesMultiple() {
         $params = [
             'title' => 'Sample Blog',
@@ -647,6 +712,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateNoAccess() {
         $blog = Blog::withId(899);
         try {
@@ -809,6 +877,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateNoContent() {
         $params = [
             'title' => 'Some Album',
@@ -827,7 +898,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("Some Album", $blogDetails['title']);
             $this->assertNull($blogDetails['safe_title']);
             $this->assertEquals("2020-01-01", $blogDetails['date']);
-            $this->assertEquals("/some/img", $blogDetails['preview']);
+            $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
             $this->assertEquals("0", $blogDetails['twitter']);
@@ -852,7 +923,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Some Album', $blogInfo['title']);
             $this->assertNull($blogInfo['safe_title']);
             $this->assertEquals('January 1st, 2020', $blogInfo['date']);
-            $this->assertEquals('/some/img', $blogInfo['preview']);
+            $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
             $this->assertEquals(0, $blogInfo['twitter']);
@@ -892,6 +963,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateBlankContent() {
         $params = [
             'title' => 'Some Album',
@@ -911,7 +985,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("Some Album", $blogDetails['title']);
             $this->assertNull($blogDetails['safe_title']);
             $this->assertEquals("2020-01-01", $blogDetails['date']);
-            $this->assertEquals("/some/img", $blogDetails['preview']);
+            $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
             $this->assertEquals("0", $blogDetails['twitter']);
@@ -936,7 +1010,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Some Album', $blogInfo['title']);
             $this->assertNull($blogInfo['safe_title']);
             $this->assertEquals('January 1st, 2020', $blogInfo['date']);
-            $this->assertEquals('/some/img', $blogInfo['preview']);
+            $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
             $this->assertEquals(0, $blogInfo['twitter']);
@@ -976,6 +1050,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateEmptyContent() {
         $params = [
             'title' => 'Some Album',
@@ -995,7 +1072,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("Some Album", $blogDetails['title']);
             $this->assertNull($blogDetails['safe_title']);
             $this->assertEquals("2020-01-01", $blogDetails['date']);
-            $this->assertEquals("/some/img", $blogDetails['preview']);
+            $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
             $this->assertEquals("0", $blogDetails['twitter']);
@@ -1020,7 +1097,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Some Album', $blogInfo['title']);
             $this->assertNull($blogInfo['safe_title']);
             $this->assertEquals('January 1st, 2020', $blogInfo['date']);
-            $this->assertEquals('/some/img', $blogInfo['preview']);
+            $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
             $this->assertEquals(0, $blogInfo['twitter']);
@@ -1149,7 +1226,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("Some Album", $blogDetails['title']);
             $this->assertNull($blogDetails['safe_title']);
             $this->assertEquals("2020-01-01", $blogDetails['date']);
-            $this->assertEquals("/some/img", $blogDetails['preview']);
+            $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
             $this->assertEquals("0", $blogDetails['twitter']);
@@ -1174,7 +1251,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Some Album', $blogInfo['title']);
             $this->assertNull($blogInfo['safe_title']);
             $this->assertEquals('January 1st, 2020', $blogInfo['date']);
-            $this->assertEquals('/some/img', $blogInfo['preview']);
+            $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
             $this->assertEquals(0, $blogInfo['twitter']);
@@ -1236,7 +1313,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("Some Album", $blogDetails['title']);
             $this->assertNull($blogDetails['safe_title']);
             $this->assertEquals("2020-01-01", $blogDetails['date']);
-            $this->assertEquals("/some/img", $blogDetails['preview']);
+            $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
             $this->assertEquals("0", $blogDetails['twitter']);
@@ -1266,7 +1343,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Some Album', $blogInfo['title']);
             $this->assertNull($blogInfo['safe_title']);
             $this->assertEquals('January 1st, 2020', $blogInfo['date']);
-            $this->assertEquals('/some/img', $blogInfo['preview']);
+            $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
             $this->assertEquals(0, $blogInfo['twitter']);
@@ -1355,7 +1432,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("Some Album", $blogDetails['title']);
             $this->assertNull($blogDetails['safe_title']);
             $this->assertEquals("2020-01-01", $blogDetails['date']);
-            $this->assertEquals("/some/img", $blogDetails['preview']);
+            $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
             $this->assertEquals("0", $blogDetails['twitter']);
@@ -1389,7 +1466,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Some Album', $blogInfo['title']);
             $this->assertNull($blogInfo['safe_title']);
             $this->assertEquals('January 1st, 2020', $blogInfo['date']);
-            $this->assertEquals('/some/img', $blogInfo['preview']);
+            $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
             $this->assertEquals(0, $blogInfo['twitter']);
@@ -1457,7 +1534,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("Some Album", $blogDetails['title']);
             $this->assertNull($blogDetails['safe_title']);
             $this->assertEquals("2020-01-01", $blogDetails['date']);
-            $this->assertEquals("/some/img", $blogDetails['preview']);
+            $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("1", $blogDetails['active']);
             $this->assertNotEquals("0", $blogDetails['twitter']);
@@ -1482,7 +1559,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Some Album', $blogInfo['title']);
             $this->assertNull($blogInfo['safe_title']);
             $this->assertEquals('January 1st, 2020', $blogInfo['date']);
-            $this->assertEquals('/some/img', $blogInfo['preview']);
+            $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('1', $blogInfo['active']);
             $this->assertNotEquals(0, $blogInfo['twitter']);
@@ -1548,7 +1625,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("Some Album", $blogDetails['title']);
             $this->assertNull($blogDetails['safe_title']);
             $this->assertEquals("2020-01-01", $blogDetails['date']);
-            $this->assertEquals("/some/img", $blogDetails['preview']);
+            $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
             $this->assertEquals("0", $blogDetails['twitter']);
@@ -1573,7 +1650,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Some Album', $blogInfo['title']);
             $this->assertNull($blogInfo['safe_title']);
             $this->assertEquals('January 1st, 2020', $blogInfo['date']);
-            $this->assertEquals('/some/img', $blogInfo['preview']);
+            $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
             $this->assertEquals(0, $blogInfo['twitter']);
@@ -1617,6 +1694,9 @@ class BlogIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteNoAccess() {
         $blog = Blog::withId(899);
         try {
@@ -1632,6 +1712,9 @@ class BlogIntegrationTest extends TestCase {
         $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $blog = Blog::withId(899);
@@ -1643,5 +1726,69 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = 899;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_comments` WHERE `blog_comments`.`blog` = 899;"));
         $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg'));
+        $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteOtherDayFile() {
+        $oldMask = umask(0);
+        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample1.jpg');
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample1.jpg', 0777);
+        umask($oldMask);
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $blog = Blog::withId(899);
+        $blog->delete();
+        unset($_SESSION ['hash']);
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_comments` WHERE `blog_comments`.`blog` = 899;"));
+        $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg'));
+        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteOtherMonthFile() {
+        $oldMask = umask(0);
+        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/sample1.jpg');
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/sample1.jpg', 0777);
+        umask($oldMask);
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $blog = Blog::withId(899);
+        $blog->delete();
+        unset($_SESSION ['hash']);
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_comments` WHERE `blog_comments`.`blog` = 899;"));
+        $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg'));
+        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteOtherYearFile() {
+        $oldMask = umask(0);
+        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/sample1.jpg');
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/sample1.jpg', 0777);
+        umask($oldMask);
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $blog = Blog::withId(899);
+        $blog->delete();
+        unset($_SESSION ['hash']);
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = 899;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_comments` WHERE `blog_comments`.`blog` = 899;"));
+        $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/01/01/sample.jpg'));
+        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/posts/2031/'));
     }
 }
