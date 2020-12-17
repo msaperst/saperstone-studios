@@ -2,16 +2,24 @@
 
 namespace api;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateBlogPostTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
     public function setUp() {
@@ -27,7 +35,7 @@ class CreateBlogPostTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-blog-post.php');
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -41,12 +49,15 @@ class CreateBlogPostTest extends TestCase {
             $this->http->request('POST', 'api/create-blog-post.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoTitle() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -58,6 +69,9 @@ class CreateBlogPostTest extends TestCase {
         $this->assertEquals("Blog title is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankTitle() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -72,6 +86,9 @@ class CreateBlogPostTest extends TestCase {
         $this->assertEquals("Blog title can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoDate() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -86,6 +103,9 @@ class CreateBlogPostTest extends TestCase {
         $this->assertEquals("Blog date is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankDate() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -101,6 +121,9 @@ class CreateBlogPostTest extends TestCase {
         $this->assertEquals("Blog date can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadDate() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -116,6 +139,9 @@ class CreateBlogPostTest extends TestCase {
         $this->assertEquals("Blog date is not the correct format", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoPreviewImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -131,6 +157,9 @@ class CreateBlogPostTest extends TestCase {
         $this->assertEquals("Blog preview image is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoPreviewImage2() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -147,6 +176,9 @@ class CreateBlogPostTest extends TestCase {
         $this->assertEquals("Blog preview image is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankPreviewImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -165,6 +197,9 @@ class CreateBlogPostTest extends TestCase {
         $this->assertEquals("Blog preview image can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoContent() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -226,6 +261,10 @@ class CreateBlogPostTest extends TestCase {
 //         $this->assertEquals("Unexpected content present, please consult the webmaster", (string) $response->getBody() );
 //     }
 
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testPreviewOffsetOnlyImage() {
         try {
             touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
@@ -283,16 +322,28 @@ class CreateBlogPostTest extends TestCase {
             $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/image.jpg"));
         } finally {
             // cleanup
-            $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
+            $cookieJar = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $this->http->request('POST', 'api/delete-blog.php', [
+                'form_params' => [
+                    'post' => $blogId
+                ],
+                'cookies' => $cookieJar
+            ]);
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
             $count++;
             $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_comments`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `blog_comments` AUTO_INCREMENT = $count;");
         }
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testNoPreviewOffsetOnlyText() {
         try {
             touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
@@ -317,7 +368,7 @@ class CreateBlogPostTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $blogId = $response->getBody();
+            $blogId = (string) $response->getBody();
             $blogDetails = $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
             $this->assertEquals($blogId, $blogDetails['id']);
             $this->assertEquals("Sample Blog", $blogDetails['title']);
@@ -335,19 +386,34 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals('Some blog text', $blogTexts['text']);
         } finally {
             // cleanup
-            $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
+            $cookieJar = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $this->http->request('POST', 'api/delete-blog.php', [
+                'form_params' => [
+                    'post' => $blogId
+                ],
+                'cookies' => $cookieJar
+            ]);
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
             $count++;
             $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_comments`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `blog_comments` AUTO_INCREMENT = $count;");
         }
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testTagsOffsetImagesText() {
         try {
-            touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
+            $oldMask = umask(0);
+            copy(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/image.jpg');
+            chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg', 0777);
+            umask($oldMask);
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -386,7 +452,7 @@ class CreateBlogPostTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $blogId = $response->getBody();
+            $blogId = (string) $response->getBody();
             $blogDetails = $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
             $this->assertEquals($blogId, $blogDetails['id']);
             $this->assertEquals("Sample Blog", $blogDetails['title']);
@@ -396,6 +462,7 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals("33", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
             $this->assertEquals("0", $blogDetails['twitter']);
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . substr($blogDetails['preview'], 6)));
             $blogImages = $this->sql->getRow("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
             $this->assertEquals($blogId, $blogImages['blog']);
             $this->assertEquals(1, $blogImages['contentGroup']);
@@ -404,6 +471,7 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals('647', $blogImages['height']);
             $this->assertEquals('0', $blogImages['left']);
             $this->assertEquals('0', $blogImages['top']);
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . substr($blogImages['location'], 6)));
             $blogTags = $this->sql->getRows("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
             $this->assertEquals(2, sizeOf($blogTags));
             $this->assertEquals($blogId, $blogTags[0]['blog']);
@@ -416,15 +484,21 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals('Some blog text', $blogTexts['text']);
         } finally {
             // cleanup
-            $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
-            $this->sql->executeStatement("DELETE FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
+            $cookieJar = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $this->http->request('POST', 'api/delete-blog.php', [
+                'form_params' => [
+                    'post' => $blogId
+                ],
+                'cookies' => $cookieJar
+            ]);
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
             $count++;
             $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_comments`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `blog_comments` AUTO_INCREMENT = $count;");
         }
     }
 }
-
-?>

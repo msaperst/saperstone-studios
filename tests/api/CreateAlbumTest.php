@@ -3,9 +3,11 @@
 namespace api;
 
 use CustomAsserts;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -13,7 +15,13 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateAlbumTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
     public function setUp() {
@@ -29,7 +37,7 @@ class CreateAlbumTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-album.php');
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -43,12 +51,15 @@ class CreateAlbumTest extends TestCase {
             $this->http->request('POST', 'api/create-album.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoAlbumName() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -60,6 +71,9 @@ class CreateAlbumTest extends TestCase {
         $this->assertEquals("Album name is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankAlbumName() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -74,6 +88,9 @@ class CreateAlbumTest extends TestCase {
         $this->assertEquals("Album name can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadDate() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -89,6 +106,10 @@ class CreateAlbumTest extends TestCase {
         $this->assertEquals("Album date is not the correct format", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testJustAlbumName() {   // done as an admin
         try {
             $cookieJar = CookieJar::fromArray([
@@ -126,6 +147,10 @@ class CreateAlbumTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testAllDetails() {      // done as an uploader
         try {
             $cookieJar = CookieJar::fromArray([

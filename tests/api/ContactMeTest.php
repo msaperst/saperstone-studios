@@ -133,7 +133,7 @@ class ContactMeTest extends TestCase {
             'form_params' => [
                 'name' => 'Max',
                 'phone' => '571-245-3351',
-                'email' => 'msaperst@saperstonestudios.com',
+                'email' => 'msaperst+sstest@saperstonestudios.com',
                 'message' => 'Hi There! I am a test email'
             ]
         ]);
@@ -141,5 +141,3 @@ class ContactMeTest extends TestCase {
         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", (string)$response->getBody());
     }
 }
-
-?>
