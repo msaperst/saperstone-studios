@@ -565,7 +565,6 @@ class UpdateBlogPostTest extends TestCase {
             unset($_SERVER['SERVER_NAME']);
             unset($_SERVER['SERVER_PORT']);
             // cleanup
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
