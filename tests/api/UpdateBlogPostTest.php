@@ -467,8 +467,8 @@ class UpdateBlogPostTest extends TestCase {
             $_SERVER['SERVER_PORT'] = "90";
             $socialMedia = new SocialMedia();
             $socialMedia->removeBlogFromTwitter(Blog::withId(999));
-            unset( $_SERVER['SERVER_NAME']);
-            unset( $_SERVER['SERVER_PORT']);
+            unset($_SERVER['SERVER_NAME']);
+            unset($_SERVER['SERVER_PORT']);
         }
     }
 }

@@ -12,13 +12,22 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.ph
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UserIntegrationTest extends TestCase {
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `users` (`id`, `usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `hash`, `active`, `created`, `lastLogin`, `resetKey`) VALUES (899, 'test', '" . md5('user') . "', 'test', 'user', 'test@example.com', 'downloader', '12345', '0', '2020-01-01 10:10:10', '2020-01-01 20:10:10', '123')");
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->sql->executeStatement("DELETE FROM `users` WHERE `users`.`id` = 899;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
@@ -80,7 +89,7 @@ class UserIntegrationTest extends TestCase {
         try {
             User::fromReset(NULL, '123');
         } catch (Exception $e) {
-            $this->assertEquals('User id is required', $e->getMessage());
+            $this->assertEquals('Credentials do not match our records', $e->getMessage());
         }
     }
 
@@ -93,7 +102,7 @@ class UserIntegrationTest extends TestCase {
         try {
             User::fromLogin('hey', '123');
         } catch (Exception $e) {
-            $this->assertEquals('User id is required', $e->getMessage());
+            $this->assertEquals('Credentials do not match our records', $e->getMessage());
         }
     }
 
@@ -106,7 +115,7 @@ class UserIntegrationTest extends TestCase {
         try {
             User::fromEmail('random@email.com');
         } catch (Exception $e) {
-            $this->assertEquals('User id is required', $e->getMessage());
+            $this->assertEquals('Credentials do not match our records', $e->getMessage());
         }
     }
 
@@ -115,51 +124,81 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals(1, $user->getId());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetId() {
         $user = User::withId('899');
         $this->assertEquals(899, $user->getId());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetUsr() {
         $user = User::withId('899');
         $this->assertEquals('test', $user->getUsername());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetHash() {
         $user = User::withId('899');
         $this->assertEquals('12345', $user->getHash());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetActiveFalse() {
         $user = User::withId('899');
         $this->assertFalse($user->isActive());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetActiveTrue() {
         $user = User::withId('1');
         $this->assertTrue($user->isActive());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetRole() {
         $user = User::withId('899');
         $this->assertEquals('downloader', $user->getRole());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetFirstName() {
         $user = User::withId('899');
         $this->assertEquals('test', $user->getFirstName());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetLastName() {
         $user = User::withId('899');
         $this->assertEquals('user', $user->getLastName());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetEmail() {
         $user = User::withId('899');
         $this->assertEquals('test@example.com', $user->getEmail());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testBasicData() {
         $user = User::withId(899);
         $userInfo = $user->getDataBasic();
@@ -174,6 +213,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('123', $userInfo['resetKey']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAllData() {
         $user = User::withId(899);
         $userInfo = $user->getDataArray();
@@ -192,6 +234,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('123', $userInfo['resetKey']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdatePasswordNoAccess() {
         $user = User::withId(899);
         try {
@@ -201,6 +246,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdatePasswordNoPassword() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $user = User::withId(899);
@@ -213,6 +261,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdatePasswordBlankPassword() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $user = User::withId(899);
@@ -225,6 +276,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteNoAccess() {
         $user = User::withId(899);
         try {
@@ -235,6 +289,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `users` WHERE `users`.`id` = 899;"));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $user = User::withId(899);
@@ -244,6 +301,9 @@ class UserIntegrationTest extends TestCase {
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testNoUser() {
         $user = User::fromSystem();
         $this->assertFalse($user->isLoggedIn());
@@ -258,6 +318,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('', $user->getEmail());
     }
 
+    /**
+     *
+     */
     public function testBadSessionUser() {
         $_SESSION ['hash'] = "1234567890abcdef1234567890abcdef";
         try {
@@ -269,6 +332,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testBadCookieUser() {
         $_COOKIE ['hash'] = "1234567890abcdef1234567890abcdef";
         try {
@@ -280,6 +346,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAdminUser() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $user = User::fromSystem();
@@ -296,6 +365,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('msaperst@gmail.com', $user->getEmail());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDownloadUser() {
         $_COOKIE ['hash'] = "5510b5e6fffd897c234cafe499f76146";
         $user = User::fromSystem();
@@ -312,6 +384,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('email@example.org', $user->getEmail());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUploadUser() {
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
         $user = User::fromSystem();
@@ -328,12 +403,18 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('uploader@example.org', $user->getEmail());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGeneratePassword() {
         $user = User::fromSystem();
         $this->assertEquals(20, strlen($user->generatePassword()));
         $this->assertEquals(1, preg_match("/^([a-zA-Z0-9]{20})$/", $user->generatePassword()));
     }
 
+    /**
+     *
+     */
     public function testNewUserNoUsername() {
         try {
             User::withParams(array());
@@ -342,6 +423,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserBlankUsername() {
         $params = [
             'username' => ''
@@ -353,6 +437,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserUsernameToShort() {
         $params = [
             'username' => '123'
@@ -364,6 +451,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserUsernameBadChars() {
         $params = [
             'username' => '123$5K{;'
@@ -375,6 +465,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserUsernameDuplicate() {
         $params = [
             'username' => 'msaperst'
@@ -386,6 +479,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserNoEmail() {
         $params = [
             'username' => 'testUser'
@@ -397,6 +493,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserBlankEmail() {
         $params = [
             'username' => 'testUser',
@@ -409,6 +508,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserInvalidEmail() {
         $params = [
             'username' => 'testUser',
@@ -421,6 +523,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserDuplicateEmail() {
         $params = [
             'username' => 'testUser',
@@ -433,6 +538,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserNoPassword() {
         $params = [
             'username' => 'testUser',
@@ -445,6 +553,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNewUserBlankPassword() {
         $params = [
             'username' => 'testUser',
@@ -458,6 +569,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserAdminPasswordNotNeeded() {
         $params = [
             'username' => 'testUser',
@@ -469,6 +583,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals(20, strlen($user->getPassword()));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserBasics() {
         $params = [
             'username' => 'testUser',
@@ -481,6 +598,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('12345', $user->getPassword());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserDownloaderDefaultRole() {
         $params = [
             'username' => 'testUser',
@@ -491,6 +611,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('downloader', $user->getRole());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserOnlyAdminCanSetAdmin() {
         $params = [
             'username' => 'testUser',
@@ -502,6 +625,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('downloader', $user->getRole());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserAdminCanSetAdmin() {
         $params = [
             'username' => 'testUser',
@@ -514,6 +640,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('admin', $user->getRole());
     }
 
+    /**
+     *
+     */
     public function testNewUserAdminCantSetBadRole() {
         $params = [
             'username' => 'testUser',
@@ -530,6 +659,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserActiveDefault() {
         try {
             $params = [
@@ -548,6 +680,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserOnlyAdminCanSetInactive() {
         try {
             $params = [
@@ -567,6 +702,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserAdminCanSetInactive() {
         try {
             $params = [
@@ -588,6 +726,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserDefaultNoName() {
         $params = [
             'username' => 'testUser',
@@ -598,6 +739,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('', $user->getName());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserFirstName() {
         $params = [
             'username' => 'testUser',
@@ -609,6 +753,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('Max', $user->getName());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserLastName() {
         $params = [
             'username' => 'testUser',
@@ -620,6 +767,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('Saperstone', $user->getName());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserName() {
         $params = [
             'username' => 'testUser',
@@ -632,6 +782,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('Max Saperstone', $user->getName());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserHash() {
         $params = [
             'username' => 'testUser',
@@ -642,6 +795,9 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals(md5('testUser12345'), $user->getHash());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUserFromAdmin() {
         sleep( 1 );
         date_default_timezone_set("America/New_York");
@@ -682,6 +838,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNewUser() {
         sleep( 1 );
         date_default_timezone_set("America/New_York");
@@ -720,6 +879,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testInactiveUser() {
         $user = User::withId(899);
         $user->login(false);
@@ -729,6 +891,9 @@ class UserIntegrationTest extends TestCase {
         //TODO - check no cookies
     }
 
+    /**
+     * @throws Exception
+     */
     public function testActiveUser() {
         date_default_timezone_set("America/New_York");
         $user = User::withId(4);
@@ -741,6 +906,9 @@ class UserIntegrationTest extends TestCase {
         //TODO - check no cookies
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRememberMeNoCookies() {
         date_default_timezone_set("America/New_York");
         $user = User::withId(4);
@@ -753,6 +921,9 @@ class UserIntegrationTest extends TestCase {
         //TODO - check no cookies
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRememberMeNoArray() {
         try {
             $_COOKIE['CookiePreferences'] = '';
@@ -770,6 +941,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRememberMeNoPreferences() {
         try {
             $_COOKIE['CookiePreferences'] = '["analytics"]';
@@ -787,6 +961,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRememberMe() {
         try {
             $_COOKIE['CookiePreferences'] = '["preferences", "analytics"]';
@@ -804,6 +981,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSetResetCode() {
         try {
             $user = User::withId(4);
@@ -815,6 +995,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testBadUserUpdateUser() {
         try {
             $_COOKIE ['hash'] = "5510b5e6fffd897c234cafe499f76146";
@@ -827,6 +1010,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateUserNoEmail() {
         try {
             $_COOKIE ['hash'] = "1d7505e7f434a7713e84ba399e937191";
@@ -839,6 +1025,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateUserBlankEmail() {
         $params = [
             'email' => ''
@@ -854,6 +1043,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateUserDuplicateEmail() {
         $params = [
             'email' => 'msaperst@gmail.com'
@@ -869,6 +1061,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateUserBadRole() {
         $params = [
             'email' => 'unique@gmail.com',
@@ -885,6 +1080,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateUserSameEmail() {
         sleep( 1 );
         $params = [
@@ -915,6 +1113,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateUserAllBasicValuesNonAdmin() {
         sleep( 1 );
         $params = [
@@ -950,6 +1151,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateUserAllBasicValuesAdmin() {
         sleep( 1 );
         $params = [
@@ -985,6 +1189,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateUserPasswordNoCurrent() {
         $params = [
             'email' => 'unique@gmail.com',
@@ -1001,6 +1208,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateUserPasswordBlankCurrent() {
         $params = [
             'email' => 'unique@gmail.com',
@@ -1018,6 +1228,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateUserPasswordDoesNotMatch() {
         $params = [
             'email' => 'unique@gmail.com',
@@ -1035,6 +1248,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testNoPasswordConfirmation() {
         $params = [
             'email' => 'uploader@example.org',
@@ -1052,6 +1268,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testBlankPasswordConfirmation() {
         $params = [
             'email' => 'uploader@example.org',
@@ -1070,6 +1289,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testBadPasswordConfirmation() {
         $params = [
             'email' => 'uploader@example.org',
@@ -1088,6 +1310,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateUserPasswordDoesMatch() {
         sleep( 1 );
         $params = [
@@ -1122,6 +1347,9 @@ class UserIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateUserPassword() {
         sleep( 1 );
         $params = [

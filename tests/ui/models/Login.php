@@ -24,7 +24,7 @@ class Login {
     }
 
     public function amILoggedIn() {
-        if( sizeof($this->driver->findElements(WebDriverBy::id('login-menu-item')))) {
+        if (sizeof($this->driver->findElements(WebDriverBy::id('login-menu-item')))) {
             return false;
         } else {
             return true;
@@ -38,7 +38,7 @@ class Login {
 
     public function loginKeyboard($username, $password, $rememberMe) {
         $this->openLogin();
-        if( $rememberMe ) {
+        if ($rememberMe) {
             $this->driver->findElement(WebDriverBy::id('login-remember'))->click();
         }
         $this->driver->findElement(WebDriverBy::id('login-user'))->sendKeys($username);
@@ -49,7 +49,7 @@ class Login {
         $this->openLogin();
         $this->driver->findElement(WebDriverBy::id('login-user'))->sendKeys($username);
         $this->driver->findElement(WebDriverBy::id('login-pass'))->sendKeys($password);
-        if( $rememberMe ) {
+        if ($rememberMe) {
             $this->driver->findElement(WebDriverBy::id('login-remember'))->click();
         }
         $this->driver->findElement(WebDriverBy::id('login-submit'))->click();

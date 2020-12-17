@@ -71,7 +71,7 @@ class SendResetCodeTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Credentials do not match our records", (string) $response->getBody());
+        $this->assertEquals("Credentials do not match our records", (string)$response->getBody());
     }
 
     public function testSendResetCode() {
@@ -81,7 +81,7 @@ class SendResetCodeTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", (string) $response->getBody());
+        $this->assertEquals("", (string)$response->getBody());
         // TODO - need to confirm email is sent
     }
 }

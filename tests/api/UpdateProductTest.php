@@ -175,7 +175,7 @@ class UpdateProductTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals('', (string) $response->getBody());
+            $this->assertEquals('', (string)$response->getBody());
 
             $productDetails = $this->sql->getRow("SELECT * FROM `product_types` WHERE `product_types`.`id` = 1;");
             $this->assertEquals(1, $productDetails['id']);

@@ -30,10 +30,10 @@ class Blog {
     }
 
     public function fillOutCommentForm($name, $email, $message) {
-        if( $name != NULL ) {
+        if ($name != NULL) {
             $this->driver->findElement(WebDriverBy::id('post-comment-name'))->clear()->sendkeys($name);
         }
-        if( $email != NULL ) {
+        if ($email != NULL) {
             $this->driver->findElement(WebDriverBy::id('post-comment-email'))->clear()->sendkeys($email);
         }
         $this->driver->findElement(WebDriverBy::id('post-comment-message'))->sendKeys($message);

@@ -180,7 +180,7 @@ class CreateProductSizeTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $productId = (string) $response->getBody();
+            $productId = (string)$response->getBody();
             $productSizeDetails = $this->sql->getRow("SELECT * FROM `products` WHERE `products`.`id` = $productId;");
             $this->assertEquals($productId, $productSizeDetails['id']);
             $this->assertEquals(1, $productSizeDetails['product_type']);

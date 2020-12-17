@@ -12,8 +12,8 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 use Sql;
-use User;
 use ui\models\Registration;
+use User;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
@@ -59,7 +59,7 @@ class RegistrationFeatureContext implements Context {
      */
     public function iAmOnTheRegistrationPage() {
         $this->driver->get($this->baseUrl . 'register.php');
-   }
+    }
 
     /**
      * @Given /^I am on the profile page$/
@@ -76,7 +76,7 @@ class RegistrationFeatureContext implements Context {
         try {
             $user = $register->registerMyUser($this->user);
             $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($user);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->dontDeleteUser();
         }
     }
@@ -95,7 +95,7 @@ class RegistrationFeatureContext implements Context {
         try {
             $user = $register->registerAUser($username, $password, $confirmPassword, $firstName, $lastName, $email);
             $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($user);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->dontDeleteUser();
         }
     }
@@ -190,7 +190,7 @@ class RegistrationFeatureContext implements Context {
         // store all off all the new user data, it will be needed
         $this->username = $this->driver->findElement(WebDriverBy::id('profile-username'))->getAttribute('value');
         $this->password = $this->driver->findElement(WebDriverBy::id('profile-password'))->getAttribute('value');
-        if ( $this->password == "" ) {
+        if ($this->password == "") {
             $this->password = $this->user->getPassword();
         }
         $this->firstName = $this->driver->findElement(WebDriverBy::id('profile-firstname'))->getAttribute('value');
@@ -284,7 +284,8 @@ class RegistrationFeatureContext implements Context {
      */
     public function iSeeANoIconForPassword() {
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#profile-password + span.glyphicon-ok'))));
-        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#profile-password + span.glyphicon-remove'))));$error = $this->driver->findElement(WebDriverBy::id('update-profile-password-message'));
+        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#profile-password + span.glyphicon-remove'))));
+        $error = $this->driver->findElement(WebDriverBy::id('update-profile-password-message'));
         Assert::assertFalse($error->isDisplayed());
         Assert::assertEquals('', $error->getText());
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('update-profile-password-strength'))));
@@ -315,7 +316,8 @@ class RegistrationFeatureContext implements Context {
      */
     public function iSeeANoIconForConfirmPassword() {
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#profile-confirm-password + span.glyphicon-ok'))));
-        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#profile-confirm-password + span.glyphicon-remove'))));$error = $this->driver->findElement(WebDriverBy::id('update-profile-confirm-password-message'));
+        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#profile-confirm-password + span.glyphicon-remove'))));
+        $error = $this->driver->findElement(WebDriverBy::id('update-profile-confirm-password-message'));
         Assert::assertFalse($error->isDisplayed());
         Assert::assertEquals('', $error->getText());
     }

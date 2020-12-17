@@ -54,11 +54,11 @@ class Blog {
         $blog->raw['tags'] = $blog->tags;      //putting the tags back in
         // content
         $blog->raw['content'] = array();
-        foreach( $sql->getRows("SELECT * FROM `blog_images` WHERE blog = $id;") as $image) {
+        foreach ($sql->getRows("SELECT * FROM `blog_images` WHERE blog = $id;") as $image) {
             $blog->raw['content'][$image['contentGroup']] [] = $image;
             $blog->content[] = new BlogImage($blog, $image['contentGroup'], $image);
         }
-        foreach( $sql->getRows("SELECT * FROM `blog_texts` WHERE blog = $id;") as $text) {
+        foreach ($sql->getRows("SELECT * FROM `blog_texts` WHERE blog = $id;") as $text) {
             $blog->raw['content'][$text['contentGroup']] [] = $text;
             $text['group'] = $text['contentGroup'];  //KLUDGE for my ugly naming convention
             $blog->content[] = new BlogText($blog, $text);
@@ -239,9 +239,9 @@ class Blog {
      */
     public function getImages(): array {
         $images = array();
-        foreach( $this->content as $content ) {
+        foreach ($this->content as $content) {
             /** @var BlogImage $content */
-            if( $content instanceof BlogImage ) {
+            if ($content instanceof BlogImage) {
                 $images[] = $content->getLocation();
             }
         }
@@ -256,7 +256,7 @@ class Blog {
      * @return bool
      */
     function isActive(): bool {
-        return (bool) $this->active;
+        return (bool)$this->active;
     }
 
     /**
@@ -351,7 +351,7 @@ class Blog {
             }
         }
 
-        if( isset($params['content']) && !empty($params['content'])) {
+        if (isset($params['content']) && !empty($params['content'])) {
             self::setContent($this, $params);
             // update our content
             $sql->executeStatement("DELETE FROM blog_texts WHERE blog='{$this->id}';");
@@ -388,13 +388,13 @@ class Blog {
         }
         unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview);
         //delete the folder if empty
-        if( $this->dirIsEmpty($this->directory) ) {     //if the day folder is empty
+        if ($this->dirIsEmpty($this->directory)) {     //if the day folder is empty
             rmdir($this->directory);
             $monDir = substr($this->directory, 0, -3);
-            if( $this->dirIsEmpty($monDir) ) {     //if the month folder is empty
+            if ($this->dirIsEmpty($monDir)) {     //if the month folder is empty
                 rmdir($monDir);
                 $yearDir = substr($monDir, 0, -3);
-                if( $this->dirIsEmpty($yearDir) ) {     //if the year folder is empty
+                if ($this->dirIsEmpty($yearDir)) {     //if the year folder is empty
                     rmdir($yearDir);
                 }
             }

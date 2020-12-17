@@ -14,11 +14,11 @@ Feature: Profile Administration
     Then I see an error indicating a bad username
     And the register button is disabled
     Examples:
-    | username |
-    |          |
-    | 1234     |
-    | msap     |
-    | hgnk*&   |
+      | username |
+      |          |
+      | 1234     |
+      | msap     |
+      | hgnk*&   |
 
   Scenario: Valid username registration input
     Given I am on the registration page
@@ -77,11 +77,11 @@ Feature: Profile Administration
     Then I see an error indicating a bad email
     And the register button is disabled
     Examples:
-    | email |
-    |       |
-    | m     |
-    | m@m   |
-    | m@m.m |
+      | email |
+      |       |
+      | m     |
+      | m@m   |
+      | m@m.m |
 
   Scenario: Valid email registration input
     Given I am on the registration page

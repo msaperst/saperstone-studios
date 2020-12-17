@@ -10,7 +10,7 @@ Feature: Gallery
 
   Scenario: Gallery images load
     Then I see the "1st" gallery images load
-    
+
   Scenario: Gallery images keep loading
     When I scroll to the bottom of the page
     Then I see the "3rd" gallery images load

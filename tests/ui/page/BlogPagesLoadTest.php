@@ -96,7 +96,7 @@ class BlogPagesLoadTest extends TestBase {
         $this->assertEquals('../tmp', $this->driver->findElement(WebDriverBy::id('post'))->getAttribute('post-location'));
         $this->assertNull($this->driver->findElement(WebDriverBy::id('post'))->getAttribute('post-id'));
         $this->assertEquals('', $this->driver->findElement(WebDriverBy::id('post-title-input'))->getAttribute('value'));
-        $this->assertEquals(date ( "Y-m-d" ), $this->driver->findElement(WebDriverBy::id('post-date-input'))->getAttribute('value'));
+        $this->assertEquals(date("Y-m-d"), $this->driver->findElement(WebDriverBy::id('post-date-input'))->getAttribute('value'));
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
@@ -130,7 +130,7 @@ class BlogPagesLoadTest extends TestBase {
             $this->assertEquals('posts/2031/01/01', $this->driver->findElement(WebDriverBy::id('post'))->getAttribute('post-location'));
             $this->assertEquals(999, $this->driver->findElement(WebDriverBy::id('post'))->getAttribute('post-id'));
             $this->assertEquals('Sample Blog', $this->driver->findElement(WebDriverBy::id('post-title-input'))->getAttribute('value'));
-            $this->assertEquals(date ( "2031-01-01" ), $this->driver->findElement(WebDriverBy::id('post-date-input'))->getAttribute('value'));
+            $this->assertEquals(date("2031-01-01"), $this->driver->findElement(WebDriverBy::id('post-date-input'))->getAttribute('value'));
             $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
         } finally {
             $sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 999;");
@@ -166,7 +166,7 @@ class BlogPagesLoadTest extends TestBase {
             $this->assertEquals('posts/2031/01/01', $this->driver->findElement(WebDriverBy::id('post'))->getAttribute('post-location'));
             $this->assertEquals(999, $this->driver->findElement(WebDriverBy::id('post'))->getAttribute('post-id'));
             $this->assertEquals('Sample Blog', $this->driver->findElement(WebDriverBy::id('post-title-input'))->getAttribute('value'));
-            $this->assertEquals(date ( "2031-01-01" ), $this->driver->findElement(WebDriverBy::id('post-date-input'))->getAttribute('value'));
+            $this->assertEquals(date("2031-01-01"), $this->driver->findElement(WebDriverBy::id('post-date-input'))->getAttribute('value'));
             $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
         } finally {
             $sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 999;");

@@ -390,8 +390,8 @@ class Album {
         $productRows = self::getCartRows($albumId, $image, $productCategory, $productSize, $productName);
         $select = new WebDriverSelect($productRows[0]->findElement(WebDriverBy::tagName('select')));
         $options = $select->getOptions();
-        for( $i = 0; $i < sizeof($options); $i++ ) {
-            if( $options[$i]->getText() == "$option" ) {
+        for ($i = 0; $i < sizeof($options); $i++) {
+            if ($options[$i]->getText() == "$option") {
                 $select->selectByIndex($i);
             }
         }

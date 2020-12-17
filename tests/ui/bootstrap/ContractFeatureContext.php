@@ -44,7 +44,7 @@ class ContractFeatureContext implements Context {
      */
     public function cleanup() {
         $sql = new Sql();
-        foreach($this->contractIds as $contractId) {
+        foreach ($this->contractIds as $contractId) {
             $contract = dirname(dirname(dirname(__DIR__))) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
             if (file_exists("$contract") && !is_dir("$contract")) {
                 unlink("$contract");

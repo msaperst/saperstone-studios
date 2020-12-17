@@ -12,9 +12,14 @@ use Sql;
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class ImageIntegrationTest extends TestCase {
-
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         date_default_timezone_set("America/New_York");
         $this->sql = new Sql();
@@ -23,7 +28,7 @@ class ImageIntegrationTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (899, '899', 'sample', '2', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (898, '1', '', '1', '', '/albums/sample/sample.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (899, '1', '', '1', '', '', '300', '400', '1');");
-        $oldmask = umask(0);
+        $oldMask = umask(0);
         mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums', 0777);
         mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample');
@@ -34,9 +39,12 @@ class ImageIntegrationTest extends TestCase {
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg', 0777);
         touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg');
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg', 0777);
-        umask($oldmask);
+        umask($oldMask);
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 899;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`id` = 898;");
@@ -69,7 +77,15 @@ class ImageIntegrationTest extends TestCase {
         }
     }
 
-    public function testLetterImageSequence() {
+    public function testAlbumLetterImageSequence() {
+        try {
+            new Image(Album::withId(899), "a");
+        } catch (Exception $e) {
+            $this->assertEquals("Image id does not match any images", $e->getMessage());
+        }
+    }
+
+    public function testGalleryLetterImageSequence() {
         try {
             new Image(Gallery::withId(2), "a");
         } catch (Exception $e) {
@@ -117,26 +133,41 @@ class ImageIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetId() {
         $image = new Image(Album::withId(899), '1');
         $this->assertEquals(898, $image->getId());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetTitle() {
         $image = new Image(Album::withId(899), '2');
         $this->assertEquals('sample', $image->getTitle());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetLocation() {
         $image = new Image(Album::withId(899), '1');
         $this->assertEquals('/albums/sample/sample.jpg', $image->getLocation());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataAlbumNobody() {
         $image = new Image(Album::withId(899), 1);
         $this->assertFalse($image->canUserGetData());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataAlbumAdmin() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $image = new Image(Album::withId(899), 1);
@@ -144,6 +175,9 @@ class ImageIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataAlbumOwner() {
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
         $image = new Image(Album::withId(899), 1);
@@ -151,6 +185,9 @@ class ImageIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataAlbumOtherUser() {
         $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
         $image = new Image(Album::withId(899), 1);
@@ -158,11 +195,17 @@ class ImageIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataGalleryNobody() {
         $image = new Image(Gallery::withId(1), 899);
         $this->assertFalse($image->canUserGetData());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataGalleryAdmin() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $image = new Image(Gallery::withId(1), 899);
@@ -170,6 +213,9 @@ class ImageIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataGalleryOtherUser() {
         $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
         $image = new Image(Gallery::withId(1), 899);
@@ -177,6 +223,9 @@ class ImageIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAllDataLoaded() {
         $image = new Image(Album::withId(899), 2);
         $imageInfo = $image->getDataArray();
@@ -192,6 +241,9 @@ class ImageIntegrationTest extends TestCase {
         $this->assertEquals(1, $imageInfo['active']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteNoAccess() {
         $image = new Image(Album::withId(899), 2);
         try {
@@ -203,6 +255,9 @@ class ImageIntegrationTest extends TestCase {
         $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteNoLocation() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $image = new Image(Album::withId(899), 2);
@@ -211,6 +266,9 @@ class ImageIntegrationTest extends TestCase {
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteAlbum() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $image = new Image(Album::withId(899), 1);
@@ -222,6 +280,9 @@ class ImageIntegrationTest extends TestCase {
         $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteGallery() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $image = new Image(Gallery::withId(1), 898);

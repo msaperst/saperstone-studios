@@ -48,7 +48,7 @@ class GalleryFeatureContext implements Context {
      */
     public function cleanup() {
         $sql = new Sql();
-        foreach($this->galleryIds as $galleryId) {
+        foreach ($this->galleryIds as $galleryId) {
             $sql->executeStatement("DELETE FROM `galleries` WHERE `galleries`.`id` = $galleryId;");
             $sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`gallery` = $galleryId;");
         }
@@ -95,7 +95,7 @@ class GalleryFeatureContext implements Context {
      */
     public function galleryImageHasCaptain($gallery, $image, $caption) {
         $sql = new Sql();
-        $sql->executeStatement("UPDATE `gallery_images` SET caption = '$caption' WHERE `gallery` = $gallery AND sequence = " . ($image-1));
+        $sql->executeStatement("UPDATE `gallery_images` SET caption = '$caption' WHERE `gallery` = $gallery AND sequence = " . ($image - 1));
         $sql->disconnect();
     }
 
@@ -171,7 +171,7 @@ class GalleryFeatureContext implements Context {
      * @param $imgNum
      */
     public function iSeeImageInThePreviewModal($imgNum) {
-        $slideShowId =  str_replace(" ","-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
+        $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id($slideShowId))->isDisplayed());
         $activeImage = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
         Assert::assertEquals('Image ' . ($imgNum - 1), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'));

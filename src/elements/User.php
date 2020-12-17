@@ -25,7 +25,11 @@ class User {
         $this->session->initialize();
     }
 
-    static function fromSystem() {
+    /**
+     * @return User
+     * @throws Exception
+     */
+    static function fromSystem(): User {
         $user = new User();
         $hash = NULL;
         if (isset ($_COOKIE) && isset ($_COOKIE['hash'])) {
@@ -47,7 +51,12 @@ class User {
         return $user;
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return User
+     * @throws Exception
+     */
+    static function withId($id): User {
         if (!isset ($id)) {
             throw new Exception("User id is required");
         } elseif ($id == "") {
@@ -76,7 +85,12 @@ class User {
         return $user;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return User
+     * @throws Exception
+     */
+    static function withParams($params): User {
         $systemUser = User::fromSystem();
         $user = new User();
         $sql = new Sql();
@@ -117,7 +131,13 @@ class User {
         return $user;
     }
 
-    private static function setBasicValues(User $user, $params) {
+    /**
+     * @param User $user
+     * @param $params
+     * @return User
+     * @throws Exception
+     */
+    private static function setBasicValues(User $user, $params): User {
         $systemUser = User::fromSystem();
         $sql = new Sql();
         $id = 0;
@@ -140,14 +160,14 @@ class User {
         }
         $user->email = $sql->escapeString($params['email']);
         //sets if the user as active - only an admin can make a user inactive
-        if( $user->active == '' ) {
+        if ($user->active == '') {
             $user->active = 1;
         }
         if ($systemUser->isAdmin() && isset($params['active'])) {
             $user->active = (int)$params['active'];
         }
         //setting role - admin users can provide different role
-        if( $user->role == '' ) {
+        if ($user->role == '') {
             $user->role = 'downloader';
         }
         if ($systemUser->isAdmin() && isset($params['role']) && $params['role'] != "") {
@@ -168,28 +188,57 @@ class User {
         return $user;
     }
 
-    static function fromReset($email, $code) {
+    /**
+     * @param $email
+     * @param $code
+     * @return User
+     * @throws Exception
+     */
+    static function fromReset($email, $code): User {
         $sql = new Sql();
         $row = $sql->getRow("SELECT * FROM users WHERE email='$email' AND resetKey='$code';");
         $sql->disconnect();
+        if ($row == null) {
+            throw new Exception('Credentials do not match our records');
+        }
         return User::withId($row['id']);
     }
 
-    static function fromLogin($username, $password) {
+    /**
+     * @param $username
+     * @param $password
+     * @return User
+     * @throws Exception
+     */
+    static function fromLogin($username, $password): User {
         $sql = new Sql();
         $row = $sql->getRow("SELECT * FROM users WHERE usr='$username' AND pass='" . md5($password) . "';");
         $sql->disconnect();
+        if ($row == null) {
+            throw new Exception('Credentials do not match our records');
+        }
         return User::withId($row['id']);
     }
 
-    static function fromEmail($email) {
+    /**
+     * @param $email
+     * @return User
+     * @throws Exception
+     */
+    static function fromEmail($email): User {
         $sql = new Sql();
         $row = $sql->getRow("SELECT * FROM users WHERE email='$email';");
         $sql->disconnect();
+        if ($row == null) {
+            throw new Exception('Credentials do not match our records');
+        }
         return User::withId($row['id']);
     }
 
-    function isLoggedIn() {
+    /**
+     * @return bool
+     */
+    function isLoggedIn(): bool {
         return $this->isLoggedIn;
     }
 
@@ -217,27 +266,45 @@ class User {
         return $this->hash;
     }
 
-    function isActive() {
+    /**
+     * @return bool
+     */
+    function isActive(): bool {
         return boolval($this->active);
     }
 
-    function getRole() {
+    /**
+     * @return string
+     */
+    function getRole(): string {
         return $this->role;
     }
 
-    function isAdmin() {
+    /**
+     * @return bool
+     */
+    function isAdmin(): bool {
         return ($this->getRole() === "admin");
     }
 
-    function getFirstName() {
+    /**
+     * @return string
+     */
+    function getFirstName(): string {
         return $this->firstName;
     }
 
-    function getLastName() {
+    /**
+     * @return string
+     */
+    function getLastName(): string {
         return $this->lastName;
     }
 
-    function getName() {
+    /**
+     * @return string
+     */
+    function getName(): string {
         $name = $this->getFirstName();
         if ($this->getLastName() != "" && $name != "") {
             $name .= " ";
@@ -254,7 +321,7 @@ class User {
      * Only return basic information
      * id, usr, firstName, lastName, email, resetKey, active, role
      */
-    function getDataBasic() {
+    function getDataBasic(): array {
         return array_diff_key($this->raw, ['pass' => '', 'hash' => '', 'created' => '', 'lastLogin' => '']);
     }
 
@@ -262,7 +329,10 @@ class User {
         return $this->raw;
     }
 
-    static function generatePassword() {
+    /**
+     * @return string
+     */
+    static function generatePassword(): string {
         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
         $pass = array(); //remember to declare $pass as an array
         $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
@@ -273,7 +343,11 @@ class User {
         return implode($pass); //turn the array into a string
     }
 
-    function create() {
+    /**
+     * @return int
+     * @throws Exception
+     */
+    function create(): int {
         $sql = new Sql();
         $lastId = $sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('{$this->username}', '{$this->md5Pass}', '{$this->firstName}', '{$this->lastName}', '{$this->email}', '{$this->role}', '{$this->active}', '{$this->hash}');");
         $systemUser = User::fromSystem();
@@ -291,6 +365,10 @@ class User {
         return $lastId;
     }
 
+    /**
+     * @param $params
+     * @throws Exception
+     */
     function update($params) {
         $systemUser = User::fromSystem();
         if (!$systemUser->isAdmin() && $systemUser->getId() != $this->getId()) {
@@ -311,6 +389,10 @@ class User {
         $this->raw = self::withId($this->id)->getDataArray();
     }
 
+    /**
+     * @param $params
+     * @throws Exception
+     */
     function updatePassword($params) {
         $systemUser = User::fromSystem();
         if (!$systemUser->isAdmin() && $systemUser->getId() != $this->getId()) {
@@ -349,6 +431,9 @@ class User {
         $sql->executeStatement("UPDATE users SET pass='{$this->md5Pass}' WHERE id='{$this->getId()}';");
     }
 
+    /**
+     * @throws Exception
+     */
     function delete() {
         $systemUser = User::fromSystem();
         if (!$systemUser->isAdmin()) {
@@ -359,6 +444,10 @@ class User {
         $sql->disconnect();
     }
 
+    /**
+     * @param $rememberMe
+     * @throws Exception
+     */
     function login($rememberMe) {
         if (!$this->isActive()) {
             return;
@@ -369,6 +458,7 @@ class User {
         $_SESSION ['hash'] = $this->hash;
 
         if (isset($_COOKIE['CookiePreferences'])) {
+            $preferences = json_decode($_COOKIE['CookiePreferences']);
             $preferences = json_decode($_COOKIE['CookiePreferences']);
             if ($rememberMe && is_array($preferences) && in_array("preferences", $preferences)) {
                 // remember the user if prompted
@@ -387,7 +477,11 @@ class User {
         $sql->disconnect();
     }
 
-    function setResetCode() {
+    /**
+     * @return string
+     * @throws Exception
+     */
+    function setResetCode(): string {
         $sql = new Sql();
         $resetCode = Strings::randomString(8);
         $sql->executeStatement("UPDATE users SET resetKey='$resetCode' WHERE id={$this->id};");
@@ -398,6 +492,9 @@ class User {
         return $resetCode;
     }
 
+    /**
+     *
+     */
     function forceAdmin() {
         if (!$this->isAdmin()) {
             $errors = new Errors();
@@ -405,6 +502,9 @@ class User {
         }
     }
 
+    /**
+     *
+     */
     function forceLogIn() {
         if (!$this->isLoggedIn()) {
             $errors = new Errors();

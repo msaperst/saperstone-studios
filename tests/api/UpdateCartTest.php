@@ -322,7 +322,7 @@ class UpdateCartTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("2", (string)$response->getBody());
-        $cart =$this->sql->getRows("SELECT * FROM cart WHERE user = 3");
+        $cart = $this->sql->getRows("SELECT * FROM cart WHERE user = 3");
         $this->assertEquals(1, sizeof($cart));
         $this->assertEquals(3, $cart[0]['user']);
         $this->assertEquals(999, $cart[0]['album']);
@@ -356,7 +356,7 @@ class UpdateCartTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("3", (string)$response->getBody());
-        $cart =$this->sql->getRows("SELECT * FROM cart WHERE user = 3");
+        $cart = $this->sql->getRows("SELECT * FROM cart WHERE user = 3");
         $this->assertEquals(2, sizeof($cart));
         $this->assertEquals(3, $cart[0]['user']);
         $this->assertEquals(999, $cart[0]['album']);

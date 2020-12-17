@@ -28,15 +28,17 @@ class DeleteBlogTest extends TestCase {
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', '2031-01-01', '', 0)");
+        $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', '2031-01-01', 'posts/2031/01/01/preview.jpg', 0)");
         $this->sql->executeStatement("INSERT INTO `blog_images` (`blog`, `contentGroup`, `location`, `width`, `height`, `left`, `top`) VALUES ('999', '1', 'posts/2031/01/01/sample.jpg', 300, 400, 0, 0)");
         $this->sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ('999', 29)");
         $this->sql->executeStatement("INSERT INTO `blog_texts` (`blog`, `contentGroup`, `text`) VALUES ('999', '2', 'Some blog text')");
-        $oldmask = umask(0);
+        $oldMask = umask(0);
         mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01', 0777, true);
+        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg');
+        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg', 0777);
         touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg');
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg', 0777);
-        umask($oldmask);
+        umask($oldMask);
     }
 
     /**

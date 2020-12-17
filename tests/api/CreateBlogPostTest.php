@@ -368,7 +368,7 @@ class CreateBlogPostTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $blogId = (string) $response->getBody();
+            $blogId = (string)$response->getBody();
             $blogDetails = $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
             $this->assertEquals($blogId, $blogDetails['id']);
             $this->assertEquals("Sample Blog", $blogDetails['title']);
@@ -452,7 +452,7 @@ class CreateBlogPostTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $blogId = (string) $response->getBody();
+            $blogId = (string)$response->getBody();
             $blogDetails = $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = $blogId;");
             $this->assertEquals($blogId, $blogDetails['id']);
             $this->assertEquals("Sample Blog", $blogDetails['title']);
