@@ -826,6 +826,8 @@ Comment',
             Assert::assertEquals($img, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
         }
         $sql->disconnect();
+        // cleanup
+        unlink( $filename );
     }
 
     /**
@@ -858,6 +860,8 @@ Comment',
             Assert::assertEquals($img, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
         }
         $sql->disconnect();
+        // cleanup
+        unlink( $filename );
     }
 
     /**
