@@ -7,6 +7,7 @@ use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Exception\UnexpectedTagNameException;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -435,5 +436,13 @@ class Album {
     public function submitImage() {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('submit-image-btn')));
         $this->driver->findElement(WebDriverBy::id('submit-image-btn'))->click();
+    }
+
+    /**
+     * @param $albumId
+     * @return RemoteWebElement
+     */
+    public function getAlbumRow($albumId): RemoteWebElement {
+        return $this->driver->findElement(WebDriverBy::cssSelector("tr[album-id='$albumId']"));
     }
 }

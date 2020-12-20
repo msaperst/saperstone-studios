@@ -4,7 +4,9 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Testwork\Environment\Environment;
 use CustomAsserts;
+use Exception;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -19,8 +21,10 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPAR
 
 class LoginFeatureContext implements Context {
 
+    /**
+     * @var Environment
+     */
     private $environment;
-
     /**
      * @var RemoteWebDriver
      */
@@ -34,7 +38,9 @@ class LoginFeatureContext implements Context {
      */
     private $user;
 
-    /** @BeforeScenario */
+    /** @BeforeScenario
+     * @param BeforeScenarioScope $scope
+     */
     public function gatherContexts(BeforeScenarioScope $scope) {
         $this->environment = $scope->getEnvironment();
         $this->driver = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
@@ -54,13 +60,33 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Given an enabled user account exists
+     * @throws Exception
      */
     public function anEnabledUserAccountExists() {
         $this->user->create();
     }
 
     /**
+     * @Given an enabled admin user account exists
+     * @throws Exception
+     */
+    public function anEnabledAdminUserAccountExists() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'msaperst+sstest@gmail.com',
+            'password' => '12345',
+            'role' => 'admin'
+        ];
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $this->user = User::withParams($params);
+        unset($_SESSION['hash']);
+        $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($this->user);
+        $this->user->create();
+    }
+
+    /**
      * @Given /^a disabled user account exists$/
+     * @throws Exception
      */
     public function aDisabledUserAccountExists() {
         $params = [

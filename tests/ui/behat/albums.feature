@@ -34,3 +34,18 @@ Feature: Albums
     Then I see an info message indicating album successfully added
     And I see 2 albums listed
     And I see album 99998 listed
+
+  Scenario Outline: Downloader able to see album information
+    Then I see album 99999 album <attribute>
+    Examples:
+      | attribute   |
+      | name        |
+      | description |
+      | date        |
+      | images      |
+
+  Scenario: Downloader unable to see album information
+    Then I don't see ability to add an album
+    And I don't see album 99999 edit icons
+    And I don't see album 99999 album last accessed
+    And I don't see album 99999 album code

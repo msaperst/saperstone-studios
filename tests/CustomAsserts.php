@@ -1,5 +1,7 @@
 <?php
 
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
@@ -40,6 +42,13 @@ class CustomAsserts {
         self::timestampWithin($range, strtotime($time));
     }
 
+    /**
+     * @param $driver
+     * @param $type
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     private static function checkMessage($driver, $type, $message) {
         $successBy = WebDriverBy::classname("alert-$type");
         $wait = new WebDriverWait($driver, 10);
@@ -49,18 +58,42 @@ class CustomAsserts {
 $message", $actualMessage, $actualMessage);
     }
 
+    /**
+     * @param $driver
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     public static function successMessage($driver, $message) {
         self::checkMessage($driver, 'success', $message);
     }
 
+    /**
+     * @param $driver
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     public static function warningMessage($driver, $message) {
         self::checkMessage($driver, 'warning', $message);
     }
 
+    /**
+     * @param $driver
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     public static function infoMessage($driver, $message) {
         self::checkMessage($driver, 'info', $message);
     }
 
+    /**
+     * @param $driver
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     public static function errorMessage($driver, $message) {
         self::checkMessage($driver, 'danger', $message);
     }
