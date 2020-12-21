@@ -2,6 +2,7 @@
 
 namespace ui\models;
 
+use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Exception\UnexpectedTagNameException;
@@ -15,6 +16,7 @@ use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverSelect;
 use Facebook\WebDriver\WebDriverWait;
 use Sql;
+use User;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Gallery.php';
 
@@ -39,13 +41,18 @@ class Album {
     }
 
     /**
+     * @param $code
+     * @param $save
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function waitForFinder() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('find-album-code')));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('find-album-code'))));
-
+    public function search($code, $save) {
+        $this->openFinder();
+        if ($save) {
+            $this->driver->findElement(WebDriverBy::id('find-album-add'))->click();
+        }
+        $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code);
+        $this->driver->findElement(WebDriverBy::className('btn-success'))->click();
     }
 
     /**
@@ -60,18 +67,13 @@ class Album {
     }
 
     /**
-     * @param $code
-     * @param $save
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function search($code, $save) {
-        $this->openFinder();
-        if ($save) {
-            $this->driver->findElement(WebDriverBy::id('find-album-add'))->click();
-        }
-        $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code);
-        $this->driver->findElement(WebDriverBy::className('btn-success'))->click();
+    public function waitForFinder() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('find-album-code')));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('find-album-code'))));
+
     }
 
     /**
@@ -164,15 +166,6 @@ class Album {
      */
     public function advanceToImage($img) {
         $this->gallery->advanceToImage($img);
-    }
-
-    /**
-     * @return WebDriverElement
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function getSlideShowImage(): WebDriverElement {
-        return $this->gallery->getSlideShowImage();
     }
 
     /**
@@ -285,38 +278,12 @@ class Album {
     }
 
     /**
-     * @param $productCategory
-     * @param $productName
-     * @param $productSize
      * @return WebDriverElement
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function getProductRow($productCategory, $productName, $productSize): WebDriverElement {
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('cart-image'))));
-        $this->driver->findElement(WebDriverBy::cssSelector('li > a[href="#' . strtolower($productCategory) . '"]'))->click();
-        $sql = new Sql();
-        $productType = $sql->getRow("SELECT * FROM product_types WHERE category = '" . strtolower($productCategory) . "' AND name = '$productName';")['id'];
-        $product = $sql->getRow("SELECT * FROM products WHERE product_type = '$productType' AND size = '$productSize';")['id'];
-        $sql->disconnect();
-        return $this->driver->findElement(WebDriverBy::cssSelector("tr[product-id='$product']"));
-    }
-
-    /**
-     * @param $album
-     * @param $image
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     * @return WebDriverElement[]
-     */
-    public function getCartRows($album, $image, $productCategory, $productSize, $productName): array {
-        $sql = new Sql();
-        $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image - 1))['id'];
-        $productType = $sql->getRow("SELECT * FROM product_types WHERE category = '" . strtolower($productCategory) . "' AND name = '$productName';")['id'];
-        $product = $sql->getRow("SELECT * FROM products WHERE product_type = '$productType' AND size = '$productSize';")['id'];
-        $sql->disconnect();
-        return $this->driver->findElements(WebDriverBy::cssSelector("tr[product-id='$product'][product-type='$productType'][album-id='$album'][image-id='$img']"));
+    public function getSlideShowImage(): WebDriverElement {
+        return $this->gallery->getSlideShowImage();
     }
 
     /**
@@ -363,6 +330,24 @@ class Album {
      * @param $productCategory
      * @param $productName
      * @param $productSize
+     * @return WebDriverElement
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function getProductRow($productCategory, $productName, $productSize): WebDriverElement {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('cart-image'))));
+        $this->driver->findElement(WebDriverBy::cssSelector('li > a[href="#' . strtolower($productCategory) . '"]'))->click();
+        $sql = new Sql();
+        $productType = $sql->getRow("SELECT * FROM product_types WHERE category = '" . strtolower($productCategory) . "' AND name = '$productName';")['id'];
+        $product = $sql->getRow("SELECT * FROM products WHERE product_type = '$productType' AND size = '$productSize';")['id'];
+        $sql->disconnect();
+        return $this->driver->findElement(WebDriverBy::cssSelector("tr[product-id='$product']"));
+    }
+
+    /**
+     * @param $productCategory
+     * @param $productName
+     * @param $productSize
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
@@ -396,6 +381,23 @@ class Album {
                 $select->selectByIndex($i);
             }
         }
+    }
+
+    /**
+     * @param $album
+     * @param $image
+     * @param $productCategory
+     * @param $productSize
+     * @param $productName
+     * @return WebDriverElement[]
+     */
+    public function getCartRows($album, $image, $productCategory, $productSize, $productName): array {
+        $sql = new Sql();
+        $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image - 1))['id'];
+        $productType = $sql->getRow("SELECT * FROM product_types WHERE category = '" . strtolower($productCategory) . "' AND name = '$productName';")['id'];
+        $product = $sql->getRow("SELECT * FROM products WHERE product_type = '$productType' AND size = '$productSize';")['id'];
+        $sql->disconnect();
+        return $this->driver->findElements(WebDriverBy::cssSelector("tr[product-id='$product'][product-type='$productType'][album-id='$album'][image-id='$img']"));
     }
 
     /**
@@ -444,5 +446,149 @@ class Album {
      */
     public function getAlbumRow($albumId): RemoteWebElement {
         return $this->driver->findElement(WebDriverBy::cssSelector("tr[album-id='$albumId']"));
+    }
+
+    /**
+     * @return RemoteWebElement[]
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function getAlbumAccessors(): array {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
+        $albumUsers = $this->driver->findElement(WebDriverBy::id('album-users'));
+        return $albumUsers->findElements(WebDriverBy::tagName('span'));
+    }
+
+    /**
+     * @return RemoteWebElement[]
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function getAlbumDownloaders(): array {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
+        $albumUsers = $this->driver->findElement(WebDriverBy::id('download-users'));
+        return $albumUsers->findElements(WebDriverBy::tagName('span'));
+    }
+
+    /**
+     * @return RemoteWebElement[]
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function getAlbumSharers(): array {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
+        $albumUsers = $this->driver->findElement(WebDriverBy::id('share-users'));
+        return $albumUsers->findElements(WebDriverBy::tagName('span'));
+    }
+
+    /**
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function giveUserAlbumAccess($user) {
+        $user = User::withId($user);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#albumDiv #user-search')));
+        $this->driver->findElement(WebDriverBy::cssSelector('#albumDiv #user-search'))->clear()->sendKeys($user->getUsername());
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
+        $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
+        foreach ($results as $result) {
+            if ($result->getAttribute('user-id') == $user->getId()) {
+                $result->click();
+            }
+        }
+    }
+
+    /**
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function giveUserDownloadAccess($user) {
+        $user = User::withId($user);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#downloadDiv #user-search')));
+        $this->driver->findElement(WebDriverBy::cssSelector('#downloadDiv #user-search'))->clear()->sendKeys($user->getUsername());
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
+        $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
+        foreach ($results as $result) {
+            if ($result->getAttribute('user-id') == $user->getId()) {
+                $result->click();
+            }
+        }
+    }
+
+    /**
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function giveUserShareAccess($user) {
+        $user = User::withId($user);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#shareDiv #user-search')));
+        $this->driver->findElement(WebDriverBy::cssSelector('#shareDiv #user-search'))->clear()->sendKeys($user->getUsername());
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
+        $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
+        foreach ($results as $result) {
+            if ($result->getAttribute('user-id') == $user->getId()) {
+                $result->click();
+            }
+        }
+    }
+
+    /**
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function removeUserAlbumAccess($user) {
+        $user = User::withId($user);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
+        $accessors = $this->getAlbumAccessors();
+        foreach ($accessors as $accessor) {
+            if ($accessor->getAttribute('user-id') == $user->getId()) {
+                $action = new WebDriverActions($this->driver);
+                $action->moveToElement($accessor, intval($accessor->getSize()->getWidth() * 0.5 - 5))->click()->perform();
+            }
+        }
+    }
+
+    /**
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function removeUserDownloadAccess($user) {
+        $user = User::withId($user);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
+        $downloaders = $this->getAlbumDownloaders();
+        foreach ($downloaders as $downloader) {
+            if ($downloader->getAttribute('user-id') == $user->getId()) {
+                $action = new WebDriverActions($this->driver);
+                $action->moveToElement($downloader, intval($downloader->getSize()->getWidth() * 0.5 - 5))->click()->perform();
+            }
+        }
+    }
+
+    /**
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function removeUserShareAccess($user) {
+        $user = User::withId($user);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
+        $sharers = $this->getAlbumSharers();
+        foreach ($sharers as $sharer) {
+            if ($sharer->getAttribute('user-id') == $user->getId()) {
+                $action = new WebDriverActions($this->driver);
+                $action->moveToElement($sharer, intval($sharer->getSize()->getWidth() * 0.5 - 5))->click()->perform();
+            }
+        }
     }
 }

@@ -62,11 +62,8 @@ class UserIntegrationTest extends TestCase {
     }
 
     public function testLetterUserId() {
-        try {
-            User::withId("a");
-        } catch (Exception $e) {
-            $this->assertEquals("User id does not match any users", $e->getMessage());
-        }
+            $user = User::withId("a");
+            $this->assertEquals(0, $user->getId());
     }
 
     public function testBadUserId() {

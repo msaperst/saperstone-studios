@@ -2,18 +2,29 @@
 
 namespace api;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetImageSharersTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
@@ -30,6 +41,9 @@ class GetImageSharersTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '999');");
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
@@ -45,6 +59,9 @@ class GetImageSharersTest extends TestCase {
         $this->sql->disconnect();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNotLoggedIn() {
         try {
             $this->http->request('GET', 'api/get-image-sharers.php');
@@ -54,6 +71,9 @@ class GetImageSharersTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -68,6 +88,9 @@ class GetImageSharersTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -79,6 +102,9 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals("Album id is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -93,6 +119,9 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals("Album id can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testLetterAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -107,6 +136,9 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -121,6 +153,9 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -135,6 +170,9 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals("Image id is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -150,6 +188,9 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals("Image id can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAlbumImageOne() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -166,6 +207,9 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals(1, sizeof($downloaders));
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAlbumImageTwo() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -185,6 +229,9 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals(0, $downloaders[2]['user']);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAlbumImageThree() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -201,5 +248,25 @@ class GetImageSharersTest extends TestCase {
         $this->assertEquals(2, sizeof($downloaders));
         $this->assertEquals(2, $downloaders[0]['user']);
         $this->assertEquals(3, $downloaders[1]['user']);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testAlbumImageAll() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('GET', 'api/get-image-sharers.php', [
+            'query' => [
+                'album' => 999,
+                'image' => '*'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $downloaders = json_decode($response->getBody(), true);
+        $this->assertEquals(1, sizeof($downloaders));
+        $this->assertEquals(2, $downloaders[0]['user']);
     }
 }

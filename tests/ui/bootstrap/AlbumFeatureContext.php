@@ -64,6 +64,7 @@ class AlbumFeatureContext implements Context {
     public function cleanup() {
         $sql = new Sql();
         foreach ($this->albumIds as $albumId) {
+            $albumLocation = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
             $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
@@ -71,6 +72,9 @@ class AlbumFeatureContext implements Context {
             $sql->executeStatement("DELETE FROM `download_rights` WHERE `download_rights`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `share_rights` WHERE `share_rights`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = $albumId;");
+            if (is_dir($albumLocation)) {
+                system("rm -rf " . escapeshellarg($albumLocation));
+            }
         }
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
@@ -127,7 +131,7 @@ class AlbumFeatureContext implements Context {
     public function albumExistsWithImages($albumId, $images) {
         $this->albumIds[] = $albumId;
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1, '$images');");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', 1, '$images');");
         $oldMask = umask(0);
         if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
             mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
@@ -206,6 +210,42 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @Given /^user (\d+) has access to album (\d+)$/
+     * @param $userId
+     * @param $albumId
+     * @throws Exception
+     */
+    public function userHasAccessToAlbum($userId, $albumId) {
+        $sql = new Sql();
+        $sql->executeStatement("INSERT INTO `albums_for_users` VALUES( $userId, $albumId);");
+        $sql->disconnect();
+    }
+
+    /**
+     * @Given /^user (\d+) has download access to album (\d+)$/
+     * @param $userId
+     * @param $albumId
+     * @throws Exception
+     */
+    public function userHasDownloadAccessToAlbum($userId, $albumId) {
+        $sql = new Sql();
+        $sql->executeStatement("INSERT INTO `download_rights` VALUES( $userId, $albumId, '*');");
+        $sql->disconnect();
+    }
+
+    /**
+     * @Given /^user (\d+) has share access to album (\d+)$/
+     * @param $userId
+     * @param $albumId
+     * @throws Exception
+     */
+    public function userHasShareAccessToAlbum($userId, $albumId) {
+        $sql = new Sql();
+        $sql->executeStatement("INSERT INTO `share_rights` VALUES( $userId, $albumId, '*');");
+        $sql->disconnect();
+    }
+
+    /**
      * @Given /^album (\d+) image (\d+) has (\d+) "([^"]*)" "([^"]*)" "([^"]*)" in the cart$/
      * @param $album
      * @param $image
@@ -256,60 +296,10 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see a cookie with album (\d+)$/
-     * @param $albumId
-     * @throws NoSuchCookieException
-     */
-    public function iSeeACookieWithMyAlbum($albumId) {
-        $sql = new Sql();
-        $code = $sql->getRow("SELECT * FROM `albums` WHERE `id` = $albumId;")['code'];
-        $sql->disconnect();
-        $cookie = $this->driver->manage()->getCookieNamed('searched');
-        Assert::assertEquals(md5('album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
-    }
-
-    /**
-     * @Then /^I see album (\d+) listed$/
-     * @param $albumId
-     */
-    public function iSeeAlbumListed($albumId) {
-        Assert::assertStringEndsWith("album.php?album=$albumId", $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'), $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'));
-    }
-
-    /**
-     * @Then /^I see (\d+) album(s?) listed$/
-     * @param $count
-     * @throws Exception
-     */
-    public function iSeeAlbumsListed($count) {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("tbody tr:nth-child($count)")));
-        Assert::assertEquals($count, sizeof($this->driver->findElements(WebDriverBy::cssSelector('tbody tr[role="row"]'))));
-    }
-
-    /**
-     * @Then /^I see an error message indicating no album exists$/
-     */
-    public function iSeeAnErrorMessageIndicatingNoAlbumExists() {
-        CustomAsserts::errorMessage($this->driver, 'That code does not match any albums');
-    }
-
-    /**
-     * @Then /^I see an error message indicating album code required$/
-     */
-    public function iSeeAnErrorMessageIndicatingAlbumCodeRequired() {
-        CustomAsserts::errorMessage($this->driver, 'Album code can not be blank');
-    }
-
-    /**
-     * @Then /^I see an info message indicating album successfully added$/
-     */
-    public function iSeeAnInfoMessageIndicatingAlbumSuccessfullyAdded() {
-        CustomAsserts::infoMessage($this->driver, 'Added album to your list');
-    }
-
-    /**
      * @When /^I hover over album image (\d+)$/
      * @param $imgNum
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iHoverOverImage($imgNum) {
         $album = new Album($this->driver, $this->wait);
@@ -319,6 +309,8 @@ class AlbumFeatureContext implements Context {
     /**
      * @When /^I view album image (\d+)$/
      * @param $imgNum
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iViewImage($imgNum) {
         $album = new Album($this->driver, $this->wait);
@@ -344,6 +336,8 @@ class AlbumFeatureContext implements Context {
     /**
      * @When /^I skip to album image (\d+)$/
      * @param $img
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSkipToImage($img) {
         $album = new Album($this->driver, $this->wait);
@@ -463,7 +457,7 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I increase "([^"]*)" "([^"]*)" "([^"]*)" count$/
+     * @When /^I increase "([^"]*)" "([^"]*)" "([^"]*)" count$/
      * @param $productCategory
      * @param $productSize
      * @param $productName
@@ -601,8 +595,197 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @When /^I add user (\d+) for album access$/
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iAddUserForAlbumAccess($user) {
+        $album = new Album($this->driver, $this->wait);
+        $album->giveUserAlbumAccess($user);
+    }
+
+    /**
+     * @When /^I add user (\d+) for download access$/
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iAddUserForDownloadAccess($user) {
+        $album = new Album($this->driver, $this->wait);
+        $album->giveUserDownloadAccess($user);
+    }
+
+    /**
+     * @When /^I add user (\d+) for share access$/
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iAddUserForShareAccess($user) {
+        $album = new Album($this->driver, $this->wait);
+        $album->giveUserShareAccess($user);
+    }
+
+    /**
+     * @When /^I remove user (\d+) for album access$/
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iRemoveUserForAlbumAccess($user) {
+        $album = new Album($this->driver, $this->wait);
+        $album->removeUserAlbumAccess($user);
+    }
+
+    /**
+     * @When /^I remove user (\d+) for download access$/
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iRemoveUserForDownloadAccess($user) {
+        $album = new Album($this->driver, $this->wait);
+        $album->removeUserDownloadAccess($user);
+    }
+
+    /**
+     * @When /^I remove user (\d+) for share access$/
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iRemoveUserForShareAccess($user) {
+        $album = new Album($this->driver, $this->wait);
+        $album->removeUserShareAccess($user);
+    }
+
+    /**
+     * @When /^I add a new album$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iAddANewAlbum() {
+        $this->driver->findElement(WebDriverBy::id('add-album-btn'))->click();
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-folder-close')));
+    }
+
+    /**
+     * @When /^I provide "([^"]*)" for the album "([^"]*)"$/
+     * @param $value
+     * @param $field
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iProvideForTheAlbum($value, $field) {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-' . $field)));
+        $this->driver->findElement(WebDriverBy::id('new-album-' . $field))->clear()->sendKeys($value);
+    }
+
+    /**
+     * @When /^I create my album$/
+     * @throws Exception
+     */
+    public function iCreateMyAlbum() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-folder-close')));
+        $this->driver->findElement(WebDriverBy::className('glyphicon-folder-close'))->click();
+        //if this is a success, we need to add the new album to the cleanup list
+        try {
+            $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album')));
+            //this means we added an album, grab the id, so we can later delete it
+            $this->albumIds[] = $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id');
+        } catch (TimeoutException | NoSuchElementException $e) {
+            // do nothing, we're in an error condition, which is fine
+        }
+    }
+
+    /**
+     * @When /^I edit album (\d+)$/
+     * @param $albumId
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iEditAlbum($albumId) {
+        $album = new Album($this->driver, $this->wait);
+        $albumRow = $album->getAlbumRow($albumId);
+        $albumRow->findElement(WebDriverBy::className('edit-album-btn'))->click();
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save')));
+    }
+
+    /**
+     * @When /^I update my album$/
+     */
+    public function iUpdateMyAlbum() {
+        $this->driver->findElement(WebDriverBy::className('glyphicon-save'))->click();
+        try {
+            $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save'))));
+        } catch (Exception | TimeoutException | NoSuchElementException $e) {
+            // do nothing, we're in an error condition, which is fine
+        }
+    }
+
+    /**
+     * @When /^I delete my album$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iDeleteMyAlbum() {
+        $this->driver->findElement(WebDriverBy::className('glyphicon-trash'))->click();
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child')));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child'))));
+    }
+
+    /**
+     * @When /^I confirm my deletion of my album$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iConfirmMyDeletionOfMyAlbum() {
+        $this->driver->findElement(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child'))->click();
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save')));
+    }
+
+    /**
+     * @When /^I set access to my album$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSetAccessToMyAlbum() {
+        $this->driver->findElement(WebDriverBy::className('glyphicon-picture'))->click();
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
+    }
+
+    /**
+     * @When /^I make thumbnails for my album$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iMakeThumbnailsForMyAlbum() {
+        $this->driver->findElement(WebDriverBy::className('glyphicon-refresh'))->click();
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('glyphicon-eye-close')));
+    }
+
+    /**
+     * @When /^I create "([^"]*)" thumbnails$/
+     * @param $thumbType
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iCreateThumbnails($thumbType) {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('glyphicon-eye-close')));
+        $buttons = $this->driver->findElements(WebDriverBy::className('bootstrap-dialog-footer-buttons'))[1]->findElements(WebDriverBy::tagName('button'));
+        foreach ($buttons as $button) {
+            if (strtolower($button->getText()) == $thumbType) {
+                $button->click();
+            }
+        }
+    }
+
+    /**
      * @Then /^I see the "([^"]*)" album images load$/
      * @param $ord
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeTheAlbumImagesLoad($ord) {
         $album = new Album($this->driver, $this->wait);
@@ -626,6 +809,8 @@ class AlbumFeatureContext implements Context {
     /**
      * @Then /^I see album image (\d+) in the preview modal$/
      * @param $imgNum
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeImageInThePreviewModal($imgNum) {
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('album'))->isDisplayed());
@@ -802,6 +987,58 @@ Comment',
     }
 
     /**
+     * @Then /^I see a cookie with album (\d+)$/
+     * @param $albumId
+     * @throws NoSuchCookieException
+     */
+    public function iSeeACookieWithMyAlbum($albumId) {
+        $sql = new Sql();
+        $code = $sql->getRow("SELECT * FROM `albums` WHERE `id` = $albumId;")['code'];
+        $sql->disconnect();
+        $cookie = $this->driver->manage()->getCookieNamed('searched');
+        Assert::assertEquals(md5('album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
+    }
+
+    /**
+     * @Then /^I see album (\d+) listed$/
+     * @param $albumId
+     */
+    public function iSeeAlbumListed($albumId) {
+        Assert::assertStringEndsWith("album.php?album=$albumId", $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'), $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'));
+    }
+
+    /**
+     * @Then /^I see (\d+) album(s?) listed$/
+     * @param $count
+     * @throws Exception
+     */
+    public function iSeeAlbumsListed($count) {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("tbody tr:nth-child($count)")));
+        Assert::assertEquals($count, sizeof($this->driver->findElements(WebDriverBy::cssSelector('tbody tr[role="row"]'))));
+    }
+
+    /**
+     * @Then /^I see an error message indicating no album exists$/
+     */
+    public function iSeeAnErrorMessageIndicatingNoAlbumExists() {
+        CustomAsserts::errorMessage($this->driver, 'That code does not match any albums');
+    }
+
+    /**
+     * @Then /^I see an error message indicating album code required$/
+     */
+    public function iSeeAnErrorMessageIndicatingAlbumCodeRequired() {
+        CustomAsserts::errorMessage($this->driver, 'Album code can not be blank');
+    }
+
+    /**
+     * @Then /^I see an info message indicating album successfully added$/
+     */
+    public function iSeeAnInfoMessageIndicatingAlbumSuccessfullyAdded() {
+        CustomAsserts::infoMessage($this->driver, 'Added album to your list');
+    }
+
+    /**
      * @Then /^I see album (\d+) download with my favorites$/
      * @param $album
      */
@@ -835,7 +1072,7 @@ Comment',
     }
 
     /**
-     * @Given /^I see album (\d+) download with images "([^"]*)"$/
+     * @Then /^I see album (\d+) download with images "([^"]*)"$/
      * @param $album
      * @param $images
      */
@@ -1121,45 +1358,6 @@ Comment',
     }
 
     /**
-     * @When /^I add a new album$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iAddANewAlbum() {
-        $this->driver->findElement(WebDriverBy::id('add-album-btn'))->click();
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save')));
-    }
-
-    /**
-     * @When /^I provide "([^"]*)" for the album "([^"]*)"$/
-     * @param $value
-     * @param $field
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iProvideForTheAlbum($value, $field) {
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-' . $field)));
-        $this->driver->findElement(WebDriverBy::id('new-album-' . $field))->clear()->sendKeys($value);
-    }
-
-    /**
-     * @When /^I create my album$/
-     * @throws Exception
-     */
-    public function iCreateMyAlbum() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-folder-close')));
-        $this->driver->findElement(WebDriverBy::className('glyphicon-folder-close'))->click();
-        //if this is a success, we need to add the new album to the cleanup list
-        try {
-            $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album')));
-            //this means we added an album, grab the id, so we can later delete it
-            $this->albumIds[] = $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id');
-        } catch (TimeoutException | NoSuchElementException $e) {
-            // do nothing, we're in an error condition, which is fine
-        }
-    }
-
-    /**
      * @Then /^I see an error message indicating album name is required$/
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -1178,6 +1376,7 @@ Comment',
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-name')));
         $sql = new Sql();
         $album = $sql->getRow("SELECT * FROM `albums` WHERE `albums`.`id` = $albumId;");
+        $sql->disconnect();
         Assert::assertEquals($albumId, $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
         Assert::assertEquals($album['name'], $this->driver->findElement(WebDriverBy::id('new-album-name'))->getAttribute('value'));
         Assert::assertEquals($album['description'], $this->driver->findElement(WebDriverBy::id('new-album-description'))->getAttribute('value'));
@@ -1186,54 +1385,215 @@ Comment',
     }
 
     /**
-     * @When /^I edit album (\d+)$/
-     * @param $albumId
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iEditAlbum($albumId) {
-        $album = new Album($this->driver, $this->wait);
-        $albumRow = $album->getAlbumRow($albumId);
-        $albumRow->findElement(WebDriverBy::className('edit-album-btn'))->click();
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save')));
-    }
-
-    /**
-     * @When /^I update my album$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iUpdateMyAlbum() {
-        $this->driver->findElement(WebDriverBy::className('glyphicon-save'))->click();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save'))));
-    }
-
-    /**
-     * @When /^I delete my album$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iDeleteMyAlbum() {
-        $this->driver->findElement(WebDriverBy::className('glyphicon-trash'))->click();
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child')));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child'))));
-    }
-
-    /**
      * @Then /^I don't see album (\d+) listed$/
      * @param $albumId
-     */
-    public function iDonTSeeAlbumListed($albumId) {
-        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::cssSelector("tr[album-id='$albumId']"))));
-    }
-
-    /**
-     * @When /^I confirm my deletion of my album$/
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function iConfirmMyDeletionOfMyAlbum() {
-        $this->driver->findElement(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child'))->click();
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save')));
+    public function iDonTSeeAlbumListed($albumId) {
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("tr[album-id='$albumId']"))));
+        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::cssSelector("tr[album-id='$albumId']"))));
+        //remove this album from our deletion list
+        for ($i = 0; $i < sizeof($this->albumIds); $i++) {
+            if ($this->albumIds[$i] == $albumId) {
+                unset($this->albumIds[$i]);
+                $this->albumIds = array_values($this->albumIds);
+            }
+        }
+    }
+
+    /**
+     * @Then /^I see the ability to set access$/
+     */
+    public function iSeeTheAbilityToSetAccess() {
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('albumDiv'))->isDisplayed());
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('downloadDiv'))->isDisplayed());
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('shareDiv'))->isDisplayed());
+    }
+
+    /**
+     * @Then /^I see users "([\d,]*)" with album access$/
+     * @param $users
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeUserWithAlbumAccess($users) {
+        $album = new Album($this->driver, $this->wait);
+        if ($users == "") {
+            $users = [];
+        } else {
+            $users = explode(",", $users);
+        }
+        $accessors = $album->getAlbumAccessors();
+        Assert::assertEquals(sizeof($users), sizeof($accessors));
+        for ($i = 0; $i < sizeof($accessors); $i++) {
+            Assert::assertEquals($users[$i], $accessors[$i]->getAttribute('user-id'));
+        }
+    }
+
+    /**
+     * @Then /^I see users "([\d,]*)" with download access$/
+     * @param $users
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeUsersWithDownloadAccess($users) {
+        $album = new Album($this->driver, $this->wait);
+        if ($users == "") {
+            $users = [];
+        } else {
+            $users = explode(",", $users);
+        }
+        $downloaders = $album->getAlbumDownloaders();
+        Assert::assertEquals(sizeof($users), sizeof($downloaders));
+        for ($i = 0; $i < sizeof($downloaders); $i++) {
+            Assert::assertEquals($users[$i], $downloaders[$i]->getAttribute('user-id'));
+        }
+    }
+
+    /**
+     * @Then /^I see users "([\d,]*)" with share access$/
+     * @param $users
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeUsersWithShareAccess($users) {
+        $album = new Album($this->driver, $this->wait);
+        if ($users == "") {
+            $users = [];
+        } else {
+            $users = explode(",", $users);
+        }
+        $sharers = $album->getAlbumSharers();
+        Assert::assertEquals(sizeof($users), sizeof($sharers));
+        for ($i = 0; $i < sizeof($sharers); $i++) {
+            Assert::assertEquals($users[$i], $sharers[$i]->getAttribute('user-id'));
+        }
+    }
+
+    /**
+     * @Then /^users "([^"]*)" have access to album (\d+)$/
+     * @param $users
+     * @param $albumId
+     */
+    public function usersHaveAlbumAccess($users, $albumId) {
+        if ($users == "") {
+            $users = [];
+        } else {
+            $users = explode(",", $users);
+        }
+        $sql = new Sql();
+        $accessors = $sql->getRows("SELECT * FROM albums_for_users WHERE album = $albumId");
+        $sql->disconnect();
+        Assert::assertEquals(sizeof($users), sizeof($accessors));
+        for ($i = 0; $i < sizeof($accessors); $i++) {
+            Assert::assertEquals($users[$i], $accessors[$i]['user']);
+        }
+    }
+
+    /**
+     * @Then /^users "([^"]*)" can download album (\d+)$/
+     * @param $users
+     * @param $albumId
+     */
+    public function usersCanDownloadAlbum($users, $albumId) {
+        if ($users == "") {
+            $users = [];
+        } else {
+            $users = explode(",", $users);
+        }
+        $sql = new Sql();
+        $downloaders = $sql->getRows("SELECT * FROM download_rights WHERE album = $albumId");
+        $sql->disconnect();
+        Assert::assertEquals(sizeof($users), sizeof($downloaders));
+        for ($i = 0; $i < sizeof($downloaders); $i++) {
+            Assert::assertEquals($users[$i], $downloaders[$i]['user']);
+        }
+    }
+
+    /**
+     * @Then /^users "([^"]*)" can share album (\d+)$/
+     * @param $users
+     * @param $albumId
+     */
+    public function usersCanShareAlbum($users, $albumId) {
+        if ($users == "") {
+            $users = [];
+        } else {
+            $users = explode(",", $users);
+        }
+        $sql = new Sql();
+        $sharers = $sql->getRows("SELECT * FROM share_rights WHERE album = $albumId");
+        $sql->disconnect();
+        Assert::assertEquals(sizeof($users), sizeof($sharers));
+        for ($i = 0; $i < sizeof($sharers); $i++) {
+            Assert::assertEquals($users[$i], $sharers[$i]['user']);
+        }
+    }
+
+    /**
+     * @Then /^I see thumbnails being created$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeThumbnailsBeingCreated() {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('resize-progress'))));
+        $this->wait->until(function () {
+            return $this->driver->findElement(WebDriverBy::id('resize-progress'))->getText() == 'Done';
+        });
+    }
+
+    /**
+     * @Then /^I have created "([^"]*)" thumbnail images for album (\d+)$/
+     */
+    public function iHaveCreatedThumbnailImages($thumbType, $albumId) {
+        $sql = new Sql();
+        $albumLocation = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
+        $images = $sql->getRows("SELECT * FROM album_images WHERE album = $albumId");
+        $sql->disconnect();
+        Assert::assertTrue(is_dir($albumLocation . DIRECTORY_SEPARATOR . 'full'));
+        foreach ($images as $image) {
+            //ensure original files are in 'full' directory
+            $parts = explode(DIRECTORY_SEPARATOR, $image['location']);
+            array_splice($parts, 3, 0, "full");
+            Assert::assertTrue($this->files_are_equal(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . implode(DIRECTORY_SEPARATOR, $parts)));
+            switch ($thumbType) {
+                case 'proof':
+                    $file = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower-proof.jpeg';
+                    break;
+                case 'watermark':
+                    $file = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower-watermark.jpeg';
+                    break;
+                case 'nothing':
+                    $file = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower-thumbed.jpeg';
+                    break;
+            }
+            Assert::assertTrue($this->files_are_equal($file, dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location']));
+        }
+    }
+
+    /**
+     * @param $a
+     * @param $b
+     * @return bool
+     */
+    private function files_are_equal($a, $b) {
+        // Check if filesize is different
+        if (filesize($a) !== filesize($b)) {
+            return false;
+        }
+        // Check if content is different
+        $ah = fopen($a, 'rb');
+        $bh = fopen($b, 'rb');
+        $result = true;
+        while (!feof($ah)) {
+            if (fread($ah, 8192) != fread($bh, 8192)) {
+                $result = false;
+                break;
+            }
+        }
+        fclose($ah);
+        fclose($bh);
+        return $result;
     }
 }

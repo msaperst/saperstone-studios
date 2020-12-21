@@ -16,10 +16,18 @@ class Album {
     private $images = array();
     private $users = array();
 
+    /**
+     * Album constructor.
+     */
     function __construct() {
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return Album
+     * @throws Exception
+     */
+    static function withId($id): Album {
         if (!isset ($id)) {
             throw new Exception("Album id is required");
         } elseif ($id == "") {
@@ -47,11 +55,22 @@ class Album {
         return $album;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return Album
+     * @throws Exception
+     */
+    static function withParams($params): Album {
         return self::setVals(new Album(), $params);
     }
 
-    private static function setVals(Album $album, $params) {
+    /**
+     * @param Album $album
+     * @param $params
+     * @return Album
+     * @throws Exception
+     */
+    private static function setVals(Album $album, $params): Album {
         $sql = new Sql();
         //album name
         if (!isset ($params['name'])) {
@@ -109,7 +128,7 @@ class Album {
      * Only return basic information
      * name, description, date, code
      */
-    function getDataBasic() {
+    function getDataBasic(): array {
         return array_diff_key($this->raw, ['id' => '', 'lastAccessed' => '', 'location' => '', 'owner' => '', 'images' => '']);
     }
 
@@ -117,13 +136,20 @@ class Album {
         return $this->raw;
     }
 
-    function canUserGetData() {
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    function canUserGetData(): bool {
         $user = User::fromSystem();
         // only admin users and uploader users who own the album can get all data
         return ($user->isAdmin() || ($user->getRole() == "uploader" && $user->getId() == $this->owner));
     }
 
-    function isSearchedFor() {
+    /**
+     * @return bool
+     */
+    function isSearchedFor(): bool {
         if ($this->code == NULL) {
             // if not code, can't be searched for
             return false;
@@ -138,7 +164,11 @@ class Album {
         }
     }
 
-    function canUserAccess() {
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    function canUserAccess(): bool {
         $user = User::fromSystem();
         if ($this->canUserGetData()) {
             // you can access your own stuff
@@ -154,7 +184,11 @@ class Album {
         }
     }
 
-    function create() {
+    /**
+     * @return int
+     * @throws Exception
+     */
+    function create(): int {
         $user = User::fromSystem();
         if (!$user->isAdmin() && $user->getRole() != "uploader") {
             throw new Exception("User not authorized to create album");
@@ -184,6 +218,10 @@ class Album {
         return $lastId;
     }
 
+    /**
+     * @param $params
+     * @throws Exception
+     */
     function update($params) {
         $user = User::fromSystem();
         if (!$this->canUserGetData()) {
@@ -208,6 +246,9 @@ class Album {
         $sql->disconnect();
     }
 
+    /**
+     * @throws Exception
+     */
     function delete() {
         if (!$this->canUserGetData()) {
             throw new Exception("User not authorized to delete album");

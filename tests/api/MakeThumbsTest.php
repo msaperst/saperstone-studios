@@ -2,18 +2,29 @@
 
 namespace api;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class MakeThumbsTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
@@ -32,6 +43,9 @@ class MakeThumbsTest extends TestCase {
         umask($oldmask);
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 998;");
@@ -49,6 +63,9 @@ class MakeThumbsTest extends TestCase {
         $this->sql->disconnect();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/make-thumbs.php');
@@ -58,6 +75,9 @@ class MakeThumbsTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
@@ -69,6 +89,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("Album id is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
@@ -83,6 +106,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("Album id can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testLetterAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
@@ -97,6 +123,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadAlbumId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
@@ -111,6 +140,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testUploaderCantThumbsOtherAlbum() {
         try {
             $cookieJar = CookieJar::fromArray([
@@ -128,6 +160,9 @@ class MakeThumbsTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoMarkup() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -142,6 +177,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("Markup is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankMarkup() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -157,6 +195,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("Markup can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testInvalidMarkup() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -172,6 +213,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("Markup is not valid", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAdminCanThumbsAnyAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -203,6 +247,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertTrue($this->files_are_equal(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg'));
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testUploaderCanThumbsOwnAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
@@ -239,6 +286,9 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(999, $userLogs[0]['album']);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAdminCanThumbsAnyAlbumNothing() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -270,6 +320,11 @@ class MakeThumbsTest extends TestCase {
         $this->assertTrue($this->files_are_equal(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower-thumbed.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg'));
     }
 
+    /**
+     * @param $a
+     * @param $b
+     * @return bool
+     */
     function files_are_equal($a, $b) {
         // Check if filesize is different
         if (filesize($a) !== filesize($b)) {
