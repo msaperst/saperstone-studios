@@ -34,13 +34,13 @@ class UserIntegrationTest extends TestCase {
         $count++;
         $this->sql->executeStatement("ALTER TABLE `users` AUTO_INCREMENT = $count;");
         $this->sql->disconnect();
-        if( isset($_COOKIE['hash'])) {
+        if (isset($_COOKIE['hash'])) {
             unset($_COOKIE['hash']);
         }
-        if( isset($_SESSION['hash'])) {
+        if (isset($_SESSION['hash'])) {
             unset($_SESSION['hash']);
         }
-        if( isset($_SESSION['usr'])) {
+        if (isset($_SESSION['usr'])) {
             unset($_SESSION['usr']);
         }
     }
@@ -62,8 +62,8 @@ class UserIntegrationTest extends TestCase {
     }
 
     public function testLetterUserId() {
-            $user = User::withId("a");
-            $this->assertEquals(0, $user->getId());
+        $user = User::withId("a");
+        $this->assertEquals(0, $user->getId());
     }
 
     public function testBadUserId() {
@@ -254,7 +254,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals("Password is required", $e->getMessage());
         } finally {
-            unset( $_SESSION ['hash'] );
+            unset($_SESSION ['hash']);
         }
     }
 
@@ -265,11 +265,11 @@ class UserIntegrationTest extends TestCase {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $user = User::withId(899);
         try {
-            $user->updatePassword([ 'password' => '']);
+            $user->updatePassword(['password' => '']);
         } catch (Exception $e) {
             $this->assertEquals("Password can not be blank", $e->getMessage());
         } finally {
-            unset( $_SESSION ['hash'] );
+            unset($_SESSION ['hash']);
         }
     }
 
@@ -796,7 +796,7 @@ class UserIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testNewUserFromAdmin() {
-        sleep( 1 );
+        sleep(1);
         date_default_timezone_set("America/New_York");
         try {
             $params = [
@@ -839,7 +839,7 @@ class UserIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testNewUser() {
-        sleep( 1 );
+        sleep(1);
         date_default_timezone_set("America/New_York");
         try {
             $params = [
@@ -1003,7 +1003,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('User not authorized to update user', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1018,7 +1018,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Email is required', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1036,7 +1036,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Email can not be blank', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1054,7 +1054,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('That email already exists in the system: try logging in with it', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1073,7 +1073,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Role is not valid', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1081,7 +1081,7 @@ class UserIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testUpdateUserSameEmail() {
-        sleep( 1 );
+        sleep(1);
         $params = [
             'email' => 'uploader@example.org'
         ];
@@ -1106,7 +1106,7 @@ class UserIntegrationTest extends TestCase {
             $this->assertNull($userLogs['what']);
             $this->assertNull($userLogs['album']);
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1114,7 +1114,7 @@ class UserIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testUpdateUserAllBasicValuesNonAdmin() {
-        sleep( 1 );
+        sleep(1);
         $params = [
             'email' => 'upload@example.org',
             'active' => 0,
@@ -1144,7 +1144,7 @@ class UserIntegrationTest extends TestCase {
             $this->assertNull($userLogs['album']);
         } finally {
             $this->sql->executeStatement("UPDATE users SET pass = '5f4dcc3b5aa765d61d8327deb882cf99', firstName = 'Upload', lastName = 'User', email = 'uploader@example.org', role = 'uploader', hash = 'c90788c0e409eac6a95f6c6360d8dbf7', active = 1 WHERE id = 4;");
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1152,7 +1152,7 @@ class UserIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testUpdateUserAllBasicValuesAdmin() {
-        sleep( 1 );
+        sleep(1);
         $params = [
             'email' => 'upload@example.org',
             'active' => 0,
@@ -1182,7 +1182,7 @@ class UserIntegrationTest extends TestCase {
             $this->assertNull($userLogs['album']);
         } finally {
             $this->sql->executeStatement("UPDATE users SET pass = '5f4dcc3b5aa765d61d8327deb882cf99', firstName = 'Upload', lastName = 'User', email = 'uploader@example.org', role = 'uploader', hash = 'c90788c0e409eac6a95f6c6360d8dbf7', active = 1 WHERE id = 4;");
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1201,7 +1201,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Current password is required', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1221,7 +1221,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Current password can not be blank', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1241,7 +1241,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Current password does not match our records', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1261,7 +1261,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Password confirmation is required', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1282,7 +1282,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Password confirmation can not be blank', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1303,7 +1303,7 @@ class UserIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Password does not match password confirmation', $e->getMessage());
         } finally {
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1311,7 +1311,7 @@ class UserIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testUpdateUserPasswordDoesMatch() {
-        sleep( 1 );
+        sleep(1);
         $params = [
             'email' => 'uploader@example.org',
             'password' => 'newpassword',
@@ -1340,7 +1340,7 @@ class UserIntegrationTest extends TestCase {
             $this->assertNull($userLogs['album']);
         } finally {
             $this->sql->executeStatement("UPDATE users SET pass = '5f4dcc3b5aa765d61d8327deb882cf99', firstName = 'Upload', lastName = 'User', email = 'uploader@example.org', role = 'uploader', hash = 'c90788c0e409eac6a95f6c6360d8dbf7', active = 1 WHERE id = 4;");
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 
@@ -1348,7 +1348,7 @@ class UserIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testUpdateUserPassword() {
-        sleep( 1 );
+        sleep(1);
         $params = [
             'email' => 'uploader@example.org',
             'password' => 'newpassword',
@@ -1376,7 +1376,7 @@ class UserIntegrationTest extends TestCase {
             $this->assertNull($userLogs['album']);
         } finally {
             $this->sql->executeStatement("UPDATE users SET pass = '5f4dcc3b5aa765d61d8327deb882cf99', firstName = 'Upload', lastName = 'User', email = 'uploader@example.org', role = 'uploader', hash = 'c90788c0e409eac6a95f6c6360d8dbf7', active = 1 WHERE id = 4;");
-            unset( $_COOKIE ['hash']);
+            unset($_COOKIE ['hash']);
         }
     }
 }

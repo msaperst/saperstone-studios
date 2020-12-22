@@ -4,6 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Gherkin\Node\TableNode;
 use Exception;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Exception\NoSuchElementException;
@@ -342,5 +343,22 @@ class NavigationFeatureContext implements Context {
     public function iSeeTheContentExpanded($ord) {
         $contents = $this->driver->findElements(WebDriverBy::className('collapse-content'));
         Assert::assertTrue($contents[intval($ord) - 1]->isDisplayed());
+    }
+
+    /**
+     * @Given /^logs exist:$/
+     * @param TableNode $table
+     * @throws Exception
+     */
+    public function logsExist(TableNode $table) {
+        $sql = new Sql();
+        foreach ($table as $row) {
+            $what = "'{$row['what']}'";
+            if ($row['what'] == 'NULL') {
+                $what = 'NULL';
+            }
+            $sql->executeStatement("INSERT INTO user_logs VALUE( {$row['user']}, '{$row['time']}', '{$row['action']}', $what, '{$row['album']}');");
+        }
+        $sql->disconnect();
     }
 }

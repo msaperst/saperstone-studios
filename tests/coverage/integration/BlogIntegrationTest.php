@@ -12,7 +12,7 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . 
 
 class BlogIntegrationTest extends TestCase {
     /**
-     * @var Sql 
+     * @var Sql
      */
     private $sql;
 
@@ -698,7 +698,7 @@ class BlogIntegrationTest extends TestCase {
         ];
         try {
             $blog = Blog::withParams($params);
-            $this->assertEquals(['../tmp/sample1.jpg','../tmp/sample2.jpg'], $blog->getImages());
+            $this->assertEquals(['../tmp/sample1.jpg', '../tmp/sample2.jpg'], $blog->getImages());
         } finally {
             // cleanup
             $blogId = $blog->getId();
@@ -732,7 +732,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog title is required', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -744,7 +744,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog title is required', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -759,7 +759,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog title can not be blank', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -774,7 +774,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog date is required', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -804,7 +804,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog date is not the correct format', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -820,7 +820,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog preview image is required', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -837,7 +837,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog preview image is required', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -854,7 +854,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog preview image is required', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -873,7 +873,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog preview image can not be blank', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -959,7 +959,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Anna', $blogInfo['comments'][1]['name']);
             $this->assertNull($blogInfo['comments'][1]['user']);
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1046,7 +1046,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Anna', $blogInfo['comments'][1]['name']);
             $this->assertNull($blogInfo['comments'][1]['user']);
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1133,7 +1133,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Anna', $blogInfo['comments'][1]['name']);
             $this->assertNull($blogInfo['comments'][1]['user']);
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1155,7 +1155,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog content is not the correct format', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1179,7 +1179,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog content is not the correct format', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1203,7 +1203,7 @@ class BlogIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('Blog content is not the correct format', $e->getMessage());
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1287,7 +1287,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Anna', $blogInfo['comments'][1]['name']);
             $this->assertNull($blogInfo['comments'][1]['user']);
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1383,7 +1383,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Anna', $blogInfo['comments'][1]['name']);
             $this->assertNull($blogInfo['comments'][1]['user']);
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1509,7 +1509,7 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Anna', $blogInfo['comments'][1]['name']);
             $this->assertNull($blogInfo['comments'][1]['user']);
         } finally {
-            unset( $_SESSION['hash']);
+            unset($_SESSION['hash']);
         }
     }
 
@@ -1595,9 +1595,9 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Anna', $blogInfo['comments'][1]['name']);
             $this->assertNull($blogInfo['comments'][1]['user']);
         } finally {
-            unset( $_SESSION['hash']);
-            unset( $_SERVER['SERVER_NAME']);
-            unset( $_SERVER['SERVER_PORT']);
+            unset($_SESSION['hash']);
+            unset($_SERVER['SERVER_NAME']);
+            unset($_SERVER['SERVER_PORT']);
             $socialMedia = new SocialMedia();
             $socialMedia->removeBlogFromTwitter($blog);
         }
@@ -1686,9 +1686,9 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('Anna', $blogInfo['comments'][1]['name']);
             $this->assertNull($blogInfo['comments'][1]['user']);
         } finally {
-            unset( $_SESSION['hash']);
-            unset( $_SERVER['SERVER_NAME']);
-            unset( $_SERVER['SERVER_PORT']);
+            unset($_SESSION['hash']);
+            unset($_SERVER['SERVER_NAME']);
+            unset($_SERVER['SERVER_PORT']);
             $socialMedia = new SocialMedia();
             $socialMedia->removeBlogFromTwitter($blog);
         }

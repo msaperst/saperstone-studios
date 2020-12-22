@@ -219,4 +219,17 @@ Feature: Admin Albums
       | nothing   |
 
   Scenario: View album logs
-    #TODO
+    Given logs exist:
+      | user | time                | action         | what                     | album |
+      | 1    | 2020-10-14 13:02:18 | Visited Album  | NULL                     | 99999 |
+      | 4    | 2020-10-14 13:02:20 | Visited Album  | NULL                     | 99999 |
+      | 5    | 2020-12-07 08:41:10 | Unset Favorite | 32                       | 99999 |
+      | 5    | 2020-12-07 08:41:41 | Downloaded     | sample1.jpg\nsample6.jpg | 99999 |
+      | 4    | 2020-10-14 13:02:20 | Visited Album  | NULL                     | 99998 |
+    When I view album 99999 logs
+    Then I see album logs:
+      | time                | action                                           |
+      | 2020-10-14 13:02:18 | User msaperst Visited Album                      |
+      | 2020-10-14 13:02:20 | User uploader Visited Album                      |
+      | 2020-12-07 08:41:10 | User testUser Unset Favorite 32                  |
+      | 2020-12-07 08:41:41 | User testUser Downloaded sample1.jpg sample6.jpg |

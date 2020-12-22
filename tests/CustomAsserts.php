@@ -11,18 +11,7 @@ class CustomAsserts {
 
     /**
      * @param $range - how many seconds the timestamp can be off by
-     * @param $timestamp    - the timestamp we want to check. Should be seconds since unix epoch
-     */
-    public static function timestampWithin($range, $timestamp) {
-        date_default_timezone_set('America/New_York');
-        $time = time();
-        Assert::assertTrue( $timestamp <= $time + $range, "Timestamp $timestamp is outside the range +/-$range from now ($time)");
-        Assert::assertTrue( $timestamp >= $time - $range, "Timestamp $timestamp is outside the range +/-$range from now ($time)");
-    }
-
-    /**
-     * @param $range - how many seconds the timestamp can be off by
-     * @param $time    - the times we want to check. Should be in "Y-m-d H:i:s" format
+     * @param $time - the times we want to check. Should be in "Y-m-d H:i:s" format
      */
     public static function timeWithin($range, $time) {
         date_default_timezone_set('America/New_York');
@@ -32,14 +21,35 @@ class CustomAsserts {
 
     /**
      * @param $range - how many seconds the timestamp can be off by
-     * @param $time    - the times we want to check. Should be in "Y-m-d H-i-s" format
+     * @param $timestamp - the timestamp we want to check. Should be seconds since unix epoch
+     */
+    public static function timestampWithin($range, $timestamp) {
+        date_default_timezone_set('America/New_York');
+        $time = time();
+        Assert::assertTrue($timestamp <= $time + $range, "Timestamp $timestamp is outside the range +/-$range from now ($time)");
+        Assert::assertTrue($timestamp >= $time - $range, "Timestamp $timestamp is outside the range +/-$range from now ($time)");
+    }
+
+    /**
+     * @param $range - how many seconds the timestamp can be off by
+     * @param $time - the times we want to check. Should be in "Y-m-d H-i-s" format
      */
     public static function dashedTimeWithin($range, $time) {
         date_default_timezone_set('America/New_York');
         Assert::assertStringMatchesFormat('%d-%d-%d %d-%d-%d', $time);
         $time = str_replace('-', ':', $time);
-        $time = preg_replace('/'.preg_quote(':', '/').'/', '-', $time, 2);
+        $time = preg_replace('/' . preg_quote(':', '/') . '/', '-', $time, 2);
         self::timestampWithin($range, strtotime($time));
+    }
+
+    /**
+     * @param $driver
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public static function successMessage($driver, $message) {
+        self::checkMessage($driver, 'success', $message);
     }
 
     /**
@@ -56,16 +66,6 @@ class CustomAsserts {
         $actualMessage = $driver->findElement($successBy)->getText();
         Assert::assertEquals("×
 $message", $actualMessage, $actualMessage);
-    }
-
-    /**
-     * @param $driver
-     * @param $message
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public static function successMessage($driver, $message) {
-        self::checkMessage($driver, 'success', $message);
     }
 
     /**
@@ -96,5 +96,30 @@ $message", $actualMessage, $actualMessage);
      */
     public static function errorMessage($driver, $message) {
         self::checkMessage($driver, 'danger', $message);
+    }
+
+    /**
+     * @param $a
+     * @param $b
+     * @return bool
+     */
+    public static function filesAreEqual($a, $b) {
+        // Check if filesize is different
+        if (filesize($a) !== filesize($b)) {
+            return false;
+        }
+        // Check if content is different
+        $ah = fopen($a, 'rb');
+        $bh = fopen($b, 'rb');
+        $result = true;
+        while (!feof($ah)) {
+            if (fread($ah, 8192) != fread($bh, 8192)) {
+                $result = false;
+                break;
+            }
+        }
+        fclose($ah);
+        fclose($bh);
+        Assert::assertTrue($result);
     }
 }

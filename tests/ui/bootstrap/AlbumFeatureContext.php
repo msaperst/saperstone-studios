@@ -5,6 +5,7 @@ namespace ui\bootstrap;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Cookie;
@@ -72,6 +73,7 @@ class AlbumFeatureContext implements Context {
             $sql->executeStatement("DELETE FROM `download_rights` WHERE `download_rights`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `share_rights` WHERE `share_rights`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = $albumId;");
+            $sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = $albumId;");
             if (is_dir($albumLocation)) {
                 system("rm -rf " . escapeshellarg($albumLocation));
             }
@@ -710,6 +712,20 @@ class AlbumFeatureContext implements Context {
         $albumRow = $album->getAlbumRow($albumId);
         $albumRow->findElement(WebDriverBy::className('edit-album-btn'))->click();
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save')));
+    }
+
+    /**
+     * @When /^I view album (\d+) logs$/
+     * @param $albumId
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iViewAlbumLogs($albumId) {
+        $album = new Album($this->driver, $this->wait);
+        $albumRow = $album->getAlbumRow($albumId);
+        $albumRow->findElement(WebDriverBy::className('view-album-log-btn'))->click();
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('album-logs')));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('album-logs'))));
     }
 
     /**
@@ -1556,7 +1572,7 @@ Comment',
             //ensure original files are in 'full' directory
             $parts = explode(DIRECTORY_SEPARATOR, $image['location']);
             array_splice($parts, 3, 0, "full");
-            Assert::assertTrue($this->files_are_equal(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . implode(DIRECTORY_SEPARATOR, $parts)));
+            CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . implode(DIRECTORY_SEPARATOR, $parts));
             switch ($thumbType) {
                 case 'proof':
                     $file = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower-proof.jpeg';
@@ -1568,32 +1584,25 @@ Comment',
                     $file = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower-thumbed.jpeg';
                     break;
             }
-            Assert::assertTrue($this->files_are_equal($file, dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location']));
+            CustomAsserts::filesAreEqual($file, dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location']);
         }
     }
 
     /**
-     * @param $a
-     * @param $b
-     * @return bool
+     * @Then /^I see album logs:$/
+     * @param TableNode $table
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
-    private function files_are_equal($a, $b) {
-        // Check if filesize is different
-        if (filesize($a) !== filesize($b)) {
-            return false;
+    public function iSeeAlbumLogs(TableNode $table) {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::className('album-logs'))));
+        $logRows = $this->driver->findElements(WebDriverBy::cssSelector('.album-logs > .row'));
+        Assert::assertEquals(count($table->getRows()) - 1, sizeof($logRows));
+        for ($i = 0; $i < sizeof($logRows); $i++) {
+            $logRowDivs = $logRows[$i]->findElements(WebDriverBy::tagName('div'));
+            $x = $table->getRow($i + 1);
+            Assert::assertEquals($x[0], $logRowDivs[0]->getText(), $logRowDivs[0]->getText());
+            Assert::assertEquals($x[1], $logRowDivs[1]->getText(), $logRowDivs[1]->getText());
         }
-        // Check if content is different
-        $ah = fopen($a, 'rb');
-        $bh = fopen($b, 'rb');
-        $result = true;
-        while (!feof($ah)) {
-            if (fread($ah, 8192) != fread($bh, 8192)) {
-                $result = false;
-                break;
-            }
-        }
-        fclose($ah);
-        fclose($bh);
-        return $result;
     }
 }

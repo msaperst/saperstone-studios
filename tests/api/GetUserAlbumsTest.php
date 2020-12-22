@@ -2,18 +2,29 @@
 
 namespace api;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetUserAlbumsTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
@@ -21,6 +32,9 @@ class GetUserAlbumsTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (1, '999');");
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 998;");
@@ -28,6 +42,9 @@ class GetUserAlbumsTest extends TestCase {
         $this->sql->disconnect();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/get-user-albums.php');
@@ -37,6 +54,9 @@ class GetUserAlbumsTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -51,6 +71,9 @@ class GetUserAlbumsTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoUser() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -62,6 +85,9 @@ class GetUserAlbumsTest extends TestCase {
         $this->assertEquals("User id is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankUser() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -76,20 +102,9 @@ class GetUserAlbumsTest extends TestCase {
         $this->assertEquals("User id can not be blank", (string)$response->getBody());
     }
 
-    public function testLetterUser() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('GET', 'api/get-user-albums.php', [
-            'query' => [
-                'id' => 'a'
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("User id does not match any users", (string)$response->getBody());
-    }
-
+    /**
+     * @throws GuzzleException
+     */
     public function testBadUser() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -104,6 +119,9 @@ class GetUserAlbumsTest extends TestCase {
         $this->assertEquals("User id does not match any users", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testUserNoAlbums() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -118,6 +136,9 @@ class GetUserAlbumsTest extends TestCase {
         $this->assertEquals(array(), json_decode($response->getBody(), true));
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testUserAlbums() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'

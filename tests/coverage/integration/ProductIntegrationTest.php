@@ -204,8 +204,8 @@ class ProductIntegrationTest extends TestCase {
             $this->assertEquals('1x1', $productInfo['size']);
             $this->assertEquals('0.00', $productInfo['price']);
             $this->assertEquals(0, $productInfo['cost']);
-        } finally{
-            unset( $_SESSION ['hash'] );
+        } finally {
+            unset($_SESSION ['hash']);
             $sql = new Sql();
             $sql->executeStatement("DELETE FROM products WHERE id = $productId");
             $sql->disconnect();
@@ -230,7 +230,7 @@ class ProductIntegrationTest extends TestCase {
             $this->assertEquals('12.23', $productInfo['price']);
             $this->assertEquals('1.00', $productInfo['cost']);
         } finally {
-            unset( $_SESSION ['hash'] );
+            unset($_SESSION ['hash']);
             $sql = new Sql();
             $sql->executeStatement("DELETE FROM products WHERE id = $productId");
             $sql->disconnect();

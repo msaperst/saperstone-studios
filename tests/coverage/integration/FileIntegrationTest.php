@@ -125,7 +125,7 @@ class FileIntegrationTest extends TestCase {
         $this->assertEquals(1, sizeOf($files));
         $this->assertEquals('sample.jpeg', $files[0]);
         $this->assertTrue(is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample'));
-        system( 'rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample');
+        system('rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample');
         // TODO - can't verify file, as move_uploaded_file only moves files uploaded by PHP
 //        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
 //        unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');

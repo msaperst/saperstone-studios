@@ -176,7 +176,7 @@ class UpdateUserPasswordTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals('', (string) $response->getBody());
+            $this->assertEquals('', (string)$response->getBody());
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = 4;");
             $this->assertEquals(4, $userDetails['id']);
             $this->assertEquals('uploader', $userDetails['usr']);
