@@ -347,14 +347,16 @@ function viewLogs(id) {
                 id : id
             }, function(data) {
                 var message = $('<div>');
-                message.addClass('row');
+                message.addClass('album-logs');
                 for (var i = 0, len = data.length; i < len; i++) {
+                    var logHolder = $('<div>');
+                    logHolder.addClass('row');
                     var log = data[i];
 
                     var time = $('<div>');
                     time.addClass('col-md-4');
                     time.html(log.time);
-                    message.append(time);
+                    logHolder.append(time);
 
                     var activity = $('<div>');
                     activity.addClass('col-md-8');
@@ -363,7 +365,8 @@ function viewLogs(id) {
                         action += " " + log.what;
                     }
                     activity.html(action);
-                    message.append(activity);
+                    logHolder.append(activity);
+                    message.append(logHolder)
                 }
                 dialog.setMessage(message)
             }, "json");
