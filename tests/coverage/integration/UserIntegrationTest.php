@@ -309,6 +309,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('', $user->getUsername());
         $this->assertEquals('', $user->getRole());
         $this->assertFalse($user->isAdmin());
+        $this->assertFalse($user->isUploader());
         $this->assertEquals('', $user->getFirstName());
         $this->assertEquals('', $user->getLastName());
         $this->assertEquals('', $user->getName());
@@ -356,6 +357,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('msaperst', $user->getUsername());
         $this->assertEquals('admin', $user->getRole());
         $this->assertTrue($user->isAdmin());
+        $this->assertFalse($user->isUploader());
         $this->assertEquals('Max', $user->getFirstName());
         $this->assertEquals('Saperstone', $user->getLastName());
         $this->assertEquals('Max Saperstone', $user->getName());
@@ -375,6 +377,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('downloader', $user->getUsername());
         $this->assertEquals('downloader', $user->getRole());
         $this->assertFalse($user->isAdmin());
+        $this->assertFalse($user->isUploader());
         $this->assertEquals('Download', $user->getFirstName());
         $this->assertEquals('User', $user->getLastName());
         $this->assertEquals('Download User', $user->getName());
@@ -394,6 +397,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('uploader', $user->getUsername());
         $this->assertEquals('uploader', $user->getRole());
         $this->assertFalse($user->isAdmin());
+        $this->assertTrue($user->isUploader());
         $this->assertEquals('Upload', $user->getFirstName());
         $this->assertEquals('User', $user->getLastName());
         $this->assertEquals('Upload User', $user->getName());

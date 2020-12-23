@@ -6,6 +6,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
+use Behat\Testwork\Environment\Environment;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Cookie;
@@ -30,6 +31,10 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPAR
 class AlbumFeatureContext implements Context {
 
     /**
+     * @var Environment
+     */
+    private $environment;
+    /**
      * @var RemoteWebDriver
      */
     private $driver;
@@ -52,10 +57,10 @@ class AlbumFeatureContext implements Context {
      * @param BeforeScenarioScope $scope
      */
     public function gatherContexts(BeforeScenarioScope $scope) {
-        $environment = $scope->getEnvironment();
-        $this->driver = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
+        $this->environment = $scope->getEnvironment();
+        $this->driver = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
         $this->wait = new WebDriverWait($this->driver, 10);
-        $this->user = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
+        $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
     }
 
     /**
@@ -96,6 +101,19 @@ class AlbumFeatureContext implements Context {
         $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1);");
+        $sql->disconnect();
+    }
+
+    /**
+     * @Given /^I have created album (\d+)$/
+     * @param $albumId
+     * @throws Exception
+     */
+    public function iHaveCreatedAlbum($albumId) {
+        $this->albumIds[] = $albumId;
+        $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
+        $sql = new Sql();
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', {$this->user->getId()});");
         $sql->disconnect();
     }
 
@@ -149,11 +167,36 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @Given /^I have created album (\d+) with (\d+) images$/
+     * @param $albumId
+     * @throws Exception
+     */
+    public function iHaveCreatedAlbumWithImages($albumId, $images) {
+        $this->albumIds[] = $albumId;
+        $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
+        $sql = new Sql();
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', {$this->user->getId()}, '$images');");
+        $oldMask = umask(0);
+        if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
+            mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
+        }
+        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
+        for ($i = 0; $i < $images; $i++) {
+            $sql->executeStatement("INSERT INTO `album_images` (`album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$albumId', 'Image $i', $i, '', '/albums/sample-album/sample$i.jpg', '400', '300', '1');");
+            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg");
+            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg", 0777);
+        }
+        umask($oldMask);
+        $sql->disconnect();
+    }
+
+    /**
      * @Given /^I have access to album (\d+)$/
      * @param $albumId
      * @throws Exception
      */
     public function iHaveAccessToAlbum($albumId) {
+        $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES ({$this->user->getId()}, $albumId);");
         $sql->disconnect();
@@ -757,6 +800,7 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iConfirmMyDeletionOfMyAlbum() {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child')));
         $this->driver->findElement(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child'))->click();
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save')));
     }
@@ -773,12 +817,9 @@ class AlbumFeatureContext implements Context {
 
     /**
      * @When /^I make thumbnails for my album$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function iMakeThumbnailsForMyAlbum() {
         $this->driver->findElement(WebDriverBy::className('glyphicon-refresh'))->click();
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('glyphicon-eye-close')));
     }
 
     /**
@@ -1352,24 +1393,42 @@ Comment',
     }
 
     /**
-     * @Then /^I don't see album (\d+) edit icons$/
+     * @Then /^I don't see album (\d+) edit icon$/
      * @param $albumId
      */
-    public function iDonTSeeAlbumEditIcons($albumId) {
+    public function iDonTSeeAlbumEditIcon($albumId) {
         $album = new Album($this->driver, $this->wait);
         $albumRow = $album->getAlbumRow($albumId);
         Assert::assertEquals(0, sizeof($albumRow->findElements(WebDriverBy::className('edit-album-btn'))));
+    }
+
+    /**
+     * @Then /^I don't see album (\d+) log icon$/
+     * @param $albumId
+     */
+    public function iDonTSeeAlbumLogIcon($albumId) {
+        $album = new Album($this->driver, $this->wait);
+        $albumRow = $album->getAlbumRow($albumId);
         Assert::assertEquals(0, sizeof($albumRow->findElements(WebDriverBy::className('view-album-log-btn'))));
     }
 
     /**
-     * @Then /^I see album (\d+) edit icons$/
+     * @Then /^I see album (\d+) edit icon$/
      * @param $albumId
      */
-    public function iSeeAlbumEditIcons($albumId) {
+    public function iSeeAlbumEditIcon($albumId) {
         $album = new Album($this->driver, $this->wait);
         $albumRow = $album->getAlbumRow($albumId);
         Assert::assertTrue($albumRow->findElement(WebDriverBy::className('edit-album-btn'))->isDisplayed());
+    }
+
+    /**
+     * @Then /^I see album (\d+) log icon$/
+     * @param $albumId
+     */
+    public function iSeeAlbumLogIcon($albumId) {
+        $album = new Album($this->driver, $this->wait);
+        $albumRow = $album->getAlbumRow($albumId);
         Assert::assertTrue($albumRow->findElement(WebDriverBy::className('view-album-log-btn'))->isDisplayed());
     }
 
@@ -1383,6 +1442,24 @@ Comment',
     }
 
     /**
+     * @Then /^I see the album details modal for album (\d+)$/
+     * @param $albumId
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeTheAlbumDetailsModalForAlbum($albumId) {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-name')));
+        $sql = new Sql();
+        $album = $sql->getRow("SELECT * FROM `albums` WHERE `albums`.`id` = $albumId;");
+        $sql->disconnect();
+        Assert::assertEquals($albumId, $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
+        Assert::assertEquals($album['name'], $this->driver->findElement(WebDriverBy::id('new-album-name'))->getAttribute('value'));
+        Assert::assertEquals($album['description'], $this->driver->findElement(WebDriverBy::id('new-album-description'))->getAttribute('value'));
+        Assert::assertEquals(substr($album['date'], 0, 10), $this->driver->findElement(WebDriverBy::id('new-album-date'))->getAttribute('value'));
+        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('new-album-code'))));
+    }
+
+        /**
      * @Then /^I see the edit album details modal for album (\d+)$/
      * @param $albumId
      * @throws NoSuchElementException
@@ -1604,5 +1681,12 @@ Comment',
             Assert::assertEquals($x[0], $logRowDivs[0]->getText(), $logRowDivs[0]->getText());
             Assert::assertEquals($x[1], $logRowDivs[1]->getText(), $logRowDivs[1]->getText());
         }
+    }
+
+    /**
+     * @Then /^I don't see the ability to set access$/
+     */
+    public function iDonTSeeTheAbilityToSetAccess() {
+        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::className('glyphicon-picture'))));
     }
 }

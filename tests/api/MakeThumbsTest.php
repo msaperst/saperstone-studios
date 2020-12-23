@@ -36,13 +36,13 @@ class MakeThumbsTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '998', '', '2', '', '/albums/sample/flower2.jpeg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '1', '', '/albums/sample/flower1.jpeg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '2', '', '/albums/sample/flower2.jpeg', '300', '400', '1');");
-        $oldmask = umask(0);
+        $oldMask = umask(0);
         mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777, true);
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
         copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg', 0777);
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg', 0777);
-        umask($oldmask);
+        umask($oldMask);
     }
 
     /**

@@ -27,6 +27,7 @@ fi
 
 if [ ! -d "$location/full" ]; then
     mkdir "$location/full";
+    chmod 777 "$location/full";
 fi
 
 for file in "$location"/*.*; do
@@ -37,11 +38,20 @@ for file in "$location"/*.*; do
         file_size=$(echo "$file_info" | cut -d ' ' -f 3);
         width=$(echo "$file_size" | cut -d 'x' -f 1);
         height=$(echo "$file_size" | cut -d 'x' -f 2);
-        if [ "$file_type" != "TXT" ] && ( [ "$width" -gt "1000" ] || [ "$height" -gt "1000" ] ); then
+        if [ "$file_type" != "TXT" ] && [ ! -f "$location/full/$filename" ]; then
             echo "Resizing file $filename..." > "$output";
             cp "$file" "$location/full/";
-            mogrify -resize 1000x1000\> "$file";
-            convert -units PixelsPerInch -density 72 "$file" "$file";
+            if [ "$file_type" != "TXT" ] && ( [ "$width" -gt "1000" ] || [ "$height" -gt "1000" ] ); then
+                mogrify -resize 1000x1000\> "$file";
+                convert -units PixelsPerInch -density 72 "$file" "$file";
+                #update mysql
+                file_info=$(identify "$file");
+                file_size=$(echo "$file_info" | cut -d ' ' -f 3);
+                width=$(echo "$file_size" | cut -d 'x' -f 1);
+                height=$(echo "$file_size" | cut -d 'x' -f 2);
+                file_location="/albums/$album/${file##*/}";
+                mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "UPDATE \`$DB_NAME\`.\`album_images\` SET width='$width', height='$height' WHERE album='$id' AND location='$file_location';"
+            fi
             if [ "$markup" == "proof" ]; then
                 composite -dissolve 30 -tile ../img/proof.png "$file" "$file";
             elif [ "$markup" == "watermark" ]; then
@@ -54,13 +64,6 @@ for file in "$location"/*.*; do
                 rm "$output";
                 exit;
             fi
-            #update mysql
-            file_info=$(identify "$file");
-            file_size=$(echo "$file_info" | cut -d ' ' -f 3);
-            width=$(echo "$file_size" | cut -d 'x' -f 1);
-            height=$(echo "$file_size" | cut -d 'x' -f 2);
-            file_location="/albums/$album/${file##*/}";
-            mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "UPDATE \`$DB_NAME\`.\`album_images\` SET width='$width', height='$height' WHERE album='$id' AND location='$file_location';"
         fi
     fi
 done

@@ -46,6 +46,7 @@ Feature: Albums
 
   Scenario: Downloader unable to see album information
     Then I don't see ability to add an album
-    And I don't see album 99999 edit icons
+    And I don't see album 99999 edit icon
+    And I don't see album 99999 log icon
     And I don't see album 99999 album last accessed
     And I don't see album 99999 album code

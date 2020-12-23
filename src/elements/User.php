@@ -288,6 +288,13 @@ class User {
     }
 
     /**
+     * @return bool
+     */
+    function isUploader(): bool {
+        return ($this->getRole() === "uploader");
+    }
+
+    /**
      * @return string
      */
     function getFirstName(): string {

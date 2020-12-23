@@ -12,7 +12,7 @@ Feature: Admin Albums
     And I am on the "user/" page
 
   Scenario: Admin able to see all albums
-    And I see album 99998 listed
+    Then I see album 99998 listed
     And I see album 99999 listed
 
   Scenario Outline: Admin able to see album information
@@ -28,7 +28,8 @@ Feature: Admin Albums
 
   Scenario: Admin able to see album icons
     Then I see ability to add an album
-    And I see album 99999 edit icons
+    And I see album 99999 edit icon
+    And I see album 99999 log icon
 
   Scenario: Album name required for album
     When I add a new album

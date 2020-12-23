@@ -80,8 +80,26 @@ class LoginFeatureContext implements Context {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $this->user = User::withParams($params);
         unset($_SESSION['hash']);
-        $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($this->user);
         $this->user->create();
+        $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($this->user);
+    }
+
+    /**
+     * @Given an enabled uploader user account exists
+     * @throws Exception
+     */
+    public function anEnabledUploaderUserAccountExists() {
+        $params = [
+            'username' => 'testUser',
+            'email' => 'msaperst+sstest@gmail.com',
+            'password' => '12345',
+            'role' => 'uploader'
+        ];
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $this->user = User::withParams($params);
+        unset($_SESSION['hash']);
+        $this->user->create();
+        $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($this->user);
     }
 
     /**
@@ -98,8 +116,8 @@ class LoginFeatureContext implements Context {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $this->user = User::withParams($params);
         unset($_SESSION['hash']);
-        $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($this->user);
         $this->user->create();
+        $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($this->user);
     }
 
     /**
