@@ -79,6 +79,7 @@ class AlbumFeatureContext implements Context {
             $sql->executeStatement("DELETE FROM `share_rights` WHERE `share_rights`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = $albumId;");
+            $sql->executeStatement("DELETE FROM `notification_emails` WHERE `notification_emails`.`album` = $albumId;");
             if (is_dir($albumLocation)) {
                 system("rm -rf " . escapeshellarg($albumLocation));
             }
@@ -150,6 +151,7 @@ class AlbumFeatureContext implements Context {
      */
     public function albumExistsWithImages($albumId, $images) {
         $this->albumIds[] = $albumId;
+        $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', 1, '$images');");
         $oldMask = umask(0);
@@ -839,6 +841,27 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @When /^I provide "([^"]*)" for the email album notification$/
+     * @param $email
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iProvideForTheEmailAlbumNotification($email) {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('notify-email')));
+        $this->driver->findElement(WebDriverBy::id('notify-email'))->clear()->sendKeys($email);
+    }
+
+    /**
+     * @When /^I submit my email for album notification$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSubmitMyEmailForAlbumNotification() {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('notify-submit')));
+        $this->driver->findElement(WebDriverBy::id('notify-submit'))->click();
+    }
+
+    /**
      * @Then /^I see the "([^"]*)" album images load$/
      * @param $ord
      * @throws NoSuchElementException
@@ -1115,10 +1138,14 @@ Comment',
         $za = new ZipArchive();
         $za->open($filename);
         $sql = new Sql();
-        $favs = array_column($sql->getRows("SELECT * FROM `download_rights` INNER JOIN `favorites` ON download_rights.user = favorites.user AND download_rights.album = favorites.album AND download_rights.image = favorites.image WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
-        Assert::assertEquals(sizeof($favs), $za->numFiles);
-        for ($i = 0; $i < sizeof($favs); $i++) {
-            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND id = {$favs[$i]};")['location'];
+        if( $this->user->isAdmin()) {
+            $favorites = array_column($sql->getRows("SELECT * FROM `favorites` WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
+        } else {
+            $favorites = array_column($sql->getRows("SELECT * FROM `download_rights` INNER JOIN `favorites` ON download_rights.user = favorites.user AND download_rights.album = favorites.album AND download_rights.image = favorites.image WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
+        }
+        Assert::assertEquals(sizeof($favorites), $za->numFiles);
+        for ($i = 0; $i < sizeof($favorites); $i++) {
+            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND id = {$favorites[$i]};")['location'];
             $parts = explode('/', $imgLoc);
             $img = $parts[sizeof($parts) - 1];
             Assert::assertEquals($img, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
@@ -1688,5 +1715,51 @@ Comment',
      */
     public function iDonTSeeTheAbilityToSetAccess() {
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::className('glyphicon-picture'))));
+    }
+
+    /**
+     * @Then /^I see an error message indicating email is required$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeAnErrorMessageIndicatingEmailIsRequired() {
+        CustomAsserts::errorMessage($this->driver, 'Email can not be blank');
+    }
+
+    /**
+     * @Then /^I see an error message indicating email is not valid$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeAnErrorMessageIndicatingEmailIsNotValid() {
+        CustomAsserts::errorMessage($this->driver, 'Email is not valid');
+    }
+
+    /**
+     * @Then /^I see a success message indicating I will be notified when images are added$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeASuccessMessageIndicatingIWillBeNotifiedWhenImagesAreAdded() {
+        CustomAsserts::successMessage($this->driver, 'Your email address was successfully recorded. You will be notified once the images have been uploaded.');
+    }
+
+    /**
+     * @Given /^I don't see the album notification form$/
+     */
+    public function iDonTSeeTheAlbumNotificationForm() {
+        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('notify-email'))));
+        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('notify-submit'))));
+    }
+
+    /**
+     * @Given /^my email address is recorded for album (\d+) notifications$/
+     * @param $albumId
+     */
+    public function myEmailAddressIsRecordedForAlbumNotifications($albumId) {
+        $sql = new Sql();
+        $emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = $albumId AND email = '{$this->user->getEmail()}';");
+        $sql->disconnect();
+        Assert::assertEquals(1, sizeof($emails));
     }
 }

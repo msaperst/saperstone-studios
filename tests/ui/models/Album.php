@@ -419,6 +419,7 @@ class Album {
      */
     public function downloadImage() {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('downloadable-image-btn')));
+        sleep( 1.0 ); //waiting for the image to fully load - TODO need to fix this
         $this->driver->findElement(WebDriverBy::id('downloadable-image-btn'))->click();
     }
 

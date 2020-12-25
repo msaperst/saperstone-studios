@@ -7,7 +7,6 @@ Feature: Admin Albums
     Given an enabled admin user account exists
     And I am logged in with saved credentials
     And album 99999 exists with 16 images
-    And I have access to album 99999
     And album 99998 exists with code "album99998"
     And I am on the "user/" page
 
@@ -82,7 +81,7 @@ Feature: Admin Albums
     Given user 4 has access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4,5" with album access
+    Then I see users "4" with album access
     And I see users "" with download access
     And I see users "" with share access
 
@@ -90,7 +89,7 @@ Feature: Admin Albums
     Given user 4 has download access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "5" with album access
+    Then I see users "" with album access
     And I see users "" with download access
     And I see users "" with share access
 
@@ -99,7 +98,7 @@ Feature: Admin Albums
     Given user 4 has download access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4,5" with album access
+    Then I see users "4" with album access
     And I see users "4" with download access
     And I see users "" with share access
 
@@ -107,7 +106,7 @@ Feature: Admin Albums
     Given user 4 has share access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "5" with album access
+    Then I see users "" with album access
     And I see users "" with download access
     And I see users "" with share access
 
@@ -116,7 +115,7 @@ Feature: Admin Albums
     Given user 4 has share access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4,5" with album access
+    Then I see users "4" with album access
     And I see users "" with download access
     And I see users "4" with share access
 
@@ -124,16 +123,16 @@ Feature: Admin Albums
     When I edit album 99999
     And I set access to my album
     And I add user 4 for album access
-    Then I see users "5,4" with album access
-    And users "4,5" have access to album 99999
+    Then I see users "4" with album access
+    And users "4" have access to album 99999
 
   Scenario: Able to remove user for album access
     Given user 4 has access to album 99999
     When I edit album 99999
     And I set access to my album
     And I remove user 4 for album access
-    Then I see users "5" with album access
-    And users "5" have access to album 99999
+    Then I see users "" with album access
+    And users "" have access to album 99999
 
   Scenario: Able to add all users for download access
     When I edit album 99999
@@ -163,9 +162,9 @@ Feature: Admin Albums
     When I edit album 99999
     And I set access to my album
     And I remove user 4 for download access
-    Then I see users "4,5" with album access
+    Then I see users "4" with album access
     Then I see users "" with download access
-    And users "4,5" have access to album 99999
+    And users "4" have access to album 99999
     And users "" can download album 99999
 
   Scenario: Able to add all users for share access
@@ -196,9 +195,9 @@ Feature: Admin Albums
     When I edit album 99999
     And I set access to my album
     And I remove user 4 for share access
-    Then I see users "4,5" with album access
+    Then I see users "4" with album access
     Then I see users "" with share access
-    And users "4,5" have access to album 99999
+    And users "4" have access to album 99999
     And users "" can share album 99999
 
   Scenario: Delete album

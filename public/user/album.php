@@ -94,6 +94,20 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
     <!-- Services Section -->
     <div id="album-thumbs" class="row image-grid">
         <?php
+        if ($user->isAdmin() && $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()};") > 0) {
+            ?>
+            <div class="col-md-offset-2 col-md-8 text-center">Several people have requested updates once images are added to this album.
+                Please be sure to email them once images have added, or updates have been made.</div>
+            <div class="col-md-4 col-md-offset-4 text-center">
+                <button id="email-users" type="submit" class="btn btn-primary">
+                    <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Email Users
+                </button>
+                <button id="clear-users" type="submit" class="btn btn-warning">
+                    <em class="fa fa-ban" aria-hidden="true"></em> Clear User List
+                </button>
+            </div>
+            <?php
+        }
         if (count($images) > 0) {
             ?>
             <div id="col-0" class="col-md-3 col-sm-6 col-gallery"></div>
@@ -103,7 +117,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
             <?php
         } else {
             ?>
-            <div class="col-md-12 text-center">Sorry, no images have
+            <div class="col-md-offset-2 col-md-8 text-center">Sorry, no images have
                 been uploaded to your gallery yet. You can submit your email to be
                 notified when images are added if you would like. Your email address
                 will not be used for any other purposes.

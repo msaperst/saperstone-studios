@@ -1,14 +1,13 @@
 @album
-Feature: Album
-  As a user
-  I want to be able to view my album
-  So that I can make selects, download images, and share them on social media
+Feature: Admin Album
+  As an admin
+  I want to be able to view an album and manage it
+  So that I can easily setup the album for others
 
   Background:
-    Given an enabled user account exists
+    Given an enabled admin user account exists
     And I am logged in with saved credentials
     And album 99999 exists with 16 images
-    And I have access to album 99999
     And I am on the "user/album.php?album=99999" page
 
   Scenario: Album images load
@@ -100,12 +99,6 @@ Feature: Album
     And I download my favorites
     Then I see the download terms of service
 
-  Scenario: Unable to download favorites
-    Given album 99999 image 2 is a favorite
-    When I view my favorites
-    And I download my favorites
-    And I confirm my download
-    Then I see an error message indicating no files are available to download
 
   Scenario: Download favorites
     Given album 99999 image 2 is a favorite
@@ -168,26 +161,12 @@ Feature: Album
     And I download all my images
     Then I see the download terms of service
 
-  Scenario: Unable to download all images
-    And I download all my images
-    And I confirm my download
-    Then I see an error message indicating no files are available to download
-
   Scenario: Download all images
     And I have download rights for album 99999 image 2
     And I download all my images
     And I confirm my download
     Then I see an info message indicating download will start shortly
-    And I see album 99999 download with images "2"
-
-  Scenario: Download multiple all images
-    And I have download rights for album 99999 image 2
-    And I have download rights for album 99999 image 4
-    And I have download rights for album 99999 image 7
-    And I download all my images
-    And I confirm my download
-    Then I see an info message indicating download will start shortly
-    And I see album 99999 download with images "2, 4, 7"
+    And I see album 99999 download with images "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16"
 
   Scenario: Adding image to cart increases cart count
     When I view album image 2
@@ -367,27 +346,14 @@ Feature: Album
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
 
-  Scenario: Request email updates no email
-    Given album 99998 exists
-    And I have access to album 99998
-    And I am on the "user/album.php?album=99998" page
-    When I provide "" for the email album notification
-    And I submit my email for album notification
-    Then I see an error message indicating email is required
+  Scenario: No email updates
+    Then I don't see any email notification messages
 
-  Scenario: Request email updates bad email
-    Given album 99998 exists
-    And I have access to album 99998
-    And I am on the "user/album.php?album=99998" page
-    When I provide "asdf" for the email album notification
-    And I submit my email for album notification
-    Then I see an error message indicating email is not valid
-
-  Scenario: Request email updates
-    Given album 99998 exists
-    And I have access to album 99998
-    And I am on the "user/album.php?album=99998" page
-    And I submit my email for album notification
-    Then I see a success message indicating I will be notified when images are added
-    And I don't see the album notification form
-    And my email address is recorded for album 99998 notifications
+  Scenario: Email notifications exist
+    Given album 99999 has notifications:
+      | email                      |
+      | msaperst+sstest@gmail.com" |
+    When I reload the page
+    Then I see notification emails of:
+      | email                     |
+      | msaperst+sstest@gmail.com |
