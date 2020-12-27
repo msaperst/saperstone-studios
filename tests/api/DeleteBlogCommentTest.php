@@ -2,25 +2,39 @@
 
 namespace api;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DeleteBlogCommentTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('998', '999', 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'msaperst+sstest@gmail.com', 'this is an awesome post')");
-        $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('999', '999', 4, 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'msaperst+sstest@gmail.com', 'this is an awesome post')");
+        $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('998', '999', 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'saperstonestudios@mailinator.com', 'this is an awesome post')");
+        $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('999', '999', 4, 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'saperstonestudios@mailinator.com', 'this is an awesome post')");
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `blog_comments` WHERE `blog_comments`.`blog` = 999;");
@@ -33,12 +47,15 @@ class DeleteBlogCommentTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/delete-blog-comment.php');
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody());
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -50,6 +67,9 @@ class DeleteBlogCommentTest extends TestCase {
         $this->assertEquals("Comment id is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -64,6 +84,9 @@ class DeleteBlogCommentTest extends TestCase {
         $this->assertEquals("Comment id can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testLetterComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -78,6 +101,9 @@ class DeleteBlogCommentTest extends TestCase {
         $this->assertEquals("Comment id does not match any comments", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -92,6 +118,9 @@ class DeleteBlogCommentTest extends TestCase {
         $this->assertEquals("Comment id does not match any comments", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testUploaderCantDeleteOtherComment() {
         try {
             $cookieJar = CookieJar::fromArray([
@@ -110,6 +139,9 @@ class DeleteBlogCommentTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAdminCanDeleteAnyComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -125,6 +157,9 @@ class DeleteBlogCommentTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_comments` WHERE `blog_comments`.`id` = 998;"));
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testUploaderCanDeleteOwnComment() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'

@@ -103,6 +103,10 @@ DB_USER=${sqlUser}\n\
 DB_PASS=${sqlPass}\n\
 \n\
 # email information\n\
+EMAIL_CONTACT=saperstonestudios@mailinator.com\n\
+EMAIL_ACTIONS=saperstonestudios@mailinator.com\n\
+EMAIL_SELECTS=saperstonestudios@mailinator.com\n\
+EMAIL_CONTRACTS=saperstonestudios@mailinator.com\n\
 EMAIL_HOST=ssl://smtp.gmail.com\n\
 EMAIL_PORT=465\n\
 EMAIL_USER=${emailUser}\n\
@@ -124,15 +128,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         }
         stage('Run Integration Tests') {
             try {
-                withCredentials([
-                        usernamePassword(
-                                credentialsId: 'docker-hub',
-                                usernameVariable: 'dockerUser',
-                                passwordVariable: 'dockerPass'
-                        )
-                ]) {
-                    sh "docker login -u ${dockerUser} -p ${dockerPass}"
-                }
+                launchBrowserDocker('chrome')
                 sh "composer integration-pre-test"
                 sh "composer integration-test"
             } catch (Exception e) {
@@ -144,7 +140,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                  }
             } finally {
                 sh "composer integration-post-test"
-                sh "docker logout"
+                closeBrowserDocker('chrome')
                 junit 'reports/it-junit.xml'
                 publishHTML([
                         allowMissing         : false,
@@ -227,7 +223,8 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Clean Up') {
             sh "composer clean"
         }
-        stage('API Tests') {
+        stage('BackEnd Tests') {
+            launchBrowserDocker('chrome')
             parallel(
                     "Coverage Tests": {
                         stage('Run Coverage Tests') {
@@ -300,28 +297,14 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         }
                     }
             )
+            closeBrowserDocker('chrome')
         }
         stage('Run Chrome Page Tests') {
             try {
-                withCredentials([
-                        usernamePassword(
-                                credentialsId: 'docker-hub',
-                                usernameVariable: 'dockerUser',
-                                passwordVariable: 'dockerPass'
-                        )
-                ]) {
-                    sh "docker login -u ${dockerUser} -p ${dockerPass}"
-                }
-                sh 'export BROWSER=chrome; composer ui-pre-test;'
-                sh '''while ! curl -sSL "http://localhost:4444/wd/hub/status" 2>&1 \
-                              | jq -r '.value.ready' 2>&1 | grep "true" >/dev/null; do
-                          echo 'Waiting for the Grid'
-                          sleep 1
-                      done'''   // from https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
+                launchBrowserDocker('chrome')
                 sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-page-test;'
             } finally {
-                sh 'export BROWSER=chrome; composer ui-post-test;'
-                sh 'docker logout'
+                closeBrowserDocker('chrome')
                 junit 'reports/ui/junit.xml'
                 publishHTML([
                         allowMissing         : false,
@@ -353,26 +336,11 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     }
                     stage('Run Chrome BDD Tests') {
                         try {
-                            withCredentials([
-                                    usernamePassword(
-                                            credentialsId: 'docker-hub',
-                                            usernameVariable: 'dockerUser',
-                                            passwordVariable: 'dockerPass'
-                                    )
-                            ]) {
-                                sh "docker login -u ${dockerUser} -p ${dockerPass}"
-                            }
-                            sh 'export BROWSER=chrome; composer ui-pre-test;'
                             sh 'composer dump-autoload'
-                            sh '''while ! curl -sSL "http://localhost:4444/wd/hub/status" 2>&1 \
-                                          | jq -r '.value.ready' 2>&1 | grep "true" >/dev/null; do
-                                      echo 'Waiting for the Grid'
-                                      sleep 1
-                                  done'''   // from https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
+                            launchBrowserDocker('chrome')
                             sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
                         } finally {
-                            sh 'export BROWSER=chrome; composer ui-post-test;'
-                            sh 'docker logout'
+                            closeBrowserDocker('chrome')
                             junit 'reports/behat/default.xml'
                             publishHTML([
                                     allowMissing         : false,
@@ -533,4 +501,27 @@ def fileContains(file, content) {
         return false
     }
     return true
+}
+
+def launchBrowserDocker(browser) {
+    withCredentials([
+            usernamePassword(
+                    credentialsId: 'docker-hub',
+                    usernameVariable: 'dockerUser',
+                    passwordVariable: 'dockerPass'
+            )
+    ]) {
+        sh "docker login -u ${dockerUser} -p ${dockerPass}"
+    }
+    sh "export BROWSER=$browser; composer ui-pre-test;"
+    sh '''while ! curl -sSL "http://localhost:4444/wd/hub/status" 2>&1 \
+                  | jq -r '.value.ready' 2>&1 | grep "true" >/dev/null; do
+              echo 'Waiting for the Grid'
+              sleep 1
+          done'''   // from https://github.com/SeleniumHQ/docker-selenium#using-a-bash-script-to-wait-for-the-grid
+}
+
+def closeBrowserDocker(browser) {
+    sh "export BROWSER=$browser; composer ui-post-test;"
+    sh 'docker logout'
 }

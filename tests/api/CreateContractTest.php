@@ -2,23 +2,37 @@
 
 namespace api;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateContractTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     *
+     */
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
     }
 
+    /**
+     *
+     */
     public function tearDown() {
         $this->http = NULL;
         $this->sql->disconnect();
@@ -27,7 +41,7 @@ class CreateContractTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-contract.php');
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -38,15 +52,18 @@ class CreateContractTest extends TestCase {
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));
         try {
-            $response = $this->http->request('POST', 'api/create-contract.php', [
+            $this->http->request('POST', 'api/create-contract.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoType() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -58,6 +75,9 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract type is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankType() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -72,6 +92,9 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract type can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoName() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -86,6 +109,9 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract name is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankName() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -101,6 +127,9 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract name can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoSession() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -116,6 +145,9 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract session is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankSession() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -132,6 +164,9 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract session can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoContent() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -148,6 +183,9 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract content is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankContent() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -165,6 +203,10 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract content can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testNoDetails() {
         try {
             $cookieJar = CookieJar::fromArray([
@@ -210,6 +252,9 @@ class CreateContractTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadDate() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -228,6 +273,10 @@ class CreateContractTest extends TestCase {
         $this->assertEquals("Contract date is not the correct format", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testAllDetails() {
         try {
             $cookieJar = CookieJar::fromArray([
@@ -243,7 +292,7 @@ class CreateContractTest extends TestCase {
                     'deposit' => 9.267,
                     'address' => '123 Seasame Street',
                     'number' => '12345 F Off',
-                    'email' => 'msaperst+sstest@gmail.com',
+                    'email' => 'saperstonestudios@mailinator.com',
                     'date' => '2020-12-01',
                     'location' => 'Universal Studios',
                     'details' => 'None you care about',
@@ -270,7 +319,7 @@ class CreateContractTest extends TestCase {
             $this->assertEquals('MaxMaxMax', $contractDetails['name']);
             $this->assertEquals('123 Seasame Street', $contractDetails['address']);
             $this->assertEquals('12345 F Off', $contractDetails['number']);
-            $this->assertEquals('msaperst+sstest@gmail.com', $contractDetails['email']);
+            $this->assertEquals('saperstonestudios@mailinator.com', $contractDetails['email']);
             $this->assertEquals('2020-12-01', $contractDetails['date']);
             $this->assertEquals('Universal Studios', $contractDetails['location']);
             $this->assertEquals('funsies', $contractDetails['session']);
@@ -301,5 +350,3 @@ class CreateContractTest extends TestCase {
         }
     }
 }
-
-?>

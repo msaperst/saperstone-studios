@@ -1810,8 +1810,11 @@ Comment',
 
     /**
      * @Then /^I don't see any email notification messages$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iDonTSeeAnyEmailNotificationMessages() {
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('email-list'))));
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('email-list'))));
     }
 
@@ -1826,5 +1829,39 @@ Comment',
         for($i = 0; $i < sizeof($emails); $i++) {
             Assert::assertEquals($table->getRow($i+1)[0], $emails[$i]->getText(), $table->getRow($i+1)[0] . " " . $emails[$i]->getText());
         }
+    }
+
+    /**
+     * @Then /^email notifications are marked as sent for album (\d+)$/
+     * @param $albumId
+     */
+    public function emailNotificationsAreMarkedAsSentForAlbum($albumId) {
+        $sql = new Sql();
+        $count = $sql->getRowCount("SELECT * FROM notification_emails WHERE album = $albumId AND contacted = FALSE");
+        $sql->disconnect();
+        Assert::assertEquals(0, $count);
+    }
+
+    /**
+     * @Then /^I see an album notification for album (\d+) was emailed out to "([^"]*)"$/
+     * @param $albumId
+     * @param $email
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeAnAlbumNotificationWasEmailedOutTo($albumId, $email) {
+        CustomAsserts::assertEmailBody($email, "An album you requested to be updated about has been updated. Images have been posted to album Album $albumId. You can access your images by logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album=$albumId.");
+    }
+
+    /**
+     * @Then /^I see the email notification set to "([^"]*)"$/
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSeeTheEmailNotificationSetTo($message) {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('notifications-message')));
+        $actualMessage = $this->driver->findElement(WebDriverBy::id('notifications-message'))->getText();
+        Assert::assertEquals($message, $actualMessage, $actualMessage);
     }
 }

@@ -125,6 +125,17 @@ class Album {
     }
 
     /**
+     * @return bool
+     */
+    public function hasCode(): bool {
+        return $this->code != NULL;
+    }
+
+    public function getCode() {
+        return $this->code;
+    }
+
+    /**
      * Only return basic information
      * name, description, date, code
      */

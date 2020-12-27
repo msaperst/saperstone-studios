@@ -644,7 +644,7 @@ function downloadImages(album, what) {
                     } else if (data.hasOwnProperty('error')) {
                         modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.error + '</div>');
                     } else {
-                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
                     }
                 }).fail(function(xhr, status, error) {
                     if ( xhr.responseText !== "" ) {
@@ -652,7 +652,7 @@ function downloadImages(album, what) {
                     } else if ( error === "Unauthorized" ) {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                     } else {
-                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
                     }
                 }).always(function() {
                     $('#compressing-download').remove();
@@ -706,7 +706,7 @@ function submitImages() {
         } else if ( error === "Unauthorized" ) {
             $('#submit .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
-            $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+            $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
         }
     }).always(function() {
         $('#submit-send').prop("disabled", false);
@@ -798,7 +798,7 @@ function submitNotifyEmail() {
         } else if ( error === "Unauthorized" ) {
             $('#album-thumbs').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
-            $("#album-thumbs").after('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+            $("#album-thumbs").after('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
         }
     }).always(function() {
         $('#notify-submit').prop("disabled", false);

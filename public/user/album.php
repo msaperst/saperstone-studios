@@ -94,19 +94,29 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
     <!-- Services Section -->
     <div id="album-thumbs" class="row image-grid">
         <?php
-        if ($user->isAdmin() && $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()};") > 0) {
-            ?>
+        $notification_emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()} AND contacted = FALSE;");
+        if ($user->isAdmin() && sizeof($notification_emails) > 0) {
+        ?>
+        <div class="row">
             <div class="col-md-offset-2 col-md-8 text-center">Several people have requested updates once images are added to this album.
                 Please be sure to email them once images have added, or updates have been made.</div>
+        </div>
+        <div id="email-list" class="row">
+            <?php
+            foreach ($notification_emails as $notification_email) {
+                echo "<div class='col-md-2 text-truncate'><a href='mailto:{$notification_email['email']}'>{$notification_email['email']}</a></div>";
+            }
+            ?>
+        </div>
+        <div class="row">
             <div class="col-md-4 col-md-offset-4 text-center">
                 <button id="email-users" type="submit" class="btn btn-primary">
-                    <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Email Users
-                </button>
-                <button id="clear-users" type="submit" class="btn btn-warning">
-                    <em class="fa fa-ban" aria-hidden="true"></em> Clear User List
+                    <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Email All Users
                 </button>
             </div>
-            <?php
+        </div>
+        <div class="row page-header"></div>
+        <?php
         }
         if (count($images) > 0) {
             ?>
@@ -652,6 +662,45 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
 </div>
 <!-- End of Modal -->
 
+<?php
+if ($user->isAdmin() && sizeof($notification_emails) > 0) {
+?>
+<!-- Submit Selections Modal -->
+<div id="notifications" album-id="<?php echo $album->getId(); ?>"
+     class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Send Album Update Information</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <em class="fa fa-exclamation-triangle"></em> What message do you want to send to the users?
+                </p>
+                <textarea id="notifications-message" class="form-control" maxlength="999" style="resize: none; height:100px">Images have been posted to album <?php echo $album->getName(); ?>. You can access your images by<?php
+                    if( $album->hasCode() ) {
+                        echo " navigating to https://saperstonestudios.com/#album and entering in album code `{$album->getCode()}`";
+                    } else {
+                        echo " logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album={$album->getId()}";
+                    }
+                    ?>.</textarea>
+            </div>
+            <div class="modal-footer bootstrap-dialog">
+                <button id="notifications-send-btn" type="button"
+                        class="btn btn-default btn-success">
+                    <em class="fa fa-paper-plane"></em> Submit Selection
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Modal -->
+<?php
+}
+?>
 <!-- Actions For the Page -->
 <nav class="navbar navbar-actions navbar-fixed-bottom breadcrumb">
     <div class="container text-center">

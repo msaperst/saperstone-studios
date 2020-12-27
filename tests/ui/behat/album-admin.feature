@@ -242,9 +242,9 @@ Feature: Admin Album
     Then the place order button is disabled
     And cart input "<input>" shows as invalid
     Examples:
-      | value1 | input1 | value2                    | input2 | value3     | input3 | value4                 | input4  | value5  | input5 | value6 | input6 | value7 | input7 | input   |
+      | value1 | input1 | value2                           | input2 | value3     | input3 | value4                 | input4  | value5  | input5 | value6 | input6 | value7 | input7 | input   |
       |        | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | name    |
-      | Max    | name   |                           | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | email   |
+      | Max    | name   |                                  | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | email   |
       | Max    | name   | saperstonestudios@mailinator.com | email  |            | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | phone   |
       | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  |                        | address | Fairfax | city   | VA     | state  | 22030  | zip    | address |
       | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address |         | city   | VA     | state  | 22030  | zip    | city    |
@@ -351,18 +351,35 @@ Feature: Admin Album
 
   Scenario: Email notifications exist
     Given album 99999 has notifications:
-      | email                      | contacted |
+      | email                             | contacted |
       | saperstonestudios@mailinator.com  | 0         |
       | saperstonestudios2@mailinator.com | 1         |
     When I reload the page
     Then I see notification emails of:
-      | email                     |
+      | email                            |
       | saperstonestudios@mailinator.com |
+
+  Scenario: Correct logged in message
+    Given album 99999 has notifications:
+      | email                            | contacted |
+      | saperstonestudios@mailinator.com | 0         |
+    When I reload the page
+    And I send the user notifications
+    Then I see the email notification set to "Images have been posted to album Album 99999. You can access your images by logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album=99999."
+
+  Scenario: Correct code message
+    Given album 99999 has code "code"
+    Given album 99999 has notifications:
+      | email                            | contacted |
+      | saperstonestudios@mailinator.com | 0         |
+    When I reload the page
+    And I send the user notifications
+    Then I see the email notification set to "Images have been posted to album Album 99999. You can access your images by navigating to https://saperstonestudios.com/#album and entering in album code `code`."
 
   Scenario: Can't send email notification with blank message
     Given album 99999 has notifications:
-      | email                      | contacted |
-      | saperstonestudios@mailinator.com  | 0         |
+      | email                            | contacted |
+      | saperstonestudios@mailinator.com | 0         |
     When I reload the page
     And I send the user notifications
     And I set the email notification message to ""
@@ -371,10 +388,11 @@ Feature: Admin Album
 
   Scenario: Able to send out user list
     Given album 99999 has notifications:
-      | email                      | contacted |
-      | saperstonestudios@mailinator.com  | 0         |
+      | email                            | contacted |
+      | saperstonestudios@mailinator.com | 0         |
     When I reload the page
     And I send the user notifications
     And I confirm sending user notification
     Then I don't see any email notification messages
     And email notifications are marked as sent for album 99999
+    And I see an album notification for album 99999 was emailed out to "saperstonestudios@mailinator.com"

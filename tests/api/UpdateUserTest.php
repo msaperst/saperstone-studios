@@ -5,13 +5,20 @@ namespace api;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UpdateUserTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
     public function setUp() {
@@ -27,7 +34,7 @@ class UpdateUserTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/update-user.php');
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -41,12 +48,15 @@ class UpdateUserTest extends TestCase {
             $this->http->request('POST', 'api/update-user.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (ClientException $e) {
+        } catch (GuzzleException | ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoUserId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -58,6 +68,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("User id is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankUserId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -72,6 +85,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("User id can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadUserId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -86,6 +102,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("User id does not match any users", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoEmail() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -100,6 +119,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Email is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankEmail() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -115,6 +137,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Email can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadEmail() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -130,6 +155,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Email is not valid", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testDuplicateEmail() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -145,6 +173,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("That email already exists in the system: try logging in with it", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadRole() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -152,7 +183,7 @@ class UpdateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-user.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'role' => 'awesome'
             ],
             'cookies' => $cookieJar
@@ -161,6 +192,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Role is not valid", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoPassConfirmation() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -168,7 +202,7 @@ class UpdateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-user.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'password' => 'awesome'
             ],
             'cookies' => $cookieJar
@@ -177,6 +211,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Password confirmation is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankPassConfirmation() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -184,7 +221,7 @@ class UpdateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-user.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'password' => 'awesome',
                 'passwordConfirm' => ''
             ],
@@ -194,6 +231,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Password confirmation can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadPassConfirmation() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -201,7 +241,7 @@ class UpdateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-user.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'password' => 'awesome',
                 'passwordConfirm' => 'awsome'
             ],
@@ -211,6 +251,9 @@ class UpdateUserTest extends TestCase {
         $this->assertEquals("Password does not match password confirmation", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoExtras() {
         try {
             $cookieJar = CookieJar::fromArray([
@@ -219,7 +262,7 @@ class UpdateUserTest extends TestCase {
             $response = $this->http->request('POST', 'api/update-user.php', [
                 'form_params' => [
                     'id' => '4',
-                    'email' => 'msaperst+sstest@gmail.com',
+                    'email' => 'saperstonestudios@mailinator.com',
                 ],
                 'cookies' => $cookieJar
             ]);
@@ -231,7 +274,7 @@ class UpdateUserTest extends TestCase {
             $this->assertEquals(md5('password'), $userDetails['pass']);
             $this->assertEquals('Upload', $userDetails['firstName']);
             $this->assertEquals('User', $userDetails['lastName']);
-            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
+            $this->assertEquals('saperstonestudios@mailinator.com', $userDetails['email']);
             $this->assertEquals('uploader', $userDetails['role']);
             $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
@@ -246,6 +289,9 @@ class UpdateUserTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAllData() {
         try {
             $cookieJar = CookieJar::fromArray([

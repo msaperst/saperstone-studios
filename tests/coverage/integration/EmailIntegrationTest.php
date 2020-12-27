@@ -39,7 +39,7 @@ class EmailIntegrationTest extends TestCase {
         $email = new Email('saperstonestudios@mailinator.com', 'la@saperstonestudios.com', 'test');
         $email->setHtml("<b>Test</b> Email");
         $email->setText("Test Email");
-        $email->addAttachment(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower.jpeg');
+        $email->addAttachment(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'uiTestResultTemplate.html');
         $email->sendEmail();
         $this->assertEquals('Test Email', self::checkEmail('saperstonestudios@mailinator.com'));
         //TODO - unable to check attachment in free mailinator

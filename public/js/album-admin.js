@@ -28,6 +28,14 @@ $(document).ready(function() {
     $('#view-my-favorites-btn').click(function() {
         viewMyFavorites();
     });
+
+    $('#email-users').click(function() {
+        $('#notifications').modal();
+    });
+
+    $('#notifications-send-btn').click(function() {
+        sendNotifications();
+    })
 });
 
 function deleteImage() {
@@ -556,4 +564,36 @@ function createUserBullet(element, user) {
         return result_li.append(result_a);
     }
     return null;
+}
+
+function sendNotifications() {
+    $("#notifications-send-btn").prop("disabled", true);
+    $("#notifications-send-btn").next().prop("disabled", true);
+    $("#notifications-send-btn em").removeClass('fa fa-paper-plane').addClass('glyphicon glyphicon-asterisk icon-spin');
+    $.post("/api/send-notification-email.php", {
+        album : $('#notifications').attr('album-id'),
+        message : $('#notifications-message').val()
+    }).done(function(data) {
+        if (data !== "") {
+            $("#notifications .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
+        } else {
+            $("#notifications").modal('hide');
+            $('#email-list').prev().remove();
+            $('#email-list').next().remove();
+            $('#email-list').next().remove();
+            $('#email-list').remove();
+        }
+    }).fail(function(xhr, status, error) {
+        if ( xhr.responseText !== "" ) {
+            $('#notifications .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if ( error === "Unauthorized" ) {
+            $('#notifications .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $("#notifications .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
+        }
+    }).always(function() {
+        $('#notifications-send-btn').prop("disabled", false);
+        $('#notifications-send-btn').next().prop("disabled", false);
+        $('#notifications-send-btn em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
+    });
 }

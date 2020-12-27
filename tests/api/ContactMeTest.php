@@ -191,5 +191,6 @@ class ContactMeTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", (string)$response->getBody());
         CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'Hi There! I am a test email');
+        //TODO - can't verify other side sent
     }
 }

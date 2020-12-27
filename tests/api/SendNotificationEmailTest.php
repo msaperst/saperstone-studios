@@ -2,7 +2,10 @@
 
 namespace api;
 
+use CustomAsserts;
 use Exception;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -10,6 +13,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SendNotificationEmailTest extends TestCase {
@@ -29,8 +33,9 @@ class SendNotificationEmailTest extends TestCase {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES ('999', 'sample-album', 'sample album for testing', '');");
-        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', 'NULL', 'msaperst+sstest@gmail.com', 0);");
-        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'msaperst+sstest2@gmail.com', 1);");
+        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', 'NULL', 'saperstonestudios@mailinator.com', 0);");
+        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'saperstonestudios2@mailinator.com', 0);");
+        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'saperstonestudios2@mailinator.com', 1);");
     }
 
     /**
@@ -171,6 +176,9 @@ class SendNotificationEmailTest extends TestCase {
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
      */
     public function testMessage() {
         $cookieJar = CookieJar::fromArray([
@@ -185,6 +193,12 @@ class SendNotificationEmailTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        //TODO - verify updated DB, verify email sent
+        $notifications = $this->sql->getRows("SELECT * FROM notification_emails WHERE album = 999;");
+        $this->assertEquals(3, sizeof($notifications));
+        $this->assertEquals(1, $notifications[0]['contacted']);
+        $this->assertEquals(1, $notifications[1]['contacted']);
+        $this->assertEquals(1, $notifications[2]['contacted']);
+        CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'An album you requested to be updated about has been updated. max@max');
+        CustomAsserts::assertEmailBody('saperstonestudios2@mailinator.com', 'An album you requested to be updated about has been updated. max@max');
     }
 }
