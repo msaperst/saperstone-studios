@@ -99,7 +99,7 @@ class BaseFeatureContext implements Context {
             'username' => 'testUser',
             'firstName' => 'test',
             'lastName' => 'user',
-            'email' => 'msaperst+sstest@gmail.com',
+            'email' => 'saperstonestudios@mailinator.com',
             'password' => '12345'
         ];
         $this->user = User::withParams($params);

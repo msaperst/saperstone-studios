@@ -147,37 +147,6 @@ class CreateUserTest extends TestCase {
         $this->assertEquals("That email already exists in the system: try logging in with it", (string)$response->getBody());
     }
 
-//    public function testNoRole() {
-//        $cookieJar = CookieJar::fromArray([
-//            'hash' => '1d7505e7f434a7713e84ba399e937191'
-//        ], getenv('DB_HOST'));
-//        $response = $this->http->request('POST', 'api/create-user.php', [
-//            'form_params' => [
-//                'username' => 'MaxMax',
-//                'email' => 'msaperst+sstest@gmail.com'
-//            ],
-//            'cookies' => $cookieJar
-//        ]);
-//        $this->assertEquals(200, $response->getStatusCode());
-//        $this->assertEquals("Role is required", (string)$response->getBody());
-//    }
-
-//    public function testBlankRole() {
-//        $cookieJar = CookieJar::fromArray([
-//            'hash' => '1d7505e7f434a7713e84ba399e937191'
-//        ], getenv('DB_HOST'));
-//        $response = $this->http->request('POST', 'api/create-user.php', [
-//            'form_params' => [
-//                'username' => 'MaxMax',
-//                'email' => 'msaperst+sstest@gmail.com',
-//                'role' => ''
-//            ],
-//            'cookies' => $cookieJar
-//        ]);
-//        $this->assertEquals(200, $response->getStatusCode());
-//        $this->assertEquals("Role can not be blank", (string)$response->getBody());
-//    }
-
     public function testBadRole() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'

@@ -2,7 +2,10 @@
 
 namespace api;
 
+use CustomAsserts;
 use Exception;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -10,6 +13,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SendSelectedImagesTest extends TestCase {
@@ -219,6 +223,8 @@ class SendSelectedImagesTest extends TestCase {
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testGoodImageWithInfo() {
         $cookieJar = CookieJar::fromArray([
@@ -229,12 +235,18 @@ class SendSelectedImagesTest extends TestCase {
                 'album' => '999',
                 'what' => '2',
                 'name' => 'Max',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'comment' => 'I want this one!'
             ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", $response->getBody());
+        CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.', true);
+        CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
+Max has made a selection from the sample-album album
+file-2
+
+     I want this one!');
     }
 }

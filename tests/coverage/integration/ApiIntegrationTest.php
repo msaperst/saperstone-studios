@@ -61,8 +61,8 @@ class ApiIntegrationTest extends TestCase {
     }
 
     public function testRetrieveValidatedPost() {
-        $_POST['bar'] = "msaperst+sstest@gmail.com";
-        $this->assertEquals("msaperst+sstest@gmail.com", $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_EMAIL));
+        $_POST['bar'] = "saperstonestudios@mailinator.com";
+        $this->assertEquals("saperstonestudios@mailinator.com", $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_EMAIL));
         unset($_POST);
     }
 

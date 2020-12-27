@@ -402,7 +402,7 @@ class ContractIntegrationTest extends TestCase {
                 'deposit' => 9.267,
                 'address' => '123 Seasame Street',
                 'number' => '12345 F Off',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'date' => '2020-12-01',
                 'location' => 'Universal Studios',
                 'details' => 'None you care about',
@@ -428,7 +428,7 @@ class ContractIntegrationTest extends TestCase {
             $this->assertEquals('MaxMaxMax', $contractInfo['name']);
             $this->assertEquals('123 Seasame Street', $contractInfo['address']);
             $this->assertEquals('12345 F Off', $contractInfo['number']);
-            $this->assertEquals('msaperst+sstest@gmail.com', $contractInfo['email']);
+            $this->assertEquals('saperstonestudios@mailinator.com', $contractInfo['email']);
             $this->assertEquals('2020-12-01', $contractInfo['date']);
             $this->assertEquals('funsies', $contractInfo['session']);
             $this->assertEquals('None you care about', $contractInfo['details']);
@@ -516,7 +516,7 @@ class ContractIntegrationTest extends TestCase {
                 'deposit' => 9.267,
                 'address' => '123 Seasame Street',
                 'number' => '12345 F Off',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'date' => '2020-12-01',
                 'location' => 'Universal Studios',
                 'details' => 'None you care about',
@@ -541,7 +541,7 @@ class ContractIntegrationTest extends TestCase {
             $this->assertEquals('MaxMaxMax', $contractInfo['name']);
             $this->assertEquals('123 Seasame Street', $contractInfo['address']);
             $this->assertEquals('12345 F Off', $contractInfo['number']);
-            $this->assertEquals('msaperst+sstest@gmail.com', $contractInfo['email']);
+            $this->assertEquals('saperstonestudios@mailinator.com', $contractInfo['email']);
             $this->assertEquals('2020-12-01', $contractInfo['date']);
             $this->assertEquals('funsies', $contractInfo['session']);
             $this->assertEquals('None you care about', $contractInfo['details']);
@@ -698,7 +698,7 @@ class ContractIntegrationTest extends TestCase {
             'name' => 'EleMax',
             'address' => '123 Street',
             'number' => '12345',
-            'email' => 'msaperst+sstest@gmail.com'
+            'email' => 'saperstonestudios@mailinator.com'
         ];
         try {
             $contract = Contract::withId(999);
@@ -713,7 +713,7 @@ class ContractIntegrationTest extends TestCase {
             'name' => 'EleMax',
             'address' => '123 Street',
             'number' => '12345',
-            'email' => 'msaperst+sstest@gmail.com',
+            'email' => 'saperstonestudios@mailinator.com',
             'signature' => ''
         ];
         try {
@@ -729,7 +729,7 @@ class ContractIntegrationTest extends TestCase {
             'name' => 'EleMax',
             'address' => '123 Street',
             'number' => '12345',
-            'email' => 'msaperst+sstest@gmail.com',
+            'email' => 'saperstonestudios@mailinator.com',
             'signature' => 'something'
         ];
         try {
@@ -745,7 +745,7 @@ class ContractIntegrationTest extends TestCase {
             'name' => 'EleMax',
             'address' => '123 Street',
             'number' => '12345',
-            'email' => 'msaperst+sstest@gmail.com',
+            'email' => 'saperstonestudios@mailinator.com',
             'signature' => 'something',
             'initial' => ''
         ];
@@ -762,7 +762,7 @@ class ContractIntegrationTest extends TestCase {
             'name' => 'EleMax',
             'address' => '123 Street',
             'number' => '12345',
-            'email' => 'msaperst+sstest@gmail.com',
+            'email' => 'saperstonestudios@mailinator.com',
             'signature' => 'something',
             'initial' => 'MAS'
         ];
@@ -779,7 +779,7 @@ class ContractIntegrationTest extends TestCase {
             'name' => 'EleMax',
             'address' => '123 Street',
             'number' => '12345',
-            'email' => 'msaperst+sstest@gmail.com',
+            'email' => 'saperstonestudios@mailinator.com',
             'signature' => 'something',
             'initial' => 'MAS',
             'content' => ''
@@ -800,7 +800,7 @@ class ContractIntegrationTest extends TestCase {
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'signature' => 'something',
                 'initial' => 'MAS',
                 'content' => 'some contract content'
@@ -824,7 +824,7 @@ class ContractIntegrationTest extends TestCase {
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'saperstonestudios@mailinator.com',
                 'signature' => 'something',
                 'initial' => 'MAS',
                 'content' => 'some contract content'

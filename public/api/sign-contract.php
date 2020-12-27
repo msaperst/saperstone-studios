@@ -1,5 +1,5 @@
 <?php
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 try {
     $contract = Contract::withId($_POST['id']);
@@ -40,8 +40,7 @@ try {
 }
 
 // now send to LAS
-//$to = "Contracts <contracts@saperstonestudios.com>";
-$to = "Test <msaperst+sstest@gmail.com>";    //TODO - fix this once done testing it out
+$to = 'Contracts <' . getenv('EMAIL_CONTRACTS') . '>';
 $email = new Email($to, $from, $subject);
 
 $html = "<html><body>";

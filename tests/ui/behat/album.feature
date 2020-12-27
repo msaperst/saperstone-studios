@@ -242,7 +242,7 @@ Feature: Album
   Scenario: Unable to submit cart when no cart images
     When I view my cart
     And I provide "Max" for the shipping "name"
-    And I provide "msaperst+sstest@gmail.com" for the shipping "email"
+    And I provide "saperstonestudios@mailinator.com" for the shipping "email"
     And I provide "5712453351" for the shipping "phone"
     And I provide "5012 Whisper Willow Dr" for the shipping "address"
     And I provide "Fairfax" for the shipping "city"
@@ -264,19 +264,19 @@ Feature: Album
     And cart input "<input>" shows as invalid
     Examples:
       | value1 | input1 | value2                    | input2 | value3     | input3 | value4                 | input4  | value5  | input5 | value6 | input6 | value7 | input7 | input   |
-      |        | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | name    |
+      |        | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | name    |
       | Max    | name   |                           | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | email   |
-      | Max    | name   | msaperst+sstest@gmail.com | email  |            | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | phone   |
-      | Max    | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  |                        | address | Fairfax | city   | VA     | state  | 22030  | zip    | address |
-      | Max    | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address |         | city   | VA     | state  | 22030  | zip    | city    |
-      | Max    | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   |        | state  | 22030  | zip    | state   |
-      | Max    | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  |        | zip    | zip     |
+      | Max    | name   | saperstonestudios@mailinator.com | email  |            | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | phone   |
+      | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  |                        | address | Fairfax | city   | VA     | state  | 22030  | zip    | address |
+      | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address |         | city   | VA     | state  | 22030  | zip    | city    |
+      | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   |        | state  | 22030  | zip    | state   |
+      | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  |        | zip    | zip     |
 
   Scenario: Unable to submit cart when options aren't filled out
     Given album 99999 image 2 has 1 "Prints" "11x14" "Photo Prints" in the cart
     When I view my cart
     And I provide "Max" for the shipping "name"
-    And I provide "msaperst+sstest@gmail.com" for the shipping "email"
+    And I provide "saperstonestudios@mailinator.com" for the shipping "email"
     And I provide "5712453351" for the shipping "phone"
     And I provide "5012 Whisper Willow Dr" for the shipping "address"
     And I provide "Fairfax" for the shipping "city"
@@ -296,7 +296,7 @@ Feature: Album
     Given album 99999 image 3 has 1 "Signature" "10x10" "Metal Prints" in the cart
     When I view my cart
     And I provide "Max" for the shipping "name"
-    And I provide "msaperst+sstest@gmail.com" for the shipping "email"
+    And I provide "saperstonestudios@mailinator.com" for the shipping "email"
     And I provide "5712453351" for the shipping "phone"
     And I provide "5012 Whisper Willow Dr" for the shipping "address"
     And I provide "Fairfax" for the shipping "city"

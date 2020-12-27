@@ -1,5 +1,5 @@
 <?php
-$path = dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/lib";
+$path = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/lib";
 set_include_path(get_include_path() . PATH_SEPARATOR . $path);
 
 use PayPal\CoreComponentTypes\BasicAmountType;
@@ -12,10 +12,10 @@ use PayPal\PayPalAPI\SetExpressCheckoutReq;
 use PayPal\PayPalAPI\SetExpressCheckoutRequestType;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
 
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/PPBootStrap.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/PPBootStrap.php";
 
 // this will hold our results/response
 $response = array();
@@ -189,7 +189,7 @@ try {
     /* wrap API method calls on the service object with a try catch */
     $setECResponse = $paypalService->SetExpressCheckout($setECReq);
 } catch (Exception $ex) {
-    require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/Error.php";
+    require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/merchant-sdk-php-3.9.1/samples/Error.php";
     exit ();
 }
 

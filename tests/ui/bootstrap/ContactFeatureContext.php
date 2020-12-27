@@ -4,6 +4,9 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
+use coverage\integration\EmailIntegrationTest;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -106,5 +109,14 @@ class ContactFeatureContext implements Context {
      */
     public function iSeeASuccessMessageIndicatingMyMessageWasSent() {
         CustomAsserts::successMessage($this->driver, 'Your message has been sent.');
+    }
+
+    /**
+     * @Given /^an email was successfully sent to "([^"]*)" with the message "([^"]*)"$/
+     * @param $email
+     * @param $message
+     */
+    public function anEmailWasSuccessfullySentToWithTheMessage($email, $message) {
+        CustomAsserts::assertEmailBody($email, $message);
     }
 }

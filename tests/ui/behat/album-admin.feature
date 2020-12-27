@@ -221,7 +221,7 @@ Feature: Admin Album
   Scenario: Unable to submit cart when no cart images
     When I view my cart
     And I provide "Max" for the shipping "name"
-    And I provide "msaperst+sstest@gmail.com" for the shipping "email"
+    And I provide "saperstonestudios@mailinator.com" for the shipping "email"
     And I provide "5712453351" for the shipping "phone"
     And I provide "5012 Whisper Willow Dr" for the shipping "address"
     And I provide "Fairfax" for the shipping "city"
@@ -243,19 +243,19 @@ Feature: Admin Album
     And cart input "<input>" shows as invalid
     Examples:
       | value1 | input1 | value2                    | input2 | value3     | input3 | value4                 | input4  | value5  | input5 | value6 | input6 | value7 | input7 | input   |
-      |        | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | name    |
+      |        | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | name    |
       | Max    | name   |                           | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | email   |
-      | Max    | name   | msaperst+sstest@gmail.com | email  |            | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | phone   |
-      | Max    | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  |                        | address | Fairfax | city   | VA     | state  | 22030  | zip    | address |
-      | Max    | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address |         | city   | VA     | state  | 22030  | zip    | city    |
-      | Max    | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   |        | state  | 22030  | zip    | state   |
-      | Max    | name   | msaperst+sstest@gmail.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  |        | zip    | zip     |
+      | Max    | name   | saperstonestudios@mailinator.com | email  |            | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  | 22030  | zip    | phone   |
+      | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  |                        | address | Fairfax | city   | VA     | state  | 22030  | zip    | address |
+      | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address |         | city   | VA     | state  | 22030  | zip    | city    |
+      | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   |        | state  | 22030  | zip    | state   |
+      | Max    | name   | saperstonestudios@mailinator.com | email  | 5712453351 | phone  | 5012 Whisper Willow Dr | address | Fairfax | city   | VA     | state  |        | zip    | zip     |
 
   Scenario: Unable to submit cart when options aren't filled out
     Given album 99999 image 2 has 1 "Prints" "11x14" "Photo Prints" in the cart
     When I view my cart
     And I provide "Max" for the shipping "name"
-    And I provide "msaperst+sstest@gmail.com" for the shipping "email"
+    And I provide "saperstonestudios@mailinator.com" for the shipping "email"
     And I provide "5712453351" for the shipping "phone"
     And I provide "5012 Whisper Willow Dr" for the shipping "address"
     And I provide "Fairfax" for the shipping "city"
@@ -275,7 +275,7 @@ Feature: Admin Album
     Given album 99999 image 3 has 1 "Signature" "10x10" "Metal Prints" in the cart
     When I view my cart
     And I provide "Max" for the shipping "name"
-    And I provide "msaperst+sstest@gmail.com" for the shipping "email"
+    And I provide "saperstonestudios@mailinator.com" for the shipping "email"
     And I provide "5712453351" for the shipping "phone"
     And I provide "5012 Whisper Willow Dr" for the shipping "address"
     And I provide "Fairfax" for the shipping "city"
@@ -351,9 +351,30 @@ Feature: Admin Album
 
   Scenario: Email notifications exist
     Given album 99999 has notifications:
-      | email                      |
-      | msaperst+sstest@gmail.com" |
+      | email                      | contacted |
+      | saperstonestudios@mailinator.com  | 0         |
+      | saperstonestudios2@mailinator.com | 1         |
     When I reload the page
     Then I see notification emails of:
       | email                     |
-      | msaperst+sstest@gmail.com |
+      | saperstonestudios@mailinator.com |
+
+  Scenario: Can't send email notification with blank message
+    Given album 99999 has notifications:
+      | email                      | contacted |
+      | saperstonestudios@mailinator.com  | 0         |
+    When I reload the page
+    And I send the user notifications
+    And I set the email notification message to ""
+    And I confirm sending user notification
+    Then I see an error message indicating all fields need to be filled in
+
+  Scenario: Able to send out user list
+    Given album 99999 has notifications:
+      | email                      | contacted |
+      | saperstonestudios@mailinator.com  | 0         |
+    When I reload the page
+    And I send the user notifications
+    And I confirm sending user notification
+    Then I don't see any email notification messages
+    And email notifications are marked as sent for album 99999

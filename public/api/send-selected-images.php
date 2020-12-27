@@ -1,5 +1,5 @@
 <?php
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $systemUser = User::fromSystem();
@@ -61,8 +61,7 @@ $sql->disconnect();
 // send email
 $systemUser = User::fromSystem();
 $from = "Selects <selects@saperstonestudios.com>";
-//$to = "Selects <selects@saperstonestudios.com>";  //TODO - fix once done testing
-$to = "Max <msaperst+sstest@gmail.com>";
+$to = "Selects <" . getenv('EMAIL_SELECTS') . ">";
 $subject = "Selects Have Been Made";
 $email = new Email($to, $from, $subject);
 

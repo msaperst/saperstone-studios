@@ -27,7 +27,7 @@ Feature: Profile Administration
 
   Scenario: Invalid username registration
     Given I am on the registration page
-    When I register a user with "msaperst", "p", "p", "Max", "Saperstone", "msaperst+sstest@gmail.com"
+    When I register a user with "msaperst", "p", "p", "Max", "Saperstone", "saperstonestudios@mailinator.com"
     Then I see an error message indicating username already exists
 
   Scenario: Invalid password registration input
@@ -85,7 +85,7 @@ Feature: Profile Administration
 
   Scenario: Valid email registration input
     Given I am on the registration page
-    When I try to register an email of "msaperst+sstest@gmail.com"
+    When I try to register an email of "saperstonestudios@mailinator.com"
     Then I see a success icon indicating a good email
 
   Scenario: Invalid email registration
@@ -188,7 +188,7 @@ Feature: Profile Administration
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the profile page
-    When I try to update to an email of "msaperst+sstest@gmail.com"
+    When I try to update to an email of "saperstonestudios@mailinator.com"
     Then I see a success icon indicating a good email
 
   Scenario: Invalid email update

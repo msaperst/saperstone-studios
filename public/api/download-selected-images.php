@@ -1,5 +1,5 @@
 <?php
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $systemUser = User::fromSystem();
@@ -99,8 +99,7 @@ $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()},
 $sql->disconnect();
 
 // send email
-// TODO - NEED TO CHANGE BACK, JUST GOOD FOR TESTING!!!
-$email = new Email("Contact <msaperst+sstest@gmail.com>", "Actions <actions@saperstonestudios.com>", "Someone Downloaded Something");
+$email = new Email("Actions <"  . getenv('EMAIL_ACTIONS') . ">", "Actions <actions@saperstonestudios.com>", "Someone Downloaded Something");
 
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";

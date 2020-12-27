@@ -1,11 +1,14 @@
 <?php
 
+use coverage\integration\EmailIntegrationTest;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
+
+require_once 'coverage' . DIRECTORY_SEPARATOR . 'integration' . DIRECTORY_SEPARATOR . 'EmailIntegrationTest.php';
 
 class CustomAsserts {
 
@@ -99,14 +102,37 @@ $message", $actualMessage, $actualMessage);
     }
 
     /**
+     * @param $email
+     * @param $body
+     * @param bool $delete
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public static function assertEmailBody($email, $body, $delete = false) {
+        $message = EmailIntegrationTest::checkEmail($email, $delete);
+        Assert::assertEquals($body, $message, $message);
+    }
+
+    /**
+     * @param $email
+     * @param $body
+     * @param bool $delete
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public static function assertEmailContains($email, $body, $delete = false) {
+        $message = EmailIntegrationTest::checkEmail($email, $delete);
+        Assert::assertContains($body, $message);
+    }
+
+    /**
      * @param $a
      * @param $b
-     * @return bool
      */
     public static function filesAreEqual($a, $b) {
         // Check if filesize is different
         if (filesize($a) !== filesize($b)) {
-            return false;
+            Assert::assertTrue(false);
         }
         // Check if content is different
         $ah = fopen($a, 'rb');

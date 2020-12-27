@@ -312,6 +312,20 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @Given /^album (\d+) has notifications:$/
+     * @param $albumId
+     * @param TableNode $table
+     * @throws Exception
+     */
+    public function albumHasNotifications($albumId, TableNode $table) {
+        $sql = new Sql();
+        foreach($table as $row) {
+            $sql->executeStatement("INSERT INTO notification_emails VALUES( $albumId, NULL, '{$row['email']}', {$row['contacted']})");
+        }
+        $sql->disconnect();
+    }
+
+    /**
      * @Given /^I have searched for album "([^"]*)"$/
      * @param $albumCode
      */
@@ -859,6 +873,37 @@ class AlbumFeatureContext implements Context {
     public function iSubmitMyEmailForAlbumNotification() {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('notify-submit')));
         $this->driver->findElement(WebDriverBy::id('notify-submit'))->click();
+    }
+
+    /**
+     * @When /^I send the user notifications$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSendTheUserNotifications() {
+        $this->driver->findElement(WebDriverBy::id('email-users'))->click();
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('notifications-message')));
+    }
+
+    /**
+     * @When /^I set the email notification message to "([^"]*)"$/
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iSetTheEmailNotificationMessageTo($message) {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('notifications-message')));
+        $this->driver->findElement(WebDriverBy::id('notifications-message'))->clear()->sendKeys($message);
+    }
+
+    /**
+     * @Given /^I confirm sending user notification$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iConfirmSendingUserNotification() {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('notifications-message')));
+        $this->driver->findElement(WebDriverBy::id('notifications-send-btn'))->click();
     }
 
     /**
@@ -1745,7 +1790,7 @@ Comment',
     }
 
     /**
-     * @Given /^I don't see the album notification form$/
+     * @Then /^I don't see the album notification form$/
      */
     public function iDonTSeeTheAlbumNotificationForm() {
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('notify-email'))));
@@ -1753,7 +1798,7 @@ Comment',
     }
 
     /**
-     * @Given /^my email address is recorded for album (\d+) notifications$/
+     * @Then /^my email address is recorded for album (\d+) notifications$/
      * @param $albumId
      */
     public function myEmailAddressIsRecordedForAlbumNotifications($albumId) {
@@ -1761,5 +1806,25 @@ Comment',
         $emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = $albumId AND email = '{$this->user->getEmail()}';");
         $sql->disconnect();
         Assert::assertEquals(1, sizeof($emails));
+    }
+
+    /**
+     * @Then /^I don't see any email notification messages$/
+     */
+    public function iDonTSeeAnyEmailNotificationMessages() {
+        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('email-list'))));
+    }
+
+    /**
+     * @Then /^I see notification emails of:$/
+     */
+    public function iSeeNotificationEmailsOf(TableNode $table) {
+        $emailList = $this->driver->findElement(WebDriverBy::id('email-list'));
+        Assert::assertTrue($emailList->isDisplayed());
+        $emails = $emailList->findElements(WebDriverBy::tagName('a'));
+        Assert::assertEquals(sizeof($table->getRows())-1, sizeof($emails));
+        for($i = 0; $i < sizeof($emails); $i++) {
+            Assert::assertEquals($table->getRow($i+1)[0], $emails[$i]->getText(), $table->getRow($i+1)[0] . " " . $emails[$i]->getText());
+        }
     }
 }

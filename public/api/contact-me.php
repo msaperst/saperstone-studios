@@ -1,10 +1,9 @@
 <?php
-require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $sql = new Sql ();
 $api = new Api ();
 
-// TODO - NEED TO CHANGE BACK, JUST GOOD FOR TESTING!!!
-$to = "Contact <msaperst+sstest@gmail.com>";
+$to = 'Contact <' . getenv('EMAIL_CONTACT') . '>';
 if (isset ($_POST ['to']) && $_POST ['to'] != "") {
     $to = $sql->escapeString($_POST ['to']);
 }

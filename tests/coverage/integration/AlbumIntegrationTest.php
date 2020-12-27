@@ -12,8 +12,14 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.ph
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class AlbumIntegrationTest extends TestCase {
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     * @throws Exception
+     */
     public function setUp() {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('898', 'sample-album', 'sample album for testing', '', 5);");
@@ -30,6 +36,9 @@ class AlbumIntegrationTest extends TestCase {
         umask($oldMask);
     }
 
+    /**
+     * @throws Exception
+     */
     public function tearDown() {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 898;");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 899;");
@@ -47,6 +56,9 @@ class AlbumIntegrationTest extends TestCase {
         system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums'));
     }
 
+    /**
+     *
+     */
     public function testNullAlbumId() {
         try {
             Album::withId(NULL);
@@ -55,6 +67,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testBlankAlbumId() {
         try {
             Album::withId("");
@@ -63,6 +78,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testLetterAlbumId() {
         try {
             Album::withId("a");
@@ -71,6 +89,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testBadAlbumId() {
         try {
             Album::withId(8999);
@@ -79,6 +100,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testBadStringAlbumId() {
         try {
             Album::withId("8999");
@@ -87,31 +111,81 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetId() {
         $album = Album::withId('899');
         $this->assertEquals(899, $album->getId());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetName() {
         $album = Album::withId('899');
         $this->assertEquals('sample-album', $album->getName());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetDescription() {
         $album = Album::withId('899');
         $this->assertEquals('sample album for testing', $album->getDescription());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetOwner() {
         $album = Album::withId('899');
         $this->assertEquals(4, $album->getOwner());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetLocation() {
         $album = Album::withId('899');
         $this->assertEquals('sample', $album->getLocation());
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testHasCodeTrue() {
+        $album = Album::withId('899');
+        $this->assertTrue($album->hasCode());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testHasCodeFalse() {
+        $album = Album::withId('898');
+        $this->assertFalse($album->hasCode());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetCodeTrue() {
+        $album = Album::withId('899');
+        $this->assertEquals('123', $album->getCode());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetCodeFalse() {
+        $album = Album::withId('898');
+        $this->assertNull($album->getCode());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testBasicDataLoaded() {
         date_default_timezone_set("America/New_York");
         $album = Album::withId(899);
@@ -123,6 +197,9 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals('123', $albumInfo['code']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAllDataLoaded() {
         date_default_timezone_set("America/New_York");
         $album = Album::withId(899);
@@ -139,11 +216,17 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals(0, $albumInfo['images']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataNobody() {
         $album = Album::withId(899);
         $this->assertFalse($album->canUserGetData());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataAdmin() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $album = Album::withId(899);
@@ -151,6 +234,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataOwner() {
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
         $album = Album::withId(899);
@@ -158,6 +244,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserGetDataOtherUser() {
         $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
         $album = Album::withId(899);
@@ -165,16 +254,25 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForNoCode() {
         $album = Album::withId(898);
         $this->assertFalse($album->isSearchedFor());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForNoSession() {
         $album = Album::withId(899);
         $this->assertFalse($album->isSearchedFor());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForNoSessionSearch() {
         $_SESSION['search'] = array();
         $album = Album::withId(899);
@@ -182,6 +280,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['search']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForEmptySessionSearch() {
         $_SESSION['searched'] = 'a';
         $album = Album::withId(899);
@@ -189,6 +290,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['searched']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForEmptySessionSearchArray() {
         $_SESSION['searched'] = array();
         $album = Album::withId(899);
@@ -196,6 +300,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['searched']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForNoSessionMatch() {
         $_SESSION['searched']['899'] = '5';
         $album = Album::withId(899);
@@ -203,6 +310,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['searched']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForSessionMatch() {
         $_SESSION['searched']['899'] = md5("album123");
         $album = Album::withId(899);
@@ -211,11 +321,17 @@ class AlbumIntegrationTest extends TestCase {
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForNoCookie() {
         $album = Album::withId(899);
         $this->assertFalse($album->isSearchedFor());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForNoCookieSearch() {
         $_COOKIE['search'] = array();
         $album = Album::withId(899);
@@ -223,6 +339,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_COOKIE['search']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForEmptyCookieSearch() {
         $_COOKIE['searched'] = 'a';
         $album = Album::withId(899);
@@ -230,6 +349,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_COOKIE['searched']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForEmptyCookieSearchArray() {
         $_COOKIE['searched'] = json_encode(array());
         $album = Album::withId(899);
@@ -237,6 +359,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_COOKIE['searched']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForNoCookieMatch() {
         $searched = array();
         $searched[899] = '5';
@@ -246,6 +371,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_COOKIE['searched']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsSearchedForCookieMatch() {
         $searched = array();
         $searched[899] = md5("album123");
@@ -255,11 +383,17 @@ class AlbumIntegrationTest extends TestCase {
         unset($_COOKIE['searched']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserAccessNobody() {
         $album = Album::withId(899);
         $this->assertFalse($album->canUserAccess());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserAccessAdmin() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $album = Album::withId(899);
@@ -267,6 +401,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserAccessOwner() {
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
         $album = Album::withId(899);
@@ -274,6 +411,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserAccessOtherUser() {
         $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
         $album = Album::withId(899);
@@ -281,6 +421,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserAccessAddedUser() {
         $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
         $album = Album::withId(898);
@@ -288,6 +431,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['hash']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanUserAccessSearched() {
         $_SESSION['searched']['899'] = md5("album123");
         $album = Album::withId(899);
@@ -295,6 +441,9 @@ class AlbumIntegrationTest extends TestCase {
         unset($_SESSION['searched']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteNoAccess() {
         $album = Album::withId(899);
         try {
@@ -308,6 +457,9 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDeleteNoLocation() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $album = Album::withId(898);
@@ -318,6 +470,9 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 898;"));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $album = Album::withId(899);
@@ -329,6 +484,9 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample.jpg'));
     }
 
+    /**
+     *
+     */
     public function testWithParamsNullParams() {
         try {
             Album::withParams(NULL);
@@ -337,6 +495,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testWithParamsNoName() {
         try {
             Album::withParams(array());
@@ -345,6 +506,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testWithParamsBlankName() {
         $params = [
             'name' => ''
@@ -356,6 +520,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testWithParamsBadDate() {
         $params = [
             'name' => 'Sample Album',
@@ -368,6 +535,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testWithParamsRegularUser() {
         $params = [
             'name' => 'Sample Album',
@@ -381,6 +551,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testWithParamsBadFolder() {
         try {
             $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
@@ -399,6 +572,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testWithParamsBasic() {
         date_default_timezone_set("America/New_York");
         try {
@@ -440,6 +616,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testWithParamsAll() {
         date_default_timezone_set("America/New_York");
         try {
@@ -476,6 +655,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateNullParams() {
         try {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
@@ -488,6 +670,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateNoName() {
         try {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
@@ -500,6 +685,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateBlankName() {
         $params = [
             'name' => ''
@@ -515,6 +703,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateBadDate() {
         $params = [
             'name' => 'Sample Album',
@@ -531,6 +722,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateUnAuthUser() {
         $params = [
             'name' => 'Sample Album',
@@ -544,6 +738,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateWrongUser() {
         try {
             $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
@@ -560,6 +757,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateAdminBasic() {
         date_default_timezone_set("America/New_York");
         try {
@@ -585,6 +785,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateAdminBasicCode() {
         try {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
@@ -611,6 +814,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateAdminBasicEmptyCode() {
         try {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
@@ -637,6 +843,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateAdminBasicNonAdminCode() {
         try {
             $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
@@ -663,6 +872,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     *
+     */
     public function testUpdateAdminBasicDuplicateCode() {
         try {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
@@ -691,6 +903,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateAdminBasicNoCodeUpdate() {
         try {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
@@ -717,6 +932,9 @@ class AlbumIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUpdateAdminFull() {
         try {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
