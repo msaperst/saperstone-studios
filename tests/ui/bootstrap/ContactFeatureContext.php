@@ -9,6 +9,8 @@ use Behat\Gherkin\Node\TableNode;
 use coverage\integration\EmailIntegrationTest;
 use CustomAsserts;
 use Exception;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -112,11 +114,24 @@ class ContactFeatureContext implements Context {
     }
 
     /**
-     * @Given /^an email was successfully sent to "([^"]*)" with the message "([^"]*)"$/
+     * @Then /^an email was successfully sent to "([^"]*)" with the message "([^"]*)"$/
      * @param $email
      * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function anEmailWasSuccessfullySentToWithTheMessage($email, $message) {
         CustomAsserts::assertEmailBody($email, $message);
+    }
+
+    /**
+     * @Then /^an email was successfully sent to "([^"]*)" containing message "([^"]*)"$/
+     * @param $email
+     * @param $message
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function anEmailWasSuccessfullySentToContainingMessage($email, $message) {
+        CustomAsserts::assertEmailContains($email, $message);
     }
 }

@@ -96,6 +96,7 @@ Feature: Profile Administration
   Scenario: Able to register user
     Given I am on the registration page
     When I register my user
+    # TODO - put in check for email
     Then I see my user name displayed
     Then I am taken to the "user/profile.php" page
 

@@ -384,4 +384,58 @@ EleMax has signed their contract, this is a copy of it for your records.', true)
             unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         }
     }
+
+    /**
+     * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function testSignContractDeposit() {
+        $this->sql->executeStatement("UPDATE contracts SET deposit = '10.00' WHERE id = 999;");
+        $this->sql->executeStatement("UPDATE contracts SET invoice = NULL WHERE id = 999;");
+        date_default_timezone_set("America/New_York");
+        try {
+            $response = $this->http->request('POST', 'api/sign-contract.php', [
+                'form_params' => [
+                    'id' => '999',
+                    'name' => 'EleMax',
+                    'address' => '123 Street',
+                    'number' => '12345',
+                    'email' => 'saperstonestudios@mailinator.com',
+                    'signature' => 'something',
+                    'initial' => 'MAS',
+                    'content' => 'some contract content'
+                ]
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals('', (string)$response->getBody());
+            $contractDetails = $this->sql->getRow("SELECT * FROM contracts WHERE contracts.id = 999");
+            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5)));
+            $this->assertEquals(999, $contractDetails['id']);
+            $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractDetails['link']);
+            $this->assertEquals('commercial', $contractDetails['type']);
+            $this->assertEquals('EleMax', $contractDetails['name']);
+            $this->assertEquals('123 Street', $contractDetails['address']);
+            $this->assertEquals('12345', $contractDetails['number']);
+            $this->assertEquals('saperstonestudios@mailinator.com', $contractDetails['email']);
+            $this->assertEquals('2021-10-13', $contractDetails['date']);
+            $this->assertEquals('1234 Sesame Street', $contractDetails['location']);
+            $this->assertEquals('Some session', $contractDetails['session']);
+            $this->assertStringStartsWith('Up to one hour photo session to include', $contractDetails['details']);
+            $this->assertEquals(0.00, $contractDetails['amount']);
+            $this->assertEquals(10.00, $contractDetails['deposit']);
+            $this->assertNull($contractDetails['invoice']);
+            $this->assertEquals('some contract content', $contractDetails['content']);
+            $this->assertEquals('something', $contractDetails['signature']);
+            $this->assertEquals('MAS', $contractDetails['initial']);
+            $this->assertEquals('/user/contracts/EleMax - ' . date('Y-m-d') . ' - Commercial Contract.pdf', $contractDetails['file']);
+            CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
+EleMax has signed their contract, this is a copy of it for your records. Don\'t forget that they have a $10.00 deposit due.', true);
+            CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'Thank you for signing your contract. Please note you have a $10.00 deposit due.');
+            //TODO - unable to verify that email is attached
+        } finally {
+            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+        }
+    }
 }

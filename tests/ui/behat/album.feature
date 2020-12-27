@@ -115,6 +115,7 @@ Feature: Album
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with my favorites
+    # TODO - put in check for email
 
   Scenario: Download multiple favorites
     Given album 99999 image 2 is a favorite
@@ -127,6 +128,7 @@ Feature: Album
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with my favorites
+    # TODO - put in check for email
 
   Scenario: Unable to share favorites
     Given album 99999 image 2 is a favorite
@@ -159,6 +161,7 @@ Feature: Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
+    # TODO - put in check for email
 
   Scenario: Unable to share all images
     When I share all my images
@@ -179,6 +182,7 @@ Feature: Album
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with images "2"
+    # TODO - put in check for email
 
   Scenario: Download multiple all images
     And I have download rights for album 99999 image 2
@@ -188,6 +192,7 @@ Feature: Album
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with images "2, 4, 7"
+    # TODO - put in check for email
 
   Scenario: Adding image to cart increases cart count
     When I view album image 2
@@ -307,6 +312,7 @@ Feature: Album
     Then I see an info message indicating forwarding to paypal
     And the place order button is disabled
     And I am forwarded to the paypal page
+    # TODO - put in check for email
 
   Scenario: Tax and Price are properly calculated
     Given album 99999 image 1 has 2 "Prints" "11x14" "Photo Prints" in the cart
@@ -348,6 +354,7 @@ Feature: Album
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with images "2"
+    # TODO - put in check for email
 
   Scenario: Unable to share single image
     Given I have share rights for album 99999 image 2
@@ -366,6 +373,7 @@ Feature: Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
+    # TODO - put in check for email
 
   Scenario: Request email updates no email
     Given album 99998 exists

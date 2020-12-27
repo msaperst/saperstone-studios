@@ -4,6 +4,8 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -19,15 +21,15 @@ class DownloadSelectedImagesTest extends TestCase {
     /**
      * @var Client
      */
-    private Client $http;
+    private $http;
     /**
      * @var Sql
      */
-    private Sql $sql;
+    private $sql;
     /**
      * @var string[]
      */
-    private array $files = array("file.0.png", "file.1.png", "file.2.png", "file.3.png", "file.4.png");
+    private $files = array("file.0.png", "file.1.png", "file.2.png", "file.3.png", "file.4.png");
 
     /**
      * @throws Exception
@@ -169,6 +171,8 @@ class DownloadSelectedImagesTest extends TestCase {
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadAllOpen() {
         try {
@@ -204,6 +208,8 @@ file.3.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadFavoritesOpen() {
         try {
@@ -256,6 +262,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadBadWhatOpen() {
         try {
@@ -285,6 +293,8 @@ file.0.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadSingleOpen() {
         try {
@@ -342,6 +352,8 @@ file.1.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadAllLimited() {
         try {
@@ -373,6 +385,8 @@ file.3.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadFavoritesLimited() {
         try {
@@ -420,6 +434,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadSingleGoodLimited() {
         try {
@@ -514,6 +530,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAuthUserDownloadAllOpen() {
         try {
@@ -553,6 +571,8 @@ file.3.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAuthUserDownloadFavoritesOpen() {
         try {
@@ -612,6 +632,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAuthUserDownloadSingleOpen() {
         try {
@@ -645,6 +667,8 @@ file.1.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAuthUserDownloadAllLimited() {
         try {
@@ -682,6 +706,8 @@ file.3.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAuthUserDownloadFavoritesLimited() {
         try {
@@ -738,6 +764,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAuthUserDownloadSingleGoodLimited() {
         try {
@@ -771,6 +799,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAuthUserDownloadSingleGoodOtherLimited() {
         try {
@@ -897,6 +927,8 @@ file.1.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadAllOpen() {
         try {
@@ -936,6 +968,8 @@ file.3.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadFavoritesOpen() {
         try {
@@ -995,6 +1029,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadSingleOpen() {
         try {
@@ -1028,6 +1064,8 @@ file.1.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadAllLimited() {
         try {
@@ -1067,6 +1105,8 @@ file.3.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadFavoritesLimited() {
         try {
@@ -1125,6 +1165,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadSingleGoodLimited() {
         try {
@@ -1158,6 +1200,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadSingleGoodOtherLimited() {
         try {
@@ -1209,6 +1253,8 @@ file.1.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadAllClosed() {
         try {
@@ -1248,6 +1294,8 @@ file.3.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadFavoritesClosed() {
         try {
@@ -1306,6 +1354,8 @@ file.2.png');
 
     /**
      * @throws GuzzleException
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function testAdminUserDownloadSingleClosed() {
         try {
