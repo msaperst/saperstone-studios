@@ -12,6 +12,7 @@
     "php-webdriver/webdriver": "1.8.3",
     "behat/behat": "3.7.0",
     "emuse/behat-html-formatter": "^0.2.0",
+    "Mpdf/Mpdf": "7.1.9",
     "google/apiclient": "^2.0"
   },
   "autoload-dev": {
