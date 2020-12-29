@@ -132,14 +132,14 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                     },
                     "Gmail Credentials File": {
                         stage('Setup Gmail Credentials File') {
-                            withCredentials([file(credentialsId: 'msaperst-gmail-credentials', variable: 'credentials')]) {
+                            withCredentials([string(credentialsId: 'msaperst-gmail-credentials', variable: 'credentials')]) {
                                 sh "echo '${credentials}' > credentials.json"
                             }
                         }
                     },
                     "Gmail Token File": {
                         stage('Setup Gmail Token File') {
-                            withCredentials([file(credentialsId: 'msaperst-gmail-auth-token', variable: 'token')]) {
+                            withCredentials([string(credentialsId: 'msaperst-gmail-auth-token', variable: 'token')]) {
                                 sh "echo '${token}' > token.json"
                             }
                         }
