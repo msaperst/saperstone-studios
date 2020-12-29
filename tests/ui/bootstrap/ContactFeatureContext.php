@@ -15,6 +15,7 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
@@ -92,6 +93,7 @@ class ContactFeatureContext implements Context {
 
     /**
      * @Then /^I see a warning message indicating my message is being sent$/
+     * @throws Exception
      */
     public function iSeeAWarningMessageIndicatingMyMessageIsBeingSent() {
         CustomAsserts::warningMessage($this->driver, 'Sending your message.');
@@ -108,30 +110,37 @@ class ContactFeatureContext implements Context {
 
     /**
      * @Then /^I see a success message indicating my message was sent$/
+     * @throws Exception
      */
     public function iSeeASuccessMessageIndicatingMyMessageWasSent() {
         CustomAsserts::successMessage($this->driver, 'Your message has been sent.');
     }
 
     /**
-     * @Then /^an email was successfully sent to "([^"]*)" with the message "([^"]*)"$/
-     * @param $email
-     * @param $message
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @Then /^I see a contact email sent to the user$/
+     * @throws ExceptionAlias
      */
-    public function anEmailWasSuccessfullySentToWithTheMessage($email, $message) {
-        CustomAsserts::assertEmailBody($email, $message);
+    public function iSeeAContactEmailSentToTheUser() {
+        CustomAsserts::assertEmailEquals('Thank you for contacting Saperstone Studios', 'Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.', '<html><body>Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.</body></html>');
     }
 
     /**
-     * @Then /^an email was successfully sent to "([^"]*)" containing message "([^"]*)"$/
-     * @param $email
-     * @param $message
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @Then /^I see a contact email send to the admin with:$/
+     * @param TableNode $table
+     * @throws ExceptionAlias
      */
-    public function anEmailWasSuccessfullySentToContainingMessage($email, $message) {
-        CustomAsserts::assertEmailContains($email, $message);
+    public function iSeeAContactEmailSendToTheAdminWith(TableNode $table) {
+        $data = $table->getRow(1);
+        CustomAsserts::assertEmailMatches('Saperstone Studios Contact Form: Max', "This is an automatically generated message from Saperstone Studios
+Name: {$data[0]}
+Phone: {$data[1]}
+Email: {$data[2]}
+Location: %s (use %d.%d.%d.%d to manually lookup)
+Browser: %s %s
+Resolution: %dx%d
+OS: %s
+Full UA: %s
+
+\t\t{$data[3]}", "<html><body>This is an automatically generated message from Saperstone Studios<br/><strong>Name</strong>: {$data[0]}<br/><strong>Phone</strong>: {$data[1]}<br/><strong>Email</strong>: <a href='mailto:{$data[2]}'>{$data[2]}</a><br/><strong>Location</strong>: %s (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$data[3]}<br/><br/></body></html>");
     }
 }

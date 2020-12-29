@@ -111,8 +111,10 @@ $message", $actualMessage, $actualMessage);
     public static function assertEmailEquals($subject, $txt, $html, $attachment = NULL) {
         try {
             $gmail = new Gmail($subject);
-            Assert::assertEquals($txt, $gmail->getEmailTxt());
-            Assert::assertEquals($html, $gmail->getEmailHtml());
+            $gmailTxt = $gmail->getEmailTxt();
+            Assert::assertEquals($txt, $gmailTxt, $gmailTxt);
+            $gmailHtml = $gmail->getEmailHtml();
+            Assert::assertEquals($html, $gmailHtml, $gmailHtml);
             if ($attachment != NULL) {
                 $filename = $gmail->saveAttachment();
                 self::filesAreEqual($attachment, $filename);
@@ -135,8 +137,10 @@ $message", $actualMessage, $actualMessage);
     public static function assertEmailMatches($subject, $txt, $html, $attachment = NULL) {
         try {
             $gmail = new Gmail($subject);
-            Assert::assertStringMatchesFormat($txt, $gmail->getEmailTxt());
-            Assert::assertStringMatchesFormat($html, $gmail->getEmailHtml());
+            $gmailTxt = $gmail->getEmailTxt();
+            Assert::assertStringMatchesFormat($txt, $gmailTxt, $gmailTxt);
+            $gmailHtml = $gmail->getEmailHtml();
+            Assert::assertStringMatchesFormat($html, $gmailHtml, $gmailHtml);
             if ($attachment != NULL) {
                 $filename = $gmail->saveAttachment();
                 self::filesAreEqual($attachment, $filename);

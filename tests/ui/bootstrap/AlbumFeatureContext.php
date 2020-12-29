@@ -19,6 +19,7 @@ use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
 use Sql;
 use ui\models\Album;
@@ -1843,14 +1844,18 @@ Comment',
     }
 
     /**
-     * @Then /^I see an album notification for album (\d+) was emailed out to "([^"]*)"$/
+     * @Then /^I see an album notification for album (\d+) was emailed out$/
      * @param $albumId
-     * @param $email
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @throws ExceptionAlias
      */
-    public function iSeeAnAlbumNotificationWasEmailedOutTo($albumId, $email) {
-        CustomAsserts::assertEmailBody($email, "An album you requested to be updated about has been updated. Images have been posted to album Album $albumId. You can access your images by logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album=$albumId.");
+    public function iSeeAnAlbumNotificationWasEmailedOutTo($albumId) {
+        CustomAsserts::assertEmailEquals('Album Updated on Saperstone Studios',
+            "An album you requested to be updated about has been updated.\r
+\r
+Images have been posted to album Album $albumId. You can access your images by logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album=$albumId.",
+            "<html><body>An album you requested to be updated about has been updated.\r
+\r
+Images have been posted to album Album $albumId. You can access your images by logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album=$albumId.</body></html>");
     }
 
     /**

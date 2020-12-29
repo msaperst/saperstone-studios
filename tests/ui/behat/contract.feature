@@ -29,14 +29,14 @@ Feature: Contract
     When I provide "Max" for the contract "name-signature"
     And I provide "123 Sesame Street" for the contract "address"
     And I provide "1234567890" for the contract "number"
-    And I provide "saperstonestudios@mailinator.com" for the contract "email"
+    And I provide "msaperst+sstest@gmail.com" for the contract "email"
     Then the submit contract button is disabled
 
   Scenario: Unable to sign without signature
     When I provide "Max" for the contract "name-signature"
     And I provide "123 Sesame Street" for the contract "address"
     And I provide "1234567890" for the contract "number"
-    And I provide "saperstonestudios@mailinator.com" for the contract "email"
+    And I provide "msaperst+sstest@gmail.com" for the contract "email"
     And I initial the contract
     Then the submit contract button is disabled
 
@@ -44,7 +44,7 @@ Feature: Contract
     When I provide "Max" for the contract "name-signature"
     And I provide "123 Sesame Street" for the contract "address"
     And I provide "1234567890" for the contract "number"
-    And I provide "saperstonestudios@mailinator.com" for the contract "email"
+    And I provide "msaperst+sstest@gmail.com" for the contract "email"
     And I initial the contract
     And I sign the contract
     And I submit the contract
@@ -53,8 +53,8 @@ Feature: Contract
     And I see a success message indicating my contract will be emailed to me
     And I see the signed contract displayed
     And I the signed contract exists for 99999
-    And an email was successfully sent to "saperstonestudios@mailinator.com" with the message "This is an automatically generated message from Saperstone Studios EleMax has signed their contract, this is a copy of it for your records."
-    And an email was successfully sent to "saperstonestudios@mailinator.com" with the message "Thank you for signing your contract. You can pay your invoice online here."
+    And an email was successfully sent to "msaperst+sstest@gmail.com" with the message "This is an automatically generated message from Saperstone Studios EleMax has signed their contract, this is a copy of it for your records."
+    And an email was successfully sent to "msaperst+sstest@gmail.com" with the message "Thank you for signing your contract. You can pay your invoice online here."
     #TODO - unable to verify the attachment due to mailinator limitations
 
   Scenario: Unable to sign contract with bad email

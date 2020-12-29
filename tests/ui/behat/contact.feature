@@ -31,18 +31,20 @@ Feature: Contact
   Scenario: Unable to submit message without message
     When I provide "Max" for the contact "name"
     And I provide "1234567890" for the contact "phone"
-    And I provide "saperstonestudios@mailinator.com" for the contact "email"
+    And I provide "msaperst+sstest@gmail.com" for the contact "email"
     And I submit the contact form
     Then I see an error indicating contact message is required
 
   Scenario: Successfully submit message
     When I provide "Max" for the contact "name"
     And I provide "1234567890" for the contact "phone"
-    And I provide "saperstonestudios@mailinator.com" for the contact "email"
+    And I provide "msaperst+sstest@gmail.com" for the contact "email"
     And I provide "This is a test message, feel free to ignore this" for the contact "message"
     And I submit the contact form
     Then I see a warning message indicating my message is being sent
     And the submit contact button is disabled
-    Then I see a success message indicating my message was sent
-    And an email was successfully sent to "saperstonestudios@mailinator.com" with the message "Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours."
-    And an email was successfully sent to "saperstonestudios@mailinator.com" containing message "This is a test message, feel free to ignore this"
+    And I see a success message indicating my message was sent
+    And I see a contact email sent to the user
+    And I see a contact email send to the admin with:
+    | name | phone | email | message |
+    | Max  | 1234567890 | msaperst+sstest@gmail.com | This is a test message, feel free to ignore this |

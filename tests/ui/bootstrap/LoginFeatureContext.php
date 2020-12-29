@@ -73,7 +73,7 @@ class LoginFeatureContext implements Context {
     public function anEnabledAdminUserAccountExists() {
         $params = [
             'username' => 'testUser',
-            'email' => 'saperstonestudios@mailinator.com',
+            'email' => 'msaperst+sstest@gmail.com',
             'password' => '12345',
             'role' => 'admin'
         ];
@@ -91,7 +91,7 @@ class LoginFeatureContext implements Context {
     public function anEnabledUploaderUserAccountExists() {
         $params = [
             'username' => 'testUser',
-            'email' => 'saperstonestudios@mailinator.com',
+            'email' => 'msaperst+sstest@gmail.com',
             'password' => '12345',
             'role' => 'uploader'
         ];
@@ -109,7 +109,7 @@ class LoginFeatureContext implements Context {
     public function aDisabledUserAccountExists() {
         $params = [
             'username' => 'testUser',
-            'email' => 'saperstonestudios@mailinator.com',
+            'email' => 'msaperst+sstest@gmail.com',
             'password' => '12345',
             'active' => '0'
         ];
