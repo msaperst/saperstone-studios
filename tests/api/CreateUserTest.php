@@ -198,7 +198,7 @@ class CreateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/create-user.php', [
             'form_params' => [
                 'username' => 'MaxMax',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'role' => 'awesome'
             ],
             'cookies' => $cookieJar
@@ -220,7 +220,7 @@ class CreateUserTest extends TestCase {
             $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
                     'username' => 'MaxMax',
-                    'email' => 'saperstonestudios@mailinator.com',
+                    'email' => 'msaperst+sstest@gmail.com',
                     'role' => 'downloader'
                 ],
                 'cookies' => $cookieJar
@@ -233,14 +233,18 @@ class CreateUserTest extends TestCase {
             $this->assertNotEquals('', $userDetails['pass']);
             $this->assertEquals('', $userDetails['firstName']);
             $this->assertEquals('', $userDetails['lastName']);
-            $this->assertEquals('saperstonestudios@mailinator.com', $userDetails['email']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(32, strlen($userDetails['hash']));
             $this->assertEquals(1, $userDetails['active']);
             CustomAsserts::timeWithin(10, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'Someone has setup a new user for you at Saperstone Studios. You can login and access the site at saperstonestudios.com. Initial credentials have been setup for you as:');
+            CustomAsserts::assertEmailMatches('New User Created at Saperstone Studios', "Someone has setup a new user for you at Saperstone Studios. You can login and access the site at https://saperstonestudios.com. Initial credentials have been setup for you as: \r
+    Username: MaxMax\r
+    Password: %s\r
+For security reasons, once logged in, we recommend you reset your password at https://saperstonestudios.com/user/profile.php",
+                "<html><body>Someone has setup a new user for you at Saperstone Studios. You can login and access the site at <a href='https://saperstonestudios.com'>saperstonestudios.com</a>. Initial credentials have been setup for you as: <p>&nbsp;&nbsp;&nbsp;&nbsp;Username: MaxMax<br/>&nbsp;&nbsp;&nbsp;&nbsp;Password: %s</p>For security reasons, once logged in, we recommend you <a href='https://saperstonestudios.com/user/profile.php'>reset your password</a>.</html></body>");
         } finally {
             $this->sql->executeStatement("DELETE FROM `users` WHERE `users`.`id` = $userId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
@@ -262,7 +266,7 @@ class CreateUserTest extends TestCase {
             $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
                     'username' => 'MaxMax',
-                    'email' => 'saperstonestudios@mailinator.com',
+                    'email' => 'msaperst+sstest@gmail.com',
                     'role' => 'downloader',
                     'firstName' => 'Max',
                     'lastName' => 'Saperstone',
@@ -278,14 +282,18 @@ class CreateUserTest extends TestCase {
             $this->assertNotEquals('', $userDetails['pass']);
             $this->assertEquals('Max', $userDetails['firstName']);
             $this->assertEquals('Saperstone', $userDetails['lastName']);
-            $this->assertEquals('saperstonestudios@mailinator.com', $userDetails['email']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(32, strlen($userDetails['hash']));
             $this->assertEquals(0, $userDetails['active']);
             CustomAsserts::timeWithin(10, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'Someone has setup a new user for you at Saperstone Studios. You can login and access the site at saperstonestudios.com. Initial credentials have been setup for you as:');
+            CustomAsserts::assertEmailMatches('New User Created at Saperstone Studios', "Someone has setup a new user for you at Saperstone Studios. You can login and access the site at https://saperstonestudios.com. Initial credentials have been setup for you as: \r
+    Username: MaxMax\r
+    Password: %s\r
+For security reasons, once logged in, we recommend you reset your password at https://saperstonestudios.com/user/profile.php",
+                "<html><body>Someone has setup a new user for you at Saperstone Studios. You can login and access the site at <a href='https://saperstonestudios.com'>saperstonestudios.com</a>. Initial credentials have been setup for you as: <p>&nbsp;&nbsp;&nbsp;&nbsp;Username: MaxMax<br/>&nbsp;&nbsp;&nbsp;&nbsp;Password: %s</p>For security reasons, once logged in, we recommend you <a href='https://saperstonestudios.com/user/profile.php'>reset your password</a>.</html></body>");
         } finally {
             $this->sql->executeStatement("DELETE FROM `users` WHERE `users`.`id` = $userId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];

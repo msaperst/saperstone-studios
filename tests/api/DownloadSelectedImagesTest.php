@@ -4,8 +4,7 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
+use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -171,8 +170,7 @@ class DownloadSelectedImagesTest extends TestCase {
 
     /**
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @throws ExceptionAlias
      */
     public function testUnAuthUserDownloadAllOpen() {
         try {
@@ -195,21 +193,30 @@ class DownloadSelectedImagesTest extends TestCase {
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
 file.0.png
 file.1.png
 file.2.png
-file.3.png');
+file.3.png
+
+Name: 
+Email: 
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadFavoritesOpen() {
         try {
@@ -250,20 +257,29 @@ file.3.png');
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
 file.0.png
 file.1.png
-file.2.png');
+file.2.png
+
+Name: 
+Email: 
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadBadWhatOpen() {
         try {
@@ -283,18 +299,27 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.0.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
-file.0.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
+file.0.png
+
+Name: 
+Email: 
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadSingleOpen() {
         try {
@@ -314,9 +339,19 @@ file.0.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
-file.1.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
+file.1.png
+
+Name: 
+Email: 
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
@@ -351,9 +386,8 @@ file.1.png');
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadAllLimited() {
         try {
@@ -374,19 +408,28 @@ file.1.png');
             $this->assertEquals(2, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.3.png", $za->statIndex(1)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
 file.2.png
-file.3.png');
+file.3.png
+
+Name: 
+Email: 
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadFavoritesLimited() {
         try {
@@ -424,18 +467,27 @@ file.3.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
-file.2.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
+file.2.png
+
+Name: 
+Email: 
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testUnAuthUserDownloadSingleGoodLimited() {
         try {
@@ -455,9 +507,19 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
-file.2.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
+file.2.png
+
+Name: 
+Email: 
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
@@ -529,9 +591,8 @@ file.2.png');
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAuthUserDownloadAllOpen() {
         try {
@@ -558,21 +619,30 @@ file.2.png');
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
 file.0.png
 file.1.png
 file.2.png
-file.3.png');
+file.3.png
+
+Name: Download User
+Email: email@example.org
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAuthUserDownloadFavoritesOpen() {
         try {
@@ -620,20 +690,29 @@ file.3.png');
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
 file.0.png
 file.1.png
-file.2.png');
+file.2.png
+
+Name: Download User
+Email: email@example.org
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAuthUserDownloadSingleOpen() {
         try {
@@ -657,18 +736,27 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
-file.1.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
+file.1.png
+
+Name: Download User
+Email: email@example.org
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAuthUserDownloadAllLimited() {
         try {
@@ -694,20 +782,29 @@ file.1.png');
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(1)['name']);
             $this->assertEquals("file.3.png", $za->statIndex(2)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
 file.1.png
 file.2.png
-file.3.png');
+file.3.png
+
+Name: Download User
+Email: email@example.org
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAuthUserDownloadFavoritesLimited() {
         try {
@@ -753,19 +850,28 @@ file.3.png');
             $this->assertEquals(2, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(1)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
 file.1.png
-file.2.png');
+file.2.png
+
+Name: Download User
+Email: email@example.org
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAuthUserDownloadSingleGoodLimited() {
         try {
@@ -789,18 +895,27 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
-file.2.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
+file.2.png
+
+Name: Download User
+Email: email@example.org
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAuthUserDownloadSingleGoodOtherLimited() {
         try {
@@ -824,9 +939,19 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
-file.1.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
+file.1.png
+
+Name: Download User
+Email: email@example.org
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
@@ -926,9 +1051,8 @@ file.1.png');
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadAllOpen() {
         try {
@@ -955,21 +1079,30 @@ file.1.png');
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
 file.0.png
 file.1.png
 file.2.png
-file.3.png');
+file.3.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadFavoritesOpen() {
         try {
@@ -1017,20 +1150,29 @@ file.3.png');
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
 file.0.png
 file.1.png
-file.2.png');
+file.2.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadSingleOpen() {
         try {
@@ -1054,18 +1196,27 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-all album
-file.1.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
+
+file.1.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadAllLimited() {
         try {
@@ -1092,21 +1243,30 @@ file.1.png');
             $this->assertEquals("file.1.png", $za->statIndex(1)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(2)['name']);
             $this->assertEquals("file.3.png", $za->statIndex(3)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
 file.0.png
 file.1.png
 file.2.png
-file.3.png');
+file.3.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadFavoritesLimited() {
         try {
@@ -1153,20 +1313,29 @@ file.3.png');
             $this->assertEquals("file.0.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.1.png", $za->statIndex(1)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(2)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
 file.0.png
 file.1.png
-file.2.png');
-       } finally {
+file.2.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+        } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadSingleGoodLimited() {
         try {
@@ -1190,18 +1359,27 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
-file.2.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
+file.2.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadSingleGoodOtherLimited() {
         try {
@@ -1225,9 +1403,19 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-download-some album
-file.1.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+
+file.1.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
@@ -1252,9 +1440,8 @@ file.1.png');
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadAllClosed() {
         try {
@@ -1281,21 +1468,30 @@ file.1.png');
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-no-access album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-no-access album at %s://%s/user/album.php?album=999
+
 file.0.png
 file.1.png
 file.2.png
-file.3.png');
+file.3.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadFavoritesClosed() {
         try {
@@ -1342,20 +1538,29 @@ file.3.png');
             $this->assertEquals("file.0.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.1.png", $za->statIndex(1)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(2)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-no-access album
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-no-access album at %s://%s/user/album.php?album=999
+
 file.0.png
 file.1.png
-file.2.png');
+file.2.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      */
     public function testAdminUserDownloadSingleClosed() {
         try {
@@ -1379,9 +1584,19 @@ file.2.png');
             $za->open('download.zip');
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Downloads have been made from the sample-album-no-access album
-file.1.png');
+            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the sample-album-no-access album at %s://%s/user/album.php?album=999
+
+file.1.png
+
+Name: Max Saperstone
+Email: msaperst@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
         }

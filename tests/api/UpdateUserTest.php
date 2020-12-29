@@ -183,7 +183,7 @@ class UpdateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-user.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'role' => 'awesome'
             ],
             'cookies' => $cookieJar
@@ -202,7 +202,7 @@ class UpdateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-user.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'password' => 'awesome'
             ],
             'cookies' => $cookieJar
@@ -221,7 +221,7 @@ class UpdateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-user.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'password' => 'awesome',
                 'passwordConfirm' => ''
             ],
@@ -241,7 +241,7 @@ class UpdateUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-user.php', [
             'form_params' => [
                 'id' => '4',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'password' => 'awesome',
                 'passwordConfirm' => 'awsome'
             ],
@@ -262,7 +262,7 @@ class UpdateUserTest extends TestCase {
             $response = $this->http->request('POST', 'api/update-user.php', [
                 'form_params' => [
                     'id' => '4',
-                    'email' => 'saperstonestudios@mailinator.com',
+                    'email' => 'msaperst+sstest@gmail.com',
                 ],
                 'cookies' => $cookieJar
             ]);
@@ -274,7 +274,7 @@ class UpdateUserTest extends TestCase {
             $this->assertEquals(md5('password'), $userDetails['pass']);
             $this->assertEquals('Upload', $userDetails['firstName']);
             $this->assertEquals('User', $userDetails['lastName']);
-            $this->assertEquals('saperstonestudios@mailinator.com', $userDetails['email']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
             $this->assertEquals('uploader', $userDetails['role']);
             $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);

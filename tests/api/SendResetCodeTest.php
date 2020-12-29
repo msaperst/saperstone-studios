@@ -6,6 +6,7 @@ use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
+use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +31,7 @@ class SendResetCodeTest extends TestCase {
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('testUser', 'somepassword', 'Test', 'User', 'saperstonestudios@mailinator.com', 'downloader', '1', 'sdlkjfisudkhfkvlzjh');");
+        $this->sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('testUser', 'somepassword', 'Test', 'User', 'msaperst+sstest@gmail.com', 'downloader', '1', 'sdlkjfisudkhfkvlzjh');");
 
     }
 
@@ -39,7 +40,7 @@ class SendResetCodeTest extends TestCase {
      */
     public function tearDown() {
         $this->http = NULL;
-        $this->sql->executeStatement("DELETE FROM `users` WHERE email = 'saperstonestudios@mailinator.com';");
+        $this->sql->executeStatement("DELETE FROM `users` WHERE email = 'msaperst+sstest@gmail.com';");
         $this->sql->disconnect();
     }
 
@@ -92,18 +93,21 @@ class SendResetCodeTest extends TestCase {
     }
 
     /**
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      * @throws GuzzleException
+     * @throws ExceptionAlias
      */
     public function testSendResetCode() {
         $response = $this->http->request('POST', 'api/send-reset-code.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com'
+                'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.');
+        CustomAsserts::assertEmailMatches('Reset Key For Saperstone Studios Account',
+            "You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.
+
+\t%s",
+            '<html><body>You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;%s</body></html>');
     }
 }

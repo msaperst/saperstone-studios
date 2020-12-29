@@ -142,7 +142,7 @@ class AddNotificationEmailTest extends TestCase {
         $response = $this->http->request('POST', 'api/add-notification-email.php', [
             'form_params' => [
                 'album' => 999,
-                'email' => 'saperstonestudios@mailinator.com'
+                'email' => 'msaperst+sstest@gmail.com'
             ],
             'cookies' => $cookieJar
         ]);
@@ -152,7 +152,7 @@ class AddNotificationEmailTest extends TestCase {
         $this->assertEquals(1, sizeOf($rows));
         $this->assertEquals(999, $rows[0]['album']);
         $this->assertEquals(1, $rows[0]['user']);
-        $this->assertEquals('saperstonestudios@mailinator.com', $rows[0]['email']);
+        $this->assertEquals('msaperst+sstest@gmail.com', $rows[0]['email']);
     }
 
     /**
@@ -162,7 +162,7 @@ class AddNotificationEmailTest extends TestCase {
         $response = $this->http->request('POST', 'api/add-notification-email.php', [
             'form_params' => [
                 'album' => 999,
-                'email' => 'saperstonestudios@mailinator.com'
+                'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -171,6 +171,6 @@ class AddNotificationEmailTest extends TestCase {
         $this->assertEquals(1, sizeOf($rows));
         $this->assertEquals(999, $rows[0]['album']);
         $this->assertTrue(filter_var($rows[0]['user'], FILTER_VALIDATE_IP) !== false);
-        $this->assertEquals('saperstonestudios@mailinator.com', $rows[0]['email']);
+        $this->assertEquals('msaperst+sstest@gmail.com', $rows[0]['email']);
     }
 }

@@ -41,7 +41,7 @@ try {
 
 // now send to LAS
 $to = 'Contracts <' . getenv('EMAIL_CONTRACTS') . '>';
-$email = new Email($to, $from, $subject);
+$email = new Email($to, $from, $subject . ' Signed');
 
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";

@@ -4,8 +4,7 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
+use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
@@ -229,7 +228,7 @@ class SignContractTest extends TestCase {
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
-                'email' => 'saperstonestudios@mailinator.com'
+                'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -246,7 +245,7 @@ class SignContractTest extends TestCase {
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'signature' => ''
             ]
         ]);
@@ -265,7 +264,7 @@ class SignContractTest extends TestCase {
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'signature' => 'something'
             ]
         ]);
@@ -284,7 +283,7 @@ class SignContractTest extends TestCase {
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'signature' => 'something',
                 'initial' => ''
             ]
@@ -304,7 +303,7 @@ class SignContractTest extends TestCase {
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'signature' => 'something',
                 'initial' => 'MAS',
             ]
@@ -324,7 +323,7 @@ class SignContractTest extends TestCase {
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'signature' => 'something',
                 'initial' => 'MAS',
                 'content' => ''
@@ -336,8 +335,7 @@ class SignContractTest extends TestCase {
 
     /**
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @throws ExceptionAlias
      */
     public function testSignContract() {
         date_default_timezone_set("America/New_York");
@@ -348,7 +346,7 @@ class SignContractTest extends TestCase {
                     'name' => 'EleMax',
                     'address' => '123 Street',
                     'number' => '12345',
-                    'email' => 'saperstonestudios@mailinator.com',
+                    'email' => 'msaperst+sstest@gmail.com',
                     'signature' => 'something',
                     'initial' => 'MAS',
                     'content' => 'some contract content'
@@ -364,7 +362,7 @@ class SignContractTest extends TestCase {
             $this->assertEquals('EleMax', $contractDetails['name']);
             $this->assertEquals('123 Street', $contractDetails['address']);
             $this->assertEquals('12345', $contractDetails['number']);
-            $this->assertEquals('saperstonestudios@mailinator.com', $contractDetails['email']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $contractDetails['email']);
             $this->assertEquals('2021-10-13', $contractDetails['date']);
             $this->assertEquals('1234 Sesame Street', $contractDetails['location']);
             $this->assertEquals('Some session', $contractDetails['session']);
@@ -376,19 +374,22 @@ class SignContractTest extends TestCase {
             $this->assertEquals('something', $contractDetails['signature']);
             $this->assertEquals('MAS', $contractDetails['initial']);
             $this->assertEquals('/user/contracts/EleMax - ' . date('Y-m-d') . ' - Commercial Contract.pdf', $contractDetails['file']);
-            CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-EleMax has signed their contract, this is a copy of it for your records.', true);
-            CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'Thank you for signing your contract. You can pay your invoice online here.');
-            //TODO - unable to verify that email is attached
+            CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract Signed',
+                "This is an automatically generated message from Saperstone Studios\r\n\r\nEleMax has signed their contract, this is a copy of it for your records. \r\n\r\n",
+                '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>EleMax has signed their contract, this is a copy of it for your records. </p></body></html>',
+                dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract',
+                "Thank you for signing your contract. You can pay your invoice online at nope!.\r\n\r\n",
+                '<html><body><p>Thank you for signing your contract. You can pay your invoice online <a href=\'nope!\' target=\'_blank\'>here</a>.</p></body></html>',
+                dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         } finally {
             unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         }
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
      * @throws Exception
      */
     public function testSignContractDeposit() {
@@ -402,7 +403,7 @@ EleMax has signed their contract, this is a copy of it for your records.', true)
                     'name' => 'EleMax',
                     'address' => '123 Street',
                     'number' => '12345',
-                    'email' => 'saperstonestudios@mailinator.com',
+                    'email' => 'msaperst+sstest@gmail.com',
                     'signature' => 'something',
                     'initial' => 'MAS',
                     'content' => 'some contract content'
@@ -418,7 +419,7 @@ EleMax has signed their contract, this is a copy of it for your records.', true)
             $this->assertEquals('EleMax', $contractDetails['name']);
             $this->assertEquals('123 Street', $contractDetails['address']);
             $this->assertEquals('12345', $contractDetails['number']);
-            $this->assertEquals('saperstonestudios@mailinator.com', $contractDetails['email']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $contractDetails['email']);
             $this->assertEquals('2021-10-13', $contractDetails['date']);
             $this->assertEquals('1234 Sesame Street', $contractDetails['location']);
             $this->assertEquals('Some session', $contractDetails['session']);
@@ -430,10 +431,14 @@ EleMax has signed their contract, this is a copy of it for your records.', true)
             $this->assertEquals('something', $contractDetails['signature']);
             $this->assertEquals('MAS', $contractDetails['initial']);
             $this->assertEquals('/user/contracts/EleMax - ' . date('Y-m-d') . ' - Commercial Contract.pdf', $contractDetails['file']);
-            CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-EleMax has signed their contract, this is a copy of it for your records. Don\'t forget that they have a $10.00 deposit due.', true);
-            CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'Thank you for signing your contract. Please note you have a $10.00 deposit due.');
-            //TODO - unable to verify that email is attached
+            CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract Signed',
+                "This is an automatically generated message from Saperstone Studios\r\n\r\nEleMax has signed their contract, this is a copy of it for your records. Don't forget that they have a $10.00 deposit due. \r\n\r\n",
+                '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>EleMax has signed their contract, this is a copy of it for your records. Don\'t forget that they have a $10.00 deposit due. </p></body></html>',
+                dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract',
+                "Thank you for signing your contract. Please note you have a $10.00 deposit due. \r\n\r\n",
+                '<html><body><p>Thank you for signing your contract. Please note you have a $10.00 deposit due. </p></body></html>',
+                dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         } finally {
             unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         }

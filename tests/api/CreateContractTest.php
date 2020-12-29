@@ -292,7 +292,7 @@ class CreateContractTest extends TestCase {
                     'deposit' => 9.267,
                     'address' => '123 Seasame Street',
                     'number' => '12345 F Off',
-                    'email' => 'saperstonestudios@mailinator.com',
+                    'email' => 'msaperst+sstest@gmail.com',
                     'date' => '2020-12-01',
                     'location' => 'Universal Studios',
                     'details' => 'None you care about',
@@ -319,7 +319,7 @@ class CreateContractTest extends TestCase {
             $this->assertEquals('MaxMaxMax', $contractDetails['name']);
             $this->assertEquals('123 Seasame Street', $contractDetails['address']);
             $this->assertEquals('12345 F Off', $contractDetails['number']);
-            $this->assertEquals('saperstonestudios@mailinator.com', $contractDetails['email']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $contractDetails['email']);
             $this->assertEquals('2020-12-01', $contractDetails['date']);
             $this->assertEquals('Universal Studios', $contractDetails['location']);
             $this->assertEquals('funsies', $contractDetails['session']);

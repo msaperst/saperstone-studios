@@ -1,14 +1,14 @@
 <?php
 
-use coverage\integration\EmailIntegrationTest;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
 
-require_once 'coverage' . DIRECTORY_SEPARATOR . 'integration' . DIRECTORY_SEPARATOR . 'EmailIntegrationTest.php';
+require_once 'Gmail.php';
 
 class CustomAsserts {
 
@@ -102,27 +102,51 @@ $message", $actualMessage, $actualMessage);
     }
 
     /**
-     * @param $email
-     * @param $body
-     * @param bool $delete
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @param $subject
+     * @param $txt
+     * @param $html
+     * @param null $attachment
+     * @throws ExceptionAlias
      */
-    public static function assertEmailBody($email, $body, $delete = false) {
-        $message = EmailIntegrationTest::checkEmail($email, $delete);
-        Assert::assertEquals($body, $message, $message);
+    public static function assertEmailEquals($subject, $txt, $html, $attachment = NULL) {
+        try {
+            $gmail = new Gmail($subject);
+            Assert::assertEquals($txt, $gmail->getEmailTxt());
+            Assert::assertEquals($html, $gmail->getEmailHtml());
+            if ($attachment != NULL) {
+                $filename = $gmail->saveAttachment();
+                self::filesAreEqual($attachment, $filename);
+            }
+        } finally {
+            $gmail->deleteEmail();
+            if (isset($filename) && file_exists($filename)) {
+                unlink($filename);
+            }
+        }
     }
 
     /**
-     * @param $email
-     * @param $body
-     * @param bool $delete
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @param $subject
+     * @param $txt
+     * @param $html
+     * @param null $attachment
+     * @throws ExceptionAlias
      */
-    public static function assertEmailContains($email, $body, $delete = false) {
-        $message = EmailIntegrationTest::checkEmail($email, $delete);
-        Assert::assertContains($body, $message);
+    public static function assertEmailMatches($subject, $txt, $html, $attachment = NULL) {
+        try {
+            $gmail = new Gmail($subject);
+            Assert::assertStringMatchesFormat($txt, $gmail->getEmailTxt());
+            Assert::assertStringMatchesFormat($html, $gmail->getEmailHtml());
+            if ($attachment != NULL) {
+                $filename = $gmail->saveAttachment();
+                self::filesAreEqual($attachment, $filename);
+            }
+        } finally {
+            $gmail->deleteEmail();
+            if (isset($filename) && file_exists($filename)) {
+                unlink($filename);
+            }
+        }
     }
 
     /**

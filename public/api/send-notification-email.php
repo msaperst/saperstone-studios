@@ -30,7 +30,7 @@ foreach( $notifications as $notification) {
     $text .= $message;
     $html = "<html><body>";
     $html .= $text;
-    $html .= "</html></body>";
+    $html .= "</body></html>";
     $email->setText($text);
     $email->setHtml($html);
     try {

@@ -129,7 +129,7 @@ class RegisterUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/register-user.php', [
             'form_params' => [
                 'username' => 'MaxMax',
-                'email' => 'saperstonestudios@mailinator.com'
+                'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -143,7 +143,7 @@ class RegisterUserTest extends TestCase {
         $response = $this->http->request('POST', 'api/register-user.php', [
             'form_params' => [
                 'username' => 'MaxMax',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'password' => ''
             ]
         ]);
@@ -160,7 +160,7 @@ class RegisterUserTest extends TestCase {
             $response = $this->http->request('POST', 'api/register-user.php', [
                 'form_params' => [
                     'username' => 'MaxMax',
-                    'email' => 'saperstonestudios@mailinator.com',
+                    'email' => 'msaperst+sstest@gmail.com',
                     'password' => '12345'
                 ]
             ]);
@@ -172,7 +172,7 @@ class RegisterUserTest extends TestCase {
             $this->assertEquals('827ccb0eea8a706c4c34a16891f84e7b', $userDetails['pass']);
             $this->assertEquals('', $userDetails['firstName']);
             $this->assertEquals('', $userDetails['lastName']);
-            $this->assertEquals('saperstonestudios@mailinator.com', $userDetails['email']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals('cf0339a5bc2feeee0aef1c553834276a', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
@@ -182,7 +182,9 @@ class RegisterUserTest extends TestCase {
             $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 2;");
             $this->assertEquals('Logged In', $log[0]['action']);
             $this->assertEquals('Registered', $log[1]['action']);
-            CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'Congratulations for registering an account with Saperstone Studios. You can login and access the site at saperstonestudios.com.');
+            CustomAsserts::assertEmailEquals('Thank you for Registering with Saperstone Studios',
+                'Congratulations for registering an account with Saperstone Studios. You can login and access the site at https://saperstonestudios.com.',
+                "<html><body>Congratulations for registering an account with Saperstone Studios. You can login and access the site at <a href='https://saperstonestudios.com'>saperstonestudios.com</a>.</body></html>");
         } finally {
             $this->sql->executeStatement("DELETE FROM `users` WHERE `users`.`id` = $userId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];
@@ -200,7 +202,7 @@ class RegisterUserTest extends TestCase {
             $response = $this->http->request('POST', 'api/register-user.php', [
                 'form_params' => [
                     'username' => 'MaxMax',
-                    'email' => 'saperstonestudios@mailinator.com',
+                    'email' => 'msaperst+sstest@gmail.com',
                     'password' => 'password',
                     'firstName' => 'Max',
                     'lastName' => 'Saperstone',
@@ -214,7 +216,7 @@ class RegisterUserTest extends TestCase {
             $this->assertEquals('5f4dcc3b5aa765d61d8327deb882cf99', $userDetails['pass']);
             $this->assertEquals('Max', $userDetails['firstName']);
             $this->assertEquals('Saperstone', $userDetails['lastName']);
-            $this->assertEquals('saperstonestudios@mailinator.com', $userDetails['email']);
+            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals('cd1b3237a8d22938f69578a8bef680c5', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
@@ -224,7 +226,9 @@ class RegisterUserTest extends TestCase {
             $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 2;");
             $this->assertEquals('Logged In', $log[0]['action']);
             $this->assertEquals('Registered', $log[1]['action']);
-            CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'Congratulations for registering an account with Saperstone Studios. You can login and access the site at saperstonestudios.com.');
+            CustomAsserts::assertEmailEquals('Thank you for Registering with Saperstone Studios',
+                'Congratulations for registering an account with Saperstone Studios. You can login and access the site at https://saperstonestudios.com.',
+                "<html><body>Congratulations for registering an account with Saperstone Studios. You can login and access the site at <a href='https://saperstonestudios.com'>saperstonestudios.com</a>.</body></html>");
         } finally {
             $this->sql->executeStatement("DELETE FROM `users` WHERE `users`.`id` = $userId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];

@@ -4,8 +4,7 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
+use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -223,8 +222,7 @@ class SendSelectedImagesTest extends TestCase {
 
     /**
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @throws ExceptionAlias
      */
     public function testGoodImageWithInfo() {
         $cookieJar = CookieJar::fromArray([
@@ -235,18 +233,24 @@ class SendSelectedImagesTest extends TestCase {
                 'album' => '999',
                 'what' => '2',
                 'name' => 'Max',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'comment' => 'I want this one!'
             ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", $response->getBody());
-        CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.', true);
-        CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'This is an automatically generated message from Saperstone Studios
-Max has made a selection from the sample-album album
-file-2
-
-     I want this one!');
+        CustomAsserts::assertEmailEquals('Thank You for Making Selects',
+            'Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.',
+            '<html><body>Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.</body></html>');
+        CustomAsserts::assertEmailMatches('Selects Have Been Made',
+            "This is an automatically generated message from Saperstone Studios\r
+\r
+Max has made a selection from the sample-album album at %s://%s/user/album.php?album=999.Their email address is msaperst+sstest@gmail.com\r
+\r
+file-2\r
+\r
+\t\tI want this one!",
+            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href=\'mailto:msaperst+sstest@gmail.com\'>Max</a> has made a selection from the <a href=\'%s://%s/user/album.php?album=999\' target=\'_blank\'>sample-album</a> album</p><p><ul><li>file-2</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I want this one!</p></body></html>');
     }
 }

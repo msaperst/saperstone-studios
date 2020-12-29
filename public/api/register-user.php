@@ -20,9 +20,9 @@ $email = new Email($to, $from, $subject);
 $text = "Congratulations for registering an account with Saperstone Studios. ";
 $text .= "You can login and access the site at https://saperstonestudios.com.";
 $html = "<html><body>";
-$html = "Congratulations for registering an account with Saperstone Studios. ";
+$html .= "Congratulations for registering an account with Saperstone Studios. ";
 $html .= "You can login and access the site at <a href='https://saperstonestudios.com'>saperstonestudios.com</a>.";
-$html .= "</html></body>";
+$html .= "</body></html>";
 $email->setText($text);
 $email->setHtml($html);
 try {

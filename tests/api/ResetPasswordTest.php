@@ -65,7 +65,7 @@ class ResetPasswordTest extends TestCase {
     public function testNoCode() {
         $response = $this->http->request('POST', 'api/reset-password.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com'
+                'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -78,7 +78,7 @@ class ResetPasswordTest extends TestCase {
     public function testBlankCode() {
         $response = $this->http->request('POST', 'api/reset-password.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'code' => ''
             ]
         ]);
@@ -92,7 +92,7 @@ class ResetPasswordTest extends TestCase {
     public function testNoPassword() {
         $response = $this->http->request('POST', 'api/reset-password.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'code' => '12345'
             ]
         ]);
@@ -106,7 +106,7 @@ class ResetPasswordTest extends TestCase {
     public function testBlankPassword() {
         $response = $this->http->request('POST', 'api/reset-password.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'code' => '12345',
                 'password' => ''
             ]
@@ -121,7 +121,7 @@ class ResetPasswordTest extends TestCase {
     public function testNoConfirmPassword() {
         $response = $this->http->request('POST', 'api/reset-password.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'code' => '12345',
                 'password' => 'password'
             ]
@@ -136,7 +136,7 @@ class ResetPasswordTest extends TestCase {
     public function testBlankConfirmPassword() {
         $response = $this->http->request('POST', 'api/reset-password.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'code' => '12345',
                 'password' => 'password',
                 'passwordConfirm' => ''
@@ -152,7 +152,7 @@ class ResetPasswordTest extends TestCase {
     public function testPasswordsDontMatch() {
         $response = $this->http->request('POST', 'api/reset-password.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'code' => '12345',
                 'password' => 'password',
                 'passwordConfirm' => 'p@ssW0rd'
@@ -168,7 +168,7 @@ class ResetPasswordTest extends TestCase {
     public function testNoLookup() {
         $response = $this->http->request('POST', 'api/reset-password.php', [
             'form_params' => [
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'code' => '12345',
                 'password' => 'password',
                 'passwordConfirm' => 'password'

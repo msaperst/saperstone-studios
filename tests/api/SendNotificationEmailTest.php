@@ -6,6 +6,7 @@ use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
+use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -33,9 +34,9 @@ class SendNotificationEmailTest extends TestCase {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES ('999', 'sample-album', 'sample album for testing', '');");
-        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', 'NULL', 'saperstonestudios@mailinator.com', 0);");
-        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'saperstonestudios2@mailinator.com', 0);");
-        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'saperstonestudios2@mailinator.com', 1);");
+        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', 'NULL', 'msaperst+sstest@gmail.com', 0);");
+        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'msaperst+sstest2@gmail.com', 0);");
+        $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'msaperst+sstest2@gmail.com', 1);");
     }
 
     /**
@@ -176,9 +177,7 @@ class SendNotificationEmailTest extends TestCase {
 
     /**
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     * @throws Exception
+     * @throws ExceptionAlias
      */
     public function testMessage() {
         $cookieJar = CookieJar::fromArray([
@@ -198,7 +197,19 @@ class SendNotificationEmailTest extends TestCase {
         $this->assertEquals(1, $notifications[0]['contacted']);
         $this->assertEquals(1, $notifications[1]['contacted']);
         $this->assertEquals(1, $notifications[2]['contacted']);
-        CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'An album you requested to be updated about has been updated. max@max');
-        CustomAsserts::assertEmailBody('saperstonestudios2@mailinator.com', 'An album you requested to be updated about has been updated. max@max');
+        CustomAsserts::assertEmailEquals('Album Updated on Saperstone Studios',
+            "An album you requested to be updated about has been updated.\r
+\r
+max@max",
+            "<html><body>An album you requested to be updated about has been updated.\r
+\r
+max@max</body></html>");
+        CustomAsserts::assertEmailEquals('Album Updated on Saperstone Studios',
+            "An album you requested to be updated about has been updated.\r
+\r
+max@max",
+            "<html><body>An album you requested to be updated about has been updated.\r
+\r
+max@max</body></html>");
     }
 }

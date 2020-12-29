@@ -3,8 +3,7 @@
 namespace api;
 
 use CustomAsserts;
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
+use Google\Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
@@ -131,7 +130,7 @@ class ContactMeTest extends TestCase {
             'form_params' => [
                 'name' => 'Max',
                 'phone' => '1234',
-                'email' => 'saperstonestudios@mailinator.com'
+                'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -146,7 +145,7 @@ class ContactMeTest extends TestCase {
             'form_params' => [
                 'name' => 'Max',
                 'phone' => '1234',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'message' => ''
             ]
         ]);
@@ -156,28 +155,36 @@ class ContactMeTest extends TestCase {
 
     /**
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @throws Exception
      */
     public function testAll() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
                 'name' => 'Max',
                 'phone' => '571-245-3351',
-                'email' => 'saperstonestudios@mailinator.com',
+                'email' => 'msaperst+sstest@gmail.com',
                 'message' => 'Hi There! I am a test email'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", (string)$response->getBody());
-        CustomAsserts::assertEmailBody('saperstonestudios@mailinator.com', 'Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.', true);
-        CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'Hi There! I am a test email');
+        CustomAsserts::assertEmailEquals('Thank you for contacting Saperstone Studios', 'Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.', '<html><body>Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.</body></html>');
+        CustomAsserts::assertEmailMatches('Saperstone Studios Contact Form: Max', "This is an automatically generated message from Saperstone Studios
+Name: Max
+Phone: 571-245-3351
+Email: msaperst+sstest@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7
+
+\t\tHi There! I am a test email", "<html><body>This is an automatically generated message from Saperstone Studios<br/><strong>Name</strong>: Max<br/><strong>Phone</strong>: 571-245-3351<br/><strong>Email</strong>: <a href='mailto:msaperst+sstest@gmail.com'>msaperst+sstest@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hi There! I am a test email<br/><br/></body></html>");
     }
 
     /**
      * @throws GuzzleException
-     * @throws NoSuchElementException
-     * @throws TimeoutException
+     * @throws Exception
      */
     public function testAllSS() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
@@ -190,7 +197,17 @@ class ContactMeTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.", (string)$response->getBody());
-        CustomAsserts::assertEmailContains('saperstonestudios@mailinator.com', 'Hi There! I am a test email');
+        CustomAsserts::assertEmailMatches('Saperstone Studios Contact Form: Max', "This is an automatically generated message from Saperstone Studios
+Name: Max
+Phone: 571-245-3351
+Email: msaperst@saperstonestudios.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: unknown unknown
+Resolution: 
+OS: unknown
+Full UA: GuzzleHttp/7
+
+\t\tHi There! I am a test email", "<html><body>This is an automatically generated message from Saperstone Studios<br/><strong>Name</strong>: Max<br/><strong>Phone</strong>: 571-245-3351<br/><strong>Email</strong>: <a href='mailto:msaperst@saperstonestudios.com'>msaperst@saperstonestudios.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hi There! I am a test email<br/><br/></body></html>");
         //TODO - can't verify other side sent
     }
 }
