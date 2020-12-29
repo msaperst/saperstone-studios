@@ -103,10 +103,10 @@ DB_USER=${sqlUser}\n\
 DB_PASS=${sqlPass}\n\
 \n\
 # email information\n\
-EMAIL_CONTACT=saperstonestudios@mailinator.com\n\
-EMAIL_ACTIONS=saperstonestudios@mailinator.com\n\
-EMAIL_SELECTS=saperstonestudios@mailinator.com\n\
-EMAIL_CONTRACTS=saperstonestudios@mailinator.com\n\
+EMAIL_CONTACT=msaperst+sstest@gmail.com\n\
+EMAIL_ACTIONS=msaperst+sstest@gmail.com\n\
+EMAIL_SELECTS=msaperst+sstest@gmail.com\n\
+EMAIL_CONTRACTS=msaperst+sstest@gmail.com\n\
 EMAIL_HOST=ssl://smtp.gmail.com\n\
 EMAIL_PORT=465\n\
 EMAIL_USER=${emailUser}\n\
@@ -128,7 +128,15 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         }
         stage('Run Integration Tests') {
             try {
-                launchBrowserDocker('chrome')
+                withCredentials([
+                        usernamePassword(
+                                credentialsId: 'docker-hub',
+                                usernameVariable: 'dockerUser',
+                                passwordVariable: 'dockerPass'
+                        )
+                ]) {
+                    sh "docker login -u ${dockerUser} -p ${dockerPass}"
+                }
                 sh "composer integration-pre-test"
                 sh "composer integration-test"
             } catch (Exception e) {
@@ -140,7 +148,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                  }
             } finally {
                 sh "composer integration-post-test"
-                closeBrowserDocker('chrome')
+                sh "docker logout"
                 junit 'reports/it-junit.xml'
                 publishHTML([
                         allowMissing         : false,
@@ -224,7 +232,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             sh "composer clean"
         }
         stage('BackEnd Tests') {
-            launchBrowserDocker('chrome')
             parallel(
                     "Coverage Tests": {
                         stage('Run Coverage Tests') {
@@ -297,7 +304,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         }
                     }
             )
-            closeBrowserDocker('chrome')
         }
         stage('Run Chrome Page Tests') {
             try {
