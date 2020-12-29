@@ -71,7 +71,7 @@ $text = "This is an automatically generated message from Saperstone Studios\n\n"
 $html .= "<p>$link has made a selection from the <a href='" . $session->getBaseURL() . "/user/album.php?album={$album->getId()}' target='_blank'>{$album->getName()}</a> album</p>";
 $text .= "$name has made a selection from the {$album->getName()} album at " . $session->getBaseURL() . "/user/album.php?album={$album->getId()}.";
 if ($emailA != "") {
-    $text .= "Their email address is $emailA";
+    $text .= " Their email address is $emailA";
 }
 $text .= "\n\n";
 $html .= "<p><ul><li>" . implode("</li><li>", $selected) . "</li></ul></p><br/>";

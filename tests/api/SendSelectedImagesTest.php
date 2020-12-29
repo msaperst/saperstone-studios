@@ -171,6 +171,7 @@ class SendSelectedImagesTest extends TestCase {
     }
 
     /**
+     * @throws ExceptionAlias
      * @throws GuzzleException
      */
     public function testFavorites() {
@@ -200,6 +201,17 @@ class SendSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", $response->getBody());
+        CustomAsserts::assertEmailMatches('Selects Have Been Made',
+            "This is an automatically generated message from Saperstone Studios\r
+\r
+Someone has made a selection from the sample-album album at %s://%s/user/album.php?album=999.\r
+\r
+file-1\r
+file-2\r
+\r
+\t\t",
+            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Someone has made a selection from the <a href=\'%s://%s/user/album.php?album=999\' target=\'_blank\'>sample-album</a> album</p><p><ul><li>file-1</li><li>file-2</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>');
+
     }
 
     /**
@@ -246,7 +258,7 @@ class SendSelectedImagesTest extends TestCase {
         CustomAsserts::assertEmailMatches('Selects Have Been Made',
             "This is an automatically generated message from Saperstone Studios\r
 \r
-Max has made a selection from the sample-album album at %s://%s/user/album.php?album=999.Their email address is msaperst+sstest@gmail.com\r
+Max has made a selection from the sample-album album at %s://%s/user/album.php?album=999. Their email address is msaperst+sstest@gmail.com\r
 \r
 file-2\r
 \r

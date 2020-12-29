@@ -32,10 +32,10 @@ $subject = "$error Error";
 $email = new Email($to, $from, $subject);
 $html = "<html><body>";
 $html .= "This is an automatically generated message from Saperstone Studios<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a $error on page $page.<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page $referrer.<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action.<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before.<br/><br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a $error on page <a href='$page' target='_blank'>$page</a><br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href='$referrer' target='_blank'>$referrer</a>.<br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/>";
 
 if ($systemUser->isLoggedIn()) {
     $html .= "<strong>User Id</strong>: {$systemUser->getId()}<br/>";
@@ -43,12 +43,13 @@ if ($systemUser->isLoggedIn()) {
     $html .= "<strong>Email</strong>: <a href='mailto:{$systemUser->getEmail()}'>{$systemUser->getEmail()}</a><br/>";
 }
 $html .= $email->getUserInfoHtml();
+$html .= "</body></html>";
 
 $text = "This is an automatically generated message from Saperstone Studios\n";
-$text .= "\t\tSomeone got a $error on page $page.\n";
-$text .= "\t\tThey came from page $referrer.\n";
-$text .= "\t\tYou might want to look into this or take action.\n";
-$text .= "\t\tUser information is collected before.\n\n";
+$text .= "\t\tSomeone got a $error on page $page\n";
+$text .= "\t\tThey came from page $referrer\n";
+$text .= "\t\tYou might want to look into this or take action\n";
+$text .= "\t\tUser information is collected before\n\n";
 if ($systemUser->isLoggedIn()) {
     $text .= "User Id: {$systemUser->getId()}\n";
     $text .= "Name: {$systemUser->getName()}\n";

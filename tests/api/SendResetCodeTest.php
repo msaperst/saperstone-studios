@@ -4,8 +4,6 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
 use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
