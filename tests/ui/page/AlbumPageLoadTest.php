@@ -5,9 +5,12 @@ namespace ui\page;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Google\Exception as ExceptionAlias;
 use Sql;
 use ui\models\Album;
 
@@ -18,7 +21,13 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . 
 
 class AlbumPageLoadTest extends TestBase {
 
+    /**
+     * @var Sql
+     */
     private $sql;
+    /**
+     * @var WebDriverWait
+     */
     private $wait;
 
     /**
@@ -52,22 +61,70 @@ class AlbumPageLoadTest extends TestBase {
         parent::tearDown();
     }
 
+    /**
+     * @throws ExceptionAlias
+     */
     public function testAlbumNoAlbum() {
         $this->driver->get($this->baseUrl . 'user/album.php?');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
+        CustomAsserts::assertEmailMatches('404 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 404 on page %s://%s/user/album.php?\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'%s://%s/user/album.php?\' target=\'_blank\'>%s://%s/user/album.php?</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
+    /**
+     * @throws ExceptionAlias
+     */
     public function testAlbumBlankAlbum() {
         $this->driver->get($this->baseUrl . 'user/album.php?album=');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
+        CustomAsserts::assertEmailMatches('404 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 404 on page %s://%s/user/album.php?album=\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'%s://%s/user/album.php?album=\' target=\'_blank\'>%s://%s/user/album.php?album=</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
+    /**
+     * @throws ExceptionAlias
+     */
     public function testAlbumBadAlbum() {
         $this->driver->get($this->baseUrl . 'user/album.php?album=998');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
+        CustomAsserts::assertEmailMatches('404 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 404 on page %s://%s/user/album.php?album=998\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'%s://%s/user/album.php?album=998\' target=\'_blank\'>%s://%s/user/album.php?album=998</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
     /**
@@ -94,12 +151,31 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws ExceptionAlias
+     */
     public function testAlbumLoadsForNoOne() {
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
         $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
+        CustomAsserts::assertEmailMatches('401 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 401 on page %s://%s/user/album.php?album=99999\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+User Id: 3\r
+Name: Download User\r
+Email: email@example.org\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 401 on page <a href=\'%s://%s/user/album.php?album=99999\' target=\'_blank\'>%s://%s/user/album.php?album=99999</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>User Id</strong>: 3<br/><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href=\'mailto:email@example.org\'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
     public function testAlbumLoadsSearchedFor() {
@@ -191,6 +267,10 @@ class AlbumPageLoadTest extends TestBase {
 //        $this->assertEquals('sample-album sample album for testing', $this->driver->findElement(WebDriverBy::id('album'))->findElement(WebDriverBy::className('modal-title'))->getText());
     }
 
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     public function testSlideShowButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
         $searched [99999] = md5("album2345");
@@ -208,6 +288,10 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('delete-image-btn'))));
     }
 
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     public function testSlideShowButtonsAdminUser() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
@@ -251,6 +335,10 @@ class AlbumPageLoadTest extends TestBase {
 //        $this->assertEquals('sample-album', $this->driver->findElement(WebDriverBy::id('favorites'))->findElement(WebDriverBy::className('modal-title'))->getText());
     }
 
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     public function testFavoritesButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
         $searched [99999] = md5("album2345");
@@ -266,6 +354,10 @@ class AlbumPageLoadTest extends TestBase {
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('view-my-favorites-btn'))));
     }
 
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
     public function testFavoritesButtonsAdminUser() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();

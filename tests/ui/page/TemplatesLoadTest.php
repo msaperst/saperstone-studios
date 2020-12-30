@@ -2,23 +2,41 @@
 
 namespace ui\page;
 
+use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\WebDriverBy;
+use Google\Exception as ExceptionAlias;
 use Sql;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestBase.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class TemplatesLoadTest extends TestBase {
 
+    /**
+     * @throws ExceptionAlias
+     */
     public function testErrorLoad() {
         $this->driver->get($this->baseUrl . 'badPage123');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals('Home 404', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
         $this->assertEquals('Looks like you got turned around. The server has not found anything matching the Request-URI.', $this->driver->findElements(WebDriverBy::className('lead'))[1]->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        //TODO - should assert email sent
+        CustomAsserts::assertEmailMatches('404 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 404 on page %s://%s/badPage123\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'%s://%s/badPage123\' target=\'_blank\'>%s://%s/badPage123</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
     public function testFooterContent() {

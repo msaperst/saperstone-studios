@@ -2,9 +2,12 @@
 
 namespace ui\page;
 
+use CustomAsserts;
 use Facebook\WebDriver\WebDriverBy;
+use Google\Exception;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestBase.php';
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 
 class WeddingPagesLoadTest extends TestBase {
 
@@ -72,10 +75,26 @@ class WeddingPagesLoadTest extends TestBase {
 
     // dynamic pages
 
+    /**
+     * @throws Exception
+     */
     public function testGalleriesPageBad() {
         $this->driver->get($this->baseUrl . 'wedding/galleries.php?w=');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
+        CustomAsserts::assertEmailMatches('404 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 404 on page %s://%s/wedding/galleries.php?w=\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'%s://%s/wedding/galleries.php?w=\' target=\'_blank\'>%s://%s/wedding/galleries.php?w=</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
     public function testGalleries() {
@@ -243,7 +262,6 @@ class WeddingPagesLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
-    //TBD - TODO
     public function testGalleriesPage40() {
         $this->driver->get($this->baseUrl . 'wedding/galleries.php?w=40');
         $this->assertEquals('Heirloom Albums Gallery', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
@@ -351,10 +369,26 @@ This box also allows for display versatility. Place your favorite image on top t
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGalleryPageBad() {
         $this->driver->get($this->baseUrl . 'wedding/gallery.php?w=17');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
+        CustomAsserts::assertEmailMatches('404 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 404 on page %s://%s/wedding/gallery.php?w=17\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'%s://%s/wedding/gallery.php?w=17\' target=\'_blank\'>%s://%s/wedding/gallery.php?w=17</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
     public function testGalleryPage8() {
@@ -405,16 +439,48 @@ This box also allows for display versatility. Place your favorite image on top t
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testReviewsPageBlankC() {
         $this->driver->get($this->baseUrl . 'wedding/reviews.php?c=');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
+        CustomAsserts::assertEmailMatches('404 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 404 on page %s://%s/wedding/reviews.php?c=\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'%s://%s/wedding/reviews.php?c=\' target=\'_blank\'>%s://%s/wedding/reviews.php?c=</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testReviewsPageBadC() {
         $this->driver->get($this->baseUrl . 'wedding/reviews.php?c=abc');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
+        CustomAsserts::assertEmailMatches('404 Error',
+            "This is an automatically generated message from Saperstone Studios\r
+\t\tSomeone got a 404 on page %s://%s/wedding/reviews.php?c=abc\r
+\t\tThey came from page Unknown\r
+\t\tYou might want to look into this or take action\r
+\t\tUser information is collected before\r
+\r
+Location: unknown (use %d.%d.%d.%d to manually lookup)\r
+Browser: %s %s\r
+Resolution: %dx%d\r
+OS: %s\r
+Full UA: %s\r\n",
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'%s://%s/wedding/reviews.php?c=abc\' target=\'_blank\'>%s://%s/wedding/reviews.php?c=abc</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
     }
 
     public function testReviewsPageWedding() {

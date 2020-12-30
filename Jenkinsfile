@@ -328,7 +328,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         stage('Run Chrome Page Tests') {
             try {
                 launchBrowserDocker('chrome')
-                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1200 composer ui-page-test;'
+                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1800 composer ui-page-test;'
             } finally {
                 closeBrowserDocker('chrome')
                 junit 'reports/ui/junit.xml'
