@@ -221,7 +221,7 @@ Full UA: %s\r\n",
             CustomAsserts::assertEmailMatches('404 Error',
                 "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/user/contracts/My%20File.pdf\r
-\t\tThey came from page http://192.168.3.106:90/contract.php?c=8e07fb32bf072e1825df8290a7bcdc57\r
+\t\tThey came from page %s://%s/contract.php?c=8e07fb32bf072e1825df8290a7bcdc57\r
 \t\tYou might want to look into this or take action\r
 \t\tUser information is collected before\r
 \r
