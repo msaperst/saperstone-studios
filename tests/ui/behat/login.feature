@@ -1,3 +1,4 @@
+@login
 Feature: System Authentication
   As a user of the website
   I want to have a login

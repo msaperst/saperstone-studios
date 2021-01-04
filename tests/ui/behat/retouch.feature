@@ -1,3 +1,4 @@
+@retouch
 Feature: Retouch
   As a user of the website
   I want to see image transformations

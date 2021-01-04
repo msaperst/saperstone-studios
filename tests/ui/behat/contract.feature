@@ -1,3 +1,4 @@
+@contract
 Feature: Contract
   As a user
   I want to be able to view and sign my contract

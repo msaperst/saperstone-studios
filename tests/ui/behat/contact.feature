@@ -1,3 +1,4 @@
+@contact
 Feature: Contact
   As a user
   I want to be able to easily contact SS

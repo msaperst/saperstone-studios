@@ -1,3 +1,4 @@
+@navigation
 Feature: System Navigation
   As a user of the website
   I want to have a common navigation bar

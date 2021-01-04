@@ -1,3 +1,4 @@
+@albums @admin
 Feature: Admin Albums
   As an admin
   I want to be able to view all albums and manage them

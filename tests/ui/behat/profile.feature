@@ -1,3 +1,4 @@
+@profile
 Feature: Profile Administration
   As a user of the website
   I want to be able to manage my own user

@@ -1,3 +1,4 @@
+@albums @uploader
 Feature: Uploader Albums
   As an uploader
   I want to be able to view all albums and manage them
