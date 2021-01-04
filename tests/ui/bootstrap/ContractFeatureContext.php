@@ -11,6 +11,7 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
 use Sql;
 
@@ -155,5 +156,35 @@ class ContractFeatureContext implements Context {
         $contract = dirname(dirname(dirname(__DIR__))) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
         $sql->disconnect();
         Assert::assertTrue(file_exists("$contract"));
+    }
+
+    /**
+     * @Then /^contract (\d+) was emailed to me$/
+     * @param $contractId
+     * @throws ExceptionAlias
+     */
+    public function contractWasEmailedToMe($contractId) {
+        $sql = new Sql();
+        $contractDetails = $sql->getRow("SELECT * FROM contracts WHERE contracts.id = $contractId");
+        $sql->disconnect();
+        CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract',
+            "Thank you for signing your contract. You can pay your invoice online at nope!.\r\n\r\n",
+            '<html><body><p>Thank you for signing your contract. You can pay your invoice online <a href=\'nope!\' target=\'_blank\'>here</a>.</p></body></html>',
+            dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+    }
+
+    /**
+     * @Then /^a copy of contract (\d+) was emailed to the admin$/
+     * @param $contractId
+     * @throws ExceptionAlias
+     */
+    public function aCopyOfContractWasEmailedToTheAdmin($contractId) {
+        $sql = new Sql();
+        $contractDetails = $sql->getRow("SELECT * FROM contracts WHERE contracts.id = $contractId");
+        $sql->disconnect();
+        CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract Signed',
+            "This is an automatically generated message from Saperstone Studios\r\n\r\nMax has signed their contract, this is a copy of it for your records. \r\n\r\n",
+            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Max has signed their contract, this is a copy of it for your records. </p></body></html>',
+            dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
     }
 }

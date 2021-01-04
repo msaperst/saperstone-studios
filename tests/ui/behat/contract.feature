@@ -53,9 +53,8 @@ Feature: Contract
     And I see a success message indicating my contract will be emailed to me
     And I see the signed contract displayed
     And I the signed contract exists for 99999
-    And an email was successfully sent to "msaperst+sstest@gmail.com" with the message "This is an automatically generated message from Saperstone Studios EleMax has signed their contract, this is a copy of it for your records."
-    And an email was successfully sent to "msaperst+sstest@gmail.com" with the message "Thank you for signing your contract. You can pay your invoice online here."
-    #TODO - unable to verify the attachment due to mailinator limitations
+    And contract 99999 was emailed to me
+    And a copy of contract 99999 was emailed to the admin
 
   Scenario: Unable to sign contract with bad email
     When I provide "Max" for the contract "name-signature"

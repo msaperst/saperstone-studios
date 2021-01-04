@@ -4,12 +4,14 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
 use Sql;
 use ui\models\Registration;
@@ -438,5 +440,16 @@ class RegistrationFeatureContext implements Context {
         Assert::assertEquals($this->lastName, $userDetails['lastName']);
         Assert::assertEquals($this->email, $userDetails['email']);
         $sql->disconnect();
+    }
+
+    /**
+     * @Then /^I receive a welcome email$/
+     * @throws ExceptionAlias
+     */
+    public function iReceiveAWelcomeEmail() {
+        CustomAsserts::assertEmailEquals('Thank you for Registering with Saperstone Studios',
+            'Congratulations for registering an account with Saperstone Studios. You can login and access the site at https://saperstonestudios.com.',
+            "<html><body>Congratulations for registering an account with Saperstone Studios. You can login and access the site at <a href='https://saperstonestudios.com'>saperstonestudios.com</a>.</body></html>");
+
     }
 }

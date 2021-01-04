@@ -4,14 +4,19 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Testwork\Environment\Environment;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Exception\NoSuchCookieException;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
 use ui\models\Login;
 use User;
@@ -217,6 +222,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @When /^I submit reset credentials$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSubmitInNewCredentials() {
         $login = new Login($this->driver, $this->wait);
@@ -234,6 +241,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then I see my user name displayed
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeMyUserNameDisplayed() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText($this->user->getUsername())));
@@ -242,6 +251,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I don't see my user name displayed$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iDonTSeeMyUserNameDisplayed() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('login-menu-item')));
@@ -250,6 +261,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I see an info message indicating I successfully logged in$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnInfoMessageIndicatingISuccessfullyLoggedIn() {
         CustomAsserts::infoMessage($this->driver, 'Successfully Logged In. Please wait as you are redirected.');
@@ -257,6 +270,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I see an error message indicating my account has been disabled$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnErrorMessageIndicatingMyAccountHasBeenDisabled() {
         CustomAsserts::errorMessage($this->driver, 'Sorry, your account has been deactivated. Please contact our webmaster to get this resolved.');
@@ -264,6 +279,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I see an error message indicating my credentials aren't valid$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnErrorMessageIndicatingMyCredentialsArenTValid() {
         CustomAsserts::errorMessage($this->driver, 'Credentials do not match our records');
@@ -271,6 +288,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I see an error message indicating all fields need to be filled in$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnErrorMessageIndicatingAllFieldsNeedToBeFilledIn() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
@@ -279,6 +298,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I see an error message indicating invalid field values$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnErrorMessageIndicatingInvalidFieldValues() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
@@ -287,6 +308,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I see an error message indicating passwords do not match$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnErrorMessageIndicatingPasswordsDoNotMatch() {
         CustomAsserts::errorMessage($this->driver, 'Password and confirmation do not match');
@@ -301,6 +324,7 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I see a cookie with my credentials$/
+     * @throws NoSuchCookieException
      */
     public function iSeeACookieWithMyCredentials() {
         $hash = $this->driver->manage()->getCookieNamed('hash');
@@ -324,6 +348,8 @@ class LoginFeatureContext implements Context {
 
     /**
      * @Then /^I can enter in new credentials$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iCanEnterInNewCredentials() {
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('forgot-password-reset-password'))));
@@ -338,5 +364,17 @@ class LoginFeatureContext implements Context {
      */
     public function iSeeThatThereIsNoResetOptionToRememberMe() {
         Assert::assertFalse($this->driver->findElement(WebDriverBy::id('forgot-password-remember-span'))->isDisplayed());
+    }
+
+    /**
+     * @Then /^I receive an email with my reset key$/
+     * @throws ExceptionAlias
+     */
+    public function iReceiveAnEmailWithMyResetKey() {
+        CustomAsserts::assertEmailMatches('Reset Key For Saperstone Studios Account',
+            "You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.
+
+\t%s",
+            '<html><body>You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;%s</body></html>');
     }
 }

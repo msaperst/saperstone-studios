@@ -437,6 +437,7 @@ class Album {
      * @throws TimeoutException
      */
     public function submitImage() {
+        sleep( 1 ); //TODO - need to fix, wait until it's the correct image loaded
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('submit-image-btn')));
         $this->driver->findElement(WebDriverBy::id('submit-image-btn'))->click();
     }

@@ -66,8 +66,8 @@ Feature: System Authentication
   Scenario: Able to enter reset credentials
     Given an enabled user account exists
     When I request a reset key
-    # TODO - put in check for email
     Then I can enter in new credentials
+    And I receive an email with my reset key
 
   Scenario: Able to enter old reset credentials
     Given an enabled user account exists

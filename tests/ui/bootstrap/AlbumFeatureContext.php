@@ -1222,8 +1222,8 @@ Comment',
         $images = explode(", ", $images);
         $za = new ZipArchive();
         $za->open($filename);
-        $sql = new Sql();
         Assert::assertEquals(sizeof($images), $za->numFiles);
+        $sql = new Sql();
         for ($i = 0; $i < sizeof($images); $i++) {
             $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND sequence = " . ($images[$i] - 1))['location'];
             $parts = explode('/', $imgLoc);
@@ -1868,5 +1868,90 @@ Images have been posted to album Album $albumId. You can access your images by l
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('notifications-message')));
         $actualMessage = $this->driver->findElement(WebDriverBy::id('notifications-message'))->getText();
         Assert::assertEquals($message, $actualMessage, $actualMessage);
+    }
+
+    /**
+     * @Then /^I see an email indicating images "([^"]*)" from album (\d+) downloaded$/
+     * @param $images
+     * @param $albumId
+     * @throws ExceptionAlias
+     */
+    public function iSeeAnEmailIndicatingImagesFromAlbumDownloaded($images, $albumId) {
+        $images = explode(", ", $images);
+        $imgs = [];
+        $sql = new Sql();
+        for ($i = 0; $i < sizeof($images); $i++) {
+            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $albumId AND sequence = " . ($images[$i] - 1))['location'];
+            $parts = explode('/', $imgLoc);
+            $imgs[] = $parts[sizeof($parts) - 1];
+        }
+        $sql->disconnect();
+        $images = implode("\r\n", $imgs);
+        $imagesLi = implode("</li><li>", $imgs);
+        CustomAsserts::assertEmailMatches('Someone Downloaded Something', "This is an automatically generated message from Saperstone Studios
+
+Downloads have been made from the Album $albumId album at %s://%s/user/album.php?album=$albumId
+
+$images
+
+Name: test user
+Email: msaperst+sstest@gmail.com
+Location: unknown (use %d.%d.%d.%d to manually lookup)
+Browser: %s %s
+Resolution: 
+OS: %s
+Full UA: %s", "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$imagesLi</li></ul></p><br/><p><strong>Name</strong>: test user<br/><strong>Email</strong>: <a href='mailto:msaperst+sstest@gmail.com'>msaperst+sstest@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>");
+    }
+
+    /**
+     * @Then /^an email is sent indicating album (\d+) favorites submitted$/
+     * @param $albumId
+     */
+    public function anEmailIsSentIndicatingFavoritesSubmitted($albumId) {
+        $sql = new Sql();
+        $imgs = array_column($sql->getRows("SELECT * FROM `favorites` LEFT JOIN album_images ON favorites.image = album_images.id WHERE favorites.album = $albumId AND favorites.user = {$this->user->getId()}"), 'title');
+        $sql->disconnect();
+        $images = implode("\r\n", $imgs);
+        $imagesLi = implode("</li><li>", $imgs);
+        CustomAsserts::assertEmailMatches('Selects Have Been Made',
+            "This is an automatically generated message from Saperstone Studios\r
+\r
+{$this->user->getName()} has made a selection from the Album $albumId album at %s://%s/user/album.php?album=$albumId. Their email address is {$this->user->getEmail()}\r
+\r
+$images\r
+\r
+\t\t",
+            "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href='mailto:{$this->user->getEmail()}'>{$this->user->getName()}</a> has made a selection from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$imagesLi</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>");
+    }
+
+    /**
+     * @Then /^an email is sent indicating album (\d+) image (\d+) submitted$/
+     * @param $albumId
+     * @param $image
+     * @throws ExceptionAlias
+     */
+    public function anEmailIsSentIndicatingImageSubmitted($albumId, $image) {
+        $sql = new Sql();
+        $image = $sql->getRow("SELECT * FROM album_images WHERE album = $albumId AND sequence = " . ($image - 1))['title'];
+        $sql->disconnect();
+        CustomAsserts::assertEmailMatches('Selects Have Been Made',
+            "This is an automatically generated message from Saperstone Studios\r
+\r
+{$this->user->getName()} has made a selection from the Album $albumId album at %s://%s/user/album.php?album=$albumId. Their email address is {$this->user->getEmail()}\r
+\r
+$image\r
+\r
+\t\t",
+            "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href='mailto:{$this->user->getEmail()}'>{$this->user->getName()}</a> has made a selection from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$image</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>");
+    }
+
+    /**
+     * @Then /^I receive an email indicating I have submitted my selects$/
+     * @throws ExceptionAlias
+     */
+    public function iReceiveAnEmailIndicatingIHaveSubmittedMySelects() {
+        CustomAsserts::assertEmailEquals('Thank You for Making Selects',
+            'Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.',
+            '<html><body>Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.</body></html>');
     }
 }
