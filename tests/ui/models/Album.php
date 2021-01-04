@@ -359,7 +359,7 @@ class Album {
     public function viewCart() {
         $this->driver->findElement(WebDriverBy::id('cart-btn'))->click();
         //waiting for the cart - TODO need to fix this
-        sleep(1.0);
+        sleep(2.0);
     }
 
     /**
@@ -410,7 +410,7 @@ class Album {
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($img));
         $this->driver->findElement(WebDriverBy::id('not-downloadable-image-btn'))->click();
         //waiting for the cart - TODO need to fix this
-        sleep(1.0);
+        sleep(2.0);
     }
 
     /**
@@ -419,7 +419,8 @@ class Album {
      */
     public function downloadImage() {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('downloadable-image-btn')));
-        sleep( 1.0 ); //waiting for the image to fully load - TODO need to fix this
+        $img = $this->getSlideShowImage();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($img));
         $this->driver->findElement(WebDriverBy::id('downloadable-image-btn'))->click();
     }
 
@@ -437,8 +438,9 @@ class Album {
      * @throws TimeoutException
      */
     public function submitImage() {
-        sleep( 1 ); //TODO - need to fix, wait until it's the correct image loaded
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('submit-image-btn')));
+        $img = $this->getSlideShowImage();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($img));
         $this->driver->findElement(WebDriverBy::id('submit-image-btn'))->click();
     }
 

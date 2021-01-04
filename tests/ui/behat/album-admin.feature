@@ -120,7 +120,7 @@ Feature: Admin Album
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with my favorites
-    And I see an email indicating images "2, 7" from album 99999 downloaded
+    And I see an email indicating images "2, 4, 7" from album 99999 downloaded
 
   Scenario: Unable to share favorites
     Given album 99999 image 2 is a favorite
@@ -153,7 +153,8 @@ Feature: Admin Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
-    And I see an email indicating images "2" from album 99999 downloaded
+    And an email is sent indicating album 99999 image 2 submitted
+    And I receive an email indicating I have submitted my selects
 
   Scenario: Unable to share all images
     When I share all my images
@@ -310,14 +311,7 @@ Feature: Admin Album
     And I see album 99998 image 2 has 1 "Signature" "10x10" "Metal Prints" listed
     And I see album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" listed
     And I see the cart count is "2"
-
-  Scenario: Purchase image adds single image to cart
-    When I view album image 2
-    And I purchase the image
-    Then I see 1 cart items
-    And I see album 99999 image 2 has 1 "Digital" "Full" "Per File" listed
-    And I see the cart count is "1"
-
+    
   Scenario: Able to download single image
     Given I have download rights for album 99999 image 2
     When I view album image 2

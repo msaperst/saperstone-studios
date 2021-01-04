@@ -194,6 +194,23 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @Given /^album (\d+) images are generic$/
+     * @param $albumId
+     * @throws Exception
+     */
+    public function albumImagesAreGeneric($albumId) {
+        $oldMask = umask(0);
+        $sql = new Sql();
+        $images = $sql->getRows("SELECT * FROM `album_images` WHERE `album` = $albumId;");
+        $sql->disconnect();
+        foreach( $images as $image) {
+            copy( dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location'] );
+            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location'], 0777);
+        }
+        umask($oldMask);
+    }
+
+    /**
      * @Given /^I have access to album (\d+)$/
      * @param $albumId
      * @throws Exception
@@ -1894,18 +1911,19 @@ Downloads have been made from the Album $albumId album at %s://%s/user/album.php
 
 $images
 
-Name: test user
-Email: msaperst+sstest@gmail.com
+Name: {$this->user->getName()}
+Email: {$this->user->getEmail()}
 Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: %s %s
 Resolution: 
 OS: %s
-Full UA: %s", "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$imagesLi</li></ul></p><br/><p><strong>Name</strong>: test user<br/><strong>Email</strong>: <a href='mailto:msaperst+sstest@gmail.com'>msaperst+sstest@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>");
+Full UA: %s", "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$imagesLi</li></ul></p><br/><p><strong>Name</strong>: {$this->user->getName()}<br/><strong>Email</strong>: <a href='mailto:{$this->user->getEmail()}'>{$this->user->getEmail()}</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>");
     }
 
     /**
      * @Then /^an email is sent indicating album (\d+) favorites submitted$/
      * @param $albumId
+     * @throws ExceptionAlias
      */
     public function anEmailIsSentIndicatingFavoritesSubmitted($albumId) {
         $sql = new Sql();

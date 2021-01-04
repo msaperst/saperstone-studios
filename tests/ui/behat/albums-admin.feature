@@ -208,6 +208,7 @@ Feature: Admin Albums
     Then I don't see album 99999 listed
 
   Scenario Outline: Able to make thumbnails
+    Given album 99999 images are generic
     When I edit album 99999
     And I make thumbnails for my album
     And I create "<thumbType>" thumbnails

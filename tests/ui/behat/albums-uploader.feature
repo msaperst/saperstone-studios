@@ -109,6 +109,7 @@ Feature: Uploader Albums
     Then I don't see album 99997 listed
 
   Scenario: Able to make thumbnails
+    Given album 99999 images are generic
     When I edit album 99997
     And I make thumbnails for my album
     Then I see thumbnails being created
