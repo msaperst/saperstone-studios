@@ -311,7 +311,7 @@ Feature: Admin Album
     And I see album 99998 image 2 has 1 "Signature" "10x10" "Metal Prints" listed
     And I see album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" listed
     And I see the cart count is "2"
-    
+
   Scenario: Able to download single image
     Given I have download rights for album 99999 image 2
     When I view album image 2
