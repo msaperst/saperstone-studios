@@ -447,8 +447,11 @@ class Album {
     /**
      * @param $albumId
      * @return RemoteWebElement
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function getAlbumRow($albumId): RemoteWebElement {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("tr[album-id='$albumId']")));
         return $this->driver->findElement(WebDriverBy::cssSelector("tr[album-id='$albumId']"));
     }
 

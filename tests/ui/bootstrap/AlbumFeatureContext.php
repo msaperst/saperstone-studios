@@ -1145,15 +1145,19 @@ Comment',
     /**
      * @Then /^I see album (\d+) listed$/
      * @param $albumId
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAlbumListed($albumId) {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("tr[album-id='$albumId']")));
         Assert::assertStringEndsWith("album.php?album=$albumId", $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'), $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'));
     }
 
     /**
      * @Then /^I see (\d+) album(s?) listed$/
      * @param $count
-     * @throws Exception
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAlbumsListed($count) {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("tbody tr:nth-child($count)")));
@@ -1162,6 +1166,8 @@ Comment',
 
     /**
      * @Then /^I see an error message indicating no album exists$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnErrorMessageIndicatingNoAlbumExists() {
         CustomAsserts::errorMessage($this->driver, 'That code does not match any albums');
@@ -1169,6 +1175,8 @@ Comment',
 
     /**
      * @Then /^I see an error message indicating album code required$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnErrorMessageIndicatingAlbumCodeRequired() {
         CustomAsserts::errorMessage($this->driver, 'Album code can not be blank');
@@ -1176,6 +1184,8 @@ Comment',
 
     /**
      * @Then /^I see an info message indicating album successfully added$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnInfoMessageIndicatingAlbumSuccessfullyAdded() {
         CustomAsserts::infoMessage($this->driver, 'Added album to your list');
@@ -1305,9 +1315,11 @@ Comment',
     /**
      * @Then /^I see (\d+) cart item(s?)$/
      * @param $count
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeCartItems($count) {
-        $this->driver->wait(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('cart-items'))));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('cart-items'))));
         Assert::assertEquals($count, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#cart-items tr'))));
     }
 
@@ -1396,6 +1408,8 @@ Comment',
 
     /**
      * @Then /^I see an info message indicating forwarding to paypal$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAnInfoMessageIndicatingForwardingToPaypal() {
         CustomAsserts::infoMessage($this->driver, 'Thank you for submitting your request. Your request is being processed, and you should be forwarded to paypal\'s payment screen within a few seconds. If you are not, please contact us and we\'ll try to resolve your issue as soon as we can.');
@@ -1429,6 +1443,8 @@ Comment',
      * @Then /^I see album (\d+) album (.*)/
      * @param $albumId
      * @param $albumAttribute
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAlbumAlbum($albumId, $albumAttribute) {
         $album = new Album($this->driver, $this->wait);
@@ -1461,6 +1477,8 @@ Comment',
      * @Then /^I don't see album (\d+) album (.*)/
      * @param $albumId
      * @param $albumAttribute
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeDontAlbumAlbum($albumId, $albumAttribute) {
         $album = new Album($this->driver, $this->wait);
@@ -1485,6 +1503,8 @@ Comment',
     /**
      * @Then /^I don't see album (\d+) edit icon$/
      * @param $albumId
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iDonTSeeAlbumEditIcon($albumId) {
         $album = new Album($this->driver, $this->wait);
@@ -1495,6 +1515,8 @@ Comment',
     /**
      * @Then /^I don't see album (\d+) log icon$/
      * @param $albumId
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iDonTSeeAlbumLogIcon($albumId) {
         $album = new Album($this->driver, $this->wait);
@@ -1505,6 +1527,8 @@ Comment',
     /**
      * @Then /^I see album (\d+) edit icon$/
      * @param $albumId
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAlbumEditIcon($albumId) {
         $album = new Album($this->driver, $this->wait);
@@ -1515,6 +1539,8 @@ Comment',
     /**
      * @Then /^I see album (\d+) log icon$/
      * @param $albumId
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeAlbumLogIcon($albumId) {
         $album = new Album($this->driver, $this->wait);
