@@ -456,39 +456,6 @@ class Album {
     }
 
     /**
-     * @return RemoteWebElement[]
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function getAlbumAccessors(): array {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
-        $albumUsers = $this->driver->findElement(WebDriverBy::id('album-users'));
-        return $albumUsers->findElements(WebDriverBy::tagName('span'));
-    }
-
-    /**
-     * @return RemoteWebElement[]
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function getAlbumDownloaders(): array {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
-        $albumUsers = $this->driver->findElement(WebDriverBy::id('download-users'));
-        return $albumUsers->findElements(WebDriverBy::tagName('span'));
-    }
-
-    /**
-     * @return RemoteWebElement[]
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function getAlbumSharers(): array {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
-        $albumUsers = $this->driver->findElement(WebDriverBy::id('share-users'));
-        return $albumUsers->findElements(WebDriverBy::tagName('span'));
-    }
-
-    /**
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -564,6 +531,17 @@ class Album {
     }
 
     /**
+     * @return RemoteWebElement[]
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function getAlbumAccessors(): array {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
+        $albumUsers = $this->driver->findElement(WebDriverBy::id('album-users'));
+        return $albumUsers->findElements(WebDriverBy::tagName('span'));
+    }
+
+    /**
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -582,6 +560,17 @@ class Album {
     }
 
     /**
+     * @return RemoteWebElement[]
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function getAlbumDownloaders(): array {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
+        $albumUsers = $this->driver->findElement(WebDriverBy::id('download-users'));
+        return $albumUsers->findElements(WebDriverBy::tagName('span'));
+    }
+
+    /**
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -597,5 +586,16 @@ class Album {
                 $action->moveToElement($sharer, intval($sharer->getSize()->getWidth() * 0.5 - 5))->click()->perform();
             }
         }
+    }
+
+    /**
+     * @return RemoteWebElement[]
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function getAlbumSharers(): array {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users')));
+        $albumUsers = $this->driver->findElement(WebDriverBy::id('share-users'));
+        return $albumUsers->findElements(WebDriverBy::tagName('span'));
     }
 }

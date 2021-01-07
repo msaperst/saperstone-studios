@@ -162,7 +162,7 @@ class AlbumFeatureContext implements Context {
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
         for ($i = 0; $i < $images; $i++) {
             $sql->executeStatement("INSERT INTO `album_images` (`album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$albumId', 'Image $i', $i, '', '/albums/sample-album/sample$i.jpg', '400', '300', '1');");
-            system( 'convert ' . dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg" );
+            system('convert ' . dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg");
             chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg", 0777);
         }
         umask($oldMask);
@@ -186,7 +186,7 @@ class AlbumFeatureContext implements Context {
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
         for ($i = 0; $i < $images; $i++) {
             $sql->executeStatement("INSERT INTO `album_images` (`album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$albumId', 'Image $i', $i, '', '/albums/sample-album/sample$i.jpg', '400', '300', '1');");
-            system( 'convert ' . dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg" );
+            system('convert ' . dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg");
             chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg", 0777);
         }
         umask($oldMask);
@@ -203,8 +203,8 @@ class AlbumFeatureContext implements Context {
         $sql = new Sql();
         $images = $sql->getRows("SELECT * FROM `album_images` WHERE `album` = $albumId;");
         $sql->disconnect();
-        foreach( $images as $image) {
-            copy( dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location'] );
+        foreach ($images as $image) {
+            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location']);
             chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location'], 0777);
         }
         umask($oldMask);
@@ -337,7 +337,7 @@ class AlbumFeatureContext implements Context {
      */
     public function albumHasNotifications($albumId, TableNode $table) {
         $sql = new Sql();
-        foreach($table as $row) {
+        foreach ($table as $row) {
             $sql->executeStatement("INSERT INTO notification_emails VALUES( $albumId, NULL, '{$row['email']}', {$row['contacted']})");
         }
         $sql->disconnect();
@@ -1211,7 +1211,7 @@ Comment',
         $za = new ZipArchive();
         $za->open($filename);
         $sql = new Sql();
-        if( $this->user->isAdmin()) {
+        if ($this->user->isAdmin()) {
             $favorites = array_column($sql->getRows("SELECT * FROM `favorites` WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
         } else {
             $favorites = array_column($sql->getRows("SELECT * FROM `download_rights` INNER JOIN `favorites` ON download_rights.user = favorites.user AND download_rights.album = favorites.album AND download_rights.image = favorites.image WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
@@ -1575,7 +1575,7 @@ Comment',
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('new-album-code'))));
     }
 
-        /**
+    /**
      * @Then /^I see the edit album details modal for album (\d+)$/
      * @param $albumId
      * @throws NoSuchElementException
@@ -1869,9 +1869,9 @@ Comment',
         $emailList = $this->driver->findElement(WebDriverBy::id('email-list'));
         Assert::assertTrue($emailList->isDisplayed());
         $emails = $emailList->findElements(WebDriverBy::tagName('a'));
-        Assert::assertEquals(sizeof($table->getRows())-1, sizeof($emails));
-        for($i = 0; $i < sizeof($emails); $i++) {
-            Assert::assertEquals($table->getRow($i+1)[0], $emails[$i]->getText(), $table->getRow($i+1)[0] . " " . $emails[$i]->getText());
+        Assert::assertEquals(sizeof($table->getRows()) - 1, sizeof($emails));
+        for ($i = 0; $i < sizeof($emails); $i++) {
+            Assert::assertEquals($table->getRow($i + 1)[0], $emails[$i]->getText(), $table->getRow($i + 1)[0] . " " . $emails[$i]->getText());
         }
     }
 
