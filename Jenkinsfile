@@ -491,7 +491,7 @@ def compress(filetype) {
             //remove the old file
             sh "rm ./public/$filetype/$file"
             //fix all references to old file
-            sh "find ./ -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
+            sh "find ./public ./templates -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
         }
     }
 }
