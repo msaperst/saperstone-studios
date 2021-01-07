@@ -1319,7 +1319,7 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeCartItems($count) {
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('cart-items'))));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('cart-table'))));
         Assert::assertEquals($count, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#cart-items tr'))));
     }
 
