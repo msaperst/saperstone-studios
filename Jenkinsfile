@@ -58,18 +58,18 @@ node() {
 
         }
         stage('Run Sonar Analysis') {
-            def sonarExtras = '';
-            if( env.CHANGE_ID ) {
-                withCredentials([
-                    usernamePassword(
-                            credentialsId: 'GitHub_API	',
-                            usernameVariable: 'gitHubUser',
-                            passwordVariable: 'gitHubPass'
-                    ),string(
-                            credentialsId: '695f143e-326d-4f85-9959-20f9ef269cdd',
-                            variable: 'sonarToken'
-                    )
-                ]) {
+            withCredentials([
+                usernamePassword(
+                        credentialsId: 'GitHub_API	',
+                        usernameVariable: 'gitHubUser',
+                        passwordVariable: 'gitHubPass'
+                ),string(
+                        credentialsId: '695f143e-326d-4f85-9959-20f9ef269cdd',
+                        variable: 'sonarToken'
+                )
+            ]) {
+                def sonarExtras = '';
+                if( env.CHANGE_ID ) {
                     sonarExtras = "-Dsonar.analysis.mode=preview \
 -Dsonar.github.repository=msaperst/saperstone-studios \
 -Dsonar.github.pullRequest=${env.CHANGE_ID} \
@@ -77,17 +77,17 @@ node() {
 -Dsonar.host.url=http://192.168.3.13/sonar/ \
 -Dsonar.login=${sonarToken}";
                 }
+                sh """sonar-scanner ${sonarExtras} \
+                    -Dsonar.projectKey=saperstone-studios \
+                    -Dsonar.projectName='Saperstone Studios' \
+                    -Dsonar.projectVersion=2.0 \
+                    -Dsonar.branch=${branch} \
+                    -Dsonar.sources=./bin,./public,./src,./templates \
+                    -Dsonar.tests=./tests \
+                    -Dsonar.exclusions=public/js/jqBootstrapValidation.js,public/img,public/retouch,public/portrait/what-to-wear, \
+                    -Dsonar.php.tests.reportPath=./reports/junit.xml \
+                    -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
             }
-            sh """sonar-scanner ${sonarExtras} \
-                -Dsonar.projectKey=saperstone-studios \
-                -Dsonar.projectName='Saperstone Studios' \
-                -Dsonar.projectVersion=2.0 \
-                -Dsonar.branch=${branch} \
-                -Dsonar.sources=./bin,./public,./src,./templates \
-                -Dsonar.tests=./tests \
-                -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
-                -Dsonar.php.tests.reportPath=./reports/junit.xml \
-                -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
         }
         stage('Prep Files') {
             parallel(
