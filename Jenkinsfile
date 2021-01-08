@@ -71,7 +71,7 @@ node() {
                     )
                 ]) {
                     sonarExtras = "-Dsonar.analysis.mode=preview \
--Dsonar.github.repository=msaperst/saperstone-studios
+-Dsonar.github.repository=msaperst/saperstone-studios \
 -Dsonar.github.pullRequest=${env.CHANGE_ID} \
 -Dsonar.github.oauth=${gitHubPass} \
 -Dsonar.host.url=http://192.168.3.13/sonar/ \
