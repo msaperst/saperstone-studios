@@ -1,5 +1,12 @@
 <?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
-
+<?php
+$password = 'password';
+$v = '123';
+$w = '123';
+$x = '123';
+$y = '123';
+$z = '123';
+?>
 <!DOCTYPE html>
 <html lang="en">
 

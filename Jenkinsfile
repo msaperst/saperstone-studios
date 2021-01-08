@@ -84,7 +84,7 @@ node() {
                     -Dsonar.branch=${branch} \
                     -Dsonar.sources=./bin,./public,./src,./templates \
                     -Dsonar.tests=./tests \
-                    -Dsonar.exclusions=public/js/jqBootstrapValidation.js,public/img/**,public/retouch/**,public/portrait/what-to-wear/**, \
+                    -Dsonar.exclusions=public/js/jqBootstrapValidation.js,public/favicon.ico,public/img/**,public/retouch/**,public/portrait/what-to-wear/**, \
                     -Dsonar.php.tests.reportPath=./reports/junit.xml \
                     -Dsonar.php.coverage.reportPaths=./reports/clover.xml"""
             }
