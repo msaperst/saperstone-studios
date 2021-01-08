@@ -189,16 +189,36 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             }
         }
         stage('Run Sonar Analysis') {
-            sh """sonar-scanner \
-                -Dsonar.projectKey=saperstone-studios \
-                -Dsonar.projectName='Saperstone Studios' \
-                -Dsonar.projectVersion=2.0 \
-                -Dsonar.branch=${branch} \
-                -Dsonar.sources=./bin,./public,./src,./templates \
-                -Dsonar.tests=./tests \
-                -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
-                -Dsonar.php.tests.reportPath=./reports/junit.xml \
-                -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
+            withCredentials([
+                usernamePassword(
+                        credentialsId: 'GitHub_API	',
+                        usernameVariable: 'gitHubUser',
+                        passwordVariable: 'gitHubPass'
+                ),string(
+                        credentialsId: '695f143e-326d-4f85-9959-20f9ef269cdd',
+                        variable: 'sonarToken'
+                )
+            ]) {
+                def sonarExtras = '';
+                if( env.CHANGE_ID ) {
+                    sonarExtras = "-Dsonar.analysis.mode=preview \
+-Dsonar.github.repository=msaperst/saperstone-studios \
+-Dsonar.github.pullRequest=${env.CHANGE_ID} \
+-Dsonar.github.oauth=${gitHubPass} \
+-Dsonar.host.url=http://192.168.3.13/sonar/ \
+-Dsonar.login=${sonarToken}";
+                }
+                sh """sonar-scanner ${sonarExtras} \
+                    -Dsonar.projectKey=saperstone-studios \
+                    -Dsonar.projectName='Saperstone Studios' \
+                    -Dsonar.projectVersion=3.0 \
+                    -Dsonar.branch=${branch} \
+                    -Dsonar.sources=./bin,./public,./src,./templates \
+                    -Dsonar.tests=./tests \
+                    -Dsonar.exclusions=public/js/jqBootstrapValidation.js,public/favicon.ico,public/img/**,public/retouch/**,public/portrait/what-to-wear/**, \
+                    -Dsonar.php.tests.reportPath=./reports/junit.xml \
+                    -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
+            }
         }
         stage('Prep Files') {
             parallel(
