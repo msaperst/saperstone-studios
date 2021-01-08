@@ -58,6 +58,7 @@ node() {
 
         }
         stage('Run Sonar Analysis') {
+            def sonarExtras = '';
             if( env.CHANGE_ID ) {
                 withCredentials([
                     usernamePassword(
@@ -69,22 +70,14 @@ node() {
                             variable: 'sonarToken'
                     )
                 ]) {
-                    sh """sonar-scanner \
-                        -Dsonar.analysis.mode=preview \
-                        -Dsonar.github.pullRequest=${env.CHANGE_ID} \
-                        -Dsonar.github.repository=msaperst/saperstone-studios \
-                        -Dsonar.branch=${branch} \
-                        -Dsonar.github.oauth=${gitHubPass} \
-                        -Dsonar.host.url=http://192.168.3.13/sonar/ \
-                        -Dsonar.login=${sonarToken} \
-                        -Dsonar.sources=./bin,./public,./src,./templates \
-                        -Dsonar.tests=./tests \
-                        -Dsonar.exclusions=public/js/jqBootstrapValidation.js \
-                        -Dsonar.php.tests.reportPath=./reports/junit.xml \
-                        -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
+                    sonarExtras = "-Dsonar.analysis.mode=preview \
+-Dsonar.github.pullRequest=${env.CHANGE_ID} \
+-Dsonar.github.oauth=${gitHubPass} \
+-Dsonar.host.url=http://192.168.3.13/sonar/ \
+-Dsonar.login=${sonarToken}";
                     }
             } else {
-                sh """sonar-scanner \
+                sh """sonar-scanner ${sonarExtras} \
                     -Dsonar.projectKey=saperstone-studios \
                     -Dsonar.projectName='Saperstone Studios' \
                     -Dsonar.projectVersion=2.0 \
