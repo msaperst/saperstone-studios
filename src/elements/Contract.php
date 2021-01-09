@@ -224,10 +224,10 @@ class Contract {
     }
 
     /**
-     * @return int
+     * @return float
      */
-    function getDeposit(): int {
-        return $this->deposit;
+    function getDeposit(): float {
+        return number_format((float)$this->deposit, 2, '.', '');
     }
 
     function getInvoice() {
