@@ -12,7 +12,12 @@ class ProductType {
     public function __construct() {
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return ProductType
+     * @throws Exception
+     */
+    static function withId($id): ProductType {
         if (!isset ($id)) {
             throw new Exception("Product id is required");
         } elseif ($id == "") {
@@ -32,11 +37,22 @@ class ProductType {
         return $productType;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return ProductType
+     * @throws Exception
+     */
+    static function withParams($params): ProductType {
         return self::setVals(new ProductType(), $params);
     }
 
-    private static function setVals(ProductType $productType, $params) {
+    /**
+     * @param ProductType $productType
+     * @param $params
+     * @return ProductType
+     * @throws Exception
+     */
+    private static function setVals(ProductType $productType, $params): ProductType {
         $sql = new Sql();
         //product category
         if (!isset ($params['category'])) {
@@ -71,7 +87,11 @@ class ProductType {
         return $this->raw;
     }
 
-    function create() {
+    /**
+     * @return int
+     * @throws Exception
+     */
+    function create(): int {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
             throw new Exception("User not authorized to create product type");
@@ -80,11 +100,15 @@ class ProductType {
         $lastId = $sql->executeStatement("INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (NULL, '{$this->category}', '{$this->name}');");
         $sql->disconnect();
         $this->id = $lastId;
-        $productType = self::withId($lastId);
+        $productType = static::withId($lastId);
         $this->raw = $productType->getDataArray();
         return $lastId;
     }
 
+    /**
+     * @param $params
+     * @throws Exception
+     */
     function update($params) {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
@@ -97,6 +121,9 @@ class ProductType {
         $sql->disconnect();
     }
 
+    /**
+     * @throws Exception
+     */
     function delete() {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {

@@ -114,7 +114,7 @@ class User {
         if (isset($params['password']) && $params['password'] != "") {
             $user->password = $sql->escapeString($params['password']);
         } elseif ($systemUser->isAdmin()) {
-            $user->password = self::generatePassword();
+            $user->password = static::generatePassword();
         } else {
             if (!isset($params['password'])) {
                 $sql->disconnect();
@@ -366,7 +366,7 @@ class User {
         $sql->executeStatement("INSERT INTO `user_logs` VALUES ( $lastId, CURRENT_TIMESTAMP, '$message', NULL, NULL );");
         $sql->disconnect();
         $this->id = $lastId;
-        $user = self::withId($lastId);
+        $user = static::withId($lastId);
         $this->created = $user->created;
         $this->raw = $user->getDataArray();
         return $lastId;
@@ -393,7 +393,7 @@ class User {
         //must be unique from all other users
         $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL );");
         $sql->disconnect();
-        $this->raw = self::withId($this->id)->getDataArray();
+        $this->raw = static::withId($this->id)->getDataArray();
     }
 
     /**
@@ -466,7 +466,6 @@ class User {
 
         if (isset($_COOKIE['CookiePreferences'])) {
             $preferences = json_decode($_COOKIE['CookiePreferences']);
-            $preferences = json_decode($_COOKIE['CookiePreferences']);
             if ($rememberMe && is_array($preferences) && in_array("preferences", $preferences)) {
                 // remember the user if prompted
                 if (!headers_sent()) {
@@ -477,7 +476,7 @@ class User {
         }
         $sql = new Sql();
         $sql->executeStatement("UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE id={$this->id};");
-        $user = self::withId($this->id);
+        $user = static::withId($this->id);
         $this->lastLogin = $user->lastLogin;
         $this->raw = $user->getDataArray();
         $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
@@ -492,16 +491,13 @@ class User {
         $sql = new Sql();
         $resetCode = Strings::randomString(8);
         $sql->executeStatement("UPDATE users SET resetKey='$resetCode' WHERE id={$this->id};");
-        $user = self::withId($this->id);
+        $user = static::withId($this->id);
         $this->resetKey = $resetCode;
         $this->raw = $user->getDataArray();
         $sql->disconnect();
         return $resetCode;
     }
 
-    /**
-     *
-     */
     function forceAdmin() {
         if (!$this->isAdmin()) {
             $errors = new Errors();

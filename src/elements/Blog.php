@@ -296,7 +296,7 @@ class Blog {
             $sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ($blogId, $tag)");
         }
         $sql->disconnect();
-        $blog = self::withId($blogId);
+        $blog = static::withId($blogId);
         $this->raw = $blog->getDataArray();
         return $blogId;
     }
@@ -362,7 +362,7 @@ class Blog {
             }
         }
         $sql->disconnect();
-        $this->raw = self::withId($this->id)->getDataArray();
+        $this->raw = static::withId($this->id)->getDataArray();
     }
 
     /**

@@ -18,7 +18,12 @@ class Comment {
     function __construct() {
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return Comment
+     * @throws Exception
+     */
+    static function withId($id): Comment {
         if (!isset ($id)) {
             throw new Exception("Comment id is required");
         } elseif ($id == "") {
@@ -48,7 +53,12 @@ class Comment {
         return $comment;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return Comment
+     * @throws Exception
+     */
+    static function withParams($params): Comment {
         $comment = new Comment();
         if (!isset($params['post'])) {
             throw new Exception("Blog id is required");
@@ -95,25 +105,36 @@ class Comment {
         return $this->raw;
     }
 
-    function canUserGetData() {
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    function canUserGetData(): bool {
         $user = User::fromSystem();
         // only admin users and the user who created the comment can get all data
         return ($this->user != NULL && $this->user == $user->getId()) || $user->isAdmin();
     }
 
-    public function create() {
+    /**
+     * @return int
+     * @throws Exception
+     */
+    public function create(): int {
         $session = new Session();
         $session->initialize();
         $sql = new Sql();
         $commentId = $sql->executeStatement("INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ({$this->blog->getId()}, {$this->user}, '{$this->name}', CURRENT_TIMESTAMP, '{$session->getClientIP()}', '{$this->email}', '{$this->comment}' );");
         $this->id = $commentId;
         $sql->disconnect();
-        $comment = self::withId($commentId);
+        $comment = static::withId($commentId);
         $this->raw = $comment->getDataArray();
         $this->date = $comment->getDate();
         return $commentId;
     }
 
+    /**
+     * @throws Exception
+     */
     public function delete() {
         if (!$this->canUserGetData()) {
             throw new Exception("User not authorized to delete comment");

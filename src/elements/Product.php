@@ -14,7 +14,12 @@ class Product {
     public function __construct() {
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return Product
+     * @throws Exception
+     */
+    static function withId($id): Product {
         if (!isset ($id)) {
             throw new Exception("Product id is required");
         } elseif ($id == "") {
@@ -36,11 +41,22 @@ class Product {
         return $product;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return Product
+     * @throws Exception
+     */
+    static function withParams($params): Product {
         return self::setVals(new Product(), $params);
     }
 
-    private static function setVals(Product $product, $params) {
+    /**
+     * @param Product $product
+     * @param $params
+     * @return Product
+     * @throws Exception
+     */
+    private static function setVals(Product $product, $params): Product {
         $sql = new Sql();
         //product type
         if (!isset ($params['type'])) {
@@ -90,7 +106,11 @@ class Product {
         return $this->raw;
     }
 
-    function create() {
+    /**
+     * @return int
+     * @throws Exception
+     */
+    function create(): int {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
             throw new Exception("User not authorized to create product");
@@ -99,11 +119,15 @@ class Product {
         $lastId = $sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (NULL, '{$this->type->getId()}', '{$this->size}', '{$this->price}', '{$this->cost}');");
         $sql->disconnect();
         $this->id = $lastId;
-        $product = self::withId($lastId);
+        $product = static::withId($lastId);
         $this->raw = $product->getDataArray();
         return $lastId;
     }
 
+    /**
+     * @param $params
+     * @throws Exception
+     */
     function update($params) {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
@@ -116,6 +140,9 @@ class Product {
         $sql->disconnect();
     }
 
+    /**
+     * @throws Exception
+     */
     function delete() {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {

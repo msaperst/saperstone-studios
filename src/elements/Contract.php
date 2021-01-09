@@ -32,7 +32,6 @@ class Contract {
 
     /**
      * @param Contract $contract
-     * @param Sql $sql
      */
     private static function setRawData(Contract $contract) {
         $contract->id = $contract->raw['id'];
@@ -61,7 +60,12 @@ class Contract {
         }
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return Contract
+     * @throws Exception
+     */
+    static function withId($id): Contract {
         if (!isset ($id)) {
             throw new Exception("Contract id is required");
         } elseif ($id == "") {
@@ -79,7 +83,12 @@ class Contract {
         return $contract;
     }
 
-    static function withLink($link) {
+    /**
+     * @param $link
+     * @return Contract
+     * @throws Exception
+     */
+    static function withLink($link): Contract {
         if (!isset ($link)) {
             throw new Exception("Contract link is required");
         } elseif ($link == "") {
@@ -97,11 +106,22 @@ class Contract {
         return $contract;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return Contract
+     * @throws Exception
+     */
+    static function withParams($params): Contract {
         return self::setVals(new Contract(), $params);
     }
 
-    private static function setVals(Contract $contract, $params) {
+    /**
+     * @param Contract $contract
+     * @param $params
+     * @return Contract
+     * @throws Exception
+     */
+    private static function setVals(Contract $contract, $params): Contract {
         $sql = new Sql();
         //contract type
         if (!isset ($params['type'])) {
@@ -216,7 +236,10 @@ class Contract {
         return $this->email;
     }
 
-    function getDeposit() {
+    /**
+     * @return int
+     */
+    function getDeposit(): int {
         return $this->deposit;
     }
 
@@ -232,15 +255,19 @@ class Contract {
         return $this->content;
     }
 
-    function isSigned() {
+    /**
+     * @return bool
+     */
+    function isSigned(): bool {
         return (bool)($this->file != NULL && $this->signature != NULL);
     }
 
     /**
      * Only return basic information
      * id, type, name, session
+     * @return array
      */
-    function getDataBasic() {
+    function getDataBasic(): array {
         return array_diff_key($this->raw, ['link' => '', 'address' => '', 'number' => '', 'email' => '', 'date' => '', 'location' => '', 'details' => '', 'amount' => '', 'deposit' => '', 'invoice' => '', 'content' => '', 'signature' => '', 'initial' => '', 'file' => '', 'lineItems' => '']);
     }
 
@@ -248,7 +275,11 @@ class Contract {
         return $this->raw;
     }
 
-    function create() {
+    /**
+     * @return int
+     * @throws Exception
+     */
+    function create(): int {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
             throw new Exception("User not authorized to create contract");
@@ -265,12 +296,16 @@ class Contract {
         }
         $sql->disconnect();
         $this->id = $lastId;
-        $contract = self::withId($lastId);
+        $contract = static::withId($lastId);
         $this->link = $contract->link;
         $this->raw = $contract->getDataArray();
         return $lastId;
     }
 
+    /**
+     * @param $params
+     * @throws Exception
+     */
     function update($params) {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
@@ -293,7 +328,12 @@ class Contract {
         $sql->disconnect();
     }
 
-    function sign($params) {
+    /**
+     * @param $params
+     * @return string
+     * @throws Exception
+     */
+    function sign($params): string {
         $sql = new Sql();
         //contract name
         if (!isset ($params['name'])) {
