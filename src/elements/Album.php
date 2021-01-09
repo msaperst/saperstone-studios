@@ -225,6 +225,7 @@ class Album {
         $sql->disconnect();
         $this->id = $lastId;
         $album = static::withId($lastId);
+        $album = self::withId($lastId);
         $this->raw = $album->getDataArray();
         return $lastId;
     }
