@@ -128,14 +128,23 @@ class Album {
      */
     function isSearchedFor(): bool {
         if ($this->code == NULL) {
-            // if not code, can't be searched for
+            // if no code, can't be searched for
             return false;
-        } elseif ((isset($_SESSION ['searched'][$this->id]) && $_SESSION ['searched'] [$this->id] == md5("album" . $this->code)) || (isset($_COOKIE ['searched']) && isset(json_decode($_COOKIE ['searched'], true) [$this->id]) && json_decode($_COOKIE ['searched'], true) [$this->id] == md5("album" . $this->code))) {
-            // if the search is stored in your session, or the search is stored in your cookies
+        } elseif ($this->doesSessionHaveAlbumCode() || $this->doesCookieHaveAlbumCode()) {
             return true;
         } else {
             return false;
         }
+    }
+
+    private function doesSessionHaveAlbumCode(): bool {
+        // if the search is stored in your session, we're good
+        return isset($_SESSION ['searched'][$this->id]) && $_SESSION ['searched'] [$this->id] == md5("album" . $this->code);
+    }
+
+    private function doesCookieHaveAlbumCode(): bool {
+        // if the search is stored in your cookies, we're good
+        return isset($_COOKIE ['searched']) && isset(json_decode($_COOKIE ['searched'], true) [$this->id]) && json_decode($_COOKIE ['searched'], true) [$this->id] == md5("album" . $this->code);
     }
 
     /**

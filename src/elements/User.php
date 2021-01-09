@@ -305,8 +305,7 @@ class User {
         if ($this->getLastName() != "" && $name != "") {
             $name .= " ";
         }
-        $name .= $this->getLastName();
-        return $name;
+        return $name . $this->getLastName();
     }
 
     /**

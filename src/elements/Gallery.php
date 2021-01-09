@@ -42,7 +42,8 @@ class Gallery {
         $gallery->image = $gallery->raw['image'];
         $gallery->title = $gallery->raw['title'];
         $gallery->comment = $gallery->raw['comment'];
-        $gallery->images = array();    //TODO - change this to an array of matching images
+        //consider changing this to an array of matching images
+        $gallery->images = array();
         $sql->disconnect();
         return $gallery;
     }
