@@ -20,6 +20,9 @@ class User {
     private $resetKey;
     private $isLoggedIn = false;
 
+    /**
+     * User constructor.
+     */
     function __construct() {
         $this->session = new Session();
         $this->session->initialize();
@@ -27,7 +30,7 @@ class User {
 
     /**
      * @return User
-     * @throws Exception
+     * @throws BadUserException
      */
     static function fromSystem(): User {
         $user = new User();
@@ -45,7 +48,7 @@ class User {
                 $sql->disconnect();
                 $user->isLoggedIn = true;
             } catch (Exception $e) {
-                throw new Exception("Invalid user token provided");
+                throw new BadUserException("Invalid user token provided");
             }
         }
         return $user;
@@ -54,13 +57,13 @@ class User {
     /**
      * @param $id
      * @return User
-     * @throws Exception
+     * @throws BadUserException
      */
     static function withId($id): User {
         if (!isset ($id)) {
-            throw new Exception("User id is required");
+            throw new BadUserException("User id is required");
         } elseif ($id == "") {
-            throw new Exception("User id can not be blank");
+            throw new BadUserException("User id can not be blank");
         }
         $user = new User();
         $id = (int)$id;
@@ -68,7 +71,7 @@ class User {
         $user->raw = $sql->getRow("SELECT * FROM users WHERE id = $id;");
         $sql->disconnect();
         if (!isset($user->raw) || !isset($user->raw['id'])) {
-            throw new Exception("User id does not match any users");
+            throw new BadUserException("User id does not match any users");
         }
         $user->id = $user->raw['id'];
         $user->username = $user->raw['usr'];
@@ -88,7 +91,7 @@ class User {
     /**
      * @param $params
      * @return User
-     * @throws Exception
+     * @throws BadUserException
      */
     static function withParams($params): User {
         $systemUser = User::fromSystem();
@@ -97,16 +100,16 @@ class User {
         //verify username properly provided
         if (!isset ($params['username'])) {
             $sql->disconnect();
-            throw new Exception("Username is required");
+            throw new BadUserException("Username is required");
         } elseif ($params['username'] == "") {
             $sql->disconnect();
-            throw new Exception("Username can not be blank");
+            throw new BadUserException("Username can not be blank");
         } elseif (!preg_match('/^[\w]{5,}$/', $params ['username'])) {
             $sql->disconnect();
-            throw new Exception("Username is not valid: it must be at least 5 characters, and contain only letters numbers and underscores");
+            throw new BadUserException("Username is not valid: it must be at least 5 characters, and contain only letters numbers and underscores");
         } elseif ($sql->getRowCount("SELECT * FROM users WHERE usr = '" . $sql->escapeString($params ['username']) . "'") > 0) {
             $sql->disconnect();
-            throw new Exception ("That username already exists in the system");
+            throw new BadUserException ("That username already exists in the system");
         }
         $user->username = $sql->escapeString($params ['username']);
         $user = self::setBasicValues($user, $params);
@@ -118,10 +121,10 @@ class User {
         } else {
             if (!isset($params['password'])) {
                 $sql->disconnect();
-                throw new Exception("Password is required");
+                throw new BadUserException("Password is required");
             } else {
                 $sql->disconnect();
-                throw new Exception("Password can not be blank");
+                throw new BadUserException("Password can not be blank");
             }
         }
         $user->md5Pass = md5($user->password);
@@ -135,7 +138,7 @@ class User {
      * @param User $user
      * @param $params
      * @return User
-     * @throws Exception
+     * @throws BadUserException
      */
     private static function setBasicValues(User $user, $params): User {
         $systemUser = User::fromSystem();
@@ -147,16 +150,16 @@ class User {
         //verify email properly provided
         if (!isset ($params['email'])) {
             $sql->disconnect();
-            throw new Exception("Email is required");
+            throw new BadUserException("Email is required");
         } elseif ($params['email'] == "") {
             $sql->disconnect();
-            throw new Exception("Email can not be blank");
+            throw new BadUserException("Email can not be blank");
         } elseif (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
             $sql->disconnect();
-            throw new Exception("Email is not valid");
+            throw new BadUserException("Email is not valid");
         } elseif ($sql->getRowCount("SELECT * FROM users WHERE email = '" . $sql->escapeString($params ['email']) . "' && id != $id") > 0) {
             $sql->disconnect();
-            throw new Exception ("That email already exists in the system: try logging in with it");
+            throw new BadUserException("That email already exists in the system: try logging in with it");
         }
         $user->email = $sql->escapeString($params['email']);
         //sets if the user as active - only an admin can make a user inactive
@@ -174,7 +177,7 @@ class User {
             $enums = $sql->getEnumValues('users', 'role');
             if (!in_array($params['role'], $enums)) {
                 $sql->disconnect();
-                throw new Exception("Role is not valid");
+                throw new BadUserException("Role is not valid");
             }
             $user->role = $sql->escapeString($params['role']);
         }
@@ -192,14 +195,14 @@ class User {
      * @param $email
      * @param $code
      * @return User
-     * @throws Exception
+     * @throws BadUserException
      */
     static function fromReset($email, $code): User {
         $sql = new Sql();
         $row = $sql->getRow("SELECT * FROM users WHERE email='$email' AND resetKey='$code';");
         $sql->disconnect();
         if ($row == null) {
-            throw new Exception('Credentials do not match our records');
+            throw new BadUserException('Credentials do not match our records');
         }
         return User::withId($row['id']);
     }
@@ -208,14 +211,14 @@ class User {
      * @param $username
      * @param $password
      * @return User
-     * @throws Exception
+     * @throws BadUserException
      */
     static function fromLogin($username, $password): User {
         $sql = new Sql();
         $row = $sql->getRow("SELECT * FROM users WHERE usr='$username' AND pass='" . md5($password) . "';");
         $sql->disconnect();
         if ($row == null) {
-            throw new Exception('Credentials do not match our records');
+            throw new BadUserException('Credentials do not match our records');
         }
         return User::withId($row['id']);
     }
@@ -223,14 +226,14 @@ class User {
     /**
      * @param $email
      * @return User
-     * @throws Exception
+     * @throws BadUserException
      */
     static function fromEmail($email): User {
         $sql = new Sql();
         $row = $sql->getRow("SELECT * FROM users WHERE email='$email';");
         $sql->disconnect();
         if ($row == null) {
-            throw new Exception('Credentials do not match our records');
+            throw new BadUserException('Credentials do not match our records');
         }
         return User::withId($row['id']);
     }
@@ -352,7 +355,8 @@ class User {
 
     /**
      * @return int
-     * @throws Exception
+     * @throws BadUserException
+     * @throws SqlException
      */
     function create(): int {
         $sql = new Sql();
@@ -374,12 +378,14 @@ class User {
 
     /**
      * @param $params
-     * @throws Exception
+     * @throws UserException
+     * @throws BadUserException
+     * @throws SqlException
      */
     function update($params) {
         $systemUser = User::fromSystem();
         if (!$systemUser->isAdmin() && $systemUser->getId() != $this->getId()) {
-            throw new Exception("User not authorized to update user");
+            throw new UserException("User not authorized to update user");
         }
         self::setBasicValues($this, $params);
         $sql = new Sql();
@@ -398,40 +404,42 @@ class User {
 
     /**
      * @param $params
-     * @throws Exception
+     * @throws UserException
+     * @throws BadUserException
+     * @throws SqlException
      */
     function updatePassword($params) {
         $systemUser = User::fromSystem();
         if (!$systemUser->isAdmin() && $systemUser->getId() != $this->getId()) {
-            throw new Exception("User not authorized to update user");
+            throw new UserException("User not authorized to update user");
         }
         if (!isset ($params['password'])) {
-            throw new Exception("Password is required");
+            throw new BadUserException("Password is required");
         } elseif ($params['password'] == "") {
-            throw new Exception("Password can not be blank");
+            throw new BadUserException("Password can not be blank");
         }
         $sql = new Sql();
         //if admin or correct current password provided, able to reset password
         if (!$systemUser->isAdmin() && !isset ($params ['curPass'])) {
             $sql->disconnect();
-            throw new Exception("Current password is required");
+            throw new BadUserException("Current password is required");
         } elseif (!$systemUser->isAdmin() && $params ['curPass'] == "") {
             $sql->disconnect();
-            throw new Exception("Current password can not be blank");
+            throw new BadUserException("Current password can not be blank");
         } elseif (!$systemUser->isAdmin() && $sql->getRowCount("SELECT * FROM users WHERE id = '{$systemUser->getId()}' AND pass = '" . md5($sql->escapeString($params ['curPass'])) . "'") == 0) {
             $sql->disconnect();
-            throw new Exception("Current password does not match our records");
+            throw new BadUserException("Current password does not match our records");
         }
         // need to ensure repeated password matches
         if (!isset ($params['passwordConfirm'])) {
             $sql->disconnect();
-            throw new Exception("Password confirmation is required");
+            throw new BadUserException("Password confirmation is required");
         } elseif ($params['passwordConfirm'] == "") {
             $sql->disconnect();
-            throw new Exception("Password confirmation can not be blank");
+            throw new BadUserException("Password confirmation can not be blank");
         } elseif ($params['passwordConfirm'] != $params ['password']) {
             $sql->disconnect();
-            throw new Exception("Password does not match password confirmation");
+            throw new BadUserException("Password does not match password confirmation");
         }
         $this->password = $sql->escapeString($params ['password']);
         $this->md5Pass = md5($this->password);
@@ -439,12 +447,14 @@ class User {
     }
 
     /**
-     * @throws Exception
+     * @throws UserException
+     * @throws SqlException
+     * @throws BadUserException
      */
     function delete() {
         $systemUser = User::fromSystem();
         if (!$systemUser->isAdmin()) {
-            throw new Exception("User not authorized to delete user");
+            throw new UserException("User not authorized to delete user");
         }
         $sql = new Sql();
         $sql->executeStatement("DELETE FROM users WHERE id='{$this->id}';");
@@ -453,7 +463,8 @@ class User {
 
     /**
      * @param $rememberMe
-     * @throws Exception
+     * @throws SqlException
+     * @throws BadUserException
      */
     function login($rememberMe) {
         if (!$this->isActive()) {
@@ -485,7 +496,8 @@ class User {
 
     /**
      * @return string
-     * @throws Exception
+     * @throws BadUserException
+     * @throws SqlException
      */
     function setResetCode(): string {
         $sql = new Sql();

@@ -23,42 +23,9 @@ class Album {
     }
 
     /**
-     * @param $id
-     * @return Album
-     * @throws Exception
-     */
-    static function withId($id): Album {
-        if (!isset ($id)) {
-            throw new Exception("Album id is required");
-        } elseif ($id == "") {
-            throw new Exception("Album id can not be blank");
-        }
-        $album = new Album();
-        $id = (int)$id;
-        $sql = new Sql();
-        $album->raw = $sql->getRow("SELECT * FROM albums WHERE id = $id;");
-        if (!isset($album->raw) || !isset($album->raw['id'])) {
-            $sql->disconnect();
-            throw new Exception("Album id does not match any albums");
-        }
-        $album->id = $album->raw['id'];
-        $album->name = $album->raw['name'];
-        $album->description = $album->raw['description'];
-        $album->date = $album->raw['date'];
-        $album->lastAccessed = $album->raw['lastAccessed'];
-        $album->location = $album->raw['location'];
-        $album->code = $album->raw['code'];
-        $album->owner = $album->raw['owner'];      //TODO - change this to a user class
-        $album->images = $album->raw['images'];    //TODO - change this to an array of matching images
-        $album->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = {$album->id};"), 'user');
-        $sql->disconnect();
-        return $album;
-    }
-
-    /**
      * @param $params
      * @return Album
-     * @throws Exception
+     * @throws BadAlbumException
      */
     static function withParams($params): Album {
         return self::setVals(new Album(), $params);
@@ -68,17 +35,17 @@ class Album {
      * @param Album $album
      * @param $params
      * @return Album
-     * @throws Exception
+     * @throws BadAlbumException
      */
     private static function setVals(Album $album, $params): Album {
         $sql = new Sql();
         //album name
         if (!isset ($params['name'])) {
             $sql->disconnect();
-            throw new Exception("Album name is required");
+            throw new BadAlbumException("Album name is required");
         } elseif ($params['name'] == "") {
             $sql->disconnect();
-            throw new Exception("Album name can not be blank");
+            throw new BadAlbumException("Album name can not be blank");
         }
         $album->name = $sql->escapeString($params ['name']);
         //album description
@@ -94,7 +61,7 @@ class Album {
             $d = DateTime::createFromFormat($format, $date);
             if (!($d && $d->format($format) === $date)) {
                 $sql->disconnect();
-                throw new Exception("Album date is not the correct format");
+                throw new BadAlbumException("Album date is not the correct format");
             }
             $album->date = "'" . $date . "'";
         } else {
@@ -102,10 +69,6 @@ class Album {
         }
         $sql->disconnect();
         return $album;
-    }
-
-    function getId() {
-        return $this->id;
     }
 
     function getName() {
@@ -143,13 +106,29 @@ class Album {
         return array_diff_key($this->raw, ['id' => '', 'lastAccessed' => '', 'location' => '', 'owner' => '', 'images' => '']);
     }
 
-    function getDataArray() {
-        return $this->raw;
+    /**
+     * @return bool
+     * @throws BadUserException
+     */
+    function canUserAccess(): bool {
+        $user = User::fromSystem();
+        if ($this->canUserGetData()) {
+            // you can access your own stuff
+            return true;
+        } elseif ($this->isSearchedFor()) { // or it's stored in your cookies
+            // you successfully searched for the album
+            return true;
+        } elseif ($user->isLoggedIn() && in_array($user->getId(), $this->users)) {
+            // your user is authorized to view the album
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * @return bool
-     * @throws Exception
+     * @throws BadUserException
      */
     function canUserGetData(): bool {
         $user = User::fromSystem();
@@ -176,33 +155,15 @@ class Album {
     }
 
     /**
-     * @return bool
-     * @throws Exception
-     */
-    function canUserAccess(): bool {
-        $user = User::fromSystem();
-        if ($this->canUserGetData()) {
-            // you can access your own stuff
-            return true;
-        } elseif ($this->isSearchedFor()) { // or it's stored in your cookies
-            // you successfully searched for the album
-            return true;
-        } elseif ($user->isLoggedIn() && in_array($user->getId(), $this->users)) {
-            // your user is authorized to view the album
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * @return int
-     * @throws Exception
+     * @throws BadUserException
+     * @throws AlbumException
+     * @throws SqlException
      */
     function create(): int {
         $user = User::fromSystem();
         if (!$user->isAdmin() && $user->getRole() != "uploader") {
-            throw new Exception("User not authorized to create album");
+            throw new AlbumException("User not authorized to create album");
         }
         $sql = new Sql();
         // generate our location for the files
@@ -215,7 +176,7 @@ class Album {
             umask($oldMask);
         } catch (Exception $e) {
             $sql->disconnect();
-            throw new Exception($e->getMessage() . "<br/>Unable to create album");
+            throw new AlbumException($e->getMessage() . "<br/>Unable to create album");
         }
         $lastId = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$this->name', '$this->description', $this->date, '$this->location', {$user->getId()});");
         if ($user->getRole() == "uploader") {
@@ -225,19 +186,58 @@ class Album {
         $sql->disconnect();
         $this->id = $lastId;
         $album = static::withId($lastId);
-        $album = self::withId($lastId);
         $this->raw = $album->getDataArray();
         return $lastId;
     }
 
     /**
+     * @param $id
+     * @return Album
+     * @throws BadAlbumException
+     */
+    static function withId($id): Album {
+        if (!isset ($id)) {
+            throw new BadAlbumException("Album id is required");
+        } elseif ($id == "") {
+            throw new BadAlbumException("Album id can not be blank");
+        }
+        $album = new Album();
+        $id = (int)$id;
+        $sql = new Sql();
+        $album->raw = $sql->getRow("SELECT * FROM albums WHERE id = $id;");
+        if (!isset($album->raw) || !isset($album->raw['id'])) {
+            $sql->disconnect();
+            throw new BadAlbumException("Album id does not match any albums");
+        }
+        $album->id = $album->raw['id'];
+        $album->name = $album->raw['name'];
+        $album->description = $album->raw['description'];
+        $album->date = $album->raw['date'];
+        $album->lastAccessed = $album->raw['lastAccessed'];
+        $album->location = $album->raw['location'];
+        $album->code = $album->raw['code'];
+        $album->owner = $album->raw['owner'];      //TODO - change this to a user class
+        $album->images = $album->raw['images'];    //TODO - change this to an array of matching images
+        $album->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = {$album->id};"), 'user');
+        $sql->disconnect();
+        return $album;
+    }
+
+    function getDataArray() {
+        return $this->raw;
+    }
+
+    /**
      * @param $params
-     * @throws Exception
+     * @throws AlbumException
+     * @throws BadAlbumException
+     * @throws BadUserException
+     * @throws SqlException
      */
     function update($params) {
         $user = User::fromSystem();
         if (!$this->canUserGetData()) {
-            throw new Exception("User not authorized to update album");
+            throw new AlbumException("User not authorized to update album");
         }
         self::setVals($this, $params);
         $sql = new Sql();
@@ -251,19 +251,25 @@ class Album {
                 $sql->executeStatement("UPDATE albums SET code='$code' WHERE id='{$this->getId()}';");
             } else {
                 $sql->disconnect();
-                throw new Exception("Album code already exists");
+                throw new BadAlbumException("Album code already exists");
             }
         }
         $this->raw = $sql->getRow("SELECT * FROM albums WHERE id = {$this->getId()};");
         $sql->disconnect();
     }
 
+    function getId() {
+        return $this->id;
+    }
+
     /**
-     * @throws Exception
+     * @throws AlbumException
+     * @throws SqlException
+     * @throws BadUserException
      */
     function delete() {
         if (!$this->canUserGetData()) {
-            throw new Exception("User not authorized to delete album");
+            throw new AlbumException("User not authorized to delete album");
         }
         $sql = new Sql();
         $sql->executeStatement("DELETE FROM albums WHERE id='{$this->id}';");
