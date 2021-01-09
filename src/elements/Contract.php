@@ -63,13 +63,13 @@ class Contract {
     /**
      * @param $id
      * @return Contract
-     * @throws Exception
+     * @throws BadContractException
      */
     static function withId($id): Contract {
         if (!isset ($id)) {
-            throw new Exception("Contract id is required");
+            throw new BadContractException("Contract id is required");
         } elseif ($id == "") {
-            throw new Exception("Contract id can not be blank");
+            throw new BadContractException("Contract id can not be blank");
         }
         $contract = new Contract();
         $id = (int)$id;
@@ -77,7 +77,7 @@ class Contract {
         $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
         $sql->disconnect();
         if (!isset($contract->raw) || !isset($contract->raw['id'])) {
-            throw new Exception("Contract id does not match any contracts");
+            throw new BadContractException("Contract id does not match any contracts");
         }
         self::setRawData($contract);
         return $contract;
@@ -86,13 +86,13 @@ class Contract {
     /**
      * @param $link
      * @return Contract
-     * @throws Exception
+     * @throws BadContractException
      */
     static function withLink($link): Contract {
         if (!isset ($link)) {
-            throw new Exception("Contract link is required");
+            throw new BadContractException("Contract link is required");
         } elseif ($link == "") {
-            throw new Exception("Contract link can not be blank");
+            throw new BadContractException("Contract link can not be blank");
         }
         $contract = new Contract();
         $sql = new Sql();
@@ -100,7 +100,7 @@ class Contract {
         $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE link = '$link';");
         $sql->disconnect();
         if (!isset($contract->raw) || !isset($contract->raw['id'])) {
-            throw new Exception("Contract link does not match any contracts");
+            throw new BadContractException("Contract link does not match any contracts");
         }
         self::setRawData($contract);
         return $contract;
@@ -109,7 +109,7 @@ class Contract {
     /**
      * @param $params
      * @return Contract
-     * @throws Exception
+     * @throws BadContractException
      */
     static function withParams($params): Contract {
         return self::setVals(new Contract(), $params);
@@ -119,47 +119,47 @@ class Contract {
      * @param Contract $contract
      * @param $params
      * @return Contract
-     * @throws Exception
+     * @throws BadContractException
      */
     private static function setVals(Contract $contract, $params): Contract {
         $sql = new Sql();
         //contract type
         if (!isset ($params['type'])) {
             $sql->disconnect();
-            throw new Exception("Contract type is required");
+            throw new BadContractException("Contract type is required");
         } elseif ($params['type'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract type can not be blank");
+            throw new BadContractException("Contract type can not be blank");
         } elseif (!in_array($params['type'], $sql->getEnumValues('contracts', 'type'))) {
             $sql->disconnect();
-            throw new Exception ("Contract type is not valid");
+            throw new BadContractException ("Contract type is not valid");
         }
         $contract->type = $sql->escapeString($params ['type']);
         //contract name
         if (!isset ($params['name'])) {
             $sql->disconnect();
-            throw new Exception("Contract name is required");
+            throw new BadContractException("Contract name is required");
         } elseif ($params['name'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract name can not be blank");
+            throw new BadContractException("Contract name can not be blank");
         }
         $contract->name = $sql->escapeString($params ['name']);
         //contract session
         if (!isset ($params['session'])) {
             $sql->disconnect();
-            throw new Exception("Contract session is required");
+            throw new BadContractException("Contract session is required");
         } elseif ($params['session'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract session can not be blank");
+            throw new BadContractException("Contract session can not be blank");
         }
         $contract->session = $sql->escapeString($params ['session']);
         //contract content
         if (!isset ($params['content'])) {
             $sql->disconnect();
-            throw new Exception("Contract content is required");
+            throw new BadContractException("Contract content is required");
         } elseif ($params['content'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract content can not be blank");
+            throw new BadContractException("Contract content can not be blank");
         }
         $contract->content = $sql->escapeString($params ['content']);
         //optional values
@@ -178,7 +178,7 @@ class Contract {
         if (isset ($params ['email']) && $params ['email'] != "") {
             if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
                 $sql->disconnect();
-                throw new Exception("Contract email is not valid");
+                throw new BadContractException("Contract email is not valid");
             }
             $contract->email = $sql->escapeString($params ['email']);
         }
@@ -188,7 +188,7 @@ class Contract {
             $d = DateTime::createFromFormat($format, $date);
             if (!($d && $d->format($format) === $date)) {
                 $sql->disconnect();
-                throw new Exception("Contract date is not the correct format");
+                throw new BadContractException("Contract date is not the correct format");
             }
             $contract->date = $date;
         }
@@ -277,12 +277,14 @@ class Contract {
 
     /**
      * @return int
-     * @throws Exception
+     * @throws BadUserException
+     * @throws ContractException
+     * @throws SqlException
      */
     function create(): int {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to create contract");
+            throw new ContractException("User not authorized to create contract");
         }
         list($address, $number, $email, $date, $location, $details, $invoice) = $this->nullify();
         $sql = new Sql();
@@ -304,15 +306,18 @@ class Contract {
 
     /**
      * @param $params
-     * @throws Exception
+     * @throws BadUserException
+     * @throws ContractException
+     * @throws BadContractException
+     * @throws SqlException
      */
     function update($params) {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to update contract");
+            throw new ContractException("User not authorized to update contract");
         }
         if ($this->signature != NULL) {
-            throw new Exception("Contract has already been signed, unable to update");
+            throw new ContractException("Contract has already been signed, unable to update");
         }
         self::setVals($this, $params);
         list($address, $number, $email, $date, $location, $details, $invoice) = $this->nullify();
@@ -331,74 +336,75 @@ class Contract {
     /**
      * @param $params
      * @return string
-     * @throws Exception
+     * @throws BadContractException
+     * @throws SqlException
      */
     function sign($params): string {
         $sql = new Sql();
         //contract name
         if (!isset ($params['name'])) {
             $sql->disconnect();
-            throw new Exception("Contract contact name is required");
+            throw new BadContractException("Contract contact name is required");
         } elseif ($params['name'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract contact name can not be blank");
+            throw new BadContractException("Contract contact name can not be blank");
         }
         $this->name = $sql->escapeString($params['name']);
         //contract address
         if (!isset ($params['address'])) {
             $sql->disconnect();
-            throw new Exception("Contract contact address is required");
+            throw new BadContractException("Contract contact address is required");
         } elseif ($params['address'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract contact address can not be blank");
+            throw new BadContractException("Contract contact address can not be blank");
         }
         $this->address = $sql->escapeString($params['address']);
         //contract number
         if (!isset ($params['number'])) {
             $sql->disconnect();
-            throw new Exception("Contract contact number is required");
+            throw new BadContractException("Contract contact number is required");
         } elseif ($params['number'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract contact number can not be blank");
+            throw new BadContractException("Contract contact number can not be blank");
         }
         $this->number = $sql->escapeString($params['number']);
         //contract email
         if (!isset ($params['email'])) {
             $sql->disconnect();
-            throw new Exception("Contract contact email is required");
+            throw new BadContractException("Contract contact email is required");
         } elseif ($params['email'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract contact email can not be blank");
+            throw new BadContractException("Contract contact email can not be blank");
         } elseif (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
             $sql->disconnect();
-            throw new Exception("Contract contact email is not valid");
+            throw new BadContractException("Contract contact email is not valid");
         }
         $this->email = $sql->escapeString($params['email']);
         //contract signature
         if (!isset ($params['signature'])) {
             $sql->disconnect();
-            throw new Exception("Contract signature is required");
+            throw new BadContractException("Contract signature is required");
         } elseif ($params['signature'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract signature can not be blank");
+            throw new BadContractException("Contract signature can not be blank");
         }
         $this->signature = $sql->escapeString($params['signature']);
         //contract initial
         if (!isset ($params['initial'])) {
             $sql->disconnect();
-            throw new Exception("Contract initials are required");
+            throw new BadContractException("Contract initials are required");
         } elseif ($params['initial'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract initials can not be blank");
+            throw new BadContractException("Contract initials can not be blank");
         }
         $this->initial = $sql->escapeString($params['initial']);
         //contract content
         if (!isset ($params['content'])) {
             $sql->disconnect();
-            throw new Exception("Contract content is required");
+            throw new BadContractException("Contract content is required");
         } elseif ($params['content'] == "") {
             $sql->disconnect();
-            throw new Exception("Contract content can not be blank");
+            throw new BadContractException("Contract content can not be blank");
         }
         $this->content = $sql->escapeString($params['content']);
 

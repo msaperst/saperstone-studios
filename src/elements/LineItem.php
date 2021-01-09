@@ -9,6 +9,13 @@ class LineItem {
     private $amount;
     private $unit;
 
+    /**
+     * LineItem constructor.
+     * @param $contract
+     * @param $item
+     * @param $amount
+     * @param $unit
+     */
     function __construct($contract, $item, $amount, $unit) {
         $this->contract = $contract;
         $this->item = $item;
@@ -20,10 +27,13 @@ class LineItem {
         $this->contract = $contract;
     }
 
-    function getValues() {
+    function getValues(): string {
         return "{$this->contract}, '{$this->item}', {$this->amount}, '{$this->unit}'";
     }
 
+    /**
+     * @throws SqlException
+     */
     function create() {
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `contract_line_items` (`contract`, `item`, `amount`, `unit`) VALUES ({$this->getValues()});");

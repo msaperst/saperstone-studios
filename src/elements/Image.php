@@ -4,6 +4,9 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Image {
 
+    /**
+     * @var array|null
+     */
     private $raw;
     private $id;
     private $album = NULL;
@@ -16,11 +19,17 @@ class Image {
     private $height;
     private $active;
 
+    /**
+     * Image constructor.
+     * @param $container
+     * @param $sequence
+     * @throws BadImageException
+     */
     function __construct($container, $sequence) {
         if (!isset ($sequence)) {
-            throw new Exception("Image id is required");
+            throw new BadImageException("Image id is required");
         } elseif ($sequence == "") {
-            throw new Exception("Image id can not be blank");
+            throw new BadImageException("Image id can not be blank");
         }
         $sql = new Sql();
         $sequence = (int)$sequence;
@@ -28,19 +37,19 @@ class Image {
             $this->raw = $sql->getRow("SELECT * FROM album_images WHERE album = {$container->getId()} AND sequence = $sequence;");
             if (!isset($this->raw) || !isset($this->raw['id'])) {
                 $sql->disconnect();
-                throw new Exception("Image id does not match any images");
+                throw new BadImageException("Image id does not match any images");
             }
             $this->album = $this->raw['album'];
         } elseif ($container instanceof Gallery) {
             $this->raw = $sql->getRow("SELECT * FROM gallery_images WHERE gallery = {$container->getId()} AND id = $sequence;");  //TODO should align the JS on this and albums
             if (!isset($this->raw) || !isset($this->raw['id'])) {
                 $sql->disconnect();
-                throw new Exception("Image id does not match any images");
+                throw new BadImageException("Image id does not match any images");
             }
             $this->gallery = $this->raw['gallery'];
         } else {
             $sql->disconnect();
-            throw new Exception("Parent (album or gallery) is required");
+            throw new BadImageException("Parent (album or gallery) is required");
         }
         $this->id = $this->raw['id'];
         $this->title = $this->raw['title'];
@@ -65,11 +74,16 @@ class Image {
         return $this->location;
     }
 
-    function getDataArray() {
+    function getDataArray(): ?array {
         return $this->raw;
     }
 
-    function canUserGetData() {
+    /**
+     * @return bool
+     * @throws BadAlbumException
+     * @throws BadUserException
+     */
+    function canUserGetData(): bool {
         $user = User::fromSystem();
         if ($this->album != NULL) {
             $album = Album::withId($this->album);
@@ -80,9 +94,15 @@ class Image {
         }
     }
 
+    /**
+     * @throws BadAlbumException
+     * @throws BadUserException
+     * @throws ImageException
+     * @throws SqlException
+     */
     function delete() {
         if (!$this->canUserGetData()) {
-            throw new Exception("User not authorized to delete image");
+            throw new ImageException("User not authorized to delete image");
         }
         $sql = new Sql();
         if ($this->album != NULL) {
