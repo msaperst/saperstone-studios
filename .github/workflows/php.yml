@@ -5,26 +5,12 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - uses: php-actions/composer@v5
-
-    - name: Validate Composer Setup
-      uses: php-actions/composer@v5
-      with:
-        version: 1
-        command: composer validate
-
-    - name: Install Dependencies
-      uses: php-actions/composer@v5
-      with:
-        version: 1
-        command: composer install --prefer-dist --no-progress --no-suggest
-
-    - name: Run Unit Tests
-      uses: php-actions/composer@v5
-      with:
-        php_version: 7.3
-        version: 1
-        command: composer unit-test
+        with:
+          php_version: 7.3
+          version: 1
+      - run: composer validate
+      - run: composer install --prefer-dist --no-progress --no-suggest
+      - run: composer unit-test

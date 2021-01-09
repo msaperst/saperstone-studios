@@ -56,14 +56,11 @@ class Album {
         }
         // album date
         if (isset ($params ['date']) && $params ['date'] != "") {
-            $date = $sql->escapeString($params ['date']);
-            $format = 'Y-m-d';
-            $d = DateTime::createFromFormat($format, $date);
-            if (!($d && $d->format($format) === $date)) {
+            if (!Strings::isDateFormatted($sql->escapeString($params ['date']))) {
                 $sql->disconnect();
                 throw new BadAlbumException("Album date is not the correct format");
             }
-            $album->date = "'" . $date . "'";
+            $album->date = "'" . $sql->escapeString($params ['date']) . "'";
         } else {
             $album->date = 'NULL';
         }
@@ -113,11 +110,7 @@ class Album {
     function canUserAccess(): bool {
         $user = User::fromSystem();
         //(it's your own stuff) || (it's stored in your cookies) || (your user is authorized to view the album)
-        if ($this->canUserGetData() || $this->isSearchedFor() || ($user->isLoggedIn() && in_array($user->getId(), $this->users))) {
-            return true;
-        } else {
-            return false;
-        }
+        return ($this->canUserGetData() || $this->isSearchedFor() || ($user->isLoggedIn() && in_array($user->getId(), $this->users)));
     }
 
     /**
@@ -137,11 +130,8 @@ class Album {
         if ($this->code == NULL) {
             // if not code, can't be searched for
             return false;
-        } elseif (isset($_SESSION ['searched'][$this->id]) && $_SESSION ['searched'] [$this->id] == md5("album" . $this->code)) {
-            // if the search is stored in your session, we're good
-            return true;
-        } elseif (isset($_COOKIE ['searched']) && isset(json_decode($_COOKIE ['searched'], true) [$this->id]) && json_decode($_COOKIE ['searched'], true) [$this->id] == md5("album" . $this->code)) {
-            // if the search is stored in your cookies, we're good
+        } elseif ((isset($_SESSION ['searched'][$this->id]) && $_SESSION ['searched'] [$this->id] == md5("album" . $this->code)) || (isset($_COOKIE ['searched']) && isset(json_decode($_COOKIE ['searched'], true) [$this->id]) && json_decode($_COOKIE ['searched'], true) [$this->id] == md5("album" . $this->code))) {
+            // if the search is stored in your session, or the search is stored in your cookies
             return true;
         } else {
             return false;

@@ -29,6 +29,52 @@ class User {
     }
 
     /**
+     * @param $params
+     * @return User
+     * @throws BadUserException
+     */
+    static function withParams($params): User {
+        $systemUser = User::fromSystem();
+        $user = new User();
+        $sql = new Sql();
+        //verify username properly provided
+        if (!isset ($params['username'])) {
+            $sql->disconnect();
+            throw new BadUserException("Username is required");
+        } elseif ($params['username'] == "") {
+            $sql->disconnect();
+            throw new BadUserException("Username can not be blank");
+        } elseif (!preg_match('/^[\w]{5,}$/', $params ['username'])) {
+            $sql->disconnect();
+            throw new BadUserException("Username is not valid: it must be at least 5 characters, and contain only letters numbers and underscores");
+        } elseif ($sql->getRowCount("SELECT * FROM users WHERE usr = '" . $sql->escapeString($params ['username']) . "'") > 0) {
+            $sql->disconnect();
+            throw new BadUserException ("That username already exists in the system");
+        }
+        $user->username = $sql->escapeString($params ['username']);
+        $user = self::setBasicValues($user, $params);
+        //set the password - admins are not expected to provide one, but could
+        if (isset($params['password']) && $params['password'] != "") {
+            $user->password = $sql->escapeString($params['password']);
+        } elseif ($systemUser->isAdmin()) {
+            $user->password = static::generatePassword();
+        } else {
+            if (!isset($params['password'])) {
+                $sql->disconnect();
+                throw new BadUserException("Password is required");
+            } else {
+                $sql->disconnect();
+                throw new BadUserException("Password can not be blank");
+            }
+        }
+        $user->md5Pass = md5($user->password);
+        // some common values
+        $sql->disconnect();
+        $user->hash = md5($user->username . $user->password);
+        return $user;
+    }
+
+    /**
      * @return User
      * @throws BadUserException
      */
@@ -85,52 +131,6 @@ class User {
         $user->created = $user->raw['created'];
         $user->lastLogin = $user->raw['lastLogin'];
         $user->resetKey = $user->raw['resetKey'];
-        return $user;
-    }
-
-    /**
-     * @param $params
-     * @return User
-     * @throws BadUserException
-     */
-    static function withParams($params): User {
-        $systemUser = User::fromSystem();
-        $user = new User();
-        $sql = new Sql();
-        //verify username properly provided
-        if (!isset ($params['username'])) {
-            $sql->disconnect();
-            throw new BadUserException("Username is required");
-        } elseif ($params['username'] == "") {
-            $sql->disconnect();
-            throw new BadUserException("Username can not be blank");
-        } elseif (!preg_match('/^[\w]{5,}$/', $params ['username'])) {
-            $sql->disconnect();
-            throw new BadUserException("Username is not valid: it must be at least 5 characters, and contain only letters numbers and underscores");
-        } elseif ($sql->getRowCount("SELECT * FROM users WHERE usr = '" . $sql->escapeString($params ['username']) . "'") > 0) {
-            $sql->disconnect();
-            throw new BadUserException ("That username already exists in the system");
-        }
-        $user->username = $sql->escapeString($params ['username']);
-        $user = self::setBasicValues($user, $params);
-        //set the password - admins are not expected to provide one, but could
-        if (isset($params['password']) && $params['password'] != "") {
-            $user->password = $sql->escapeString($params['password']);
-        } elseif ($systemUser->isAdmin()) {
-            $user->password = static::generatePassword();
-        } else {
-            if (!isset($params['password'])) {
-                $sql->disconnect();
-                throw new BadUserException("Password is required");
-            } else {
-                $sql->disconnect();
-                throw new BadUserException("Password can not be blank");
-            }
-        }
-        $user->md5Pass = md5($user->password);
-        // some common values
-        $sql->disconnect();
-        $user->hash = md5($user->username . $user->password);
         return $user;
     }
 
@@ -192,6 +192,27 @@ class User {
     }
 
     /**
+     * @return bool
+     */
+    function isAdmin(): bool {
+        return ($this->getRole() === "admin");
+    }
+
+    /**
+     * @return string
+     */
+    function getRole(): string {
+        return $this->role;
+    }
+
+    /**
+     * @return string
+     */
+    static function generatePassword(): string {
+        return Strings::randomString(20);
+    }
+
+    /**
      * @param $email
      * @param $code
      * @return User
@@ -238,6 +259,14 @@ class User {
         return User::withId($row['id']);
     }
 
+    function getIdentifier() {
+        if (!$this->isLoggedIn()) {
+            return $this->session->getClientIP();
+        } else {
+            return $this->getId();
+        }
+    }
+
     /**
      * @return bool
      */
@@ -247,14 +276,6 @@ class User {
 
     function getId() {
         return $this->id;
-    }
-
-    function getIdentifier() {
-        if (!$this->isLoggedIn()) {
-            return $this->session->getClientIP();
-        } else {
-            return $this->getId();
-        }
     }
 
     function getUsername() {
@@ -272,29 +293,20 @@ class User {
     /**
      * @return bool
      */
-    function isActive(): bool {
-        return boolval($this->active);
+    function isUploader(): bool {
+        return ($this->getRole() === "uploader");
     }
 
     /**
      * @return string
      */
-    function getRole(): string {
-        return $this->role;
-    }
-
-    /**
-     * @return bool
-     */
-    function isAdmin(): bool {
-        return ($this->getRole() === "admin");
-    }
-
-    /**
-     * @return bool
-     */
-    function isUploader(): bool {
-        return ($this->getRole() === "uploader");
+    function getName(): string {
+        $name = $this->getFirstName();
+        if ($this->getLastName() != "" && $name != "") {
+            $name .= " ";
+        }
+        $name .= $this->getLastName();
+        return $name;
     }
 
     /**
@@ -311,18 +323,6 @@ class User {
         return $this->lastName;
     }
 
-    /**
-     * @return string
-     */
-    function getName(): string {
-        $name = $this->getFirstName();
-        if ($this->getLastName() != "" && $name != "") {
-            $name .= " ";
-        }
-        $name .= $this->getLastName();
-        return $name;
-    }
-
     function getEmail() {
         return $this->email;
     }
@@ -333,24 +333,6 @@ class User {
      */
     function getDataBasic(): array {
         return array_diff_key($this->raw, ['pass' => '', 'hash' => '', 'created' => '', 'lastLogin' => '']);
-    }
-
-    function getDataArray() {
-        return $this->raw;
-    }
-
-    /**
-     * @return string
-     */
-    static function generatePassword(): string {
-        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-        $pass = array(); //remember to declare $pass as an array
-        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
-        for ($i = 0; $i < 20; $i++) {
-            $n = rand(0, $alphaLength);
-            $pass[] = $alphabet[$n];
-        }
-        return implode($pass); //turn the array into a string
     }
 
     /**
@@ -374,6 +356,10 @@ class User {
         $this->created = $user->created;
         $this->raw = $user->getDataArray();
         return $lastId;
+    }
+
+    function getDataArray() {
+        return $this->raw;
     }
 
     /**
@@ -477,12 +463,9 @@ class User {
 
         if (isset($_COOKIE['CookiePreferences'])) {
             $preferences = json_decode($_COOKIE['CookiePreferences']);
-            if ($rememberMe && is_array($preferences) && in_array("preferences", $preferences)) {
-                // remember the user if prompted
-                if (!headers_sent()) {
-                    setcookie('hash', $this->hash, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-                    setcookie('usr', $this->username, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-                }
+            if ($rememberMe && is_array($preferences) && in_array("preferences", $preferences) && !headers_sent()) {
+                setcookie('hash', $this->hash, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
+                setcookie('usr', $this->username, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
             }
         }
         $sql = new Sql();
@@ -492,6 +475,13 @@ class User {
         $this->raw = $user->getDataArray();
         $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
         $sql->disconnect();
+    }
+
+    /**
+     * @return bool
+     */
+    function isActive(): bool {
+        return boolval($this->active);
     }
 
     /**

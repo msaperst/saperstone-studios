@@ -188,14 +188,11 @@ class Contract {
             $contract->email = $sql->escapeString($params ['email']);
         }
         if (isset ($params ['date']) && $params ['date'] != "") {
-            $date = $sql->escapeString($params ['date']);
-            $format = 'Y-m-d';
-            $d = DateTime::createFromFormat($format, $date);
-            if (!($d && $d->format($format) === $date)) {
+            if (!Strings::isDateFormatted($sql->escapeString($params ['date']))) {
                 $sql->disconnect();
                 throw new BadContractException("Contract date is not the correct format");
             }
-            $contract->date = $date;
+            $contract->date = $sql->escapeString($params ['date']);
         }
         if (isset ($params ['location']) && $params ['location'] != "") {
             $contract->location = $sql->escapeString($params ['location']);

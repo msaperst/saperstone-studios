@@ -116,10 +116,7 @@ class Blog {
             $sql->disconnect();
             throw new BadBlogException("Blog date can not be blank");
         } else {
-            $date = $sql->escapeString($params ['date']);
-            $format = 'Y-m-d';
-            $d = DateTime::createFromFormat($format, $date);
-            if (!($d && $d->format($format) === $date)) {
+            if (!Strings::isDateFormatted($sql->escapeString($params ['date']))) {
                 $sql->disconnect();
                 throw new BadBlogException("Blog date is not the correct format");
             }
