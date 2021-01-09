@@ -179,4 +179,10 @@ class StringsUnitTest extends TestCase {
         $result = Strings::endsWith("Max", "");
         $this->assertTrue($result);
     }
+
+    public function testIsDateFormatted() {
+        $this->assertTrue(Strings::isDateFormatted('2000-01-01'));
+        $this->assertFalse(Strings::isDateFormatted('200-01-01'));
+        $this->assertFalse(Strings::isDateFormatted('aa67-01-01'));
+    }
 }
