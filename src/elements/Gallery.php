@@ -52,7 +52,7 @@ class Gallery {
      * @throws GalleryException
      */
     static function withParams($params) {
-        throw new GalleryException('Not yet implemented');
+        throw new GalleryException('Not yet implemented: ' . json_encode($params));
     }
 
     function getId() {

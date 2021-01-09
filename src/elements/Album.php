@@ -112,14 +112,8 @@ class Album {
      */
     function canUserAccess(): bool {
         $user = User::fromSystem();
-        if ($this->canUserGetData()) {
-            // you can access your own stuff
-            return true;
-        } elseif ($this->isSearchedFor()) { // or it's stored in your cookies
-            // you successfully searched for the album
-            return true;
-        } elseif ($user->isLoggedIn() && in_array($user->getId(), $this->users)) {
-            // your user is authorized to view the album
+        //(it's your own stuff) || (it's stored in your cookies) || (your user is authorized to view the album)
+        if ($this->canUserGetData() || $this->isSearchedFor() || ($user->isLoggedIn() && in_array($user->getId(), $this->users))) {
             return true;
         } else {
             return false;
@@ -216,8 +210,10 @@ class Album {
         $album->lastAccessed = $album->raw['lastAccessed'];
         $album->location = $album->raw['location'];
         $album->code = $album->raw['code'];
-        $album->owner = $album->raw['owner'];      //TODO - change this to a user class
-        $album->images = $album->raw['images'];    //TODO - change this to an array of matching images
+        //consider changing this to a user class
+        $album->owner = $album->raw['owner'];
+        //consider changing this to an array of matching images
+        $album->images = $album->raw['images'];
         $album->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = {$album->id};"), 'user');
         $sql->disconnect();
         return $album;

@@ -41,7 +41,7 @@ class Image {
             }
             $this->album = $this->raw['album'];
         } elseif ($container instanceof Gallery) {
-            $this->raw = $sql->getRow("SELECT * FROM gallery_images WHERE gallery = {$container->getId()} AND id = $sequence;");  //TODO should align the JS on this and albums
+            $this->raw = $sql->getRow("SELECT * FROM gallery_images WHERE gallery = {$container->getId()} AND id = $sequence;");
             if (!isset($this->raw) || !isset($this->raw['id'])) {
                 $sql->disconnect();
                 throw new BadImageException("Image id does not match any images");

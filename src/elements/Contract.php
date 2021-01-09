@@ -31,6 +31,29 @@ class Contract {
     }
 
     /**
+     * @param $link
+     * @return Contract
+     * @throws BadContractException
+     */
+    static function withLink($link): Contract {
+        if (!isset ($link)) {
+            throw new BadContractException("Contract link is required");
+        } elseif ($link == "") {
+            throw new BadContractException("Contract link can not be blank");
+        }
+        $contract = new Contract();
+        $sql = new Sql();
+        $link = $sql->escapeString($link);
+        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE link = '$link';");
+        $sql->disconnect();
+        if (!isset($contract->raw) || !isset($contract->raw['id'])) {
+            throw new BadContractException("Contract link does not match any contracts");
+        }
+        self::setRawData($contract);
+        return $contract;
+    }
+
+    /**
      * @param Contract $contract
      */
     private static function setRawData(Contract $contract) {
@@ -58,52 +81,6 @@ class Contract {
         foreach ($contract->raw['lineItems'] as $lineItem) {
             $contract->lineItems[] = new LineItem($lineItem['contract'], $lineItem['item'], $lineItem['amount'], $lineItem['unit']);
         }
-    }
-
-    /**
-     * @param $id
-     * @return Contract
-     * @throws BadContractException
-     */
-    static function withId($id): Contract {
-        if (!isset ($id)) {
-            throw new BadContractException("Contract id is required");
-        } elseif ($id == "") {
-            throw new BadContractException("Contract id can not be blank");
-        }
-        $contract = new Contract();
-        $id = (int)$id;
-        $sql = new Sql();
-        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
-        $sql->disconnect();
-        if (!isset($contract->raw) || !isset($contract->raw['id'])) {
-            throw new BadContractException("Contract id does not match any contracts");
-        }
-        self::setRawData($contract);
-        return $contract;
-    }
-
-    /**
-     * @param $link
-     * @return Contract
-     * @throws BadContractException
-     */
-    static function withLink($link): Contract {
-        if (!isset ($link)) {
-            throw new BadContractException("Contract link is required");
-        } elseif ($link == "") {
-            throw new BadContractException("Contract link can not be blank");
-        }
-        $contract = new Contract();
-        $sql = new Sql();
-        $link = $sql->escapeString($link);
-        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE link = '$link';");
-        $sql->disconnect();
-        if (!isset($contract->raw) || !isset($contract->raw['id'])) {
-            throw new BadContractException("Contract link does not match any contracts");
-        }
-        self::setRawData($contract);
-        return $contract;
     }
 
     /**
@@ -162,6 +139,34 @@ class Contract {
             throw new BadContractException("Contract content can not be blank");
         }
         $contract->content = $sql->escapeString($params ['content']);
+        $contract = self::setOptionalItems($contract, $params);
+        // our line items
+        $contract->lineItems = array();
+        if (isset ($params ['lineItems']) && !empty($params ['lineItems'])) {
+            foreach ($params ['lineItems'] as $lineItem) {
+                $amount = floatval(str_replace('$', '', $lineItem ['amount']));
+                $item = $unit = NULL;
+                if (isset ($lineItem ['item']) && $lineItem ['item'] != "") {
+                    $item = $sql->escapeString($lineItem ['item']);
+                }
+                if (isset ($lineItem ['unit']) && $lineItem ['unit'] != "") {
+                    $unit = $sql->escapeString($lineItem ['unit']);
+                }
+                $contract->lineItems[] = new LineItem($contract->getId(), $item, $amount, $unit);
+            }
+        }
+        $sql->disconnect();
+        return $contract;
+    }
+
+    /**
+     * @param Contract $contract
+     * @param $params
+     * @return Contract
+     * @throws BadContractException
+     */
+    private static function setOptionalItems(Contract $contract, $params): Contract {
+        $sql = new Sql();
         //optional values
         if (isset ($params ['amount']) && $params ['amount'] != "") {
             $contract->amount = floatval(str_replace('$', '', $params ['amount']));
@@ -200,21 +205,6 @@ class Contract {
         }
         if (isset ($params ['invoice']) && $params ['invoice'] != "") {
             $contract->invoice = $sql->escapeString($params ['invoice']);
-        }
-        // our line items
-        $contract->lineItems = array();
-        if (isset ($params ['lineItems']) && !empty($params ['lineItems'])) {
-            foreach ($params ['lineItems'] as $lineItem) {
-                $amount = floatval(str_replace('$', '', $lineItem ['amount']));
-                $item = $unit = NULL;
-                if (isset ($lineItem ['item']) && $lineItem ['item'] != "") {
-                    $item = $sql->escapeString($lineItem ['item']);
-                }
-                if (isset ($lineItem ['unit']) && $lineItem ['unit'] != "") {
-                    $unit = $sql->escapeString($lineItem ['unit']);
-                }
-                $contract->lineItems[] = new LineItem($contract->getId(), $item, $amount, $unit);
-            }
         }
         $sql->disconnect();
         return $contract;
@@ -271,10 +261,6 @@ class Contract {
         return array_diff_key($this->raw, ['link' => '', 'address' => '', 'number' => '', 'email' => '', 'date' => '', 'location' => '', 'details' => '', 'amount' => '', 'deposit' => '', 'invoice' => '', 'content' => '', 'signature' => '', 'initial' => '', 'file' => '', 'lineItems' => '']);
     }
 
-    function getDataArray() {
-        return $this->raw;
-    }
-
     /**
      * @return int
      * @throws BadUserException
@@ -302,6 +288,68 @@ class Contract {
         $this->link = $contract->link;
         $this->raw = $contract->getDataArray();
         return $lastId;
+    }
+
+    /**
+     * @return array
+     */
+    private function nullify(): array {
+        $address = "NULL";
+        if ($this->address != NULL) {
+            $address = "'{$this->address}'";
+        }
+        $number = "NULL";
+        if ($this->number != NULL) {
+            $number = "'{$this->number}'";
+        }
+        $email = "NULL";
+        if ($this->email != NULL) {
+            $email = "'{$this->email}'";
+        }
+        $date = "NULL";
+        if ($this->date != NULL) {
+            $date = "'{$this->date}'";
+        }
+        $location = "NULL";
+        if ($this->location != NULL) {
+            $location = "'{$this->location}'";
+        }
+        $details = "NULL";
+        if ($this->details != NULL) {
+            $details = "'{$this->details}'";
+        }
+        $invoice = "NULL";
+        if ($this->invoice != NULL) {
+            $invoice = "'{$this->invoice}'";
+        }
+        return array($address, $number, $email, $date, $location, $details, $invoice);
+    }
+
+    /**
+     * @param $id
+     * @return Contract
+     * @throws BadContractException
+     */
+    static function withId($id): Contract {
+        if (!isset ($id)) {
+            throw new BadContractException("Contract id is required");
+        } elseif ($id == "") {
+            throw new BadContractException("Contract id can not be blank");
+        }
+        $contract = new Contract();
+        $id = (int)$id;
+        $sql = new Sql();
+        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
+        $sql->disconnect();
+        if (!isset($contract->raw) || !isset($contract->raw['id'])) {
+            throw new BadContractException("Contract id does not match any contracts");
+        }
+        self::setRawData($contract);
+        return $contract;
+    }
+
+    function getDataArray() {
+        return $this->raw;
     }
 
     /**
@@ -411,8 +459,8 @@ class Contract {
         //set up our file
         $this->file = DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' . DIRECTORY_SEPARATOR . $this->name . ' - ' . date('Y-m-d') . ' - ' . ucfirst($this->type) . ' Contract.pdf';
         $sql->executeStatement("UPDATE `contracts` SET `name` = '{$this->name}', `address` = '{$this->address}', `number` = '{$this->number}',
-        `email` = '{$this->email}', `signature` = '{$this->signature}', `initial` = '{$this->initial}', `content` = '{$this->content}', 
-        `file` = '{$this->file}' WHERE `id` = {$this->id};");
+                `email` = '{$this->email}', `signature` = '{$this->signature}', `initial` = '{$this->initial}', `content` = '{$this->content}', 
+                `file` = '{$this->file}' WHERE `id` = {$this->id};");
         $sql->disconnect();
 
         // sanitize out content
@@ -433,40 +481,5 @@ class Contract {
         $mpdf->WriteHTML($content);
         $mpdf->Output(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . $this->file);
         return $this->file;
-    }
-
-    /**
-     * @return array
-     */
-    private function nullify(): array {
-        $address = "NULL";
-        if ($this->address != NULL) {
-            $address = "'{$this->address}'";
-        }
-        $number = "NULL";
-        if ($this->number != NULL) {
-            $number = "'{$this->number}'";
-        }
-        $email = "NULL";
-        if ($this->email != NULL) {
-            $email = "'{$this->email}'";
-        }
-        $date = "NULL";
-        if ($this->date != NULL) {
-            $date = "'{$this->date}'";
-        }
-        $location = "NULL";
-        if ($this->location != NULL) {
-            $location = "'{$this->location}'";
-        }
-        $details = "NULL";
-        if ($this->details != NULL) {
-            $details = "'{$this->details}'";
-        }
-        $invoice = "NULL";
-        if ($this->invoice != NULL) {
-            $invoice = "'{$this->invoice}'";
-        }
-        return array($address, $number, $email, $date, $location, $details, $invoice);
     }
 }
