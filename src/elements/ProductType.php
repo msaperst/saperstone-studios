@@ -12,11 +12,16 @@ class ProductType {
     public function __construct() {
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return ProductType
+     * @throws BadProductTypeException
+     */
+    static function withId($id): ProductType {
         if (!isset ($id)) {
-            throw new Exception("Product id is required");
+            throw new BadProductTypeException("Product id is required");
         } elseif ($id == "") {
-            throw new Exception("Product id can not be blank");
+            throw new BadProductTypeException("Product id can not be blank");
         }
         $productType = new ProductType();
         $id = (int)$id;
@@ -24,7 +29,7 @@ class ProductType {
         $productType->raw = $sql->getRow("SELECT * FROM product_types WHERE id = $id;");
         $sql->disconnect();
         if (!isset($productType->raw) || !isset($productType->raw['id'])) {
-            throw new Exception("Product id does not match any products");
+            throw new BadProductTypeException("Product id does not match any products");
         }
         $productType->id = $productType->raw['id'];
         $productType->category = $productType->raw['category'];
@@ -32,31 +37,42 @@ class ProductType {
         return $productType;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return ProductType
+     * @throws BadProductTypeException
+     */
+    static function withParams($params): ProductType {
         return self::setVals(new ProductType(), $params);
     }
 
-    private static function setVals(ProductType $productType, $params) {
+    /**
+     * @param ProductType $productType
+     * @param $params
+     * @return ProductType
+     * @throws BadProductTypeException
+     */
+    private static function setVals(ProductType $productType, $params): ProductType {
         $sql = new Sql();
         //product category
         if (!isset ($params['category'])) {
             $sql->disconnect();
-            throw new Exception("Product category is required");
+            throw new BadProductTypeException("Product category is required");
         } elseif ($params['category'] == "") {
             $sql->disconnect();
-            throw new Exception("Product category can not be blank");
+            throw new BadProductTypeException("Product category can not be blank");
         } elseif (!in_array($params['category'], $sql->getEnumValues('product_types', 'category'))) {
             $sql->disconnect();
-            throw new Exception ("Product category is not valid");
+            throw new BadProductTypeException ("Product category is not valid");
         }
         $productType->category = $sql->escapeString($params ['category']);
         //product name
         if (!isset ($params['name'])) {
             $sql->disconnect();
-            throw new Exception("Product name is required");
+            throw new BadProductTypeException("Product name is required");
         } elseif ($params['name'] == "") {
             $sql->disconnect();
-            throw new Exception("Product name can not be blank");
+            throw new BadProductTypeException("Product name can not be blank");
         }
         $productType->name = $sql->escapeString($params ['name']);
         $sql->disconnect();
@@ -71,24 +87,36 @@ class ProductType {
         return $this->raw;
     }
 
-    function create() {
+    /**
+     * @return int
+     * @throws BadUserException
+     * @throws ProductTypeException
+     * @throws SqlException
+     */
+    function create(): int {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to create product type");
+            throw new ProductTypeException("User not authorized to create product type");
         }
         $sql = new Sql();
         $lastId = $sql->executeStatement("INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (NULL, '{$this->category}', '{$this->name}');");
         $sql->disconnect();
         $this->id = $lastId;
-        $productType = self::withId($lastId);
+        $productType = static::withId($lastId);
         $this->raw = $productType->getDataArray();
         return $lastId;
     }
 
+    /**
+     * @param $params
+     * @throws BadUserException
+     * @throws ProductTypeException
+     * @throws SqlException
+     */
     function update($params) {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to update product type");
+            throw new ProductTypeException("User not authorized to update product type");
         }
         self::setVals($this, $params);
         $sql = new Sql();
@@ -97,10 +125,15 @@ class ProductType {
         $sql->disconnect();
     }
 
+    /**
+     * @throws BadUserException
+     * @throws BadProductTypeException
+     * @throws SqlException
+     */
     function delete() {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to delete product type");
+            throw new BadProductTypeException("User not authorized to delete product type");
         }
         $sql = new Sql();
         $sql->executeStatement("DELETE FROM product_types WHERE id='{$this->id}';");

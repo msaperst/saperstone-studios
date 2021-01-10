@@ -56,7 +56,7 @@ class GalleryIntegrationTest extends TestCase {
         try {
             Gallery::withParams(NULL);
         } catch (Exception $e) {
-            $this->assertEquals("Not yet implemented", $e->getMessage());
+            $this->assertEquals("Not yet implemented: null", $e->getMessage());
         }
     }
 

@@ -7,21 +7,27 @@ class BlogText {
     private $group;
     private $text;
 
+    /**
+     * BlogText constructor.
+     * @param Blog $blog
+     * @param $params
+     * @throws BadBlogTextException
+     */
     function __construct(Blog $blog, $params) {
         $this->blog = $blog;
         if (!isset ($params['group'])) {
-            throw new Exception("Blog content group is required");
+            throw new BadBlogTextException("Blog content group is required");
         } elseif ($params['group'] == "") {
-            throw new Exception("Blog content group can not be blank");
+            throw new BadBlogTextException("Blog content group can not be blank");
         }
         $this->group = (int)$params['group'];
         $sql = new Sql();
         if (!isset ($params['text'])) {
             $sql->disconnect();
-            throw new Exception("Blog content text is required");
+            throw new BadBlogTextException("Blog content text is required");
         } elseif ($params['text'] == "") {
             $sql->disconnect();
-            throw new Exception("Blog content text can not be blank");
+            throw new BadBlogTextException("Blog content text can not be blank");
         }
         $this->text = $sql->escapeString($params['text']);
         $sql->disconnect();
@@ -35,11 +41,16 @@ class BlogText {
         return "{$this->blog->getId()}, {$this->group}, '{$this->text}'";
     }
 
+    /**
+     * @throws BadUserException
+     * @throws BlogTextException
+     * @throws SqlException
+     */
     function create() {
         //check for access
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to create blog content");
+            throw new BlogTextException("User not authorized to create blog content");
         }
         //add the text to the db
         $sql = new Sql();

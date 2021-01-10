@@ -18,11 +18,17 @@ class Comment {
     function __construct() {
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return Comment
+     * @throws BadCommentException
+     * @throws BadUserException
+     */
+    static function withId($id): Comment {
         if (!isset ($id)) {
-            throw new Exception("Comment id is required");
+            throw new BadCommentException("Comment id is required");
         } elseif ($id == "") {
-            throw new Exception("Comment id can not be blank");
+            throw new BadCommentException("Comment id can not be blank");
         }
         $comment = new Comment();
         $id = (int)$id;
@@ -30,7 +36,7 @@ class Comment {
         $comment->raw = $sql->getRow("SELECT * FROM blog_comments WHERE id = $id;");
         if (!isset($comment->raw) || !isset($comment->raw['id'])) {
             $sql->disconnect();
-            throw new Exception("Comment id does not match any comments");
+            throw new BadCommentException("Comment id does not match any comments");
         }
         $comment->id = $comment->raw['id'];
         $comment->blog = $comment->raw['blog'];
@@ -48,10 +54,17 @@ class Comment {
         return $comment;
     }
 
-    static function withParams($params) {
+    /**
+     * @param $params
+     * @return Comment
+     * @throws BadCommentException
+     * @throws BadBlogException
+     * @throws BadUserException
+     */
+    static function withParams($params): Comment {
         $comment = new Comment();
         if (!isset($params['post'])) {
-            throw new Exception("Blog id is required");
+            throw new BadBlogException("Blog id is required");
         }
         $comment->blog = Blog::withId($params['post']);
         $sql = new Sql ();
@@ -66,10 +79,10 @@ class Comment {
         //message is required
         if (!isset ($params['message'])) {
             $sql->disconnect();
-            throw new Exception("Message is required");
+            throw new BadCommentException("Message is required");
         } elseif ($params['message'] == "") {
             $sql->disconnect();
-            throw new Exception("Message can not be blank");
+            throw new BadCommentException("Message can not be blank");
         }
         $comment->comment = $sql->escapeString($params ['message']);
         $sql->disconnect();
@@ -95,28 +108,43 @@ class Comment {
         return $this->raw;
     }
 
-    function canUserGetData() {
+    /**
+     * @return bool
+     * @throws BadUserException
+     */
+    function canUserGetData(): bool {
         $user = User::fromSystem();
         // only admin users and the user who created the comment can get all data
         return ($this->user != NULL && $this->user == $user->getId()) || $user->isAdmin();
     }
 
-    public function create() {
+    /**
+     * @return int
+     * @throws SqlException
+     * @throws BadCommentException
+     * @throws BadUserException
+     */
+    public function create(): int {
         $session = new Session();
         $session->initialize();
         $sql = new Sql();
         $commentId = $sql->executeStatement("INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ({$this->blog->getId()}, {$this->user}, '{$this->name}', CURRENT_TIMESTAMP, '{$session->getClientIP()}', '{$this->email}', '{$this->comment}' );");
         $this->id = $commentId;
         $sql->disconnect();
-        $comment = self::withId($commentId);
+        $comment = static::withId($commentId);
         $this->raw = $comment->getDataArray();
         $this->date = $comment->getDate();
         return $commentId;
     }
 
+    /**
+     * @throws SqlException
+     * @throws BadUserException
+     * @throws CommentException
+     */
     public function delete() {
         if (!$this->canUserGetData()) {
-            throw new Exception("User not authorized to delete comment");
+            throw new CommentException("User not authorized to delete comment");
         }
         $sql = new Sql();
         $sql->executeStatement("DELETE FROM blog_comments WHERE id={$this->id};");

@@ -24,13 +24,17 @@ class Blog {
     /**
      * @param $id
      * @return Blog
-     * @throws Exception
+     * @throws BadBlogException
+     * @throws BadCommentException
+     * @throws BadBlogTextException
+     * @throws BadUserException
+     * @throws BadBlogImageException
      */
     static function withId($id): Blog {
         if (!isset ($id)) {
-            throw new Exception("Blog id is required");
+            throw new BadBlogException("Blog id is required");
         } elseif ($id == "") {
-            throw new Exception("Blog id can not be blank");
+            throw new BadBlogException("Blog id can not be blank");
         }
         $blog = new Blog();
         $id = (int)$id;
@@ -38,7 +42,7 @@ class Blog {
         $blog->raw = $sql->getRow("SELECT * FROM blog_details WHERE id = $id;");
         if (!isset($blog->raw) || !isset($blog->raw['id'])) {
             $sql->disconnect();
-            throw new Exception("Blog id does not match any blog posts");
+            throw new BadBlogException("Blog id does not match any blog posts");
         }
         $blog->directory = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $blog->raw['date']);
         $blog->id = $blog->raw['id'];
@@ -78,7 +82,9 @@ class Blog {
     /**
      * @param $params
      * @return Blog
-     * @throws Exception
+     * @throws BadBlogException
+     * @throws BadBlogImageException
+     * @throws BadBlogTextException
      */
     static function withParams($params): Blog {
         $blog = self::setBasicValues(new Blog(), $params);
@@ -89,43 +95,40 @@ class Blog {
      * @param Blog $blog
      * @param $params
      * @return Blog
-     * @throws Exception
+     * @throws BadBlogException
      */
     private static function setBasicValues(Blog $blog, $params): Blog {
         $sql = new Sql();
         //blog title
         if (!isset ($params['title'])) {
             $sql->disconnect();
-            throw new Exception("Blog title is required");
+            throw new BadBlogException("Blog title is required");
         } elseif ($params['title'] == "") {
             $sql->disconnect();
-            throw new Exception("Blog title can not be blank");
+            throw new BadBlogException("Blog title can not be blank");
         }
         $blog->title = $sql->escapeString($params ['title']);
         //blog date
         if (!isset ($params['date'])) {
             $sql->disconnect();
-            throw new Exception("Blog date is required");
+            throw new BadBlogException("Blog date is required");
         } elseif ($params['date'] == "") {
             $sql->disconnect();
-            throw new Exception("Blog date can not be blank");
+            throw new BadBlogException("Blog date can not be blank");
         } else {
-            $date = $sql->escapeString($params ['date']);
-            $format = 'Y-m-d';
-            $d = DateTime::createFromFormat($format, $date);
-            if (!($d && $d->format($format) === $date)) {
+            if (!Strings::isDateFormatted($sql->escapeString($params ['date']))) {
                 $sql->disconnect();
-                throw new Exception("Blog date is not the correct format");
+                throw new BadBlogException("Blog date is not the correct format");
             }
         }
         $blog->date = $sql->escapeString($params ['date']);
         //blog preview image
         if (!isset ($params ['preview'] ['img'])) {
             $sql->disconnect();
-            throw new Exception("Blog preview image is required");
+            throw new BadBlogException("Blog preview image is required");
         } elseif ($params ['preview'] ['img'] == "") {
             $sql->disconnect();
-            throw new Exception("Blog preview image can not be blank");
+            throw new BadBlogException("Blog preview image can not be blank");
         }
         $blog->preview = $sql->escapeString($params ['preview'] ['img']);
         //blog preview offset
@@ -156,7 +159,9 @@ class Blog {
      * @param Blog $blog
      * @param $params
      * @return Blog
-     * @throws Exception
+     * @throws BadBlogException
+     * @throws BadBlogImageException
+     * @throws BadBlogTextException
      */
     private static function setContent(Blog $blog, $params): Blog {
         $sql = new Sql();
@@ -164,15 +169,15 @@ class Blog {
         //blog content
         if (!isset ($params ['content'])) {
             $sql->disconnect();
-            throw new Exception("Blog content is required");
+            throw new BadBlogException("Blog content is required");
         } elseif (empty ($params ['content'])) {
             $sql->disconnect();
-            throw new Exception("Blog content can not be empty");
+            throw new BadBlogException("Blog content can not be empty");
         } else {
             foreach ($params ['content'] as $content) {
                 if (!isset($content['type'])) {
                     $sql->disconnect();
-                    throw new Exception("Blog content is not the correct format");
+                    throw new BadBlogException("Blog content is not the correct format");
                 }
                 if ($content ['type'] == "text") {
                     $blog->content[] = new BlogText($blog, $content);
@@ -182,7 +187,7 @@ class Blog {
                     }
                 } else {
                     $sql->disconnect();
-                    throw new Exception("Blog content is not the correct format");
+                    throw new BadBlogException("Blog content is not the correct format");
                 }
             }
         }
@@ -261,13 +266,15 @@ class Blog {
 
     /**
      * @return int
-     * @throws Exception
+     * @throws BlogException
+     * @throws SqlException
+     * @throws BadUserException
      */
     function create(): int {
         //check for access
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to create blog post");
+            throw new BlogException("User not authorized to create blog post");
         }
 
         // move and resize our preview image
@@ -296,19 +303,21 @@ class Blog {
             $sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ($blogId, $tag)");
         }
         $sql->disconnect();
-        $blog = self::withId($blogId);
+        $blog = static::withId($blogId);
         $this->raw = $blog->getDataArray();
         return $blogId;
     }
 
     /**
      * @param $params
-     * @throws Exception
+     * @throws BlogException
+     * @throws BadUserException
+     * @throws SqlException
      */
     function update($params) {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to update blog post");
+            throw new BlogException("User not authorized to update blog post");
         }
         // get our updated values
         self::setBasicValues($this, $params);
@@ -362,16 +371,18 @@ class Blog {
             }
         }
         $sql->disconnect();
-        $this->raw = self::withId($this->id)->getDataArray();
+        $this->raw = static::withId($this->id)->getDataArray();
     }
 
     /**
-     * @throws Exception
+     * @throws BadUserException
+     * @throws BlogException
+     * @throws SqlException
      */
     function delete() {
         $user = User::fromSystem();
         if (!$user->isAdmin()) {
-            throw new Exception("User not authorized to delete blog post");
+            throw new BlogException("User not authorized to delete blog post");
         }
         $sql = new Sql();
         $images = $sql->getRows("SELECT * FROM blog_images WHERE blog='{$this->id}';");

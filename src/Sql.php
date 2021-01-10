@@ -1,14 +1,26 @@
 <?php
 
+require_once "autoloader.php";
+
 class Sql {
+    /**
+     * @var bool
+     */
     private $connected = false;
+    /**
+     * @var mysqli
+     */
     private $mysqli;
 
+    /**
+     * Sql constructor.
+     * @throws SqlException
+     */
     function __construct() {
         try {
             $this->mysqli = new mysqli (getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
         } catch (Exception $e) {
-            throw new Exception("Failed to connect to MySQL: " . $e);
+            throw new SqlException("Failed to connect to MySQL: " . $e);
         }
         $this->connected = true;
     }
@@ -20,25 +32,40 @@ class Sql {
         }
     }
 
-    function isConnected() {
+    /**
+     * @return bool
+     */
+    function isConnected(): bool {
         return $this->connected;
     }
 
-    function escapeString($string) {
+    /**
+     * @param $string
+     * @return string
+     */
+    function escapeString($string): string {
         if (!$this->connected) {
             return $string;
         }
         return $this->mysqli->real_escape_string($string);
     }
 
-    function getRow($selectStatement) {
+    /**
+     * @param $selectStatement
+     * @return array|null
+     */
+    function getRow($selectStatement): ?array {
         if (!$this->connected) {
             return array();
         }
         return $this->mysqli->query($selectStatement)->fetch_assoc();
     }
 
-    function getRows($selectStatement) {
+    /**
+     * @param $selectStatement
+     * @return array
+     */
+    function getRows($selectStatement): array {
         $rows = array();
         if (!$this->connected) {
             return $rows;
@@ -53,7 +80,11 @@ class Sql {
         return $rows;
     }
 
-    function getRowCount($selectStatement) {
+    /**
+     * @param $selectStatement
+     * @return int
+     */
+    function getRowCount($selectStatement): int {
         if (!$this->connected) {
             return 0;
         }
@@ -64,15 +95,25 @@ class Sql {
         return $rows->num_rows;
     }
 
-    function executeStatement($statement) {
+    /**
+     * @param $statement
+     * @return string
+     * @throws SqlException
+     */
+    function executeStatement($statement): string {
         if (!$this->connected) {
-            throw new Exception("Not connected, unable to execute statement: '$statement'");
+            throw new SqlException("Not connected, unable to execute statement: '$statement'");
         }
         $this->mysqli->query($statement);
         return $this->mysqli->insert_id;
     }
 
-    function getEnumValues($table, $field) {
+    /**
+     * @param $table
+     * @param $field
+     * @return string[]
+     */
+    function getEnumValues($table, $field): array {
         if (!$this->connected) {
             return array();
         }

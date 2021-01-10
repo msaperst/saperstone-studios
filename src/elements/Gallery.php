@@ -15,11 +15,16 @@ class Gallery {
     function __construct() {
     }
 
-    static function withId($id) {
+    /**
+     * @param $id
+     * @return Gallery
+     * @throws BadGalleryException
+     */
+    static function withId($id): Gallery {
         if (!isset ($id)) {
-            throw new Exception("Gallery id is required");
+            throw new BadGalleryException("Gallery id is required");
         } elseif ($id === "") {
-            throw new Exception("Gallery id can not be blank");
+            throw new BadGalleryException("Gallery id can not be blank");
         }
         $gallery = new Gallery();
         $sql = new Sql();
@@ -27,7 +32,7 @@ class Gallery {
         $gallery->raw = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
         if (!isset($gallery->raw) || !isset($gallery->raw['id'])) {
             $sql->disconnect();
-            throw new Exception("Gallery id does not match any galleries");
+            throw new BadGalleryException("Gallery id does not match any galleries");
         }
         $gallery->id = $gallery->raw['id'];
         $gallery->parent = $gallery->raw['parent'];
@@ -37,13 +42,18 @@ class Gallery {
         $gallery->image = $gallery->raw['image'];
         $gallery->title = $gallery->raw['title'];
         $gallery->comment = $gallery->raw['comment'];
-        $gallery->images = array();    //TODO - change this to an array of matching images
+        //consider changing this to an array of matching images
+        $gallery->images = array();
         $sql->disconnect();
         return $gallery;
     }
 
+    /**
+     * @param $params
+     * @throws GalleryException
+     */
     static function withParams($params) {
-        throw new Exception('Not yet implemented');
+        throw new GalleryException('Not yet implemented: ' . json_encode($params));
     }
 
     function getId() {
@@ -62,7 +72,10 @@ class Gallery {
         return $this->image;
     }
 
-    function getNav() {
+    /**
+     * @return string
+     */
+    function getNav(): string {
         $nav = $this->getTitle();
         $mostParent = $this->parent;
         while ($mostParent != NULL) {
@@ -98,7 +111,11 @@ class Gallery {
         return $crumbs;
     }
 
-    private function crumbsHasProduct($nav) {
+    /**
+     * @param $nav
+     * @return bool
+     */
+    private function crumbsHasProduct($nav): bool {
         foreach ($nav as $n) {
             if ($n['title'] == 'Product') {
                 return true;
@@ -115,7 +132,10 @@ class Gallery {
         return $this->parent;
     }
 
-    function getImageLocation() {
+    /**
+     * @return string
+     */
+    function getImageLocation(): string {
         $location = $this->title . DIRECTORY_SEPARATOR;
         $mostParent = $this->parent;
         while ($mostParent != NULL) {
@@ -131,6 +151,10 @@ class Gallery {
         return DIRECTORY_SEPARATOR . str_replace(" ", "-", strtolower($location));
     }
 
+    /**
+     * @param $params
+     * @throws SqlException
+     */
     function update($params) {
         $sql = new Sql();
         if (isset ($params ['title'])) {
