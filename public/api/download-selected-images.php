@@ -93,6 +93,8 @@ $myFile = "../tmp/{$album->getName()} " . date("Y-m-d H-i-s") . ".zip";
 $command = `zip -j "$myFile" $images`;
 $response ['file'] = $myFile;
 echo json_encode($response);
+//remove our file after a specified amount of time
+system("bash -c 'sleep " . getenv('CLEAN_UP_AFTER') . "; rm \"$myFile\";' > /dev/null 2>&1 &");
 
 // update our user records table
 $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode("\n", $image_array) . "', {$album->getId()} );");

@@ -176,4 +176,18 @@ $message", $actualMessage, $actualMessage);
         fclose($bh);
         Assert::assertTrue($result);
     }
+
+    /**
+     * @param $url
+     * @param $code
+     */
+    public static function httpCodeEquals($url, $code) {
+        $url = str_replace(" ", '%20', $url);
+        $handle = curl_init($url);
+        curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+        curl_exec($handle);
+        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+        curl_close($handle);
+        Assert::assertEquals($code, $httpCode, $httpCode);
+    }
 }
