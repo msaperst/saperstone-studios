@@ -13,7 +13,8 @@
     "behat/behat": "3.7.0",
     "emuse/behat-html-formatter": "^0.2.0",
     "mpdf/mpdf": "7.1.9",
-    "google/apiclient": "^2.0"
+    "google/apiclient": "^2.0",
+    "ext-curl": "*"
   },
   "autoload-dev": {
     "psr-4": {

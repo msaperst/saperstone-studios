@@ -70,5 +70,6 @@ services:
       CONSUMER_SECRET: ${CONSUMER_SECRET}
       TOKEN: ${TOKEN}
       TOKEN_SECRET: ${TOKEN_SECRET}
+      CLEAN_UP_AFTER: 604800
 volumes:
   mysql:

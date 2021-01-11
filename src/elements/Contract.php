@@ -224,9 +224,9 @@ class Contract {
     }
 
     /**
-     * @return float
+     * @return string
      */
-    function getDeposit(): float {
+    function getDeposit(): string {
         return number_format((float)$this->deposit, 2, '.', '');
     }
 

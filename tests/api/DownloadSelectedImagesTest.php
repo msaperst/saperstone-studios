@@ -4,6 +4,7 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
+use Gmail;
 use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
@@ -13,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 use ZipArchive;
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Gmail.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
@@ -1599,6 +1601,33 @@ OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
         } finally {
             unlink('download.zip');
+        }
+    }
+
+    /**
+     * @throws ExceptionAlias
+     * @throws GuzzleException
+     */
+    public function testFileDeletedAfter() {
+        try {
+            $cookieJar = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $response = $this->http->request('POST', 'api/download-selected-images.php', [
+                'form_params' => [
+                    'what' => '1',
+                    'album' => 999
+                ],
+                'cookies' => $cookieJar
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $zipFile = json_decode($response->getBody(), true)['file'];
+            CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 200);
+            sleep(65);
+            CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 404);
+        } finally {
+            $gmail = new Gmail('Someone Downloaded Something');
+            $gmail->deleteEmail();
         }
     }
 }
