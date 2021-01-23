@@ -456,7 +456,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             sh "docker system prune -a -f"
             sh "docker logout ${dockerRepo}"
         }
-        if( branch == 'master' ) {
+        if( 'develop'.equals(branch ) {
             stage('Deploy to Production') {
                 timeout(time: 30, unit: 'MINUTES') {
                     input(
@@ -491,6 +491,9 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml stop'"
                 sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml up -d'"
                 sh "ssh 192.168.1.2 'docker system prune -a -f'"
+            }
+            stage('Merge to Master') {
+                //TODO
             }
         }
     }
