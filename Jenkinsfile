@@ -456,7 +456,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             sh "docker system prune -a -f"
             sh "docker logout ${dockerRepo}"
         }
-        if( 'develop'.equals(branch ) {
+        if( 'develop'.equals(branch) ) {
             stage('Deploy to Production') {
                 timeout(time: 30, unit: 'MINUTES') {
                     input(
