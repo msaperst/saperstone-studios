@@ -90,7 +90,7 @@ Feature: Admin Album
   Scenario: Unable to do any actions when no favorites
     When I view my favorites
     Then the download favorites button is disabled
-    And the share favorites button is disabled
+#    And the share favorites button is disabled
     And the submit favorites button is disabled
 
   Scenario: Able to download favorites
@@ -122,11 +122,11 @@ Feature: Admin Album
     And I see album 99999 download with my favorites
     And I see an email indicating images "2, 4, 7" from album 99999 downloaded
 
-  Scenario: Unable to share favorites
-    Given album 99999 image 2 is a favorite
-    When I view my favorites
-    And I share my favorites
-    Then I see that sharing isn't available
+#  Scenario: Unable to share favorites
+#    Given album 99999 image 2 is a favorite
+#    When I view my favorites
+#    And I share my favorites
+#    Then I see that sharing isn't available
 
   Scenario: Able to submit favorites
     Given album 99999 image 2 is a favorite
@@ -156,9 +156,9 @@ Feature: Admin Album
     And an email is sent indicating album 99999 image 2 submitted
     And I receive an email indicating I have submitted my selects
 
-  Scenario: Unable to share all images
-    When I share all my images
-    Then I see that sharing isn't available
+#  Scenario: Unable to share all images
+#    When I share all my images
+#    Then I see that sharing isn't available
 
   Scenario: Able to download all images
     And I download all my images
@@ -327,11 +327,11 @@ Feature: Admin Album
     And I see album 99999 download with images "2"
     And I see an email indicating images "2" from album 99999 downloaded
 
-  Scenario: Unable to share single image
-    Given I have share rights for album 99999 image 2
-    When I view album image 2
-    And I share the image
-    Then I see that sharing isn't available
+#  Scenario: Unable to share single image
+#    Given I have share rights for album 99999 image 2
+#    When I view album image 2
+#    And I share the image
+#    Then I see that sharing isn't available
 
   Scenario: Able to submit single image
     When I view album image 2
