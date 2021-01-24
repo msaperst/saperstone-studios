@@ -344,10 +344,10 @@ function submitContract(inputs, post, dialogItself, button) {
     var modal = button.closest('.modal-content');
     // send our update
     $.post(post, inputs).done(function(data) {
-        if (data !== "") {
-            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-        } else {
+        if ($.isNumeric(data) && data !== '0') {
             dialogItself.close();
+        } else {
+            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }
         contract_table.ajax.reload(null, false);
     }).fail(function(xhr, status, error) {
