@@ -263,19 +263,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
 <!--                        </div>-->
                             <?php
                         }
-                        if (!$user->isLoggedIn()) {
-                            ?>
-                            <!-- removing add to cart as it causes confusion -->
-<!--                            <div class="tooltip-wrapper disabled"-->
-<!--                                 data-toggle="tooltip" data-placement="top"-->
-<!--                                 title="Login or create an account for this feature.">-->
-<!--                            <button id="cart-image-btn" type="button"-->
-<!--                                    class="btn btn-default btn-warning" disabled>-->
-<!--                                <em class="fa fa-shopping-cart"></em> Add to Cart-->
-<!--                            </button>-->
-<!--                        </div>-->
-                            <?php
-                        } else {
+                        if ($user->isLoggedIn()) {
                             ?>
                             <button id="cart-image-btn" type="button"
                                     class="btn btn-default btn-warning btn-action">
