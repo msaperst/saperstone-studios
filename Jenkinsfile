@@ -434,15 +434,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             )
         }
         stage('Publish Containers') {
-            withCredentials([
-                    usernamePassword(
-                            credentialsId: 'nexus-docker',
-                            usernameVariable: 'dockerUser',
-                            passwordVariable: 'dockerPass'
-                    )
-            ]) {
-                sh "docker login ${dockerRepo} -u ${dockerUser} -p ${dockerPass}"
-            }
             // tag and push each of our containers
             parallel(
                     "PHP": {
@@ -455,8 +446,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         pushContainer(dockerRegistry, version, "workspace_mysql", "mysql")
                     }
             )
-            sh "docker system prune -a -f"
-            sh "docker logout ${dockerRepo}"
         }
         if( 'develop'.equals(branch) ) {
             stage('Deploy to Production') {
@@ -475,15 +464,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 }
             }
             stage('Copy Container to Walter') {
-                withCredentials([
-                        usernamePassword(
-                                credentialsId: 'nexus-docker',
-                                usernameVariable: 'dockerUser',
-                                passwordVariable: 'dockerPass'
-                        )
-                ]) {
-                    sh "docker login ${dockerRepo} -u ${dockerUser} -p ${dockerPass}"
-                }
                 parallel(
                         "PHP": {
                             copyContainer(dockerRegistry, version,"php")
@@ -495,7 +475,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                             copyContainer(dockerRegistry, version,"mysql")
                         }
                 )
-                sh "docker logout ${dockerRepo}"
+                sh "docker system prune -a -f"
             }
             stage('Stand Up New Instance') {
                 sh "scp docker-compose-prod.yml 192.168.1.2:/var/www/ss-docker/"
