@@ -370,67 +370,69 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 ])
             }
         }
-        parallel(
-            'Execute Chrome BDD Tests': {
-                try {
-                    stage('Start ZAP') {
-                        startZap(
-                                host: "localhost",
-                                port: 9092,
-                                zapHome: "/opt/zap"
-                        )
-                    }
-                    stage('Run Chrome BDD Tests') {
+        stage('Run Chrome Functional Tests') {
+            parallel(
+                    'Execute Chrome BDD Tests': {
                         try {
-                            sh 'composer dump-autoload'
-                            launchBrowserDocker('chrome')
-                            sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
-                        } catch (Exception e) {
-                            //TODO - not doing anything yet...but we'll need to
+                            stage('Start ZAP') {
+                                startZap(
+                                        host: "localhost",
+                                        port: 9092,
+                                        zapHome: "/opt/zap"
+                                )
+                            }
+                            stage('Run Chrome BDD Tests') {
+                                try {
+                                    sh 'composer dump-autoload'
+                                    launchBrowserDocker('chrome')
+                                    sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
+                                } catch (Exception e) {
+                                    //TODO - not doing anything yet...but we'll need to
+                                } finally {
+                                    closeBrowserDocker('chrome')
+                                    junit 'reports/behat/default.xml'
+                                    publishHTML([
+                                            allowMissing         : false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll              : true,
+                                            reportDir            : 'reports/behat/',
+                                            reportFiles          : 'index.html',
+                                            reportName           : 'Chrome Behat Test Results Report'
+                                    ])
+                                    publishHTML([
+                                            allowMissing         : false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll              : true,
+                                            reportDir            : 'reports/behat/',
+                                            reportFiles          : 'screenshots.html',
+                                            reportName           : 'Chrome Behat Test Results Screenshot Report'
+                                    ])
+                                }
+                            }
                         } finally {
-                            closeBrowserDocker('chrome')
-                            junit 'reports/behat/default.xml'
-                            publishHTML([
-                                    allowMissing         : false,
-                                    alwaysLinkToLastBuild: true,
-                                    keepAll              : true,
-                                    reportDir            : 'reports/behat/',
-                                    reportFiles          : 'index.html',
-                                    reportName           : 'Chrome Behat Test Results Report'
-                            ])
-                            publishHTML([
-                                    allowMissing         : false,
-                                    alwaysLinkToLastBuild: true,
-                                    keepAll              : true,
-                                    reportDir            : 'reports/behat/',
-                                    reportFiles          : 'screenshots.html',
-                                    reportName           : 'Chrome Behat Test Results Screenshot Report'
-                            ])
+                            stage('Get ZAP Results') {
+                                sh 'mkdir -p results/zap'
+                                sh 'wget -q -O results/zap/report.html http://localhost:9092/OTHER/core/other/htmlreport'
+                                sh 'wget -q -O results/zap/report.xml http://localhost:9092/OTHER/core/other/xmlreport'
+                                publishHTML([
+                                        allowMissing         : false,
+                                        alwaysLinkToLastBuild: true,
+                                        keepAll              : true,
+                                        reportDir            : 'results/zap',
+                                        reportFiles          : 'report.html',
+                                        reportName           : 'ZAP Report'
+                                ])
+                                archiveZap()
+                            }
+                        }
+                    },
+                    'Monitor Network Traffic': {
+                        stage('Zap Monitoring') {
+                            echo 'Monitoring traffic'
                         }
                     }
-                } finally {
-                    stage('Get ZAP Results') {
-                        sh 'mkdir -p results/zap'
-                        sh 'wget -q -O results/zap/report.html http://localhost:9092/OTHER/core/other/htmlreport'
-                        sh 'wget -q -O results/zap/report.xml http://localhost:9092/OTHER/core/other/xmlreport'
-                        publishHTML([
-                                allowMissing         : false,
-                                alwaysLinkToLastBuild: true,
-                                keepAll              : true,
-                                reportDir            : 'results/zap',
-                                reportFiles          : 'report.html',
-                                reportName           : 'ZAP Report'
-                        ])
-                        archiveZap()
-                    }
-                }
-            },
-            'Monitor Network Traffic': {
-                stage('Zap Monitoring') {
-                    echo 'Monitoring traffic'
-                }
-            }
-        )
+            )
+        }
         stage('Publish Containers') {
             withCredentials([
                     usernamePassword(

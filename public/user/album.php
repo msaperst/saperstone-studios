@@ -237,42 +237,33 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         }
                         if (!$user->isLoggedIn() && !$isAlbumSharable) {
                             ?>
-                            <div class="tooltip-wrapper disabled"
-                                 data-toggle="tooltip" data-placement="top"
-                                 title="Login or create an account for this feature.">
-                            <button id="shareable-image-btn"
-                                    type="button" class="btn btn-default" disabled>
-                                <em class="fa fa-share"></em> Share
-                            </button>
-                        </div>
+                            <!-- removing share abilities until feature is completed -->
+<!--                            <div class="tooltip-wrapper disabled"-->
+<!--                                 data-toggle="tooltip" data-placement="top"-->
+<!--                                 title="Login or create an account for this feature.">-->
+<!--                            <button id="shareable-image-btn"-->
+<!--                                    type="button" class="btn btn-default" disabled>-->
+<!--                                <em class="fa fa-share"></em> Share-->
+<!--                            </button>-->
+<!--                        </div>-->
                             <?php
                         } else {
                             ?>
-                            <button id="shareable-image-btn" type="button"
-                                    class="btn btn-default btn-action btn-success hidden">
-                            <em class="fa fa-share"></em> Share
-                        </button>
-                            <div id="not-shareable-image-btn" class="tooltip-wrapper disabled"
-                                 data-toggle="tooltip" data-placement="top"
-                                 title="Purchase social media rights to this image in order to share it on social media.">
-                            <button type="button" class="btn btn-default btn-action">
-                                <em class="fa fa-share"></em> Share
-                            </button>
-                        </div>
+                            <!-- removing share abilities until feature is completed -->
+<!--                            <button id="shareable-image-btn" type="button"-->
+<!--                                    class="btn btn-default btn-action btn-success hidden">-->
+<!--                            <em class="fa fa-share"></em> Share-->
+<!--                        </button>-->
+<!--                            <div id="not-shareable-image-btn" class="tooltip-wrapper disabled"-->
+<!--                                 data-toggle="tooltip" data-placement="top"-->
+<!--                                 title="Purchase social media rights to this image in order to share it on social media.">-->
+<!--                            <button type="button" class="btn btn-default btn-action">-->
+<!--                                <em class="fa fa-share"></em> Share-->
+<!--                            </button>-->
+<!--                        </div>-->
                             <?php
                         }
-                        if (!$user->isLoggedIn()) {
-                            ?>
-                            <div class="tooltip-wrapper disabled"
-                                 data-toggle="tooltip" data-placement="top"
-                                 title="Login or create an account for this feature.">
-                            <button id="cart-image-btn" type="button"
-                                    class="btn btn-default btn-warning" disabled>
-                                <em class="fa fa-shopping-cart"></em> Add to Cart
-                            </button>
-                        </div>
-                            <?php
-                        } else {
+                        if ($user->isLoggedIn()) {
                             ?>
                             <button id="cart-image-btn" type="button"
                                     class="btn btn-default btn-warning btn-action">
@@ -364,21 +355,23 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         }
                         if (!$user->isLoggedIn() && !$isAlbumSharable) {
                             ?>
-                            <div class="tooltip-wrapper disabled"
-                                 data-toggle="tooltip" data-placement="top"
-                                 title="Login or create an account for this feature.">
-                            <button id="shareable-favorites-btn"
-                                    type="button" class="btn btn-default" disabled>
-                                <em class="fa fa-share"></em> Share Favorites
-                            </button>
-                        </div>
+                                <!-- removing share abilities until feature is completed -->
+<!--                            <div class="tooltip-wrapper disabled"-->
+<!--                                 data-toggle="tooltip" data-placement="top"-->
+<!--                                 title="Login or create an account for this feature.">-->
+<!--                            <button id="shareable-favorites-btn"-->
+<!--                                    type="button" class="btn btn-default" disabled>-->
+<!--                                <em class="fa fa-share"></em> Share Favorites-->
+<!--                            </button>-->
+<!--                        </div>-->
                             <?php
                         } else {
                             ?>
-                            <button id="shareable-favorites-btn"
-                                    type="button" class="btn btn-default btn-action btn-success">
-                            <em class="fa fa-share"></em> Share Favorites
-                        </button>
+                            <!-- removing share abilities until feature is completed -->
+<!--                            <button id="shareable-favorites-btn"-->
+<!--                                    type="button" class="btn btn-default btn-action btn-success">-->
+<!--                            <em class="fa fa-share"></em> Share Favorites-->
+<!--                        </button>-->
                             <?php
                         }
                         ?>
@@ -729,22 +722,25 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
         }
         if (!$user->isLoggedIn() && !$isAlbumSharable) {
             ?>
-            <span class="text-center"><div
-                        class="tooltip-wrapper disabled" data-toggle="tooltip"
-                        data-placement="top"
-                        title="Login or create an account for this feature.">
-                    <button id="shareable-all-btn"
-                            type="button" class="btn btn-default" disabled>
-                        <em class="fa fa-share"></em> Share All
-                    </button>
-                </div></span>
+            <!-- removing share abilities until feature is completed -->
+<!--            <span class="text-center"><div-->
+<!--                        class="tooltip-wrapper disabled" data-toggle="tooltip"-->
+<!--                        data-placement="top"-->
+<!--                        title="Login or create an account for this feature.">-->
+<!--                    <button id="shareable-all-btn"-->
+<!--                            type="button" class="btn btn-default" disabled>-->
+<!--                        <em class="fa fa-share"></em> Share All-->
+<!--                    </button>-->
+<!--                </div></span>-->
             <?php
         } else {
-            ?> <span class="text-center"><button
-                        id="shareable-all-btn" type="button"
-                        class="btn btn-default btn-action btn-success">
-                    <em class="fa fa-share"></em> Share All
-                </button></span>
+            ?>
+            <!-- removing share abilities until feature is completed -->
+            <!--            <span class="text-center"><button-->
+<!--                        id="shareable-all-btn" type="button"-->
+<!--                        class="btn btn-default btn-action btn-success">-->
+<!--                    <em class="fa fa-share"></em> Share All-->
+<!--                </button></span>-->
             <?php
         }
         if (!$user->isLoggedIn()) {
