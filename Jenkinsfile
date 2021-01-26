@@ -473,6 +473,15 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 }
             }
             stage('Copy Container to Walter') {
+                withCredentials([
+                        usernamePassword(
+                                credentialsId: 'nexus-docker',
+                                usernameVariable: 'dockerUser',
+                                passwordVariable: 'dockerPass'
+                        )
+                ]) {
+                    sh "docker login ${dockerRepo} -u ${dockerUser} -p ${dockerPass}"
+                }
                 parallel(
                         "PHP": {
                             copyContainer(dockerRegistry, version,"php")
@@ -484,6 +493,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                             copyContainer(dockerRegistry, version,"mysql")
                         }
                 )
+                sh "docker logout ${dockerRepo}"
             }
             stage('Stand Up New Instance') {
                 sh "scp docker-compose-prod.yml 192.168.1.2:/var/www/ss-docker/"
