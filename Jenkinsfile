@@ -310,13 +310,13 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
             stage('Pull Containers') {
                 parallel(
                         "PHP": {
-                            pullContainer(dockerRegistry, ci, "php")
+                            pullContainer(dockerRegistry, 'ci', "php")
                         },
                         "PHP MyAdmin": {
-                            pullContainer(dockerRegistry, ci, "php-myadmin")
+                            pullContainer(dockerRegistry, 'ci', "php-myadmin")
                         },
                         "MySQL": {
-                            pullContainer(dockerRegistry, ci, "mysql")
+                            pullContainer(dockerRegistry, 'ci', "mysql")
                         }
                 )
             }
@@ -489,66 +489,59 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         }
                 )
             }
-            //TODO - retag and publish our containers
-
+            stage('Publish Containers') {
+                // retag and push each of our containers
+                parallel(
+                        "PHP": {
+                            pushContainer(dockerRegistry, ['qa'], "workspace_php", "php")
+                        },
+                        "PHP MyAdmin": {
+                            pushContainer(dockerRegistry, ['qa'], "phpmyadmin/phpmyadmin", "php-myadmin")
+                        },
+                        "MySQL": {
+                            pushContainer(dockerRegistry, ['qa'], "workspace_mysql", "mysql")
+                        }
+                )
+            }
+            stage('Clean Up') {
+                sh "docker system prune -a -f"
+            }
             currentBuild.result = 'SUCCESS'
             return
         }
 
-        // our release process
-        stage('Publish Containers') {
-            // tag and push each of our containers
-            parallel(
-                    "PHP": {
-                        pushContainer(dockerRegistry, version, "workspace_php", "php")
-                    },
-                    "PHP MyAdmin": {
-                        pushContainer(dockerRegistry, version, "phpmyadmin/phpmyadmin", "php-myadmin")
-                    },
-                    "MySQL": {
-                        pushContainer(dockerRegistry, version, "workspace_mysql", "mysql")
-                    }
-            )
-        }
-        if( 'develop'.equals(branch) ) {
-            stage('Deploy to Production') {
-                timeout(time: 30, unit: 'MINUTES') {
-                    input(
-                        message: 'Deploy To Production?',
-                        ok: 'Yes',
-                        parameters: [
-                            booleanParam(
-                                defaultValue: true,
-                                description: 'Should we deploy this out to production',
-                                name: 'Deploy?'
-                            )
-                        ]
-                    )
-                }
+        //our release workflow - kicked off when code is merged into release
+        if( 'release'.equals(branch) ) {
+            stage('Checkout Configuration') { // for display purposes
+                sh "docker system prune -a -f"
+                cleanWs()
+                checkout scm
             }
             stage('Copy Container to Walter') {
                 parallel(
                         "PHP": {
-                            copyContainer(dockerRegistry, version,"php")
+                            pullContainer(dockerRegistry, 'qa', "php")
+                            pushContainer(dockerRegistry, ['prod'], "workspace_mysql", "mysql")
+                            copyContainer(dockerRegistry, 'prod',"php")
                         },
                         "PHP MyAdmin": {
-                            copyContainer(dockerRegistry, version,"php-myadmin")
+                            pullContainer(dockerRegistry, 'qa', "php-myadmin")
+                            pushContainer(dockerRegistry, ['prod'], "workspace_mysql", "mysql")
+                            copyContainer(dockerRegistry, 'prod',"php-myadmin")
                         },
                         "MySQL": {
-                            copyContainer(dockerRegistry, version,"mysql")
+                            pullContainer(dockerRegistry, 'qa', "mysql")
+                            pushContainer(dockerRegistry, ['prod'], "workspace_mysql", "mysql")
+                            copyContainer(dockerRegistry, 'prod',"mysql")
                         }
                 )
                 sh "docker system prune -a -f"
             }
             stage('Stand Up New Instance') {
                 sh "scp docker-compose-prod.yml 192.168.1.2:/var/www/ss-docker/"
-                sh "ssh 192.168.1.2 \"sed -i 's/latest/${version}/g'\" /var/www/ss-docker/docker-compose-prod.yml"
                 sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml stop'"
                 sh "ssh 192.168.1.2 'cd /var/www/ss-docker/; docker-compose -f docker-compose-prod.yml up -d'"
                 sh "ssh 192.168.1.2 'docker system prune -a -f'"
-            }
-            stage('Merge to Master') {
-                //TODO
             }
         }
     }
