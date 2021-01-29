@@ -254,7 +254,7 @@ node() {
                                             }
                                         }
                                     }
-                                    sh "composer integration-pre-test"
+                                    sh "composer coverage-pre-test"
                                     sh "COMPOSER_PROCESS_TIMEOUT=600 composer coverage-test"
                                 } catch (Exception e) {
                                     if( fileContains( 'reports/cov-junit.xml', 'testsuite name=\\"tests/coverage/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
