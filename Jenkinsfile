@@ -254,18 +254,6 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                         }
                 )
             }
-            stage('Setup Files') {
-                try {
-                    sh "rm -r content"
-                } catch (e) {
-                }
-                sh "ln -s /home/msaperst/saperstone-studios/content content"
-                try {
-                    sh "rm -r logs"
-                } catch (e) {
-                }
-                sh "ln -s /home/msaperst/saperstone-studios/logs logs"
-            }
             stage('Build Containers') {
                 withCredentials([
                         usernamePassword(
@@ -319,6 +307,18 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                             pullContainer(dockerRegistry, 'ci', "mysql")
                         }
                 )
+            }
+            stage('Setup Files') {
+                try {
+                    sh "rm -r content"
+                } catch (e) {
+                }
+                sh "ln -s /home/msaperst/saperstone-studios/content content"
+                try {
+                    sh "rm -r logs"
+                } catch (e) {
+                }
+                sh "ln -s /home/msaperst/saperstone-studios/logs logs"
             }
             stage('Launch New Application') {
                 sh "docker-compose down"
