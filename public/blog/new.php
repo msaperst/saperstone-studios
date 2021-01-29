@@ -122,8 +122,9 @@ $sql->disconnect();
                 <?php
                 if (isset ( $blog )) {
                     foreach ( $blog->getImages() as $image ) {
+                        $parts = explode(DIRECTORY_SEPARATOR, $image);
                         //TODO - figure out how to select the correct one
-                        echo "<option>$image</option>";
+                        echo "<option>{$parts[sizeof($parts)-1]}</option>";
                     }
                 }
                 ?>
@@ -247,7 +248,11 @@ $sql->disconnect();
             <?php
                     } elseif ($group[0] instanceof BlogImage) {
                         ?>
-            addImageArea(<?php echo json_encode( $group[0]->getRaw() ); ?>);
+            addImageArea([<?php
+                        foreach( $group as $image ) {
+                            echo json_encode( $image->getRaw() ) . ",";
+                        }
+                        ?>]);
             <?php
                     }
                 }
