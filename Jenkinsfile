@@ -232,11 +232,14 @@ node() {
             }
             setupEnvFile()
             stage('Launch New Application') {
+                sh "mv docker-compose-prod.yml docker-compose.yml"
+                sh "sed -i 's/prod/ci/g' docker-compose.yml"
                 sh "docker-compose down"
                 sh "docker-compose up -d"
             }
             stage('Clean Up') {
                 sh "composer clean"
+                sh "composer install --prefer-dist --no-progress --no-suggest"
             }
             stage('BackEnd Tests') {
                 parallel(
