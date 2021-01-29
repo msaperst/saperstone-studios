@@ -1,5 +1,4 @@
 def branch
-def version
 def dockerRepo = "victor:9086"
 def dockerRegistry = "${dockerRepo}/saperstone-studios"
 
@@ -21,7 +20,6 @@ release
 node() {
     ansiColor('xterm') {
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
-        version = "$branch-${env.BUILD_NUMBER}"
 
         //our dev workflow - kicked off for feature branches and PRs
         if( !'develop'.equals(branch) && !'release'.equals(branch) ) {
@@ -271,13 +269,13 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 // tag and push each of our containers
                 parallel(
                         "PHP": {
-                            pushContainer(dockerRegistry, ['latest','ci',version], "workspace_php", "php")
+                            pushContainer(dockerRegistry, ['latest','ci',branch], "workspace_php", "php")
                         },
                         "PHP MyAdmin": {
-                            pushContainer(dockerRegistry, ['latest','ci',version], "phpmyadmin/phpmyadmin", "php-myadmin")
+                            pushContainer(dockerRegistry, ['latest','ci',branch], "phpmyadmin/phpmyadmin", "php-myadmin")
                         },
                         "MySQL": {
-                            pushContainer(dockerRegistry, ['latest','ci',version], "workspace_mysql", "mysql")
+                            pushContainer(dockerRegistry, ['latest','ci',branch], "workspace_mysql", "mysql")
                         }
                 )
             }
