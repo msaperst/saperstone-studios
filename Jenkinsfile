@@ -111,40 +111,40 @@ node() {
                                         )
                                 ]) {
                                     sh "echo '# tool hosting information\n\
-    ADMIN_PORT=9090\n\
-    HTTP_PORT=90\n\
-    HTTPS_PORT=9443\n\
-    SERVER_NAME=victor\n\
-    \n\
-    # database information\n\
-    DB_ROOT=${sqlRootPass}\n\
-    DB_PORT=3406\n\
-    DB_NAME=saperstone-studios\n\
-    DB_USER=${sqlUser}\n\
-    DB_PASS=${sqlPass}\n\
-    \n\
-    # email information\n\
-    EMAIL_CONTACT=msaperst+sstest@gmail.com\n\
-    EMAIL_ACTIONS=msaperst+sstest@gmail.com\n\
-    EMAIL_SELECTS=msaperst+sstest@gmail.com\n\
-    EMAIL_CONTRACTS=msaperst+sstest@gmail.com\n\
-    EMAIL_HOST=ssl://smtp.gmail.com\n\
-    EMAIL_PORT=465\n\
-    EMAIL_USER=${emailUser}\n\
-    EMAIL_PASS=${emailPass}\n\
-    EMAIL_USER_X=${emailUserX}\n\
-    EMAIL_PASS_X=${emailPassX}\n\
-    \n\
-    # twitter information\n\
-    CONSUMER_KEY=${twitterConsumerKey}\n\
-    CONSUMER_SECRET=${twitterConsumerSecret}\n\
-    TOKEN=${twitterToken}\n\
-    TOKEN_SECRET=${twitterTokenSecret}\n\
-    \n\
-    # paypal information\n\
-    PAYPAL_USERNAME=${paypalUser}\n\
-    PAYPAL_PASSWORD=${paypalPass}\n\
-    PAYPAL_SIGNATURE=${paypalSignature}' > .env"
+ADMIN_PORT=9090\n\
+HTTP_PORT=90\n\
+HTTPS_PORT=9443\n\
+SERVER_NAME=victor\n\
+\n\
+# database information\n\
+DB_ROOT=${sqlRootPass}\n\
+DB_PORT=3406\n\
+DB_NAME=saperstone-studios\n\
+DB_USER=${sqlUser}\n\
+DB_PASS=${sqlPass}\n\
+\n\
+# email information\n\
+EMAIL_CONTACT=msaperst+sstest@gmail.com\n\
+EMAIL_ACTIONS=msaperst+sstest@gmail.com\n\
+EMAIL_SELECTS=msaperst+sstest@gmail.com\n\
+EMAIL_CONTRACTS=msaperst+sstest@gmail.com\n\
+EMAIL_HOST=ssl://smtp.gmail.com\n\
+EMAIL_PORT=465\n\
+EMAIL_USER=${emailUser}\n\
+EMAIL_PASS=${emailPass}\n\
+EMAIL_USER_X=${emailUserX}\n\
+EMAIL_PASS_X=${emailPassX}\n\
+\n\
+# twitter information\n\
+CONSUMER_KEY=${twitterConsumerKey}\n\
+CONSUMER_SECRET=${twitterConsumerSecret}\n\
+TOKEN=${twitterToken}\n\
+TOKEN_SECRET=${twitterTokenSecret}\n\
+\n\
+# paypal information\n\
+PAYPAL_USERNAME=${paypalUser}\n\
+PAYPAL_PASSWORD=${paypalPass}\n\
+PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                                 }
                             }
                         },
@@ -283,13 +283,13 @@ node() {
                 // tag and push each of our containers
                 parallel(
                         "PHP": {
-                            pushContainer(dockerRegistry, ['latest',version], "workspace_php", "php")
+                            pushContainer(dockerRegistry, ['latest','ci',version], "workspace_php", "php")
                         },
                         "PHP MyAdmin": {
-                            pushContainer(dockerRegistry, ['latest',version], "phpmyadmin/phpmyadmin", "php-myadmin")
+                            pushContainer(dockerRegistry, ['latest','ci',version], "phpmyadmin/phpmyadmin", "php-myadmin")
                         },
                         "MySQL": {
-                            pushContainer(dockerRegistry, ['latest',version], "workspace_mysql", "mysql")
+                            pushContainer(dockerRegistry, ['latest','ci',version], "workspace_mysql", "mysql")
                         }
                 )
             }
@@ -301,197 +301,201 @@ node() {
         }
 
         //our develop workflow - kicked off when code is merged into develop
-        stage('Kill Any Old Docker Containers') {
-            parallel(
-                    "PHP": {
-                        killContainer("saperstonestudios_php")
-                    },
-                    "PHP MyAdmin": {
-                        killContainer("saperstonestudios_php-myadmin")
-                    },
-                    "MySQL": {
-                        killContainer("saperstonestudios_mysql")
-                    }
-            )
-        }
-        stage('Launch Docker Container') {
-            withCredentials([
-                    usernamePassword(
-                            credentialsId: 'docker-hub',
-                            usernameVariable: 'dockerUser',
-                            passwordVariable: 'dockerPass'
-                    )
-            ]) {
-                sh "docker login -u ${dockerUser} -p ${dockerPass}"
+        if( 'develop'.equals(branch) ) {
+            stage('Checkout Configuration') { // for display purposes
+                sh "docker system prune -a -f"
+                cleanWs()
+                checkout scm
             }
-            sh "docker-compose up --build -d"
-            sh "docker logout"
-        }
-        stage('Clean Up') {
-            sh "composer clean"
-        }
-        stage('BackEnd Tests') {
-            parallel(
-                    "Coverage Tests": {
-                        stage('Run Coverage Tests') {
-                            try {
-                                timeout(60) {
-                                    waitUntil {
-                                        script {
-                                            def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
-                                            return (r.trim() == '200');
-                                        }
-                                    }
-                                }
-                                sh "COMPOSER_PROCESS_TIMEOUT=600 composer coverage-test"
-                            } catch (Exception e) {
-                                if( fileContains( 'reports/cov-junit.xml', 'testsuite name=\\"tests/coverage/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
-                                     fileContains( 'reports/cov-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
-                                     echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
-                                 } else {
-                                    throw e
-                                 }
-                            } finally {
-                                junit 'reports/cov-junit.xml'
-                                publishHTML([
-                                        allowMissing         : false,
-                                        alwaysLinkToLastBuild: true,
-                                        keepAll              : true,
-                                        reportDir            : 'reports/',
-                                        reportFiles          : 'cov-results.html',
-                                        reportName           : 'Coverage Test Results Report'
-                                ])
-                                step([
-                                    $class: 'CloverPublisher',
-                                    cloverReportDir: 'reports/',
-                                    cloverReportFileName: 'cov-clover.xml'
-                                ])
-                                publishHTML([
-                                        allowMissing         : false,
-                                        alwaysLinkToLastBuild: true,
-                                        keepAll              : true,
-                                        reportDir            : 'reports/cov-coverage',
-                                        reportFiles          : 'index.html',
-                                        reportName           : 'Coverage Test Coverage Report'
-                                ])
-                            }
+            stage('Pull Containers') {
+                parallel(
+                        "PHP": {
+                            pullContainer(dockerRegistry, ci, "php")
+                        },
+                        "PHP MyAdmin": {
+                            pullContainer(dockerRegistry, ci, "php-myadmin")
+                        },
+                        "MySQL": {
+                            pullContainer(dockerRegistry, ci, "mysql")
                         }
-                    },
-                    "API Tests": {
-                        stage('Run API Tests') {
-                            try {
-                                timeout(60) {
-                                    waitUntil {
-                                        script {
-                                            def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
-                                            return (r.trim() == '200');
-                                        }
-                                    }
-                                }
-                                sh "COMPOSER_PROCESS_TIMEOUT=1200 composer api-test"
-                            } finally {
-                                junit 'reports/api-junit.xml'
-                                publishHTML([
-                                        allowMissing         : false,
-                                        alwaysLinkToLastBuild: true,
-                                        keepAll              : true,
-                                        reportDir            : 'reports/',
-                                        reportFiles          : 'api-results.html',
-                                        reportName           : 'API Test Results Report'
-                                ])
-                            }
-                        }
-                    }
-            )
-        }
-        stage('Run Chrome Page Tests') {
-            try {
-                launchBrowserDocker('chrome')
-                sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1800 composer ui-page-test;'
-            } finally {
-                closeBrowserDocker('chrome')
-                junit 'reports/ui/junit.xml'
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/ui/',
-                        reportFiles          : 'results.html',
-                        reportName           : 'Chrome Page Test Results Simple Report'
-                ])
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/ui/',
-                        reportFiles          : 'index.html',
-                        reportName           : 'Chrome Page Test Results Screenshot Report'
-                ])
+                )
             }
-        }
-        stage('Run Chrome Functional Tests') {
-            parallel(
-                    'Execute Chrome BDD Tests': {
-                        try {
-                            stage('Start ZAP') {
-                                startZap(
-                                        host: "localhost",
-                                        port: 9092,
-                                        zapHome: "/opt/zap"
-                                )
-                            }
-                            stage('Run Chrome BDD Tests') {
+            stage('Launch New Application') {
+                sh "docker-compose down"
+                sh "docker-compose up -d"
+            }
+            stage('Clean Up') {
+                sh "composer clean"
+            }
+            stage('BackEnd Tests') {
+                parallel(
+                        "Coverage Tests": {
+                            stage('Run Coverage Tests') {
                                 try {
-                                    sh 'composer dump-autoload'
-                                    launchBrowserDocker('chrome')
-                                    sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
+                                    timeout(60) {
+                                        waitUntil {
+                                            script {
+                                                def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
+                                                return (r.trim() == '200');
+                                            }
+                                        }
+                                    }
+                                    sh "COMPOSER_PROCESS_TIMEOUT=600 composer coverage-test"
                                 } catch (Exception e) {
-                                    //TODO - not doing anything yet...but we'll need to
+                                    if( fileContains( 'reports/cov-junit.xml', 'testsuite name=\\"tests/coverage/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
+                                         fileContains( 'reports/cov-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
+                                         echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
+                                     } else {
+                                        throw e
+                                     }
                                 } finally {
-                                    closeBrowserDocker('chrome')
-                                    junit 'reports/behat/default.xml'
+                                    junit 'reports/cov-junit.xml'
                                     publishHTML([
                                             allowMissing         : false,
                                             alwaysLinkToLastBuild: true,
                                             keepAll              : true,
-                                            reportDir            : 'reports/behat/',
-                                            reportFiles          : 'index.html',
-                                            reportName           : 'Chrome Behat Test Results Report'
+                                            reportDir            : 'reports/',
+                                            reportFiles          : 'cov-results.html',
+                                            reportName           : 'Coverage Test Results Report'
+                                    ])
+                                    step([
+                                        $class: 'CloverPublisher',
+                                        cloverReportDir: 'reports/',
+                                        cloverReportFileName: 'cov-clover.xml'
                                     ])
                                     publishHTML([
                                             allowMissing         : false,
                                             alwaysLinkToLastBuild: true,
                                             keepAll              : true,
-                                            reportDir            : 'reports/behat/',
-                                            reportFiles          : 'screenshots.html',
-                                            reportName           : 'Chrome Behat Test Results Screenshot Report'
+                                            reportDir            : 'reports/cov-coverage',
+                                            reportFiles          : 'index.html',
+                                            reportName           : 'Coverage Test Coverage Report'
                                     ])
                                 }
                             }
-                        } finally {
-                            stage('Get ZAP Results') {
-                                sh 'mkdir -p results/zap'
-                                sh 'wget -q -O results/zap/report.html http://localhost:9092/OTHER/core/other/htmlreport'
-                                sh 'wget -q -O results/zap/report.xml http://localhost:9092/OTHER/core/other/xmlreport'
-                                publishHTML([
-                                        allowMissing         : false,
-                                        alwaysLinkToLastBuild: true,
-                                        keepAll              : true,
-                                        reportDir            : 'results/zap',
-                                        reportFiles          : 'report.html',
-                                        reportName           : 'ZAP Report'
-                                ])
-                                archiveZap()
+                        },
+                        "API Tests": {
+                            stage('Run API Tests') {
+                                try {
+                                    timeout(60) {
+                                        waitUntil {
+                                            script {
+                                                def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
+                                                return (r.trim() == '200');
+                                            }
+                                        }
+                                    }
+                                    sh "COMPOSER_PROCESS_TIMEOUT=1200 composer api-test"
+                                } finally {
+                                    junit 'reports/api-junit.xml'
+                                    publishHTML([
+                                            allowMissing         : false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll              : true,
+                                            reportDir            : 'reports/',
+                                            reportFiles          : 'api-results.html',
+                                            reportName           : 'API Test Results Report'
+                                    ])
+                                }
                             }
                         }
-                    },
-                    'Monitor Network Traffic': {
-                        stage('Zap Monitoring') {
-                            echo 'Monitoring traffic'
+                )
+            }
+            stage('Run Chrome Page Tests') {
+                try {
+                    launchBrowserDocker('chrome')
+                    sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1800 composer ui-page-test;'
+                } finally {
+                    closeBrowserDocker('chrome')
+                    junit 'reports/ui/junit.xml'
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/ui/',
+                            reportFiles          : 'results.html',
+                            reportName           : 'Chrome Page Test Results Simple Report'
+                    ])
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/ui/',
+                            reportFiles          : 'index.html',
+                            reportName           : 'Chrome Page Test Results Screenshot Report'
+                    ])
+                }
+            }
+            stage('Run Chrome Functional Tests') {
+                parallel(
+                        'Execute Chrome BDD Tests': {
+                            try {
+                                stage('Start ZAP') {
+                                    startZap(
+                                            host: "localhost",
+                                            port: 9092,
+                                            zapHome: "/opt/zap"
+                                    )
+                                }
+                                stage('Run Chrome BDD Tests') {
+                                    try {
+                                        sh 'composer dump-autoload'
+                                        launchBrowserDocker('chrome')
+                                        sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
+                                    } catch (Exception e) {
+                                        //TODO - not doing anything yet...but we'll need to
+                                    } finally {
+                                        closeBrowserDocker('chrome')
+                                        junit 'reports/behat/default.xml'
+                                        publishHTML([
+                                                allowMissing         : false,
+                                                alwaysLinkToLastBuild: true,
+                                                keepAll              : true,
+                                                reportDir            : 'reports/behat/',
+                                                reportFiles          : 'index.html',
+                                                reportName           : 'Chrome Behat Test Results Report'
+                                        ])
+                                        publishHTML([
+                                                allowMissing         : false,
+                                                alwaysLinkToLastBuild: true,
+                                                keepAll              : true,
+                                                reportDir            : 'reports/behat/',
+                                                reportFiles          : 'screenshots.html',
+                                                reportName           : 'Chrome Behat Test Results Screenshot Report'
+                                        ])
+                                    }
+                                }
+                            } finally {
+                                stage('Get ZAP Results') {
+                                    sh 'mkdir -p results/zap'
+                                    sh 'wget -q -O results/zap/report.html http://localhost:9092/OTHER/core/other/htmlreport'
+                                    sh 'wget -q -O results/zap/report.xml http://localhost:9092/OTHER/core/other/xmlreport'
+                                    publishHTML([
+                                            allowMissing         : false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll              : true,
+                                            reportDir            : 'results/zap',
+                                            reportFiles          : 'report.html',
+                                            reportName           : 'ZAP Report'
+                                    ])
+                                    archiveZap()
+                                }
+                            }
+                        },
+                        'Monitor Network Traffic': {
+                            stage('Zap Monitoring') {
+                                echo 'Monitoring traffic'
+                            }
                         }
-                    }
-            )
+                )
+            }
+            //TODO - retag and publish our containers
+
+            currentBuild.result = 'SUCCESS'
+            return
         }
+
+        // our release process
         stage('Publish Containers') {
             // tag and push each of our containers
             parallel(
@@ -572,20 +576,26 @@ def compress(filetype) {
     }
 }
 
-def killContainer(containerName) {
-    stage("Kill Container " + containerName) {
-        try {
-            sh "docker kill ${containerName}"
-        } catch (e) {
-        }
-    }
-}
-
 def pushContainer(dockerRegistry, versions, localContainerName, nexusContainerName) {
     stage("Pushing Container " + nexusContainerName) {
         for( String version in versions) {
             sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:${version}"
             sh "docker push ${dockerRegistry}/${nexusContainerName}:${version}"
+        }
+    }
+}
+
+def pullContainer(dockerRegistry, version, nexusContainerName) {
+    stage("Pulling Container ${nexusContainerName}:${version}") {
+        sh "docker pull ${dockerRegistry}/${nexusContainerName}:${version}"
+    }
+}
+
+def killContainer(containerName) {
+    stage("Kill Container " + containerName) {
+        try {
+            sh "docker kill ${containerName}"
+        } catch (e) {
         }
     }
 }
