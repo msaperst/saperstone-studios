@@ -262,6 +262,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 ]) {
                     sh "docker login -u ${dockerUser} -p ${dockerPass}"
                 }
+                sh "docker pull phpmyadmin/phpmyadmin"
                 sh "docker-compose build"
                 sh "docker logout"
             }
