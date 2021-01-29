@@ -52,27 +52,7 @@ node() {
                     ])
                 }
             }
-            stage('Setup configuration files') {
-                parallel(
-                        "env File": {
-                            setupEnvFile()
-                        },
-                        "Gmail Credentials File": {
-                            stage('Setup Gmail Credentials File') {
-                                withCredentials([string(credentialsId: 'msaperst-gmail-credentials', variable: 'credentials')]) {
-                                    sh "echo '${credentials}' > credentials.json"
-                                }
-                            }
-                        },
-                        "Gmail Token File": {
-                            stage('Setup Gmail Token File') {
-                                withCredentials([string(credentialsId: 'msaperst-gmail-auth-token', variable: 'token')]) {
-                                    sh "echo '${token}' > token.json"
-                                }
-                            }
-                        }
-                )
-            }
+            setupConfigurationFiles()
             stage('Run Integration Tests') {
                 try {
                     withCredentials([
@@ -230,7 +210,7 @@ node() {
                 }
                 sh "ln -s /home/msaperst/saperstone-studios/logs logs"
             }
-            setupEnvFile()
+            setupConfigurationFiles()
             stage('Launch New Application') {
                 sh "mv docker-compose-prod.yml docker-compose.yml"
                 sh "sed -i 's/prod/ci/g' docker-compose.yml"
@@ -499,61 +479,64 @@ def pullContainer(dockerRegistry, version, nexusContainerName) {
     }
 }
 
-def setupEnvFile() {
-    stage('Setup env File') {
-        withCredentials([
-                usernamePassword(
-                        credentialsId: 'saperstone-studios-contact',
-                        usernameVariable: 'emailUser',
-                        passwordVariable: 'emailPass'
-                ),
-                usernamePassword(
-                        credentialsId: 'saperstone-studios-gmail',
-                        usernameVariable: 'emailUserX',
-                        passwordVariable: 'emailPassX'
-                ),
-                usernamePassword(
-                        credentialsId: 'paypal',
-                        usernameVariable: 'paypalUser',
-                        passwordVariable: 'paypalPass'
-                ),
-                usernamePassword(
-                        credentialsId: 'docker-sql-root',
-                        usernameVariable: 'sqlRootUser',
-                        passwordVariable: 'sqlRootPass'
-                ),
-                usernamePassword(
-                        credentialsId: 'docker-sql-root',
-                        usernameVariable: 'sqlRootUser',
-                        passwordVariable: 'sqlRootPass'
-                ),
-                usernamePassword(
-                        credentialsId: 'docker-sql-user',
-                        usernameVariable: 'sqlUser',
-                        passwordVariable: 'sqlPass'
-                ),
-                string(
-                        credentialsId: 'paypal-signature',
-                        variable: 'paypalSignature'
-                ),
-                string(
-                        credentialsId: 'twitter-consumer-key',
-                        variable: 'twitterConsumerKey'
-                ),
-                string(
-                        credentialsId: 'twitter-consumer-secret',
-                        variable: 'twitterConsumerSecret'
-                ),
-                string(
-                        credentialsId: 'twitter-token',
-                        variable: 'twitterToken'
-                ),
-                string(
-                        credentialsId: 'twitter-token-secret',
-                        variable: 'twitterTokenSecret'
-                )
-        ]) {
-            sh "echo '# tool hosting information\n\
+def setupConfigurationFiles() {
+stage('Setup configuration files') {
+                parallel(
+                        "env File": {
+                            stage('Setup env File') {
+                                withCredentials([
+                                        usernamePassword(
+                                                credentialsId: 'saperstone-studios-contact',
+                                                usernameVariable: 'emailUser',
+                                                passwordVariable: 'emailPass'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'saperstone-studios-gmail',
+                                                usernameVariable: 'emailUserX',
+                                                passwordVariable: 'emailPassX'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'paypal',
+                                                usernameVariable: 'paypalUser',
+                                                passwordVariable: 'paypalPass'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'docker-sql-root',
+                                                usernameVariable: 'sqlRootUser',
+                                                passwordVariable: 'sqlRootPass'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'docker-sql-root',
+                                                usernameVariable: 'sqlRootUser',
+                                                passwordVariable: 'sqlRootPass'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'docker-sql-user',
+                                                usernameVariable: 'sqlUser',
+                                                passwordVariable: 'sqlPass'
+                                        ),
+                                        string(
+                                                credentialsId: 'paypal-signature',
+                                                variable: 'paypalSignature'
+                                        ),
+                                        string(
+                                                credentialsId: 'twitter-consumer-key',
+                                                variable: 'twitterConsumerKey'
+                                        ),
+                                        string(
+                                                credentialsId: 'twitter-consumer-secret',
+                                                variable: 'twitterConsumerSecret'
+                                        ),
+                                        string(
+                                                credentialsId: 'twitter-token',
+                                                variable: 'twitterToken'
+                                        ),
+                                        string(
+                                                credentialsId: 'twitter-token-secret',
+                                                variable: 'twitterTokenSecret'
+                                        )
+                                ]) {
+                                    sh "echo '# tool hosting information\n\
 ADMIN_PORT=9090\n\
 HTTP_PORT=90\n\
 HTTPS_PORT=9443\n\
@@ -588,9 +571,28 @@ TOKEN_SECRET=${twitterTokenSecret}\n\
 PAYPAL_USERNAME=${paypalUser}\n\
 PAYPAL_PASSWORD=${paypalPass}\n\
 PAYPAL_SIGNATURE=${paypalSignature}' > .env"
-        }
-    }
-}
+                                    }
+                                }
+                            }
+                        },
+                        "Gmail Credentials File": {
+                            stage('Setup Gmail Credentials File') {
+                                withCredentials([string(credentialsId: 'msaperst-gmail-credentials', variable: 'credentials')]) {
+                                    sh "echo '${credentials}' > credentials.json"
+                                }
+                            }
+                        },
+                        "Gmail Token File": {
+                            stage('Setup Gmail Token File') {
+                                withCredentials([string(credentialsId: 'msaperst-gmail-auth-token', variable: 'token')]) {
+                                    sh "echo '${token}' > token.json"
+                                }
+                            }
+                        }
+                )
+            }
+
+
 
 def copyContainer(dockerRegistry, version, containerName) {
     stage("Copying Container " + containerName) {
