@@ -456,6 +456,11 @@ def compress(filetype) {
             def newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
             //compress the file
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
+            //check the file for size of non-zero
+            File file = new File("./public/$filetype/$newFile")
+            if( file.length() == 0 ) {
+                throw new Exception("$newFile has filesize 0. We have an issue.")
+            }
             //remove the old file
             sh "rm ./public/$filetype/$file"
             //fix all references to old file
