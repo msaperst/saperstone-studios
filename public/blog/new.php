@@ -15,7 +15,6 @@ if (isset ( $_GET ['p'] )) {
         $title = $blog->getTitle();
         $date = date('Y-m-d',strtotime($blog->getDate()));
         $content = $blog->getContent();
-//        ksort ( $content );
         $location = $blog->getLocation();
     } catch (Exception $e) {
         $errors->throw404();
