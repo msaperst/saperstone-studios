@@ -3,151 +3,270 @@ def version
 def dockerRepo = "victor:9086"
 def dockerRegistry = "${dockerRepo}/saperstone-studios"
 
+/*
+Logic for the pipeline
+feature branch
+    start through sonar
+pr
+    start through sonar
+    build containers and push to nexus
+develop
+    start w/ deploy to victor (qa)
+    run through all tests
+    retag in nexus
+release
+    deploy to walter (prod)
+*/
+
 node() {
     ansiColor('xterm') {
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
         version = "$branch-${env.BUILD_NUMBER}"
-        stage('Checkout Code') { // for display purposes
-            cleanWs()
-            checkout scm
-        }
-        stage('Run Unit Tests') {
-            try {
-                sh "composer validate"
-                sh "composer install --prefer-dist --no-progress --no-suggest"
-                sh "composer unit-test"
-            } finally {
-                junit 'reports/ut-junit.xml'
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/',
-                        reportFiles          : 'ut-results.html',
-                        reportName           : 'Unit Test Results Report'
-                ])
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/ut-coverage',
-                        reportFiles          : 'index.html',
-                        reportName           : 'Unit Test Coverage Report'
-                ])
+
+        //our dev workflow - kicked off for feature branches and PRs
+        if( !'develop'.equals(branch) && !'release'.equals(branch) ) {
+            stage('Checkout Code') { // for display purposes
+                cleanWs()
+                checkout scm
             }
-        }
-        stage('Setup configuration files') {
-            parallel(
-                    "env File": {
-                        stage('Setup env File') {
-                            withCredentials([
-                                    usernamePassword(
-                                            credentialsId: 'saperstone-studios-contact',
-                                            usernameVariable: 'emailUser',
-                                            passwordVariable: 'emailPass'
-                                    ),
-                                    usernamePassword(
-                                            credentialsId: 'saperstone-studios-gmail',
-                                            usernameVariable: 'emailUserX',
-                                            passwordVariable: 'emailPassX'
-                                    ),
-                                    usernamePassword(
-                                            credentialsId: 'paypal',
-                                            usernameVariable: 'paypalUser',
-                                            passwordVariable: 'paypalPass'
-                                    ),
-                                    usernamePassword(
-                                            credentialsId: 'docker-sql-root',
-                                            usernameVariable: 'sqlRootUser',
-                                            passwordVariable: 'sqlRootPass'
-                                    ),
-                                    usernamePassword(
-                                            credentialsId: 'docker-sql-root',
-                                            usernameVariable: 'sqlRootUser',
-                                            passwordVariable: 'sqlRootPass'
-                                    ),
-                                    usernamePassword(
-                                            credentialsId: 'docker-sql-user',
-                                            usernameVariable: 'sqlUser',
-                                            passwordVariable: 'sqlPass'
-                                    ),
-                                    string(
-                                            credentialsId: 'paypal-signature',
-                                            variable: 'paypalSignature'
-                                    ),
-                                    string(
-                                            credentialsId: 'twitter-consumer-key',
-                                            variable: 'twitterConsumerKey'
-                                    ),
-                                    string(
-                                            credentialsId: 'twitter-consumer-secret',
-                                            variable: 'twitterConsumerSecret'
-                                    ),
-                                    string(
-                                            credentialsId: 'twitter-token',
-                                            variable: 'twitterToken'
-                                    ),
-                                    string(
-                                            credentialsId: 'twitter-token-secret',
-                                            variable: 'twitterTokenSecret'
-                                    )
-                            ]) {
-                                sh "echo '# tool hosting information\n\
-ADMIN_PORT=9090\n\
-HTTP_PORT=90\n\
-HTTPS_PORT=9443\n\
-SERVER_NAME=victor\n\
-\n\
-# database information\n\
-DB_ROOT=${sqlRootPass}\n\
-DB_PORT=3406\n\
-DB_NAME=saperstone-studios\n\
-DB_USER=${sqlUser}\n\
-DB_PASS=${sqlPass}\n\
-\n\
-# email information\n\
-EMAIL_CONTACT=msaperst+sstest@gmail.com\n\
-EMAIL_ACTIONS=msaperst+sstest@gmail.com\n\
-EMAIL_SELECTS=msaperst+sstest@gmail.com\n\
-EMAIL_CONTRACTS=msaperst+sstest@gmail.com\n\
-EMAIL_HOST=ssl://smtp.gmail.com\n\
-EMAIL_PORT=465\n\
-EMAIL_USER=${emailUser}\n\
-EMAIL_PASS=${emailPass}\n\
-EMAIL_USER_X=${emailUserX}\n\
-EMAIL_PASS_X=${emailPassX}\n\
-\n\
-# twitter information\n\
-CONSUMER_KEY=${twitterConsumerKey}\n\
-CONSUMER_SECRET=${twitterConsumerSecret}\n\
-TOKEN=${twitterToken}\n\
-TOKEN_SECRET=${twitterTokenSecret}\n\
-\n\
-# paypal information\n\
-PAYPAL_USERNAME=${paypalUser}\n\
-PAYPAL_PASSWORD=${paypalPass}\n\
-PAYPAL_SIGNATURE=${paypalSignature}' > .env"
+            stage('Run Unit Tests') {
+                try {
+                    sh "composer validate"
+                    sh "composer install --prefer-dist --no-progress --no-suggest"
+                    sh "composer unit-test"
+                } finally {
+                    junit 'reports/ut-junit.xml'
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/',
+                            reportFiles          : 'ut-results.html',
+                            reportName           : 'Unit Test Results Report'
+                    ])
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/ut-coverage',
+                            reportFiles          : 'index.html',
+                            reportName           : 'Unit Test Coverage Report'
+                    ])
+                }
+            }
+            stage('Setup configuration files') {
+                parallel(
+                        "env File": {
+                            stage('Setup env File') {
+                                withCredentials([
+                                        usernamePassword(
+                                                credentialsId: 'saperstone-studios-contact',
+                                                usernameVariable: 'emailUser',
+                                                passwordVariable: 'emailPass'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'saperstone-studios-gmail',
+                                                usernameVariable: 'emailUserX',
+                                                passwordVariable: 'emailPassX'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'paypal',
+                                                usernameVariable: 'paypalUser',
+                                                passwordVariable: 'paypalPass'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'docker-sql-root',
+                                                usernameVariable: 'sqlRootUser',
+                                                passwordVariable: 'sqlRootPass'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'docker-sql-root',
+                                                usernameVariable: 'sqlRootUser',
+                                                passwordVariable: 'sqlRootPass'
+                                        ),
+                                        usernamePassword(
+                                                credentialsId: 'docker-sql-user',
+                                                usernameVariable: 'sqlUser',
+                                                passwordVariable: 'sqlPass'
+                                        ),
+                                        string(
+                                                credentialsId: 'paypal-signature',
+                                                variable: 'paypalSignature'
+                                        ),
+                                        string(
+                                                credentialsId: 'twitter-consumer-key',
+                                                variable: 'twitterConsumerKey'
+                                        ),
+                                        string(
+                                                credentialsId: 'twitter-consumer-secret',
+                                                variable: 'twitterConsumerSecret'
+                                        ),
+                                        string(
+                                                credentialsId: 'twitter-token',
+                                                variable: 'twitterToken'
+                                        ),
+                                        string(
+                                                credentialsId: 'twitter-token-secret',
+                                                variable: 'twitterTokenSecret'
+                                        )
+                                ]) {
+                                    sh "echo '# tool hosting information\n\
+    ADMIN_PORT=9090\n\
+    HTTP_PORT=90\n\
+    HTTPS_PORT=9443\n\
+    SERVER_NAME=victor\n\
+    \n\
+    # database information\n\
+    DB_ROOT=${sqlRootPass}\n\
+    DB_PORT=3406\n\
+    DB_NAME=saperstone-studios\n\
+    DB_USER=${sqlUser}\n\
+    DB_PASS=${sqlPass}\n\
+    \n\
+    # email information\n\
+    EMAIL_CONTACT=msaperst+sstest@gmail.com\n\
+    EMAIL_ACTIONS=msaperst+sstest@gmail.com\n\
+    EMAIL_SELECTS=msaperst+sstest@gmail.com\n\
+    EMAIL_CONTRACTS=msaperst+sstest@gmail.com\n\
+    EMAIL_HOST=ssl://smtp.gmail.com\n\
+    EMAIL_PORT=465\n\
+    EMAIL_USER=${emailUser}\n\
+    EMAIL_PASS=${emailPass}\n\
+    EMAIL_USER_X=${emailUserX}\n\
+    EMAIL_PASS_X=${emailPassX}\n\
+    \n\
+    # twitter information\n\
+    CONSUMER_KEY=${twitterConsumerKey}\n\
+    CONSUMER_SECRET=${twitterConsumerSecret}\n\
+    TOKEN=${twitterToken}\n\
+    TOKEN_SECRET=${twitterTokenSecret}\n\
+    \n\
+    # paypal information\n\
+    PAYPAL_USERNAME=${paypalUser}\n\
+    PAYPAL_PASSWORD=${paypalPass}\n\
+    PAYPAL_SIGNATURE=${paypalSignature}' > .env"
+                                }
+                            }
+                        },
+                        "Gmail Credentials File": {
+                            stage('Setup Gmail Credentials File') {
+                                withCredentials([string(credentialsId: 'msaperst-gmail-credentials', variable: 'credentials')]) {
+                                    sh "echo '${credentials}' > credentials.json"
+                                }
+                            }
+                        },
+                        "Gmail Token File": {
+                            stage('Setup Gmail Token File') {
+                                withCredentials([string(credentialsId: 'msaperst-gmail-auth-token', variable: 'token')]) {
+                                    sh "echo '${token}' > token.json"
+                                }
                             }
                         }
-                    },
-                    "Gmail Credentials File": {
-                        stage('Setup Gmail Credentials File') {
-                            withCredentials([string(credentialsId: 'msaperst-gmail-credentials', variable: 'credentials')]) {
-                                sh "echo '${credentials}' > credentials.json"
-                            }
-                        }
-                    },
-                    "Gmail Token File": {
-                        stage('Setup Gmail Token File') {
-                            withCredentials([string(credentialsId: 'msaperst-gmail-auth-token', variable: 'token')]) {
-                                sh "echo '${token}' > token.json"
-                            }
-                        }
+                )
+            }
+            stage('Run Integration Tests') {
+                try {
+                    withCredentials([
+                            usernamePassword(
+                                    credentialsId: 'docker-hub',
+                                    usernameVariable: 'dockerUser',
+                                    passwordVariable: 'dockerPass'
+                            )
+                    ]) {
+                        sh "docker login -u ${dockerUser} -p ${dockerPass}"
                     }
-            )
-        }
-        stage('Run Integration Tests') {
-            try {
+                    sh "composer integration-pre-test"
+                    sh "composer integration-test"
+                } catch (Exception e) {
+                    if( fileContains( 'reports/it-junit.xml', 'testsuite name=\\"tests/coverage/integration/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
+                         fileContains( 'reports/it-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
+                         echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
+                     } else {
+                        throw e
+                     }
+                } finally {
+                    sh "composer integration-post-test"
+                    sh "docker logout"
+                    junit 'reports/it-junit.xml'
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/',
+                            reportFiles          : 'it-results.html',
+                            reportName           : 'Integration Test Results Report'
+                    ])
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/it-coverage',
+                            reportFiles          : 'index.html',
+                            reportName           : 'Integration Test Coverage Report'
+                    ])
+                }
+            }
+            stage('Run Sonar Analysis') {
+                withCredentials([
+                    usernamePassword(
+                            credentialsId: 'GitHub_API	',
+                            usernameVariable: 'gitHubUser',
+                            passwordVariable: 'gitHubPass'
+                    ),string(
+                            credentialsId: '695f143e-326d-4f85-9959-20f9ef269cdd',
+                            variable: 'sonarToken'
+                    )
+                ]) {
+                    def sonarExtras = '';
+                    if( env.CHANGE_ID ) {
+                        sonarExtras = "-Dsonar.analysis.mode=preview \
+    -Dsonar.github.repository=msaperst/saperstone-studios \
+    -Dsonar.github.pullRequest=${env.CHANGE_ID} \
+    -Dsonar.github.oauth=${gitHubPass} \
+    -Dsonar.host.url=http://192.168.3.13/sonar/ \
+    -Dsonar.login=${sonarToken}";
+                    }
+                    sh """sonar-scanner ${sonarExtras} \
+                        -Dsonar.projectKey=saperstone-studios \
+                        -Dsonar.projectName='Saperstone Studios' \
+                        -Dsonar.projectVersion=3.0 \
+                        -Dsonar.branch=${branch} \
+                        -Dsonar.sources=./bin,./public,./src,./templates \
+                        -Dsonar.tests=./tests \
+                        -Dsonar.exclusions=public/js/jqBootstrapValidation.js,public/favicon.ico,public/img/**,public/retouch/**,public/portrait/what-to-wear/**, \
+                        -Dsonar.php.tests.reportPath=./reports/junit.xml \
+                        -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
+                }
+            }
+            //if feature branch, good to exit here
+            if( !env.CHANGE_ID ) {
+                currentBuild.result = 'SUCCESS'
+                return
+            }
+
+            stage('Prep Files') {
+                parallel(
+                        "Compress JS": {
+                            compress('js')
+                        },
+                        "Compress CSS": {
+                            compress('css')
+                        }
+                )
+            }
+            stage('Setup Files') {
+                try {
+                    sh "rm -r content"
+                } catch (e) {
+                }
+                sh "ln -s /home/msaperst/saperstone-studios/content content"
+                try {
+                    sh "rm -r logs"
+                } catch (e) {
+                }
+                sh "ln -s /home/msaperst/saperstone-studios/logs logs"
+            }
+            stage('Build Containers') {
                 withCredentials([
                         usernamePassword(
                                 credentialsId: 'docker-hub',
@@ -157,91 +276,31 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 ]) {
                     sh "docker login -u ${dockerUser} -p ${dockerPass}"
                 }
-                sh "composer integration-pre-test"
-                sh "composer integration-test"
-            } catch (Exception e) {
-                if( fileContains( 'reports/it-junit.xml', 'testsuite name=\\"tests/coverage/integration/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
-                     fileContains( 'reports/it-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
-                     echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
-                 } else {
-                    throw e
-                 }
-            } finally {
-                sh "composer integration-post-test"
+                sh "docker-compose build"
                 sh "docker logout"
-                junit 'reports/it-junit.xml'
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/',
-                        reportFiles          : 'it-results.html',
-                        reportName           : 'Integration Test Results Report'
-                ])
-                publishHTML([
-                        allowMissing         : false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll              : true,
-                        reportDir            : 'reports/it-coverage',
-                        reportFiles          : 'index.html',
-                        reportName           : 'Integration Test Coverage Report'
-                ])
             }
-        }
-        stage('Run Sonar Analysis') {
-            withCredentials([
-                usernamePassword(
-                        credentialsId: 'GitHub_API	',
-                        usernameVariable: 'gitHubUser',
-                        passwordVariable: 'gitHubPass'
-                ),string(
-                        credentialsId: '695f143e-326d-4f85-9959-20f9ef269cdd',
-                        variable: 'sonarToken'
+            stage('Publish Containers') {
+                // tag and push each of our containers
+                parallel(
+                        "PHP": {
+                            pushContainer(dockerRegistry, ['latest',version], "workspace_php", "php")
+                        },
+                        "PHP MyAdmin": {
+                            pushContainer(dockerRegistry, ['latest',version], "phpmyadmin/phpmyadmin", "php-myadmin")
+                        },
+                        "MySQL": {
+                            pushContainer(dockerRegistry, ['latest',version], "workspace_mysql", "mysql")
+                        }
                 )
-            ]) {
-                def sonarExtras = '';
-                if( env.CHANGE_ID ) {
-                    sonarExtras = "-Dsonar.analysis.mode=preview \
--Dsonar.github.repository=msaperst/saperstone-studios \
--Dsonar.github.pullRequest=${env.CHANGE_ID} \
--Dsonar.github.oauth=${gitHubPass} \
--Dsonar.host.url=http://192.168.3.13/sonar/ \
--Dsonar.login=${sonarToken}";
-                }
-                sh """sonar-scanner ${sonarExtras} \
-                    -Dsonar.projectKey=saperstone-studios \
-                    -Dsonar.projectName='Saperstone Studios' \
-                    -Dsonar.projectVersion=3.0 \
-                    -Dsonar.branch=${branch} \
-                    -Dsonar.sources=./bin,./public,./src,./templates \
-                    -Dsonar.tests=./tests \
-                    -Dsonar.exclusions=public/js/jqBootstrapValidation.js,public/favicon.ico,public/img/**,public/retouch/**,public/portrait/what-to-wear/**, \
-                    -Dsonar.php.tests.reportPath=./reports/junit.xml \
-                    -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
             }
-        }
-        stage('Prep Files') {
-            parallel(
-                    "Compress JS": {
-                        compress('js')
-                    },
-                    "Compress CSS": {
-                        compress('css')
-                    }
-            )
-        }
-        stage('Setup Files') {
-            try {
-                sh "rm -r content"
-            } catch (e) {
+            stage('Clean Up') {
+                sh "docker system prune -a -f"
             }
-            sh "ln -s /home/msaperst/saperstone-studios/content content"
-            try {
-                sh "rm -r logs"
-            } catch (e) {
-            }
-            sh "ln -s /home/msaperst/saperstone-studios/logs logs"
+            currentBuild.result = 'SUCCESS'
+            return
         }
+
+        //our develop workflow - kicked off when code is merged into develop
         stage('Kill Any Old Docker Containers') {
             parallel(
                     "PHP": {
@@ -522,12 +581,12 @@ def killContainer(containerName) {
     }
 }
 
-def pushContainer(dockerRegistry, version, localContainerName, nexusContainerName) {
+def pushContainer(dockerRegistry, versions, localContainerName, nexusContainerName) {
     stage("Pushing Container " + nexusContainerName) {
-        sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:${version}"
-        sh "docker push ${dockerRegistry}/${nexusContainerName}:${version}"
-        sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:latest"
-        sh "docker push ${dockerRegistry}/${nexusContainerName}:latest"
+        for( String version in versions) {
+            sh "docker tag ${localContainerName} ${dockerRegistry}/${nexusContainerName}:${version}"
+            sh "docker push ${dockerRegistry}/${nexusContainerName}:${version}"
+        }
     }
 }
 
