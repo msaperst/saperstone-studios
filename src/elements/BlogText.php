@@ -3,8 +3,17 @@
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class BlogText {
+    /**
+     * @var Blog
+     */
     private $blog;
+    /**
+     * @var int
+     */
     private $group;
+    /**
+     * @var string
+     */
     private $text;
 
     /**
@@ -33,10 +42,30 @@ class BlogText {
         $sql->disconnect();
     }
 
+    /**
+     * @param Blog $blog
+     */
     function setBlog(Blog $blog) {
         $this->blog = $blog;
     }
 
+    /**
+     * @return int
+     */
+    function getGroup(): int {
+        return $this->group;
+    }
+
+    /**
+     * @return string
+     */
+    function getText(): string {
+        return $this->text;
+    }
+
+    /**
+     * @return string
+     */
     function getValues() {
         return "{$this->blog->getId()}, {$this->group}, '{$this->text}'";
     }

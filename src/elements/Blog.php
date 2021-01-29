@@ -242,6 +242,13 @@ class Blog {
     /**
      * @return array
      */
+    public function getContent(): array {
+        return $this->content;
+    }
+
+    /**
+     * @return array
+     */
     public function getImages(): array {
         $images = array();
         foreach ($this->content as $content) {

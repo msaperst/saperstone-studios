@@ -9,14 +9,12 @@ $errors = new Errors();
 $title = "";
 $date = date ( "Y-m-d" );
 $location = "../tmp";
-// if no blog is set, throw a 404 error - TODO - use new blog object!
 if (isset ( $_GET ['p'] )) {
     try {
         $blog = Blog::withId($_GET ['p']);
         $title = $blog->getTitle();
         $date = date('Y-m-d',strtotime($blog->getDate()));
-        $content = $blog->getDataArray()['content'];
-        ksort ( $content );
+        $content = $blog->getContent();
         $location = $blog->getLocation();
     } catch (Exception $e) {
         $errors->throw404();
@@ -123,7 +121,9 @@ $sql->disconnect();
                 <?php
                 if (isset ( $blog )) {
                     foreach ( $blog->getImages() as $image ) {
-                        echo "<option>$image</option>";
+                        $parts = explode(DIRECTORY_SEPARATOR, $image);
+                        //TODO - figure out how to select the correct one
+                        echo "<option>{$parts[sizeof($parts)-1]}</option>";
                     }
                 }
                 ?>
@@ -232,19 +232,26 @@ $sql->disconnect();
             if (isset ( $blog )) {
                 foreach ( $blog->getTags() as $tag ) {
                     ?>
-            $('#post-tags-select').val(<?php echo $tag; ?>);
+            $('#post-tags-select').val(<?php echo $tag['id']; ?>);
             addTag($('#post-tags-select'));
             <?php
                 }
+                $groups = array();
                 foreach ( $content as $block ) {
-                    if ($block ['type'] == "text") {
+                    $groups[$block->getGroup()][] = $block;
+                }
+                foreach( $groups as $group) {
+                    if ($group[0] instanceof BlogText) {
                         ?>
-            addTextArea("<?php echo addcslashes($block['text'],'"'); ?>");
+            addTextArea("<?php echo addcslashes($group[0]->getText(),'"'); ?>");
             <?php
-                    } elseif ($block ['type'] == "images") {
-                        unset ( $block ['type'] );
+                    } elseif ($group[0] instanceof BlogImage) {
                         ?>
-            addImageArea(<?php echo json_encode( $block ); ?>);
+            addImageArea([<?php
+                        foreach( $group as $image ) {
+                            echo json_encode( $image->getRaw() ) . ",";
+                        }
+                        ?>]);
             <?php
                     }
                 }

@@ -3,12 +3,33 @@
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class BlogImage {
+    /**
+     * @var Blog
+     */
     private $blog;
+    /**
+     * @var int
+     */
     private $group;
+    /**
+     * @var string
+     */
     private $location;
+    /**
+     * @var int
+     */
     private $top;
+    /**
+     * @var int
+     */
     private $left;
+    /**
+     * @var int
+     */
     private $width;
+    /**
+     * @var int
+     */
     private $height;
 
     /**
@@ -60,10 +81,33 @@ class BlogImage {
         $sql->disconnect();
     }
 
+    /**
+     * @return int
+     */
+    function getGroup(): int {
+        return $this->group;
+    }
+
+    function getRaw(): array {
+        return array(
+            'location' => $this->location,
+            'top' => $this->top,
+            'left' => $this->left,
+            'width' => $this->width,
+            'height' => $this->height
+        );
+    }
+
+    /**
+     * @return string
+     */
     function getLocation(): string {
         return $this->location;
     }
 
+    /**
+     * @param Blog $blog
+     */
     function setBlog(Blog $blog) {
         $this->blog = $blog;
     }
