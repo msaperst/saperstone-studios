@@ -55,96 +55,7 @@ node() {
             stage('Setup configuration files') {
                 parallel(
                         "env File": {
-                            stage('Setup env File') {
-                                withCredentials([
-                                        usernamePassword(
-                                                credentialsId: 'saperstone-studios-contact',
-                                                usernameVariable: 'emailUser',
-                                                passwordVariable: 'emailPass'
-                                        ),
-                                        usernamePassword(
-                                                credentialsId: 'saperstone-studios-gmail',
-                                                usernameVariable: 'emailUserX',
-                                                passwordVariable: 'emailPassX'
-                                        ),
-                                        usernamePassword(
-                                                credentialsId: 'paypal',
-                                                usernameVariable: 'paypalUser',
-                                                passwordVariable: 'paypalPass'
-                                        ),
-                                        usernamePassword(
-                                                credentialsId: 'docker-sql-root',
-                                                usernameVariable: 'sqlRootUser',
-                                                passwordVariable: 'sqlRootPass'
-                                        ),
-                                        usernamePassword(
-                                                credentialsId: 'docker-sql-root',
-                                                usernameVariable: 'sqlRootUser',
-                                                passwordVariable: 'sqlRootPass'
-                                        ),
-                                        usernamePassword(
-                                                credentialsId: 'docker-sql-user',
-                                                usernameVariable: 'sqlUser',
-                                                passwordVariable: 'sqlPass'
-                                        ),
-                                        string(
-                                                credentialsId: 'paypal-signature',
-                                                variable: 'paypalSignature'
-                                        ),
-                                        string(
-                                                credentialsId: 'twitter-consumer-key',
-                                                variable: 'twitterConsumerKey'
-                                        ),
-                                        string(
-                                                credentialsId: 'twitter-consumer-secret',
-                                                variable: 'twitterConsumerSecret'
-                                        ),
-                                        string(
-                                                credentialsId: 'twitter-token',
-                                                variable: 'twitterToken'
-                                        ),
-                                        string(
-                                                credentialsId: 'twitter-token-secret',
-                                                variable: 'twitterTokenSecret'
-                                        )
-                                ]) {
-                                    sh "echo '# tool hosting information\n\
-ADMIN_PORT=9090\n\
-HTTP_PORT=90\n\
-HTTPS_PORT=9443\n\
-SERVER_NAME=victor\n\
-\n\
-# database information\n\
-DB_ROOT=${sqlRootPass}\n\
-DB_PORT=3406\n\
-DB_NAME=saperstone-studios\n\
-DB_USER=${sqlUser}\n\
-DB_PASS=${sqlPass}\n\
-\n\
-# email information\n\
-EMAIL_CONTACT=msaperst+sstest@gmail.com\n\
-EMAIL_ACTIONS=msaperst+sstest@gmail.com\n\
-EMAIL_SELECTS=msaperst+sstest@gmail.com\n\
-EMAIL_CONTRACTS=msaperst+sstest@gmail.com\n\
-EMAIL_HOST=ssl://smtp.gmail.com\n\
-EMAIL_PORT=465\n\
-EMAIL_USER=${emailUser}\n\
-EMAIL_PASS=${emailPass}\n\
-EMAIL_USER_X=${emailUserX}\n\
-EMAIL_PASS_X=${emailPassX}\n\
-\n\
-# twitter information\n\
-CONSUMER_KEY=${twitterConsumerKey}\n\
-CONSUMER_SECRET=${twitterConsumerSecret}\n\
-TOKEN=${twitterToken}\n\
-TOKEN_SECRET=${twitterTokenSecret}\n\
-\n\
-# paypal information\n\
-PAYPAL_USERNAME=${paypalUser}\n\
-PAYPAL_PASSWORD=${paypalPass}\n\
-PAYPAL_SIGNATURE=${paypalSignature}' > .env"
-                                }
-                            }
+                            setupEnvFile()
                         },
                         "Gmail Credentials File": {
                             stage('Setup Gmail Credentials File') {
@@ -319,6 +230,7 @@ PAYPAL_SIGNATURE=${paypalSignature}' > .env"
                 }
                 sh "ln -s /home/msaperst/saperstone-studios/logs logs"
             }
+            setupEnvFile()
             stage('Launch New Application') {
                 sh "docker-compose down"
                 sh "docker-compose up -d"
@@ -583,11 +495,95 @@ def pullContainer(dockerRegistry, version, nexusContainerName) {
     }
 }
 
-def killContainer(containerName) {
-    stage("Kill Container " + containerName) {
-        try {
-            sh "docker kill ${containerName}"
-        } catch (e) {
+def setupEnvFile() {
+    stage('Setup env File') {
+        withCredentials([
+                usernamePassword(
+                        credentialsId: 'saperstone-studios-contact',
+                        usernameVariable: 'emailUser',
+                        passwordVariable: 'emailPass'
+                ),
+                usernamePassword(
+                        credentialsId: 'saperstone-studios-gmail',
+                        usernameVariable: 'emailUserX',
+                        passwordVariable: 'emailPassX'
+                ),
+                usernamePassword(
+                        credentialsId: 'paypal',
+                        usernameVariable: 'paypalUser',
+                        passwordVariable: 'paypalPass'
+                ),
+                usernamePassword(
+                        credentialsId: 'docker-sql-root',
+                        usernameVariable: 'sqlRootUser',
+                        passwordVariable: 'sqlRootPass'
+                ),
+                usernamePassword(
+                        credentialsId: 'docker-sql-root',
+                        usernameVariable: 'sqlRootUser',
+                        passwordVariable: 'sqlRootPass'
+                ),
+                usernamePassword(
+                        credentialsId: 'docker-sql-user',
+                        usernameVariable: 'sqlUser',
+                        passwordVariable: 'sqlPass'
+                ),
+                string(
+                        credentialsId: 'paypal-signature',
+                        variable: 'paypalSignature'
+                ),
+                string(
+                        credentialsId: 'twitter-consumer-key',
+                        variable: 'twitterConsumerKey'
+                ),
+                string(
+                        credentialsId: 'twitter-consumer-secret',
+                        variable: 'twitterConsumerSecret'
+                ),
+                string(
+                        credentialsId: 'twitter-token',
+                        variable: 'twitterToken'
+                ),
+                string(
+                        credentialsId: 'twitter-token-secret',
+                        variable: 'twitterTokenSecret'
+                )
+        ]) {
+            sh "echo '# tool hosting information\n\
+ADMIN_PORT=9090\n\
+HTTP_PORT=90\n\
+HTTPS_PORT=9443\n\
+SERVER_NAME=victor\n\
+\n\
+# database information\n\
+DB_ROOT=${sqlRootPass}\n\
+DB_PORT=3406\n\
+DB_NAME=saperstone-studios\n\
+DB_USER=${sqlUser}\n\
+DB_PASS=${sqlPass}\n\
+\n\
+# email information\n\
+EMAIL_CONTACT=msaperst+sstest@gmail.com\n\
+EMAIL_ACTIONS=msaperst+sstest@gmail.com\n\
+EMAIL_SELECTS=msaperst+sstest@gmail.com\n\
+EMAIL_CONTRACTS=msaperst+sstest@gmail.com\n\
+EMAIL_HOST=ssl://smtp.gmail.com\n\
+EMAIL_PORT=465\n\
+EMAIL_USER=${emailUser}\n\
+EMAIL_PASS=${emailPass}\n\
+EMAIL_USER_X=${emailUserX}\n\
+EMAIL_PASS_X=${emailPassX}\n\
+\n\
+# twitter information\n\
+CONSUMER_KEY=${twitterConsumerKey}\n\
+CONSUMER_SECRET=${twitterConsumerSecret}\n\
+TOKEN=${twitterToken}\n\
+TOKEN_SECRET=${twitterTokenSecret}\n\
+\n\
+# paypal information\n\
+PAYPAL_USERNAME=${paypalUser}\n\
+PAYPAL_PASSWORD=${paypalPass}\n\
+PAYPAL_SIGNATURE=${paypalSignature}' > .env"
         }
     }
 }
