@@ -5,31 +5,46 @@ namespace api;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UpdateGalleryImageTest extends TestCase {
+    /**
+     * @var Client
+     */
     private $http;
+    /**
+     * @var Sql
+     */
     private $sql;
 
+    /**
+     * @throws SqlException
+     */
     public function setUp() {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ('999', '1', 'sample.jpg', 'Sample', NULL);");
+        $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (997, '999', '', '0', '', '/portrait/img/sample/sample.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '0', '', '/portrait/img/sample/sample1.jpg', '300', '400', '1');");
-        $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '1', '', '/portrait/img/sample/sample2.jpg', '300', '400', '1');");
-        $oldmask = umask(0);
+        $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '1', '', 'img/sample/sample2.jpg', '300', '400', '1');");
+        $oldMask = umask(0);
         mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
         touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg');
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg', 0777);
         touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg');
         chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg', 0777);
-        umask($oldmask);
+        umask($oldMask);
     }
 
+    /**
+     * @throws SqlException
+     */
     public function tearDown() {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `galleries` WHERE `galleries`.`id` = 999;");
@@ -45,6 +60,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->sql->disconnect();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/update-gallery-image.php');
@@ -54,6 +72,9 @@ class UpdateGalleryImageTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -68,6 +89,9 @@ class UpdateGalleryImageTest extends TestCase {
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoGallery() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -79,6 +103,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Gallery id is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankGallery() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -93,6 +120,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Gallery id can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testLetterGallery() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -107,6 +137,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Gallery id does not match any galleries", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadGalleryId() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -121,6 +154,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Gallery id does not match any galleries", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -135,6 +171,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Image id is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -150,6 +189,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Image id can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBadImage() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -165,6 +207,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Image id does not match any images", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoTitle() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -180,6 +225,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Title is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankTitle() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -196,6 +244,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Title can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testNoFilename() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -212,6 +263,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Filename is required", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testBlankFilename() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -229,6 +283,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Filename can not be blank", (string)$response->getBody());
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testUpdateSimple() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -257,6 +314,9 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testUpdateComplex() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -267,7 +327,7 @@ class UpdateGalleryImageTest extends TestCase {
                 'image' => 998,
                 'title' => '"\'123$!?',
                 'caption' => 'I like dirt',
-                'filename' => '/portrait/img/x.jpg'
+                'filename' => '/portrait/img/x 5 &.jpg'
             ],
             'cookies' => $cookieJar
         ]);
@@ -279,12 +339,41 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals('"\'123$!?', $image['title']);
         $this->assertEquals(0, $image['sequence']);
         $this->assertEquals('I like dirt', $image['caption']);
-        $this->assertEquals('/portrait/img/x.jpg', $image['location']);
+        $this->assertEquals('/portrait/img/x 5 &.jpg', $image['location']);
         $this->assertEquals(300, $image['width']);
         $this->assertEquals(400, $image['height']);
         $this->assertEquals(1, $image['active']);
-        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
+        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x 5 &.jpg'));
     }
 
-
+    /**
+     * @throws GuzzleException
+     */
+    public function testUpdateNoFile() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 999,
+                'title' => 'sample',
+                'filename' => 'img/x.jpg'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Unable to find original image to rename!", (string)$response->getBody());
+        $image = $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 999;");
+        $this->assertEquals(999, $image['id']);
+        $this->assertEquals(999, $image['gallery']);
+        $this->assertEquals('sample', $image['title']);
+        $this->assertEquals(1, $image['sequence']);
+        $this->assertEquals('', $image['caption']);
+        $this->assertEquals('img/sample/sample2.jpg', $image['location']);
+        $this->assertEquals(300, $image['width']);
+        $this->assertEquals(400, $image['height']);
+        $this->assertEquals(1, $image['active']);
+        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg'));
+    }
 }
