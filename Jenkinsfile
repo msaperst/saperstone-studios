@@ -458,6 +458,7 @@ def compress(filetype) {
             //compress the file
             sh "echo 'uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile'"
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
+            sleep 1
             //check the file for size of non-zero
             new File("./public/$filetype/${newFile}").eachLine { line ->
                 println line
