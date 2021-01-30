@@ -449,6 +449,7 @@ def compress(filetype) {
         def output = sh returnStdout: true, script: "ls ./public/$filetype/"
         def files = output.split()
         files.each { file ->
+            file = file.trim();
             if (file == "mpdf.css") {
                 return
             }
