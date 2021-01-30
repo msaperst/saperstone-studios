@@ -27,111 +27,111 @@ node() {
                 cleanWs()
                 checkout scm
             }
-//             stage('Run Unit Tests') {
-//                 try {
-//                     sh "composer validate"
-//                     sh "composer install --prefer-dist --no-progress --no-suggest"
-//                     sh "composer unit-test"
-//                 } finally {
-//                     junit 'reports/ut-junit.xml'
-//                     publishHTML([
-//                             allowMissing         : false,
-//                             alwaysLinkToLastBuild: true,
-//                             keepAll              : true,
-//                             reportDir            : 'reports/',
-//                             reportFiles          : 'ut-results.html',
-//                             reportName           : 'Unit Test Results Report'
-//                     ])
-//                     publishHTML([
-//                             allowMissing         : false,
-//                             alwaysLinkToLastBuild: true,
-//                             keepAll              : true,
-//                             reportDir            : 'reports/ut-coverage',
-//                             reportFiles          : 'index.html',
-//                             reportName           : 'Unit Test Coverage Report'
-//                     ])
-//                 }
-//             }
-//             setupConfigurationFiles()
-//             stage('Run Integration Tests') {
-//                 try {
-//                     withCredentials([
-//                             usernamePassword(
-//                                     credentialsId: 'docker-hub',
-//                                     usernameVariable: 'dockerUser',
-//                                     passwordVariable: 'dockerPass'
-//                             )
-//                     ]) {
-//                         sh "docker login -u ${dockerUser} -p ${dockerPass}"
-//                     }
-//                     sh "composer integration-pre-test"
-//                     sh "composer integration-test"
-//                 } catch (Exception e) {
-//                     if( fileContains( 'reports/it-junit.xml', 'testsuite name=\\"tests/coverage/integration/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
-//                          fileContains( 'reports/it-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
-//                          echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
-//                      } else {
-//                         throw e
-//                      }
-//                 } finally {
-//                     sh "composer integration-post-test"
-//                     sh "docker logout"
-//                     junit 'reports/it-junit.xml'
-//                     publishHTML([
-//                             allowMissing         : false,
-//                             alwaysLinkToLastBuild: true,
-//                             keepAll              : true,
-//                             reportDir            : 'reports/',
-//                             reportFiles          : 'it-results.html',
-//                             reportName           : 'Integration Test Results Report'
-//                     ])
-//                     publishHTML([
-//                             allowMissing         : false,
-//                             alwaysLinkToLastBuild: true,
-//                             keepAll              : true,
-//                             reportDir            : 'reports/it-coverage',
-//                             reportFiles          : 'index.html',
-//                             reportName           : 'Integration Test Coverage Report'
-//                     ])
-//                 }
-//             }
-//             stage('Run Sonar Analysis') {
-//                 withCredentials([
-//                     usernamePassword(
-//                             credentialsId: 'GitHub_API	',
-//                             usernameVariable: 'gitHubUser',
-//                             passwordVariable: 'gitHubPass'
-//                     ),string(
-//                             credentialsId: '695f143e-326d-4f85-9959-20f9ef269cdd',
-//                             variable: 'sonarToken'
-//                     )
-//                 ]) {
-//                     def sonarExtras = '';
-//                     if( env.CHANGE_ID ) {
-//                         sonarExtras = "-Dsonar.analysis.mode=preview \
-//     -Dsonar.github.repository=msaperst/saperstone-studios \
-//     -Dsonar.github.pullRequest=${env.CHANGE_ID} \
-//     -Dsonar.github.oauth=${gitHubPass} \
-//     -Dsonar.host.url=http://192.168.3.13/sonar/ \
-//     -Dsonar.login=${sonarToken}";
-//                     }
-//                     sh """sonar-scanner ${sonarExtras} \
-//                         -Dsonar.projectKey=saperstone-studios \
-//                         -Dsonar.projectName='Saperstone Studios' \
-//                         -Dsonar.projectVersion=3.0 \
-//                         -Dsonar.branch=${branch} \
-//                         -Dsonar.sources=./bin,./public,./src,./templates \
-//                         -Dsonar.tests=./tests \
-//                         -Dsonar.exclusions=public/js/jqBootstrapValidation.js,public/favicon.ico,public/img/**,public/retouch/**,public/portrait/what-to-wear/**, \
-//                         -Dsonar.php.tests.reportPath=./reports/junit.xml \
-//                         -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
-//                 }
-//             }
-//             //if feature branch, good to exit here
-//             if( !env.CHANGE_ID ) {
-//                 currentBuild.result = 'SUCCESS'
-//                 return
-//             }
+            stage('Run Unit Tests') {
+                try {
+                    sh "composer validate"
+                    sh "composer install --prefer-dist --no-progress --no-suggest"
+                    sh "composer unit-test"
+                } finally {
+                    junit 'reports/ut-junit.xml'
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/',
+                            reportFiles          : 'ut-results.html',
+                            reportName           : 'Unit Test Results Report'
+                    ])
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/ut-coverage',
+                            reportFiles          : 'index.html',
+                            reportName           : 'Unit Test Coverage Report'
+                    ])
+                }
+            }
+            setupConfigurationFiles()
+            stage('Run Integration Tests') {
+                try {
+                    withCredentials([
+                            usernamePassword(
+                                    credentialsId: 'docker-hub',
+                                    usernameVariable: 'dockerUser',
+                                    passwordVariable: 'dockerPass'
+                            )
+                    ]) {
+                        sh "docker login -u ${dockerUser} -p ${dockerPass}"
+                    }
+                    sh "composer integration-pre-test"
+                    sh "composer integration-test"
+                } catch (Exception e) {
+                    if( fileContains( 'reports/it-junit.xml', 'testsuite name=\\"tests/coverage/integration/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
+                         fileContains( 'reports/it-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
+                         echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
+                     } else {
+                        throw e
+                     }
+                } finally {
+                    sh "composer integration-post-test"
+                    sh "docker logout"
+                    junit 'reports/it-junit.xml'
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/',
+                            reportFiles          : 'it-results.html',
+                            reportName           : 'Integration Test Results Report'
+                    ])
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/it-coverage',
+                            reportFiles          : 'index.html',
+                            reportName           : 'Integration Test Coverage Report'
+                    ])
+                }
+            }
+            stage('Run Sonar Analysis') {
+                withCredentials([
+                    usernamePassword(
+                            credentialsId: 'GitHub_API	',
+                            usernameVariable: 'gitHubUser',
+                            passwordVariable: 'gitHubPass'
+                    ),string(
+                            credentialsId: '695f143e-326d-4f85-9959-20f9ef269cdd',
+                            variable: 'sonarToken'
+                    )
+                ]) {
+                    def sonarExtras = '';
+                    if( env.CHANGE_ID ) {
+                        sonarExtras = "-Dsonar.analysis.mode=preview \
+    -Dsonar.github.repository=msaperst/saperstone-studios \
+    -Dsonar.github.pullRequest=${env.CHANGE_ID} \
+    -Dsonar.github.oauth=${gitHubPass} \
+    -Dsonar.host.url=http://192.168.3.13/sonar/ \
+    -Dsonar.login=${sonarToken}";
+                    }
+                    sh """sonar-scanner ${sonarExtras} \
+                        -Dsonar.projectKey=saperstone-studios \
+                        -Dsonar.projectName='Saperstone Studios' \
+                        -Dsonar.projectVersion=3.0 \
+                        -Dsonar.branch=${branch} \
+                        -Dsonar.sources=./bin,./public,./src,./templates \
+                        -Dsonar.tests=./tests \
+                        -Dsonar.exclusions=public/js/jqBootstrapValidation.js,public/favicon.ico,public/img/**,public/retouch/**,public/portrait/what-to-wear/**, \
+                        -Dsonar.php.tests.reportPath=./reports/junit.xml \
+                        -Dsonar.php.coverage.reportPaths=./reports/it-clover.xml,./reports/ut-clover.xml"""
+                }
+            }
+            //if feature branch, good to exit here
+            if( !env.CHANGE_ID ) {
+                currentBuild.result = 'SUCCESS'
+                return
+            }
 
             stage('Prep Files') {
                 parallel(
@@ -459,8 +459,7 @@ def compress(filetype) {
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
             //fix all references to old file
             sh "find ./public ./templates -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
-            //remove the old file once the new one exists
-            waitUntil { new File("./public/$filetype/$newFile").exists() }
+            //remove the old file
             sh "rm ./public/$filetype/$file"
         }
     }
