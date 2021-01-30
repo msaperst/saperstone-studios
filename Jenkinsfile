@@ -21,8 +21,10 @@ node() {
     ansiColor('xterm') {
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
 
+        //TODO - do nothing for merge into release
+
         //our dev workflow - kicked off for feature branches and PRs
-        if( !'develop'.equals(branch) && !'release'.equals(branch) ) {
+        if( !'develop'.equals(branch) && !'release'.equals(branch) && !('release').equals(env.CHANGE_TARGET)  {
             stage('Checkout Code') { // for display purposes
                 cleanWs()
                 checkout scm
@@ -418,16 +420,19 @@ node() {
                         "PHP": {
                             pullContainer(dockerRegistry, 'qa', "php")
                             pushContainer(dockerRegistry, ['prod'], "${dockerRegistry}/php:qa", "mysql")
+                            pullContainer(dockerRegistry, 'prod', "php")
                             copyContainer(dockerRegistry, 'prod',"php")
                         },
                         "PHP MyAdmin": {
                             pullContainer(dockerRegistry, 'qa', "php-myadmin")
                             pushContainer(dockerRegistry, ['prod'], "${dockerRegistry}/php-myadmin:qa", "mysql")
+                            pullContainer(dockerRegistry, 'prod', "php-myadmin")
                             copyContainer(dockerRegistry, 'prod',"php-myadmin")
                         },
                         "MySQL": {
                             pullContainer(dockerRegistry, 'qa', "mysql")
                             pushContainer(dockerRegistry, ['prod'], "${dockerRegistry}/mysql:qa", "mysql")
+                            pullContainer(dockerRegistry, 'prod', "mysql")
                             copyContainer(dockerRegistry, 'prod',"mysql")
                         }
                 )
