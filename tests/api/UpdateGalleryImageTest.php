@@ -376,4 +376,36 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals(1, $image['active']);
         $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg'));
     }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testUpdateEmptyCaption() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 999,
+                'title' => 'sample',
+                'caption' => '',
+                'filename' => 'img/sample/sample2.jpg'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', (string)$response->getBody());
+        $image = $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 999;");
+        $this->assertEquals(999, $image['id']);
+        $this->assertEquals(999, $image['gallery']);
+        $this->assertEquals('sample', $image['title']);
+        $this->assertEquals(1, $image['sequence']);
+        $this->assertEquals('', $image['caption']);
+        $this->assertEquals('img/sample/sample2.jpg', $image['location']);
+        $this->assertEquals(300, $image['width']);
+        $this->assertEquals(400, $image['height']);
+        $this->assertEquals(1, $image['active']);
+        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg'));
+    }
 }
