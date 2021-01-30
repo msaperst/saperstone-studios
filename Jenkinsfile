@@ -456,20 +456,11 @@ def compress(filetype) {
             //get the new filename
             def newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
             //compress the file
-            sh "echo 'uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile'"
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
-            sleep 1
-            //check the file for size of non-zero
-            new File("./public/$filetype/${newFile}").eachLine { line ->
-                println line
-            }
-            if( new File("./public/$filetype/${newFile}").length() == 0 ) {
-                throw new Exception("$newFile has filesize " +  new File("./public/$filetype/$newFile").length() + ". We have an issue.")
-            }
-            //remove the old file
-            sh "rm ./public/$filetype/$file"
             //fix all references to old file
             sh "find ./public ./templates -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
+            //remove the old file
+            sh "rm ./public/$filetype/$file"
         }
     }
 }
