@@ -243,7 +243,7 @@ $sql->disconnect();
                 foreach( $groups as $group) {
                     if ($group[0] instanceof BlogText) {
                         ?>
-            addTextArea("<?php echo addcslashes($group[0]->getText(),'"'); ?>");
+            addTextArea("<?php echo $group[0]->getText(); ?>");
             <?php
                     } elseif ($group[0] instanceof BlogImage) {
                         ?>
