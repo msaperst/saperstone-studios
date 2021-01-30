@@ -449,6 +449,7 @@ def compress(filetype) {
         def output = sh returnStdout: true, script: "ls ./public/$filetype/"
         def files = output.split()
         files.each { file ->
+            file = file.trim();
             if (file == "mpdf.css") {
                 return
             }
@@ -456,15 +457,10 @@ def compress(filetype) {
             def newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
             //compress the file
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
-            //check the file for size of non-zero
-            File file = new File("./public/$filetype/$newFile")
-            if( file.length() == 0 ) {
-                throw new Exception("$newFile has filesize 0. We have an issue.")
-            }
-            //remove the old file
-            sh "rm ./public/$filetype/$file"
             //fix all references to old file
             sh "find ./public ./templates -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
+            //remove the old file
+            sh "rm ./public/$filetype/$file"
         }
     }
 }
