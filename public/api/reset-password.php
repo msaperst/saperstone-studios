@@ -1,76 +1,31 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api();
 
-$err = array ();
-
-if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL )) {
-    $_POST ['email'] = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
-} elseif ($_POST ['email'] == "") {
-    $err [] = "All the fields must be filled in!";
-} else {
-    $err [] = "Enter a valid email address!";
-}
-if (isset ( $_POST ['code'] ) && $_POST ['code'] != "") {
-    $_POST ['code'] = mysqli_real_escape_string ( $conn->db, $_POST ['code'] );
-} else {
-    $err [] = "All the fields must be filled in!";
-}
-if (isset ( $_POST ['password'] ) && $_POST ['password'] != "") {
-    $_POST ['password'] = mysqli_real_escape_string ( $conn->db, $_POST ['password'] );
-} else {
-    $err [] = "All the fields must be filled in!";
-}
-if (isset ( $_POST ['passwordConfirm'] ) && $_POST ['passwordConfirm'] != "") {
-    $_POST ['passwordConfirm'] = mysqli_real_escape_string ( $conn->db, $_POST ['passwordConfirm'] );
-} else {
-    $err [] = "All the fields must be filled in!";
+try {
+    $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
+    $code = $api->retrievePostString('code', 'Code');
+    $password = $api->retrievePostString('password', 'Password');
+    $passwordConfirm = $api->retrievePostString('passwordConfirm', 'Password confirmation');
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-if ($_POST ['password'] != $_POST ['passwordConfirm']) {
-    $err [] = "Password and Confirmation do not match!";
-}
-$err = array_unique ( $err );
-
-if (count ( $err ) > 0) {
-    echo implode ( '<br />', $err );
-    $conn->disconnect ();
-    exit ();
+if ($password != $passwordConfirm) {
+    echo "Password and confirmation do not match";
+    exit();
 }
 
-$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE email='{$_POST['email']}' AND resetKey='{$_POST ['code']}';" ) );
-if ($row ['usr']) {
-    // If everything is OK login, so update our password
-    mysqli_query ( $conn->db, "UPDATE users SET pass='" . md5 ( $_POST ['password'] ) . "' WHERE email='{$_POST ['email']}' AND resetKey='{$_POST ['code']}';" );
-    mysqli_query ( $conn->db, "UPDATE users SET resetKey=NULL WHERE email='{$_POST ['email']}';" );
-    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Reset Password', NULL, NULL );" );
-    
-    // If everything is OK login
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-    $_SESSION ['usr'] = $row ['usr'];
-    $_SESSION ['hash'] = $row ['hash'];
-     // Store some data in the session
-
-    $preferences = json_decode( $_COOKIE['CookiePreferences'] );
-    if( $_POST['rememberMe'] && in_array( "preferences", $preferences ) ) {
-        // remember the user if prompted
-        $_COOKIE['hash'] = $row ['hash'];
-        $_COOKIE ['usr'] = $row ['usr'];
-        setcookie ( 'hash', $row ['hash'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-        setcookie ( 'usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-    }
-    
-    mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$row ['hash']}';" );
-    sleep ( 1 );
-    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
-} else {
-    $err [] = "Credentials do not match our records!";
+try {
+    $user = User::fromReset($email, $code);
+} catch (Exception $e) {
+    echo "Credentials do not match our records";
+    exit();
 }
-
-if ($err) {
-    // Save the error messages for the user
-    echo implode ( '<br />', $err );
-}
-$conn->disconnect ();
+$sql = new Sql();
+$sql->executeStatement("UPDATE users SET pass='" . md5($password) . "', resetKey=NULL WHERE email='$email' AND resetKey='$code';");
+$sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Reset Password', NULL, NULL );");
+$sql->disconnect();
+$user->login(false);
 exit ();

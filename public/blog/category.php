@@ -1,35 +1,23 @@
 <?php
-$categories;
-$where;
-$tags = array ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$errors = new Errors();
+
 // if no album is set, throw a 404 error
-if (! isset ( $_GET ['t'] )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+if (! isset ( $_GET ['t'] ) || $_GET ['t'] == "") {
+    $errors->throw404();
 } else {
     $categories = array_map ( 'intval', explode ( ',', $_GET ['t'] ) );
     $where = "`id` = '" . implode ( "' OR `id` = '", $categories ) . "';";
 }
-
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
-$string = new Strings ();
-
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
-$sql = "SELECT * FROM `tags` WHERE $where";
-$result = mysqli_query ( $conn->db, $sql );
-while ( $row = mysqli_fetch_assoc ( $result ) ) {
-    array_push ( $tags, $row ['tag'] );
-}
+$session = new Session();
+$session->initialize();
+$sql = new Sql ();
+$tags = array_column($sql->getRows( "SELECT tag FROM `tags` WHERE $where" ), 'tag');
 if (empty ( $tags )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
+    $errors->throw404();
 }
+$postCount = $sql->getRowCount( "SELECT * FROM `blog_tags` WHERE " . str_replace ( "id", "tag", $where ) );
+$sql->disconnect ();
 ?>
 
 <!DOCTYPE html>
@@ -43,17 +31,7 @@ if (empty ( $tags )) {
 
 <body>
 
-    <?php
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
-    // get our blog posts
-    $sql = "SELECT * FROM `blog_tags` WHERE " . str_replace ( $where, "id", "tag" );
-    $posts = array ();
-    $result = mysqli_query ( $conn->db, $sql );
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $posts [] = $row;
-    }
-    $conn->disconnect ();
-    ?>
+    <?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
     
     <!-- Page Content -->
     <div class="page-content container">
@@ -61,12 +39,12 @@ if (empty ( $tags )) {
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center"><?php echo $string->commaSeparate($tags); ?> Blog Posts</h1>
+                <h1 class="page-header text-center"><?php echo Strings::commaSeparate($tags); ?> Blog Posts</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/blog/categories.php">Categories</a></li>
-                    <li class="active"><?php echo $string->commaSeparate($tags); ?></li>
+                    <li class="active"><?php echo Strings::commaSeparate($tags); ?></li>
                 </ol>
             </div>
         </div>
@@ -87,11 +65,11 @@ if (empty ( $tags )) {
 
     <!-- Script to Activate the Gallery -->
     <script>
-        var postsFull = new PostsFull( <?php echo count($posts); ?>, <?php echo "[" . implode($categories,",") . "]"; ?> );
+        var postsFull = new PostsFull( <?php echo $postCount; ?>, <?php echo "[" . implode($categories,",") . "]"; ?> );
         
         var loaded = 0;
         $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() && loaded < <?php echo count($posts); ?> ) {
+            if( $('footer').isOnScreen() && loaded < <?php echo $postCount; ?> ) {
                 loaded = postsFull.loadPosts();
             }
         });

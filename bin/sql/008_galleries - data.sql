@@ -4,7 +4,9 @@
 
 LOCK TABLES `galleries` WRITE;
 /*!40000 ALTER TABLE `galleries` DISABLE KEYS */;
--- INSERT IGNORE INTO `galleries` VALUES (0, NULL, NULL, 'Leigh Ann');
+INSERT IGNORE INTO `galleries` VALUES (999, NULL, NULL, 'Leigh Ann', NULL);
+UPDATE `galleries` SET `id` = '0' WHERE `galleries`.`id` = 999;
+ALTER TABLE `albums` AUTO_INCREMENT = 1;
 INSERT IGNORE INTO `galleries` VALUES (1, NULL, NULL, 'Portrait', NULL);
 INSERT IGNORE INTO `galleries` VALUES (2, 1, 'maternity.jpg', 'Maternity', NULL);
 INSERT IGNORE INTO `galleries` VALUES (3, 1, 'newborn.jpg', 'Newborn', NULL);
@@ -63,7 +65,6 @@ INSERT IGNORE INTO `galleries` VALUES (55, 52, 'company-headshots.jpg', 'Company
 INSERT IGNORE INTO `galleries` VALUES (56, 52, 'professional-branding.jpg', 'Professional Branding', 'Move away from the ''stock photo'' look for your website, social media and branding materials and give your business a more personal voice. Below are some past projects we''ve done to showcase different companies and their individual corporate culture.');
 INSERT IGNORE INTO `galleries` VALUES (57, 52, 'events.jpg', 'Events', NULL);
 INSERT IGNORE INTO `galleries` VALUES (58, 52, 'photobooth.jpg', 'Photobooth', NULL);
-
 INSERT IGNORE INTO `galleries` VALUES (62, 28, 'reveal-box.jpg', 'Reveal Box', 'Hand made in Italy with a wide array of color options in leatherette to customize to your home and style. The Reveal Box holds 15 of your favorite images from your session on fine art paper either printed on a thick styrene at 8x10 or printed as 5x7 and placed in an 8x10 matte - Mix and match however you choose.<br/><br/>This box also allows for display versatility. Place your favorite image on top to be viewed through the glass window, place images in an 8x10 frame and put on your walls or tabletop or even place images as is on an easel. These images can go from box to frame and back again with extreme ease.');
 INSERT IGNORE INTO `galleries` VALUES (63, 38, 'reveal-box.jpg', 'Reveal Box', 'Hand made in Italy with a wide array of color options in leatherette to customize to your home and style. The Reveal Box holds 15 of your favorite images from your session on fine art paper either printed on a thick styrene at 8x10 or printed as 5x7 and placed in an 8x10 matte - Mix and match however you choose.<br/><br/>This box also allows for display versatility. Place your favorite image on top to be viewed through the glass window, place images in an 8x10 frame and put on your walls or tabletop or even place images as is on an easel. These images can go from box to frame and back again with extreme ease.');
 INSERT IGNORE INTO `galleries` VALUES (65, 56, 'team-hot-cocoa-social.jpg', 'Team Hot Cocoa Social', NULL);

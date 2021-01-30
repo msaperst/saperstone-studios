@@ -1,27 +1,11 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api ();
 
-$user = new User ();
+$api->forceAdmin();
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
-    }
-    $conn->disconnect ();
-    exit ();
-}
-
-$sql = "SELECT * FROM users;";
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $response [] = $r;
-}
-echo "{\"data\":" . json_encode ( $response ) . "}";
-
-$conn->disconnect ();
+$sql = new Sql ();
+$users = $sql->getRows("SELECT id, usr, firstName, lastName, email, role, active, lastLogin FROM users;");
+echo "{\"data\":" . json_encode($users) . "}";
+$sql->disconnect();
 exit ();

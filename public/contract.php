@@ -1,29 +1,14 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$errors = new Errors();
 
-$contract_link;
-// if no contract is set, throw a 404 error
-if (! isset ( $_GET ['c'] ) || $_GET ['c'] == "") {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
-} else {
-    $contract_link = mysqli_real_escape_string ( $conn->db, $_GET ['c'] );
+try {
+    $contract = Contract::withLink($_GET ['c']);
+} catch (Exception $e) {
+    $errors->throw404();
 }
-
-$sql = "SELECT * FROM `contracts` WHERE link = '" . $contract_link . "';";
-$contract_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-// if the contract doesn't exist, throw a 404 error
-if (! $contract_info ['link']) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,19 +40,19 @@ if (! $contract_info ['link']) {
         <!-- /.row -->
 
         <input type='hidden' id='contract-id'
-            value='<?php echo $contract_info['id']; ?>' />
+            value='<?php echo $contract->getId(); ?>' />
 
         <?php
             // if the contract is already signed
-            if ($contract_info ['file']) {
+            if ($contract->isSigned()) {
         ?>
-        <embed src='<?php echo substr( $contract_info['file'], 2 ); ?>' type="application/pdf" width="100%" height="600px" />
+        <embed src='<?php echo $contract->getFile(); ?>' type="application/pdf" width="100%" height="600px" />
         <?php
             } else {
         ?>
 
         <div id='contract'>
-        <?php echo $contract_info['content']; ?>
+        <?php echo $contract->getContent(); ?>
         </div>
 
         <hr />
@@ -81,14 +66,10 @@ if (! $contract_info ['link']) {
             </div>
             <div id='contract-messages' class="col-md-8 text-center">
                 <?php
-                if ($contract_info ['invoice'] != null && $contract_info ['invoice'] != "") {
+                if ($contract->getInvoice() != NULL && $contract->getInvoice() != "") {
                     ?>
                     <a target='_blank'
-                    href='
-                    <?php
-                    echo $contract_info ['invoice'];
-                    ?>
-                    '>Paypal Invoice Link</a>
+                    href='<?php echo $contract->getInvoice(); ?>'>Paypal Invoice Link</a>
                     <?php
                 }
                 ?>

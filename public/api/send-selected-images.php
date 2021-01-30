@@ -1,120 +1,109 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$systemUser = User::fromSystem();
+$api = new Api ();
 
-$user = new User ();
-
-if (! $user->isLoggedIn ()) {
-    $user = getClientIP();
-} else {
-    $user = $user->getId ();
+try {
+    $album = Album::withId($_POST ['album']);
+} catch (Exception $e) {
+    echo json_encode(array('err' => $e->getMessage()));
+    exit();
 }
 
-if (isset ( $_POST ['what'] )) {
-    $what = mysqli_real_escape_string ( $conn->db, $_POST ['what'] );
-} else {
-    $response ['err'] = "Need to provide what you desire to download";
-    echo json_encode ( $response );
-    $conn->disconnect ();
+if (!$album->canUserAccess()) {
+    header('HTTP/1.0 403 Unauthorized');
     exit ();
 }
 
-if (isset ( $_POST ['album'] )) {
-    $album = mysqli_real_escape_string ( $conn->db, $_POST ['album'] );
-} else {
-    echo "No album was provided. Please refresh this page and resubmit this request.";
-    $conn->disconnect ();
-    exit ();
-}
-$sql = "SELECT * FROM `albums` WHERE id = '$album';";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-// if the album doesn't exist, throw a 404 error
-if (! $album_info ['name']) {
-    echo "The provided album does not exist. Please refresh this page and resubmit this request.";
-    $conn->disconnect ();
-    exit ();
+try {
+    $what = $api->retrievePostString('what', 'What to select');
+} catch (Exception $e) {
+    echo json_encode(array('err' => $e->getMessage()));
+    exit();
 }
 
-$selected = array ();
+$sql = new Sql();
 if ($what == "favorites") {
-    $sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user' AND favorites.album = '$album';";
-    $result = mysqli_query ( $conn->db, $sql );
-    $desired = array ();
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $selected [] = $r ['title'];
+    $selected = array_column($sql->getRows("SELECT album_images.title FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '{$systemUser->getIdentifier()}' AND favorites.album = '{$album->getId()}';"), 'title');
+    if (empty($selected)) {
+        echo json_encode(array('err' => "You have not selected any favorites"));
+        $sql->disconnect();
+        exit();
     }
 } else {
-    $sql = "SELECT * FROM album_images WHERE album = '$album' AND sequence = '$what';";
-    $result = mysqli_query ( $conn->db, $sql );
-    $desired = array ();
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $selected [] = $r ['title'];
+    try {
+        $image = new Image($album, $what);
+    } catch (Exception $e) {
+        echo json_encode(array('err' => $e->getMessage()));
+        $sql->disconnect();
+        exit();
     }
+    $selected = array($image->getTitle());
 }
 
-$name = "";
-if (isset ( $_POST ['name'] )) {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+$name = $link = "Someone";
+if (isset ($_POST ['name'])) {
+    $name = $sql->escapeString($_POST ['name']);
 }
-$email = "";
-if (isset ( $_POST ['email'] )) {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+$emailA = "";
+if (isset ($_POST ['email'])) {
+    $emailA = $sql->escapeString($_POST ['email']);
+    $link = "<a href='mailto:$emailA'>$name</a>";
 }
 $comment = "";
-if (isset ( $_POST ['comment'] )) {
-    $comment = mysqli_real_escape_string ( $conn->db, $_POST ['comment'] );
+if (isset ($_POST ['comment'])) {
+    $comment = $sql->escapeString($_POST ['comment']);
 }
+$sql->disconnect();
 
 // send email
-$user = new User ();
-$IP = getClientIP();
-$geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
-require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php");
-$browser = new Browser ();
+$systemUser = User::fromSystem();
 $from = "Selects <selects@saperstonestudios.com>";
-$to = "Selects <selects@saperstonestudios.com>";
+$to = "Selects <" . getenv('EMAIL_SELECTS') . ">";
 $subject = "Selects Have Been Made";
+$email = new Email($to, $from, $subject);
 
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
 $text = "This is an automatically generated message from Saperstone Studios\n\n";
-$html .= "<p><a href='mailto:$email'>$name</a> has made a selection from the <a href='" . $_SERVER ['HTTP_REFERER'] . "' target='_blank'>" . $album_info ['name'] . "</a> album</p>";
-$text .= "$name has made a selection from the " . $album_info ['name'] . " album at " . $_SERVER ['HTTP_REFERER'] . ". Their email address is $email\n\n";
-$html .= "<p><ul><li>" . implode ( "</li><li>", $selected ) . "</li></ul></p><br/>";
-$text .= implode ( "\n", $selected ) . "\n\n";
+$html .= "<p>$link has made a selection from the <a href='" . $session->getBaseURL() . "/user/album.php?album={$album->getId()}' target='_blank'>{$album->getName()}</a> album</p>";
+$text .= "$name has made a selection from the {$album->getName()} album at " . $session->getBaseURL() . "/user/album.php?album={$album->getId()}.";
+if ($emailA != "") {
+    $text .= " Their email address is $emailA";
+}
+$text .= "\n\n";
+$html .= "<p><ul><li>" . implode("</li><li>", $selected) . "</li></ul></p><br/>";
+$text .= implode("\n", $selected) . "\n\n";
 $html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$comment</p>";
 $text .= "\t\t$comment";
 $html .= "</body></html>";
 
-require_once "Mail.php";
-require_once "Mail/mime.php";
-$crlf = "\n";
-$mime = new Mail_mime ( $crlf );
-$mime->setTXTBody ( $text );
-$mime->setHTMLBody ( $html );
-$body = $mime->get ();
-require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/email.php";
+$email->setHtml($html);
+$email->setText($text);
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    //apparently do nothing
+}
 
 // send a separate one to the user
-if ($email != "") {
-    $to = "$name <$email>";
+if ($emailA != "") {
+    $to = "$name <$emailA>";
     $subject = "Thank You for Making Selects";
+    $email = new Email($to, $from, $subject);
 
     $text = "Thank you for making your selects. We'll start working on your images, and reach back out to you shortly with access to your final images.";
     $html = "<html><body>$text</body></html>";
 
-    require_once "Mail.php";
-    require_once "Mail/mime.php";
-    $crlf = "\n";
-    $mime = new Mail_mime ( $crlf );
-    $mime->setTXTBody ( $text );
-    $mime->setHTMLBody ( $html );
-    $body = $mime->get ();
-    require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/email.php";
+    $email->setHtml($html);
+    $email->setText($text);
+    try {
+        $email->sendEmail();
+    } catch (Exception $e) {
+        //apparently do nothing
+    }
 }
 
-$conn->disconnect ();
 exit ();

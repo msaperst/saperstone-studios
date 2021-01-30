@@ -1,35 +1,18 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$systemUser = User::fromSystem();
+$api = new Api ();
 
-$user = new User ();
+$api->forceLoggedIn();
 
-if (! $user->isLoggedIn ()) {
-    echo "User must be logged in to order products";
-    $conn->disconnect ();
-    exit ();
-} else {
-    $user = $user->getId ();
-}
-
-$sql = "SELECT * FROM `cart` JOIN `album_images` ON `cart`.`image` = `album_images`.`sequence` AND `cart`.`album` = `album_images`.`album` JOIN `products` ON `cart`.`product` = `products`.`id` JOIN `product_types` ON `products`.`product_type` = `product_types`.`id` WHERE `cart`.`user` = '$user';";
-$result = mysqli_query ( $conn->db, $sql );
-$cart = array ();
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    unset ( $r ['cost'] );
-    $sql = "SELECT opt FROM product_options WHERE product_type = '" . $r ['product_type'] . "';";
-    $results = mysqli_query ( $conn->db, $sql );
-    $options = array ();
-    while ( $s = mysqli_fetch_assoc ( $results ) ) {
-        $options [] = $s ['opt'];
-    }
-    $r ['options'] = $options;
+$sql = new Sql();
+$result = $sql->getRows("SELECT cart.count, cart.product, cart.album, cart.image, album_images.title, album_images.location, product_types.name, products.product_type, products.size, products.price FROM `cart` JOIN `album_images` ON `cart`.`image` = `album_images`.`id` AND `cart`.`album` = `album_images`.`album` JOIN `products` ON `cart`.`product` = `products`.`id` JOIN `product_types` ON `products`.`product_type` = `product_types`.`id` WHERE `cart`.`user` = '{$systemUser->getId()}';");
+$cart = array();
+foreach ($result as $r) {
+    unset ($r ['cost']);
+    $r ['options'] = array_column($sql->getRows("SELECT opt FROM product_options WHERE product_type = '" . $r ['product_type'] . "';"), 'opt');
     $cart [] = $r;
 }
-echo json_encode ( $cart );
-
-$conn->disconnect ();
+echo json_encode($cart);
+$sql->disconnect();
 exit ();

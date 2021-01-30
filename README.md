@@ -1,27 +1,47 @@
-# [Start Bootstrap](http://startbootstrap.com/) - [Modern Business](http://startbootstrap.com/template-overviews/modern-business/)
+# Saperstone Studios Website
+Something about how awesome this is
 
-[Modern Business](http://startbootstrap.com/template-overviews/modern-business/) is a multipurpose, full website template for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/). This template includes 17 unique HTML pages and a working PHP contact form.
+## Deploying
 
-## Getting Started
+### Locally
 
-To use this template, choose one of the following options to get started:
-* Download the latest release on Start Bootstrap
-* Fork this repository on GitHub
+### Jenkins
 
-## Bugs and Issues
+## Testing
+All the testing is managed by `composer`. To run tests, ensure `composer` is
+installed, then run the desired commands from below
+### Running Unit Tests
+```shell
+composer unit-test
+```
+This will not only run the unit tests, but also calculate the code coverage
+for the unit tests. The most useful results are displayed on the commandline,
+but if you want something for the record, the below reports are generated:
+* junit: `reports/ut-junit.xml`
+* testdox: `reports/ut-results.html`
+* clover coverage: `reports/ut-coverage/index.html`
+### Running Integration Tests
+Before you can run the integration tests, a database must be stood up to run
+against. If the application is deployed, that will work, otherwise, stand 
+up a database for testing with the below:
+```shell
+composer integration-pre-test
+```
+One you have a database stood up to run tests against, simply run the 
+integration tests
+```shell
+composer integration-test
+```
+This will not only run the integration tests, but also calculate the code 
+coverage for the integration tests. The most useful results are displayed 
+on the commandline, but if you want something for the record, the below 
+reports are generated:
+* junit: `reports/it-junit.xml`
+* testdox: `reports/it-results.html`
+* clover coverage: `reports/it-coverage/index.html`
+### Running Code Coverage
 
-Have a bug or an issue with this template? [Open a new issue](https://github.com/IronSummitMedia/startbootstrap-modern-business/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](http://startbootstrap.com/template-overviews/modern-business/).
+### Running API Tests
 
-## Creator
-
-Start Bootstrap was created by and is maintained by **David Miller**, Managing Parter at [Iron Summit Media Strategies](http://www.ironsummitmedia.com/).
-
-* https://twitter.com/davidmillerskt
-* https://github.com/davidtmiller
-
-Start Bootstrap is based on the [Bootstrap](http://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
-
-## Copyright and License
-
-Copyright 2013-2015 Iron Summit Media Strategies, LLC. Code released under the [Apache 2.0](https://github.com/IronSummitMedia/startbootstrap-modern-business/blob/gh-pages/LICENSE) license.
+### Running UI Tests
 

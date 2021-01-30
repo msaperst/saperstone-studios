@@ -1,5 +1,5 @@
 #!/bin/bash
-
+DRYRUN=$1;
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
 PARENTDIR="$( dirname ${DIR} )";
 
@@ -11,14 +11,20 @@ done
 
 #create our database if it doesn't exist
 echo "Creating Database"
-mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS \`$DB_DATABASE\`;" > /dev/null 2>&1
+mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;" > /dev/null 2>&1
 
 #setup our schema
 for file in ${DIR}/sql/*.sql; do
     filename=${file##*/}
     echo "Running ${filename%.sql}";
-    mysql -h $DB_HOST -P $DB_PORT -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < "$file" #> /dev/null 2>&1
+    mysql --force -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME < "$file" #> /dev/null 2>&1
 done
+
+if [ "$DRYRUN" = true ]; then
+    echo "Finished Setting up DB"
+    exit 0;
+fi
+
 
 #set server name
 echo "export SERVER_NAME='${SERVER_NAME}'" >> /etc/apache2/envvars

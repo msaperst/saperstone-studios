@@ -1,61 +1,18 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$systemUser = User::fromSystem();
+$api = new Api ();
 
-$conn = new Sql ();
-$conn->connect ();
-
-$user = new User ();
-
-$user_id;
-if (! $user->isLoggedIn ()) {
-    $user_id = getClientIP();
-} else {
-    $user_id = $user->getId ();
-}
-
-$album = "";
-if (isset ( $_POST ['album'] ) && $_POST ['album'] != "") {
-    $album = ( int ) $_POST ['album'];
-} else {
-    if (! isset ( $_POST ['album'] )) {
-        echo "Album id is required!";
-    } elseif ($_POST ['album'] == "") {
-        echo "Album id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
-}
-
-$sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect ();
-    exit ();
-}
-
-$email = "";
-if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
-} else {
-    if (! isset ( $_POST ['email'] )) {
-        echo "Email is required!";
-    } elseif ($_POST ['email'] == "") {
-        echo "Email cannot be blank!";
-    } else {
-        echo "Some other email error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
+try {
+    $album = Album::withId($_POST['album']);
+    $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
 // update our mysql database
-$sql = "INSERT INTO `notification_emails` (`album`, `user`, `email`) VALUES ('$album', '$user_id', '$email');";
-mysqli_query ( $conn->db, $sql );
-
-$conn->disconnect ();
+$sql = new Sql ();
+$sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`) VALUES ('{$album->getId()}', '{$systemUser->getIdentifier()}', '$email');");
+$sql->disconnect();
 exit ();

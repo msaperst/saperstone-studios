@@ -99,12 +99,12 @@ window.onhashchange = function() {
 
 // Cookies
 function createCookie(name, value, days) {
+    var expires = "";
     if (days) {
         var date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        var expires = "; expires=" + date.toGMTString();
+        expires = "; expires=" + date.toGMTString();
     }
-    else var expires = "";
 
     document.cookie = name + "=" + value + expires + "; path=/";
 }
@@ -165,7 +165,6 @@ function forgotPassword() {
     $('#forgot-password-instructions').show();
     $('#forgot-password-error').empty();
     $('#forgot-password-message').empty();
-    $('#forgot-password-instructions').show();
     $('#forgot-password-submit').show();
     $('#forgot-password-code').hide();
     $('#forgot-password-new-password').hide();

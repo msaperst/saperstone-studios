@@ -1,19 +1,11 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$user = User::fromSystem();
+$user->forceAdmin();
 
-$user = new User ();
-
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    $conn->disconnect ();
-    exit ();
-}
-
-$contract;
+$contract = array();
 $contract ['name'] = "";
 $contract ['date'] = "";
 $contract ['address'] = "";
@@ -27,10 +19,10 @@ $contract ['invoice'] = "";
 $contract ['location'] = "";
 // get the id if set, and pull these values
 if (isset ( $_GET ['id'] )) {
-    $sql = "SELECT * FROM contracts WHERE id = {$_GET['id']};";
-    $contract = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $sql = new Sql ();
+    $contract = $sql->getRow( "SELECT * FROM contracts WHERE id = {$_GET['id']};" );
+    $sql->disconnect ();
 }
-$conn->disconnect ();
 ?>
 
 <div>

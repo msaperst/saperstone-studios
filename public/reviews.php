@@ -1,22 +1,21 @@
 <?php
-$category;
-// if no active category is set, throw a 404 error
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$sql = new Sql ();
+$user = User::fromSystem();
+$errors = new Errors();
 
 if (isset ( $_GET ['c'] )) {
-    $category = ( int ) $_GET ['c'];
-    $sql = "SELECT * FROM `review_types` WHERE id = '$category';";
-    $details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+    $category = (int) $_GET ['c'];
+    $details = $sql->getRow( "SELECT * FROM `review_types` WHERE id = '$category';" );
     if (! $details ['name']) {
-        header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-        include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-        $conn->disconnect ();
-        exit ();
+        $errors->throw404();
     }
+    $where = " WHERE `category` = $category";
 }
+$reviews = $sql->getRows ( "SELECT * FROM `reviews`$where;" );
+$sql->disconnect();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,9 +28,7 @@ if (isset ( $_GET ['c'] )) {
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
+        $rand = "?" . Strings::randomString ();
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php
@@ -87,39 +84,37 @@ if (isset ( $_GET ['c'] )) {
             if (isset ( $category )) {
                 $where = " WHERE `category` = $category";
             }
-            $sql = "SELECT * FROM `reviews`$where;";
-            $result = mysqli_query ( $conn->db, $sql );
             $counter = 0;
-            while ( $r = mysqli_fetch_assoc ( $result ) ) {
+            foreach ( $reviews as $review ) {
                 $style = " align='right' style='margin: 0px 0px 20px 20px;'";
                 if ($counter % 2) {
                     $style = " align='left' style='margin: 0px 20px 20px 0px;'";
                 }
                 ?>
-            <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <img src="<?php echo $r['image1']; echo $rand; ?>" width="100%"
-                        alt="<?php echo $r['image1']; ?>">
+            <div class="review-holder">
+                <div class="col-xs-6">
+                    <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                        <img src="<?php echo $review['image1']; echo $rand; ?>" width="100%"
+                            alt="<?php echo $review['image1']; ?>">
+                    </div>
                 </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <img src="<?php echo $r['image2']; echo $rand; ?>" width="100%"
-                        alt="<?php echo $r['image2']; ?>">
+                <div class="col-xs-6">
+                    <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                        <img src="<?php echo $review['image2']; echo $rand; ?>" width="100%"
+                            alt="<?php echo $review['image2']; ?>">
+                    </div>
                 </div>
-            </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+                <div class="col-xs-12" style="padding-top: 20px;">
+                    <blockquote>
+                        <p>
+                            <?php echo $review['quote']; ?>
+                        </p>
+                        <footer><?php echo $review['client']; ?><br /> <em><?php echo $review['event']; ?></em>
+                        </footer>
 
-                <blockquote>
-                    <p>
-                        <?php echo $r['quote']; ?>
-                    
-                    </p>
-                    <footer><?php echo $r['client']; ?><br /> <em><?php echo $r['event']; ?></em>
-                    </footer>
-
-                </blockquote>
-                <hr />
+                    </blockquote>
+                    <hr />
+                </div>
             </div>
             <?php
                 $counter ++;
@@ -196,5 +191,3 @@ if ($user->isAdmin ()) {
 </body>
 
 </html>
-<?php
-$conn->disconnect ();

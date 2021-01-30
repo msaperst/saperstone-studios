@@ -1,68 +1,40 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$systemUser = User::fromSystem();
+$api = new Api ();
 
-$user = new User ();
+$api->forceLoggedIn();
 
-$id = "";
-if (isset ( $_POST ['id'] ) && $_POST ['id'] != "") {
-    $id = ( int ) $_POST ['id'];
-} else {
-    if (! isset ( $_POST ['id'] )) {
-        echo "Album id is required!";
-    } elseif ($_POST ['id'] != "") {
-        echo "Album id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
-    }
-    $conn->disconnect ();
+try {
+    $album = Album::withId($_POST['id']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
+}
+
+if (!$album->canUserGetData()) {
+    header('HTTP/1.0 403 Unauthorized');
     exit ();
 }
 
-$sql = "SELECT * FROM albums WHERE id = $id;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect ();
-    exit ();
-}
-// only admin users and uploader users who own the album can make updates
-if (! ($user->isAdmin () || ($user->getRole () == "uploader" && $user->getId () == $album_info ['owner']))) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
-    }
-    $conn->disconnect ();
-    exit ();
+try {
+    $markup = $api->retrievePostString('markup', 'Markup');
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-$markup = "";
-if (isset ( $_POST ['markup'] )) {
-    $markup = mysqli_real_escape_string ( $conn->db, $_POST ['markup'] );
-} else {
-    echo "Markup is required!";
-    $conn->disconnect ();
-    exit ();
-}
 if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
-    echo "Markup is not a valid option!";
-    $conn->disconnect ();
+    echo "Markup is not valid";
     exit ();
 }
 
-if (! $user->isAdmin ()) {
+if (!$systemUser->isAdmin()) {
     // update our user records table
-    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, $id );" );
+    $sql = new Sql ();
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, {$album->getId()} );");
+    $sql->disconnect();
 }
 
-$sql = "SELECT * FROM albums WHERE id = $id;";
-$result = mysqli_query ( $conn->db, $sql );
-$album_info = mysqli_fetch_assoc ( $result );
-
-system ( dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh $id $markup " . $album_info ['location'] . " > /dev/null 2>&1 &" );
-
-$conn->disconnect ();
+system(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh {$album->getId()} $markup {$album->getLocation()} > /dev/null 2>&1 &");
 exit ();

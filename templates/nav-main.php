@@ -1,3 +1,9 @@
+<?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$navUser = User::fromSystem();
+?>
+
+
 <!-- Collect the nav links, forms, and other content for toggling -->
 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav navbar-right">
@@ -34,7 +40,7 @@
             <ul class="dropdown-menu">
                 <li><a href="/blog/posts.php">Recent Posts</a></li>
                 <li><a href="/blog/categories.php">Categories</a></li>
-                <?php if ( $user->isAdmin () ) { ?>
+                <?php if ( $navUser->isAdmin () ) { ?>
                 <li><a href="/blog/new.php">Write New Post</a></li>
                 <li><a href="/blog/manage.php">Manage Posts</a></li>
                 <?php } ?>
@@ -46,7 +52,7 @@
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <?php
-                if (! $user->isAdmin ()) {
+                if (! $navUser->isAdmin ()) {
                     ?>
                 <li><a href="#album">Find Album</a></li>
                 <?php

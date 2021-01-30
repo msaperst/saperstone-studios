@@ -1,133 +1,67 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$systemUser = User::fromSystem();
+$api = new Api ();
 
-$user = new User ();
-
-// check if fields passed are empty
-if (isset ( $_POST ['name'] ) && $_POST ['name'] != "") {
-    $name = mysqli_real_escape_string ( $conn->db, $_POST ['name'] );
+try {
+    $error = $api->retrievePostString('error', 'Error');
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-if (isset ( $_POST ['email'] ) && $_POST ['email'] != "") {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
+try {
+    $page = $api->retrievePostString('page', 'Page');
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-if (isset ( $_POST ['error'] ) && $_POST ['error'] != "") {
-    $error = mysqli_real_escape_string ( $conn->db, $_POST ['error'] );
-} else {
-    echo "Error is required";
-    exit ();
+try {
+    $referrer = $api->retrievePostString('referrer', 'Referral');
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
-
-if (isset ( $_POST ['page'] ) && $_POST ['page'] != "") {
-    $page = mysqli_real_escape_string ( $conn->db, $_POST ['page'] );
-} else {
-    echo "A page is required";
-    exit ();
-}
-
-if (isset ( $_POST ['referrer'] ) && $_POST ['referrer'] != "") {
-    $referrer = mysqli_real_escape_string ( $conn->db, $_POST ['referrer'] );
-} else {
-    echo "A referrer is required";
-    exit ();
-}
-
-$resolution = "";
-if (isset ( $_POST ['resolution'] ) && $_POST ['resolution'] != "") {
-    $resolution = mysqli_real_escape_string ( $conn->db, $_POST ['resolution'] );
-}
-
-require_once "Mail.php";
-require_once "Mail/mime.php";
-
-$IP = getClientIP();
-$geo_info = json_decode ( file_get_contents ( "http://ipinfo.io/$IP/json" ) );
-require_once ($path = dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "resources/Browser.php-master/src/Browser.php");
-$browser = new Browser ();
 
 // create email body and send it
 $to = "Webmaster <msaperst@gmail.com>";
 $from = "Error <error@saperstonestudios.com>";
 $subject = "$error Error";
 
+$email = new Email($to, $from, $subject);
 $html = "<html><body>";
 $html .= "This is an automatically generated message from Saperstone Studios<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a $error on page $page.<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page $referrer.<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action.<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before.<br/><br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a $error on page <a href='$page' target='_blank'>$page</a><br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href='$referrer' target='_blank'>$referrer</a>.<br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/>";
 
-if ($user->isLoggedIn ()) {
-    $id = $user->getId ();
-    $name = $user->getName ();
-    $email = $user->getEmail ();
-    $html .= "<strong>User Id</strong>: $id<br/>";
-    $html .= "<strong>Name</strong>: $name<br/>";
-    $html .= "<strong>Email</strong>: <a href='mailto:$email'>$email</a><br/>";
+if ($systemUser->isLoggedIn()) {
+    $html .= "<strong>User Id</strong>: {$systemUser->getId()}<br/>";
+    $html .= "<strong>Name</strong>: {$systemUser->getName()}<br/>";
+    $html .= "<strong>Email</strong>: <a href='mailto:{$systemUser->getEmail()}'>{$systemUser->getEmail()}</a><br/>";
 }
-if (! isset ( $geo_info->city )) {
-    $html .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
-} else {
-    if (isset ( $geo_info->postal )) {
-        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
-    } else {
-        $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
-    }
-    $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
-}
-if (isset ( $_POST ['position'] ) && isset ( $location )) {
-    $html .= "<strong>Location</strong>: $location (estimate based on geolocation $position)<br/>";
-}
-$html .= "<strong>Browser</strong>: " . $browser->getBrowser () . " " . $browser->getVersion () . "<br/>";
-$html .= "<strong>Resoluation</strong>: $resolution<br/>";
-$html .= "<strong>OS</strong>: " . $browser->getPlatform () . "<br/>";
-$html .= "<strong>Full UA</strong>: " . $_SERVER ['HTTP_USER_AGENT'] . "<br/>";
+$html .= $email->getUserInfoHtml();
 $html .= "</body></html>";
 
 $text = "This is an automatically generated message from Saperstone Studios\n";
-$text .= "\t\tSomeone got a $error on page $page.\n";
-$text .= "\t\tThey came from page $referrer.\n";
-$text .= "\t\tYou might want to look into this or take action.\n";
-$text .= "\t\tUser information is collected before.\n\n";
-if ($user->isLoggedIn ()) {
-    $id = $user->getId ();
-    $name = $user->getName ();
-    $email = $user->getEmail ();
-    $text .= "User Id: $id\n";
-    $text .= "Name: $name\n";
-    $text .= "Email: $email\n";
+$text .= "\t\tSomeone got a $error on page $page\n";
+$text .= "\t\tThey came from page $referrer\n";
+$text .= "\t\tYou might want to look into this or take action\n";
+$text .= "\t\tUser information is collected before\n\n";
+if ($systemUser->isLoggedIn()) {
+    $text .= "User Id: {$systemUser->getId()}\n";
+    $text .= "Name: {$systemUser->getName()}\n";
+    $text .= "Email: {$systemUser->getEmail()}\n";
 }
-if (! isset ( $geo_info->city )) {
-    $text .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
-} else {
-    if (isset ( $geo_info->postal )) {
-        $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
-    } else {
-        $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
-    }
-    $text .= "Hostname: " . $geo_info->hostname . "\n";
+$text .= $email->getUserInfoText();
+
+$email->setHtml($html);
+$email->setText($text);
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    //apparently do nothing
 }
-if (isset ( $_POST ['position'] ) && isset ( $location )) {
-    $text .= "Location: $location (estimate based on geolocation $position)\n";
-}
-$text .= "Browser: " . $browser->getBrowser () . " " . $browser->getVersion () . "\n";
-$text .= "Resoluation: $resolution";
-$text .= "OS: " . $browser->getPlatform () . "\n";
-$text .= "Full UA: " . $_SERVER ['HTTP_USER_AGENT'] . "\n";
-
-$crlf = "\n";
-
-$mime = new Mail_mime ( $crlf );
-
-$mime->setTXTBody ( $text );
-$mime->setHTMLBody ( $html );
-
-$body = $mime->get ();
-
-require dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/email.php";
 exit ();

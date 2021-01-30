@@ -1,6 +1,12 @@
-<?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
-<?php include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php"; ?>
-
+<?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$user = User::fromSystem();
+$sql = new Sql ();
+$images = $sql->getRows( "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = 37;" );
+$sql->disconnect();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,21 +26,7 @@
 
 <body>
 
-    <?php
-    $nav = "wedding";
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
-    
-    // get our gallery images
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $conn = new Sql ();
-    $conn->connect ();
-    $sql = "SELECT gallery_images.* FROM `gallery_images` JOIN `galleries` ON gallery_images.gallery = galleries.id WHERE galleries.id = 37;";
-    $result = mysqli_query ( $conn->db, $sql );
-    $images = array ();
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $images [] = $row;
-    }
-    ?>
+    <?php $nav = "wedding"; require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
 
     <!-- Page Content -->
     <div class="page-content container">

@@ -1,39 +1,18 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api ();
 
-$user = new User ();
+$api->forceAdmin();
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
-    }
-    $conn->disconnect ();
-    exit ();
+try {
+    $type = ProductType::withId($_POST['type']);
+    $option = $api->retrievePostString('option', 'Product option');
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-if (isset ( $_POST ['type'] ) && $_POST ['type'] != "") {
-    $type = ( int ) $_POST ['type'];
-} else {
-    echo "Product type is not provided";
-    $conn->disconnect ();
-    exit ();
-}
-
-if (isset ( $_POST ['option'] ) && $_POST ['option'] != "") {
-    $option = mysqli_real_escape_string ( $conn->db, $_POST ['option'] );
-} else {
-    echo "Option is not provided";
-    $conn->disconnect ();
-    exit ();
-}
-
-$sql = "DELETE FROM `product_options` WHERE `product_type` = '$type' AND `opt` = '$option';";
-mysqli_query ( $conn->db, $sql );
-
-$conn->disconnect ();
+$sql = new Sql();
+$sql->executeStatement("DELETE FROM `product_options` WHERE `product_type` = '{$type->getId()}' AND `opt` = '$option';");
+$sql->disconnect();
 exit ();

@@ -1,51 +1,19 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api ();
 
-$user = new User ();
+$api->forceLoggedIn();
 
-if (!$user->isLoggedIn ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    $conn->disconnect ();
-    exit ();
-}
-
-$comment = "";
-if (isset ( $_POST ['comment'] ) && $_POST ['comment'] != "") {
-    $comment = ( int ) $_POST ['comment'];
-} else {
-    if (! isset ( $_POST ['comment'] )) {
-        echo "Comment id is required!";
-    } elseif ($_POST ['comment'] == "") {
-        echo "Comment id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
+try {
+    $comment = Comment::withId($_POST['comment']);
+    // check our user permissions
+    if (!$comment->canUserGetData()) {
+        header('HTTP/1.0 403 Unauthorized');
+        exit ();
     }
-    $conn->disconnect ();
-    exit ();
+    $comment->delete();
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
-
-$sql = "SELECT * FROM blog_comments WHERE id = $comment;";
-$blog_comment_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $blog_comment_info ['id']) {
-    echo "That ID doesn't match any comments";
-    $conn->disconnect ();
-    exit ();
-}
-
-// check our user permissions
-if (! $user->isAdmin () && $user->getId () != $blog_comment_info ['user']) {
-    header ( 'HTTP/1.0 403 Unauthorized' );
-    $conn->disconnect ();
-    exit ();
-}
-
-// delete our image from mysql table
-$sql = "DELETE FROM blog_comments WHERE id='$comment';";
-mysqli_query ( $conn->db, $sql );
-
-$conn->disconnect ();
 exit ();

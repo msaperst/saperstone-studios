@@ -1,54 +1,31 @@
 <?php
-$what;
-// if no album is set, throw a 404 error
-if (! isset ( $_GET ['w'] )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
-} else {
-    $what = ( int ) $_GET ['w'];
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$errors = new Errors();
+
+try {
+    $gallery = Gallery::withId($_GET ['w']);
+} catch (Exception $e) {
+    $errors->throw404();
 }
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
-$sql = "SELECT * FROM `galleries` WHERE id = '$what';";
-$details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $details ['id']) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
-}
+$session = new Session();
+$session->initialize();
+$sql = new Sql ();
+$user = User::fromSystem();
 
-$sql = "SELECT * FROM `galleries` WHERE parent = '$what';";
-$children = array ();
-$result = mysqli_query ( $conn->db, $sql );
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    if ($r ['title'] != 'Product') {
-        $children [] = $r;
-    }
+$children = array();
+foreach( $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '{$gallery->getId()}' AND title != 'Product';" ) as $child) {
+    $children[] = Gallery::withId($child['id']);
 }
 if (sizeof ( $children ) == 0) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
+    $errors->throw404();
 }
 
-$parent = $details ['title'];
-if ($details ['parent'] != NULL) {
-    $sql = "SELECT `title` FROM `galleries` WHERE id = " . $details ['parent'] . ";";
-    $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
-}
-if ($parent == 'Product') {
-    $grandparent = $parent;
-    $sql = "SELECT `parent` FROM `galleries` WHERE id = " . $details ['parent'] . ";";
-    $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['parent'];
-    $sql = "SELECT `title` FROM `galleries` WHERE id =$parent;";
-    $parent = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) ) ['title'];
-}
+//if ($gallery->getParent() != NULL && $gallery->getParent()->getTitle() == 'Product') {
+//    $grandparent = $parent;
+//    $parent = $sql->getRow( "SELECT `parent` FROM `galleries` WHERE id = " . $details ['parent'] . ";" ) ['parent'];
+//    $parent = $sql->getRow( "SELECT `title` FROM `galleries` WHERE id = $parent;" ) ['title'];
+//}
 ?>
 
 <!DOCTYPE html>
@@ -62,9 +39,8 @@ if ($parent == 'Product') {
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
+        $rand = "?" . Strings::randomString ();
+        ?>
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php
@@ -75,7 +51,7 @@ if ($parent == 'Product') {
 
 <body>
 
-    <?php $nav = strtolower($parent); require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
+    <?php $nav = $gallery->getNav(); require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
     
     <!-- Page Content -->
     <div class="page-content container">
@@ -83,36 +59,16 @@ if ($parent == 'Product') {
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center"><?php echo $details['title']; ?> Gallery</h1>
+                <h1 class="page-header text-center"><?php echo $gallery->getTitle(); ?> Gallery</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php"><?php echo $parent; ?></a></li>
-                    <?php
-                    if ($details ['parent'] != NULL && $details ['title'] != 'Product' && (! isset ( $grandparent ) || $grandparent != 'Product')) {
-                        ?>
-                        <li><a
-                        href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
-                    <li class='active'><?php echo $details['title']; ?></li>
-                        <?php
-                    } elseif (isset ( $grandparent ) && $grandparent == 'Product') {
-                        ?>
-                    <li><a href='services.php'>Services</a></li>
-                    <li><a href='products.php'>Products</a></li>
-                    <li><a href='gallery.php?w=<?php echo $details['parent']; ?>'>Gallery</a></li>
-                    <li class='active'><?php echo $details['title']; ?></li>
-                        <?php
-                    } elseif ($details ['parent'] != NULL && $details ['title'] == 'Product') {
-                        ?>
-                    <li><a href='services.php'>Services</a></li>
-                    <li><a href='products.php'>Products</a></li>
-                    <li class='active'>Gallery</li>
-                        <?php
-                    } else {
-                        ?>
-                        <li class='active'>Gallery</li>
-                        <?php
-                    }
-                    ?>
+                    <?php foreach( $gallery->getBreadcrumbs() as $breadcrumb ) {
+                        if( $breadcrumb['link'] != '' ) {
+                            echo "<li><a href='{$breadcrumb['link']}'>{$breadcrumb['title']}</a></li>";
+                        } else {
+                            echo "<li class='active'>{$breadcrumb['title']}</li>";
+                        }
+                    } ?>
                 </ol>
             </div>
         </div>
@@ -123,13 +79,7 @@ if ($parent == 'Product') {
             <?php
             for($i = 0; $i < count ( $children ); $i ++) {
                 $child = $children [$i];
-                $sql = "SELECT * FROM `galleries` WHERE parent = '" . $child ['id'] . "';";
-                $grandchildren = array ();
-                $result = mysqli_query ( $conn->db, $sql );
-                while ( $r = mysqli_fetch_assoc ( $result ) ) {
-                    $grandchildren [] = $r;
-                }
-                
+                $grandchildren = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '{$child->getId()}';" );
                 $padding = "";
                 if (count ( $children ) % 3 == 1 && $i == (count ( $children ) - 1)) {
                     $padding = "col-sm-offset-4 ";
@@ -140,21 +90,21 @@ if ($parent == 'Product') {
                 ?>
             <div
                 class="<?php echo $padding; ?>col-md-4 col-sm-6 col-xs-12">
-                <div section="<?php echo $child['title']; ?>"
+                <div section="<?php echo $child->getTitle(); ?>"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <span class='preview-title'><?php echo $child['title']; ?></span> <img
-                        class="img-responsive" alt="<?php echo $child['title']; ?>"
-                        src="img/<?php echo $child['image']; echo $rand; ?>" />
+                    <span class='preview-title'><?php echo $child->getTitle(); ?></span> <img
+                        class="img-responsive" alt="<?php echo $child->getTitle(); ?>"
+                        src="img/<?php echo $child->getImage(); echo $rand; ?>" />
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info"
                             <?php
                 if (sizeof ( $grandchildren ) == 0) {
                     ?>
-                            href="galleries.php?w=<?php echo $child['id']; ?>">See More</a>
+                            href="galleries.php?w=<?php echo $child->getId(); ?>">See More</a>
                         <?php
                 } else {
                     ?>
-                            href="gallery.php?w=<?php echo $child['id']; ?>">See More</a>
+                            href="gallery.php?w=<?php echo $child->getId(); ?>">See More</a>
                         <?php
                 }
                 ?>                        
@@ -163,6 +113,7 @@ if ($parent == 'Product') {
             </div>
     <?php
             }
+            $sql->disconnect();
             ?>
         </div>
         <!-- /.row -->

@@ -1,7 +1,7 @@
 version: '3'
 services:
   mysql:
-    image: victor:9086/saperstone-studios/mysql:latest
+    image: victor:9086/saperstone-studios/mysql:prod
     container_name: saperstonestudios_mysql
     restart: always
     volumes:
@@ -18,7 +18,7 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
   php-myadmin:
-    image: victor:9086/saperstone-studios/php-myadmin:latest
+    image: victor:9086/saperstone-studios/php-myadmin:prod
     container_name: saperstonestudios_php-myadmin
     restart: always
     depends_on:
@@ -33,7 +33,7 @@ services:
     links:
     - mysql
   php:
-    image: victor:9086/saperstone-studios/php:latest
+    image: victor:9086/saperstone-studios/php:prod
     container_name: saperstonestudios_php
     restart: always
     depends_on:
@@ -52,15 +52,24 @@ services:
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_DATABASE: ${DB_NAME}
-      DB_USERNAME: ${DB_USER}
-      DB_PASSWORD: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
       SERVER_NAME: ${SERVER_NAME}
+      EMAIL_CONTACT: ${EMAIL_CONTACT}
+      EMAIL_ACTIONS: ${EMAIL_ACTIONS}
+      EMAIL_SELECTS: ${EMAIL_SELECTS}
+      EMAIL_CONTRACTS: ${EMAIL_CONTRACTS}
       EMAIL_HOST: ${EMAIL_HOST}
       EMAIL_PORT: ${EMAIL_PORT}
-      EMAIL_USERNAME: ${EMAIL_USER}
-      EMAIL_PASSWORD: ${EMAIL_PASS}
-      EMAIL_USERNAME_BACKUP: ${EMAIL_USER_X}
-      EMAIL_PASSWORD_BACKUP: ${EMAIL_PASS_X}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      EMAIL_USER_X: ${EMAIL_USER_X}
+      EMAIL_PASS_X: ${EMAIL_PASS_X}
+      CONSUMER_KEY: ${CONSUMER_KEY}
+      CONSUMER_SECRET: ${CONSUMER_SECRET}
+      TOKEN: ${TOKEN}
+      TOKEN_SECRET: ${TOKEN_SECRET}
+      CLEAN_UP_AFTER: 604800
 volumes:
   mysql:

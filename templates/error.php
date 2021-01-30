@@ -3,7 +3,8 @@ $referer = "Unknown";
 if (isset ( $_SERVER ['HTTP_REFERER'] )) {
     $referer = $_SERVER ['HTTP_REFERER'];
 }
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
 ?>
 
 <!DOCTYPE html>
@@ -70,7 +71,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src
                         '/api/send-error.php',
                         {
                             error: '<?php echo $title; ?>',
-                            page: '<?php echo getCurrentPage(); ?>',
+                            page: '<?php echo $session->getCurrentPage(); ?>',
                             referrer: '<?php echo $referer ?>',
                             resolution: screen.width+'x'+screen.height
                         }

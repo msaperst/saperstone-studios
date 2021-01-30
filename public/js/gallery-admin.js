@@ -1,59 +1,191 @@
 var resultsSelected = false;
 
-$(document).ready(function() {
-    $('#delete-image-btn').click(function() {
+$(document).ready(function () {
+    $('#delete-image-btn').click(function () {
         deleteImage();
     });
+    $('#edit-image-btn').click(function () {
+        editImage();
+    });
 
-    $("#sort-gallery-btn").click(function() {
+    $("#sort-gallery-btn").click(function () {
         sortGallery();
     });
 
-    $("#save-gallery-btn").click(function() {
+    $("#save-gallery-btn").click(function () {
         saveGallery(getQueryVariable('w'));
     });
 
-    $("#edit-gallery-btn").click(function() {
+    $("#edit-gallery-btn").click(function () {
         editGallery(getQueryVariable('w'));
     });
 
     $('[data-toggle="tooltip"]').tooltip();
 });
 
+function editImage() {
+    $('.carousel').carousel("pause");
+    var img = $('.carousel div.active div:first-child');
+    BootstrapDialog.show({
+        draggable: true,
+        title: 'Edit Image Metadata',
+        message: function () {
+            var inputs = $('<div>');
+            inputs.addClass('form-horizontal');
+
+            var titleDiv = $('<div>');
+            titleDiv.addClass('form-group');
+            var titleLabel = $('<label>');
+            titleLabel.addClass('control-label col-sm-2');
+            titleLabel.attr('for', 'gallery-title');
+            titleLabel.html('Title: ');
+            var titleInputDiv = $('<div>');
+            titleInputDiv.addClass('col-sm-10');
+            var titleInput = $('<input>');
+            titleInput.attr('id', 'gallery-title');
+            titleInput.attr('type', 'text');
+            titleInput.addClass('form-control');
+            titleInput.attr('placeholder', 'Image Title');
+            titleInput.val(img.attr('alt'));
+            inputs.append(titleDiv.append(titleLabel).append(titleInputDiv.append(titleInput)));
+
+            var captionDiv = $('<div>');
+            captionDiv.addClass('form-group');
+            var captionLabel = $('<label>');
+            captionLabel.addClass('control-label col-sm-2');
+            captionLabel.attr('for', 'gallery-caption');
+            captionLabel.html('Caption: ');
+            var captionInputDiv = $('<div>');
+            captionInputDiv.addClass('col-sm-10');
+            var captionInput = $('<input>');
+            captionInput.attr('id', 'gallery-caption');
+            captionInput.attr('type', 'text');
+            captionInput.addClass('form-control');
+            captionInput.attr('placeholder', 'Image Caption');
+            captionInput.val(img.next().children().html());
+            inputs.append(captionDiv.append(captionLabel).append(captionInputDiv.append(captionInput)));
+
+            var filenameDiv = $('<div>');
+            filenameDiv.addClass('form-group');
+            var filenameLabel = $('<label>');
+            filenameLabel.addClass('control-label col-sm-2');
+            filenameLabel.attr('for', 'gallery-filename');
+            filenameLabel.html('Filename: ');
+            var filenameInputDiv = $('<div>');
+            filenameInputDiv.addClass('col-sm-10');
+            var filenameInput = $('<input>');
+            filenameInput.attr('id', 'gallery-filename');
+            filenameInput.attr('type', 'text');
+            filenameInput.addClass('form-control');
+            filenameInput.attr('placeholder', 'Filename including path');
+            filenameInput.val(img.attr('style').split("'")[1]);
+            inputs.append(filenameDiv.append(filenameLabel).append(filenameInputDiv.append(filenameInput)));
+
+            return inputs;
+        },
+        buttons: [{
+            icon: 'glyphicon glyphicon-pencil',
+            label: ' Update',
+            cssClass: 'btn-info',
+            action: function (dialogInItself) {
+                var $button = this;
+                $button.spin();
+                dialogInItself.enableButtons(false);
+                dialogInItself.setClosable(false);
+                // send our update
+                $.post("/api/update-gallery-image.php", {
+                    gallery: img.attr('gallery-id'),
+                    image: img.attr('image-id'),
+                    title: $('#gallery-title').val(),
+                    caption: $('#gallery-caption').val(),
+                    filename: $('#gallery-filename').val()
+                }).done(function (data) {
+                    if (data !== "") {
+                        dialogInItself.getModal().find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                    } else {
+                        //update our image
+                        img.attr('alt', $('#gallery-title').val());
+                        img.attr('style', "background-image: url('" + $('#gallery-filename').val() + "');");
+                        img.next().children().html($('#gallery-caption').val());
+                        //close our dialog
+                        dialogInItself.close();
+                        // go to the next image
+                        $('.carousel').carousel("next");
+                    }
+                }).fail(function (xhr, status, error) {
+                    if (xhr.responseText !== "") {
+                        dialogInItself.getModal().find('.modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+                    } else if (error === "Unauthorized") {
+                        dialogInItself.getModal().find('.modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+                    } else {
+                        dialogInItself.getModal().find('.modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                    }
+                }).always(function () {
+                    $button.stopSpin();
+                    dialogInItself.enableButtons(true);
+                    dialogInItself.setClosable(true);
+                });
+            }
+        }, {
+            label: 'Close',
+            action: function (dialogInItself) {
+                dialogInItself.close();
+            }
+        }]
+    });
+}
+
 function deleteImage() {
+    $('.carousel').carousel("pause");
     var img = $('.carousel div.active div');
     BootstrapDialog.show({
-        draggable : true,
-        title : 'Are You Sure?',
-        message : 'Are you sure you want to delete the image <b>' + img.attr('alt') + '</b>',
-        buttons : [ {
-            icon : 'glyphicon glyphicon-trash',
-            label : ' Delete',
-            cssClass : 'btn-danger',
-            action : function(dialogInItself) {
+        draggable: true,
+        title: 'Are You Sure?',
+        message: 'Are you sure you want to delete the image <b>' + img.attr('alt') + '</b>',
+        buttons: [{
+            icon: 'glyphicon glyphicon-trash',
+            label: ' Delete',
+            cssClass: 'btn-danger',
+            action: function (dialogInItself) {
                 var $button = this;
                 $button.spin();
                 dialogInItself.enableButtons(false);
                 dialogInItself.setClosable(false);
                 // send our update
                 $.post("/api/delete-gallery-image.php", {
-                    gallery : img.attr('gallery-id'),
-                    image : img.attr('image-id')
-                }).done(function() {
-                    dialogInItself.close();
-                    // go to the next image
-                    $('.carousel').carousel("next");
-                    // cleanup the dom
-                    $('.gallery img[alt="' + img.attr('alt') + '"]').parent().remove();
-                    img.parent().remove();
+                    gallery: img.attr('gallery-id'),
+                    image: img.attr('image-id')
+                }).done(function (data) {
+                    if (data !== "") {
+                        dialogInItself.getModal().find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                    } else {
+                        dialogInItself.close();
+                        // go to the next image
+                        $('.carousel').carousel("next");
+                        // cleanup the dom
+                        $('.gallery img[alt="' + img.attr('alt') + '"]').parent().remove();
+                        img.parent().remove();
+                    }
+                }).fail(function (xhr, status, error) {
+                    if (xhr.responseText !== "") {
+                        dialogInItself.getModal().find('.modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+                    } else if (error === "Unauthorized") {
+                        dialogInItself.getModal().find('.modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+                    } else {
+                        dialogInItself.getModal().find('.modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                    }
+                }).always(function () {
+                    $button.stopSpin();
+                    dialogInItself.enableButtons(true);
+                    dialogInItself.setClosable(true);
                 });
             }
         }, {
-            label : 'Close',
-            action : function(dialogInItself) {
+            label: 'Close',
+            action: function (dialogInItself) {
                 dialogInItself.close();
             }
-        } ]
+        }]
     });
 }
 
@@ -64,18 +196,18 @@ function sortGallery() {
 
     // setup sort
     $(".image-grid").sortable({
-        items : 'div.gallery',
+        items: 'div.gallery',
     });
 }
 
 function saveGallery(id) {
     $.blockUI({
-        message : '<h1>Saving New Image Order...</h1>'
+        message: '<h1>Saving New Image Order...</h1>'
     });
 
     // determine the new order
     var imgs = [];
-    $('div.gallery').each(function() {
+    $('div.gallery').each(function () {
         var img = {};
         img.id = $(this).attr('image-id');
         img.sequence = $(this).attr('sequence');
@@ -83,7 +215,7 @@ function saveGallery(id) {
         img.height = $(this).position().top;
         imgs.push(img);
     });
-    imgs.sort(function(a, b) {
+    imgs.sort(function (a, b) {
         if (a.height === b.height) {
             var x = a.col.toLowerCase(), y = b.col.toLowerCase();
 
@@ -97,9 +229,9 @@ function saveGallery(id) {
 
     // save our updates
     $.post("/api/update-gallery-order.php", {
-        id : id,
-        imgs : imgs,
-    }).done(function(data) {
+        id: id,
+        imgs: imgs,
+    }).done(function (data) {
         if (data === "") {
             $(".image-grid").sortable("destroy");
             // fix the buttons
@@ -108,7 +240,7 @@ function saveGallery(id) {
         } else {
             $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }
-    }).fail(function(xhr, status, error) {
+    }).fail(function (xhr, status, error) {
         if (xhr.responseText !== "") {
             $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
         } else if (error === "Unauthorized") {
@@ -116,27 +248,27 @@ function saveGallery(id) {
         } else {
             $('.breadcrumb').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while saving your new gallery order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
-    }).always(function() {
+    }).always(function () {
         $.unblockUI();
     });
 }
 
 function editGallery(id) {
     $.get("/api/get-gallery.php", {
-        id : id
-    }, function(data) {
+        id: id
+    }, function (data) {
         BootstrapDialog.show({
-            draggable : true,
-            size : BootstrapDialog.SIZE_WIDE,
-            title : 'Edit Gallery <b>' + data.title + '</b>',
-            message : function() {
+            draggable: true,
+            size: BootstrapDialog.SIZE_WIDE,
+            title: 'Edit Gallery <b>' + data.title + '</b>',
+            message: function () {
                 return '<input placeholder="Gallery Title" id="new-gallery-title" type="text" class="form-control" value="' + data.title + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div>' + '</div>' + '<div id="new-gallery-error" class="error"></div>' + '<div id="new-gallery-message" class="success"></div>';
             },
-            buttons : [ {
-                icon : 'glyphicon glyphicon-save',
-                label : ' Save Details',
-                cssClass : 'btn-success',
-                action : function(dialogItself) {
+            buttons: [{
+                icon: 'glyphicon glyphicon-save',
+                label: ' Save Details',
+                cssClass: 'btn-success',
+                action: function (dialogItself) {
                     var $button = this; // 'this' here
                     // is a jQuery
                     // object that
@@ -145,47 +277,47 @@ function editGallery(id) {
                     $button.spin();
                     disableDialogButtons(dialogItself);
                     $.post("/api/update-gallery.php", {
-                        id : id,
-                        title : $('#new-gallery-title').val()
-                    }).done(function() {
+                        id: id,
+                        title: $('#new-gallery-title').val()
+                    }).done(function () {
                         dialogItself.close();
                     });
                 }
             }, {
-                label : 'Close',
-                action : function(dialogItself) {
+                label: 'Close',
+                action: function (dialogItself) {
                     dialogItself.close();
                 }
-            } ],
-            onshown : function(dialogItself) {
+            }],
+            onshown: function (dialogItself) {
                 $('#upload-container').uploadFile({
-                    url : "/api/upload-gallery-images.php",
-                    uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
-                    multiple : true,
-                    dragDrop : true,
-                    uploadButtonLocation : $('.bootstrap-dialog-footer-buttons'),
-                    uploadContainer : $('#upload-container'),
-                    uploadButtonClass : "btn btn-default btn-info",
-                    statusBarWidth : "48%",
-                    dragdropWidth : "100%",
-                    fileName : "myfile",
-                    sequential : true,
-                    sequentialCount : 1,
-                    acceptFiles : "image/*",
-                    uploadQueueOrder : "bottom",
-                    formData : {
-                        "gallery" : id
+                    url: "/api/upload-gallery-images.php",
+                    uploadStr: "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
+                    multiple: true,
+                    dragDrop: true,
+                    uploadButtonLocation: $('.bootstrap-dialog-footer-buttons'),
+                    uploadContainer: $('#upload-container'),
+                    uploadButtonClass: "btn btn-default btn-info",
+                    statusBarWidth: "48%",
+                    dragdropWidth: "100%",
+                    fileName: "myfile",
+                    sequential: true,
+                    sequentialCount: 1,
+                    acceptFiles: "image/*",
+                    uploadQueueOrder: "bottom",
+                    formData: {
+                        "gallery": id
                     },
-                    onSubmit : function() {
+                    onSubmit: function () {
                         $('.ajax-file-upload-container').show();
                         dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-upload').addClass('glyphicon-asterisk icon-spin');
                         disableDialogButtons(dialogItself);
                     },
-                    onSuccess : function(files, data, xhr, pd) {
+                    onSuccess: function (files, data, xhr, pd) {
                         data = JSON.parse(data);
-                        if ($.isPlainObject(data)) {
+                        if ($.isArray(data)) {
                             pd.statusbar.remove();
-                            $.each(files, function() {
+                            $.each(files, function () {
                                 total++;
                                 loaded = gallery.loadImages(1);
                             });
@@ -197,8 +329,8 @@ function editGallery(id) {
                             pd.filename.after(data);
                         }
                     },
-                    afterUploadAll : function() {
-                        setTimeout(function() {
+                    afterUploadAll: function () {
+                        setTimeout(function () {
                             $('.ajax-file-upload-container').hide();
                         }, 5000);
                         dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-asterisk icon-spin').addClass('glyphicon-upload');
@@ -215,19 +347,20 @@ function disableDialogButtons(dialog) {
     uploadButton.addClass('disabled');
     uploadButton.prop("disabled", true);
     uploadButton.css({
-        'cursor' : 'not-allowed',
-        'pointer-events' : 'none'
+        'cursor': 'not-allowed',
+        'pointer-events': 'none'
     });
     dialog.enableButtons(false);
     dialog.setClosable(false);
 }
+
 function enableDialogButtons(dialog) {
     var uploadButton = dialog.$modalFooter.find('#add-images-button');
     uploadButton.removeClass('disabled');
     uploadButton.prop("disabled", false);
     uploadButton.css({
-        'cursor' : 'pointer',
-        'pointer-events' : 'inherit'
+        'cursor': 'pointer',
+        'pointer-events': 'inherit'
     });
     dialog.enableButtons(true);
     dialog.setClosable(true);

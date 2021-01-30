@@ -1,15 +1,9 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$user = new User ();
-
-if (! $user->isLoggedIn ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
-    exit ();
-}
-
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$user = User::fromSystem();
+$user->forceLogIn();
 ?>
 
 <!DOCTYPE html>
@@ -50,7 +44,7 @@ if (! $user->isLoggedIn ()) {
                     </div>
                     <div class="col-md-10">
                         <input type="text" class="form-control" id="profile-username"
-                            placeholder="Username" value="<?php echo $user->getUser(); ?>"
+                            placeholder="Username" value="<?php echo $user->getUsername(); ?>"
                             required disabled />
                     </div>
                 </div>

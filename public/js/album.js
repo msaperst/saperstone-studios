@@ -184,7 +184,7 @@ $(document).ready(function() {
     });
     // update our cart
     $('.product-count input').change(function() {
-        updateCart();
+        updateCart($(this));
     });
     // show our cart review
     $('#cart-btn,#reviewOrder').click(function() {
@@ -304,7 +304,7 @@ function validateCartInput(ele) {
         }
     }
     // fix our submit button if no errors exist
-    if ($('#cart .has-error').length === 0) {
+    if ($('#cart .has-error').length === 0 && $('#cart-items > tr').length > 0) {
         $('#cart-submit').prop("disabled", false);
     } else {
         $('#cart-submit').prop("disabled", true);
@@ -413,17 +413,17 @@ function showCart() {
             var row = $('#cart-image tr[product-id="' + data[i].product + '"]');
             var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
             $('input', row).val(data[i].count);
-            $('.product-total', row).html("$" + price * data[i].count);
+            $('.product-total', row).html("$" + (Math.round(price * data[i].count * 100) / 100).toFixed(2));
         }
     }, "json");
 }
 
-function updateCart() {
+function updateCart(input) {
     var img = $('#album-carousel div.active div');
-    var row = $('.product-count input').closest('tr');
+    var row = input.closest('tr');
     var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
-    $('.product-total', row).html("$" + price * $('.product-count input').val());
-    if ($('.product-total', row).html() === "$0") {
+    $('.product-total', row).html("$" + (Math.round(price * input.val() * 100) / 100).toFixed(2));
+    if ($('.product-total', row).html() === "$0.00") {
         $('.product-total', row).html("--");
     }
     // update our database
@@ -641,10 +641,10 @@ function downloadImages(album, what) {
                     if (data.hasOwnProperty('file')) {
                         window.location = data.file;
                         dialogInItself.close();
-                    } else if (data.hasOwnProperty('err')) {
-                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.err + '</div>');
+                    } else if (data.hasOwnProperty('error')) {
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.error + '</div>');
                     } else {
-                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
                     }
                 }).fail(function(xhr, status, error) {
                     if ( xhr.responseText !== "" ) {
@@ -652,7 +652,7 @@ function downloadImages(album, what) {
                     } else if ( error === "Unauthorized" ) {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                     } else {
-                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+                        modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
                     }
                 }).always(function() {
                     $('#compressing-download').remove();
@@ -706,7 +706,7 @@ function submitImages() {
         } else if ( error === "Unauthorized" ) {
             $('#submit .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
-            $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+            $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
         }
     }).always(function() {
         $('#submit-send').prop("disabled", false);
@@ -798,7 +798,7 @@ function submitNotifyEmail() {
         } else if ( error === "Unauthorized" ) {
             $('#album-thumbs').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
-            $("#album-thumbs").after('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occured while downloading your files. Please try again in a bit</div>');
+            $("#album-thumbs").after('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
         }
     }).always(function() {
         $('#notify-submit').prop("disabled", false);

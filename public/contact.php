@@ -1,7 +1,8 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$user = new User ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$user = User::fromSystem();
 ?>
 
 <!DOCTYPE html>
@@ -106,7 +107,7 @@ $user = new User ();
                     </div>
                     <div id="success"></div>
                     <!-- For success/fail messages -->
-                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <button id="submit-contact-form" type="submit" class="btn btn-primary">Send Message</button>
                 </form>
             </div>
 

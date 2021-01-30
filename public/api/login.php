@@ -1,90 +1,47 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$systemUser = User::fromSystem();
+$session = new Session();
+$session->initialize();
+$api = new Api();
 
-if (isset ( $_SESSION ) && isset ( $_SESSION ['hash'] ) && ! isset ( $_COOKIE ['hash'] ) && ! isset ( $_COOKIE ['usr'] )) {
-    // If you are logged in, but you don't have the tzRemember cookie (browser restart)
-    // and you have not checked the rememberMe checkbox:
-    
-    session_unset ();
-    session_destroy ();
-    
-    // Destroy the session
-}
-
-if ($_POST ['submit'] == 'Logout') {
+if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
+    $sql = new Sql ();
     // note the logout
-    $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE hash='{$_SESSION['hash']}'" ) );
-    mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );" );
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );");
+    $sql->disconnect();
 
     // remove any stored login
-    unset($_COOKIE['hash']);
-    unset($_COOKIE['usr']);
     setcookie('hash', null, -1, '/');
     setcookie('usr', null, -1, '/');
 
     // destroy the session
-    session_unset ();
-    session_destroy ();
-    $conn->disconnect ();
+    session_unset();
+    session_destroy();
     exit ();
 }
 
 if ($_POST ['submit'] == 'Login') {
-    // Checking whether the Login form has been submitted
-    
-    $err = array ();
-    // Will hold our errors
-    
-    if (! $_POST ['username'] || ! $_POST ['password']) {
-        $err [] = 'All the fields must be filled in!';
+    try {
+        $username = $api->retrievePostString('username', 'Username');
+        $password = $api->retrievePostString('password', 'Password');
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit();
     }
-    
-    if (! count ( $err )) {
-        $_POST ['username'] = mysqli_real_escape_string ( $conn->db, $_POST ['username'] );
-        $_POST ['password'] = md5( mysqli_real_escape_string ( $conn->db, $_POST ['password'] ) );
-        $_POST ['rememberMe'] = ( int ) $_POST ['rememberMe'];
-        
-        // Escaping all input data
-        $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT * FROM users WHERE usr='{$_POST['username']}' AND pass='{$_POST ['password']}'" ) );
-        
-        if ($row ['usr'] && $row ['active']) {
-            // If everything is OK login
 
-            $_SESSION ['usr'] = $row ['usr'];
-            $_SESSION ['hash'] = $row ['hash'];
-            // Store some data in the session
-
-            $preferences = json_decode( $_COOKIE['CookiePreferences'] );
-            if( $_POST['rememberMe'] && in_array( "preferences", $preferences ) ) {
-                // remember the user if prompted
-                $_COOKIE ['hash'] = $row ['hash'];
-                $_COOKIE ['usr'] = $row ['usr'];
-                setcookie ( 'hash', $row ['hash'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-                setcookie ( 'usr', $row ['usr'], time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-            }
-
-            mysqli_query ( $conn->db, "UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE hash='{$_SESSION['hash']}';" );
-            mysqli_query ( $conn->db, "INSERT INTO `user_logs` VALUES ( {$row ['id']}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );" );
-            // Update last login in DB
-        } elseif ($row ['usr']) {
-            $err [] = 'Sorry, you account has been deactivated. Please 
-                    <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our
-                    webmaster</a> to get this resolved.';
-        } else {
-            $err [] = 'Credentials do not match our records!';
-        }
+    try {
+        $user = User::fromLogin($username, $password);
+    } catch (Exception $e) {
+        echo "Credentials do not match our records";
+        exit();
     }
-    
-    if ($err) {
-        // Save the error messages in the session
-        echo implode ( '<br />', $err );
+
+    if (!$user->isActive()) {
+        echo 'Sorry, your account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.';
+        exit();
     }
-    $conn->disconnect ();
-    exit ();
+    $user->login(boolval((int)$_POST ['rememberMe']));
 }
 
-$conn->disconnect ();
 exit ();

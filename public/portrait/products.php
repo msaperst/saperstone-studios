@@ -1,5 +1,12 @@
-<?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
-
+<?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$user = User::fromSystem();
+$sql = new Sql ();
+$products = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = 28;" );
+$sql->disconnect();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,21 +16,9 @@
     <link href="/css/hover-effect.css" rel="stylesheet">
     
     <?php
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-    $conn = new Sql ();
-    $conn->connect ();
-    $products = array ();
-    $sql = "SELECT * FROM `galleries` WHERE parent = 28;";
-    $result = mysqli_query ( $conn->db, $sql );
-    while ( $r = mysqli_fetch_assoc ( $result ) ) {
-        $products [] = $r;
-    }
-    
     $rand = "";
     if ($user->isAdmin ()) {
-        require_once '../../src/strings.php';
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
+        $rand = "?" . Strings::randomString ();
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php
@@ -111,12 +106,9 @@
             for($i = 0; $i < count ( $products ); $i ++) {
                 $product = $products [$i];
 
-                $sql = "SELECT * FROM `galleries` WHERE parent = '" . $product ['id'] . "';";
-                $subproducts = array ();
-                $result = mysqli_query ( $conn->db, $sql );
-                while ( $r = mysqli_fetch_assoc ( $result ) ) {
-                    $subproducts [] = $r;
-                }
+                $sql = new Sql ();
+                $subProducts = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '" . $product ['id'] . "';" );
+                $sql->disconnect();
 
                 $padding = "";
                 if (count ( $products ) % 3 == 1 && $i == (count ( $products ) - 1)) {
@@ -137,7 +129,7 @@
                         <div class="overlay">
                             <br /> <br /> <br /> <a class="info"
                                 <?php
-                                if (sizeof ( $subproducts ) == 0) {
+                                if (sizeof ( $subProducts ) == 0) {
                                 ?>
                                                     href="galleries.php?w=<?php echo $product['id']; ?>">See More</a>
                             <?php

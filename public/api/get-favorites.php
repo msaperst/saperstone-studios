@@ -1,36 +1,24 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$systemUser = User::fromSystem();
 
-$user = new User ();
-
-$user;
-if (! $user->isLoggedIn ()) {
-    $user = getClientIP();
-} else {
-    $user = $user->getId ();
+$sql = new Sql();
+$results = $sql->getRows("SELECT album_images.album, album_images.sequence, album_images.location FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '{$systemUser->getIdentifier()}';");
+$favorites = array();
+foreach ($results as $r) {
+    $album = $r ['album'];
+    unset($r['album']);
+    $favorites [$album] [] = $r;
 }
 
-$sql = "SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence WHERE favorites.user = '$user';";
-$result = mysqli_query ( $conn->db, $sql );
-
-$favorites = array ();
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $favorites [$r ['album']] [] = $r;
-}
-
-if (isset ( $_GET ['album'] )) {
-    $album = ( int ) $_GET ['album'];
-    if (isset ( $favorites [$album] )) {
+if (isset ($_GET ['album'])) {
+    $album = (int)$_GET ['album'];
+    if (isset ($favorites [$album])) {
         $favorites = $favorites [$album];
     } else {
-        $favorites = array ();
+        $favorites = array();
     }
 }
-echo json_encode ( $favorites );
-
-$conn->disconnect ();
+echo json_encode($favorites);
+$sql->disconnect();
 exit ();

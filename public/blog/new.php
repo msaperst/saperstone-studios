@@ -1,67 +1,28 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$user = User::fromSystem();
+$user->forceAdmin();
+$errors = new Errors();
 
-$user = new User ();
-
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/401.php";
-    exit ();
-}
-
-$post;
 $title = "";
 $date = date ( "Y-m-d" );
-$tags = [ ];
-$content = [ ];
-$images = [ ];
-$preview;
-$offset;
 $location = "../tmp";
-// if no album is set, throw a 404 error
 if (isset ( $_GET ['p'] )) {
-    $post = ( int ) $_GET ['p'];
-    $sql = "SELECT * FROM `blog_details` WHERE id = '$post';";
-    $details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-    if (! $details ['title']) {
-        header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-        include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-        $conn->disconnect ();
-        exit ();
-    } else {
-        $title = $details ['title'];
-        $date = $details ['date'];
-        $preview = $details ['preview'];
-        $offset = $details ['offset'];
-        $location = dirname ( $preview );
-        // determine our tags
-        $sql = "SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = $post;";
-        $result = mysqli_query ( $conn->db, $sql );
-        while ( $r = mysqli_fetch_assoc ( $result ) ) {
-            $tags [] = $r ['id'];
-        }
-        // get our content
-        $contents = array ();
-        $sql = "SELECT * FROM `blog_images` WHERE blog = $post;";
-        $result = mysqli_query ( $conn->db, $sql );
-        while ( $s = mysqli_fetch_assoc ( $result ) ) {
-            $images [] = basename ( $s ['location'] );
-            $content [$s ['contentGroup']] ['type'] = 'images';
-            $content [$s ['contentGroup']] [] = $s;
-        }
-        $sql = "SELECT * FROM `blog_texts` WHERE blog = $post;";
-        $result = mysqli_query ( $conn->db, $sql );
-        while ( $s = mysqli_fetch_assoc ( $result ) ) {
-            $s ['type'] = 'text';
-            $content [$s ['contentGroup']] = $s;
-        }
+    try {
+        $blog = Blog::withId($_GET ['p']);
+        $title = $blog->getTitle();
+        $date = date('Y-m-d',strtotime($blog->getDate()));
+        $content = $blog->getContent();
+        $location = $blog->getLocation();
+    } catch (Exception $e) {
+        $errors->throw404();
     }
 }
-
+$sql = new Sql ();
+$categories = $sql->getRows( "SELECT * FROM `tags`;" );
+$sql->disconnect();
 ?>
 
 <!DOCTYPE html>
@@ -103,7 +64,7 @@ if (isset ( $_GET ['p'] )) {
                 <em class="fa fa-pencil-square-o"></em> Edit Post
             </button>
             <?php
-            if (isset ( $post )) {
+            if (isset ( $blog )) {
                 ?>
             <button id="update-post" type="button"
                 class="btn btn-warning">
@@ -120,7 +81,7 @@ if (isset ( $_GET ['p'] )) {
             ?>
             <br />
             <?php
-            if (! isset ( $post )) {
+            if (! isset ( $blog )) {
                 ?>
             <button id="schedule-post" type="button"
                 class="btn btn-success">
@@ -130,7 +91,7 @@ if (isset ( $_GET ['p'] )) {
                 <em class="fa fa-send"></em> Publish Post
             </button>
             <?php
-            } elseif (! $details ['active']) {
+            } elseif (! $blog->isActive()) {
                 ?>
             <button id="schedule-saved-post" type="button"
                 class="btn btn-success">
@@ -158,16 +119,18 @@ if (isset ( $_GET ['p'] )) {
                 style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'>
                 <option></option>
                 <?php
-                if (isset ( $post )) {
-                    foreach ( $images as $image ) {
-                        echo "<option>$image</option>";
+                if (isset ( $blog )) {
+                    foreach ( $blog->getImages() as $image ) {
+                        $parts = explode(DIRECTORY_SEPARATOR, $image);
+                        //TODO - figure out how to select the correct one
+                        echo "<option>{$parts[sizeof($parts)-1]}</option>";
                     }
                 }
                 ?>
             </select>
             <?php
-            if (isset ( $post )) {
-                echo "<img src='$preview' style='width:300px; top:${offset}px;'>";
+            if (isset ( $blog )) {
+                echo "<img src='{$blog->getPreview()}' style='width:300px; top:{$blog->getOffset()}px;'>";
             }
             ?>
         </div>
@@ -180,7 +143,7 @@ if (isset ( $_GET ['p'] )) {
         <div class="row">
             <div class="col-lg-12">
                 <?php
-                if (isset ( $post )) {
+                if (isset ( $blog )) {
                     ?>
                 <h1 class="page-header text-center">Edit Your Blog Post</h1>
                 <?php
@@ -195,7 +158,7 @@ if (isset ( $_GET ['p'] )) {
                     <li><a href="/">Home</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <?php
-                    if (isset ( $post )) {
+                    if (isset ( $blog )) {
                         ?>
                     <li class="active">Edit Post</li>
                     <?php
@@ -211,7 +174,7 @@ if (isset ( $_GET ['p'] )) {
         <!-- /.row -->
 
         <!-- Post Section -->
-        <div class="row" id="post" post-location="<?php echo $location; ?>"<?php if( isset( $post ) ) { echo " post-id='$post'"; } ?>">
+        <div class="row" id="post" post-location="<?php echo $location; ?>"<?php if( isset( $blog ) ) { echo " post-id='{$blog->getId()}'"; } ?>">
             <div class="col-lg-12">
                 <strong><input id='post-title-input'
                     class='form-control input-lg text-center' type='text'
@@ -226,14 +189,9 @@ if (isset ( $_GET ['p'] )) {
                     <option></option>
                     <option value='0' style='color: red;'>New Category</option>
                 <?php
-                $conn = new Sql ();
-                $conn->connect ();
-                $sql = "SELECT * FROM `tags`;";
-                $result = mysqli_query ( $conn->db, $sql );
-                while ( $row = mysqli_fetch_assoc ( $result ) ) {
-                    echo "<option value='" . $row ['id'] . "'>" . $row ['tag'] . "</option>";
+                foreach ( $categories as $category ) {
+                    echo "<option value='" . $category ['id'] . "'>" . $category ['tag'] . "</option>";
                 }
-                $conn->disconnect ();
                 ?>
                 </select>
             </div>
@@ -271,23 +229,29 @@ if (isset ( $_GET ['p'] )) {
     <script>
         $(document).ready(function() {
             <?php
-            if (isset ( $post )) {
-                foreach ( $tags as $tag ) {
+            if (isset ( $blog )) {
+                foreach ( $blog->getTags() as $tag ) {
                     ?>
-            $('#post-tags-select').val(<?php echo $tag; ?>);
+            $('#post-tags-select').val(<?php echo $tag['id']; ?>);
             addTag($('#post-tags-select'));
             <?php
                 }
-                ksort ( $content );
+                $groups = array();
                 foreach ( $content as $block ) {
-                    if ($block ['type'] == "text") {
+                    $groups[$block->getGroup()][] = $block;
+                }
+                foreach( $groups as $group) {
+                    if ($group[0] instanceof BlogText) {
                         ?>
-            addTextArea("<?php echo addcslashes($block['text'],'"'); ?>");
+            addTextArea("<?php echo addcslashes($group[0]->getText(),'"'); ?>");
             <?php
-                    } elseif ($block ['type'] == "images") {
-                        unset ( $block ['type'] );
+                    } elseif ($group[0] instanceof BlogImage) {
                         ?>
-            addImageArea(<?php echo json_encode( $block ); ?>);
+            addImageArea([<?php
+                        foreach( $group as $image ) {
+                            echo json_encode( $image->getRaw() ) . ",";
+                        }
+                        ?>]);
             <?php
                     }
                 }

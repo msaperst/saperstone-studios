@@ -1,47 +1,33 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api ();
 
-$user = new User ();
+$api->forceAdmin();
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
+$sql = new Sql();
+$user_favs = array();
+if (isset ($_GET ['album'])) {
+    $album = (int)$_GET ['album'];
+    $users = $sql->getRows("SELECT DISTINCT `favorites`.`user` FROM `favorites` WHERE `favorites`.`album` = $album;");
+    foreach ($users as $user) {
+        $images = $sql->getRows("SELECT album_images.sequence, album_images.location, album_images.title, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id LEFT JOIN users ON favorites.user = users.id WHERE `favorites`.`album` = $album && `favorites`.`user` = '" . $user['user'] . "';");
+        $user_favs[$user['user']] = $images;
     }
-    $conn->disconnect ();
-    exit ();
-}
-
-$sql = "SELECT album_images.*, favorites.user, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.sequence LEFT JOIN users ON favorites.user = users.id;";
-$result = mysqli_query ( $conn->db, $sql );
-
-$favorites = array ();
-while ( $r = mysqli_fetch_assoc ( $result ) ) {
-    $favorites [$r ['album']] [] = $r;
-}
-
-$user_favs = array ();
-foreach ( $favorites as $album => $favs ) {
-    foreach ( $favs as $fav ) {
-        $user_favs [$fav ['user']] [$album] [] = $fav;
+} else {
+    $favorites = array();
+    foreach ($sql->getRows("SELECT album_images.album, album_images.sequence, album_images.location, album_images.title, favorites.user, users.usr FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id LEFT JOIN users ON favorites.user = users.id;") as $r) {
+        $album = $r ['album'];
+        unset($r['album']);
+        $favorites [$album] [] = $r;
     }
-}
-
-if (isset ( $_GET ['album'] )) {
-    $album = ( int ) $_GET ['album'];
-    foreach ( $user_favs as $user => $favorites ) {
-        if (isset ( $favorites [$album] )) {
-            $user_favs [$user] = $favorites [$album];
-        } else {
-            unset ( $user_favs [$user] );
+    foreach ($favorites as $album => $favs) {
+        foreach ($favs as $fav) {
+            $user = $fav ['user'];
+            unset($fav['user']);
+            $user_favs [$user] [$album] [] = $fav;
         }
     }
 }
-echo json_encode ( $user_favs );
-
-$conn->disconnect ();
+echo json_encode($user_favs);
+$sql->disconnect();
 exit ();

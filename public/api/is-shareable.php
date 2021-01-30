@@ -1,79 +1,42 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$systemUser = User::fromSystem();
 
-$user = new User ();
-
-if ($user->isAdmin ()) {
+if ($systemUser->isAdmin()) {
     echo 1;
-    $conn->disconnect ();
     exit ();
 }
 
-$user;
-if (! $user->isLoggedIn ()) {
-    $user = getClientIP();
-} else {
-    $user = $user->getId ();
+try {
+    $album = Album::withId($_GET['album']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-$album = "";
-if (isset ( $_GET ['album'] ) && $_GET ['album'] != "") {
-    $album = ( int ) $_GET ['album'];
-} else {
-    if (! isset ( $_GET ['album'] )) {
-        echo "Album id is required!";
-    } elseif ($_GET ['album'] != "") {
-        echo "Album id cannot be blank!";
-    } else {
-        echo "Some other Album id error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
+if (!$album->canUserAccess()) {
+    echo 0;
+    exit();
 }
 
-$sql = "SELECT * FROM albums WHERE id = $album;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $album_info ['id']) {
-    echo "That ID doesn't match any albums";
-    $conn->disconnect ();
-    exit ();
+if ($album->canUserGetData()) {
+    echo 1;
+    exit();
 }
 
-$sequence = "";
-if (isset ( $_GET ['image'] ) && $_GET ['image'] != "") {
-    $sequence = ( int ) $_GET ['image'];
-} else {
-    if (! isset ( $_GET ['image'] )) {
-        echo "Image id is required!";
-    } elseif ($_GET ['image'] != "") {
-        echo "Image id cannot be blank!";
-    } else {
-        echo "Some other Image id error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
+try {
+    $image = new Image($album, $_GET['image']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-$sql = "SELECT * FROM album_images WHERE album = $album AND sequence = $sequence;";
-$album_info = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $album_info ['title']) {
-    echo "That image doesn't match anything";
-    $conn->disconnect ();
-    exit ();
-}
-
-$sql = "SELECT * FROM `share_rights` WHERE ( `user` = '$user' OR `user` = '0' ) AND ( `album` = '$album' OR `album` = '*' ) AND ( `image` = '$sequence' OR `image` = '*' );";
-$shareable = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
+$sql = new Sql ();
+$shareable = $sql->getRow("SELECT album FROM `share_rights` WHERE ( `user` = '{$systemUser->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
 if ($shareable ['album']) {
     echo 1;
-    $conn->disconnect ();
-    exit ();
+} else {
+    echo 0;
 }
-
-echo 0;
-$conn->disconnect ();
+$sql->disconnect();
 exit ();

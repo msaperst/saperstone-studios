@@ -1,71 +1,11 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-$user = new User ();
-
-$response = array ();
-$post = 0;
-
-if (isset ( $_GET ['post'] ) && $_GET ['post'] != "") {
-    $post = ( int ) $_GET ['post'];
-} else {
-    if (! isset ( $_GET ['post'] )) {
-        echo "Post id is required!";
-    } elseif ($_GET ['post'] == "") {
-        echo "Post id cannot be blank!";
-    } else {
-        echo "Some other Post id error occurred!";
-    }
-    $conn->disconnect ();
-    exit ();
+try {
+    $blog = Blog::withId($_GET['post']);
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
-
-$sql = "SELECT * FROM `blog_details` WHERE id = $post;";
-$r = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $r ['title']) {
-    echo "Blog doesn't exist!";
-    $conn->disconnect();
-    exit ();
-}
-
-$r ['date'] = date ( 'F jS, Y', strtotime ( $r ['date'] ) );
-$sql = "SELECT * FROM `blog_images` WHERE blog = " . $r ['id'] . ";";
-$images = mysqli_query ( $conn->db, $sql );
-$contents = array ();
-while ( $s = mysqli_fetch_assoc ( $images ) ) {
-    $contents [] = $s;
-}
-
-$sql = "SELECT * FROM `blog_texts` WHERE blog = " . $r ['id'] . ";";
-$texts = mysqli_query ( $conn->db, $sql );
-while ( $s = mysqli_fetch_assoc ( $texts ) ) {
-    $contents [] = $s;
-}
-
-foreach ( $contents as $content ) {
-    $r ['content'] [$content ['contentGroup']] [] = $content;
-}
-
-$sql = "SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = " . $r ['id'] . ";";
-$tags = mysqli_query ( $conn->db, $sql );
-while ( $s = mysqli_fetch_assoc ( $tags ) ) {
-    $r ['tags'] [] = $s;
-}
-
-$sql = "SELECT * FROM `blog_comments` WHERE blog = " . $r ['id'] . " ORDER BY date desc;";
-$comments = mysqli_query ( $conn->db, $sql );
-while ( $s = mysqli_fetch_assoc ( $comments ) ) {
-    if (($s ['user'] != "" && $s ['user'] == $user->getId ()) || $user->isAdmin ()) {
-        $s ['delete'] = true;
-    }
-    $r ['comments'] [] = $s;
-}
-
-echo json_encode ( $r );
-
-$conn->disconnect ();
+echo json_encode($blog->getDataArray());
 exit ();

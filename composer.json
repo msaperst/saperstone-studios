@@ -1,11 +1,39 @@
 {
-    "name": "fatmax.com/saperstone-studios",
-    "description": "Saperstone Studios website tooling needed for localized testing",
-    "require-dev": {
-        "phpunit/phpunit": "^7"
-    },
-
-    "scripts": {
-        "unit-test": "vendor/phpunit/phpunit/phpunit tests/unit/ --log-junit reports/junit.xml --coverage-clover reports/clover.xml --coverage-html reports/html --whitelist src/"
+  "name": "fatmax.com/saperstone-studios",
+  "description": "Saperstone Studios website tooling needed for localized testing",
+  "config": {
+    "vendor-dir": "resources/"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "7.5.20",
+    "guzzlehttp/guzzle": "7.2.0",
+    "ext-json": "*",
+    "ext-zip": "*",
+    "php-webdriver/webdriver": "1.8.3",
+    "behat/behat": "3.7.0",
+    "emuse/behat-html-formatter": "^0.2.0",
+    "mpdf/mpdf": "7.1.9",
+    "google/apiclient": "^2.0",
+    "ext-curl": "*"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ui\\bootstrap\\": "tests/ui/bootstrap"
     }
+  },
+  "scripts": {
+    "clean": "rm -rf reports;",
+    "unit-test": "resources/phpunit/phpunit/phpunit tests/coverage/unit/ --log-junit reports/ut-junit.xml --testdox-html reports/ut-results.html --coverage-clover reports/ut-clover.xml --coverage-html reports/ut-coverage --whitelist src/",
+    "integration-pre-test": "wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php -O src/Browser.php; mkdir -p resources/codebird-php-3.1.0/src/; wget --quiet https://raw.githubusercontent.com/jublo/codebird-php/3.1.0/src/codebird.php -O resources/codebird-php-3.1.0/src/codebird.php; wget --quiet https://raw.githubusercontent.com/jublo/codebird-php/3.1.0/src/cacert.pem -O resources/codebird-php-3.1.0/src/cacert.pem; export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3506; docker build -q -f .docker/sql/Dockerfile -t integration_sql .; docker run -d -e TZ='America/New_York' -e MYSQL_ALLOW_EMPTY_PASSWORD=no -e MYSQL_ROOT_PASSWORD=${DB_ROOT} -e MYSQL_DATABASE=${DB_NAME} -e MYSQL_USER=${DB_USER} -e MYSQL_PASSWORD=${DB_PASS} -p ${DB_PORT}:3306 --expose ${DB_PORT} integration_sql; ./bin/setup-database.sh true;",
+    "integration-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3506; resources/phpunit/phpunit/phpunit tests/coverage/integration/ --log-junit reports/it-junit.xml --testdox-html reports/it-results.html --coverage-clover reports/it-clover.xml --coverage-html reports/it-coverage --whitelist src/",
+    "integration-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=integration_sql --format=\"{{.ID}}\"))",
+    "coverage-pre-test": "wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php -O src/Browser.php; mkdir -p resources/codebird-php-3.1.0/src/; wget --quiet https://raw.githubusercontent.com/jublo/codebird-php/3.1.0/src/codebird.php -O resources/codebird-php-3.1.0/src/codebird.php; wget --quiet https://raw.githubusercontent.com/jublo/codebird-php/3.1.0/src/cacert.pem -O resources/codebird-php-3.1.0/src/cacert.pem;",
+    "coverage-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3406; resources/phpunit/phpunit/phpunit tests/coverage/ --log-junit reports/cov-junit.xml --testdox-html reports/cov-results.html --coverage-clover reports/cov-clover.xml --coverage-html reports/cov-coverage --whitelist src/",
+    "api-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; resources/phpunit/phpunit/phpunit tests/api/ --log-junit reports/api-junit.xml --testdox-html reports/api-results.html",
+    "ui-pre-test": "docker run -d -p 4444:4444 --network host -e TZ=America/New_York -v /dev/shm:/dev/shm -v $HOME/Downloads:/home/seluser/Downloads selenium/standalone-$BROWSER",
+    "ui-pre-test-local": "java -Dwebdriver.chrome.driver=\"/home/max/.m2/repository/webdriver/chromedriver/linux64/87.0.4280.20/chromedriver\" -jar selenium-server-standalone-3.141.59.jar",
+    "ui-page-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; resources/phpunit/phpunit/phpunit tests/ui/page/ --log-junit reports/ui/junit.xml --testdox-html reports/ui/results.html",
+    "ui-behat-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; resources/bin/behat",
+    "ui-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=selenium/standalone-$BROWSER --format=\"{{.ID}}\"))"
+  }
 }

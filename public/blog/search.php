@@ -1,18 +1,18 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$sql = new Sql ();
+$errors = new Errors();
 
-$search;
 // if no album is set, throw a 404 error
-if (! isset ( $_GET ['s'] )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
+if (! isset ( $_GET ['s'] ) || $_GET ['s'] == '' ) {
+    $errors->throw404();
 } else {
-    $search = mysqli_real_escape_string ( $conn->db, $_GET ['s'] );
+    $search = $sql->escapeString( $_GET ['s'] );
 }
+$posts = $sql->getRows( "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog`;" );
+$sql->disconnect();
 ?>
 
 <!DOCTYPE html>
@@ -28,17 +28,7 @@ if (! isset ( $_GET ['s'] )) {
 <body>
 
     <?php
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
-    
-    // get our gallery images
-    $sql = "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog`;";
-    $result = mysqli_query ( $conn->db, $sql );
-    $posts = array ();
-    while ( $row = mysqli_fetch_assoc ( $result ) ) {
-        $posts [] = $row;
-    }
-    $conn->disconnect ();
-    ?>
+    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
     
     <!-- Page Content -->
     <div class="page-content container">

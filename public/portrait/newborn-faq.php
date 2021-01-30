@@ -1,4 +1,9 @@
-<?php require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php"; ?>
+<?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$session = new Session();
+$session->initialize();
+$user = User::fromSystem();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,9 +16,7 @@
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
-        require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/strings.php";
-        $string = new Strings ();
-        $rand = "?" . $string->randomString ();
+        $rand = "?" . Strings::randomString ();
         ?>
     <link href="/css/uploadfile.css" rel="stylesheet">
     <?php
@@ -32,7 +35,7 @@
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center">Newborn FAQ</h1>
+                <h1 class="page-header text-center">Newborn Frequently Asked Questions</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">Portraits</a></li>
@@ -58,9 +61,9 @@
                 </div>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">When should I book my session?</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> When should I book my session?</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>Newborn sessions are done within the first 2 weeks of life to get
                     those precious sleepy baby photos so it’s best to contact me as
                     soon as possible. Based on your due date, we’ll pencil in a
@@ -68,20 +71,18 @@
                     if needed.</p>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">How long can I expect the newborn session to
-                    be?</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How long can I expect the
+                    newborn session to be?</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>Every baby is different and to allow time for feeding/changing,
                     each session is about 3-4 hours.</p>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">Where will the session be?</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Where will the session be?</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>There are two options:
-                
-                
                 <ul>
                     <li><strong>Your Home</strong>: I can include all of those personal
                         elements into the photographs including the nursery. An additional
@@ -109,9 +110,9 @@
                 </div>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">How can we prepare the baby?</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How can we prepare the baby?</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>All of the following are guidelines, at the end of the day your
                     newborn runs the show and if they don’t want to follow everything
                     to the tee, then don’t stress! We will have a wonderful session
@@ -129,9 +130,9 @@
                 </ul>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">How should we dress the baby?</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How should we dress the baby?</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>Don't worry about picking out clothes, unless there is something
                     of sentimental or religious value. About an hour before your
                     session place a loose diaper on them to avoid indentations on their
@@ -140,9 +141,9 @@
                     hats. All babies look insanely adorable in hats.</p>
             </div>
             <div class="col-lg-12">
-                <h2 class="page-header">Will we (the parents) be in the photos?</h2>
+                <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Will we (the parents) be in the photos?</h4>
             </div>
-            <div class="col-md-12">
+            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
                 <p>If you'd like to be! If you don't want to have your photo taken,
                     I would recommend at least holding/touching the baby or having
                     him/her grasp onto your fingers in some shots. This not only
@@ -157,6 +158,9 @@
 
     </div>
     <!-- /.container -->
+
+    <!-- Content JavaScript -->
+    <script src="/js/dynamic-content.js"></script>
 
     <?php
     if ($user->isAdmin ()) {

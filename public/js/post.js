@@ -8,7 +8,7 @@ $(document).ready(function() {
 });
 
 function getLink( data ) {
-    return window.location.protocol + '//' + window.location.hostname + '/blog/post.php?p=' + data.id;
+    return '/blog/post.php?p=' + data.id;
 }
 
 function loadPostPreview(k, v) {
@@ -93,8 +93,6 @@ function loadPost(data, header) {
     details_date.append("<strong>" + data.date + "</strong>");
     details_row.append(details_date);
 
-    
-
     details_row.append( addSocialMedias( data ) );
     holder.append(details_row);
 
@@ -149,11 +147,11 @@ function loadPost(data, header) {
     $('#post-content').append(holder);
 
     // load our comments
-    $.each(data.comments, function(k, v) {
+    $.each(data.comments.reverse(), function(k, v) {
         addComment(v);
     });
     if( data.comments ) {
-        var comments_header = (data.comments.length > 1) ? data.comments.length + " Comments" : data.comments.length + " Comment";
+        var comments_header = (data.comments.length !== 1) ? data.comments.length + " Comments" : data.comments.length + " Comment";
         $('#post-comments h2').html(comments_header);
     }
     loadSM();
@@ -287,7 +285,8 @@ function addComment(comment) {
     comment_set.append(comment_block);
     comment_row.append(comment_set);
     
-    $('#post-comments').append(comment_row);
+    $('#post-comments > div:first-child').after(comment_row);
+    setCommentHeader(1);
 }
 
 function loadSM() {
@@ -323,6 +322,7 @@ function deletePost(post) {
                     dialogInItself.close();
                     // cleanup the dom
                     post.currentTarget.remove();
+                    setCommentHeader(-1);
                 }).fail(function(xhr, status, error) {
                     if ( xhr.responseText !== "" ) {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
@@ -368,6 +368,7 @@ function submitPost() {
         return;
     }
     $('#post-comment-message-message').empty();
+    $('#post-comment-submit').prop('disabled', true);
     $.post("/api/create-blog-comment.php", {
         post : $('#post-comment-submit').attr('post-id'),
         name : $('#post-comment-name').val(),
@@ -375,10 +376,12 @@ function submitPost() {
         message : $('#post-comment-message').val()
     }).done(function(data) {
         if ($.isNumeric(data) && data !== '0') {
+            var current_datetime = new Date();
+            var formatted_date = current_datetime.getFullYear() + "-" + appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) + " " + appendLeadingZeroes(current_datetime.getHours()) + ":" + appendLeadingZeroes(current_datetime.getMinutes()) + ":" + appendLeadingZeroes(current_datetime.getSeconds());
             var comment = {
                     id: data,
-                    delete: true,
-                    date: '',
+                    delete: Boolean($('#my-user-id').val()),
+                    date: formatted_date,
                     name: $('#post-comment-name').val(),
                     comment: $('#post-comment-message').val()
             };
@@ -389,7 +392,6 @@ function submitPost() {
         } else {
             $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }
-        
     }).fail(function(xhr, status, error) {
         if ( xhr.responseText !== "" ) {
             $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
@@ -402,16 +404,23 @@ function submitPost() {
     });
 }
 
-// ////////////////////////scripts to load it all/////////////////////////
-(function() {
-    var po = document.createElement('script');
-    po.type = 'text/javascript';
-    po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(po, s);
-})();
+function setCommentHeader(increment) {
+    if( $('#post-comments h2').length ) {
+        var comments_present = $('#post-comments h2').html().split(" ")[0];
+        comments_present = parseInt(comments_present) + parseInt(increment);
+        var comments_header = (comments_present !== 1) ? comments_present + " Comments" : comments_present + " Comment";
+        $('#post-comments h2').html(comments_header);
+    }
+}
 
+function appendLeadingZeroes(n){
+    if(n <= 9){
+        return "0" + n;
+    }
+    return n
+}
+
+// ////////////////////////scripts to load SM/////////////////////////
 (function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id))

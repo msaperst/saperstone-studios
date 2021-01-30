@@ -12,7 +12,7 @@ RUN pear install Mail && \
         pear install pear/Net_SMTP
 # install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-    php -r "if (hash_file('sha384', 'composer-setup.php') === 'e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
+#    php -r "if (hash_file('sha384', 'composer-setup.php') === 'e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
     php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
     php -r "unlink('composer-setup.php');"
 COPY .docker/php/composer.json /var/www/
@@ -69,19 +69,19 @@ RUN cd /var/www/resources/merchant-sdk-php-${PAYPAL_VERSION}/samples && \
         sed -i 's/acct1.Password =/acct1.Password = ${PAYPAL_PASSWORD}/' sdk_config.ini && \
         sed -i 's/acct1.Signature =/acct1.Signature = ${PAYPAL_SIGNATURE}/' sdk_config.ini
 ## install/configure ua parser plugin
-RUN cd /var/www/resources && \
-        wget --quiet https://github.com/cbschuld/Browser.php/archive/master.zip && \
-        unzip -qq master.zip && \
-        rm master.zip
+RUN cd /var/www/src && \
+        wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php
 ## install browscap ini
 RUN cd /var/www/resources && \
         wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \
         mv stream\?q\=PHP_BrowsCapINI php_browscap.ini
 ## install/configure twitter plugin
 RUN cd /var/www/resources && \
-        wget --quiet https://github.com/jublonet/codebird-php/archive/${TWITTER_VERSION}.tar.gz && \
+        wget --quiet https://github.com/jublo/codebird-php/archive/${TWITTER_VERSION}.tar.gz && \
         tar -xf ${TWITTER_VERSION}.tar.gz && \
-        rm ${TWITTER_VERSION}.tar.gz
+        rm ${TWITTER_VERSION}.tar.gz && \
+        rm codebird-php-${TWITTER_VERSION}/*.* && \
+        rm -r codebird-php-${TWITTER_VERSION}/test
 
 # try setting the timezone
 ARG TZ=America/New_York

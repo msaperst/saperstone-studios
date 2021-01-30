@@ -1,36 +1,18 @@
 <?php
+require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$errors = new Errors();
 
-$post;
-// if no album is set, throw a 404 error
-if (! isset ( $_GET ['p'] )) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    exit ();
-} else {
-    $post = ( int ) $_GET ['p'];
+try {
+    $blog = Blog::withId($_GET ['p']);
+} catch (Exception $e) {
+    $errors->throw404();
 }
 
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-$conn = new Sql ();
-$conn->connect ();
-$sql = "SELECT * FROM `blog_details` WHERE id = '$post';";
-$details = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if (! $details ['title']) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
-}
-
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$user = new User ();
-
-if (! $user->isAdmin () && ! $details ['active']) {
-    header ( $_SERVER ["SERVER_PROTOCOL"] . " 404 Not Found" );
-    include dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/errors/404.php";
-    $conn->disconnect ();
-    exit ();
+$session = new Session();
+$session->initialize();
+$user = User::fromSystem();
+if (! $user->isAdmin () && ! $blog->isActive()) {
+    $errors->throw404();
 }
 ?>
 
@@ -128,7 +110,7 @@ if (! $user->isAdmin () && ! $details ['active']) {
                     <h2 class='text-left'></h2>
                 </div>
                 <div class="col-md-6 text-right">
-                    <button post-id="<?php echo $post; ?>" id="post-comment-submit"
+                    <button post-id="<?php echo $blog->getId(); ?>" id="post-comment-submit"
                         class="btn btn-success disabled" style="margin-top: 20px;"
                         disabled>Submit Comment</button>
                 </div>
@@ -147,7 +129,7 @@ if (! $user->isAdmin () && ! $details ['active']) {
 
     <!-- Script to Activate the Gallery -->
     <script>
-        new PostFull( <?php echo $post; ?> );
+        new PostFull( <?php echo $blog->getId(); ?> );
     </script>
 
 </body>

@@ -1,76 +1,41 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/sql.php";
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/session.php";
-include_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "src/user.php";
-$conn = new Sql ();
-$conn->connect ();
+require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api ();
 
-$user = new User ();
+$api->forceAdmin();
 
-if (! $user->isAdmin ()) {
-    header ( 'HTTP/1.0 401 Unauthorized' );
-    if ($user->isLoggedIn ()) {
-        echo "Sorry, you do you have appropriate rights to perform this action.";
-    }
-    $conn->disconnect ();
-    exit ();
+try {
+    $user = User::withParams($_POST);
+    echo $user->create();
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
 }
 
-$username = "";
-$firstName = "";
-$lastName = "";
-$email = "";
-$role = "";
-$active = "";
-
-$err = array ();
-
-if (isset ( $_POST ['username'] ) && $_POST ['username'] != "") {
-    $username = mysqli_real_escape_string ( $conn->db, $_POST ['username'] );
-} else {
-    $err [] = "Username is not provided";
+$to = "{$user->getName()} <{$user->getEmail()}>";
+$from = "noreply@saperstonestudios.com";
+$subject = "New User Created at Saperstone Studios";
+$email = new Email($to, $from, $subject);
+$text = "Someone has setup a new user for you at Saperstone Studios. ";
+$text .= "You can login and access the site at https://saperstonestudios.com. ";
+$text .= "Initial credentials have been setup for you as: \n";
+$text .= "    Username: {$user->getUsername()}\n";
+$text .= "    Password: {$user->getPassword()}\n";
+$text .= "For security reasons, once logged in, we recommend you reset your password at ";
+$text .= "https://saperstonestudios.com/user/profile.php";
+$html = "<html><body>";
+$html .= "Someone has setup a new user for you at Saperstone Studios. ";
+$html .= "You can login and access the site at <a href='https://saperstonestudios.com'>saperstonestudios.com</a>. ";
+$html .= "Initial credentials have been setup for you as: ";
+$html .= "<p>&nbsp;&nbsp;&nbsp;&nbsp;Username: {$user->getUsername()}";
+$html .= "<br/>&nbsp;&nbsp;&nbsp;&nbsp;Password: {$user->getPassword()}</p>";
+$html .= "For security reasons, once logged in, we recommend you <a href='https://saperstonestudios.com/user/profile.php'>reset your password</a>.";
+$html .= "</html></body>";
+$email->setText($text);
+$email->setHtml($html);
+try {
+    $email->sendEmail();
+} catch (Exception $e) {
+    echo $e->getMessage();
 }
-if (isset ( $_POST ['email'] ) && filter_var ( $_POST ['email'], FILTER_VALIDATE_EMAIL )) {
-    $email = mysqli_real_escape_string ( $conn->db, $_POST ['email'] );
-    $row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, "SELECT email FROM users WHERE email='$email'" ) );
-    if ($row ['email']) {
-        $err [] = "We already have an account on file for that email address.";
-    }
-} elseif ($_POST ['email'] == "") {
-    $err [] = "Email is not provided!";
-} else {
-    $err [] = "Enter a valid email address!";
-}
-
-$sql = "SELECT * FROM users WHERE usr = '$username'";
-$row = mysqli_fetch_assoc ( mysqli_query ( $conn->db, $sql ) );
-if ($row ['usr']) {
-    $err [] = "That user ID already exists";
-}
-
-if (count ( $err ) > 0) {
-    echo implode ( '<br />', $err );
-    $conn->disconnect ();
-    exit ();
-}
-
-if (isset ( $_POST ['firstName'] )) {
-    $firstName = mysqli_real_escape_string ( $conn->db, $_POST ['firstName'] );
-}
-if (isset ( $_POST ['lastName'] )) {
-    $lastName = mysqli_real_escape_string ( $conn->db, $_POST ['lastName'] );
-}
-if (isset ( $_POST ['role'] )) {
-    $role = mysqli_real_escape_string ( $conn->db, $_POST ['role'] );
-}
-if (isset ( $_POST ['active'] )) {
-    $active = ( int ) $_POST ['active'];
-}
-$sql = "INSERT INTO users ( usr, firstName, lastName, email, role, active, hash ) VALUES ('$username', '$firstName', '$lastName', '$email', '$role', '$active', '" . md5 ( $username . $role ) . "' );";
-mysqli_query ( $conn->db, $sql );
-$last_id = mysqli_insert_id ( $conn->db );
-
-echo $last_id;
-
-$conn->disconnect ();
 exit ();
