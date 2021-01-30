@@ -456,6 +456,7 @@ def compress(filetype) {
             //get the new filename
             def newFile = file.take(file.lastIndexOf('.')) + ".min.$filetype"
             //compress the file
+            sh "echo 'uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile'"
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
             //check the file for size of non-zero
             new File("./public/$filetype/${newFile}").eachLine { line ->
