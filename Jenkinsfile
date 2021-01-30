@@ -214,6 +214,7 @@ node() {
             stage('Launch New Application') {
                 sh "mv docker-compose-prod.yml docker-compose.yml"
                 sh "sed -i 's/prod/ci/g' docker-compose.yml"
+                sh "sed -i 's/604800/60/g' docker-compose.yml"
                 sh "docker-compose down"
                 sh "docker-compose up -d"
             }
