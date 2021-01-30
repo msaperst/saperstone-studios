@@ -458,7 +458,7 @@ def compress(filetype) {
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
             //check the file for size of non-zero
             if( new File("./public/$filetype/$newFile").length() == 0 ) {
-                throw new Exception("$newFile has filesize 0. We have an issue.")
+                throw new Exception("$newFile has filesize " +  new File("./public/$filetype/$newFile").length() + ". We have an issue.")
             }
             //remove the old file
             sh "rm ./public/$filetype/$file"
