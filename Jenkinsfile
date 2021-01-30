@@ -21,10 +21,8 @@ node() {
     ansiColor('xterm') {
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
 
-        //TODO - do nothing for merge into release
-
         //our dev workflow - kicked off for feature branches and PRs
-        if( !'develop'.equals(branch) && !'release'.equals(branch) && !('release').equals(env.CHANGE_TARGET)  {
+        if( !'develop'.equals(branch) && !'release'.equals(branch) && !('release').equals(env.CHANGE_TARGET) ) {
             stage('Checkout Code') { // for display purposes
                 cleanWs()
                 checkout scm
