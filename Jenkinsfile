@@ -459,7 +459,8 @@ def compress(filetype) {
             sh "uglify$filetype ./public/$filetype/$file > ./public/$filetype/$newFile"
             //fix all references to old file
             sh "find ./public ./templates -type f -exec sed -i 's/$file/$newFile?$random/g' {} \\;"
-            //remove the old file
+            //remove the old file once the new one exists
+            waitUntil { new File("./public/$filetype/$newFile").exists() }
             sh "rm ./public/$filetype/$file"
         }
     }
