@@ -163,11 +163,9 @@ $user = User::fromSystem();
 
                         <!-- Controls -->
                         <a class="left carousel-control"
-                            href="#<?php echo str_replace(" ","-",$gallery->getTitle()); ?>-carousel"
-                            data-slide="prev"> <span class="icon-prev"></span>
+                           onclick="gallery.prev()"> <span class="icon-prev"></span>
                         </a> <a class="right carousel-control"
-                            href="#<?php echo str_replace(" ","-",$gallery->getTitle()); ?>-carousel"
-                            data-slide="next"> <span class="icon-next"></span>
+                            onclick="gallery.next()"> <span class="icon-next"></span>
                         </a>
                     </div>
                 </div>
