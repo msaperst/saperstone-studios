@@ -37,6 +37,10 @@ Gallery.prototype.setImage = function (img) {
     var Gallery = this;
 
     $('#' + Gallery.gallery).modal('show');
+    $('#' + Gallery.gallery).carousel({
+        interval: false,
+        pause: "false",
+    });
     $('#' + Gallery.gallery).carousel(parseInt(img));
 }
 
