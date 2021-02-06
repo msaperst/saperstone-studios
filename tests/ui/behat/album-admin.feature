@@ -340,13 +340,6 @@ Feature: Admin Album
     And I see album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" listed
     And I see the cart count is "2"
 
-  Scenario: Purchase image adds single image to cart
-    Given I am on the "user/album.php?album=99999#1" page
-    When I purchase the image
-    Then I see 1 cart items
-    And I see album 99999 image 2 has 1 "Digital" "Full" "Per File" listed
-    And I see the cart count is "1"
-
   Scenario: Able to download single image
     Given I have download rights for album 99999 image 2
     And I am on the "user/album.php?album=99999#1" page
@@ -383,6 +376,7 @@ Feature: Admin Album
     And I receive an email indicating I have submitted my selects
 
   Scenario: No email updates
+    Given I am on the "user/album.php?album=99999" page
     Then I don't see any email notification messages
 
   Scenario: Email notifications exist
@@ -390,7 +384,7 @@ Feature: Admin Album
       | email                      | contacted |
       | msaperst+sstest@gmail.com  | 0         |
       | msaperst+sstest2@gmail.com | 1         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     Then I see notification emails of:
       | email                     |
       | msaperst+sstest@gmail.com |
@@ -399,16 +393,16 @@ Feature: Admin Album
     Given album 99999 has notifications:
       | email                     | contacted |
       | msaperst+sstest@gmail.com | 0         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     And I send the user notifications
     Then I see the email notification set to "Images have been posted to album Album 99999. You can access your images by logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album=99999."
 
   Scenario: Correct code message
     Given album 99999 has code "code"
-    Given album 99999 has notifications:
+    And album 99999 has notifications:
       | email                     | contacted |
       | msaperst+sstest@gmail.com | 0         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     And I send the user notifications
     Then I see the email notification set to "Images have been posted to album Album 99999. You can access your images by navigating to https://saperstonestudios.com/#album and entering in album code `code`."
 
@@ -416,7 +410,7 @@ Feature: Admin Album
     Given album 99999 has notifications:
       | email                     | contacted |
       | msaperst+sstest@gmail.com | 0         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     And I send the user notifications
     And I set the email notification message to ""
     And I confirm sending user notification
@@ -426,7 +420,7 @@ Feature: Admin Album
     Given album 99999 has notifications:
       | email                     | contacted |
       | msaperst+sstest@gmail.com | 0         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     And I send the user notifications
     And I confirm sending user notification
     Then I don't see any email notification messages
