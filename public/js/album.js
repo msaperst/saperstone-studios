@@ -112,16 +112,6 @@ Album.prototype.loadImages = function () {
             var link = $('<a>');
             link.addClass('info no-border');
             link.attr('href', '#' + parseInt(v.sequence));
-            // link.attr('data-toggle', 'modal');
-            // link.attr('data-target', '#album');
-            // link.on('click', function() {
-            //     var carouselImage = $('#album-carousel .item').index($('#album-carousel .contain[image-id="' + v.sequence + '"]').parent());
-            //     $('#album-carousel').carousel(parseInt(carouselImage));
-            //     $('#album .btn-action').each(function() {
-            //         $(this).prop("disabled", true);
-            //     });
-            //     getDetails();
-            // });
             // add our image icon
             var view = $('<i>');
             view.addClass('fa fa-search fa-2x');
