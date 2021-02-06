@@ -16,10 +16,8 @@ function Gallery(gallery_id, gallery, totalImages) {
 
     Gallery.loadImages();
 
-    if (window.location.hash) {
-        if (window.location.hash.length > 1) {
-            Gallery.setImage(window.location.hash.substr(1));
-        }
+    if (window.location.hash && window.location.hash.length > 1) {
+        Gallery.setImage(window.location.hash.substr(1));
     }
 
     window.onhashchange = function () {
@@ -28,7 +26,7 @@ function Gallery(gallery_id, gallery, totalImages) {
         }
     };
 
-    $('#' + Gallery.gallery).on('hide.bs.modal', function (e) {
+    $('#' + Gallery.gallery).on('hide.bs.modal', function () {
         window.location.hash = "";
     });
 }

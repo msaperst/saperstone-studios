@@ -14,10 +14,8 @@ function Album(albumId, columns, totalImages) {
 
     Album.loadImages();
 
-    if (window.location.hash) {
-        if (window.location.hash.length > 1) {
-            Album.setImage(window.location.hash.substr(1));
-        }
+    if (window.location.hash && window.location.hash.length > 1) {
+        Album.setImage(window.location.hash.substr(1));
     }
 
     window.onhashchange = function () {
@@ -26,14 +24,12 @@ function Album(albumId, columns, totalImages) {
         }
     };
 
-    $('#album').on('hide.bs.modal', function (e) {
+    $('#album').on('hide.bs.modal', function () {
         window.location.hash = "";
     });
 }
 
 Album.prototype.setImage = function (img) {
-    var Album = this;
-
     $('#album').modal('show');
     $('#album-carousel').carousel({
         interval: false,
