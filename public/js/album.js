@@ -1,30 +1,84 @@
-$.fn.isOnScreen = function() {
+$.fn.isOnScreen = function () {
     var element = this.get(0);
     var bounds = element.getBoundingClientRect();
     return bounds.top < window.innerHeight && bounds.bottom > 0;
 };
 
 function Album(albumId, columns, totalImages) {
-    this.loaded = 0;
-    this.albumId = albumId;
-    this.columns = columns;
-    this.totalImages = totalImages;
+    var Album = this;
 
-    this.loadImages();
+    Album.loaded = 0;
+    Album.albumId = albumId;
+    Album.columns = columns;
+    Album.totalImages = totalImages;
+
+    Album.loadImages();
+
+    if (window.location.hash) {
+        if (window.location.hash.length > 1) {
+            Album.setImage(window.location.hash.substr(1));
+        }
+    }
+
+    window.onhashchange = function () {
+        if (window.location.hash.length > 1) {
+            Album.setImage(window.location.hash.substr(1));
+        }
+    };
+
+    $('#album').on('hide.bs.modal', function (e) {
+        window.location.hash = "";
+    });
 }
 
-Album.prototype.loadImages = function() {
+Album.prototype.setImage = function (img) {
+    var Album = this;
+
+    $('#album').modal('show');
+    $('#album-carousel').carousel({
+        interval: false,
+        pause: "false",
+    });
+    var carouselImage = $('#album-carousel .item').index($('#album-carousel .contain[image-id="' + img + '"]').parent());
+    $('#album-carousel').carousel(parseInt(carouselImage));
+    $('#album .btn-action').each(function () {
+        $(this).prop("disabled", true);
+    });
+    getDetails();
+}
+
+Album.prototype.prev = function () {
+    var Album = this;
+
+    var prev = parseInt(parseInt(window.location.hash.substring(1)) - 1);
+    if (prev < 0) {
+        prev = (parseInt(Album.totalImages) - 1);
+    }
+    window.location.hash = "#" + prev;
+}
+
+Album.prototype.next = function () {
+    var Album = this;
+
+    var next = parseInt(parseInt(window.location.hash.substring(1)) + 1);
+    if (next >= Album.totalImages) {
+        next = 0;
+    }
+    window.location.hash = "#" + next;
+}
+
+Album.prototype.loadImages = function () {
     var Album = this;
     $.get("/api/get-album-images.php", {
-        albumId : Album.albumId,
-        start : Album.loaded,
-        howMany : Album.columns
-    }, function(data) {
+        albumId: Album.albumId,
+        start: Album.loaded,
+        howMany: Album.columns
+    }, function (data) {
         // load each of our 4 images on the screen
-        $.each(data, function(k, v) {
+        $.each(data, function (k, v) {
             var shortest = {};
             shortest.height = 999999999;
-            $('.col-gallery').each(function() {
+            $('.col-gallery').each(function () {
                 if ($(this).height() < shortest.height) {
                     shortest.obj = $(this);
                     shortest.height = $(this).height();
@@ -57,16 +111,17 @@ Album.prototype.loadImages = function() {
             // our view link
             var link = $('<a>');
             link.addClass('info no-border');
-            link.attr('data-toggle', 'modal');
-            link.attr('data-target', '#album');
-            link.on('click', function() {
-                var carouselImage = $('#album-carousel .item').index($('#album-carousel .contain[image-id="' + v.sequence + '"]').parent());
-                $('#album-carousel').carousel(parseInt(carouselImage));
-                $('#album .btn-action').each(function() {
-                    $(this).prop("disabled", true);
-                });
-                getDetails();
-            });
+            link.attr('href', '#' + parseInt(v.sequence));
+            // link.attr('data-toggle', 'modal');
+            // link.attr('data-target', '#album');
+            // link.on('click', function() {
+            //     var carouselImage = $('#album-carousel .item').index($('#album-carousel .contain[image-id="' + v.sequence + '"]').parent());
+            //     $('#album-carousel').carousel(parseInt(carouselImage));
+            //     $('#album .btn-action').each(function() {
+            //         $(this).prop("disabled", true);
+            //     });
+            //     getDetails();
+            // });
             // add our image icon
             var view = $('<i>');
             view.addClass('fa fa-search fa-2x');
@@ -86,43 +141,43 @@ Album.prototype.loadImages = function() {
     return Album.loaded;
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     $('#album-carousel').carousel({
-        interval : false,
-        pause : "false",
+        interval: false,
+        pause: "false",
     });
 
     // download an image
-    $('#downloadable-image-btn').click(function() {
+    $('#downloadable-image-btn').click(function () {
         var img = $('#album-carousel div.active div');
         downloadImages(img.attr('album-id'), img.attr('image-id'));
     });
     // share an image
-    $('#shareable-image-btn').click(function() {
+    $('#shareable-image-btn').click(function () {
         var img = $('#album-carousel div.active div');
         shareImages(img.attr('album-id'), img.attr('image-id'));
     });
     // submit an image
-    $('#submit-image-btn').click(function() {
+    $('#submit-image-btn').click(function () {
         var img = $('#album-carousel div.active div');
         $('#submit').attr('what', img.attr('image-id')).modal();
     });
     // quick purchase an image
-    $('#not-downloadable-image-btn').click(function() {
+    $('#not-downloadable-image-btn').click(function () {
         var img = $('#album-carousel div.active div');
         var products = {};
         products['31'] = 1;
         $.post("/api/update-cart-image.php", {
-            album : img.attr('album-id'),
-            image : img.attr('image-id'),
-            products : products
-        }).done(function(data) {
+            album: img.attr('album-id'),
+            image: img.attr('image-id'),
+            products: products
+        }).done(function (data) {
             // update our count on the page
             $('#cart-count').html(data).css({
-                'padding-left' : '10px'
+                'padding-left': '10px'
             });
             reviewCart();
-        }).fail(function(xhr, status, error) {
+        }).fail(function (xhr, status, error) {
             if (xhr.responseText !== "") {
                 $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
             } else if (error === "Unauthorized") {
@@ -134,123 +189,123 @@ $(document).ready(function() {
     })
 
     // download favorite images
-    $('#downloadable-favorites-btn').click(function() {
+    $('#downloadable-favorites-btn').click(function () {
         downloadImages($('#favorites').attr('album-id'), 'favorites');
     });
     // share favorite images
-    $('#shareable-favorites-btn').click(function() {
+    $('#shareable-favorites-btn').click(function () {
         shareImages($('#favorites').attr('album-id'), 'favorites');
     });
     // submit favorite images
-    $('#submit-favorites-btn').click(function() {
+    $('#submit-favorites-btn').click(function () {
         $('#submit').attr('what', 'favorites').modal();
     });
 
     // download all images
-    $('#downloadable-all-btn').click(function() {
+    $('#downloadable-all-btn').click(function () {
         downloadImages($('#favorites').attr('album-id'), 'all');
     });
     // share all images
-    $('#shareable-all-btn').click(function() {
+    $('#shareable-all-btn').click(function () {
         shareImages($('#favorites').attr('album-id'), 'all');
     });
 
     // our actual submit button
-    $('#submit-send').click(function() {
+    $('#submit-send').click(function () {
         submitImages();
     });
 
     // set a favorite
-    $('#set-favorite-image-btn').click(function() {
+    $('#set-favorite-image-btn').click(function () {
         setFavoriteImage();
     });
     // unset a favorite
-    $('#unset-favorite-image-btn').click(function() {
+    $('#unset-favorite-image-btn').click(function () {
         unsetFavoriteImage();
     });
 
     // show our favorites
-    $('#favorite-btn').click(function() {
+    $('#favorite-btn').click(function () {
         showFavorites();
     });
 
     // show our cart image
-    $('#cart-image-btn').click(function() {
+    $('#cart-image-btn').click(function () {
         showCart();
     });
     // show different tabs on our cart
-    $(".nav-tabs a").click(function() {
+    $(".nav-tabs a").click(function () {
         $(this).tab('show');
     });
     // update our cart
-    $('.product-count input').change(function() {
+    $('.product-count input').change(function () {
         updateCart($(this));
     });
     // show our cart review
-    $('#cart-btn,#reviewOrder').click(function() {
+    $('#cart-btn,#reviewOrder').click(function () {
         reviewCart();
     });
     // cart purchase options
-    $('#cart-submit').click(function() {
+    $('#cart-submit').click(function () {
         submitCart();
     });
 
-    $('#cart-shipping input').bind("change keyup input", function() {
+    $('#cart-shipping input').bind("change keyup input", function () {
         validateCartInput($(this));
     });
 
     // on start of slide, disable all buttons
-    $('#album-carousel').on('slide.bs.carousel', function() {
-        $('#album .btn-action').each(function() {
+    $('#album-carousel').on('slide.bs.carousel', function () {
+        $('#album .btn-action').each(function () {
             $(this).prop("disabled", true);
         });
     });
     // once slide completes, check for a favorite, which will
     // re-enable
-    $('#album-carousel').on('slid.bs.carousel', function() {
+    $('#album-carousel').on('slid.bs.carousel', function () {
         getDetails();
     });
-    
+
     //submit email
-    $('#notify-submit').click(function(){
+    $('#notify-submit').click(function () {
         submitNotifyEmail();
     });
 });
 
 function getDetails() {
-    $('#album .btn-action').each(function() {
+    $('#album .btn-action').each(function () {
         $(this).prop("disabled", true);
     });
     var img = $('#album-carousel div.active div');
     $.get("/api/is-favorite.php", {
-        album : img.attr('album-id'),
-        image : img.attr('image-id')
-    }).done(function(data) {
+        album: img.attr('album-id'),
+        image: img.attr('image-id')
+    }).done(function (data) {
         if (data === '1') {
             setFavorite();
         } else {
             unsetFavorite();
         }
         $.get("/api/is-downloadable.php", {
-            album : img.attr('album-id'),
-            image : img.attr('image-id')
-        }).done(function(data) {
+            album: img.attr('album-id'),
+            image: img.attr('image-id')
+        }).done(function (data) {
             if (data === '1') {
                 setDownloadable();
             } else {
                 unsetDownloadable();
             }
             $.get("/api/is-shareable.php", {
-                album : img.attr('album-id'),
-                image : img.attr('image-id')
-            }).done(function(data) {
+                album: img.attr('album-id'),
+                image: img.attr('image-id')
+            }).done(function (data) {
                 if (data === '1') {
                     setShareable();
                 } else {
                     unsetShareable();
                 }
 
-                $('#album .btn-action').each(function() {
+                $('#album .btn-action').each(function () {
                     $(this).prop("disabled", false);
                 });
             });
@@ -260,7 +315,7 @@ function getDetails() {
 
 function calculateCost() {
     var total = 0;
-    $('#cart-table .item-cost').each(function() {
+    $('#cart-table .item-cost').each(function () {
         var price = Number($(this).html().replace(/[^0-9\.]+/g, ""));
         total += price;
     });
@@ -315,17 +370,17 @@ function setFavoriteImage() {
     var img = $('#album-carousel div.active div');
     // send our update
     $.post("/api/set-favorite.php", {
-        album : img.attr('album-id'),
-        image : img.attr('image-id')
-    }).done(function(data) {
+        album: img.attr('album-id'),
+        image: img.attr('image-id')
+    }).done(function (data) {
         // update our count on the page
         if (parseInt(data) > 0) {
             $('#favorite-count').html(data).css({
-                'padding-left' : '10px'
+                'padding-left': '10px'
             });
         } else {
             $('#favorite-count').html("").css({
-                'padding-left' : ''
+                'padding-left': ''
             });
         }
         setFavorite();
@@ -336,17 +391,17 @@ function unsetFavoriteImage() {
     var img = $('#album-carousel div.active div');
     // send our update
     $.post("/api/unset-favorite.php", {
-        album : img.attr('album-id'),
-        image : img.attr('image-id')
-    }).done(function(data) {
+        album: img.attr('album-id'),
+        image: img.attr('image-id')
+    }).done(function (data) {
         // update our count on the page
         if (parseInt(data) > 0) {
             $('#favorite-count').html(data).css({
-                'padding-left' : '10px'
+                'padding-left': '10px'
             });
         } else {
             $('#favorite-count').html("").css({
-                'padding-left' : ''
+                'padding-left': ''
             });
         }
         unsetFavorite();
@@ -357,24 +412,24 @@ function showFavorites() {
     $('#favorites-list').empty();
     $('#favorites').modal();
     $.get("/api/get-favorites.php", {
-        album : $('#album').attr('album-id'),
-    }, function(data) {
-        $.each(data, function(i) {
+        album: $('#album').attr('album-id'),
+    }, function (data) {
+        $.each(data, function (i) {
             var li = $('<li image-id="' + data[i].sequence + '" class="img-favorite">');
             li.css('background-image', 'url("' + data[i].location + '")');
-            li.click(function() {
+            li.click(function () {
                 $.post("/api/unset-favorite.php", {
-                    album : $('#album').attr('album-id'),
-                    image : $(this).attr('image-id')
-                }).done(function(data) {
+                    album: $('#album').attr('album-id'),
+                    image: $(this).attr('image-id')
+                }).done(function (data) {
                     // update our count on the page
                     if (parseInt(data) > 0) {
                         $('#favorite-count').html(data).css({
-                            'padding-left' : '10px'
+                            'padding-left': '10px'
                         });
                     } else {
                         $('#favorite-count').html("").css({
-                            'padding-left' : ''
+                            'padding-left': ''
                         });
                         $("#downloadable-favorites-btn").prop("disabled", true);
                         $("#shareable-favorites-btn").prop("disabled", true);
@@ -399,16 +454,16 @@ function showFavorites() {
 function showCart() {
     var img = $('#album-carousel div.active div');
     $('#cart-image').modal();
-    $('.product-count input').each(function() {
+    $('.product-count input').each(function () {
         $(this).val("");
     });
-    $('.product-total').each(function() {
+    $('.product-total').each(function () {
         $(this).html("--");
     });
     $.get("/api/get-cart-image.php", {
-        album : img.attr('album-id'),
-        image : img.attr('image-id'),
-    }, function(data) {
+        album: img.attr('album-id'),
+        image: img.attr('image-id'),
+    }, function (data) {
         for (var i = 0, len = data.length; i < len; i++) {
             var row = $('#cart-image tr[product-id="' + data[i].product + '"]');
             var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
@@ -428,7 +483,7 @@ function updateCart(input) {
     }
     // update our database
     var products = {};
-    $('.product-count input').each(function() {
+    $('.product-count input').each(function () {
         var product = $(this).closest('tr').attr('product-id');
         var count = parseInt($(this).val()) || 0;
         if (count !== 0) {
@@ -436,18 +491,18 @@ function updateCart(input) {
         }
     });
     $.post("/api/update-cart-image.php", {
-        album : img.attr('album-id'),
-        image : img.attr('image-id'),
-        products : products
-    }).done(function(data) {
+        album: img.attr('album-id'),
+        image: img.attr('image-id'),
+        products: products
+    }).done(function (data) {
         // update our count on the page
         if (parseInt(data) > 0) {
             $('#cart-count').html(data).css({
-                'padding-left' : '10px'
+                'padding-left': '10px'
             });
         } else {
             $('#cart-count').html("").css({
-                'padding-left' : ''
+                'padding-left': ''
             });
         }
     });
@@ -458,7 +513,7 @@ function reviewCart() {
     $('#album').modal('hide');
     $('#cart').modal();
     $('#cart-items').empty();
-    $.get("/api/get-cart.php", function(data) {
+    $.get("/api/get-cart.php", function (data) {
         for (var i = 0, len = data.length; i < len; i++) {
             for (var c = 0, zen = data[i].count; c < zen; c++) {
                 var row = $("<tr>");
@@ -472,7 +527,7 @@ function reviewCart() {
                 var removeIcon = $("<i>");
                 removeIcon.addClass("fa fa-trash error");
                 removeIcon.css({
-                    "cursor" : "pointer"
+                    "cursor": "pointer"
                 });
                 removeIcon = removeFromCart(removeIcon);
                 remove.append(removeIcon);
@@ -480,11 +535,11 @@ function reviewCart() {
                 var preview = $("<td>");
                 var previewDiv = $("<div>");
                 previewDiv.css({
-                    "background-image" : "url('" + data[i].location + "')",
-                    "background-size" : "cover",
-                    "background-position" : "50%",
-                    "width" : "50px",
-                    "height" : "50px"
+                    "background-image": "url('" + data[i].location + "')",
+                    "background-size": "cover",
+                    "background-position": "50%",
+                    "width": "50px",
+                    "height": "50px"
                 });
                 preview.append(previewDiv);
                 row.append(preview);
@@ -518,10 +573,10 @@ function reviewCart() {
             }
         }
         calculateCost();
-        $('#cart-shipping input').each(function() {
+        $('#cart-shipping input').each(function () {
             validateCartInput($(this));
         });
-        $('#cart-table select').off().bind("change keyup input", function() {
+        $('#cart-table select').off().bind("change keyup input", function () {
             validateCartInput($(this));
         });
     }, "json");
@@ -531,6 +586,7 @@ function setFavorite() {
     $('#set-favorite-image-btn').addClass('hidden');
     $('#unset-favorite-image-btn').removeClass('hidden');
 }
+
 function unsetFavorite() {
     $('#set-favorite-image-btn').removeClass('hidden');
     $('#unset-favorite-image-btn').addClass('hidden');
@@ -540,6 +596,7 @@ function setDownloadable() {
     $('#not-downloadable-image-btn').addClass('hidden');
     $('#downloadable-image-btn').removeClass('hidden');
 }
+
 function unsetDownloadable() {
     $('#not-downloadable-image-btn').removeClass('hidden');
     $('#downloadable-image-btn').addClass('hidden');
@@ -549,6 +606,7 @@ function setShareable() {
     $('#not-shareable-image-btn').addClass('hidden');
     $('#shareable-image-btn').removeClass('hidden');
 }
+
 function unsetShareable() {
     $('#not-shareable-image-btn').removeClass('hidden');
     $('#shareable-image-btn').addClass('hidden');
@@ -565,8 +623,9 @@ function arrayHasJSON(myArray, product, album, image) {
     }
     return hasJSON;
 }
+
 function incrementProduct(myArray, product, album, image) {
-    $.each(myArray, function(i, obj) {
+    $.each(myArray, function (i, obj) {
         if (obj.product === product && obj.album === album && obj.image === image) {
             obj.count++;
         }
@@ -575,13 +634,13 @@ function incrementProduct(myArray, product, album, image) {
 }
 
 function removeFromCart(removeIcon) {
-    removeIcon.click(function() {
+    removeIcon.click(function () {
         // TODO - we should really put in a confirm here
         $(this).closest('tr').remove();
         calculateCost();
         // update our database
         var cart = [];
-        $('#cart-items tr').each(function() {
+        $('#cart-items tr').each(function () {
             var product = $(this).attr('product-id');
             var image = $(this).attr('image-id');
             var album = $(this).attr('album-id');
@@ -597,16 +656,16 @@ function removeFromCart(removeIcon) {
             }
         });
         $.post("/api/update-cart.php", {
-            images : cart
-        }).done(function(data) {
+            images: cart
+        }).done(function (data) {
             // update our count on the page
             if (parseInt(data) > 0) {
                 $('#cart-count').html(data).css({
-                    'padding-left' : '10px'
+                    'padding-left': '10px'
                 });
             } else {
                 $('#cart-count').html("").css({
-                    'padding-left' : ''
+                    'padding-left': ''
                 });
             }
         });
@@ -616,14 +675,14 @@ function removeFromCart(removeIcon) {
 
 function downloadImages(album, what) {
     BootstrapDialog.show({
-        draggable : true,
-        title : 'Terms Of Service',
-        message : '<em class="fa fa-exclamation-triangle"></em> By downloading the selected files, you are agreeing to the right to copy, display, reproduce, enlarge and distribute said photographs taken by the Photographer in connection with the Services and in connection with the publication known as Saperstone Studios for personal use, and any reprints or reproductions, or excerpts thereof; all other rights are expressly reserved by and to Photographer.<br/><br/>While usage in accordance with above policies of selected files on public social media sites and personal websites for non-profit purposes is acceptable, any use of selected files in any publication, display, exhibit or paid medium are not permitted without express consent from Photographer.<br/><br/>Please note that only images you have expressly purchased rights to will be downloaded, even if additional images were selected for this download.',
-        buttons : [ {
-            icon : 'glyphicon glyphicon-download-alt',
-            label : ' Download',
-            cssClass : 'btn-success',
-            action : function(dialogInItself) {
+        draggable: true,
+        title: 'Terms Of Service',
+        message: '<em class="fa fa-exclamation-triangle"></em> By downloading the selected files, you are agreeing to the right to copy, display, reproduce, enlarge and distribute said photographs taken by the Photographer in connection with the Services and in connection with the publication known as Saperstone Studios for personal use, and any reprints or reproductions, or excerpts thereof; all other rights are expressly reserved by and to Photographer.<br/><br/>While usage in accordance with above policies of selected files on public social media sites and personal websites for non-profit purposes is acceptable, any use of selected files in any publication, display, exhibit or paid medium are not permitted without express consent from Photographer.<br/><br/>Please note that only images you have expressly purchased rights to will be downloaded, even if additional images were selected for this download.',
+        buttons: [{
+            icon: 'glyphicon glyphicon-download-alt',
+            label: ' Download',
+            cssClass: 'btn-success',
+            action: function (dialogInItself) {
                 var $button = this; // 'this' here is a jQuery
                 // object that
                 // wrapping the <button> DOM element.
@@ -634,9 +693,9 @@ function downloadImages(album, what) {
                 dialogInItself.setClosable(false);
                 // send our update
                 $.post("/api/download-selected-images.php", {
-                    album : album,
-                    what : what
-                }, "json").done(function(data) {
+                    album: album,
+                    what: what
+                }, "json").done(function (data) {
                     data = jQuery.parseJSON(data);
                     if (data.hasOwnProperty('file')) {
                         window.location = data.file;
@@ -646,15 +705,15 @@ function downloadImages(album, what) {
                     } else {
                         modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
                     }
-                }).fail(function(xhr, status, error) {
-                    if ( xhr.responseText !== "" ) {
+                }).fail(function (xhr, status, error) {
+                    if (xhr.responseText !== "") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if ( error === "Unauthorized" ) {
+                    } else if (error === "Unauthorized") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                     } else {
                         modal.find('.bootstrap-dialog-body').append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
                     }
-                }).always(function() {
+                }).always(function () {
                     $('#compressing-download').remove();
                     $button.stopSpin();
                     dialogInItself.enableButtons(true);
@@ -662,25 +721,25 @@ function downloadImages(album, what) {
                 });
             }
         }, {
-            label : 'Close',
-            action : function(dialogInItself) {
+            label: 'Close',
+            action: function (dialogInItself) {
                 dialogInItself.close();
             }
-        } ]
+        }]
     });
 }
 
 function shareImages(album, what) {
     BootstrapDialog.show({
-        draggable : true,
-        title : '<em class="fa fa-frown-o"></em> Sorry',
-        message : '<em class="fa fa-exclamation-triangle"> This functionality isn\'t available yet. Please check back soon.',
-        buttons : [ {
-            label : 'Close',
-            action : function(dialogInItself) {
+        draggable: true,
+        title: '<em class="fa fa-frown-o"></em> Sorry',
+        message: '<em class="fa fa-exclamation-triangle"> This functionality isn\'t available yet. Please check back soon.',
+        buttons: [{
+            label: 'Close',
+            action: function (dialogInItself) {
                 dialogInItself.close();
             }
-        } ]
+        }]
     });
 }
 
@@ -689,26 +748,26 @@ function submitImages() {
     $("#submit-send").next().prop("disabled", true);
     $("#submit-send em").removeClass('fa fa-paper-plane').addClass('glyphicon glyphicon-asterisk icon-spin');
     $.post("/api/send-selected-images.php", {
-        album : $('#submit').attr('album-id'),
-        what : $('#submit').attr('what'),
-        name : $('#submit-name').val(),
-        email : $('#submit-email').val(),
-        comment : $('#submit-comment').val()
-    }).done(function(data) {
+        album: $('#submit').attr('album-id'),
+        what: $('#submit').attr('what'),
+        name: $('#submit-name').val(),
+        email: $('#submit-email').val(),
+        comment: $('#submit-comment').val()
+    }).done(function (data) {
         if (data !== "") {
             $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
         } else {
             $("#submit").modal('hide')
         }
-    }).fail(function(xhr, status, error) {
-        if ( xhr.responseText !== "" ) {
+    }).fail(function (xhr, status, error) {
+        if (xhr.responseText !== "") {
             $('#submit .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if ( error === "Unauthorized" ) {
+        } else if (error === "Unauthorized") {
             $('#submit .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
             $("#submit .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
         }
-    }).always(function() {
+    }).always(function () {
         $('#submit-send').prop("disabled", false);
         $('#submit-send').next().prop("disabled", false);
         $('#submit-send em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
@@ -726,29 +785,29 @@ function submitCart() {
         coupon = $('#cart-coupon').val();
     }
     var order = [];
-    $('#cart-items tr').each(function() {
+    $('#cart-items tr').each(function () {
         order.push({
-            product : $(this).attr('product-id'),
-            type : $(this).attr('product-type'),
-            img : $(this).attr('image-id'),
-            title : $(this).attr('image-title'),
-            option : $(this).find('td.item-option select').val()
+            product: $(this).attr('product-id'),
+            type: $(this).attr('product-type'),
+            img: $(this).attr('image-id'),
+            title: $(this).attr('image-title'),
+            option: $(this).find('td.item-option select').val()
         });
     });
     var user = {
-        name : $('#cart-name').val(),
-        email : $('#cart-email').val(),
-        phone : $('#cart-phone').val(),
-        address : $('#cart-address').val(),
-        city : $('#cart-city').val(),
-        state : $('#cart-state').val(),
-        zip : $('#cart-zip').val(),
+        name: $('#cart-name').val(),
+        email: $('#cart-email').val(),
+        phone: $('#cart-phone').val(),
+        address: $('#cart-address').val(),
+        city: $('#cart-city').val(),
+        state: $('#cart-state').val(),
+        zip: $('#cart-zip').val(),
     };
     $.post("/api/checkout.php", {
-        user : user,
-        order : order,
-        coupon : coupon
-    }, "json").done(function(data) {
+        user: user,
+        order: order,
+        coupon: coupon
+    }, "json").done(function (data) {
         data = jQuery.parseJSON(data);
         if (data.hasOwnProperty('response') && data.response.Ack === "Success") {
             var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
@@ -764,15 +823,15 @@ function submitCart() {
         } else {
             $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
-    }).fail(function(xhr, status, error) {
-        if ( xhr.responseText !== "" ) {
+    }).fail(function (xhr, status, error) {
+        if (xhr.responseText !== "") {
             $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if ( error === "Unauthorized" ) {
+        } else if (error === "Unauthorized") {
             $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
             $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
-    }).always(function() {
+    }).always(function () {
         $('#cart-submit').prop("disabled", false);
         $('#cart-submit').next().prop("disabled", false);
         $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
@@ -784,23 +843,23 @@ function submitNotifyEmail() {
     $("#notify-submit").next().prop("disabled", true);
     $("#notify-submit em").removeClass('fa fa-paper-plane').addClass('glyphicon glyphicon-asterisk icon-spin');
     $.post("/api/add-notification-email.php", {
-        album : $('#submit').attr('album-id'),
-        email : $('#notify-email').val()
-    }).done(function(data) {
+        album: $('#submit').attr('album-id'),
+        email: $('#notify-email').val()
+    }).done(function (data) {
         if (data !== "") {
             $("#album-thumbs").after('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
         } else {
             $("#album-thumbs").empty().after('<div class="alert alert-success"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Your email address was successfully recorded. You will be notified once the images have been uploaded.</div>');
         }
-    }).fail(function(xhr, status, error) {
-        if ( xhr.responseText !== "" ) {
+    }).fail(function (xhr, status, error) {
+        if (xhr.responseText !== "") {
             $('#album-thumbs').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if ( error === "Unauthorized" ) {
+        } else if (error === "Unauthorized") {
             $('#album-thumbs').after("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
             $("#album-thumbs").after('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
         }
-    }).always(function() {
+    }).always(function () {
         $('#notify-submit').prop("disabled", false);
         $('#notify-submit').next().prop("disabled", false);
         $('#notify-submit em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');

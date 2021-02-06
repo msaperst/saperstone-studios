@@ -37,7 +37,7 @@ Feature: Gallery
     And I wait for 5 seconds
     Then I see gallery image 1 in the preview modal
 
-  Scenario: Modal does not automatically scroll to the next image
+  Scenario: Modal does not automatically scroll to the next image on hash
     Given I am on the "portrait/galleries.php?w=999#0" page
     When I wait for 5 seconds
     Then I see gallery image 1 in the preview modal
@@ -67,7 +67,8 @@ Feature: Gallery
     Then I do not see any gallery captions
 
   Scenario: Opening an image sets the hash to that image
-    When I am on the "portrait/galleries.php?w=999#2" page
+    Given I am on the "portrait/galleries.php?w=999" page
+    When I view gallery image 3
     Then I am taken to the "portrait/galleries.php?w=999#2" page
 
   Scenario: Opening gallery with hash displays that image

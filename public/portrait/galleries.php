@@ -162,11 +162,8 @@ $user = User::fromSystem();
                     </div>
 
                         <!-- Controls -->
-                        <a class="left carousel-control"
-                           onclick="gallery.prev()"> <span class="icon-prev"></span>
-                        </a> <a class="right carousel-control"
-                            onclick="gallery.next()"> <span class="icon-next"></span>
-                        </a>
+                        <a class="left carousel-control" onclick="gallery.prev()"> <span class="icon-prev"></span> </a>
+                        <a class="right carousel-control" onclick="gallery.next()"> <span class="icon-next"></span> </a>
                     </div>
                 </div>
                 <div class="modal-footer">

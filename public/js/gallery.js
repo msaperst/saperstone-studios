@@ -17,20 +17,20 @@ function Gallery(gallery_id, gallery, totalImages) {
     Gallery.loadImages();
 
     if (window.location.hash) {
-        if( window.location.hash.length > 1 ) {
+        if (window.location.hash.length > 1) {
             Gallery.setImage(window.location.hash.substr(1));
         }
     }
 
     window.onhashchange = function () {
-        if( window.location.hash.length > 1 ) {
+        if (window.location.hash.length > 1) {
             Gallery.setImage(window.location.hash.substr(1));
         }
     };
 
     $('#' + Gallery.gallery).on('hide.bs.modal', function (e) {
         window.location.hash = "";
-    })
+    });
 }
 
 Gallery.prototype.setImage = function (img) {
@@ -48,8 +48,8 @@ Gallery.prototype.prev = function () {
     var Gallery = this;
 
     var prev = parseInt(parseInt(window.location.hash.substring(1)) - 1);
-    if( prev < 0 ) {
-        prev = (parseInt(Gallery.totalImages)-1);
+    if (prev < 0) {
+        prev = (parseInt(Gallery.totalImages) - 1);
     }
     window.location.hash = "#" + prev;
 }
@@ -58,7 +58,7 @@ Gallery.prototype.next = function () {
     var Gallery = this;
 
     var next = parseInt(parseInt(window.location.hash.substring(1)) + 1);
-    if( next >= Gallery.totalImages ) {
+    if (next >= Gallery.totalImages) {
         next = 0;
     }
     window.location.hash = "#" + next;
