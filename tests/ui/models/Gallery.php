@@ -118,4 +118,15 @@ class Gallery {
         $this->driver->findElement(WebDriverBy::cssSelector('.carousel-indicators > li:nth-child(' . $imgNum . ')'))->click();
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($img)));
     }
+
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function closeSlideShow() {
+        $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector("#$slideShowId [data-dismiss='modal']")));
+        $this->driver->findElement(WebDriverBy::cssSelector("#$slideShowId [data-dismiss='modal']"))->click();
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id($slideShowId)))));
+    }
 }

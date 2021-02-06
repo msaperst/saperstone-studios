@@ -222,169 +222,169 @@ node() {
                 sh "composer clean"
                 sh "composer install --prefer-dist --no-progress --no-suggest"
             }
-//             stage('BackEnd Tests') {
-//                 parallel(
-//                         "Coverage Tests": {
-//                             stage('Run Coverage Tests') {
-//                                 try {
-//                                     timeout(60) {
-//                                         waitUntil {
-//                                             script {
-//                                                 def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
-//                                                 return (r.trim() == '200');
-//                                             }
-//                                         }
-//                                     }
-//                                     sh "composer coverage-pre-test"
-//                                     sh "COMPOSER_PROCESS_TIMEOUT=600 composer coverage-test"
-//                                 } catch (Exception e) {
-//                                     if( fileContains( 'reports/cov-junit.xml', 'testsuite name=\\"tests/coverage/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
-//                                          fileContains( 'reports/cov-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
-//                                          echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
-//                                      } else {
-//                                         throw e
-//                                      }
-//                                 } finally {
-//                                     junit 'reports/cov-junit.xml'
-//                                     publishHTML([
-//                                             allowMissing         : false,
-//                                             alwaysLinkToLastBuild: true,
-//                                             keepAll              : true,
-//                                             reportDir            : 'reports/',
-//                                             reportFiles          : 'cov-results.html',
-//                                             reportName           : 'Coverage Test Results Report'
-//                                     ])
-//                                     step([
-//                                         $class: 'CloverPublisher',
-//                                         cloverReportDir: 'reports/',
-//                                         cloverReportFileName: 'cov-clover.xml'
-//                                     ])
-//                                     publishHTML([
-//                                             allowMissing         : false,
-//                                             alwaysLinkToLastBuild: true,
-//                                             keepAll              : true,
-//                                             reportDir            : 'reports/cov-coverage',
-//                                             reportFiles          : 'index.html',
-//                                             reportName           : 'Coverage Test Coverage Report'
-//                                     ])
-//                                 }
-//                             }
-//                         },
-//                         "API Tests": {
-//                             stage('Run API Tests') {
-//                                 try {
-//                                     timeout(60) {
-//                                         waitUntil {
-//                                             script {
-//                                                 def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
-//                                                 return (r.trim() == '200');
-//                                             }
-//                                         }
-//                                     }
-//                                     sh "COMPOSER_PROCESS_TIMEOUT=1200 composer api-test"
-//                                 } finally {
-//                                     junit 'reports/api-junit.xml'
-//                                     publishHTML([
-//                                             allowMissing         : false,
-//                                             alwaysLinkToLastBuild: true,
-//                                             keepAll              : true,
-//                                             reportDir            : 'reports/',
-//                                             reportFiles          : 'api-results.html',
-//                                             reportName           : 'API Test Results Report'
-//                                     ])
-//                                 }
-//                             }
-//                         }
-//                 )
-//             }
-//             stage('Run Chrome Page Tests') {
-//                 try {
-//                     launchBrowserDocker('chrome')
-//                     sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1800 composer ui-page-test;'
-//                 } finally {
-//                     closeBrowserDocker('chrome')
-//                     junit 'reports/ui/junit.xml'
-//                     publishHTML([
-//                             allowMissing         : false,
-//                             alwaysLinkToLastBuild: true,
-//                             keepAll              : true,
-//                             reportDir            : 'reports/ui/',
-//                             reportFiles          : 'results.html',
-//                             reportName           : 'Chrome Page Test Results Simple Report'
-//                     ])
-//                     publishHTML([
-//                             allowMissing         : false,
-//                             alwaysLinkToLastBuild: true,
-//                             keepAll              : true,
-//                             reportDir            : 'reports/ui/',
-//                             reportFiles          : 'index.html',
-//                             reportName           : 'Chrome Page Test Results Screenshot Report'
-//                     ])
-//                 }
-//             }
-//             stage('Run Chrome Functional Tests') {
-//                 parallel(
-//                         'Execute Chrome BDD Tests': {
-//                             try {
-//                                 stage('Start ZAP') {
-//                                     startZap(
-//                                             host: "localhost",
-//                                             port: 9092,
-//                                             zapHome: "/opt/zap"
-//                                     )
-//                                 }
-//                                 stage('Run Chrome BDD Tests') {
-//                                     try {
-//                                         sh 'composer dump-autoload'
-//                                         launchBrowserDocker('chrome')
-//                                         sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
-//                                     } catch (Exception e) {
-//                                         //TODO - not doing anything yet...but we'll need to
-//                                     } finally {
-//                                         closeBrowserDocker('chrome')
-//                                         junit 'reports/behat/default.xml'
-//                                         publishHTML([
-//                                                 allowMissing         : false,
-//                                                 alwaysLinkToLastBuild: true,
-//                                                 keepAll              : true,
-//                                                 reportDir            : 'reports/behat/',
-//                                                 reportFiles          : 'index.html',
-//                                                 reportName           : 'Chrome Behat Test Results Report'
-//                                         ])
-//                                         publishHTML([
-//                                                 allowMissing         : false,
-//                                                 alwaysLinkToLastBuild: true,
-//                                                 keepAll              : true,
-//                                                 reportDir            : 'reports/behat/',
-//                                                 reportFiles          : 'screenshots.html',
-//                                                 reportName           : 'Chrome Behat Test Results Screenshot Report'
-//                                         ])
-//                                     }
-//                                 }
-//                             } finally {
-//                                 stage('Get ZAP Results') {
-//                                     sh 'mkdir -p results/zap'
-//                                     sh 'wget -q -O results/zap/report.html http://localhost:9092/OTHER/core/other/htmlreport'
-//                                     sh 'wget -q -O results/zap/report.xml http://localhost:9092/OTHER/core/other/xmlreport'
-//                                     publishHTML([
-//                                             allowMissing         : false,
-//                                             alwaysLinkToLastBuild: true,
-//                                             keepAll              : true,
-//                                             reportDir            : 'results/zap',
-//                                             reportFiles          : 'report.html',
-//                                             reportName           : 'ZAP Report'
-//                                     ])
-//                                     archiveZap()
-//                                 }
-//                             }
-//                         },
-//                         'Monitor Network Traffic': {
-//                             stage('Zap Monitoring') {
-//                                 echo 'Monitoring traffic'
-//                             }
-//                         }
-//                 )
-//             }
+            stage('BackEnd Tests') {
+                parallel(
+                        "Coverage Tests": {
+                            stage('Run Coverage Tests') {
+                                try {
+                                    timeout(60) {
+                                        waitUntil {
+                                            script {
+                                                def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
+                                                return (r.trim() == '200');
+                                            }
+                                        }
+                                    }
+                                    sh "composer coverage-pre-test"
+                                    sh "COMPOSER_PROCESS_TIMEOUT=600 composer coverage-test"
+                                } catch (Exception e) {
+                                    if( fileContains( 'reports/cov-junit.xml', 'testsuite name=\\"tests/coverage/\\".* errors=\\"1\\" failures=\\"0\\" skipped=\\"0\\"') &&
+                                         fileContains( 'reports/cov-junit.xml', 'Exception: Request error for API call: Resolving timed out') ) {
+                                         echo 'Experiencing a twitter timeout issue, this is "expected", but unfortunate'
+                                     } else {
+                                        throw e
+                                     }
+                                } finally {
+                                    junit 'reports/cov-junit.xml'
+                                    publishHTML([
+                                            allowMissing         : false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll              : true,
+                                            reportDir            : 'reports/',
+                                            reportFiles          : 'cov-results.html',
+                                            reportName           : 'Coverage Test Results Report'
+                                    ])
+                                    step([
+                                        $class: 'CloverPublisher',
+                                        cloverReportDir: 'reports/',
+                                        cloverReportFileName: 'cov-clover.xml'
+                                    ])
+                                    publishHTML([
+                                            allowMissing         : false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll              : true,
+                                            reportDir            : 'reports/cov-coverage',
+                                            reportFiles          : 'index.html',
+                                            reportName           : 'Coverage Test Coverage Report'
+                                    ])
+                                }
+                            }
+                        },
+                        "API Tests": {
+                            stage('Run API Tests') {
+                                try {
+                                    timeout(60) {
+                                        waitUntil {
+                                            script {
+                                                def r = sh returnStdout: true, script: 'curl -I http://localhost:90/ 2>/dev/null | head -n 1 | cut -d " " -f2'
+                                                return (r.trim() == '200');
+                                            }
+                                        }
+                                    }
+                                    sh "COMPOSER_PROCESS_TIMEOUT=1200 composer api-test"
+                                } finally {
+                                    junit 'reports/api-junit.xml'
+                                    publishHTML([
+                                            allowMissing         : false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll              : true,
+                                            reportDir            : 'reports/',
+                                            reportFiles          : 'api-results.html',
+                                            reportName           : 'API Test Results Report'
+                                    ])
+                                }
+                            }
+                        }
+                )
+            }
+            stage('Run Chrome Page Tests') {
+                try {
+                    launchBrowserDocker('chrome')
+                    sh 'export BROWSER=chrome; COMPOSER_PROCESS_TIMEOUT=1800 composer ui-page-test;'
+                } finally {
+                    closeBrowserDocker('chrome')
+                    junit 'reports/ui/junit.xml'
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/ui/',
+                            reportFiles          : 'results.html',
+                            reportName           : 'Chrome Page Test Results Simple Report'
+                    ])
+                    publishHTML([
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'reports/ui/',
+                            reportFiles          : 'index.html',
+                            reportName           : 'Chrome Page Test Results Screenshot Report'
+                    ])
+                }
+            }
+            stage('Run Chrome Functional Tests') {
+                parallel(
+                        'Execute Chrome BDD Tests': {
+                            try {
+                                stage('Start ZAP') {
+                                    startZap(
+                                            host: "localhost",
+                                            port: 9092,
+                                            zapHome: "/opt/zap"
+                                    )
+                                }
+                                stage('Run Chrome BDD Tests') {
+                                    try {
+                                        sh 'composer dump-autoload'
+                                        launchBrowserDocker('chrome')
+                                        sh 'export BROWSER=chrome; export PROXY=http://127.0.0.1:9092; COMPOSER_PROCESS_TIMEOUT=2400 composer ui-behat-test;'
+                                    } catch (Exception e) {
+                                        //TODO - not doing anything yet...but we'll need to
+                                    } finally {
+                                        closeBrowserDocker('chrome')
+                                        junit 'reports/behat/default.xml'
+                                        publishHTML([
+                                                allowMissing         : false,
+                                                alwaysLinkToLastBuild: true,
+                                                keepAll              : true,
+                                                reportDir            : 'reports/behat/',
+                                                reportFiles          : 'index.html',
+                                                reportName           : 'Chrome Behat Test Results Report'
+                                        ])
+                                        publishHTML([
+                                                allowMissing         : false,
+                                                alwaysLinkToLastBuild: true,
+                                                keepAll              : true,
+                                                reportDir            : 'reports/behat/',
+                                                reportFiles          : 'screenshots.html',
+                                                reportName           : 'Chrome Behat Test Results Screenshot Report'
+                                        ])
+                                    }
+                                }
+                            } finally {
+                                stage('Get ZAP Results') {
+                                    sh 'mkdir -p results/zap'
+                                    sh 'wget -q -O results/zap/report.html http://localhost:9092/OTHER/core/other/htmlreport'
+                                    sh 'wget -q -O results/zap/report.xml http://localhost:9092/OTHER/core/other/xmlreport'
+                                    publishHTML([
+                                            allowMissing         : false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll              : true,
+                                            reportDir            : 'results/zap',
+                                            reportFiles          : 'report.html',
+                                            reportName           : 'ZAP Report'
+                                    ])
+                                    archiveZap()
+                                }
+                            }
+                        },
+                        'Monitor Network Traffic': {
+                            stage('Zap Monitoring') {
+                                echo 'Monitoring traffic'
+                            }
+                        }
+                )
+            }
             stage('Publish Containers') {
                 // retag and push each of our containers
                 parallel(

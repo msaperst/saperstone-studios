@@ -201,11 +201,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     </div>
 
                     <!-- Controls -->
-                    <a class="left carousel-control" href="#album-carousel"
-                       data-slide="prev"> <span class="icon-prev"></span>
-                    </a> <a class="right carousel-control" href="#album-carousel"
-                            data-slide="next"> <span class="icon-next"></span>
-                    </a>
+                    <a class="left carousel-control" onclick="album.prev()"> <span class="icon-prev"></span> </a>
+                    <a class="right carousel-control" onclick="album.next()"> <span class="icon-next"></span> </a>
                 </div>
             </div>
             <div class="modal-footer">

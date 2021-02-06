@@ -8,73 +8,83 @@ Feature: Admin Album
     Given an enabled admin user account exists
     And I am logged in with saved credentials
     And album 99999 exists with 16 images
-    And I am on the "user/album.php?album=99999" page
 
   Scenario: Album images load
+    When I am on the "user/album.php?album=99999" page
     Then I see the "1st" album images load
 
   Scenario: Album images keep loading
+    Given I am on the "user/album.php?album=99999" page
     When I scroll to the bottom of the page
     Then I see the "3rd" album images load
 
   Scenario: Hovering an image zooms in
+    Given I am on the "user/album.php?album=99999" page
     When I hover over album image 1
     Then I see the info icon on album image 1
 
   Scenario: Clicking an image brings up a preview modal
+    Given I am on the "user/album.php?album=99999" page
     When I view album image 1
     Then I see album image 1 in the preview modal
 
   Scenario: Clicking another image brings up a preview modal
+    Given I am on the "user/album.php?album=99999" page
     When I view album image 6
     Then I see album image 6 in the preview modal
 
   Scenario: Modal does not automatically scroll to the next image
+    Given I am on the "user/album.php?album=99999" page
     When I view album image 1
     And I wait for 5 seconds
     Then I see album image 1 in the preview modal
 
+  Scenario: Modal does not automatically scroll to the next image on hash
+    Given I am on the "user/album.php?album=99999#0" page
+    When I wait for 5 seconds
+    Then I see album image 1 in the preview modal
+
   Scenario: Able to manually advance to next image
-    When I view album image 1
-    And I advance to the next album image
+    Given I am on the "user/album.php?album=99999#0" page
+    When I advance to the next album image
     Then I see album image 2 in the preview modal
 
   Scenario: Able to manually advance to previous image
-    When I view album image 1
-    And I advance to the previous album image
+    Given I am on the "user/album.php?album=99999#0" page
+    When I advance to the previous album image
     Then I see album image 16 in the preview modal
 
   Scenario: Images with captions display captions
     Given album 99999 image 2 has captain "sample caption"
-    When I reload the page
-    And I view album image 2
+    Given I am on the "user/album.php?album=99999#1" page
     Then I see the album caption "sample caption" displayed
 
   Scenario: Images without captions do not display captions
-    When I view album image 3
+    Given I am on the "user/album.php?album=99999#2" page
     Then I do not see any album captions
 
   Scenario: Favoriting image increases favorites count
-    When I view album image 2
+    Given I am on the "user/album.php?album=99999#1" page
     And I favorite the image
     Then I see the image as a favorite
     And I see the favorite count is "1"
 
   Scenario: Defavoriting image decreases favorites count
     Given album 99999 image 2 is a favorite
-    When I view album image 2
+    When I am on the "user/album.php?album=99999#1" page
     And I defavorite the image
     Then I do not see the image as a favorite
     And I see the favorite count is ""
 
   Scenario: No favorites shows empty favorites
+    Given I am on the "user/album.php?album=99999" page
     When I view my favorites
     Then I see 0 favorites
     And I see the favorite count is ""
 
   Scenario: Able to view favorite images
     Given album 99999 image 2 is a favorite
-    And I reload the page
+    And I am on the "user/album.php?album=99999" page
     When I view my favorites
     Then I see 1 favorite
     And I see album image 2 as a favorite
@@ -82,12 +92,14 @@ Feature: Admin Album
 
   Scenario: Able to remove favorite from favorites
     Given album 99999 image 2 is a favorite
+    And I am on the "user/album.php?album=99999" page
     When I view my favorites
     And I remove favorite image 2
     Then I see 0 favorites
     And I see the favorite count is ""
 
   Scenario: Unable to do any actions when no favorites
+    Given I am on the "user/album.php?album=99999" page
     When I view my favorites
     Then the download favorites button is disabled
 #    And the share favorites button is disabled
@@ -95,6 +107,7 @@ Feature: Admin Album
 
   Scenario: Able to download favorites
     Given album 99999 image 2 is a favorite
+    And I am on the "user/album.php?album=99999" page
     When I view my favorites
     And I download my favorites
     Then I see the download terms of service
@@ -102,6 +115,7 @@ Feature: Admin Album
   Scenario: Download favorites
     Given album 99999 image 2 is a favorite
     And I have download rights for album 99999 image 2
+    And I am on the "user/album.php?album=99999" page
     When I view my favorites
     And I download my favorites
     And I confirm my download
@@ -115,7 +129,8 @@ Feature: Admin Album
     Given album 99999 image 7 is a favorite
     And I have download rights for album 99999 image 2
     And I have download rights for album 99999 image 7
-    When I view my favorites
+    When I am on the "user/album.php?album=99999" page
+    And I view my favorites
     And I download my favorites
     And I confirm my download
     Then I see an info message indicating download will start shortly
@@ -124,12 +139,14 @@ Feature: Admin Album
 
 #  Scenario: Unable to share favorites
 #    Given album 99999 image 2 is a favorite
+#    And I am on the "user/album.php?album=99999" page
 #    When I view my favorites
 #    And I share my favorites
 #    Then I see that sharing isn't available
 
   Scenario: Able to submit favorites
     Given album 99999 image 2 is a favorite
+    And I am on the "user/album.php?album=99999" page
     When I view my favorites
     And I submit my favorites
     Then I see the form to submit my favorites
@@ -148,24 +165,28 @@ Feature: Admin Album
 
   Scenario: Submit favorites
     Given album 99999 image 2 is a favorite
+    And I am on the "user/album.php?album=99999" page
     When I view my favorites
     And I submit my favorites
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
-    And an email is sent indicating album 99999 image 2 submitted
+    And an email is sent indicating album 99999 favorites submitted
     And I receive an email indicating I have submitted my selects
 
 #  Scenario: Unable to share all images
+#    Given I am on the "user/album.php?album=99999" page
 #    When I share all my images
 #    Then I see that sharing isn't available
 
   Scenario: Able to download all images
+    Given I am on the "user/album.php?album=99999" page
     And I download all my images
     Then I see the download terms of service
 
   Scenario: Download all images
-    And I have download rights for album 99999 image 2
+    Given I have download rights for album 99999 image 2
+    And I am on the "user/album.php?album=99999" page
     And I download all my images
     And I confirm my download
     Then I see an info message indicating download will start shortly
@@ -173,43 +194,43 @@ Feature: Admin Album
     And I see an email indicating images "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16" from album 99999 downloaded
 
   Scenario: Adding image to cart increases cart count
-    When I view album image 2
-    And I add the image to my cart
+    Given I am on the "user/album.php?album=99999#1" page
+    When I add the image to my cart
     And I add 1 "Signature" "10x10" "Metal Prints"
     Then I see 1 "Signature" "10x10" "Metal Prints" price calculated
     And I see the cart count is "1"
 
   Scenario: Able to increase cart count input
-    When I view album image 2
-    And I add the image to my cart
+    Given I am on the "user/album.php?album=99999#1" page
+    When I add the image to my cart
     And I increase "Signature" "10x10" "Metal Prints" count
     Then I see 1 "Signature" "10x10" "Metal Prints" price calculated
     And I see the cart count is "1"
 
   Scenario: Cart images can be saved
     Given album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
-    And I reload the page
-    When I view album image 2
+    And I am on the "user/album.php?album=99999#1" page
     And I add the image to my cart
     Then I see 1 "Signature" "10x10" "Metal Prints" price calculated
     And I see the cart count is "1"
 
   Scenario: Removing image from cart decreases cart count
     Given album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
-    When I view album image 2
-    And I add the image to my cart
+    And I am on the "user/album.php?album=99999#1" page
+    When I add the image to my cart
     And I add 0 "Signature" "10x10" "Metal Prints"
     Then I see 0 "Signature" "10x10" "Metal Prints" price calculated
     And I see the cart count is ""
 
   Scenario: No cart images shows empty cart
+    Given I am on the "user/album.php?album=99999" page
     When I view my cart
     Then I see 0 cart items
     And I see the cart count is ""
 
   Scenario: Able to view cart images
     Given album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
-    And I reload the page
+    And I am on the "user/album.php?album=99999" page
     When I view my cart
     Then I see 1 cart items
     And I see album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" listed
@@ -217,12 +238,14 @@ Feature: Admin Album
 
   Scenario: Able to remove image from cart
     Given album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
+    And I am on the "user/album.php?album=99999" page
     When I view my cart
     And I remove album 99999 image 2 "Signature" "10x10" "Metal Prints" from the cart
     Then I see 0 cart items
     And I see the cart count is ""
 
   Scenario: Unable to submit cart when no cart images
+    Given I am on the "user/album.php?album=99999" page
     When I view my cart
     And I provide "Max" for the shipping "name"
     And I provide "msaperst+sstest@gmail.com" for the shipping "email"
@@ -235,6 +258,7 @@ Feature: Admin Album
 
   Scenario Outline: Unable to submit cart when cart info isn't filled out
     Given album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
+    And I am on the "user/album.php?album=99999" page
     When I view my cart
     And I provide "<value1>" for the shipping "<input1>"
     And I provide "<value2>" for the shipping "<input2>"
@@ -257,6 +281,7 @@ Feature: Admin Album
 
   Scenario: Unable to submit cart when options aren't filled out
     Given album 99999 image 2 has 1 "Prints" "11x14" "Photo Prints" in the cart
+    And I am on the "user/album.php?album=99999" page
     When I view my cart
     And I provide "Max" for the shipping "name"
     And I provide "msaperst+sstest@gmail.com" for the shipping "email"
@@ -270,6 +295,7 @@ Feature: Admin Album
 
   Scenario: Able to select cart options
     Given album 99999 image 2 has 1 "Prints" "11x14" "Photo Prints" in the cart
+    And I am on the "user/album.php?album=99999" page
     When I view my cart
     And I select option "Glossy" in cart for album 99999 image 2 "Prints" "11x14" "Photo Prints"
     Then I see option is valid for "1st" album 99999 image 2 "Prints" "11x14" "Photo Prints"
@@ -277,6 +303,7 @@ Feature: Admin Album
   Scenario: Able to submit cart
     Given album 99999 image 2 has 1 "Prints" "11x14" "Photo Prints" in the cart
     Given album 99999 image 3 has 1 "Signature" "10x10" "Metal Prints" in the cart
+    And I am on the "user/album.php?album=99999" page
     When I view my cart
     And I provide "Max" for the shipping "name"
     And I provide "msaperst+sstest@gmail.com" for the shipping "email"
@@ -294,18 +321,19 @@ Feature: Admin Album
 
   Scenario: Tax and Price are properly calculated
     Given album 99999 image 1 has 2 "Prints" "11x14" "Photo Prints" in the cart
-    Given album 99999 image 3 has 1 "Signature" "10x10" "Metal Prints" in the cart
-    Given album 99999 image 3 has 1 "Standard" "16x20" "Stand Out Frames" in the cart
-    Given album 99999 image 4 has 1 "Standard" "16x20" "Stand Out Frames" in the cart
+    And album 99999 image 3 has 1 "Signature" "10x10" "Metal Prints" in the cart
+    And album 99999 image 3 has 1 "Standard" "16x20" "Stand Out Frames" in the cart
+    And album 99999 image 4 has 1 "Standard" "16x20" "Stand Out Frames" in the cart
+    And I am on the "user/album.php?album=99999" page
     When I view my cart
     Then I see the tax calculated as $72.00
     And I see the total calculated as $1272.00
 
   Scenario: Able to see images from other albums
-    And album 99998 exists with 3 images
-    Given album 99998 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
-    Given album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
-    And I reload the page
+    Given album 99998 exists with 3 images
+    And album 99998 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
+    And album 99999 image 2 has 1 "Signature" "10x10" "Metal Prints" in the cart
+    And I am on the "user/album.php?album=99999" page
     When I view my cart
     Then I see 2 cart items
     And I see album 99998 image 2 has 1 "Signature" "10x10" "Metal Prints" listed
@@ -314,14 +342,14 @@ Feature: Admin Album
 
   Scenario: Able to download single image
     Given I have download rights for album 99999 image 2
-    When I view album image 2
+    And I am on the "user/album.php?album=99999#1" page
     And I download the image
     Then I see the download terms of service
 
   Scenario: Download single image
     Given I have download rights for album 99999 image 2
-    When I view album image 2
-    And I download the image
+    And I am on the "user/album.php?album=99999#1" page
+    When I download the image
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with images "2"
@@ -329,18 +357,18 @@ Feature: Admin Album
 
 #  Scenario: Unable to share single image
 #    Given I have share rights for album 99999 image 2
-#    When I view album image 2
-#    And I share the image
+#    And I am on the "user/album.php?album=99999#1" page
+#    When I share the image
 #    Then I see that sharing isn't available
 
   Scenario: Able to submit single image
-    When I view album image 2
-    And I submit the image
+    Given I am on the "user/album.php?album=99999#1" page
+    When I submit the image
     Then I see the form to submit my favorites
 
   Scenario: Submit single image
-    When I view album image 2
-    And I submit the image
+    Given I am on the "user/album.php?album=99999#1" page
+    When I submit the image
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
@@ -348,6 +376,7 @@ Feature: Admin Album
     And I receive an email indicating I have submitted my selects
 
   Scenario: No email updates
+    Given I am on the "user/album.php?album=99999" page
     Then I don't see any email notification messages
 
   Scenario: Email notifications exist
@@ -355,7 +384,7 @@ Feature: Admin Album
       | email                      | contacted |
       | msaperst+sstest@gmail.com  | 0         |
       | msaperst+sstest2@gmail.com | 1         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     Then I see notification emails of:
       | email                     |
       | msaperst+sstest@gmail.com |
@@ -364,16 +393,16 @@ Feature: Admin Album
     Given album 99999 has notifications:
       | email                     | contacted |
       | msaperst+sstest@gmail.com | 0         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     And I send the user notifications
     Then I see the email notification set to "Images have been posted to album Album 99999. You can access your images by logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album=99999."
 
   Scenario: Correct code message
     Given album 99999 has code "code"
-    Given album 99999 has notifications:
+    And album 99999 has notifications:
       | email                     | contacted |
       | msaperst+sstest@gmail.com | 0         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     And I send the user notifications
     Then I see the email notification set to "Images have been posted to album Album 99999. You can access your images by navigating to https://saperstonestudios.com/#album and entering in album code `code`."
 
@@ -381,7 +410,7 @@ Feature: Admin Album
     Given album 99999 has notifications:
       | email                     | contacted |
       | msaperst+sstest@gmail.com | 0         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     And I send the user notifications
     And I set the email notification message to ""
     And I confirm sending user notification
@@ -391,11 +420,38 @@ Feature: Admin Album
     Given album 99999 has notifications:
       | email                     | contacted |
       | msaperst+sstest@gmail.com | 0         |
-    When I reload the page
+    When I am on the "user/album.php?album=99999" page
     And I send the user notifications
     And I confirm sending user notification
     Then I don't see any email notification messages
     And email notifications are marked as sent for album 99999
     And I see an album notification for album 99999 was emailed out
 
-    #TODO - finish me
+  Scenario: Opening an image sets the hash to that image
+    Given I am on the "user/album.php?album=99999" page
+    When I view album image 3
+    Then I am taken to the "user/album.php?album=99999#2" page
+
+  Scenario: Opening album with hash displays that image
+    When I am on the "user/album.php?album=99999#1" page
+    Then I see album image 2 in the preview modal
+
+  Scenario: Going to next image increases hash
+    Given I am on the "user/album.php?album=99999#1" page
+    When I advance to the next album image
+    Then I am taken to the "user/album.php?album=99999#2" page
+
+  Scenario: Going to previous image decreases hash
+    Given I am on the "user/album.php?album=99999#1" page
+    When I advance to the previous album image
+    Then I am taken to the "user/album.php?album=99999#0" page
+
+  Scenario: Closing image closes modal
+    Given I am on the "user/album.php?album=99999#1" page
+    When I close the album view
+    Then I don't see the album preview modal
+
+  Scenario: Closing image removes hash
+    Given I am on the "user/album.php?album=99999#1" page
+    When I close the album view
+    Then I am taken to the "user/album.php?album=99999#" page

@@ -598,4 +598,14 @@ class Album {
         $albumUsers = $this->driver->findElement(WebDriverBy::id('share-users'));
         return $albumUsers->findElements(WebDriverBy::tagName('span'));
     }
+
+    /**
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function closeSlideShow() {
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector("#album [data-dismiss='modal']")));
+        $this->driver->findElement(WebDriverBy::cssSelector("#album [data-dismiss='modal']"))->click();
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album')))));
+    }
 }
