@@ -4,36 +4,36 @@ allUser.id = "0";
 allUser.usr = "<i>All Users</i>";
 
 
-$(document).ready(function() {
+$(document).ready(function () {
 
-    $('#edit-album-btn').click(function() {
+    $('#edit-album-btn').click(function () {
         editAlbum($('#album').attr('album-id'));
     });
 
-    $('#delete-image-btn').click(function() {
+    $('#delete-image-btn').click(function () {
         deleteImage()
     });
-    $('#access-image-btn').click(function() {
+    $('#access-image-btn').click(function () {
         setupImageAccess();
     });
 
-    $('#access-btn').click(function() {
+    $('#access-btn').click(function () {
         setupAlbumAccess();
     });
 
-    $('#view-all-favorites-btn').click(function() {
+    $('#view-all-favorites-btn').click(function () {
         viewAllFavorites();
     });
 
-    $('#view-my-favorites-btn').click(function() {
+    $('#view-my-favorites-btn').click(function () {
         viewMyFavorites();
     });
 
-    $('#email-users').click(function() {
+    $('#email-users').click(function () {
         $('#notifications').modal();
     });
 
-    $('#notifications-send-btn').click(function() {
+    $('#notifications-send-btn').click(function () {
         sendNotifications();
     })
 });
@@ -41,14 +41,14 @@ $(document).ready(function() {
 function deleteImage() {
     var img = $('#album-carousel div.active div');
     BootstrapDialog.show({
-        draggable : true,
-        title : 'Are You Sure?',
-        message : 'Are you sure you want to delete the image <b>' + img.attr('alt') + '</b>',
-        buttons : [ {
-            icon : 'glyphicon glyphicon-trash',
-            label : ' Delete',
-            cssClass : 'btn-danger',
-            action : function(dialogInItself) {
+        draggable: true,
+        title: 'Are You Sure?',
+        message: 'Are you sure you want to delete the image <b>' + img.attr('alt') + '</b>',
+        buttons: [{
+            icon: 'glyphicon glyphicon-trash',
+            label: ' Delete',
+            cssClass: 'btn-danger',
+            action: function (dialogInItself) {
                 var $button = this;
                 var modal = $button.closest('.modal-content');
                 $button.spin();
@@ -56,16 +56,16 @@ function deleteImage() {
                 dialogInItself.setClosable(false);
                 // send our update
                 $.post("/api/delete-album-image.php", {
-                    album : img.attr('album-id'),
-                    image : img.attr('image-id')
-                }).done(function() {
+                    album: img.attr('album-id'),
+                    image: img.attr('image-id')
+                }).done(function () {
                     dialogInItself.close();
                     // go to the next image
                     $('#album-carousel').carousel("next");
                     // cleanup the dom
                     $('.gallery img[alt="' + img.attr('alt') + '"]').parent().remove();
                     img.parent().remove();
-                }).fail(function(xhr, status, error) {
+                }).fail(function (xhr, status, error) {
                     if (xhr.responseText !== "") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
                     } else if (error === "Unauthorized") {
@@ -76,20 +76,20 @@ function deleteImage() {
                 });
             }
         }, {
-            label : 'Close',
-            action : function(dialogInItself) {
+            label: 'Close',
+            action: function (dialogInItself) {
                 dialogInItself.close();
             }
-        } ]
+        }]
     });
 }
 
 function setupImageAccess() {
     var img = $('#album-carousel div.active div');
     BootstrapDialog.show({
-        draggable : true,
-        title : 'Who Do You Want To Give Access To For Image <b>' + img.attr('alt') + '</b>?',
-        message : function() {
+        draggable: true,
+        title: 'Who Do You Want To Give Access To For Image <b>' + img.attr('alt') + '</b>?',
+        message: function () {
             var inputs = $('<div>');
             var albumDiv = $('<div id="albumDiv">');
             albumDiv.append('<h4>Overall Album Access</h4>');
@@ -100,26 +100,26 @@ function setupImageAccess() {
             searchAlbumInput.attr('type', 'text');
             searchAlbumInput.addClass('form-control');
             searchAlbumInput.attr('placeholder', 'Enter User Name');
-            searchAlbumInput.on("keyup focus", function() {
+            searchAlbumInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
                 $.get("/api/search-users.php", {
-                    keyword : keyword
-                }, function(data) {
+                    keyword: keyword
+                }, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
-                    $.each(data, function(key, user) {
+                    $.each(data, function (key, user) {
                         results_ul.append(createUserBullet("album-users", user));
                     });
-                    results_ul.hover(function() {
+                    results_ul.hover(function () {
                         resultsSelected = true;
-                    }, function() {
+                    }, function () {
                         resultsSelected = false;
                     });
                     search_ele.after(results_ul);
                 }, "json");
             });
-            searchAlbumInput.focusout(function() {
+            searchAlbumInput.focusout(function () {
                 if (!resultsSelected) {
                     $('.search-results').remove();
                 }
@@ -137,28 +137,28 @@ function setupImageAccess() {
             searchDownloadInput.attr('type', 'text');
             searchDownloadInput.addClass('form-control');
             searchDownloadInput.attr('placeholder', 'Enter User Name');
-            searchDownloadInput.on("keyup focus", function() {
+            searchDownloadInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
                 $.get("/api/search-album-users.php", {
-                    album : img.attr('album-id'),
-                    keyword : keyword
-                }, function(data) {
+                    album: img.attr('album-id'),
+                    keyword: keyword
+                }, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     results_ul.append(createUserBullet("download-users", allUser));
-                    $.each(data, function(key, user) {
+                    $.each(data, function (key, user) {
                         results_ul.append(createUserBullet("download-users", user));
                     });
-                    results_ul.hover(function() {
+                    results_ul.hover(function () {
                         resultsSelected = true;
-                    }, function() {
+                    }, function () {
                         resultsSelected = false;
                     });
                     search_ele.after(results_ul);
                 }, "json");
             });
-            searchDownloadInput.focusout(function() {
+            searchDownloadInput.focusout(function () {
                 if (!resultsSelected) {
                     $('.search-results').remove();
                 }
@@ -176,28 +176,28 @@ function setupImageAccess() {
             searchUploadInput.attr('type', 'text');
             searchUploadInput.addClass('form-control');
             searchUploadInput.attr('placeholder', 'Enter User Name');
-            searchUploadInput.on("keyup focus", function() {
+            searchUploadInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
                 $.get("/api/search-album-users.php", {
-                    album : img.attr('album-id'),
-                    keyword : keyword
-                }, function(data) {
+                    album: img.attr('album-id'),
+                    keyword: keyword
+                }, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     results_ul.append(createUserBullet("share-users", allUser));
-                    $.each(data, function(key, user) {
+                    $.each(data, function (key, user) {
                         results_ul.append(createUserBullet("share-users", user));
                     });
-                    results_ul.hover(function() {
+                    results_ul.hover(function () {
                         resultsSelected = true;
-                    }, function() {
+                    }, function () {
                         resultsSelected = false;
                     });
                     search_ele.after(results_ul);
                 }, "json");
             });
-            searchUploadInput.focusout(function() {
+            searchUploadInput.focusout(function () {
                 if (!resultsSelected) {
                     $('.search-results').remove();
                 }
@@ -208,26 +208,26 @@ function setupImageAccess() {
 
             return inputs;
         },
-        buttons : [ {
-            label : 'Close',
-            action : function(dialogInItself) {
+        buttons: [{
+            label: 'Close',
+            action: function (dialogInItself) {
                 dialogInItself.close();
             }
-        } ],
-        onshown : function() {
+        }],
+        onshown: function () {
             var albumsDiv = $('<div>');
             albumsDiv.attr('id', 'album-users');
             albumsDiv.attr('url', 'update-album-users.php');
             albumsDiv.attr('image-id', img.attr('image-id'));
             albumsDiv.attr('album-id', img.attr('album-id'));
             albumsDiv.css({
-                'padding' : '10px 0 10px 0',
-                'margin' : '0 -5px 0 -5px'
+                'padding': '10px 0 10px 0',
+                'margin': '0 -5px 0 -5px'
             });
             $('#albumDiv').after(albumsDiv);
             $.get("/api/get-album-users.php", {
-                album : $('#album').attr('album-id'),
-            }, function(album_users) {
+                album: $('#album').attr('album-id'),
+            }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#album-users'), album_users[i].user, false);
                 }
@@ -238,14 +238,14 @@ function setupImageAccess() {
             downloadsDiv.attr('image-id', img.attr('image-id'));
             downloadsDiv.attr('album-id', img.attr('album-id'));
             downloadsDiv.css({
-                'padding' : '10px 0 10px 0',
-                'margin' : '0 -5px 0 -5px'
+                'padding': '10px 0 10px 0',
+                'margin': '0 -5px 0 -5px'
             });
             $('#downloadDiv').after(downloadsDiv);
             $.get("/api/get-image-downloaders.php", {
-                album : img.attr('album-id'),
-                image : img.attr('image-id')
-            }, function(album_users) {
+                album: img.attr('album-id'),
+                image: img.attr('image-id')
+            }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#download-users'), album_users[i].user, false);
                 }
@@ -256,14 +256,14 @@ function setupImageAccess() {
             sharesDiv.attr('image-id', img.attr('image-id'));
             sharesDiv.attr('album-id', img.attr('album-id'));
             sharesDiv.css({
-                'padding' : '10px 0 10px 0',
-                'margin' : '0 -5px 0 -5px'
+                'padding': '10px 0 10px 0',
+                'margin': '0 -5px 0 -5px'
             });
             $('#shareDiv').after(sharesDiv);
             $.get("/api/get-image-sharers.php", {
-                album : img.attr('album-id'),
-                image : img.attr('image-id')
-            }, function(album_users) {
+                album: img.attr('album-id'),
+                image: img.attr('image-id')
+            }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#share-users'), album_users[i].user, false);
                 }
@@ -274,9 +274,9 @@ function setupImageAccess() {
 
 function setupAlbumAccess() {
     BootstrapDialog.show({
-        draggable : true,
-        title : 'Who Do You Want To Give Access To For Album <b>' + $('#album-title').html() + '</b>?',
-        message : function() {
+        draggable: true,
+        title: 'Who Do You Want To Give Access To For Album <b>' + $('#album-title').html() + '</b>?',
+        message: function () {
             var inputs = $('<div>');
             var albumDiv = $('<div id="albumDiv">');
             albumDiv.append('<h4>Album Access</h4>');
@@ -287,26 +287,26 @@ function setupAlbumAccess() {
             searchAlbumInput.attr('type', 'text');
             searchAlbumInput.addClass('form-control');
             searchAlbumInput.attr('placeholder', 'Enter User Name');
-            searchAlbumInput.on("keyup focus", function() {
+            searchAlbumInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
                 $.get("/api/search-users.php", {
-                    keyword : keyword
-                }, function(data) {
+                    keyword: keyword
+                }, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
-                    $.each(data, function(key, user) {
+                    $.each(data, function (key, user) {
                         results_ul.append(createUserBullet("album-users", user));
                     });
-                    results_ul.hover(function() {
+                    results_ul.hover(function () {
                         resultsSelected = true;
-                    }, function() {
+                    }, function () {
                         resultsSelected = false;
                     });
                     search_ele.after(results_ul);
                 }, "json");
             });
-            searchAlbumInput.focusout(function() {
+            searchAlbumInput.focusout(function () {
                 if (!resultsSelected) {
                     $('.search-results').remove();
                 }
@@ -324,28 +324,28 @@ function setupAlbumAccess() {
             searchDownloadInput.attr('type', 'text');
             searchDownloadInput.addClass('form-control');
             searchDownloadInput.attr('placeholder', 'Enter User Name');
-            searchDownloadInput.on("keyup focus", function() {
+            searchDownloadInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
                 $.get("/api/search-album-users.php", {
-                    album : $('#album').attr('album-id'),
-                    keyword : keyword
-                }, function(data) {
+                    album: $('#album').attr('album-id'),
+                    keyword: keyword
+                }, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     results_ul.append(createUserBullet("download-users", allUser));
-                    $.each(data, function(key, user) {
+                    $.each(data, function (key, user) {
                         results_ul.append(createUserBullet("download-users", user));
                     });
-                    results_ul.hover(function() {
+                    results_ul.hover(function () {
                         resultsSelected = true;
-                    }, function() {
+                    }, function () {
                         resultsSelected = false;
                     });
                     search_ele.after(results_ul);
                 }, "json");
             });
-            searchDownloadInput.focusout(function() {
+            searchDownloadInput.focusout(function () {
                 if (!resultsSelected) {
                     $('.search-results').remove();
                 }
@@ -363,28 +363,28 @@ function setupAlbumAccess() {
             searchUploadInput.attr('type', 'text');
             searchUploadInput.addClass('form-control');
             searchUploadInput.attr('placeholder', 'Enter User Name');
-            searchUploadInput.on("keyup focus", function() {
+            searchUploadInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
                 $.get("/api/search-album-users.php", {
-                    album : $('#album').attr('album-id'),
-                    keyword : keyword
-                }, function(data) {
+                    album: $('#album').attr('album-id'),
+                    keyword: keyword
+                }, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     results_ul.append(createUserBullet("share-users", allUser));
-                    $.each(data, function(key, user) {
+                    $.each(data, function (key, user) {
                         results_ul.append(createUserBullet("share-users", user));
                     });
-                    results_ul.hover(function() {
+                    results_ul.hover(function () {
                         resultsSelected = true;
-                    }, function() {
+                    }, function () {
                         resultsSelected = false;
                     });
                     search_ele.after(results_ul);
                 }, "json");
             });
-            searchUploadInput.focusout(function() {
+            searchUploadInput.focusout(function () {
                 if (!resultsSelected) {
                     $('.search-results').remove();
                 }
@@ -395,26 +395,26 @@ function setupAlbumAccess() {
 
             return inputs;
         },
-        buttons : [ {
-            label : 'Close',
-            action : function(dialogInItself) {
+        buttons: [{
+            label: 'Close',
+            action: function (dialogInItself) {
                 dialogInItself.close();
             }
-        } ],
-        onshown : function() {
+        }],
+        onshown: function () {
             var albumsDiv = $('<div>');
             albumsDiv.attr('id', 'album-users');
             albumsDiv.attr('url', 'update-album-users.php');
             albumsDiv.attr('image-id', "*");
             albumsDiv.attr('album-id', $('#album').attr('album-id'));
             albumsDiv.css({
-                'padding' : '10px 0 10px 0',
-                'margin' : '0 -5px 0 -5px'
+                'padding': '10px 0 10px 0',
+                'margin': '0 -5px 0 -5px'
             });
             $('#albumDiv').after(albumsDiv);
             $.get("/api/get-album-users.php", {
-                album : $('#album').attr('album-id'),
-            }, function(album_users) {
+                album: $('#album').attr('album-id'),
+            }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#album-users'), album_users[i].user, false);
                 }
@@ -425,14 +425,14 @@ function setupAlbumAccess() {
             downloadsDiv.attr('image-id', "*");
             downloadsDiv.attr('album-id', $('#album').attr('album-id'));
             downloadsDiv.css({
-                'padding' : '10px 0 10px 0',
-                'margin' : '0 -5px 0 -5px'
+                'padding': '10px 0 10px 0',
+                'margin': '0 -5px 0 -5px'
             });
             $('#downloadDiv').after(downloadsDiv);
             $.get("/api/get-image-downloaders.php", {
-                album : $('#album').attr('album-id'),
-                image : "*"
-            }, function(album_users) {
+                album: $('#album').attr('album-id'),
+                image: "*"
+            }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#download-users'), album_users[i].user, false);
                 }
@@ -443,14 +443,14 @@ function setupAlbumAccess() {
             sharesDiv.attr('image-id', "*");
             sharesDiv.attr('album-id', $('#album').attr('album-id'));
             sharesDiv.css({
-                'padding' : '10px 0 10px 0',
-                'margin' : '0 -5px 0 -5px'
+                'padding': '10px 0 10px 0',
+                'margin': '0 -5px 0 -5px'
             });
             $('#shareDiv').after(sharesDiv);
             $.get("/api/get-image-sharers.php", {
-                album : $('#album').attr('album-id'),
-                image : "*"
-            }, function(album_users) {
+                album: $('#album').attr('album-id'),
+                image: "*"
+            }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#share-users'), album_users[i].user, false);
                 }
@@ -468,17 +468,17 @@ function viewAllFavorites() {
     $('#favorites-all-title').empty();
     $('#favorites-all-content').empty();
     $.get("/api/get-all-favorites.php", {
-        album : $('#album').attr('album-id')
-    }, function(favorites) {
+        album: $('#album').attr('album-id')
+    }, function (favorites) {
         $('#view-my-favorites-btn').removeClass('hidden').show();
         $('#view-all-favorites-btn').removeClass('disabled').prop("disabled", false).hide();
         $('#view-all-favorites-btn em').removeClass('fa-spinner fa-spin').addClass('fa-search');
-        $.each(favorites, function(user, favs) {
+        $.each(favorites, function (user, favs) {
             var title = $('<li>');
             var link = $('<a>');
             link.attr({
-                'data-toggle' : 'tab',
-                'href' : '#' + user.replace(/\./g, '-') + '-favs'
+                'data-toggle': 'tab',
+                'href': '#' + user.replace(/\./g, '-') + '-favs'
             });
             link.html(user);
 
@@ -487,10 +487,10 @@ function viewAllFavorites() {
             content.addClass('tab-pane fade');
             var list = $('<ul>');
             list.addClass('list-inline');
-            $.each(favs, function(index, fav) {
+            $.each(favs, function (index, fav) {
                 var item = $('<li image-id="' + fav.sequence + '" class="img-favorite img-favorite-text">');
                 item.css({
-                    'background-image' : 'url("' + fav.location + '")',
+                    'background-image': 'url("' + fav.location + '")',
                 });
                 item.text(fav.title);
                 list.append(item);
@@ -519,35 +519,35 @@ function addAlbumUser(ele, user_id, update) {
     var userSpan = $('<span>');
     userSpan.addClass('selected-user');
     userSpan.attr('user-id', user_id);
-    userSpan.click(function() {
+    userSpan.click(function () {
         $(this).remove();
         var users = [];
-        $('.selected-user', $(ele)).each(function() {
+        $('.selected-user', $(ele)).each(function () {
             users.push($(this).attr('user-id'));
         });
         // send our update
         $.post("/api/" + ele.attr('url'), {
-            album : ele.attr('album-id'),
-            image : ele.attr('image-id'),
-            users : users
+            album: ele.attr('album-id'),
+            image: ele.attr('image-id'),
+            users: users
         });
     });
     $.get("/api/get-user.php", {
-        id : user_id
-    }, function(data) {
+        id: user_id
+    }, function (data) {
         userSpan.html(data.usr);
         $(ele).append(userSpan);
 
         if (update) {
             var users = [];
-            $('.selected-user', $(ele)).each(function() {
+            $('.selected-user', $(ele)).each(function () {
                 users.push($(this).attr('user-id'));
             });
             // send our update
             $.post("/api/" + ele.attr('url'), {
-                album : ele.attr('album-id'),
-                image : ele.attr('image-id'),
-                users : users
+                album: ele.attr('album-id'),
+                image: ele.attr('image-id'),
+                users: users
             });
         }
     }, "json");
@@ -557,7 +557,7 @@ function createUserBullet(element, user) {
     if (!($("#" + element + " .selected-user[user-id='" + user.id + "']").length || user.role === "admin")) {
         var result_li = $('<li>');
         var result_a = $('<a user-id="' + user.id + '" >' + user.usr + '</a>');
-        result_a.click(function() {
+        result_a.click(function () {
             addAlbumUser($('#' + element), user.id, true);
             $('.search-results').remove();
         });
@@ -571,9 +571,9 @@ function sendNotifications() {
     $("#notifications-send-btn").next().prop("disabled", true);
     $("#notifications-send-btn em").removeClass('fa fa-paper-plane').addClass('glyphicon glyphicon-asterisk icon-spin');
     $.post("/api/send-notification-email.php", {
-        album : $('#notifications').attr('album-id'),
-        message : $('#notifications-message').val()
-    }).done(function(data) {
+        album: $('#notifications').attr('album-id'),
+        message: $('#notifications-message').val()
+    }).done(function (data) {
         if (data !== "") {
             $("#notifications .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
         } else {
@@ -583,15 +583,15 @@ function sendNotifications() {
             $('#email-list').next().remove();
             $('#email-list').remove();
         }
-    }).fail(function(xhr, status, error) {
-        if ( xhr.responseText !== "" ) {
+    }).fail(function (xhr, status, error) {
+        if (xhr.responseText !== "") {
             $('#notifications .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if ( error === "Unauthorized" ) {
+        } else if (error === "Unauthorized") {
             $('#notifications .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
             $("#notifications .modal-body").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>Some unexpected error occurred while downloading your files. Please try again in a bit</div>');
         }
-    }).always(function() {
+    }).always(function () {
         $('#notifications-send-btn').prop("disabled", false);
         $('#notifications-send-btn').next().prop("disabled", false);
         $('#notifications-send-btn em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
