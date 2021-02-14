@@ -417,13 +417,13 @@ node() {
                 parallel(
                         "PHP": {
                             pullContainer(dockerRegistry, 'qa', "php")
-                            pushContainer(dockerRegistry, ['prod'], "${dockerRegistry}/php:qa", "mysql")
+                            pushContainer(dockerRegistry, ['prod'], "${dockerRegistry}/php:qa", "php")
                             pullContainer(dockerRegistry, 'prod', "php")
                             copyContainer(dockerRegistry, 'prod',"php")
                         },
                         "PHP MyAdmin": {
                             pullContainer(dockerRegistry, 'qa', "php-myadmin")
-                            pushContainer(dockerRegistry, ['prod'], "${dockerRegistry}/php-myadmin:qa", "mysql")
+                            pushContainer(dockerRegistry, ['prod'], "${dockerRegistry}/php-myadmin:qa", "php-myadmin")
                             pullContainer(dockerRegistry, 'prod', "php-myadmin")
                             copyContainer(dockerRegistry, 'prod',"php-myadmin")
                         },
