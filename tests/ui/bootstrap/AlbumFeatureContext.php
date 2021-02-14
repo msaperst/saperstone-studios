@@ -956,6 +956,7 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSeeImageInThePreviewModal($imgNum) {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('album'))->isDisplayed());
         $album = new Album($this->driver, $this->wait);
         $img = $album->getSlideShowImage();
@@ -1997,5 +1998,26 @@ $image\r
         CustomAsserts::assertEmailEquals('Thank You for Making Selects',
             'Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.',
             '<html><body>Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.</body></html>');
+    }
+
+    /**
+     * @When /^I close the album view$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iCloseTheAlbumView() {
+        $album = new Album($this->driver, $this->wait);
+        $album->closeSlideShow();
+    }
+
+    /**
+     * @Then /^I don't see the album preview modal$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iDonTSeeTheAlbumPreviewModal() {
+        $modal = $this->driver->findElement(WebDriverBy::id('album'));
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
+        Assert::assertFalse($modal->isDisplayed());
     }
 }

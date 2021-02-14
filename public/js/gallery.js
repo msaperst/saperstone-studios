@@ -1,32 +1,81 @@
-$.fn.isOnScreen = function() {
+var gallery
+
+$.fn.isOnScreen = function () {
     var element = this.get(0);
     var bounds = element.getBoundingClientRect();
     return bounds.top < window.innerHeight && bounds.bottom > 0;
 };
 
 function Gallery(gallery_id, gallery, totalImages) {
-    this.loaded = 0;
-    this.gallery_id = gallery_id;
-    this.gallery = gallery;
-    this.totalImages = totalImages;
+    var Gallery = this;
 
-    this.loadImages();
+    Gallery.loaded = 0;
+    Gallery.gallery_id = gallery_id;
+    Gallery.gallery = gallery;
+    Gallery.totalImages = totalImages;
+
+    Gallery.loadImages();
+
+    if (window.location.hash && window.location.hash.length > 1) {
+        Gallery.setImage(window.location.hash.substr(1));
+    }
+
+    window.onhashchange = function () {
+        if (window.location.hash.length > 1) {
+            Gallery.setImage(window.location.hash.substr(1));
+        }
+    };
+
+    $('#' + Gallery.gallery).on('hide.bs.modal', function () {
+        window.location.hash = "";
+    });
 }
 
-Gallery.prototype.loadImages = function(howMany) {
+Gallery.prototype.setImage = function (img) {
+    var Gallery = this;
+
+    $('#' + Gallery.gallery).modal('show');
+    $('#' + Gallery.gallery).carousel({
+        interval: false,
+        pause: "false",
+    });
+    $('#' + Gallery.gallery).carousel(parseInt(img));
+}
+
+Gallery.prototype.prev = function () {
+    var Gallery = this;
+
+    var prev = parseInt(parseInt(window.location.hash.substring(1)) - 1);
+    if (prev < 0) {
+        prev = (parseInt(Gallery.totalImages) - 1);
+    }
+    window.location.hash = "#" + prev;
+}
+
+Gallery.prototype.next = function () {
+    var Gallery = this;
+
+    var next = parseInt(parseInt(window.location.hash.substring(1)) + 1);
+    if (next >= Gallery.totalImages) {
+        next = 0;
+    }
+    window.location.hash = "#" + next;
+}
+
+Gallery.prototype.loadImages = function (howMany) {
     howMany = typeof howMany !== 'undefined' ? howMany : 4;
 
     var Gallery = this;
     $.get("/api/get-gallery-images.php", {
-        gallery : Gallery.gallery_id,
-        start : Gallery.loaded,
-        howMany : howMany
-    }, function(data) {
+        gallery: Gallery.gallery_id,
+        start: Gallery.loaded,
+        howMany: howMany
+    }, function (data) {
         // load each of our 4 images on the screen
-        $.each(data, function(k, v) {
+        $.each(data, function (k, v) {
             var shortest = {};
             shortest.height = 999999999;
-            $('.col-gallery').each(function() {
+            $('.col-gallery').each(function () {
                 if ($(this).height() < shortest.height) {
                     shortest.obj = $(this);
                     shortest.height = $(this).height();
@@ -36,8 +85,8 @@ Gallery.prototype.loadImages = function(howMany) {
             var holder = $('<div>');
             holder.addClass('gallery hovereffect');
             holder.attr({
-                'image-id' : v.id,
-                'sequence' : v.sequence
+                'image-id': v.id,
+                'sequence': v.sequence
             });
             var rect = shortest.obj[0].getBoundingClientRect();
             var width;
@@ -62,11 +111,7 @@ Gallery.prototype.loadImages = function(howMany) {
             // our view link
             var link = $('<a>');
             link.addClass('info no-border');
-            link.attr('data-toggle', 'modal');
-            link.attr('data-target', '#' + Gallery.gallery);
-            link.on('click', function() {
-                $('#' + Gallery.gallery).carousel(parseInt(v.sequence));
-            });
+            link.attr('href', '#' + parseInt(v.sequence));
             // add our image icon
             var view = $('<i>');
             view.addClass('fa fa-search fa-2x');

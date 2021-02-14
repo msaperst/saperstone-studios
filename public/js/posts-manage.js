@@ -1,59 +1,59 @@
 var post_table;
 var resultsSelected = false;
 
-$(document).ready(function() {
+$(document).ready(function () {
     if ($('#posts').length) {
         post_table = $('#posts').DataTable({
-            "ajax" : "/api/get-blogs-details.php?a=1",
-            "order" : [ [ 2, "desc" ] ],
-            "columnDefs" : [ {
-                "orderable" : false,
-                "searchable" : false,
-                "data" : function(row) {
+            "ajax": "/api/get-blogs-details.php?a=1",
+            "order": [[2, "desc"]],
+            "columnDefs": [{
+                "orderable": false,
+                "searchable": false,
+                "data": function (row) {
                     var buttons = '<button type="button" class="btn btn-xs btn-info quick-edit-post-btn" data-toggle="tooltip" data-placement="right" title="Edit Post Details"><i class="fa fa-pencil-square-o"></i></button>';
                     buttons += ' <button type="button" class="btn btn-xs btn-warning edit-post-btn" data-toggle="tooltip" data-placement="right" title="Edit Full Post" onclick="window.location.href=\'/blog/new.php?p=' + row.id + '\'">' + '<i class="fa fa-pencil-square-o"></i></button>';
                     return buttons;
                 },
-                "targets" : 0
+                "targets": 0
             }, {
-                "data" : function(row) {
+                "data": function (row) {
                     return "<a href='/blog/post.php?p=" + row.id + "'>" + row.title + "</a>";
                 },
-                "className" : "post-title",
-                "targets" : 1
+                "className": "post-title",
+                "targets": 1
             }, {
-                "data" : "date",
-                "className" : "post-date",
-                "targets" : 2
+                "data": "date",
+                "className": "post-date",
+                "targets": 2
             }, {
-                "data" : function(row) {
+                "data": function (row) {
                     return (row.active === "1") ? "true" : "false";
                 },
-                "className" : "post-active",
-                "targets" : 3
-            } ],
-            "fnCreatedRow" : function(nRow, aData) {
+                "className": "post-active",
+                "targets": 3
+            }],
+            "fnCreatedRow": function (nRow, aData) {
                 $(nRow).attr('post-id', aData.id);
             }
         });
     }
 
-    $('#posts').on('draw.dt search.dt', function() {
+    $('#posts').on('draw.dt search.dt', function () {
         setupEdit();
         $('[data-toggle="tooltip"]').tooltip();
     });
 
-    $('#post-delete-button').click(function() {
+    $('#post-delete-button').click(function () {
         deletePost($('#post').attr('post-id'));
     });
 
-    $('#post-update-button').click(function() {
+    $('#post-update-button').click(function () {
         updatePost($('#post').attr('post-id'));
     });
 });
 
 function setupEdit() {
-    $('.quick-edit-post-btn').off().click(function() {
+    $('.quick-edit-post-btn').off().click(function () {
         var post = post_table.row($(this).closest('tr')).data();
         editPost(post);
     });
@@ -62,12 +62,12 @@ function setupEdit() {
 function editPost(post) {
     // remove any old values
     $('#post-preview-holder img').remove();
-    $('#post-preview-image option').each(function() {
+    $('#post-preview-image option').each(function () {
         $(this).remove();
     });
     var option = $('<option>');
     $('#post-preview-image').append(option);
-    $('.selected-tag').each(function() {
+    $('.selected-tag').each(function () {
         removeTag($(this));
     });
 
@@ -81,21 +81,21 @@ function editPost(post) {
     var img = $('<img>');
     img.attr('src', post.preview);
     img.css({
-        width : '300px',
-        top : post.offset + 'px'
+        width: '300px',
+        top: post.offset + 'px'
     });
     $('#post-preview-holder').append(img);
     img.draggable({
-        axis : "y",
+        axis: "y",
     });
     $('#post').modal();
     $.get("/api/get-blog-full.php", {
-        post : post.id
-    }, function(data) {
+        post: post.id
+    }, function (data) {
         var location;
-        for ( var i in data.content) {
+        for (var i in data.content) {
             if (data.content.hasOwnProperty(i)) {
-                for ( var j in data.content[i]) {
+                for (var j in data.content[i]) {
                     if (data.content[i][j].hasOwnProperty('location')) {
                         var bits = data.content[i][j].location.split('/');
                         var option = $('<option>');
@@ -107,7 +107,7 @@ function editPost(post) {
             }
         }
         $('#post').attr('post-location', location);
-        for ( var k in data.tags) {
+        for (var k in data.tags) {
             if (data.tags.hasOwnProperty(k)) {
                 $('#post-tags-select').val(data.tags[k].id);
                 addTag($('#post-tags-select'));
@@ -120,18 +120,18 @@ function deletePost(post) {
     $('#post-update-button').prop('disabled', true);
     $('#post-delete-button').prop('disabled', true);
     $('#post-update-close-button').prop('disabled', true);
-    BootstrapDialog.confirm("Are you sure you want to delete this post?", function(result) {
+    BootstrapDialog.confirm("Are you sure you want to delete this post?", function (result) {
         if (result) {
             $.post("/api/delete-blog.php", {
-                post : post
-            }).done(function(data) {
+                post: post
+            }).done(function (data) {
                 if (data !== "") {
                     $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                 } else {
                     $('#post').modal('hide');
                     post_table.row($('tr[post-id=' + post + ']')).remove().draw();
                 }
-            }).fail(function(xhr, status, error) {
+            }).fail(function (xhr, status, error) {
                 if (xhr.responseText !== "") {
                     $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
                 } else if (error === "Unauthorized") {
@@ -139,7 +139,7 @@ function deletePost(post) {
                 } else {
                     $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                 }
-            }).always(function() {
+            }).always(function () {
                 $('#post-update-button').prop('disabled', false);
                 $('#post-delete-button').prop('disabled', false);
                 $('#post-update-close-button').prop('disabled', false);
@@ -158,7 +158,7 @@ function updatePost(post) {
     $('#post-update-close-button').prop('disabled', true);
     // get our updated content
     var tags = [];
-    $('#post-tags span').each(function() {
+    $('#post-tags span').each(function () {
         tags.push($(this).attr('tag-id'));
     });
     var preview = {};
@@ -166,27 +166,27 @@ function updatePost(post) {
     preview.offset = $('#post-preview-holder img').css('top');
     // send the content
     $.post("/api/update-blog-post.php", {
-        post : post,
-        title : $('#post-title-input').val(),
-        date : $('#post-date-input').val(),
-        tags : tags,
-        preview : preview,
-        active : $('#post-active-input').is(':checked') ? 1 : 0,
-    }).done(function(data) {
+        post: post,
+        title: $('#post-title-input').val(),
+        date: $('#post-date-input').val(),
+        tags: tags,
+        preview: preview,
+        active: $('#post-active-input').is(':checked') ? 1 : 0,
+    }).done(function (data) {
         if (data === "published") {
             $('#post-update-button').prop('disabled', true);
             $('#post-delete-button').prop('disabled', true);
             $('#post-update-close-button').prop('disabled', true);
             $.post("/api/publish-blog-post.php", {
-                post : post
-            }).done(function(data) {
+                post: post
+            }).done(function (data) {
                 if (data !== "") {
                     $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                 } else {
                     $('#post').modal('hide');
                     post_table.ajax.reload(null, false);
                 }
-            }).fail(function(xhr, status, error) {
+            }).fail(function (xhr, status, error) {
                 if (xhr.responseText !== "") {
                     $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
                 } else if (error === "Unauthorized") {
@@ -194,7 +194,7 @@ function updatePost(post) {
                 } else {
                     $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                 }
-            }).always(function() {
+            }).always(function () {
                 $('#post-update-button').prop('disabled', false);
                 $('#post-delete-button').prop('disabled', false);
                 $('#post-update-close-button').prop('disabled', false);
@@ -205,7 +205,7 @@ function updatePost(post) {
             $('#post').modal('hide');
             post_table.ajax.reload(null, false);
         }
-    }).fail(function(xhr, status, error) {
+    }).fail(function (xhr, status, error) {
         if (xhr.responseText !== "") {
             $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
         } else if (error === "Unauthorized") {
@@ -213,7 +213,7 @@ function updatePost(post) {
         } else {
             $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
-    }).always(function() {
+    }).always(function () {
         $('#post-update-button').prop('disabled', false);
         $('#post-delete-button').prop('disabled', false);
         $('#post-update-close-button').prop('disabled', false);

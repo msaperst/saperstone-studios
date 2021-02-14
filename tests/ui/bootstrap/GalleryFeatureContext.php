@@ -5,9 +5,12 @@ namespace ui\bootstrap;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Exception;
+use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 use Sql;
@@ -72,17 +75,17 @@ class GalleryFeatureContext implements Context {
         $this->galleryIds[] = $galleryId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ($galleryId, '1', 'sample.jpg', 'Gallery $galleryId', NULL);");
-        for ($i = 0; $i < $images; $i++) {
-            $sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ((9999 + $i), '$galleryId', 'Image $i', $i, '', '/portrait/img/sample/sample.jpg', '400', '300', '1');");
-        }
-        $oldmask = umask(0);
+        $oldMask = umask(0);
         if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample')) {
             mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
         }
         chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample.jpg');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample.jpg', 0777);
-        umask($oldmask);
+        for ($i = 0; $i < $images; $i++) {
+            $sql->executeStatement("INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$galleryId', 'Image $i', $i, '', '/portrait/img/sample/sample$i.jpg', '400', '300', '1');");
+            system('convert ' . dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/portrait/sample/sample$i.jpg");
+            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/portrait/sample/sample$i.jpg", 0777);
+        }
+        umask($oldMask);
         $sql->disconnect();
     }
 
@@ -102,6 +105,8 @@ class GalleryFeatureContext implements Context {
     /**
      * @When /^I hover over gallery image (\d+)$/
      * @param $imgNum
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iHoverOverImage($imgNum) {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -112,6 +117,8 @@ class GalleryFeatureContext implements Context {
     /**
      * @When /^I view gallery image (\d+)$/
      * @param $imgNum
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iViewImage($imgNum) {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -120,6 +127,8 @@ class GalleryFeatureContext implements Context {
 
     /**
      * @When /^I advance to the next gallery image$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iAdvanceToTheNextImage() {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -128,6 +137,8 @@ class GalleryFeatureContext implements Context {
 
     /**
      * @When /^I advance to the previous gallery image$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iAdvanceToThePreviousImage() {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -137,6 +148,8 @@ class GalleryFeatureContext implements Context {
     /**
      * @When /^I skip to gallery image (\d+)$/
      * @param $img
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSkipToImage($img) {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -146,6 +159,8 @@ class GalleryFeatureContext implements Context {
     /**
      * @Then /^I see the "([^"]*)" gallery images load$/
      * @param $ord
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeTheGalleryImagesLoad($ord) {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -169,9 +184,12 @@ class GalleryFeatureContext implements Context {
     /**
      * @Then /^I see gallery image (\d+) in the preview modal$/
      * @param $imgNum
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeImageInThePreviewModal($imgNum) {
         $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id($slideShowId))));
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id($slideShowId))->isDisplayed());
         $activeImage = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
         Assert::assertEquals('Image ' . ($imgNum - 1), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'));
@@ -180,6 +198,8 @@ class GalleryFeatureContext implements Context {
     /**
      * @Then /^I see the gallery caption "([^"]*)" displayed$/
      * @param $caption
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iSeeTheCaptionDisplayed($caption) {
         $gallery = new Gallery($this->driver, $this->wait);
@@ -189,10 +209,34 @@ class GalleryFeatureContext implements Context {
 
     /**
      * @Then /^I do not see any gallery captions$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
      */
     public function iDoNotSeeAnyCaptions() {
         $gallery = new Gallery($this->driver, $this->wait);
         $img = $gallery->getSlideShowImage();
         Assert::assertEquals('', $img->findElement(WebDriverBy::tagName('h2'))->getText());
+    }
+
+    /**
+     * @When /^I close the gallery view$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iCloseTheGalleryView() {
+        $gallery = new Gallery($this->driver, $this->wait);
+        $gallery->closeSlideShow();
+    }
+
+    /**
+     * @Then /^I don't see the gallery preview modal$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iDonTSeeTheGalleryPreviewModal() {
+        $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
+        $modal = $this->driver->findElement(WebDriverBy::id($slideShowId));
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
+        Assert::assertFalse($modal->isDisplayed());
     }
 }

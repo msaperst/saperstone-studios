@@ -8,15 +8,16 @@ var showGhost = false;
 var imageOrder = {};
 var tempArray = [];
 var currentMousePos = {
-    x : -1,
-    y : -1
+    x: -1,
+    y: -1
 };
 var moveTo = null;
 
 // a function to set all of our globals
 var isDragged = false;
+
 function DragNDrop(elementBuilderString, imageBuilderString, imagePlaceString,
-        showGhostBool) {
+                   showGhostBool) {
     elementBuilder = elementBuilderString;
     imageBuilder = imageBuilderString;
     imagePlace = imagePlaceString;
@@ -38,7 +39,7 @@ function addTextArea(text) {
     textHolder.summernote();
 
     // set our removal functionality
-    textHolder.dblclick(function() {
+    textHolder.dblclick(function () {
         text = $(this).parent().find('textarea').val();
         if (text !== "") {
             var r = confirm("This input area has text in it, are you sure you want to delete it?");
@@ -50,6 +51,7 @@ function addTextArea(text) {
     });
     makeSortable();
 }
+
 // add a new image area
 function addImageArea(images) {
     var imageAreaID = "imageArea-" + imageAreas++;
@@ -64,20 +66,20 @@ function addImageArea(images) {
     var maxHeight = 100;
     for (var ndx = 0; ndx < images.length; ndx++) {
         maxHeight = Math.max(maxHeight,
-                (images[ndx].height * 1 + images[ndx].top * 1));
+            (images[ndx].height * 1 + images[ndx].top * 1));
     }
     var imageBuilder = $("<div id='" + imageAreaID
-            + "' class='image-builder' style='height:" + maxHeight
-            + "px;'></div>");
+        + "' class='image-builder' style='height:" + maxHeight
+        + "px;'></div>");
     var curTop = 0; // for keeping track of when we need breaks
     for (ndx = 0; ndx < images.length; ndx++) {
         // setup our image element
         var ele = $("<img id='image-" + imageId++
-                + "' class='draggable' src='" + images[ndx].location
-                + "' style='position:absolute;z-index:90;width:"
-                + images[ndx].width + "px;height:" + images[ndx].height
-                + "px;left:" + images[ndx].left + "px;top:" + images[ndx].top
-                + "px' />");
+            + "' class='draggable' src='" + images[ndx].location
+            + "' style='position:absolute;z-index:90;width:"
+            + images[ndx].width + "px;height:" + images[ndx].height
+            + "px;left:" + images[ndx].left + "px;top:" + images[ndx].top
+            + "px' />");
         // add our images to our image area
         imageBuilder.append(ele);
         // add our images to our imageOrder
@@ -90,9 +92,9 @@ function addImageArea(images) {
     imageOrder[imageAreaID] = imageArray;
     imageEle.append(imageBuilder);
     imageEle
-            .append("<div id='temp' style='background:lightblue;width:1px;height:1px;'></div>");
+        .append("<div id='temp' style='background:lightblue;width:1px;height:1px;'></div>");
     $(elementBuilder).append(imageEle);
-    imageBuilder.dblclick(function() {
+    imageBuilder.dblclick(function () {
         if (!$(this).children().length) {
             var r = confirm("Do you want to delete this image area?");
             if (r === false) {
@@ -102,39 +104,39 @@ function addImageArea(images) {
         }
     });
     // setup our draggable objects
-    $(".draggable").dblclick(function() {
+    $(".draggable").dblclick(function () {
         removeImage($(this));
     });
     $(".draggable").draggable();
     $("div#" + imageAreaID).droppable(
-            {
-                tolerance : "pointer",
-                over : function() {
-                    isDragged = true;
-                },
-                out : function() {
-                    isDragged = false;
-                },
-                activate : function(event, ui) {
-                    ui.draggable.css({
-                        'cursor' : 'move',
-                        'z-index' : 99
-                    });
-                },
-                deactivate : function(event, ui) {
-                    ui.draggable.css({
-                        'cursor' : 'pointer',
-                        'z-index' : 90
-                    });
-                },
-                drop : function(event, ui) {
-                    isDragged = false;
-                    if (ui.draggable[0].tagName === "IMG"
-                            || ui.draggable[0].tagName === "img") {
-                        placeImage(ui.draggable, imageAreaID);
-                    }
-                },
-            });
+        {
+            tolerance: "pointer",
+            over: function () {
+                isDragged = true;
+            },
+            out: function () {
+                isDragged = false;
+            },
+            activate: function (event, ui) {
+                ui.draggable.css({
+                    'cursor': 'move',
+                    'z-index': 99
+                });
+            },
+            deactivate: function (event, ui) {
+                ui.draggable.css({
+                    'cursor': 'pointer',
+                    'z-index': 90
+                });
+            },
+            drop: function (event, ui) {
+                isDragged = false;
+                if (ui.draggable[0].tagName === "IMG"
+                    || ui.draggable[0].tagName === "img") {
+                    placeImage(ui.draggable, imageAreaID);
+                }
+            },
+        });
     // setup our sortable images
     makeSortable();
 }
@@ -142,12 +144,12 @@ function addImageArea(images) {
 function makeSortable() {
     var moveTo;
     $(elementBuilder).sortable({
-        handle : '.panel-heading',
-        start: function( event, ui ) {
+        handle: '.panel-heading',
+        start: function (event, ui) {
             moveTo = ui.item.prev();
         },
-        update: function( event, ui ) {
-            moveTo.insertBefore( ui.item );
+        update: function (event, ui) {
+            moveTo.insertBefore(ui.item);
         }
     });
 }
@@ -158,7 +160,7 @@ function placeImage(ele, arrayName) {
     var yPos = currentMousePos.y - $("div#" + arrayName).offset().top;
 
     // first check if our image is already in the array
-    for ( var ndx in imageOrder[arrayName]) {
+    for (var ndx in imageOrder[arrayName]) {
         if (typeof imageOrder[arrayName][ndx].attr !== 'function') {
             continue;
         }
@@ -190,15 +192,15 @@ function placeImage(ele, arrayName) {
             rowTop = rowTop.substr(0, rowTop.length - 2);
             //if this is not in our row, do nothing
             if (yPos < rowTop || yPos > (rowTop * 1) + (rowHeight * 1)) {
-            // if we are in the top %15 of the pixels of the row
-            // unshift an image and a break
+                // if we are in the top %15 of the pixels of the row
+                // unshift an image and a break
             } else if (yPos < (rowHeight * 0.15) + (rowTop * 1)) {
                 thisRow.unshift(ele, "BREAK");
-            // if we are in the bottom 15% of the pixels of the row
-            // push a break and an image
+                // if we are in the bottom 15% of the pixels of the row
+                // push a break and an image
             } else if (yPos > (rowHeight * 0.85) + (rowTop * 1)) {
                 thisRow.push("BREAK", ele);
-            // search through each image to see where it fits
+                // search through each image to see where it fits
             } else {
                 for (ndx in thisRow) {
                     if (thisRow.hasOwnProperty(ndx)) {
@@ -230,6 +232,7 @@ function placeImage(ele, arrayName) {
     }
     resizeImages(arrayName);
 }
+
 function removeImage(ele) {
     // get parent id
     var arrayName = ele.parent().attr('id');
@@ -244,13 +247,13 @@ function removeImage(ele) {
     }
     ele.appendTo(imagePlace);
     ele.css({
-        'position' : 'relative',
-        'left' : '',
-        'top' : '',
-        'width' : '',
-        'height' : '',
-        'z-index' : '',
-        'cursor' : '',
+        'position': 'relative',
+        'left': '',
+        'top': '',
+        'width': '',
+        'height': '',
+        'z-index': '',
+        'cursor': '',
     });
     resizeImages(arrayName);
 }
@@ -311,11 +314,11 @@ function resizeImages(arrayName) {
                     eleHeight = thisRow[ndx].height();
                     var newWidth = Math.round(eleWidth / eleHeight * widthScaling);
                     thisRow[ndx].css({
-                        'position' : 'absolute',
-                        'left' : startWidth,
-                        'top' : startHeight,
-                        'width' : newWidth,
-                        'height' : widthScaling
+                        'position': 'absolute',
+                        'left': startWidth,
+                        'top': startHeight,
+                        'width': newWidth,
+                        'height': widthScaling
                     });
                     startWidth += newWidth * 1;
                 }
@@ -327,6 +330,7 @@ function resizeImages(arrayName) {
         $("div#" + arrayName).height(startHeight);
     }
 }
+
 function compareLeft(a, b) {
     if (a.left < b.left)
         return -1;
@@ -334,6 +338,7 @@ function compareLeft(a, b) {
         return 1;
     return 0;
 }
+
 function compareTop(a, b) {
     if (a.top < b.top)
         return -1;
@@ -342,9 +347,9 @@ function compareTop(a, b) {
     return 0;
 }
 
-$(function() {
+$(function () {
     isDragged = false;
-    $("body").mousemove(function(e) {
+    $("body").mousemove(function (e) {
         currentMousePos.x = e.pageX;
         currentMousePos.y = e.pageY;
         if (isDragged && showGhost) { // setup our ghost
