@@ -47,6 +47,11 @@ function editImage() {
             titleInput.addClass('form-control');
             titleInput.attr('placeholder', 'Image Title');
             titleInput.val(img.attr('alt'));
+            titleInput.on('keyup keypress blur change', function () {
+                if ( $('#gallery-filename-match').prop('checked') ) {
+                    updateFilename();
+                }
+            });
             inputs.append(titleDiv.append(titleLabel).append(titleInputDiv.append(titleInput)));
 
             var captionDiv = $('<div>');
@@ -72,14 +77,22 @@ function editImage() {
             filenameLabel.attr('for', 'gallery-filename');
             filenameLabel.html('Filename: ');
             var filenameInputDiv = $('<div>');
-            filenameInputDiv.addClass('col-sm-10');
+            filenameInputDiv.addClass('col-sm-9');
             var filenameInput = $('<input>');
             filenameInput.attr('id', 'gallery-filename');
             filenameInput.attr('type', 'text');
             filenameInput.addClass('form-control');
             filenameInput.attr('placeholder', 'Filename including path');
             filenameInput.val(img.attr('style').split("'")[1]);
-            inputs.append(filenameDiv.append(filenameLabel).append(filenameInputDiv.append(filenameInput)));
+            var filenameMatchDiv = $('<div>');
+            filenameMatchDiv.addClass('col-sm-1');
+            var filenameMatch = $('<input>');
+            filenameMatch.attr('id', 'gallery-filename-match');
+            filenameMatch.attr('type', 'checkbox');
+            filenameMatch.attr('checked', 'true');
+            filenameMatch.attr('title', 'Match title');
+            filenameMatch.addClass('form-control');
+            inputs.append(filenameDiv.append(filenameLabel).append(filenameInputDiv.append(filenameInput)).append(filenameMatchDiv.append(filenameMatch)));
 
             return inputs;
         },
@@ -340,6 +353,13 @@ function editGallery(id) {
             }
         });
     }, "json");
+}
+
+function updateFilename() {
+    var parts = $('#gallery-filename').val().split('/');
+    var extension = parts[parts.length-1].split('.').pop();
+    parts[parts.length-1] = $('#gallery-title').val().replace(/[^0-9a-z\s]/gi, '') + "." + extension;
+    $('#gallery-filename').val(parts.join('/'));
 }
 
 function disableDialogButtons(dialog) {
