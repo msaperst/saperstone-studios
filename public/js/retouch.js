@@ -10,7 +10,7 @@ function Retouch(ele, images, instruct) {
     Retouch.slider = Retouch.createSlider();
     Retouch.selector = Retouch.addSelector();
 
-    setInterval(function() {
+    setInterval(function () {
         Retouch.slide();
     }, 50);
 
@@ -20,19 +20,19 @@ function Retouch(ele, images, instruct) {
     }
 }
 
-Retouch.prototype.createSlider = function() {
+Retouch.prototype.createSlider = function () {
     var protector = $('<img>');
     protector.addClass('protect');
     protector.attr({
-        'src' : '/img/image.png',
-        'alt' : 'placeholder'
+        'src': '/img/image.png',
+        'alt': 'placeholder'
     });
     this.ele.append(protector);
 
     if (this.instruct) {
         var instructions = $('<div>');
         instructions.attr({
-            'id' : 'instructions'
+            'id': 'instructions'
         });
         instructions.html('Select an Image then drag slider');
         this.ele.before(instructions)
@@ -40,20 +40,20 @@ Retouch.prototype.createSlider = function() {
 
     var heighter = $('<div>');
     heighter.attr({
-        'id' : 'heighter'
+        'id': 'heighter'
     });
     heighter.css({
-        'margin-top' : '0%'
+        'margin-top': '0%'
     });
     this.ele.append(heighter);
 
     var original = $('<div>');
     original.addClass('images original');
     original.css({
-        'z-index' : '1'
+        'z-index': '1'
     });
     original.attr({
-        'id' : 'original'
+        'id': 'original'
     });
     var origImg = $('<img>');
     original.append(origImg);
@@ -62,10 +62,10 @@ Retouch.prototype.createSlider = function() {
     var edit = $('<div>');
     edit.addClass('images edit');
     edit.css({
-        'z-index' : '1'
+        'z-index': '1'
     });
     edit.attr({
-        'id' : 'edit'
+        'id': 'edit'
     });
     var editImg = $('<img>');
     edit.append(editImg);
@@ -75,31 +75,31 @@ Retouch.prototype.createSlider = function() {
     var slider = $('<input>');
     slider.addClass('slider');
     slider.attr({
-        'type' : 'range',
-        'name' : 'slider',
-        'value' : '0',
-        'min' : '0',
-        'max' : '100'
+        'type': 'range',
+        'name': 'slider',
+        'value': '0',
+        'min': '0',
+        'max': '100'
     });
     container.append(slider);
 
     var comment = $('<p>');
     comment.addClass('comment');
     container.append(comment);
-    
+
     this.ele.after(container);
 
     return slider;
 }
 
-Retouch.prototype.setSelect = function(img) {
+Retouch.prototype.setSelect = function (img) {
 
     var imgWidth = img.attr('imgWidth');
     var imgHeight = img.attr('imgHeight');
     var heightP = imgHeight / imgWidth * 100;
 
     this.ele.find('#heighter').css({
-        'margin-top' : heightP + '%'
+        'margin-top': heightP + '%'
     });
 
     var width = this.ele.parent().width();
@@ -114,36 +114,36 @@ Retouch.prototype.setSelect = function(img) {
     var orig = img.attr('imgOrig');
     var edit = img.attr('imgEdit');
     this.ele.find('#original img').attr({
-        'src' : orig
+        'src': orig
     }).width(width);
     this.ele.find('#edit img').attr({
-        'src' : edit
+        'src': edit
     }).width(width);
     this.slider.val(0);
     this.ele.parent().find('.comment').html(img.attr('text'));
 
     this.selector.find('img.thumb').css({
-        'border' : '2px transparent solid'
+        'border': '2px transparent solid'
     });
     img.css({
-        'border' : '2px #9dcb3b solid'
+        'border': '2px #9dcb3b solid'
     });
     this.slide();
 }
 
-Retouch.prototype.addSelector = function() {
+Retouch.prototype.addSelector = function () {
     var Retouch = this;
 
     var selector = $('<div>');
     selector.addClass('col-md-12');
     selector.css({
-        'overflow' : 'auto'
+        'overflow': 'auto'
     });
 
     var row = $('<div>');
     row.addClass('row-fluid text-center');
     row.css({
-        'white-space' : 'nowrap'
+        'white-space': 'nowrap'
     });
 
     for (var i = 0; i < Retouch.images.length; i++) {
@@ -152,22 +152,22 @@ Retouch.prototype.addSelector = function() {
         var cell = $('<div>');
         cell.addClass('col-lg-1');
         cell.css({
-            'display' : 'inline-block',
-            'float' : 'none'
+            'display': 'inline-block',
+            'float': 'none'
         });
 
         var cellImg = $('<img>');
         cellImg.addClass('thumb');
         cellImg.attr({
-            'hash' : i,
-            'imgOrig' : image.orig,
-            'imgEdit' : image.edit,
-            'imgWidth' : image.width,
-            'imgHeight' : image.height,
-            'text' : image.text,
-            'src' : image.thumb,
-            'alt' : image.edit
-        }).click(function() {
+            'hash': i,
+            'imgOrig': image.orig,
+            'imgEdit': image.edit,
+            'imgWidth': image.width,
+            'imgHeight': image.height,
+            'text': image.text,
+            'src': image.thumb,
+            'alt': image.edit
+        }).click(function () {
             window.location.hash = $(this).attr('hash');
             Retouch.setSelect($(this));
         });
@@ -182,6 +182,6 @@ Retouch.prototype.addSelector = function() {
     return selector;
 }
 
-Retouch.prototype.slide = function() {
+Retouch.prototype.slide = function () {
     this.ele.find('#edit').width(this.slider.val() + "%");
 }

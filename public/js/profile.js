@@ -1,9 +1,9 @@
-$(document).ready(function() {
+$(document).ready(function () {
     validateInput();
-    $('#update-profile').click(function() {
+    $('#update-profile').click(function () {
         updateProfile();
     });
-    $('input').keyup(function() {
+    $('input').keyup(function () {
         validateInput();
     });
 });
@@ -47,11 +47,11 @@ function validateInput() {
         $('#update-profile-email-message').empty();
     }
 
-    if( $('#profile-password').val() === "" && window.location.href.endsWith("/register.php")) {
+    if ($('#profile-password').val() === "" && window.location.href.endsWith("/register.php")) {
         $('#update-profile-password-message').empty().append("A password is required").addClass('error');
         setError($('#profile-password'));
         allGood = false
-    } else if ( $('#profile-password').val() === "" ) {
+    } else if ($('#profile-password').val() === "") {
         setBlank($('#profile-password'));
         $('#update-profile-password-message').empty();
     } else {
@@ -72,9 +72,9 @@ function validateInput() {
         $('#update-profile-password-message').empty().append('<div id="update-profile-password-strength"></div>').removeClass('error');
         $('#update-profile-password-strength').width(width);
         $('#update-profile-password-strength').css({
-            'width' : width + '%',
-            'background-color' : color,
-            'height' : '10px'
+            'width': width + '%',
+            'background-color': color,
+            'height': '10px'
         });
     }
 
@@ -87,7 +87,7 @@ function validateInput() {
         $('#update-profile-confirm-password-message').empty();
     }
 
-    if( window.location.href.endsWith("/profile.php") ) {
+    if (window.location.href.endsWith("/profile.php")) {
         if ($('#profile-password').val() === "" && $('#profile-confirm-password').val() === "") {
             setBlank($('#profile-password'));
             setBlank($('#profile-confirm-password'));
@@ -118,14 +118,17 @@ function setSuccess(input) {
     input.next().addClass('glyphicon-ok').removeClass('glyphicon-remove');
     input.closest('.has-feedback').addClass('has-success').removeClass('has-error');
 }
+
 function setError(input) {
     input.next().removeClass('glyphicon-ok').addClass('glyphicon-remove');
     input.closest('.has-feedback').removeClass('has-success').addClass('has-error');
 }
+
 function setBlank(input) {
     input.next().removeClass('glyphicon-ok').removeClass('glyphicon-remove');
     input.closest('.has-feedback').removeClass('has-success').removeClass('has-error');
 }
+
 function updateProfile() {
     // setup our button
     $("#update-profile").prop("disabled", true);
@@ -137,15 +140,15 @@ function updateProfile() {
     }
 
     $.post(url, {
-        username : $('#profile-username').val(),
-        firstName : $('#profile-firstname').val(),
-        lastName : $('#profile-lastname').val(),
-        curPass : $('#profile-current-password').length ? $('#profile-current-password').val() : "",
-        password : $('#profile-password').val().length ? $('#profile-password').val() : "",
-        passwordConfirm : $('#profile-confirm-password').val().length ? $('#profile-confirm-password').val() : "",
-        email : $('#profile-email').val(),
-        rememberMe : $('#profile-remember').is(':checked') ? 1 : 0,
-    }).done(function(data) {
+        username: $('#profile-username').val(),
+        firstName: $('#profile-firstname').val(),
+        lastName: $('#profile-lastname').val(),
+        curPass: $('#profile-current-password').length ? $('#profile-current-password').val() : "",
+        password: $('#profile-password').val().length ? $('#profile-password').val() : "",
+        passwordConfirm: $('#profile-confirm-password').val().length ? $('#profile-confirm-password').val() : "",
+        email: $('#profile-email').val(),
+        rememberMe: $('#profile-remember').is(':checked') ? 1 : 0,
+    }).done(function (data) {
         if ($.isNumeric(data) && data !== '0') {
             $('#update-profile-message').append("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your user was successfully created.</div>");
             if (!$('#profile-current-password').length) {
@@ -156,7 +159,7 @@ function updateProfile() {
         } else {
             $('#update-profile-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }
-    }).fail(function(xhr, status, error) {
+    }).fail(function (xhr, status, error) {
         if (xhr.responseText !== "") {
             $('#update-profile-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
         } else if (error === "Unauthorized") {
@@ -164,7 +167,7 @@ function updateProfile() {
         } else {
             $('#update-profile-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your album users.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
-    }).always(function() {
+    }).always(function () {
         $("#update-profile").prop("disabled", false);
         $("#update-profile em").addClass('fa fa-floppy-o').removeClass('glyphicon glyphicon-asterisk icon-spin');
     });

@@ -1,53 +1,53 @@
 var imageId = 0;
 
-$(document).ready(function() {
+$(document).ready(function () {
     sortOptions();
 
-    $('#post-tags-select').change(function() {
+    $('#post-tags-select').change(function () {
         addTag($(this));
     });
 
-    $('#add-text-button').click(function() {
+    $('#add-text-button').click(function () {
         addTextArea();
     });
 
-    $('#add-image-button').click(function() {
+    $('#add-image-button').click(function () {
         addImageArea();
     });
 
-    $('#edit-post').click(function() {
+    $('#edit-post').click(function () {
         editPost();
     });
 
-    $('#preview-post').click(function() {
+    $('#preview-post').click(function () {
         previewPost();
     });
 
-    $('#save-post').click(function() {
+    $('#save-post').click(function () {
         collectPost(savePost);
     });
 
-    $('#update-post').click(function() {
+    $('#update-post').click(function () {
         collectPost(updatePost);
     });
 
-    $('#schedule-post').click(function() {
+    $('#schedule-post').click(function () {
         collectPost(savePost, schedulePost);
     });
 
-    $('#schedule-saved-post').click(function() {
+    $('#schedule-saved-post').click(function () {
         collectPost(updatePost, schedulePost);
     });
 
-    $('#publish-post').click(function() {
+    $('#publish-post').click(function () {
         collectPost(savePost, publishPost);
     });
 
-    $('#publish-saved-post').click(function() {
+    $('#publish-saved-post').click(function () {
         collectPost(updatePost, publishPost);
     });
 
-    $('#post-preview-image').change(function() {
+    $('#post-preview-image').change(function () {
         setPreview();
     });
 
@@ -58,36 +58,36 @@ $(document).ready(function() {
 
 function uploadForPost() {
     $('#post-image-holder').uploadFile({
-        url : "/api/upload-blog-images.php",
-        uploadStr : "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
-        multiple : true,
-        dragDrop : true,
-        uploadButtonLocation : $('#post-button-holder'),
-        uploadContainer : $('#post-button-holder'),
-        uploadButtonClass : "btn btn-default btn-info",
-        statusBarWidth : "auto",
-        dragdropWidth : "100%",
-        fileName : "myfile",
-        sequential : true,
-        sequentialCount : 5,
-        acceptFiles : "image/*",
-        uploadQueueOrder : "bottom",
-        onSubmit : function() {
+        url: "/api/upload-blog-images.php",
+        uploadStr: "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
+        multiple: true,
+        dragDrop: true,
+        uploadButtonLocation: $('#post-button-holder'),
+        uploadContainer: $('#post-button-holder'),
+        uploadButtonClass: "btn btn-default btn-info",
+        statusBarWidth: "auto",
+        dragdropWidth: "100%",
+        fileName: "myfile",
+        sequential: true,
+        sequentialCount: 5,
+        acceptFiles: "image/*",
+        uploadQueueOrder: "bottom",
+        onSubmit: function () {
             $('.ajax-file-upload-container').show();
         },
-        onSuccess : function(files, data, xhr, pd) {
+        onSuccess: function (files, data, xhr, pd) {
             data = JSON.parse(data);
             if ($.isArray(data)) {
                 pd.statusbar.remove();
-                $.each(files, function(key, value) {
+                $.each(files, function (key, value) {
                     var img = $("<img>");
                     img.attr({
-                        id : "image-" + imageId++,
-                        src : "../tmp/" + value,
+                        id: "image-" + imageId++,
+                        src: "../tmp/" + value,
                     });
                     img.addClass('draggable');
                     img.draggable();
-                    img.dblclick(function() {
+                    img.dblclick(function () {
                         removeImage($(this));
                     });
                     $('#post-image-holder').append(img);
@@ -103,8 +103,8 @@ function uploadForPost() {
                 pd.filename.after(data);
             }
         },
-        afterUploadAll : function() {
-            setTimeout(function() {
+        afterUploadAll: function () {
+            setTimeout(function () {
                 $('.ajax-file-upload-container').hide();
             }, 5000);
         },
@@ -115,15 +115,15 @@ function uploadForPost() {
 
 function newTag(ele) {
     BootstrapDialog.show({
-        draggable : true,
-        title : 'Add a New Category',
-        message : '<input placeholder="Category Name" id="new-category-name" type="text" class="form-control"/>',
-        buttons : [ {
-            icon : 'glyphicon glyphicon-plus',
-            label : ' Create Category',
-            hotkey : 13,
-            cssClass : 'btn-success',
-            action : function(dialogItself) {
+        draggable: true,
+        title: 'Add a New Category',
+        message: '<input placeholder="Category Name" id="new-category-name" type="text" class="form-control"/>',
+        buttons: [{
+            icon: 'glyphicon glyphicon-plus',
+            label: ' Create Category',
+            hotkey: 13,
+            cssClass: 'btn-success',
+            action: function (dialogItself) {
                 var $button = this; // 'this' here is a jQuery
                 // object that
                 // wrapping the <button> DOM element.
@@ -133,8 +133,8 @@ function newTag(ele) {
                 dialogItself.setClosable(false);
                 // send our update
                 $.post("/api/create-blog-tag.php", {
-                    tag : $('#new-category-name').val(),
-                }).done(function(data) {
+                    tag: $('#new-category-name').val(),
+                }).done(function (data) {
                     // add the option to the
                     // select field, and select
                     // it
@@ -152,26 +152,26 @@ function newTag(ele) {
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
-                }).fail(function(xhr, status, error) {
-                    if ( xhr.responseText !== "" ) {
+                }).fail(function (xhr, status, error) {
+                    if (xhr.responseText !== "") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if ( error === "Unauthorized" ) {
+                    } else if (error === "Unauthorized") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your new blog category.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     }
-                }).always(function() {
+                }).always(function () {
                     $button.stopSpin();
                     dialogItself.enableButtons(true);
                     dialogItself.setClosable(true);
                 });
             }
         }, {
-            label : 'Close',
-            action : function(dialogItself) {
+            label: 'Close',
+            action: function (dialogItself) {
                 dialogItself.close();
             }
-        } ],
+        }],
     });
 }
 
@@ -184,7 +184,7 @@ function addTag(ele) {
     tagSpan.addClass('selected-tag');
     tagSpan.attr('tag-id', ele.val());
     tagSpan.html($('option:selected', ele).text());
-    tagSpan.click(function() {
+    tagSpan.click(function () {
         removeTag($(this));
     });
     ele.parent().append(tagSpan);
@@ -205,7 +205,7 @@ function sortOptions() {
     var my_options = $("#post-tags-select option");
     var selected = $("#post-tags-select").val();
 
-    my_options.sort(function(a, b) {
+    my_options.sort(function (a, b) {
         if (a.text > b.text) {
             return 1;
         }
@@ -256,9 +256,9 @@ function previewPost() {
     var dateSpan = $('<span>');
     var date = new Date($('#post-date-input').val());
     var options = {
-        year : "numeric",
-        month : "long",
-        day : "numeric"
+        year: "numeric",
+        month: "long",
+        day: "numeric"
     };
     dateSpan.html(date.toLocaleDateString("en-us", options));
     dateSpan.attr('id', 'post-date-preview');
@@ -269,8 +269,8 @@ function previewPost() {
     var facebookButton = $('<button>');
     facebookButton.addClass('btn btn-xs btn-info');
     facebookButton.css({
-        'background-color' : '#4267b2',
-        'border' : '#4267b2'
+        'background-color': '#4267b2',
+        'border': '#4267b2'
     });
     var facebookIcon = $('<em>');
     facebookIcon.addClass('fa fa-thumbs-up');
@@ -295,8 +295,8 @@ function previewPost() {
     var gplusButton = $('<button>');
     gplusButton.addClass('btn btn-xs');
     gplusButton.css({
-        'background-color' : 'transparent',
-        'border' : '1px grey solid'
+        'background-color': 'transparent',
+        'border': '1px grey solid'
     });
     var gplusIcon = $('<em>');
     gplusIcon.addClass('fa fa-google-plus error');
@@ -307,7 +307,7 @@ function previewPost() {
     $('#post-tags-select').hide();
     var tagsSpan = $('<span>');
     tagsSpan.attr('id', 'post-tags-preview');
-    $('.selected-tag').each(function() {
+    $('.selected-tag').each(function () {
         $(this).hide();
         var tagLink = $('<a>');
         tagLink.html($(this).html());
@@ -317,10 +317,10 @@ function previewPost() {
     $('#post-tags').append(tagsSpan);
 
     // setup our texts for previews
-    $('.blog-editable-text').each(function() {
+    $('.blog-editable-text').each(function () {
         $(this).show().html($(this).summernote('code'));
     });
-    $('.note-editor').each(function() {
+    $('.note-editor').each(function () {
         $(this).hide();
     });
 }
@@ -347,34 +347,34 @@ function editPost() {
 
     $('#post-tags-select').show();
     $('#post-tags-preview').remove();
-    $('.selected-tag').each(function() {
+    $('.selected-tag').each(function () {
         $(this).show();
     });
 
     // fix our texts for editing
-    $('.blog-editable-text').each(function() {
+    $('.blog-editable-text').each(function () {
         $(this).hide();
     });
-    $('.note-editor').each(function() {
+    $('.note-editor').each(function () {
         $(this).show();
     });
 }
 
 function collectPost(callback1, callback2) {
     $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Saving your post.</div>");
-    $('.btn').each(function() {
+    $('.btn').each(function () {
         $(this).prop("disabled", true);
     });
     if ($('#post-title-input').val() === "") {
         BootstrapDialog.alert("Please enter a title for your post");
-        $('.btn').each(function() {
+        $('.btn').each(function () {
             $(this).prop("disabled", false);
         });
         $('#post-information-message').remove();
         return;
     }
     var tags = [];
-    $('#post-tags span').each(function() {
+    $('#post-tags span').each(function () {
         tags.push($(this).attr('tag-id'));
     });
     var preview = {};
@@ -382,7 +382,7 @@ function collectPost(callback1, callback2) {
     preview.offset = $('#post-preview-holder img').css('top');
     if (!$('#post-preview-holder img').length) {
         BootstrapDialog.alert("Please select a preview image for your post");
-        $('.btn').each(function() {
+        $('.btn').each(function () {
             $(this).prop("disabled", false);
         });
         $('#post-information-message').remove();
@@ -390,7 +390,7 @@ function collectPost(callback1, callback2) {
     }
     var content = {};
     var group = 0;
-    $('#post-content>li').each(function() {
+    $('#post-content>li').each(function () {
         var elements = {};
         elements.group = ++group;
         if ($(this).hasClass('blog-editable-text')) {
@@ -399,7 +399,7 @@ function collectPost(callback1, callback2) {
         } else if ($(this).hasClass('blog-editable-images')) {
             elements.type = "images";
             elements.imgs = [];
-            $('img', this).each(function() {
+            $('img', this).each(function () {
                 var img = {};
                 img.location = $(this).attr('src');
                 img.top = $(this).css('top');
@@ -415,11 +415,11 @@ function collectPost(callback1, callback2) {
         content[group] = elements;
     });
     if (tags.length === 0) {
-        BootstrapDialog.confirm("You didn't enter any tags. Are you sure you want to save this post?", function(result) {
+        BootstrapDialog.confirm("You didn't enter any tags. Are you sure you want to save this post?", function (result) {
             if (result) {
                 callback1(tags, preview, content, callback2);
             } else {
-                $('.btn').each(function() {
+                $('.btn').each(function () {
                     $(this).prop("disabled", false);
                 });
                 $('#post-information-message').remove();
@@ -432,12 +432,12 @@ function collectPost(callback1, callback2) {
 
 function savePost(tags, preview, content, callback) {
     $.post("/api/create-blog-post.php", {
-        title : $('#post-title-input').val(),
-        date : $('#post-date-input').val(),
-        tags : tags,
-        preview : preview,
-        content : content,
-    }).done(function(data) {
+        title: $('#post-title-input').val(),
+        date: $('#post-date-input').val(),
+        tags: tags,
+        preview: preview,
+        content: content,
+    }).done(function (data) {
         if ($.isNumeric(data) && data !== '0') {
             $('#post-information-message').remove();
             $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been saved.</div>");
@@ -455,17 +455,17 @@ function savePost(tags, preview, content, callback) {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
             $('#post-information-message').remove();
         }
-    }).fail(function(xhr, status, error) {
-        if ( xhr.responseText !== "" ) {
+    }).fail(function (xhr, status, error) {
+        if (xhr.responseText !== "") {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if ( error === "Unauthorized" ) {
+        } else if (error === "Unauthorized") {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
         $('#post-information-message').remove();
-    }).always(function() {
-        $('.btn').each(function() {
+    }).always(function () {
+        $('.btn').each(function () {
             $(this).prop("disabled", false);
         });
     });
@@ -473,13 +473,13 @@ function savePost(tags, preview, content, callback) {
 
 function updatePost(tags, preview, content, callback) {
     $.post("/api/update-blog-post.php", {
-        post : $('#post').attr('post-id'),
-        title : $('#post-title-input').val(),
-        date : $('#post-date-input').val(),
-        tags : tags,
-        preview : preview,
-        content : content,
-    }).done(function(data) {
+        post: $('#post').attr('post-id'),
+        title: $('#post-title-input').val(),
+        date: $('#post-date-input').val(),
+        tags: tags,
+        preview: preview,
+        content: content,
+    }).done(function (data) {
         if (data === "" || data === "published") {
             $('#post-information-message').remove();
             $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been saved.</div>");
@@ -494,7 +494,7 @@ function updatePost(tags, preview, content, callback) {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
             $('#post-information-message').remove();
         }
-    }).fail(function(xhr, status, error) {
+    }).fail(function (xhr, status, error) {
         if (xhr.responseText !== "") {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
         } else if (error === "Unauthorized") {
@@ -503,26 +503,26 @@ function updatePost(tags, preview, content, callback) {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
         $('#post-information-message').remove();
-    }).always(function() {
-        $('.btn').each(function() {
+    }).always(function () {
+        $('.btn').each(function () {
             $(this).prop("disabled", false);
         });
     });
 }
 
 function schedulePost(post) {
-    $('.btn').each(function() {
+    $('.btn').each(function () {
         $(this).prop("disabled", true);
     });
     BootstrapDialog.show({
-        draggable : true,
-        title : 'Select A Time',
-        message : 'When do you want to schedule this post to be published' + '<input id="post-publish-date" class="form-control" type="date"/>' + '<input id="post-publish-time" class="form-control" type="time"/>',
-        buttons : [ {
-            icon : 'glyphicon glyphicon-time',
-            label : ' Schedule',
-            cssClass : 'btn-success',
-            action : function(dialogItself) {
+        draggable: true,
+        title: 'Select A Time',
+        message: 'When do you want to schedule this post to be published' + '<input id="post-publish-date" class="form-control" type="date"/>' + '<input id="post-publish-time" class="form-control" type="time"/>',
+        buttons: [{
+            icon: 'glyphicon glyphicon-time',
+            label: ' Schedule',
+            cssClass: 'btn-success',
+            action: function (dialogItself) {
                 $('#post-information-message').remove();
                 $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Scheduling your post.</div>");
                 var $button = this; // 'this' here is a jQuery
@@ -534,10 +534,10 @@ function schedulePost(post) {
                 dialogItself.setClosable(false);
                 // send our update
                 $.post("/api/schedule-blog-post.php", {
-                    post : post,
-                    date : $('#post-publish-date').val(),
-                    time : $('#post-publish-time').val()
-                }).done(function(data) {
+                    post: post,
+                    date: $('#post-publish-date').val(),
+                    time: $('#post-publish-time').val()
+                }).done(function (data) {
                     if (data === "") {
                         dialogItself.close();
                         $('#post-information-message').remove();
@@ -546,16 +546,16 @@ function schedulePost(post) {
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
-                }).fail(function(xhr, status, error) {
-                    if ( xhr.responseText !== "" ) {
+                }).fail(function (xhr, status, error) {
+                    if (xhr.responseText !== "") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if ( error === "Unauthorized" ) {
+                    } else if (error === "Unauthorized") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while scheduling your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     }
-                }).always(function() {
-                    $('.btn').each(function() {
+                }).always(function () {
+                    $('.btn').each(function () {
                         $(this).prop("disabled", false);
                     });
                     $button.stopSpin();
@@ -564,23 +564,23 @@ function schedulePost(post) {
                 });
             }
         }, {
-            label : 'Close',
-            action : function(dialogItself) {
+            label: 'Close',
+            action: function (dialogItself) {
                 dialogItself.close();
             }
-        } ]
+        }]
     });
 }
 
 function publishPost(post) {
     $('#post-information-message').remove();
     $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Publishing your post.</div>");
-    $('.btn').each(function() {
+    $('.btn').each(function () {
         $(this).prop("disabled", true);
     });
     $.post("/api/publish-blog-post.php", {
-        post : post
-    }).done(function(data) {
+        post: post
+    }).done(function (data) {
         if (data === "") {
             $('#post-information-message').remove();
             $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your blog post has been published.</div>");
@@ -588,16 +588,16 @@ function publishPost(post) {
         } else {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }
-    }).fail(function(xhr, status, error) {
-        if ( xhr.responseText !== "" ) {
+    }).fail(function (xhr, status, error) {
+        if (xhr.responseText !== "") {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if ( error === "Unauthorized" ) {
+        } else if (error === "Unauthorized") {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while publishing your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
-    }).always(function() {
-        $('.btn').each(function() {
+    }).always(function () {
+        $('.btn').each(function () {
             $(this).prop("disabled", false);
         });
     });
@@ -608,10 +608,10 @@ function setPreview() {
     var img = $('<img>');
     img.attr('src', $('#post').attr('post-location') + '/' + $('#post-preview-image').val());
     img.css({
-        width : '300px'
+        width: '300px'
     });
     $('#post-preview-holder').append(img);
     img.draggable({
-        axis : "y",
+        axis: "y",
     });
 }

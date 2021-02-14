@@ -1,98 +1,98 @@
 var user_table;
 var resultsSelected = false;
 
-$(document).ready(function() {
+$(document).ready(function () {
     user_table = $('#users').DataTable({
-        "ajax" : "/api/get-users.php",
-        "order" : [ [ 2, "asc" ] ],
-        "columnDefs" : [ {
-            "orderable" : false,
-            "searchable" : false,
-            "data" : function(row) {
+        "ajax": "/api/get-users.php",
+        "order": [[2, "asc"]],
+        "columnDefs": [{
+            "orderable": false,
+            "searchable": false,
+            "data": function (row) {
                 return '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.usr + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-user-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.usr + ' Activities"><i class="fa fa-bars"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As ' + row.usr + '"><i class="fa fa-user-secret"></i></button>';
             },
-            "targets" : 0
+            "targets": 0
         }, {
-            "data" : "id",
-            "className" : "user-id",
-            "visible" : false,
-            "searchable" : false,
-            "targets" : 1
+            "data": "id",
+            "className": "user-id",
+            "visible": false,
+            "searchable": false,
+            "targets": 1
         }, {
-            "data" : "usr",
-            "className" : "user-username",
-            "targets" : 2
+            "data": "usr",
+            "className": "user-username",
+            "targets": 2
         }, {
-            "data" : function(row) {
+            "data": function (row) {
                 return row.firstName + " " + row.lastName;
             },
-            "className" : "user-name",
-            "targets" : 3
+            "className": "user-name",
+            "targets": 3
         }, {
-            "data" : "email",
-            "className" : "user-email",
-            "targets" : 4
+            "data": "email",
+            "className": "user-email",
+            "targets": 4
         }, {
-            "data" : "role",
-            "className" : "user-role",
-            "targets" : 5
+            "data": "role",
+            "className": "user-role",
+            "targets": 5
         }, {
-            "data" : "active",
-            "className" : "user-active",
-            "targets" : 6
+            "data": "active",
+            "className": "user-active",
+            "targets": 6
         }, {
-            "data" : "lastLogin",
-            "className" : "user-last-login",
-            "targets" : 7
-        } ],
-        "fnCreatedRow" : function(nRow, aData) {
+            "data": "lastLogin",
+            "className": "user-last-login",
+            "targets": 7
+        }],
+        "fnCreatedRow": function (nRow, aData) {
             $(nRow).attr('user-id', aData.id);
         }
     });
-    $('#users').on('draw.dt search.dt', function() {
+    $('#users').on('draw.dt search.dt', function () {
         setupEdit();
         $('[data-toggle="tooltip"]').tooltip();
     });
 
-    $('#add-user-btn').click(function() {
+    $('#add-user-btn').click(function () {
         editUser(null);
     });
 });
 
 function setupEdit() {
-    $('.edit-user-btn').off().click(function() {
+    $('.edit-user-btn').off().click(function () {
         var id = $(this).closest('tr').attr('user-id');
         $.get("/api/get-user.php", {
-            id : id
-        }, function(data) {
+            id: id
+        }, function (data) {
             editUser(data);
         }, "json");
     });
-    $('.view-as-user-btn').off().click(function() {
+    $('.view-as-user-btn').off().click(function () {
         var id = $(this).closest('tr').attr('user-id');
         $.post("/api/login-as-user.php", {
-            id : id
-        }).done(function() {
+            id: id
+        }).done(function () {
             window.location.href = "index.php";
         });
     });
-    $('.view-user-log-btn').off().click(function() {
+    $('.view-user-log-btn').off().click(function () {
         viewLogs($(this).closest('tr').attr('user-id'));
     });
 }
 
 function editUser(data) {
     BootstrapDialog.show({
-        draggable : true,
-        size : BootstrapDialog.SIZE_WIDE,
-        title : function() {
+        draggable: true,
+        size: BootstrapDialog.SIZE_WIDE,
+        title: function () {
             if (data !== null) {
                 return 'Edit User <b>' + data.usr + '</b>';
             } else {
                 return 'Add new user';
             }
         },
-        message : function() {
+        message: function () {
             var inputs = $('<div>');
             inputs.addClass('form-horizontal');
 
@@ -216,12 +216,12 @@ function editUser(data) {
 
             return inputs;
         },
-        buttons : [ {
-            id : 'user-albums-btn',
-            icon : 'glyphicon glyphicon-picture',
-            label : ' Update Albums',
-            cssClass : 'btn-info',
-            action : function(dialogItself) {
+        buttons: [{
+            id: 'user-albums-btn',
+            icon: 'glyphicon glyphicon-picture',
+            label: ' Update Albums',
+            cssClass: 'btn-info',
+            action: function (dialogItself) {
                 var $button = this; // 'this' here is a jQuery
                 // object that
                 // wrapping the <button> DOM element.
@@ -229,9 +229,9 @@ function editUser(data) {
                 disableDialogButtons(dialogItself);
                 // send our update
                 BootstrapDialog.show({
-                    draggable : true,
-                    title : 'Albums for User <b>' + data.usr + '</b>',
-                    message : function() {
+                    draggable: true,
+                    title: 'Albums for User <b>' + data.usr + '</b>',
+                    message: function () {
                         var inputs = $('<div class="open">');
 
                         var searchInput = $('<input>');
@@ -239,34 +239,34 @@ function editUser(data) {
                         searchInput.attr('type', 'text');
                         searchInput.addClass('form-control');
                         searchInput.attr('placeholder', 'Enter Album Name');
-                        searchInput.on("keyup focus", function() {
+                        searchInput.on("keyup focus", function () {
                             var search_ele = $(this);
                             var keyword = search_ele.val();
                             $.get("/api/search-albums.php", {
-                                keyword : keyword
-                            }, function(data) {
+                                keyword: keyword
+                            }, function (data) {
                                 $('.search-results').remove();
                                 var results_ul = $('<ul class="dropdown-menu search-results">');
-                                $.each(data, function(key, album) {
+                                $.each(data, function (key, album) {
                                     if (!$(".selected-album[album-id='" + album.id + "']").length) {
                                         var result_li = $('<li>');
                                         var result_a = $('<a album-id="' + album.id + '" >' + album.name + '</a>');
-                                        result_a.click(function() {
+                                        result_a.click(function () {
                                             addAlbum(album.id);
                                             $('.search-results').remove();
                                         });
                                         results_ul.append(result_li.append(result_a));
                                     }
                                 });
-                                results_ul.hover(function() {
+                                results_ul.hover(function () {
                                     resultsSelected = true;
-                                }, function() {
+                                }, function () {
                                     resultsSelected = false;
                                 });
                                 search_ele.after(results_ul);
                             }, "json");
                         });
-                        searchInput.focusout(function() {
+                        searchInput.focusout(function () {
                             if (!resultsSelected) {
                                 $('.search-results').remove();
                             }
@@ -275,11 +275,11 @@ function editUser(data) {
 
                         return inputs;
                     },
-                    buttons : [ {
-                        icon : 'glyphicon glyphicon-save',
-                        label : ' Update',
-                        cssClass : 'btn-success',
-                        action : function(dialogInItself) {
+                    buttons: [{
+                        icon: 'glyphicon glyphicon-save',
+                        label: ' Update',
+                        cssClass: 'btn-success',
+                        action: function (dialogInItself) {
                             var $buttonIn = this; // 'this'
                             // here
                             // is a
@@ -293,14 +293,14 @@ function editUser(data) {
                             dialogInItself.enableButtons(false);
                             dialogInItself.setClosable(false);
                             var albums = [];
-                            $('#user-albums .selected-album').each(function() {
+                            $('#user-albums .selected-album').each(function () {
                                 albums.push($(this).attr('album-id'));
                             });
                             // send our update
                             $.post("/api/update-user-albums.php", {
-                                user : data.id,
-                                albums : albums
-                            }).done(function(data) {
+                                user: data.id,
+                                albums: albums
+                            }).done(function (data) {
                                 if (data !== "") {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                                 }
@@ -308,10 +308,10 @@ function editUser(data) {
                                 $button.stopSpin();
                                 dialogInItself.close();
                                 enableDialogButtons(dialogItself);
-                            }).fail(function(xhr, status, error) {
-                                if ( xhr.responseText !== "" ) {
+                            }).fail(function (xhr, status, error) {
+                                if (xhr.responseText !== "") {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                                } else if ( error === "Unauthorized" ) {
+                                } else if (error === "Unauthorized") {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                                 } else {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user's albums.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
@@ -319,23 +319,23 @@ function editUser(data) {
                             });
                         }
                     }, {
-                        label : 'Close',
-                        action : function(dialogInItself) {
+                        label: 'Close',
+                        action: function (dialogInItself) {
                             $button.stopSpin();
                             enableDialogButtons(dialogItself);
                             dialogInItself.close();
                         }
-                    } ],
-                    onshown : function(dialogInItself) {
+                    }],
+                    onshown: function (dialogInItself) {
                         var albumsDiv = $('<div>');
                         albumsDiv.attr('id', 'user-albums');
                         albumsDiv.css({
-                            'padding' : '0 10px 5px 10px'
+                            'padding': '0 10px 5px 10px'
                         });
                         dialogInItself.$modalBody.after(albumsDiv);
                         $.get("/api/get-user-albums.php", {
-                            user : data.id
-                        }, function(user_albums) {
+                            user: data.id
+                        }, function (user_albums) {
                             for (var i = 0, len = user_albums.length; i < len; i++) {
                                 addAlbum(user_albums[i].album);
                             }
@@ -344,11 +344,11 @@ function editUser(data) {
                 });
             }
         }, {
-            id : 'user-delete-btn',
-            icon : 'glyphicon glyphicon-trash',
-            label : ' Delete User',
-            cssClass : 'btn-danger',
-            action : function(dialogItself) {
+            id: 'user-delete-btn',
+            icon: 'glyphicon glyphicon-trash',
+            label: ' Delete User',
+            cssClass: 'btn-danger',
+            action: function (dialogItself) {
                 var $button = this; // 'this' here is a jQuery
                 // object that
                 // wrapping the <button> DOM element.
@@ -356,20 +356,20 @@ function editUser(data) {
                 disableDialogButtons(dialogItself);
                 // send our update
                 BootstrapDialog.show({
-                    draggable : true,
-                    title : 'Are You Sure?',
-                    message : function() {
+                    draggable: true,
+                    title: 'Are You Sure?',
+                    message: function () {
                         if (data !== null) {
                             return 'Are you sure you want to delete the user <b>' + data.usr + '</b>';
                         } else {
                             return '';
                         }
                     },
-                    buttons : [ {
-                        icon : 'glyphicon glyphicon-trash',
-                        label : ' Delete',
-                        cssClass : 'btn-danger',
-                        action : function(dialogInItself) {
+                    buttons: [{
+                        icon: 'glyphicon glyphicon-trash',
+                        label: ' Delete',
+                        cssClass: 'btn-danger',
+                        action: function (dialogInItself) {
                             var $button = this; // 'this'
                             // here
                             // is a
@@ -384,44 +384,44 @@ function editUser(data) {
                             dialogInItself.setClosable(false);
                             // send our update
                             $.post("/api/delete-user.php", {
-                                id : data.id,
-                            }).done(function(data) {
+                                id: data.id,
+                            }).done(function (data) {
                                 if (data === "") {
                                     user_table.ajax.reload(null, false);
                                     dialogItself.close();
                                 } else {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                                 }
-                            }).fail(function(xhr, status, error) {
-                                if ( xhr.responseText !== "" ) {
+                            }).fail(function (xhr, status, error) {
+                                if (xhr.responseText !== "") {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                                } else if ( error === "Unauthorized" ) {
+                                } else if (error === "Unauthorized") {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                                 } else {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while deleting your user.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                                 }
-                            }).always(function() {
+                            }).always(function () {
                                 $button.stopSpin();
                                 dialogInItself.close();
                                 enableDialogButtons(dialogItself);
                             });
                         }
                     }, {
-                        label : 'Close',
-                        action : function(dialogInItself) {
+                        label: 'Close',
+                        action: function (dialogInItself) {
                             $button.stopSpin();
                             enableDialogButtons(dialogItself);
                             dialogInItself.close();
                         }
-                    } ]
+                    }]
                 });
             }
         }, {
-            id : 'user-update-password-btn',
-            icon : 'glyphicon glyphicon-edit',
-            label : ' Update Password',
-            cssClass : 'btn-warning',
-            action : function(dialogItself) {
+            id: 'user-update-password-btn',
+            icon: 'glyphicon glyphicon-edit',
+            label: ' Update Password',
+            cssClass: 'btn-warning',
+            action: function (dialogItself) {
                 var $button = this; // 'this' here is a jQuery
                 // object that
                 // wrapping the <button> DOM element.
@@ -429,9 +429,9 @@ function editUser(data) {
                 disableDialogButtons(dialogItself);
                 // send our update
                 BootstrapDialog.show({
-                    draggable : true,
-                    title : 'Change User Password',
-                    message : function() {
+                    draggable: true,
+                    title: 'Change User Password',
+                    message: function () {
                         var inputs = $('<div>');
 
                         var passwordInput = $('<input>');
@@ -450,11 +450,11 @@ function editUser(data) {
 
                         return inputs;
                     },
-                    buttons : [ {
-                        icon : 'glyphicon glyphicon-save',
-                        label : ' Update',
-                        cssClass : 'btn-success',
-                        action : function(dialogInItself) {
+                    buttons: [{
+                        icon: 'glyphicon glyphicon-save',
+                        label: ' Update',
+                        cssClass: 'btn-success',
+                        action: function (dialogInItself) {
                             var $buttonIn = this; // 'this'
                             // here
                             // is a
@@ -469,10 +469,10 @@ function editUser(data) {
                             dialogInItself.setClosable(false);
                             // send our update
                             $.post("/api/update-user-password.php", {
-                                id : data.id,
-                                password : $('#user-password').val(),
-                                passwordConfirm : $('#user-password-confirm').val(),
-                            }).done(function(data) {
+                                id: data.id,
+                                password: $('#user-password').val(),
+                                passwordConfirm: $('#user-password-confirm').val(),
+                            }).done(function (data) {
                                 if (data === "") {
                                     $button.stopSpin();
                                     dialogInItself.close();
@@ -480,35 +480,35 @@ function editUser(data) {
                                 } else {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                                 }
-                            }).fail(function(xhr, status, error) {
-                                if ( xhr.responseText !== "" ) {
+                            }).fail(function (xhr, status, error) {
+                                if (xhr.responseText !== "") {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                                } else if ( error === "Unauthorized" ) {
+                                } else if (error === "Unauthorized") {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                                 } else {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user's password.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                                 }
-                            }).always(function() {
+                            }).always(function () {
                                 $buttonIn.stopSpin();
                                 enableDialogButtons(dialogInItself);
                             });
                         }
                     }, {
-                        label : 'Close',
-                        action : function(dialogInItself) {
+                        label: 'Close',
+                        action: function (dialogInItself) {
                             $button.stopSpin();
                             enableDialogButtons(dialogItself);
                             dialogInItself.close();
                         }
-                    } ]
+                    }]
                 });
             }
         }, {
-            id : 'user-update-btn',
-            icon : 'glyphicon glyphicon-save',
-            label : ' Update User',
-            cssClass : 'btn-success',
-            action : function(dialogItself) {
+            id: 'user-update-btn',
+            icon: 'glyphicon glyphicon-save',
+            label: ' Update User',
+            cssClass: 'btn-success',
+            action: function (dialogItself) {
                 var $button = this; // 'this' here is a jQuery
                 // object that
                 // wrapping the <button> DOM element.
@@ -516,14 +516,14 @@ function editUser(data) {
                 $button.spin();
                 disableDialogButtons(dialogItself);
                 $.post("/api/update-user.php", {
-                    id : data.id,
-                    username : $('#user-username').val(),
-                    firstName : $('#user-first-name').val(),
-                    lastName : $('#user-last-name').val(),
-                    email : $('#user-email').val(),
-                    role : $('#user-role').val(),
-                    active : $('#user-active').is(':checked') ? 1 : 0,
-                }).done(function(data) {
+                    id: data.id,
+                    username: $('#user-username').val(),
+                    firstName: $('#user-first-name').val(),
+                    lastName: $('#user-last-name').val(),
+                    email: $('#user-email').val(),
+                    role: $('#user-role').val(),
+                    active: $('#user-active').is(':checked') ? 1 : 0,
+                }).done(function (data) {
                     if (data === "") {
                         dialogItself.close();
                         user_table.ajax.reload(null, false);
@@ -531,25 +531,25 @@ function editUser(data) {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
 
-                }).fail(function(xhr, status, error) {
-                    if ( xhr.responseText !== "" ) {
+                }).fail(function (xhr, status, error) {
+                    if (xhr.responseText !== "") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if ( error === "Unauthorized" ) {
+                    } else if (error === "Unauthorized") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     }
-                }).always(function() {
+                }).always(function () {
                     $button.stopSpin();
                     enableDialogButtons(dialogItself);
                 });
             }
         }, {
-            id : 'user-save-btn',
-            icon : 'glyphicon glyphicon-save',
-            label : ' Add User',
-            cssClass : 'btn-success',
-            action : function(dialogItself) {
+            id: 'user-save-btn',
+            icon: 'glyphicon glyphicon-save',
+            label: ' Add User',
+            cssClass: 'btn-success',
+            action: function (dialogItself) {
                 var $button = this; // 'this' here is a jQuery
                 // object that
                 // wrapping the <button> DOM element.
@@ -557,20 +557,20 @@ function editUser(data) {
                 $button.spin();
                 disableDialogButtons(dialogItself);
                 $.post("/api/create-user.php", {
-                    username : $('#user-username').val(),
-                    firstName : $('#user-first-name').val(),
-                    lastName : $('#user-last-name').val(),
-                    email : $('#user-email').val(),
-                    role : $('#user-role').val(),
-                    active : $('#user-active').is(':checked') ? 1 : 0,
-                }).done(function(data) {
+                    username: $('#user-username').val(),
+                    firstName: $('#user-first-name').val(),
+                    lastName: $('#user-last-name').val(),
+                    email: $('#user-email').val(),
+                    role: $('#user-role').val(),
+                    active: $('#user-active').is(':checked') ? 1 : 0,
+                }).done(function (data) {
                     if ($.isNumeric(data) && data !== '0') {
                         user_table.ajax.reload(null, false);
                         dialogItself.close();
                         // reload the modal
                         $.get("/api/get-user.php", {
-                            id : data
-                        }, function(data) {
+                            id: data
+                        }, function (data) {
                             editUser(data);
                         }, "json");
                     } else if (data === '0') {
@@ -578,27 +578,27 @@ function editUser(data) {
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
-                }).fail(function(xhr, status, error) {
-                    if ( xhr.responseText !== "" ) {
+                }).fail(function (xhr, status, error) {
+                    if (xhr.responseText !== "") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if ( error === "Unauthorized" ) {
+                    } else if (error === "Unauthorized") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your user.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     }
-                }).always(function() {
+                }).always(function () {
                     $button.stopSpin();
                     enableDialogButtons(dialogItself);
                 });
             }
         }, {
-            label : 'Close',
-            action : function(dialogItself) {
+            label: 'Close',
+            action: function (dialogItself) {
                 dialogItself.close();
                 user_table.ajax.reload(null, false);
             }
-        } ],
-        onshow : function(dialogItself) {
+        }],
+        onshow: function (dialogItself) {
             if (data !== null && data.role === "admin") {
                 dialogItself.$modalFooter.find('#user-albums-btn').remove();
                 dialogItself.$modalFooter.find('#user-save-btn').remove();
@@ -611,8 +611,8 @@ function editUser(data) {
                 dialogItself.$modalFooter.find('#user-update-btn').remove();
             }
         },
-        onshown : function() {
-            $.get("/api/get-roles.php", function(roles) {
+        onshown: function () {
+            $.get("/api/get-roles.php", function (roles) {
                 for (var i = 0, len = roles.length; i < len; i++) {
                     var option = $('<option>');
                     option.val(roles[i]);
@@ -626,7 +626,7 @@ function editUser(data) {
                 }
             }, "json");
         },
-        onhide : function() {
+        onhide: function () {
             user_table.ajax.reload(null, false);
         },
     });
@@ -634,12 +634,12 @@ function editUser(data) {
 
 function viewLogs(id) {
     var dialog = new BootstrapDialog({
-        title : 'User Activity',
-        message : function() {
+        title: 'User Activity',
+        message: function () {
             var $message = $('<div>Loading...</div>');
             $.get("/api/get-user-log.php", {
-                id : id
-            }, function(data) {
+                id: id
+            }, function (data) {
                 var message = $('<div>');
                 message.addClass('row');
                 for (var i = 0, len = data.length; i < len; i++) {
@@ -666,12 +666,12 @@ function viewLogs(id) {
             }, "json");
             return $message;
         },
-        buttons : [ {
-            label : 'Close',
-            action : function(dialogItself) {
+        buttons: [{
+            label: 'Close',
+            action: function (dialogItself) {
                 dialogItself.close();
             }
-        } ]
+        }]
     });
     dialog.open();
 }
@@ -680,12 +680,12 @@ function addAlbum(id) {
     var albumSpan = $('<span>');
     albumSpan.addClass('selected-album');
     albumSpan.attr('album-id', id);
-    albumSpan.click(function() {
+    albumSpan.click(function () {
         $(this).remove();
     });
     $.get("/api/get-album.php", {
-        id : id
-    }, function(data) {
+        id: id
+    }, function (data) {
         albumSpan.html(data.name);
         $('#user-albums').append(albumSpan);
     }, "json");
@@ -695,6 +695,7 @@ function disableDialogButtons(dialog) {
     dialog.enableButtons(false);
     dialog.setClosable(false);
 }
+
 function enableDialogButtons(dialog) {
     dialog.enableButtons(true);
     dialog.setClosable(true);

@@ -9,9 +9,9 @@
  * Cookies Create/Read/Delete from https://www.quirksmode.org/js/cookies.html
  */
 
-(function($) {
+(function ($) {
 
-    $.fn.bsgdprcookies = function(event) {
+    $.fn.bsgdprcookies = function (event) {
 
         var $element = $(this);
         var cookieShow = ReadCookie('CookieShow');
@@ -23,20 +23,20 @@
             class: '',
             title: 'Cookies & Privacy Policy',
             backdrop: 'static',
-            message:"This site uses cookies in order to provide you with the best experience possible, provide social media " +
-                        "features, analyze our traffic, and personalize album and photo data.<br/>\n<br/>\n" +
-                        "Please click 'Accept' to accept this use of your data. Alternatively, you may click 'Customize' to accept (or " +
-                        "reject) specific categories of data processing.<br/>\n<br/>\n" +
-                        "For more information on how we process your personal data - or to update your preferences at any time - please " +
-                        "visit our ",
+            message: "This site uses cookies in order to provide you with the best experience possible, provide social media " +
+                "features, analyze our traffic, and personalize album and photo data.<br/>\n<br/>\n" +
+                "Please click 'Accept' to accept this use of your data. Alternatively, you may click 'Customize' to accept (or " +
+                "reject) specific categories of data processing.<br/>\n<br/>\n" +
+                "For more information on how we process your personal data - or to update your preferences at any time - please " +
+                "visit our ",
             messageScrollBar: false,
             messageMaxHeightPercent: 25,
             delay: 1500,
             expireDays: 10 * 52 * 7,
-            moreLinkActive:true,
-            moreLinkLabel:'Privacy Policy',
-            moreLinkNewTab:true,
-            moreLink:'/Privacy-Policy.php',
+            moreLinkActive: true,
+            moreLinkLabel: 'Privacy Policy',
+            moreLinkNewTab: true,
+            moreLink: '/Privacy-Policy.php',
             acceptButtonLabel: 'Accept',
             allowAdvancedOptions: true,
             advancedTitle: 'Select which cookies you want to accept',
@@ -60,10 +60,10 @@
                     description: 'Required to collect site visits, browser types, etc.',
                 },
             ],
-            OnAccept: function() {
+            OnAccept: function () {
                 // show remember me option if user accepts to use preferences cookies
                 var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
-                if( cookies !== null && cookies.includes("preferences") ) {
+                if (cookies !== null && cookies.includes("preferences")) {
                     // hide all of the labels containing this
                     $('#profile-remember-span').show();
                     $('#login-remember-span').show();
@@ -72,7 +72,7 @@
             }
         };
 
-        if(!cookieShow || !cookiePreferences || event == 'reinit') {
+        if (!cookieShow || !cookiePreferences || event == 'reinit') {
 
             // Make sure that other instances are gone
             DisposeModal(settings.id);
@@ -83,28 +83,27 @@
             var moreLink = '';
 
             // Generate more link
-            if(settings.moreLinkActive == true) {
-                if(settings.moreLinkNewTab == true) {
+            if (settings.moreLinkActive == true) {
+                if (settings.moreLinkNewTab == true) {
                     moreLink = '<a href="' + settings.moreLink + '" target="_blank" rel="noopener noreferrer" id="' + settings.id + '-more-link">' + settings.moreLinkLabel + '</a>';
-                }
-                else {
+                } else {
                     moreLink = '<a href="' + settings.moreLink + '" id="' + settings.id + '-more-link">' + settings.moreLinkLabel + '</a>';
                 }
             }
 
 
-            if(settings.allowAdvancedOptions === true) {
+            if (settings.allowAdvancedOptions === true) {
                 modalButtons = '<button id="' + settings.id + '-advanced-btn" type="button" class="btn btn-secondary">' + settings.advancedButtonLabel + '</button><button id="' + settings.id + '-accept-btn" type="button" class="btn btn-primary" data-dismiss="modal">' + settings.acceptButtonLabel + '</button>';
 
                 // Generate list of available advanced settings
                 var advancedCookiesToSelectList = '';
 
                 preferences = JSON.parse(cookiePreferences);
-                $.each(settings.advancedCookiesToSelect, function(index, field) {
+                $.each(settings.advancedCookiesToSelect, function (index, field) {
                     if (field.name !== '' && field.title !== '') {
 
                         var cookieDisabledText = '';
-                        if(field.isFixed == true) {
+                        if (field.isFixed == true) {
                             cookieDisabledText = ' checked="checked" disabled="disabled"';
                         }
 
@@ -120,30 +119,29 @@
                 });
 
                 modalBody = '<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>' + '<div id="' + settings.id + '-advanced-types" style="display:none; margin-top: 10px;"><h5 id="' + settings.id + '-advanced-title">' + settings.advancedTitle + '</h5>' + advancedCookiesToSelectList + '</div>';
-            }
-            else {
+            } else {
                 modalButtons = '<button id="' + settings.id + '-accept-btn" type="button" class="btn btn-primary" data-dismiss="modal">' + settings.acceptButtonLabel + '</button>';
 
-                modalBody ='<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>';
+                modalBody = '<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>';
             }
-            
-            if(settings.messageScrollBar == true) {
+
+            if (settings.messageScrollBar == true) {
                 modalBodyStyle = 'style="overflow-y: scroll; max-height: ' + settings.messageMaxHeightPercent + '%"';
             }
 
             var modal = '<div class="modal fade ' + settings.class + '" id="' + settings.id + '" tabindex="-1" role="dialog" aria-labelledby="' + settings.id + '-title" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="' + settings.id + '-title">' + settings.title + '</h5></div><div id="' + settings.id + '-body" class="modal-body" ' + modalBodyStyle + '>' + modalBody + '</div><div class="modal-footer">' + modalButtons + '</div></div></div></div>';
 
             // Show Modal
-            setTimeout(function() {
+            setTimeout(function () {
                 $($element).append(modal);
 
                 $('#' + settings.id).modal({keyboard: false, backdrop: settings.backdrop});
 
                 if (event === 'reinit' && settings.allowAdvancedOptions === true) {
 
-                    setTimeout(function(){
+                    setTimeout(function () {
                         $('#' + settings.id + '-advanced-btn').trigger('click');
-                        $.each(preferences, function(index, field) {
+                        $.each(preferences, function (index, field) {
                             $('#' + settings.id + '-option-' + field).prop('checked', true);
                         });
                     }, settings.advancedAutoOpenDelay)
@@ -151,7 +149,7 @@
             }, settings.delay);
 
             // When user clicks accept set cookie and close modal
-            $('body').on('click','#' + settings.id + '-accept-btn', function(){
+            $('body').on('click', '#' + settings.id + '-accept-btn', function () {
 
                 // Set show cookie
                 CreateCookie('CookieShow', true, settings.expireDays);
@@ -165,7 +163,7 @@
 
                 // Set user preferences cookie
                 var preferences = [];
-                $.each($('input[name="bsgdpr[]"]').serializeArray(), function(i, field){
+                $.each($('input[name="bsgdpr[]"]').serializeArray(), function (i, field) {
                     preferences.push(field.value);
                 });
                 CreateCookie('CookiePreferences', JSON.stringify(preferences), settings.expireDays);
@@ -175,20 +173,20 @@
             });
 
             // Show advanced options
-            $('body').on('click', '#' + settings.id + '-advanced-btn', function(){
+            $('body').on('click', '#' + settings.id + '-advanced-btn', function () {
                 // Uncheck all checkboxes except for the disabled ones
                 $('input[name="bsgdpr[]"]:not(:disabled)').attr('data-auto', 'off').prop('checked', false);
-                
+
                 $('label[name="bsgdpr[]"]').tooltip({offset: '0, 10'});
 
                 // Show advanced checkboxes
-                $('#' + settings.id + '-advanced-types').slideDown('fast', function(){
+                $('#' + settings.id + '-advanced-types').slideDown('fast', function () {
                     $('#' + settings.id + '-advanced-btn').prop('disabled', true);
                 });
 
                 // Scroll content to bottom if scrollbar option is active
-                if(settings.messageScrollBar == true) {
-                    setTimeout(function() {
+                if (settings.messageScrollBar == true) {
+                    setTimeout(function () {
                         bodyID = settings.id + '-body';
                         var div = document.getElementById(bodyID);
                         $('#' + bodyID).animate({
@@ -197,8 +195,7 @@
                     }, 500);
                 }
             });
-        }
-        else {
+        } else {
             var cookieValue = true;
             if (cookieShow == 'false') {
                 cookieValue = false;
@@ -211,17 +208,17 @@
     /**
      * Returns user preferences saved in cookie
      */
-    $.fn.bsgdprcookies.GetUserPreferences = function() {
+    $.fn.bsgdprcookies.GetUserPreferences = function () {
         var preferences = ReadCookie('CookiePreferences');
         return JSON.parse(preferences);
     };
 
     /**
      * Check if user preference exists in cookie
-     * 
+     *
      * @param {string} pref Preference to check
      */
-    $.fn.bsgdprcookies.PreferenceExists = function(pref) {
+    $.fn.bsgdprcookies.PreferenceExists = function (pref) {
         var preferences = $.fn.bsgdprcookies.GetUserPreferences();
 
         if (ReadCookie('CookieShow') === false) {
@@ -237,7 +234,7 @@
 
     /**
      * Hide then delete bs modal
-     * 
+     *
      * @param {string} id Modal ID without '#'
      */
     function DisposeModal(id) {
@@ -251,7 +248,7 @@
 
     /**
      * Sets Cookie
-     * 
+     *
      * @param {string} name Name of the cookie which you want to create
      * @param {boolean} value Value for the created cookie
      * @param {number} days Expire days
@@ -259,37 +256,36 @@
     function CreateCookie(name, value, days) {
         if (days) {
             var date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             var expires = "; expires=" + date.toGMTString();
-        }
-        else var expires = "";
+        } else var expires = "";
         document.cookie = name + "=" + value + expires + "; path=/";
     }
-    
+
 
     /**
      * Gets Cookie called 'name'
-     * 
+     *
      * @param {string} name Name of the cookie to read
      */
     function ReadCookie(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
-        for(var i=0; i < ca.length; i++) {
+        for (var i = 0; i < ca.length; i++) {
             var c = ca[i];
             while (c.charAt(0) == ' ') c = c.substring(1, c.length);
             if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
         }
         return null;
     }
-    
+
     /**
      * Deletes Cookie called 'name;
-     * 
+     *
      * @param {string} name Name of the cookie which you want to delete
      */
     function DeleteCookie(name) {
         CreateCookie(name, "", -1);
-    }    
+    }
 
 }(jQuery));

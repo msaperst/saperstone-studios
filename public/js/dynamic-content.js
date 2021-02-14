@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     $(".collapse-header").click(function () {
         $icon = $(this).find("i")
         $child = $(this).parent().next();

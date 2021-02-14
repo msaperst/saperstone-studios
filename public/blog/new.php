@@ -240,15 +240,15 @@ $sql->disconnect();
                 foreach ( $content as $block ) {
                     $groups[$block->getGroup()][] = $block;
                 }
-                foreach( $groups as $group) {
-                    if ($group[0] instanceof BlogText) {
+                for( $i = 0; $i < sizeof($groups); $i++) {
+                    if ($groups[$i][0] instanceof BlogText) {
                         ?>
-            addTextArea("<?php echo $group[0]->getText(); ?>");
+            addTextArea("<?php echo $groups[$i][0]->getText(); ?>");
             <?php
-                    } elseif ($group[0] instanceof BlogImage) {
+                    } elseif ($groups[$i][0] instanceof BlogImage) {
                         ?>
             addImageArea([<?php
-                        foreach( $group as $image ) {
+                        foreach( $groups[$i] as $image ) {
                             echo json_encode( $image->getRaw() ) . ",";
                         }
                         ?>]);
