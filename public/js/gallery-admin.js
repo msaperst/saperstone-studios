@@ -48,7 +48,7 @@ function editImage() {
             titleInput.attr('placeholder', 'Image Title');
             titleInput.val(img.attr('alt'));
             titleInput.on('keyup keypress blur change', function () {
-                if ( $('#gallery-filename-match').prop('checked') == true ) {
+                if ( $('#gallery-filename-match').prop('checked') ) {
                     updateFilename();
                 }
             });
