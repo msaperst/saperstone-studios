@@ -137,7 +137,6 @@ $user = User::fromSystem();
                             if ($num == 0) {
                                 $class = " class='active'";
                             }
-//                            echo "<li data-target='#" . str_replace ( " ", "-", $gallery->getTitle() ) . "-carousel' data-slide-to='$num'$class></li>";
                             echo "<li onclick='window.location.hash=$num'$class></li>";
                         }
                         ?>
