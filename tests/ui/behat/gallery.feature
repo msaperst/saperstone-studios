@@ -94,3 +94,8 @@ Feature: Gallery
     Given I am on the "portrait/galleries.php?w=999#1" page
     When I close the gallery view
     Then I am taken to the "portrait/galleries.php?w=999#" page
+
+  Scenario: Clicking indicator changes the hash
+    Given I am on the "portrait/galleries.php?w=999#0" page
+    When I skip to gallery image 7
+    Then I am taken to the "portrait/galleries.php?w=999#6" page
