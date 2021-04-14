@@ -86,10 +86,8 @@ $navUser = User::fromSystem();
 
 <!-- Google Analytics -->
 <?php
-$preferences = json_decode( $_COOKIE['CookiePreferences'] );
-$server = 'saperstonestudios.com';
-if (isset ( $_SERVER ['HTTP_X_FORWARDED_HOST'] ) && substr($_SERVER ['HTTP_X_FORWARDED_HOST'], -strlen($server)) === $server && in_array( "analytics", $preferences ) ) {
-    ?>
+if (Session::useAnalytics()) {
+?>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23617021-6"></script>
     <script>
