@@ -37,7 +37,7 @@ class Session {
         return $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER ['HTTP_HOST'];
     }
 
-    function getBaseURL() {
+    function getBaseURL(): string {
         $pageURL = 'http';
         if (isset ($_SERVER ["SERVER_PORT"]) && $_SERVER ["SERVER_PORT"] == "9443") {
             $pageURL .= "s";
@@ -49,7 +49,16 @@ class Session {
         return $pageURL;
     }
 
-    function getCurrentPage() {
+    function getCurrentPage(): string {
         return $this->getBaseURL() . $_SERVER ["REQUEST_URI"];
+    }
+
+    static function useAnalytics(): bool {
+        if (!isset($_COOKIE['CookiePreferences'])) {
+            return false;
+        }
+        $preferences = json_decode($_COOKIE['CookiePreferences']);
+        $server = 'saperstonestudios.com';
+        return (isset ($_SERVER ['HTTP_X_FORWARDED_HOST']) && str_ends_with($_SERVER ['HTTP_X_FORWARDED_HOST'], $server) && in_array("analytics", $preferences));
     }
 }

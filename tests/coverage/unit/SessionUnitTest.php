@@ -122,4 +122,48 @@ class SessionUnitTest extends TestCase {
         unset($_SERVER['REQUEST_URI']);
         $this->assertEquals("https://www.examples.com/here", $result);
     }
+
+    public function testUseAnalyticsNoCookie() {
+        $this->assertFalse(Session::useAnalytics());
+    }
+
+    public function testUseAnalyticsNoHost() {
+        $_COOKIE['CookiePreferences'] = '';
+        $this->assertFalse(Session::useAnalytics());
+        unset($_COOKIE ['CookiePreferences']);
+    }
+
+    public function testUseAnalyticsBadHost() {
+        $_COOKIE['CookiePreferences'] = '';
+        $_SERVER ['HTTP_X_FORWARDED_HOST'] = '12345';
+        $this->assertFalse(Session::useAnalytics());
+        unset($_SERVER ['HTTP_X_FORWARDED_HOST']);
+        unset($_COOKIE ['CookiePreferences']);
+    }
+
+    public function testUseAnalyticsWrongCookie() {
+        $_SERVER ['HTTP_X_FORWARDED_HOST'] = 'http://www.saperstonestudios.com';
+        $_COOKIE['CookiePreferences'] = json_encode(['preferences']);
+        $this->assertFalse(Session::useAnalytics());
+        unset($_SERVER ['HTTP_X_FORWARDED_HOST']);
+        unset($_COOKIE ['CookiePreferences']);
+    }
+
+    public function testUseAnalyticsGood() {
+        $_SERVER ['HTTP_X_FORWARDED_HOST'] = 'saperstonestudios.com';
+        $_COOKIE['CookiePreferences'] = json_encode(['preferences', 'analytics']);
+        $this->assertTrue(Session::useAnalytics());
+        unset($_SERVER ['HTTP_X_FORWARDED_HOST']);
+        unset($_COOKIE ['CookiePreferences']);
+    }
+
+    public function testUseAnalyticsGood1() {
+        $_SERVER ['HTTP_X_FORWARDED_HOST'] = 'https://saperstonestudios.com';
+        $_COOKIE['CookiePreferences'] = json_encode(['preferences', 'analytics']);
+        $this->assertTrue(Session::useAnalytics());
+        unset($_SERVER ['HTTP_X_FORWARDED_HOST']);
+        unset($_COOKIE ['CookiePreferences']);
+    }
+
+
 }
