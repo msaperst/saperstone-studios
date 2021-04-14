@@ -9,6 +9,9 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . 
 
 class SessionUnitTest extends TestCase {
 
+    /**
+     * @var Session
+     */
     private $session;
 
     public function setUp() {

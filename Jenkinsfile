@@ -17,6 +17,13 @@ release
     deploy to walter (prod)
 */
 
+properties(
+    [
+        buildDiscarder(logRotator(numToKeepStr: '5')),
+        disableConcurrentBuilds()
+    ]
+)
+
 node() {
     ansiColor('xterm') {
         branch = env.BRANCH_NAME.replaceAll(/\//, "-")
