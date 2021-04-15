@@ -2,10 +2,15 @@
 Something about how awesome this is
 
 ## Deploying
-
+Everything is orchestrated with Docker and docker-compose
 ### Locally
+To build and deploy locally, simply run
+```shell
+docker-compose up --build
+```
 
 ### Jenkins
+
 
 ## Testing
 All the testing is managed by `composer`. To run tests, ensure `composer` is

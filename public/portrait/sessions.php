@@ -210,6 +210,66 @@ $user = User::fromSystem();
             </div>
 
             <div class="col-lg-12">
+                <h2 class="page-header">Milestone Photography Session Packages</h2>
+            </div>
+            <div class="col-xs-12" style="padding-top: 20px;">
+                <p>Want to capture it all? I offer two different milestone packages so you
+                    can capture your baby's photos throughout the whole first year when
+                    they grow and change the most.</p>
+            </div>
+            <div class="col-lg-12">
+                <h3 class="page-header">Bump to Baby</h3>
+            </div>
+            <div class="col-xs-6">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                    <img src="img/bump-to-baby-1.jpg<?php echo $rand; ?>" width="100%"
+                         alt="Bump to Baby">
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                    <img src="img/bump-to-baby-2.jpg<?php echo $rand; ?>" width="100%"
+                         alt="Bump to Baby">
+                </div>
+            </div>
+            <div class="col-xs-12" style="padding-top: 20px;">
+                <ul>
+                    <li>Includes both a <a href="galleries.php?w=2">Maternity photography
+                        session</a> as well as a <a href="gallery.php?w=3">Newborn photography session</a></li>
+                    <li>Each photography session includes an additional complimentary $150 print credit to
+                        put towards your <a href="products.php">purchase of digitals and/or product artwork</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-12">
+                <h3 class="page-header">Watch Me Grow</h3>
+            </div>
+            <div class="col-xs-6">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                    <img src="img/watch-me-grow-1.jpg<?php echo $rand; ?>" width="100%"
+                         alt="Watch Me Grow">
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                    <img src="img/watch-me-grow-2.jpg<?php echo $rand; ?>" width="100%"
+                         alt="Watch Me Grow">
+                </div>
+            </div>
+            <div class="col-xs-12" style="padding-top: 20px;">
+                <ul>
+                    <li>Includes 3 sessions total:
+                        <ol>
+                            <li><a href="galleries.php?w=35">Sitter 6 Month Photography Session</a></li>
+                            <li><a href="galleries.php?w=48">Cake Smash Photography Session</a></li>
+                            <li><a href="galleries.php?w=6">Family Photography Session</a> at some point in baby's 2nd year</li>
+                        </ol>
+                    </li>
+                    <li>Each photography session includes an additional complimentary $150 print credit
+                        to put towards your <a href="products.php">purchase of digitals and/or product artwork</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-12">
                 <h2 class="page-header">Family and Kids Photography Session</h2>
             </div>
             <div class="col-xs-6">
