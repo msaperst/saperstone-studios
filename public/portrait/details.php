@@ -48,10 +48,10 @@ $user = User::fromSystem();
         <div class="row" style='padding-top: 30px'>
             <div class="col-lg-12">
                 <p>
-                    No matter what stage of life you find yourself in, portraits are
-                    always special. Take the moment to document where you are as an
-                    individual, couple or family by being in front of the lens AND
-                    having fun. Each time I pull out my camera I strive to provide a
+                    No matter what stage of life you find yourself in, family photography
+                    portrait sessions are always special. Take the moment to document where
+                    you are as an individual, couple or family by being in front of the lens
+                    AND having fun. Each time I pull out my camera I strive to provide a
                     unique, fun photography experience. Often when clients are in front
                     of the lens having their portraits taken they need a bit of
                     direction on what to do. No fear, that's why you've hired me. It's

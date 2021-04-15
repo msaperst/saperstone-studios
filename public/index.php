@@ -95,7 +95,8 @@ $user = User::fromSystem();
                 </p>
                 <p class="lead">I've started Saperstone Studios with the hope of
                     providing not just photography, but also an experience.</p>
-                <p>I serve the DC Metro area photographing countless moments for
+                <p>I'm located in Fairfax, VA and provide professional photography for
+                    the DC Metro area photographing countless moments for
                     everything from weddings and engagements to family and events. Each
                     time I pull out my camera I strive to provide a unique, fun
                     photography experience where you can be, well, you! Many clients
