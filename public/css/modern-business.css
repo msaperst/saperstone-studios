@@ -84,3 +84,7 @@ footer {
         height: 70%;
     }
 }
+
+.carousel-control.left, .carousel-control.right {
+    cursor: pointer;
+}
