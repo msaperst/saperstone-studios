@@ -216,6 +216,11 @@ node() {
                 } catch (e) {
                 }
                 sh "ln -s /home/msaperst/saperstone-studios/logs logs"
+                try {
+                    sh "rm -r tmp"
+                } catch (e) {
+                }
+                sh "ln -s /home/msaperst/saperstone-studios/tmp tmp"
             }
             setupConfigurationFiles()
             stage('Launch New Application') {
