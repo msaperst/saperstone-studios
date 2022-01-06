@@ -109,8 +109,8 @@ $message", $actualMessage, $actualMessage);
      * @throws ExceptionAlias
      */
     public static function assertEmailEquals($subject, $txt, $html, $attachment = NULL) {
+        $gmail = new Gmail($subject);
         try {
-            $gmail = new Gmail($subject);
             $gmailTxt = $gmail->getEmailTxt();
             Assert::assertEquals($txt, $gmailTxt, $gmailTxt);
             $gmailHtml = $gmail->getEmailHtml();
@@ -135,8 +135,8 @@ $message", $actualMessage, $actualMessage);
      * @throws ExceptionAlias
      */
     public static function assertEmailMatches($subject, $txt, $html, $attachment = NULL) {
+        $gmail = new Gmail($subject);
         try {
-            $gmail = new Gmail($subject);
             $gmailTxt = $gmail->getEmailTxt();
             Assert::assertStringMatchesFormat($txt, $gmailTxt, $gmailTxt);
             $gmailHtml = $gmail->getEmailHtml();

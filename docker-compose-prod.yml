@@ -49,6 +49,7 @@ services:
     volumes:
     - ./content:/var/www/content
     - ./logs:/var/www/logs
+    - ./tmp:/var/www/public/tmp
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
