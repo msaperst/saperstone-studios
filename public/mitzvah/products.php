@@ -30,7 +30,7 @@ $sql->disconnect();
 
 <body>
 
-    <?php $nav = "mitzvah"; require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
+    <?php $nav = "b'nai mitzvah"; require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
 
     <!-- Page Content -->
     <div class="page-content container">

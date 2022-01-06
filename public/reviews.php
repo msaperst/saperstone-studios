@@ -54,7 +54,7 @@ $sql->disconnect();
                 <h1 class="page-header text-center">
                 <?php
                 if (isset ( $category )) {
-                    echo ucfirst ( $details ['name'] ) . " ";
+                    echo ucwords ( $details ['name'] ) . " ";
                 }
                 ?>
                 Raves</h1>
@@ -63,7 +63,7 @@ $sql->disconnect();
                     <?php
                     if (isset ( $category )) {
                         ?>
-                    <li><a href='index.php'><?php  echo ucfirst ( $details ['name'] ); ?></a></li>
+                    <li><a href='index.php'><?php  echo ucwords ( $details ['name'] ); ?></a></li>
                     <li class='active'>Raves</li>
                     <?php
                     } else {
