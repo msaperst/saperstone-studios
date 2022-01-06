@@ -34,7 +34,7 @@
                 <li><a href="restoration.php">Restoration</a></li>
                 <li><a href="manipulation.php">Other Edits</a></li>
             </ul></li>
-        <li><a href="reviews.php?c=1">Raves</a></li>
+        <li><a href="reviews.php?c=4">Raves</a></li>
         <li><a href="/blog/category.php?t=4">Blog</a></li>
         <li><a href="/about.php">About</a></li>
         <li><a href="/contact.php">Contact</a></li>
