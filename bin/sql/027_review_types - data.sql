@@ -7,7 +7,9 @@ LOCK TABLES `review_types` WRITE;
 INSERT IGNORE INTO `review_types` VALUES (1,'portrait');
 INSERT IGNORE INTO `review_types` VALUES (2,'wedding');
 INSERT IGNORE INTO `review_types` VALUES (3,'commercial');
-INSERT IGNORE INTO `review_types` VALUES (4,'mitzvah');
 INSERT IGNORE INTO `review_types` VALUES (4,'other');
+
+UPDATE `review_types` set `id` = 5 WHERE `id` = 4;
+INSERT IGNORE INTO `review_types` VALUES (4,'mitzvah');
 /*!40000 ALTER TABLE `review_types` ENABLE KEYS */;
 UNLOCK TABLES;
