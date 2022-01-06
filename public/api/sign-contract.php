@@ -12,7 +12,7 @@ try {
 // email out pdf
 $from = "Contracts <contracts@saperstonestudios.com>";
 $to = "{$contract->getName()} <{$contract->getEmail()}>";
-$subject = "Saperstone Studios " . ucfirst($contract->getType()) . " Contract";
+$subject = "Saperstone Studios " . ucwords($contract->getType()) . " Contract";
 $email = new Email($to, $from, $subject);
 
 $html = "<html><body>";

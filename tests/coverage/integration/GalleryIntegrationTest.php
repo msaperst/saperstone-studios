@@ -117,6 +117,11 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals('commercial', $gallery->getNav());
         $gallery = Gallery::withId('71');
         $this->assertEquals('commercial', $gallery->getNav());
+        $gallery = Gallery::withId('72');
+        $this->assertEquals('b\'nai mitzvah', $gallery->getNav());
+        $gallery = Gallery::withId('73');
+        $this->assertEquals('b\'nai mitzvah', $gallery->getNav());
+        //TODO - add a mitzvah sub category
     }
 
     public function testGetBreadcrumbsBasicPortrait() {
