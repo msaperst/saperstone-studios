@@ -18,12 +18,12 @@
             class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="galleries.php?w=2">Maternity</a></li>
-                <li><a href="gallery.php?w=3">Newborns</a></li>
-                <li><a href="gallery.php?w=4">6 Months</a></li>
-                <li><a href="gallery.php?w=5">First Birthday</a></li>
-                <li><a href="galleries.php?w=6">Kids and Family</a></li>
-                <li><a href="galleries.php?w=7">Seniors</a></li>
+                <li><a href="galleries.php?w=73">Maternity</a></li>
+                <li><a href="gallery.php?w=74">Newborns</a></li>
+                <li><a href="gallery.php?w=75">6 Months</a></li>
+                <li><a href="gallery.php?w=73">First Birthday</a></li>
+                <li><a href="galleries.php?w=74">Kids and Family</a></li>
+                <li><a href="galleries.php?w=75">Seniors</a></li>
             </ul></li>
 
         <li class="dropdown"><a href="javascript:void(0);"
@@ -35,6 +35,6 @@
                 <li><a href="manipulation.php">Other Edits</a></li>
             </ul></li>
         <li><a href="reviews.php?c=1">Raves</a></li>
-        <li><a href="/blog/category.php?t=20">Blog</a></li>
+        <li><a href="/blog/category.php?t=4">Blog</a></li>
         <li><a href="/about.php">About</a></li>
         <li><a href="/contact.php">Contact</a></li>

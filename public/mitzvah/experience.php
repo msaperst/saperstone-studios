@@ -27,7 +27,7 @@ $user = User::fromSystem();
 
 <body>
 
-    <?php $nav = "wedding"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
+    <?php $nav = "mitzvah"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
 
     <!-- Page Content -->
     <div class="page-content container">
