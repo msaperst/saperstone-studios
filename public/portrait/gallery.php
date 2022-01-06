@@ -20,12 +20,6 @@ foreach( $sql->getRows( "SELECT * FROM `galleries` WHERE parent = '{$gallery->ge
 if (sizeof ( $children ) == 0) {
     $errors->throw404();
 }
-
-//if ($gallery->getParent() != NULL && $gallery->getParent()->getTitle() == 'Product') {
-//    $grandparent = $parent;
-//    $parent = $sql->getRow( "SELECT `parent` FROM `galleries` WHERE id = " . $details ['parent'] . ";" ) ['parent'];
-//    $parent = $sql->getRow( "SELECT `title` FROM `galleries` WHERE id = $parent;" ) ['title'];
-//}
 ?>
 
 <!DOCTYPE html>
