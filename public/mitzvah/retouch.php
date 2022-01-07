@@ -25,7 +25,7 @@ $user = User::fromSystem();
 <body>
 
     <?php
-    $nav = "mitzvah";
+    $nav = "b'nai mitzvah";
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
     ?>
 
