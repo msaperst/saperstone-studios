@@ -28,8 +28,8 @@ $userId = $systemUser->getIdentifier();
 //TODO - might need to ensure that the user has access to the album
 // determine what the user can download
 $downloadable = array();
-foreach ($sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '" . $systemUser->getId() . "' OR `user` = '0';") as $r) {
-    if ($r ['album'] == "*" || ($r ['album'] == $album->getId() && $r ['image'] == "*")) {
+foreach ($sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '" . $systemUser->getId() . "' OR ( `user` = '0' AND `album` != '*');") as $r) {
+    if (($r ['album'] == "*" && $r ['image'] == "*") || ($r ['album'] == $album->getId() && $r ['image'] == "*")) {
         $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = {$album->getId()};"));
     } elseif ($r ['album'] == $album->getId()) {
         $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = {$album->getId()} AND id = " . $r ['image'] . ";"));
