@@ -5,6 +5,7 @@ namespace ui\page;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Google\Exception as ExceptionAlias;
 use Sql;
@@ -139,55 +140,68 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl);
         $this->assertEquals('Portraits
 Weddings
+B\'Nai Mitzvahs
 Commercial
 Blog
 Information
 Login', $this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->getText());
     }
 
+    private function blogMenu(): RemoteWebElement {
+        return $this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[4];
+    }
+
+    private function infoMenu(): RemoteWebElement {
+        return $this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[5];
+    }
+
+    private function userMenu(): RemoteWebElement {
+        return $this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[6];
+    }
+
     public function testMainMenuBlog() {
         $this->driver->get($this->baseUrl);
-        $this->assertEquals(3, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[3]->findElements(WebDriverBy::tagName('li'))));
+        $this->assertEquals(3, sizeof($this->blogMenu()->findElements(WebDriverBy::tagName('li'))));
     }
 
     public function testMainMenuBlogAdmin() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
         $this->driver->get($this->baseUrl);
-        $this->assertEquals(5, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[3]->findElements(WebDriverBy::tagName('li'))));
+        $this->assertEquals(5, sizeof($this->blogMenu()->findElements(WebDriverBy::tagName('li'))));
     }
 
     public function testMainMenuInformation() {
         $this->driver->get($this->baseUrl);
-        $this->assertEquals(5, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[4]->findElements(WebDriverBy::tagName('li'))));
+        $this->assertEquals(5, sizeof($this->infoMenu()->findElements(WebDriverBy::tagName('li'))));
     }
 
     public function testMainMenuInformationAdmin() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
         $this->driver->get($this->baseUrl);
-        $this->assertEquals(4, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[4]->findElements(WebDriverBy::tagName('li'))));
+        $this->assertEquals(4, sizeof($this->infoMenu()->findElements(WebDriverBy::tagName('li'))));
     }
 
     public function testMainMenuUser() {
         $this->driver->get($this->baseUrl);
-        $this->assertEquals(5, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))));
+        $this->assertEquals(6, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))));
     }
 
     public function testMainMenuUserUser() {
         $this->driver->get($this->baseUrl);
         $this->loginAs('c90788c0e409eac6a95f6c6360d8dbf7');
         $this->driver->get($this->baseUrl);
-        $this->assertEquals(6, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))));
-        $this->assertEquals(3, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[5]->findElements(WebDriverBy::tagName('li'))));
+        $this->assertEquals(7, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))));
+        $this->assertEquals(3, sizeof($this->userMenu()->findElements(WebDriverBy::tagName('li'))));
     }
 
     public function testMainMenuUserAdmin() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
         $this->driver->get($this->baseUrl);
-        $this->assertEquals(6, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))));
-        $this->assertEquals(7, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))[5]->findElements(WebDriverBy::tagName('li'))));
+        $this->assertEquals(7, sizeof($this->driver->findElement(WebDriverBy::id('bs-example-navbar-collapse-1'))->findElements(WebDriverBy::className('dropdown'))));
+        $this->assertEquals(7, sizeof($this->userMenu()->findElements(WebDriverBy::tagName('li'))));
     }
 
     public function testPortrait() {

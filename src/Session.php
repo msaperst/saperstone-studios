@@ -60,6 +60,6 @@ class Session {
         }
         $preferences = json_decode($_COOKIE['CookiePreferences']);
         $server = 'saperstonestudios.com';
-        return (isset ($_SERVER ['HTTP_X_FORWARDED_HOST']) && str_ends_with($_SERVER ['HTTP_X_FORWARDED_HOST'], $server) && in_array("analytics", $preferences));
+        return (isset ($_SERVER ['HTTP_X_FORWARDED_HOST']) && Strings::endsWith($_SERVER ['HTTP_X_FORWARDED_HOST'], $server) && in_array("analytics", $preferences));
     }
 }

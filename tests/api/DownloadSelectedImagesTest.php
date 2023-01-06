@@ -183,6 +183,7 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
+            $x = (string)$response->getBody();
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
             CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
@@ -400,6 +401,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
+            $x = (string)$response->getBody();
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
             CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
@@ -773,6 +775,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
+            $x = (string)$response->getBody();
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
             CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);

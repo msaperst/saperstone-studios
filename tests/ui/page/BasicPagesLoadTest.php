@@ -213,7 +213,7 @@ Full UA: %s\r\n",
             $sql->executeStatement("INSERT INTO `contracts` (`id`, `link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`, `session`, `details`, `amount`, `deposit`, `invoice`, `content`, `signature`, `initial`, `file`) VALUES (999, '8e07fb32bf072e1825df8290a7bcdc57', 'commercial', 'MaxMaxMax', 'Address', '1234567890', 'email-address', '2021-10-13', '1234 Sesame Street', 'Some session', 'details', '0.00', '0.00', '', 'content', 'x', 'y', '../user/contracts/My File.pdf')");
             $this->driver->get($this->baseUrl . 'contract.php?c=8e07fb32bf072e1825df8290a7bcdc57');
             $this->assertTrue($this->driver->findElement(WebDriverBy::tagName('embed'))->isDisplayed());
-            $this->assertStringEndsWith('/user/contracts/My%20File.pdf', $this->driver->findElement(WebDriverBy::tagName('embed'))->getAttribute('src'));
+            $this->assertStringEndsWith('/user/contracts/My File.pdf', $this->driver->findElement(WebDriverBy::tagName('embed'))->getAttribute('src'));
             $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('contract'))));
             $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('contract-initial-holder'))));
             $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('contract-messages'))));

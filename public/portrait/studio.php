@@ -38,7 +38,7 @@ $sql->disconnect();
                 <h1 class="page-header text-center">Home Studio</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php"><?php echo ucfirst($nav); ?></a></li>
+                    <li><a href="index.php"><?php echo ucwords($nav); ?></a></li>
                     <li><a href="details.php">Details</a></li>
                     <li class="active">Studio</li>
                 </ol>

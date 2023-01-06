@@ -94,7 +94,7 @@ class GetUserAlbumsTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-user-albums.php', [
             'query' => [
-                'id' => ''
+                'user' => ''
             ],
             'cookies' => $cookieJar
         ]);
@@ -111,7 +111,7 @@ class GetUserAlbumsTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-user-albums.php', [
             'query' => [
-                'id' => 9999
+                'user' => 9999
             ],
             'cookies' => $cookieJar
         ]);
@@ -128,7 +128,7 @@ class GetUserAlbumsTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-user-albums.php', [
             'query' => [
-                'id' => 2
+                'user' => 2
             ],
             'cookies' => $cookieJar
         ]);
@@ -145,7 +145,7 @@ class GetUserAlbumsTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-user-albums.php', [
             'query' => [
-                'id' => 1
+                'user' => 1
             ],
             'cookies' => $cookieJar
         ]);

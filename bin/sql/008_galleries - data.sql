@@ -73,7 +73,10 @@ INSERT IGNORE INTO `galleries` VALUES (68, 56, 'neurogrow-brain-fitness-center.j
 INSERT IGNORE INTO `galleries` VALUES (69, 57, 'company-meeting.jpg', 'Company Meeting', NULL);
 INSERT IGNORE INTO `galleries` VALUES (70, 57, 'holiday-party.jpg', 'Holiday Party', NULL);
 INSERT IGNORE INTO `galleries` VALUES (71, 57, 'corporate-picnic.jpg', 'Corporate Picnic', NULL);
-
+INSERT IGNORE INTO `galleries` VALUES (72, NULL, NULL, 'B\'nai Mitzvah', NULL);
+INSERT IGNORE INTO `galleries` VALUES (73, 72, 'something-1.jpg', 'Something 1', NULL);
+INSERT IGNORE INTO `galleries` VALUES (74, 72, 'something-2.jpg', 'Something 2', NULL);
+INSERT IGNORE INTO `galleries` VALUES (75, 72, 'something-3.jpg', 'Something 3', NULL);
 
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
