@@ -51,7 +51,7 @@ $user = User::fromSystem();
             <div class="col-lg-12"></div>
 
             <div class="col-lg-12">
-                <h2 class="page-header">The Fab Five | $100</h2>
+                <h2 class="page-header">The Fab Five | $250</h2>
             </div>
             <div class="col-xs-4">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable vertical"; } ?>">
@@ -74,7 +74,7 @@ $user = User::fromSystem();
             </div>
 
             <div class="col-lg-12">
-                <h2 class="page-header">The Basic | $200</h2>
+                <h2 class="page-header">The Basic | $400</h2>
             </div>
             <div class="col-xs-4">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable vertical"; } ?>">
@@ -91,13 +91,13 @@ $user = User::fromSystem();
                             (Located in Fairfax, VA) or a <a href='galleries.php?w=53'>Studio Headshot</a> session</li>
                     <li>1 background for <a href='galleries.php?w=53'>Studio</a> session</li>
                     <li>Same day web gallery with 40+ unretouched selects to choose from</li>
-                    <li>1 file of your choice retouched with print release</li>
+                    <li>2 files of your choice retouched with print release</li>
                     <li>Additional files available for purchase</li>
                 </ul></p>
             </div>
 
             <div class="col-lg-12">
-                <h2 class="page-header">The Professional | $400</h2>
+                <h2 class="page-header">The Professional | $600</h2>
             </div>
             <div class="col-xs-4">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable vertical"; } ?>">
@@ -115,7 +115,7 @@ $user = User::fromSystem();
                                 (Located in Fairfax, VA) or a <a href='galleries.php?w=53'>Studio Headshot</a> session</li>
                     <li>3 background changes for <a href='galleries.php?w=53'>Studio</a> session</li>
                     <li>Same day web gallery with 75+ unretouched selects to choose from</li>
-                    <li>3 files of your choice retouched with print release</li>
+                    <li>5 files of your choice retouched with print release</li>
                     <li>Additional files available for purchase</li>
                 </ul></p>
             </div>
