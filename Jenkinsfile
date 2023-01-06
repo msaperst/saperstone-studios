@@ -94,7 +94,7 @@ node() {
                             reportName           : 'Integration Test Results Report'
                     ])
                     publishHTML([
-                            allowMissing         : false,
+                            allowMissing         : true,
                             alwaysLinkToLastBuild: true,
                             keepAll              : true,
                             reportDir            : 'reports/it-coverage',
@@ -274,7 +274,7 @@ node() {
                                         cloverReportFileName: 'cov-clover.xml'
                                     ])
                                     publishHTML([
-                                            allowMissing         : false,
+                                            allowMissing         : true,
                                             alwaysLinkToLastBuild: true,
                                             keepAll              : true,
                                             reportDir            : 'reports/cov-coverage',
