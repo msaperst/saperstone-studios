@@ -11,7 +11,6 @@ INSERT IGNORE INTO `galleries` VALUES (1, NULL, NULL, 'Portrait', NULL);
 INSERT IGNORE INTO `galleries` VALUES (2, 1, 'maternity.jpg', 'Maternity', NULL);
 INSERT IGNORE INTO `galleries` VALUES (3, 1, 'newborn.jpg', 'Newborn', NULL);
 INSERT IGNORE INTO `galleries` VALUES (4, 1, '6-month.jpg', '6 Months', NULL);
-INSERT IGNORE INTO `galleries` VALUES (5, 1, '1-year.jpg', 'First Birthday', NULL);
 INSERT IGNORE INTO `galleries` VALUES (6, 1, 'family.jpg', 'Kids and Family', NULL);
 INSERT IGNORE INTO `galleries` VALUES (7, 1, 'senior.jpg', 'Seniors', NULL);
 INSERT IGNORE INTO `galleries` VALUES (8, NULL, NULL, 'Wedding', NULL);
