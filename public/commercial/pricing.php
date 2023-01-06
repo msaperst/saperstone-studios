@@ -68,8 +68,8 @@ $user = User::fromSystem();
                     <li>One look/outfit</li>
                     <li><a href='galleries.php?w=54'>On Location Headshot</a> at Saperstone Studios (located in Fairfax, VA)</li>
                     <li>Same day web gallery with 10-15 unretouched selects to choose from</li>
-                    <li>1 file of your choice retouched with print release</li>
-                    <li>Additional files available for purchase</li>
+                    <li>1 image of your choice retouched with print release</li>
+                    <li>Additional images available for purchase</li>
                 </ul></p>
             </div>
 
@@ -91,8 +91,8 @@ $user = User::fromSystem();
                             (Located in Fairfax, VA) or a <a href='galleries.php?w=53'>Studio Headshot</a> session</li>
                     <li>1 background for <a href='galleries.php?w=53'>Studio</a> session</li>
                     <li>Same day web gallery with 40+ unretouched selects to choose from</li>
-                    <li>2 files of your choice retouched with print release</li>
-                    <li>Additional files available for purchase</li>
+                    <li>2 images of your choice retouched with print release</li>
+                    <li>Additional images available for purchase</li>
                 </ul></p>
             </div>
 
@@ -115,8 +115,8 @@ $user = User::fromSystem();
                                 (Located in Fairfax, VA) or a <a href='galleries.php?w=53'>Studio Headshot</a> session</li>
                     <li>3 background changes for <a href='galleries.php?w=53'>Studio</a> session</li>
                     <li>Same day web gallery with 75+ unretouched selects to choose from</li>
-                    <li>5 files of your choice retouched with print release</li>
-                    <li>Additional files available for purchase</li>
+                    <li>5 images of your choice retouched with print release</li>
+                    <li>Additional images available for purchase</li>
                 </ul></p>
             </div>
         </div>
@@ -148,5 +148,4 @@ $user = User::fromSystem();
     ?>
 
 </body>
-
 </html>
