@@ -430,40 +430,10 @@
         <priority>0.3</priority>
     </url>
     <url>
-        <loc>https://saperstonestudios.com/portrait/gallery.php?w=4</loc>
+        <loc>https://saperstonestudios.com/portrait/gallery.php?w=35</loc>
         <lastmod>2020-10-23</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
-    </url>
-    <url>
-        <loc>https://saperstonestudios.com/portrait/galleries.php?w=35</loc>
-        <lastmod>2020-10-23</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.3</priority>
-    </url>
-    <url>
-        <loc>https://saperstonestudios.com/portrait/galleries.php?w=36</loc>
-        <lastmod>2020-10-23</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.3</priority>
-    </url>
-    <url>
-        <loc>https://saperstonestudios.com/portrait/gallery.php?w=5</loc>
-        <lastmod>2020-10-23</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    <url>
-        <loc>https://saperstonestudios.com/portrait/galleries.php?w=48</loc>
-        <lastmod>2020-10-23</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.3</priority>
-    </url>
-    <url>
-        <loc>https://saperstonestudios.com/portrait/galleries.php?w=49</loc>
-        <lastmod>2020-10-23</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.3</priority>
     </url>
     <url>
         <loc>https://saperstonestudios.com/portrait/galleries.php?w=6</loc>

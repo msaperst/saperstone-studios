@@ -1,6 +1,15 @@
 # Saperstone Studios Website
 Something about how awesome this is
 
+## Development
+
+### Retouch
+When creating new thumbs for retouch:
+- first create 90 (short side) thumbs:
+`convert -resize x90 EmilyAfter.jpg Emily.jpg` OR `convert -resize 90x EmilyAfter.jpg Emily.jpg`
+- then crop it:
+`convert Emily.jpg -gravity center -crop 90x90+0+0 +repage Emily.jpg`
+
 ## Deploying
 Everything is orchestrated with Docker and docker-compose
 ### Locally

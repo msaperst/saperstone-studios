@@ -10,7 +10,6 @@ ALTER TABLE `albums` AUTO_INCREMENT = 1;
 INSERT IGNORE INTO `galleries` VALUES (1, NULL, NULL, 'Portrait', NULL);
 INSERT IGNORE INTO `galleries` VALUES (2, 1, 'maternity.jpg', 'Maternity', NULL);
 INSERT IGNORE INTO `galleries` VALUES (3, 1, 'newborn.jpg', 'Newborn', NULL);
-INSERT IGNORE INTO `galleries` VALUES (4, 1, '6-month.jpg', '6 Months', NULL);
 INSERT IGNORE INTO `galleries` VALUES (6, 1, 'family.jpg', 'Kids and Family', NULL);
 INSERT IGNORE INTO `galleries` VALUES (7, 1, 'senior.jpg', 'Seniors', NULL);
 INSERT IGNORE INTO `galleries` VALUES (8, NULL, NULL, 'Wedding', NULL);
@@ -40,8 +39,7 @@ INSERT IGNORE INTO `galleries` VALUES (31, 28, 'acrylic-print.jpg', 'Acrylic Pri
 INSERT IGNORE INTO `galleries` VALUES (32, 28, 'keepsake-box.jpg', 'Keepsake Boxes', 'Perfect for anyone who wants to display a lot of images but doesn''t have a ton of wall space.  These custom 5x7 boxes come with 10 of your favorite images from your session printed on lustre paper and mounted on a rigid black styrene.  Rotate through displaying your images on the included easel for all to enjoy.');
 INSERT IGNORE INTO `galleries` VALUES (33, 28, 'stand-out-frame.jpg', 'Stand Out Frames', 'These lustre prints are mounted on 3/4 inch thick foam core and wrapped with either a black or white edge.  Modern, sleek and light weight for easy hanging!');
 INSERT IGNORE INTO `galleries` VALUES (34, 28, 'canvas-print.jpg', 'Canvas Prints', 'That classic, timeless look of canvas can''t be beat. Archival quality stretched canvas over a solid wooden frame built to stand the test of time.  Hang just one or multiples to create a cluster of images that tell a story from your session.');
-INSERT IGNORE INTO `galleries` VALUES (35, 4, '6-month-studio.jpg', 'In Studio', NULL);
-INSERT IGNORE INTO `galleries` VALUES (36, 4, '6-month-location.jpg', 'On Location', NULL);
+INSERT IGNORE INTO `galleries` VALUES (35, 1, '6-month-studio.jpg', 'In Studio', NULL);
 INSERT IGNORE INTO `galleries` VALUES (37, 8, 'photobooth.jpg', 'Photobooth', NULL);
 INSERT IGNORE INTO `galleries` VALUES (38, 8, NULL, 'Product', NULL);
 INSERT IGNORE INTO `galleries` VALUES (39, 38, 'story-grid.jpg', 'Story Grids', 'Hate making sure your prints are evenly spaced once hung on the wall?  Then this is the art product for you.  Each story grid comes with a paper template to hang on the wall.  Your template indicates where to place metal pegs which then make up a grid system on your wall.  Simply slip the prints onto the metal pegs and voila! Evenly spaced prints! These collages range in overall sizes from 2'' x 3'' all the way up to 4.5'' x 2'' or beyond and are totally customizable. Images are printed on either metal or a lustre photographic paper, your choice.');
@@ -53,8 +51,6 @@ INSERT IGNORE INTO `galleries` VALUES (44, 38, 'canvas-print.jpg', 'Canvas Print
 INSERT IGNORE INTO `galleries` VALUES (45, 40, 'standard-albums.jpg', 'Standard Albums', NULL);
 INSERT IGNORE INTO `galleries` VALUES (46, 40, 'signature-albums.jpg', 'Signature Albums', NULL);
 INSERT IGNORE INTO `galleries` VALUES (47, 40, 'engagement-book.jpg', 'Engagement Book', NULL);
-INSERT IGNORE INTO `galleries` VALUES (48, 5, '1year-studio.jpg', 'Studio Sessions', NULL);
-INSERT IGNORE INTO `galleries` VALUES (49, 5, '1year-locaion.jpg', 'On Location', NULL);
 INSERT IGNORE INTO `galleries` VALUES (50, 28, 'album-block.jpg', 'Album Block', 'This wooden block holds 10 of your favorite 5x7 images and is perfect for display on a mantle, coffee table or shelf.  Photos are mounted on a durable styrene, making it easy to rotate through displaying your images.  Color options are black or white, your choice!');
 INSERT IGNORE INTO `galleries` VALUES (51, 28, 'keepsake-usb.jpg', 'Keepsake USB', 'Every time you order digital files, they are given to you in this keepsake USB case for safe keeping.  Be sure to back these images up in multiple locations as digital media is forever changing!');
 INSERT IGNORE INTO `galleries` VALUES (52, NULL, NULL, 'Commercial', NULL);
@@ -77,6 +73,12 @@ INSERT IGNORE INTO `galleries` VALUES (72, NULL, NULL, 'B\'nai Mitzvah', NULL);
 INSERT IGNORE INTO `galleries` VALUES (73, 72, 'something-1.jpg', 'Something 1', NULL);
 INSERT IGNORE INTO `galleries` VALUES (74, 72, 'something-2.jpg', 'Something 2', NULL);
 INSERT IGNORE INTO `galleries` VALUES (75, 72, 'something-3.jpg', 'Something 3', NULL);
+
+DELETE FROM `galleries` WHERE id = 5;
+DELETE FROM `galleries` WHERE id = 48;
+DELETE FROM `galleries` WHERE id = 49;
+DELETE FROM `galleries` WHERE id = 4;
+DELETE FROM `galleries` WHERE id = 36;
 
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
