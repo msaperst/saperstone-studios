@@ -79,6 +79,7 @@ $user = User::fromSystem();
         images[0] = { thumb:'/retouch/mitzvah/Ainsley.jpg', orig:'/retouch/mitzvah/AinsleyBefore.jpg', edit:'/retouch/mitzvah/AinsleyAfter.jpg', width:'1140', height:'761', text:'' };
         images[1] = { thumb:'/retouch/mitzvah/Ari.jpg', orig:'/retouch/mitzvah/AriBefore.jpg', edit:'/retouch/mitzvah/AriAfter.jpg', width:'1140', height:'761', text:'' };
         images[2] = { thumb:'/retouch/mitzvah/Emily.jpg', orig:'/retouch/mitzvah/EmilyBefore.jpg', edit:'/retouch/mitzvah/EmilyAfter.jpg', width:'1140', height:'761', text:'' };
+
         var retouch = new Retouch( $('#holder'), images, true );
     </script>
 
