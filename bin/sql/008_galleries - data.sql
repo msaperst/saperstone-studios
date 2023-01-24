@@ -70,9 +70,22 @@ INSERT IGNORE INTO `galleries` VALUES (69, 57, 'company-meeting.jpg', 'Company M
 INSERT IGNORE INTO `galleries` VALUES (70, 57, 'holiday-party.jpg', 'Holiday Party', NULL);
 INSERT IGNORE INTO `galleries` VALUES (71, 57, 'corporate-picnic.jpg', 'Corporate Picnic', NULL);
 INSERT IGNORE INTO `galleries` VALUES (72, NULL, NULL, 'B\'nai Mitzvah', NULL);
-INSERT IGNORE INTO `galleries` VALUES (73, 72, 'something-1.jpg', 'Something 1', NULL);
-INSERT IGNORE INTO `galleries` VALUES (74, 72, 'something-2.jpg', 'Something 2', NULL);
-INSERT IGNORE INTO `galleries` VALUES (75, 72, 'something-3.jpg', 'Something 3', NULL);
+INSERT IGNORE INTO `galleries` VALUES (73, 72, 'bimah.jpg', 'Bimah Session', NULL);
+INSERT IGNORE INTO `galleries` VALUES (74, 72, 'services.jpg', 'Services', NULL);
+INSERT IGNORE INTO `galleries` VALUES (75, 72, 'reception.jpg', 'Reception', NULL);
+INSERT IGNORE INTO `galleries` VALUES (76, 38, 'album-block.jpg', 'Album Block', NULL);
+INSERT IGNORE INTO `galleries` VALUES (77, 72, 'photobooth.jpg', 'Photobooth', NULL);
+INSERT IGNORE INTO `galleries` VALUES (78, 72, NULL, 'Product', NULL);
+INSERT IGNORE INTO `galleries` VALUES (79, 78, 'story-grid.jpg', 'Story Grids', 'Hate making sure your prints are evenly spaced once hung on the wall?  Then this is the art product for you.  Each story grid comes with a paper template to hang on the wall.  Your template indicates where to place metal pegs which then make up a grid system on your wall.  Simply slip the prints onto the metal pegs and voila! Evenly spaced prints! These collages range in overall sizes from 2'' x 3'' all the way up to 4.5'' x 2'' or beyond and are totally customizable. Images are printed on either metal or a lustre photographic paper, your choice.');
+INSERT IGNORE INTO `galleries` VALUES (80, 78, 'keepsake-album.jpg', 'Heirloom Albums', 'How are you planning to share all those amazing memories with future little ones? Heirloom albums are the perfect way to put all your favorite images in one place. Hand made and printed Fuji lustre paper that has a 100+ year rating (the highest in the industry), these albums will be sure to stand the test of time for generations to come.');
+INSERT IGNORE INTO `galleries` VALUES (81, 78, 'acrylic-print.jpg', 'Acrylic Prints', 'These gorgeous portraits are printed on a metallic paper and mounted under acrylic for a frameless modern way to display your images.  They stand out from the wall about 3/4 of an inch which gives depth.  One image can stand alone or order multiples to display a series from your session.');
+INSERT IGNORE INTO `galleries` VALUES (82, 78, 'stand-out-frame.jpg', 'Stand Out Frames', 'These lustre prints are mounted on 3/4 inch thick foam core and wrapped with either a black or white edge.  Modern, sleek and light weight for easy hanging!');
+INSERT IGNORE INTO `galleries` VALUES (83, 78, 'canvas-print.jpg', 'Canvas Prints', 'That classic, timeless look of canvas can''t be beat. Archival quality stretched canvas over a solid wooden frame built to stand the test of time.  Hang just one or multiples to create a cluster of images that tell a story from your session.');
+INSERT IGNORE INTO `galleries` VALUES (84, 80, 'standard-albums.jpg', 'Standard Albums', NULL);
+INSERT IGNORE INTO `galleries` VALUES (85, 80, 'signature-albums.jpg', 'Signature Albums', NULL);
+INSERT IGNORE INTO `galleries` VALUES (86, 80, 'memory-book.jpg', 'Memory Book', NULL);
+INSERT IGNORE INTO `galleries` VALUES (87, 78, 'album-block.jpg', 'Album Block', 'This wooden block holds 10 of your favorite 5x7 images and is perfect for display on a mantle, coffee table or shelf.  Photos are mounted on a durable styrene, making it easy to rotate through displaying your images.  Color options are black or white, your choice!');
+INSERT IGNORE INTO `galleries` VALUES (88, 78, 'keepsake-usb.jpg', 'Keepsake USB', 'Every time you order digital files, they are given to you in this keepsake USB case for safe keeping.  Be sure to back these images up in multiple locations as digital media is forever changing!');
 
 DELETE FROM `galleries` WHERE id = 5;
 DELETE FROM `galleries` WHERE id = 48;

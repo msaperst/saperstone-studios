@@ -115,7 +115,7 @@ $user = User::fromSystem();
     <!-- /.container -->
 
     <!-- Slideshow Modal -->
-    <div id="<?php echo str_replace(" ","-",$gallery->getTitle()); ?>"
+    <div id="<?php echo str_replace("'", "-", str_replace(" ","-",$gallery->getTitle())); ?>"
         class="modal fade modal-carousel" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
@@ -127,7 +127,7 @@ $user = User::fromSystem();
                 <div class="modal-body">
                     <!-- Carousel -->
                     <div
-                        id="<?php echo str_replace(" ","-",$gallery->getTitle()); ?>-carousel"
+                        id="<?php echo str_replace("'", "-", str_replace(" ","-",$gallery->getTitle())); ?>-carousel"
                         class="carousel slide carousel-three-by-two" data-pause="false" data-interval="false">
                         <!-- Indicators -->
                         <ol class="carousel-indicators">
@@ -207,7 +207,7 @@ $user = User::fromSystem();
     <script>
         var loaded = 0;
         var total = <?php echo count($images); ?>;
-        var gallery = new Gallery( <?php echo $gallery->getId(); ?>, "<?php echo str_replace(" ","-",$gallery->getTitle()); ?>", total );
+        var gallery = new Gallery( <?php echo $gallery->getId(); ?>, "<?php echo str_replace("'", "-",str_replace(" ","-",$gallery->getTitle())); ?>", total );
 
         $(window,document).on("scroll resize", function(){
             if( $('footer').isOnScreen() && loaded < total ) {
@@ -216,7 +216,7 @@ $user = User::fromSystem();
         });
 
         $(document).ready(function() {
-            $('#<?php echo str_replace(" ","-",$gallery->getTitle()); ?>').carousel({
+            $('#<?php echo str_replace("'", "-", str_replace(" ","-",$gallery->getTitle())); ?>').carousel({
                 interval: false,
                 pause: "false",
             });

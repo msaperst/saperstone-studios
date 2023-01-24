@@ -61,6 +61,7 @@ if ($navSql->getRowCount ( $query )) {
                 require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "templates/nav-wedding.php";
                 break;
             case "b'nai mitzvah" :
+            case "mitzvah" :
                 require_once dirname ( $_SERVER [$DOCUMENT_ROOT] ) . DIRECTORY_SEPARATOR . "templates/nav-mitzvah.php";
                 break;
             case "commercial" :
