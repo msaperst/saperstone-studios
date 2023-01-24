@@ -69,7 +69,7 @@ $user = User::fromSystem();
 <!--                            class="img-responsive" src="/img/main/mitzvahs.jpg--><?php //echo $rand; ?><!--"-->
 <!--                            width="100%" alt="B'nai Mitzvahs">-->
 <!--                    <div class="overlay">-->
-<!--                        <br /> <br /> <br /> <a class="info" href="/mitzvah/index.php">See-->
+<!--                        <br /> <br /> <br /> <a class="info" href="/b-nai-mitzvah/index.php">See-->
 <!--                            More</a>-->
 <!--                    </div>-->
 <!--                </div>-->

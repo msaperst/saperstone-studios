@@ -51,18 +51,13 @@ $user = User::fromSystem();
                     lives as a force to be reckoned with. Nothing can take you guys
                     down, including the wedding planning process!</p>
 
-                <p>
-                    2017 wedding packages start at $2,700 but are customizable to fit
-                    your needs for your day. All of my packages come with photography
-                    time on your wedding day, digital files on a USB with personal
-                    print release as well as an <a href='engagement.php'>engagement
-                        session</a>. I love being able to spend time with my couples at an
-                    engagement shoot before the rush of the big day. Who do you spend
-                    the most time with on your wedding day? Most likely it's your
-                    photographer so spending some time together to see how I work and
-                    become comfortable in front of the lens can make a world of
-                    difference :)
-                </p>
+                <p>Package options include photography time on your wedding day, digital
+                    files on a USB with personal print release as well as an engagement
+                    session. I love being able to spend time with my couples at an
+                    engagement shoot before the rush of the big day. Who do you spend the
+                    most time with on your wedding day? Most likely it's your photographer
+                    so spending some time together to see how I work and become comfortable
+                    in front of the lens can make a world of difference :)</p>
 
                 <p>
                     Want to know more about what it's like to work with Saperstone
