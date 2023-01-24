@@ -14,8 +14,6 @@
                 <li><a href="studio.php">Home Studio</a></li>
                 <li><a href="faq.php">FAQs</a></li>
                 <li><a href="experience.php">The Mitzvah Experience</a></li>
-                <li><a href="engagement.php">Rehearsal</a></li>
-                <li><a href="night.php">Night Photography</a></li>
                 <li><a href="photobooth.php">Photobooth</a></li>
             </ul></li>
         <li class="dropdown"><a href="javascript:void(0);"
