@@ -66,18 +66,6 @@ $user = User::fromSystem();
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Engagements"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <span class='preview-title'>Engagements</span> <img
-                        class="img-responsive"
-                        src="img/engagement.jpg<?php echo $rand; ?>" alt="Engagements">
-                    <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="engagement.php">See
-                            More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="The Process"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>The Process</span> <img
@@ -99,18 +87,7 @@ $user = User::fromSystem();
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Night Photography"
-                    class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <span class='preview-title'>Night Photography</span> <img
-                        class="img-responsive" src="img/night.jpg<?php echo $rand; ?>"
-                        alt="Night Photography">
-                    <div class="overlay">
-                        <br /> <br /> <br /> <a class="info" href="night.php">See More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-offset-4 col-md-4 col-sm-6 col-xs-12">
                 <div section="Photobooth"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Photobooth</span> <img

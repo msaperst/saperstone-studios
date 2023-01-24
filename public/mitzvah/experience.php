@@ -59,6 +59,11 @@ $user = User::fromSystem();
 
         <div class="row" style='padding-top: 30px'>
             <div class="col-lg-12">
+                <p>I'm often asked - For the love of ducks, how do you get a teeneger
+                    to smile?! We. Have. Fun. I take some time to get to know your
+                    mitzvah and what they enjoy. From there, I'll arrange everyone so
+                    they look good and throw out fun prompts and terrible dad jokes
+                    to get natural smiles.</p>
                 <p>I'm a self proclaimed photo ninja. And when it comes down to it,
                     haven't you always wanted to have a ninja at your mitzvah? ;) I
                     have a photo journalistic style which means for the most part I
@@ -66,20 +71,10 @@ $user = User::fromSystem();
                     being said, there are instances when I do step up and give
                     direction to make sure your photos tell a story in the best way
                     possible.</p>
-                <p>Often when a couple is in front of the lens having their
-                    portraits taken they need a bit of direction on what to do. No
-                    fear, that's why you've hired me. It's my job to pose you both in a
-                    way that's natural as well as flattering. To ensure that your posed
-                    moments are still ones that are candid, fun and personable, I'll
-                    have you interact with each other...simple, right? But it's just oh
-                    so effective in making you both smile. :)</p>
-                <p>There are other times when the light and/or composition is better
-                    in a certain room, I'll be on the look out for harsh shadows and
-                    and cluttered backgrounds and be sure to direct you when needed.</p>
-                <p>
-                    Be sure to also check out the <a href='night.php'>night photography</a>
-                    I love to shoot on mitzvah days!
-                </p>
+                <p>Want to know more about the lady behind the camera? <a href="/leighAnn.php">
+                        Here's what I'm all about.</a></p>
+                <p>I'd love to chat through your day with you! <a href="/contact.php">Contact me
+                        today</a> so we can customize photography that fits your family :)</p>
             </div>
         </div>
         <!-- /.row -->
