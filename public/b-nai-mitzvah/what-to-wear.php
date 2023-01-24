@@ -27,7 +27,7 @@ $session->initialize();
                 <h1 class="page-header text-center">What to Wear</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php">Portraits</a></li>
+                    <li><a href="index.php">B'nai Mitzvahs</a></li>
                     <li><a href="details.php">Details</a></li>
                     <li class="active">What to Wear</li>
                 </ol>

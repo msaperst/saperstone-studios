@@ -55,7 +55,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                 each other or myself...simple, right? But it's just oh so effective in making the moment your own. :) My
                 photography style is vibrant and colorful to reflect how you love life.</p>
             <p>Curious why you should choose Saperstone Studios over everyone else out there? Check out more about <a
-                        href="about.php">how we differentiate ourselves</a></p>
+                        href="/about.php">how we differentiate ourselves</a></p>
         </div>
     </div>
 

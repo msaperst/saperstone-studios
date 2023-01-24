@@ -38,7 +38,7 @@ $user = User::fromSystem();
                 <h1 class="page-header text-center">Session Information</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="index.php">Portraits</a></li>
+                    <li><a href="index.php">B'nai Mitzvahs</a></li>
                     <li><a href="details.php">Details</a></li>
                     <li class="active">Sessions</li>
                 </ol>

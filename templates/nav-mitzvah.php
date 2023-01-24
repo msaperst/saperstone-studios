@@ -11,7 +11,6 @@
                 <li><a href="process.php">The Process</a></li>
                 <li><a href="products.php">Products and Investment</a></li>
                 <li><a href="what-to-wear.php">What to Wear</a></li>
-                <li><a href="studio.php">Home Studio</a></li>
                 <li><a href="faq.php">FAQs</a></li>
                 <li><a href="experience.php">The Mitzvah Experience</a></li>
                 <li><a href="photobooth.php">Photobooth</a></li>
@@ -20,9 +19,10 @@
             class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="galleries.php?w=73">Something 1</a></li>
-                <li><a href="galleries.php?w=74">Something 2</a></li>
-                <li><a href="galleries.php?w=75">Something 3</a></li>
+                <li><a href="galleries.php?w=73">Bimah Session</a></li>
+                <li><a href="galleries.php?w=74">Services</a></li>
+                <li><a href="galleries.php?w=75">Reception</a></li>
+                <li><a href="galleries.php?w=77">Photobooth</a></li>
             </ul></li>
         <li><a href="retouch.php">Retouch</a></li>
         <li><a href="reviews.php?c=4">Raves</a></li>

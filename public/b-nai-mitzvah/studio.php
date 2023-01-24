@@ -1,1 +1,0 @@
-../portrait/studio.php
