@@ -95,7 +95,7 @@ VOLUME /var/www/logs
 RUN ln -s /var/www/content/commercial /var/www/public/commercial/img
 RUN ln -s /var/www/content/portrait /var/www/public/portrait/img
 RUN ln -s /var/www/content/wedding /var/www/public/wedding/img
-RUN ln -s /var/www/content/mitzvah /var/www/public/mitzvah/img
+RUN ln -s /var/www/content/b-nai-mitzvah /var/www/public/b-nai-mitzvah/img
 RUN ln -s /var/www/content/main /var/www/public/img/main
 RUN ln -s /var/www/content/reviews /var/www/public/img/reviews
 RUN ln -s /var/www/content/albums /var/www/public/albums

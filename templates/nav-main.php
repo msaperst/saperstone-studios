@@ -29,10 +29,10 @@ $navUser = User::fromSystem();
             class="dropdown-toggle" data-toggle="dropdown">B'Nai Mitzvahs<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
-                <li><a href="/mitzvah/details.php">Details</a></li>
-                <li><a href="/mitzvah/gallery.php?w=72">Gallery</a></li>
-                <li><a href="/mitzvah/retouch.php">Retouch</a></li>
-                <li><a href="/mitzvah/reviews.php?c=4">Raves</a></li>
+                <li><a href="/b-nai-mitzvah/details.php">Details</a></li>
+                <li><a href="/b-nai-mitzvah/gallery.php?w=72">Gallery</a></li>
+                <li><a href="/b-nai-mitzvah/retouch.php">Retouch</a></li>
+                <li><a href="/b-nai-mitzvah/reviews.php?c=4">Raves</a></li>
             </ul></li> -->
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Commercial<strong

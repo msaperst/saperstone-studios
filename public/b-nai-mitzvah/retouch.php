@@ -76,9 +76,9 @@ $user = User::fromSystem();
     <script src='/js/retouch.js'></script>
     <script>
         var images = [];
-        images[0] = { thumb:'/retouch/mitzvah/Ainsley.jpg', orig:'/retouch/mitzvah/AinsleyBefore.jpg', edit:'/retouch/mitzvah/AinsleyAfter.jpg', width:'1140', height:'761', text:'' };
-        images[1] = { thumb:'/retouch/mitzvah/Ari.jpg', orig:'/retouch/mitzvah/AriBefore.jpg', edit:'/retouch/mitzvah/AriAfter.jpg', width:'1140', height:'761', text:'' };
-        images[2] = { thumb:'/retouch/mitzvah/Emily.jpg', orig:'/retouch/mitzvah/EmilyBefore.jpg', edit:'/retouch/mitzvah/EmilyAfter.jpg', width:'1140', height:'761', text:'' };
+        images[0] = { thumb:'/retouch/b-nai-mitzvah/Ainsley.jpg', orig:'/retouch/b-nai-mitzvah/AinsleyBefore.jpg', edit:'/retouch/b-nai-mitzvah/AinsleyAfter.jpg', width:'1140', height:'761', text:'' };
+        images[1] = { thumb:'/retouch/b-nai-mitzvah/Ari.jpg', orig:'/retouch/b-nai-mitzvah/AriBefore.jpg', edit:'/retouch/b-nai-mitzvah/AriAfter.jpg', width:'1140', height:'761', text:'' };
+        images[2] = { thumb:'/retouch/b-nai-mitzvah/Emily.jpg', orig:'/retouch/b-nai-mitzvah/EmilyBefore.jpg', edit:'/retouch/b-nai-mitzvah/EmilyAfter.jpg', width:'1140', height:'761', text:'' };
         var retouch = new Retouch( $('#holder'), images, true );
     </script>
 
