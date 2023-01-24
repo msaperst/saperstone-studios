@@ -148,7 +148,7 @@ class Gallery {
         if ($location == $this->title . DIRECTORY_SEPARATOR) {
             $location = "img/main/" . $location;
         }
-        return DIRECTORY_SEPARATOR . str_replace(" ", "-", strtolower($location));
+        return DIRECTORY_SEPARATOR . str_replace("'", "-", str_replace(" ", "-", strtolower($location)));
     }
 
     /**

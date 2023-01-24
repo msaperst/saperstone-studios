@@ -79,6 +79,5 @@ DELETE FROM `galleries` WHERE id = 48;
 DELETE FROM `galleries` WHERE id = 49;
 DELETE FROM `galleries` WHERE id = 4;
 DELETE FROM `galleries` WHERE id = 36;
-
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
