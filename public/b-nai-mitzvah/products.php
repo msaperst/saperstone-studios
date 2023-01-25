@@ -4,7 +4,7 @@ $session = new Session();
 $session->initialize();
 $sql = new Sql ();
 $user = User::fromSystem();
-$products = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = 38;" );
+$products = $sql->getRows( "SELECT * FROM `galleries` WHERE parent = 78;" );
 $sql->disconnect();
 ?>
 <!DOCTYPE html>
