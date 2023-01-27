@@ -10,6 +10,7 @@ ALTER TABLE `albums` AUTO_INCREMENT = 1;
 INSERT IGNORE INTO `galleries` VALUES (1, NULL, NULL, 'Portrait', NULL);
 INSERT IGNORE INTO `galleries` VALUES (2, 1, 'maternity.jpg', 'Maternity', NULL);
 INSERT IGNORE INTO `galleries` VALUES (3, 1, 'newborn.jpg', 'Newborn', NULL);
+INSERT IGNORE INTO `galleries` VALUES (48, 1, '1-year.jpg', 'First Birthday', NULL);
 INSERT IGNORE INTO `galleries` VALUES (6, 1, 'family.jpg', 'Kids and Family', NULL);
 INSERT IGNORE INTO `galleries` VALUES (7, 1, 'senior.jpg', 'Seniors', NULL);
 INSERT IGNORE INTO `galleries` VALUES (8, NULL, NULL, 'Wedding', NULL);
@@ -88,7 +89,6 @@ INSERT IGNORE INTO `galleries` VALUES (87, 78, 'album-block.jpg', 'Album Block',
 INSERT IGNORE INTO `galleries` VALUES (88, 78, 'keepsake-usb.jpg', 'Keepsake USB', 'Every time you order digital files, they are given to you in this keepsake USB case for safe keeping.  Be sure to back these images up in multiple locations as digital media is forever changing!');
 
 DELETE FROM `galleries` WHERE id = 5;
-DELETE FROM `galleries` WHERE id = 48;
 DELETE FROM `galleries` WHERE id = 49;
 DELETE FROM `galleries` WHERE id = 4;
 DELETE FROM `galleries` WHERE id = 36;
