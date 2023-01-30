@@ -86,12 +86,12 @@ INSERT IGNORE INTO `galleries` VALUES (84, 80, 'standard-albums.jpg', 'Standard 
 INSERT IGNORE INTO `galleries` VALUES (85, 80, 'signature-albums.jpg', 'Signature Albums', NULL);
 INSERT IGNORE INTO `galleries` VALUES (86, 80, 'memory-book.jpg', 'Memory Book', NULL);
 INSERT IGNORE INTO `galleries` VALUES (87, 78, 'album-block.jpg', 'Album Block', 'This wooden block holds 10 of your favorite 5x7 images and is perfect for display on a mantle, coffee table or shelf.  Photos are mounted on a durable styrene, making it easy to rotate through displaying your images.  Color options are black or white, your choice!');
-INSERT IGNORE INTO `galleries` VALUES (88, 78, 'keepsake-usb.jpg', 'Keepsake USB', 'Every time you order digital files, they are given to you in this keepsake USB case for safe keeping.  Be sure to back these images up in multiple locations as digital media is forever changing!');
 
 DELETE FROM `galleries` WHERE id = 5;
 DELETE FROM `galleries` WHERE id = 49;
 DELETE FROM `galleries` WHERE id = 4;
 DELETE FROM `galleries` WHERE id = 36;
+DELETE FROM `galleries` WHERE id = 88;
 
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -53,7 +53,7 @@ $session->initialize();
                 <h2>What Makes Saperstone Studios Unique</h2>
                 <p>
                     It's all in the name, Saperstone Studios Photography and <em><a
-                        href='/portrait/retouch.php'>Retouch</a></em>. It's a digital age
+                        href='/retouch.php'>Retouch</a></em>. It's a digital age
                     and as such the art of photography has expanded beyond being able
                     to compose and take beautiful photographs. Much of the work that
                     goes into your photos is what happens after you download the images
