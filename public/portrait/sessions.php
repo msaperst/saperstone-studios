@@ -171,9 +171,6 @@ $user = User::fromSystem();
                     <li>The focus of this session is on the one child, but you may
                         include 2-3 sibling/family portraits</li>
                 </ul>
-                <p>
-                    <a href='gallery.php?w=4'>See More</a>
-                </p>
             </div>
 
             <div class="col-lg-12">
@@ -205,7 +202,7 @@ $user = User::fromSystem();
                         include 2-3 sibling/family portraits</li>
                 </ul>
                 <p>
-                    <a href='gallery.php?w=5'>See More</a>
+                    <a href='galleries.php?w=48'>See More</a>
                 </p>
             </div>
 
