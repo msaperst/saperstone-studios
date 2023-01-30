@@ -87,9 +87,9 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templa
                 <li><strong>Consultation.</strong> I would love to find out more about
                     your mitzvah and answer any questions you may have – I've found the
                     best way to do this is via virtual meeting or meeting up at
-                    <a href='studio.php'>my studio</a>! I'll walk you through how I approach
-                    photographing your mitzvah, find out how we can make it a custom
-                    experience for your family and review pricing options.
+                    my studio! I'll walk you through how I approach photographing your
+                    mitzvah, find out how we can make it a custom experience for your
+                    family and review pricing options.
                 </li>
                 <li><strong>Review/Sign Contract and Session Payment.</strong> Want
                     to book your mitzvah date with Saperstone Studios? Great! A signed
