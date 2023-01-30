@@ -25,7 +25,14 @@ $sql->disconnect();
                 <?php
                 for ($i = 0; $i < count($galleries); $i++) {
                     $gallery = $galleries [$i];
-                    echo "<li><a href='gallery.php?w=" . $gallery['id'] . "'>" . $gallery['title'] . "</a></li>";
+                    $sql = new Sql ();
+                    $subGalleries = $sql->getRows("SELECT * FROM `galleries` WHERE parent = '" . $gallery ['id'] . "';");
+                    $sql->disconnect();
+                    if (sizeof($subGalleries) == 0) {
+                        echo "<li><a href='galleries.php?w=" . $gallery['id'] . "'>" . $gallery['title'] . "</a></li>";
+                    } else {
+                        echo "<li><a href='gallery.php?w=" . $gallery['id'] . "'>" . $gallery['title'] . "</a></li>";
+                    }
                 }
                 ?>
             </ul>
