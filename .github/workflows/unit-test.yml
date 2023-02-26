@@ -12,11 +12,17 @@ on:
 jobs:
   unit-testing:
     name: Unit Testing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
+
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.3'
+          extensions: imagick
 
       - name: Install 🔧
         run: |
@@ -35,11 +41,23 @@ jobs:
 
   integration-testing:
     name: Integration Testing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
+
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.3'
+          extensions: imagick
+
+      - name: Install 🔧
+        run: |
+          composer validate
+          composer install --prefer-dist --no-progress --no-suggest
+
 
       - name: Integration Test 🤞
         run: composer integration-pre-test; composer integration-test
