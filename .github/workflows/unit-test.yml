@@ -5,7 +5,7 @@ name: Unit Testing
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ '!release' ]
   pull_request:
     branches: [ develop ]
 

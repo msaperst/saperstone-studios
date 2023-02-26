@@ -17,6 +17,8 @@ release
     deploy to walter (prod)
 */
 
+// TODO - start storing the containers in github: https://github.com/msaperst/saperstone-studios/new/develop?filename=.github%2Fworkflows%2Fdocker-publish.yml&workflow_template=ci%2Fdocker-publish
+
 properties(
     [
         buildDiscarder(logRotator(numToKeepStr: '5')),
