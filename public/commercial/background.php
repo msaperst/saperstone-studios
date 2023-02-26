@@ -103,6 +103,28 @@ $user = User::fromSystem();
                         alt="Solid White">
                 </div>
             </div>
+            
+            <div class="col-lg-12">
+                <h3 class="page-header">Solid Black</h3>
+            </div>
+            <div class="col-xs-4">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
+                    <img src="img/solid-black-1.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Solid Black">
+                </div>
+            </div>
+            <div class="col-xs-4">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
+                    <img src="img/solid-black-2.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Solid Black">
+                </div>
+            </div>
+            <div class="col-xs-4">
+                <div class="<?php if ($user->isAdmin ()) { echo " editable square"; } ?>">
+                    <img src="img/solid-black-3.jpg<?php echo $rand; ?>" width="100%"
+                        alt="Solid Black">
+                </div>
+            </div>
 
             <div class="col-lg-12">
                 <h3 class="page-header">Muslin Grey</h3>
