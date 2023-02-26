@@ -99,5 +99,18 @@ UPDATE `galleries` SET comment = "Not your grandmother's canvas! Beautifully han
 UPDATE `galleries` SET comment = "Not your grandmother's canvas! Beautifully handcrafted in Italy and printed on archival cotton canvas that has an anti glare 'Touch' finishing. Precision wrapped edges and mounted to a 1.5 inch board with wood finishing for an updated, modern twist to the traditional canvas. It will never collapse, get loose or bulge and has a lifetime guarantee" WHERE id = 44;
 UPDATE `galleries` SET comment = "Not your grandmother's canvas! Beautifully handcrafted in Italy and printed on archival cotton canvas that has an anti glare 'Touch' finishing. Precision wrapped edges and mounted to a 1.5 inch board with wood finishing for an updated, modern twist to the traditional canvas. It will never collapse, get loose or bulge and has a lifetime guarantee" WHERE id = 83;
 
+INSERT IGNORE INTO `galleries` VALUES (88, 28, 'gift-prints.jpg', 'Gift Prints', NULL);
+INSERT IGNORE INTO `galleries` VALUES (89, 38, 'gift-prints.jpg', 'Gift Prints', NULL);
+INSERT IGNORE INTO `galleries` VALUES (90, 83, 'gift-prints.jpg', 'Gift Prints', NULL);
+INSERT IGNORE INTO `galleries` VALUES (91, 88, 'curved-metal.jpg', 'Curved Metal', 'The perfect metal print display for your desk or tabletop! Slightly curved concave so they can stand alone and come in 8x10 size or smaller. These make the perfect gifts for family and friends.');
+INSERT IGNORE INTO `galleries` VALUES (92, 88, 'mounted.jpg', 'Mounted', 'Mounted on a 3mm styrene board and printed on archival paper. They can be left out on a display easel or fit into most standard frames so you can customize however you choose. Perfect gifts for family and friends!');
+INSERT IGNORE INTO `galleries` VALUES (93, 89, 'curved-metal.jpg', 'Curved Metal', 'The perfect metal print display for your desk or tabletop! Slightly curved concave so they can stand alone and come in 8x10 size or smaller. These make the perfect gifts for family and friends.');
+INSERT IGNORE INTO `galleries` VALUES (94, 89, 'mounted.jpg', 'Mounted', 'Mounted on a 3mm styrene board and printed on archival paper. They can be left out on a display easel or fit into most standard frames so you can customize however you choose. Perfect gifts for family and friends!');
+INSERT IGNORE INTO `galleries` VALUES (95, 90, 'curved-metal.jpg', 'Curved Metal', 'The perfect metal print display for your desk or tabletop! Slightly curved concave so they can stand alone and come in 8x10 size or smaller. These make the perfect gifts for family and friends.');
+INSERT IGNORE INTO `galleries` VALUES (96, 90, 'mounted.jpg', 'Mounted', 'Mounted on a 3mm styrene board and printed on archival paper. They can be left out on a display easel or fit into most standard frames so you can customize however you choose. Perfect gifts for family and friends!');
+
+INSERT IGNORE INTO `galleries` VALUES (97, 56, 'chiropractic-care-branding-session.jpg', 'Chiropractic Care Branding Session', NULL);
+INSERT IGNORE INTO `galleries` VALUES (98, 56, 'life-coach-branding-session.jpg', 'Life Coach Branding Session', NULL);
+
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
