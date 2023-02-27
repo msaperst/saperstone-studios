@@ -19,7 +19,7 @@ class EmailIntegrationTest extends TestCase {
             new Email('msaperst+sstest@gmail.com', 'la@saperstonestudios.com', 'test');
             $this->assertTrue(true);
         } finally {
-            system('rm -rf mv /var/www/logs');
+            system('rm -rf /var/www/logs');
             system('mv /var/www/logs-bkp /var/www/logs');
         }
     }
