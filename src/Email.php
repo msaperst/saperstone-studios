@@ -38,10 +38,6 @@ class Email {
         if (!file_exists($this->logLocation)) {
             mkdir($this->logLocation, 0700);
         }
-        if (!file_exists($this->myFile)) {
-            $fp = fopen($this->myFile, 'w');
-            fclose($fp);
-        }
     }
 
     public function setHtml($html) {

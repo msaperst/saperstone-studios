@@ -104,6 +104,7 @@ jobs:
         run: |
           sudo mkdir -p /var/www/logs
           sudo chmod 777 /var/www
+          sudo chmod 777 /var/www/logs
           composer integration-pre-test
           composer integration-test
 
