@@ -101,7 +101,11 @@ jobs:
           echo 'PAYPAL_SIGNATURE=${{ secrets.PAYPAL_SIGNATURE }}' >> .env
 
       - name: Integration Test 🤞
-        run: composer integration-pre-test; composer integration-test
+        run: |
+          mkdir -p /var/www/logs
+          chmod 777 /var/www
+          composer integration-pre-test
+          composer integration-test
 
       - name: Upload Coverage 📊
         if: always()
