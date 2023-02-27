@@ -109,8 +109,8 @@ INSERT IGNORE INTO `galleries` VALUES (94, 89, 'mounted.jpg', 'Mounted', 'Mounte
 INSERT IGNORE INTO `galleries` VALUES (95, 90, 'curved-metal.jpg', 'Curved Metal', 'The perfect metal print display for your desk or tabletop! Slightly curved concave so they can stand alone and come in 8x10 size or smaller. These make the perfect gifts for family and friends.');
 INSERT IGNORE INTO `galleries` VALUES (96, 90, 'mounted.jpg', 'Mounted', 'Mounted on a 3mm styrene board and printed on archival paper. They can be left out on a display easel or fit into most standard frames so you can customize however you choose. Perfect gifts for family and friends!');
 
-INSERT IGNORE INTO `galleries` VALUES (97, 56, 'chiropractic-care-branding-session.jpg', 'Chiropractic Care Branding Session', NULL);
-INSERT IGNORE INTO `galleries` VALUES (98, 56, 'life-coach-branding-session.jpg', 'Life Coach Branding Session', NULL);
+INSERT IGNORE INTO `galleries` VALUES (97, 56, 'chiropractic-care-branding-session.jpg', 'Chiropractic Care', NULL);
+INSERT IGNORE INTO `galleries` VALUES (98, 56, 'life-coach-branding-session.jpg', 'Life Coach', NULL);
 
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
