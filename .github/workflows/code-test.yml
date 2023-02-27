@@ -100,6 +100,12 @@ jobs:
           echo 'PAYPAL_PASSWORD=${{ secrets.PAYPAL_PASSWORD }}' >> .env
           echo 'PAYPAL_SIGNATURE=${{ secrets.PAYPAL_SIGNATURE }}' >> .env
 
+      - name: Set up Gmail Credentials
+        run: echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
+
+      - name: Set up Gmail Token
+        run: echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
+
       - name: Integration Test 🤞
         run: |
           sudo mkdir -p /var/www/logs
