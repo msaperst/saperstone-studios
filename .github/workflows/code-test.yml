@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Unit Testing
+name: Code Testing
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ut-coverage
-          path: reports/it-clover.xml
+          path: reports
 
   integration-testing:
     name: Integration Testing
@@ -58,6 +58,43 @@ jobs:
           composer validate
           composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Set up env file
+        run: |
+          echo '# tool hosting information' > .env
+          echo 'ADMIN_PORT=9090' >> .env"
+          echo 'HTTP_PORT=90' >> .env"
+          echo 'HTTPS_PORT=9443' >> .env"
+          echo 'SERVER_NAME=victor' >> .env"
+          echo '' >> .env"
+          echo '# database information' >> .env"
+          echo 'DB_ROOT=${{ secrets.DB_ROOT }}' >> .env"
+          echo 'DB_PORT=3406' >> .env"
+          echo 'DB_NAME=saperstone-studios' >> .env"
+          echo 'DB_USER=${{ secrets.DB_USER }}' >> .env"
+          echo 'DB_PASS=${{ secrets.DB_PASS }}' >> .env"
+          echo '' >> .env"
+          echo '# email information' >> .env"
+          echo 'EMAIL_CONTACT=msaperst+sstest@gmail.com' >> .env"
+          echo 'EMAIL_ACTIONS=msaperst+sstest@gmail.com' >> .env"
+          echo 'EMAIL_SELECTS=msaperst+sstest@gmail.com' >> .env"
+          echo 'EMAIL_CONTRACTS=msaperst+sstest@gmail.com' >> .env"
+          echo 'EMAIL_HOST=ssl://smtp.gmail.com' >> .env"
+          echo 'EMAIL_PORT=465' >> .env"
+          echo 'EMAIL_USER=${{ secrets.EMAIL_USER }}' >> .env"
+          echo 'EMAIL_PASS=${{ secrets.EMAIL_PASS }}' >> .env"
+          echo 'EMAIL_USER_X=${{ secrets.EMAIL_USER_X }}' >> .env"
+          echo 'EMAIL_PASS_X=${{ secrets.EMAIL_PASS_X }}' >> .env"
+          echo '' >> .env"
+          echo '# twitter information' >> .env"
+          echo 'CONSUMER_KEY=${{ secrets.CONSUMER_KEY }}' >> .env"
+          echo 'CONSUMER_SECRET=${{ secrets.CONSUMER_SECRET }}' >> .env"
+          echo 'TOKEN=${{ secrets.TOKEN }}' >> .env"
+          echo 'TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}' >> .env"
+          echo '' >> .env"
+          echo '# paypal information' >> .env"
+          echo 'PAYPAL_USERNAME=${{ secrets.PAYPAL_USERNAME }}' >> .env"
+          echo 'PAYPAL_PASSWORD=${{ secrets.PAYPAL_PASSWORD }}' >> .env"
+          echo 'PAYPAL_SIGNATURE=${{ secrets.PAYPAL_SIGNATURE }}' >> .env"
 
       - name: Integration Test 🤞
         run: composer integration-pre-test; composer integration-test
@@ -67,7 +104,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: it-coverage
-          path: reports/it-clover.xml
+          path: reports
 
   sonar:
     name: SonarCloud
@@ -89,6 +126,9 @@ jobs:
         with:
           name: it-coverage
           path: it/
+
+      - name: Combine Reports
+        run: mkdir reports; mv ut/* reports/; mv it/* reports/
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
