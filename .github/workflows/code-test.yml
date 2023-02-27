@@ -102,8 +102,8 @@ jobs:
 
       - name: Integration Test 🤞
         run: |
-          mkdir -p /var/www/logs
-          chmod 777 /var/www
+          sudo mkdir -p /var/www/logs
+          sudo chmod 777 /var/www
           composer integration-pre-test
           composer integration-test
 
