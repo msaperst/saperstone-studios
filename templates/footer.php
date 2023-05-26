@@ -88,14 +88,14 @@ $navUser = User::fromSystem();
 <?php
 if (Session::useAnalytics()) {
 ?>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23617021-6"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L6F5KNQDY1"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        gtag('config', 'UA-23617021-6');
+        gtag('config', 'G-L6F5KNQDY1');
     </script>
 <?php
 }
