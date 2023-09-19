@@ -1,7 +1,6 @@
 <?php
-$sql = new Sql();
-$galleries = $sql->getRows("SELECT * FROM galleries WHERE parent = (SELECT id FROM galleries WHERE title = 'Portrait') AND title != 'Product';");
-$sql->disconnect();
+$galleryDropDown = Gallery::withTitle('Portrait');
+$galleryChildren = $galleryDropDown->getChildren();
 ?>
 
 <!-- Collect the nav links, forms, and other content for toggling -->
@@ -24,15 +23,14 @@ $sql->disconnect();
                         class="caret"></strong></a>
             <ul class="dropdown-menu">
                 <?php
-                for ($i = 0; $i < count($galleries); $i++) {
-                    $gallery = $galleries [$i];
-                    $sql = new Sql ();
-                    $subGalleries = $sql->getRows("SELECT * FROM `galleries` WHERE parent = '" . $gallery ['id'] . "';");
-                    $sql->disconnect();
-                    if (sizeof($subGalleries) == 0) {
-                        echo "<li><a href='galleries.php?w=" . $gallery['id'] . "'>" . $gallery['title'] . "</a></li>";
+                for ($i = 0; $i < count($galleryChildren); $i++) {
+                    $galleryChild = $galleryChildren[$i];
+                    if ($galleryChild->hasChildren()) {
+                        echo "<li><a href='gallery.php?w=" . $galleryChild->getId() .
+                            "'>" . $galleryChild->getTitle() . "</a></li>";
                     } else {
-                        echo "<li><a href='gallery.php?w=" . $gallery['id'] . "'>" . $gallery['title'] . "</a></li>";
+                        echo "<li><a href='galleries.php?w=" . $galleryChild->getId() .
+                            "'>" . $galleryChild->getTitle() . "</a></li>";
                     }
                 }
                 ?>

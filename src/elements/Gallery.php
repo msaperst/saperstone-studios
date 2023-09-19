@@ -11,6 +11,7 @@ class Gallery {
     private $title;
     private $comment;
     private $images = array();
+    private $children = array();
 
     function __construct() {
     }
@@ -34,9 +35,39 @@ class Gallery {
             $sql->disconnect();
             throw new BadGalleryException("Gallery id does not match any galleries");
         }
+        $gallery = self::setGalleryData($gallery);
+        $sql->disconnect();
+        return $gallery;
+    }
+
+    /**
+     * @param $title
+     * @return Gallery
+     * @throws BadGalleryException
+     */
+    static function withTitle($title): Gallery {
+        if (!isset($title)) {
+            throw new BadGalleryException("Gallery title is required");
+        } elseif ($title === "") {
+            throw new BadGalleryException("Gallery title can not be blank");
+        }
+        $gallery = new Gallery();
+        $sql = new Sql();
+        $title = (string)$title;
+        $gallery->raw = $sql->getRow("SELECT * FROM galleries WHERE title = " . $sql->escapeString($title) . ";");
+        if (!isset($gallery->raw) || !isset($gallery->raw['id'])) {
+            $sql->disconnect();
+            throw new BadGalleryException("Gallery title does not match any galleries");
+        }
+        $gallery = self::setGalleryData($gallery);
+        $sql->disconnect();
+        return $gallery;
+    }
+
+    private static function setGalleryData($gallery): Gallery {
         $gallery->id = $gallery->raw['id'];
         $gallery->parent = $gallery->raw['parent'];
-        if ($gallery->parent != NULL) {
+        if ($gallery->parent != null) {
             $gallery->parent = Gallery::withId($gallery->parent);
         }
         $gallery->image = $gallery->raw['image'];
@@ -44,6 +75,12 @@ class Gallery {
         $gallery->comment = $gallery->raw['comment'];
         //consider changing this to an array of matching images
         $gallery->images = array();
+        //get children if any
+        $sql = new Sql();
+        $children = $sql->getRows(
+            "SELECT * FROM `galleries` WHERE parent = '" . $gallery->id . "' AND title != 'Product';"
+        );
+        $gallery->children = $children;
         $sql->disconnect();
         return $gallery;
     }
@@ -72,13 +109,31 @@ class Gallery {
         return $this->image;
     }
 
+    function hasChildren() {
+        return sizeof($this->children) != 0;
+    }
+
+    /**
+     * @return Gallery[]
+     * @throws BadGalleryException
+     */
+    function getChildren(): array {
+        $children = array();
+        for ($i = 0; $i < count($this->children); $i++) {
+            $child = $this->children[$i];
+            $gallery = Gallery::withId($child['id']);
+            $children[] = $gallery;
+        }
+        return $children;
+    }
+
     /**
      * @return string
      */
     function getNav(): string {
         $nav = $this->getTitle();
         $mostParent = $this->parent;
-        while ($mostParent != NULL) {
+        while ($mostParent != null) {
             $nav = $mostParent->getTitle();
             $mostParent = $mostParent->parent;
         }
@@ -138,8 +193,8 @@ class Gallery {
     function getImageLocation(): string {
         $location = $this->title . DIRECTORY_SEPARATOR;
         $mostParent = $this->parent;
-        while ($mostParent != NULL) {
-            if ($mostParent->parent == NULL) {
+        while ($mostParent != null) {
+            if ($mostParent->parent == null) {
                 $location = 'img' . DIRECTORY_SEPARATOR . $location;
             }
             $location = $mostParent->getTitle() . DIRECTORY_SEPARATOR . $location;

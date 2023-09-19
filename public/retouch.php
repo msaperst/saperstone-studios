@@ -71,7 +71,7 @@ $user = User::fromSystem();
 
         <!-- Products Section -->
         <div class="row" style='padding-top: 30px'>
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-6 col-xs-12">
                 <div section='Portrait Retouch'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Portrait Retouch</span> <img
@@ -84,7 +84,7 @@ $user = User::fromSystem();
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-6 col-xs-12">
                 <div section='Wedding Retouch'
                      class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Wedding Retouch</span> <img
@@ -97,20 +97,20 @@ $user = User::fromSystem();
                     </div>
                 </div>
             </div>
-<!--            <div class="col-md-4 col-sm-6 col-xs-12">-->
-<!--                <div section='Mitzvah Retouch'-->
-<!--                     class="hovereffect img-portfolio--><?php //if ($user->isAdmin ()) { echo " editable horizontal"; } ?><!--">-->
-<!--                    <span class='preview-title'>B'Nai Mitzvah Retouch</span> <img-->
-<!--                            class="img-responsive"-->
-<!--                            src="img/b-nai-retouch.jpg--><?php //echo $rand; ?><!--" width="100%"-->
-<!--                            alt="Mitzvah Retouch">-->
-<!--                    <div class="overlay">-->
-<!--                        <br /> <br /> <br /> <a class="info" href="b-nai-mitzvah/retouch.php">See-->
-<!--                            More</a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-            <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="col-md-6 col-xs-12">
+                <div section='Mitzvah Retouch'
+                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                    <span class='preview-title'>B'Nai Mitzvah Retouch</span> <img
+                            class="img-responsive"
+                            src="img/b-nai-retouch.jpg<?php echo $rand; ?>" width="100%"
+                            alt="Mitzvah Retouch">
+                    <div class="overlay">
+                        <br /> <br /> <br /> <a class="info" href="b-nai-mitzvah/retouch.php">See
+                            More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xs-12">
                 <div section='Commercial Retouch'
                      class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Commercial Retouch</span> <img
