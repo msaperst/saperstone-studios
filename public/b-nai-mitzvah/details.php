@@ -65,7 +65,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                  class="hovereffect img-portfolio<?php if ($user->isAdmin()) {
                      echo " editable horizontal";
                  } ?>">
-                <span class='preview-title'>The Mitzvah Experience</span> <img
+                <span class='preview-title'>Session Information</span> <img
                         class="img-responsive" src="img/session.jpg<?php echo $rand; ?>"
                         alt="Session Information">
                 <div class="overlay">
