@@ -61,15 +61,15 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
 
     <div class="row" style='padding-top: 30px'>
         <div class="col-md-4 col-sm-6 col-xs-12">
-            <div section="The Mitzvah Experience"
+            <div section="Session Information"
                  class="hovereffect img-portfolio<?php if ($user->isAdmin()) {
                      echo " editable horizontal";
                  } ?>">
                 <span class='preview-title'>The Mitzvah Experience</span> <img
-                        class="img-responsive" src="img/mitzvah.jpg<?php echo $rand; ?>"
-                        alt="The Mitzvah Experience">
+                        class="img-responsive" src="img/session.jpg<?php echo $rand; ?>"
+                        alt="Session Information">
                 <div class="overlay">
-                    <br /> <br /> <br /> <a class="info" href="experience.php">See
+                    <br /> <br /> <br /> <a class="info" href="sessions.php">See
                         More</a>
                 </div>
             </div>
@@ -100,7 +100,21 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                 </div>
             </div>
         </div>
-        <div class="col-md-offset-4 col-md-4 col-sm-6 col-xs-12">
+        <div class="col-md-offset-2 col-md-4 col-sm-6 col-xs-12">
+            <div section="The Mitzvah Experience"
+                 class="hovereffect img-portfolio<?php if ($user->isAdmin()) {
+                     echo " editable horizontal";
+                 } ?>">
+                <span class='preview-title'>The Mitzvah Experience</span> <img
+                        class="img-responsive" src="img/mitzvah.jpg<?php echo $rand; ?>"
+                        alt="The Mitzvah Experience">
+                <div class="overlay">
+                    <br /> <br /> <br /> <a class="info" href="experience.php">See
+                        More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 col-xs-12">
             <div section="Photobooth"
                  class="hovereffect img-portfolio<?php if ($user->isAdmin()) {
                      echo " editable horizontal";
