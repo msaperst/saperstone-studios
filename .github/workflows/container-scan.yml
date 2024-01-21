@@ -26,7 +26,6 @@ jobs:
         uses: anchore/scan-action@v3
         with:
           image: "saperstone-studios/php:latest"
-          acs-report-enable: true
           fail-build: true
           severity-cutoff: high
 
@@ -54,7 +53,6 @@ jobs:
         uses: anchore/scan-action@v3
         with:
           image: "saperstone-studios/sql:latest"
-          acs-report-enable: true
           fail-build: true
           severity-cutoff: high
 

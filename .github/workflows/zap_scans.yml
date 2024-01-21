@@ -1,9 +1,10 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Zap Scans
 
-on: [ pull_request ]
+on:
+  pull_request:
+    branches: [ develop ]
+  schedule:
+    - cron: '23 22 * * 1'
 
 jobs:
   baseline:
