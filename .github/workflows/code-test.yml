@@ -52,7 +52,7 @@ jobs:
         run: |
           composer validate
           composer install --prefer-dist --no-progress --no-suggest
-          pear channel-update pear.php.net
+          sudo pear channel-update pear.php.net
 #          pear install Mail Mail_Mime
 
       - name: Set up env file
