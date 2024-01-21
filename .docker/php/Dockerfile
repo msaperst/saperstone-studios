@@ -2,7 +2,7 @@ FROM php:7.4-apache
 
 # setup additional tooling
 RUN apt update
-RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip
+RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip libonig-dev
 
 # setup mail plugins
 RUN pear install Mail Mail_Mime Auth_SASL pear/Net_SMTP
@@ -20,7 +20,6 @@ COPY .docker/php/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 COPY .docker/php/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
 COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 RUN a2enmod rewrite expires speling ssl
-RUN docker-php-ext-configure zip --with-libzip
 RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd
 
 # copy over files

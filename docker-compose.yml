@@ -39,7 +39,7 @@ services:
       context: .
       dockerfile: .docker/php/Dockerfile
       args:
-        MPDF_VERSION: 7.1.9
+        MPDF_VERSION: 8.0.4
     container_name: saperstonestudios_php
     restart: always
     depends_on:
