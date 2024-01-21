@@ -1,35 +1,17 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Functional Testing
+name: API Testing
 
 on:
   pull_request:
     branches: [ develop ]
 
 jobs:
-  page_tests:
-    name: Page Testing
+  api_tests:
+    name: API Testing
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
-
-      - name: Setup PHP with PECL extension
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.3'
-          extensions: imagick
-
-      - name: Install 🔧
-        run: |
-          composer validate
-          composer install --prefer-dist --no-progress --no-suggest
-          pear install Mail
-          pear install Mail_Mime
-          pear install Auth_SASL
-          pear install pear/Net_SMTP
 
       - name: Set up env file
         run: |
@@ -75,6 +57,14 @@ jobs:
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Page Tests
+      - name: API Tests
         run: |
-          echo "placeholder"
+          curl --retry 10 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
+          COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
+
+      - name: Upload Coverage 📊
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: API Results
+          path: reports
