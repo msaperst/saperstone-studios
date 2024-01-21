@@ -1,15 +1,12 @@
-FROM php:7.3.0-apache
+FROM php:7.4-apache
 
 # setup additional tooling
-RUN apt-get update && \
-        apt-get install -yy mysql-client && \
-        apt-get install -yy imagemagick && \
-        apt-get install -yy libpng-dev libzip-dev wget zip unzip
+RUN apt update
+RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip
+
 # setup mail plugins
-RUN pear install Mail && \
-        pear install Mail_Mime && \
-        pear install Auth_SASL && \
-        pear install pear/Net_SMTP
+RUN pear install Mail Mail_Mime Auth_SASL pear/Net_SMTP
+
 # install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
 #    php -r "if (hash_file('sha384', 'composer-setup.php') === 'e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
