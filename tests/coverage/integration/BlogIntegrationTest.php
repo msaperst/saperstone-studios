@@ -5,7 +5,6 @@ namespace coverage\integration;
 use Blog;
 use Exception;
 use PHPUnit\Framework\TestCase;
-use SocialMedia;
 use Sql;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
@@ -173,14 +172,6 @@ class BlogIntegrationTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function testGetTwitter() {
-        $blog = Blog::withId('899');
-        $this->assertEquals(0, $blog->getTwitter());
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testGetImages() {
         $blog = Blog::withId('899');
         $this->assertEquals(['posts/2031/01/01/sample.jpg'], $blog->getImages());
@@ -217,7 +208,6 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals('', $blogInfo['preview']);
         $this->assertEquals('0', $blogInfo['offset']);
         $this->assertEquals('0', $blogInfo['active']);
-        $this->assertEquals(0, $blogInfo['twitter']);
         $this->assertEquals(array(), $blogInfo['tags']);
         $this->assertEquals(array(), $blogInfo['comments']);
         $this->assertEquals(array(), $blogInfo['content']);
@@ -237,7 +227,6 @@ class BlogIntegrationTest extends TestCase {
         $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
         $this->assertEquals('0', $blogInfo['offset']);
         $this->assertEquals('0', $blogInfo['active']);
-        $this->assertEquals(0, $blogInfo['twitter']);
         $this->assertEquals(2, sizeOf($blogInfo['content']));
         $this->assertEquals(1, sizeOf($blogInfo['content'][1]));
         $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -535,7 +524,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2020/01/01/preview_image-$blogId.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogTexts = $this->sql->getRows("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
             $this->assertEquals(1, sizeof($blogTexts));
             $this->assertEquals($blogId, $blogTexts[0]['blog']);
@@ -611,7 +599,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview']);
             $this->assertEquals("33", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
             $this->assertEquals(2, sizeof($blogImages));
             $this->assertEquals($blogId, $blogImages[0]['blog']);
@@ -901,7 +888,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;");
             $this->assertEquals(1, sizeof($blogImages));
             $this->assertEquals(899, $blogImages[0]['blog']);
@@ -926,7 +912,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
-            $this->assertEquals(0, $blogInfo['twitter']);
             $this->assertEquals(2, sizeOf($blogInfo['content']));
             $this->assertEquals(1, sizeOf($blogInfo['content'][1]));
             $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -988,7 +973,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;");
             $this->assertEquals(1, sizeof($blogImages));
             $this->assertEquals(899, $blogImages[0]['blog']);
@@ -1013,7 +997,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
-            $this->assertEquals(0, $blogInfo['twitter']);
             $this->assertEquals(2, sizeOf($blogInfo['content']));
             $this->assertEquals(1, sizeOf($blogInfo['content'][1]));
             $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -1075,7 +1058,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;");
             $this->assertEquals(1, sizeof($blogImages));
             $this->assertEquals(899, $blogImages[0]['blog']);
@@ -1100,7 +1082,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
-            $this->assertEquals(0, $blogInfo['twitter']);
             $this->assertEquals(2, sizeOf($blogInfo['content']));
             $this->assertEquals(1, sizeOf($blogInfo['content'][1]));
             $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -1229,7 +1210,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;");
             $this->assertEquals(1, sizeof($blogImages));
             $this->assertEquals(899, $blogImages[0]['blog']);
@@ -1254,7 +1234,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
-            $this->assertEquals(0, $blogInfo['twitter']);
             $this->assertEquals(2, sizeOf($blogInfo['content']));
             $this->assertEquals(1, sizeOf($blogInfo['content'][1]));
             $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -1316,7 +1295,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;");
             $this->assertEquals(1, sizeof($blogImages));
             $this->assertEquals(899, $blogImages[0]['blog']);
@@ -1346,7 +1324,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
-            $this->assertEquals(0, $blogInfo['twitter']);
             $this->assertEquals(2, sizeOf($blogInfo['content']));
             $this->assertEquals(1, sizeOf($blogInfo['content'][1]));
             $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -1435,7 +1412,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = 899;"));
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;");
             $this->assertEquals(2, sizeof($blogImages));
@@ -1469,7 +1445,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
-            $this->assertEquals(0, $blogInfo['twitter']);
             $this->assertEquals(2, sizeOf($blogInfo['content']));
             $this->assertEquals(2, sizeOf($blogInfo['content'][1]));
             $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -1537,8 +1512,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("1", $blogDetails['active']);
-            // TODO - setting to 0 as we're not connected to twitter ATM
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;");
             $this->assertEquals(1, sizeof($blogImages));
             $this->assertEquals(899, $blogImages[0]['blog']);
@@ -1563,8 +1536,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('1', $blogInfo['active']);
-            // TODO - setting to 0 as we're not connected to twitter ATM
-            $this->assertEquals(0, $blogInfo['twitter']);
             $this->assertEquals(2, sizeOf($blogInfo['content']));
             $this->assertEquals(1, sizeOf($blogInfo['content'][1]));
             $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -1600,8 +1571,6 @@ class BlogIntegrationTest extends TestCase {
             unset($_SESSION['hash']);
             unset($_SERVER['SERVER_NAME']);
             unset($_SERVER['SERVER_PORT']);
-            $socialMedia = new SocialMedia();
-            $socialMedia->removeBlogFromTwitter($blog);
         }
     }
 
@@ -1618,7 +1587,7 @@ class BlogIntegrationTest extends TestCase {
         $_SERVER['SERVER_NAME'] = "www.examples.com";
         $_SERVER['SERVER_PORT'] = "90";
         try {
-            $this->sql->executeStatement("UPDATE `blog_details` SET `active` = '1', `twitter` = 1234567 WHERE `id` = 899;");
+            $this->sql->executeStatement("UPDATE `blog_details` SET `active` = '1' WHERE `id` = 899;");
             $blog = Blog::withId(899);
             $blog->update($params);
             //checkout our sql data
@@ -1630,7 +1599,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals("posts/2031/01/01/preview-image-24.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRows("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 899;");
             $this->assertEquals(1, sizeof($blogImages));
             $this->assertEquals(899, $blogImages[0]['blog']);
@@ -1655,7 +1623,6 @@ class BlogIntegrationTest extends TestCase {
             $this->assertEquals('posts/2031/01/01/preview-image-24.jpg', $blogInfo['preview']);
             $this->assertEquals('0', $blogInfo['offset']);
             $this->assertEquals('0', $blogInfo['active']);
-            $this->assertEquals(0, $blogInfo['twitter']);
             $this->assertEquals(2, sizeOf($blogInfo['content']));
             $this->assertEquals(1, sizeOf($blogInfo['content'][1]));
             $this->assertEquals(899, $blogInfo['content'][1][0]['blog']);
@@ -1691,8 +1658,6 @@ class BlogIntegrationTest extends TestCase {
             unset($_SESSION['hash']);
             unset($_SERVER['SERVER_NAME']);
             unset($_SERVER['SERVER_PORT']);
-            $socialMedia = new SocialMedia();
-            $socialMedia->removeBlogFromTwitter($blog);
         }
     }
 

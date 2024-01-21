@@ -44,7 +44,6 @@ services:
         PAYPAL_USERNAME: ${PAYPAL_USERNAME}
         PAYPAL_PASSWORD: ${PAYPAL_PASSWORD}
         PAYPAL_SIGNATURE: ${PAYPAL_SIGNATURE}
-        TWITTER_VERSION: 3.1.0
     container_name: saperstonestudios_php
     restart: always
     depends_on:

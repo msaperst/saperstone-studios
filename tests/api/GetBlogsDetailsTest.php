@@ -50,7 +50,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][0]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][0]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
         $this->assertEquals(999, $blogsDetails['data'][1]['id']);
         $this->assertEquals('Sample Blog', $blogsDetails['data'][1]['title']);
         $this->assertNull($blogsDetails['data'][1]['safe_title']);
@@ -58,7 +57,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][1]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][1]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][1]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][1]['twitter']);
     }
 
     public function testAllBlogsDetailsByTag() {
@@ -78,7 +76,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][0]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][0]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
     }
 
     public function testAllBlogsDetailsByTags() {
@@ -98,7 +95,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][0]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][0]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
     }
 
     public function testAllBlogsDetailsByTagsNoMatch() {
@@ -131,7 +127,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][0]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][0]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
         $this->assertEquals(999, $blogsDetails['data'][1]['id']);
         $this->assertEquals('Sample Blog', $blogsDetails['data'][1]['title']);
         $this->assertNull($blogsDetails['data'][1]['safe_title']);
@@ -139,7 +134,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][1]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][1]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][1]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][1]['twitter']);
     }
 
     public function testAllBlogsDetailsAdminInactive() {
@@ -163,7 +157,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][0]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
         $this->assertEquals(0, $blogsDetails['data'][0]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
 
         $this->assertEquals(998, $blogsDetails['data'][1]['id']);
         $this->assertEquals('Sample Blog', $blogsDetails['data'][1]['title']);
@@ -172,7 +165,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][1]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][1]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][1]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][1]['twitter']);
 
         $this->assertEquals(999, $blogsDetails['data'][2]['id']);
         $this->assertEquals('Sample Blog', $blogsDetails['data'][2]['title']);
@@ -181,7 +173,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][2]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][2]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][2]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][2]['twitter']);
     }
 
     public function testAllBlogsDetailsLimit() {
@@ -202,7 +193,6 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails['data'][0]['preview']);
         $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
         $this->assertEquals(1, $blogsDetails['data'][0]['active']);
-        $this->assertEquals(0, $blogsDetails['data'][0]['twitter']);
     }
 }
 

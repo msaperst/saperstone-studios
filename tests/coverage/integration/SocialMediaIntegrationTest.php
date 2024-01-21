@@ -2,7 +2,6 @@
 
 namespace coverage\integration;
 
-use Blog;
 use PHPUnit\Framework\TestCase;
 use SocialMedia;
 use Sql;
@@ -123,36 +122,6 @@ class SocialMediaIntegrationTest extends TestCase {
 ", file_get_contents(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
         } finally {
             unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
-        }
-    }
-
-    public function testPublishToTwitter() {
-        $socialMedia = new SocialMedia();
-        $_SERVER['SERVER_NAME'] = "www.examples.com";
-        $_SERVER['SERVER_PORT'] = "90";
-        try {
-            $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('999', 'Sample Blog', '2032-01-01', 'flower.jpeg', 0, 0)");
-            // TODO - setting these to zero as we now have to pay for twitter integration
-            $this->assertEquals(0, $socialMedia->publishBlogToTwitter(Blog::withId(999)));
-            $this->assertEquals(0, $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;")['twitter']);
-        } finally {
-            $socialMedia->removeBlogFromTwitter(Blog::withId(999));
-            unset($_SERVER['SERVER_NAME']);
-            unset($_SERVER['SERVER_PORT']);
-        }
-    }
-
-    public function testPublishBadImageToTwitter() {
-        $socialMedia = new SocialMedia();
-        $_SERVER['SERVER_NAME'] = "www.examples.com";
-        $_SERVER['SERVER_PORT'] = "90";
-        try {
-            $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('999', 'Sample Blog', '2032-01-01', 'flower.jpg', 0, 0)");
-            $this->assertEquals(0, $socialMedia->publishBlogToTwitter(Blog::withId(999)));
-            $this->assertEquals(0, $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;")['twitter']);
-        } finally {
-            unset($_SERVER['SERVER_NAME']);
-            unset($_SERVER['SERVER_PORT']);
         }
     }
 }

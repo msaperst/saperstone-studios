@@ -93,7 +93,6 @@ class GetBlogFullTest extends TestCase {
         $this->assertEquals("", $blogDetails['preview']);
         $this->assertEquals(0, $blogDetails['offset']);
         $this->assertEquals(0, $blogDetails['active']);
-        $this->assertEquals(0, $blogDetails['twitter']);
         $this->assertEquals(array(), $blogDetails['tags']);
         $this->assertEquals(array(), $blogDetails['comments']);
     }
@@ -113,7 +112,6 @@ class GetBlogFullTest extends TestCase {
         $this->assertEquals("", $blogDetails['preview']);
         $this->assertEquals(0, $blogDetails['offset']);
         $this->assertEquals(0, $blogDetails['active']);
-        $this->assertEquals(0, $blogDetails['twitter']);
         $this->assertEquals(2, sizeOf($blogDetails['content']));
         $this->assertEquals(1, sizeOf($blogDetails['content'][1]));
         $this->assertEquals(999, $blogDetails['content'][1][0]['blog']);
@@ -168,7 +166,6 @@ class GetBlogFullTest extends TestCase {
         $this->assertEquals("", $blogDetails['preview']);
         $this->assertEquals(0, $blogDetails['offset']);
         $this->assertEquals(0, $blogDetails['active']);
-        $this->assertEquals(0, $blogDetails['twitter']);
         $this->assertEquals(2, sizeOf($blogDetails['content']));
         $this->assertEquals(1, sizeOf($blogDetails['content'][1]));
         $this->assertEquals(999, $blogDetails['content'][1][0]['blog']);
@@ -224,7 +221,6 @@ class GetBlogFullTest extends TestCase {
         $this->assertEquals("", $blogDetails['preview']);
         $this->assertEquals(0, $blogDetails['offset']);
         $this->assertEquals(0, $blogDetails['active']);
-        $this->assertEquals(0, $blogDetails['twitter']);
         $this->assertEquals(2, sizeOf($blogDetails['content']));
         $this->assertEquals(1, sizeOf($blogDetails['content'][1]));
         $this->assertEquals(999, $blogDetails['content'][1][0]['blog']);

@@ -46,8 +46,6 @@ ARG PAYPAL_PASSWORD=""
 ENV PAYPAL_PASSWORD="${PAYPAL_PASSWORD}"
 ARG PAYPAL_SIGNATURE=""
 ENV PAYPAL_SIGNATURE="${PAYPAL_SIGNATURE}"
-ARG TWITTER_VERSION=3.1.0
-ENV TWITTER_VERSION="${TWITTER_VERSION}"
 
 RUN mkdir /var/www/resources
 ## install jSignature plugin
@@ -78,13 +76,6 @@ RUN cd /var/www/src && \
 RUN cd /var/www/resources && \
         wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \
         mv stream\?q\=PHP_BrowsCapINI php_browscap.ini
-## install/configure twitter plugin
-RUN cd /var/www/resources && \
-        wget --quiet https://github.com/jublo/codebird-php/archive/${TWITTER_VERSION}.tar.gz && \
-        tar -xf ${TWITTER_VERSION}.tar.gz && \
-        rm ${TWITTER_VERSION}.tar.gz && \
-        rm codebird-php-${TWITTER_VERSION}/*.* && \
-        rm -r codebird-php-${TWITTER_VERSION}/test
 
 # try setting the timezone
 ARG TZ=America/New_York

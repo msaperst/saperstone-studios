@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
-use SocialMedia;
 use Sql;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
@@ -114,23 +113,17 @@ class PublishBlogPostTest extends TestCase {
     }
 
     public function testPublishBlog() {
-        try {
-            $cookieJar = CookieJar::fromArray([
-                'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], getenv('DB_HOST'));
-            $response = $this->http->request('POST', 'api/publish-blog-post.php', [
-                'form_params' => [
-                    'post' => 999
-                ],
-                'cookies' => $cookieJar
-            ]);
-            $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals("", (string)$response->getBody());
-            $this->assertEquals(1, $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;")['active']);
-            $this->assertNotEquals(0, $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;")['twitter']);
-        } finally {
-            $socialMedia = new SocialMedia();
-            $socialMedia->removeBlogFromTwitter(Blog::withId(999));
-        }
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/publish-blog-post.php', [
+            'form_params' => [
+                'post' => 999
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+        $this->assertEquals(1, $this->sql->getRow("SELECT * FROM `blog_details` WHERE `blog_details`.`id` = 999;")['active']);
     }
 }
