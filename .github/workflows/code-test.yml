@@ -52,9 +52,11 @@ jobs:
         run: |
           composer validate
           composer install --prefer-dist --no-progress --no-suggest
+          pear channel-update pear.php.net
           pear install Mail
           pear install Mail_Mime
           pear install Auth_SASL
+          pear install pear/Net_SMTP
 
       - name: Set up env file
         run: |
