@@ -52,6 +52,7 @@ jobs:
         run: |
           composer validate
           composer install --prefer-dist --no-progress --no-suggest
+          pear install Mail Mail_Mime
 
       - name: Set up env file
         run: |
