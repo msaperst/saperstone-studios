@@ -38,14 +38,6 @@ COPY templates /var/www/templates
 # install plugins
 ARG MPDF_VERSION=7.1.9
 ENV MPDF_VERSION="${MPDF_VERSION}"
-ARG PAYPAL_VERSION=3.9.1
-ENV PAYPAL_VERSION="${PAYPAL_VERSION}"
-ARG PAYPAL_USERNAME=""
-ENV PAYPAL_USERNAME="${PAYPAL_USERNAME}"
-ARG PAYPAL_PASSWORD=""
-ENV PAYPAL_PASSWORD="${PAYPAL_PASSWORD}"
-ARG PAYPAL_SIGNATURE=""
-ENV PAYPAL_SIGNATURE="${PAYPAL_SIGNATURE}"
 
 RUN mkdir /var/www/resources
 ## install jSignature plugin
@@ -58,17 +50,6 @@ RUN cd /var/www/public/js && \
 ## install mPDF
 RUN cd /var/www/ && \
         composer require mpdf/mpdf:${MPDF_VERSION}
-## install/configure paypal plugin
-RUN cd /var/www/resources && \
-        wget --quiet https://github.com/paypal/merchant-sdk-php/archive/v${PAYPAL_VERSION}.tar.gz && \
-        tar -xf v${PAYPAL_VERSION}.tar.gz && \
-        rm v${PAYPAL_VERSION}.tar.gz
-RUN cd /var/www/resources/merchant-sdk-php-${PAYPAL_VERSION}/samples && \
-        php -f install.php && \
-        sed -i 's/mode = sandbox/mode = live/' sdk_config.ini && \
-        sed -i 's/acct1.UserName =/acct1.UserName = ${PAYPAL_USERNAME}/' sdk_config.ini && \
-        sed -i 's/acct1.Password =/acct1.Password = ${PAYPAL_PASSWORD}/' sdk_config.ini && \
-        sed -i 's/acct1.Signature =/acct1.Signature = ${PAYPAL_SIGNATURE}/' sdk_config.ini
 ## install/configure ua parser plugin
 RUN cd /var/www/src && \
         wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php

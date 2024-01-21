@@ -40,10 +40,6 @@ services:
       dockerfile: .docker/php/Dockerfile
       args:
         MPDF_VERSION: 7.1.9
-        PAYPAL_VERSION: 3.9.1
-        PAYPAL_USERNAME: ${PAYPAL_USERNAME}
-        PAYPAL_PASSWORD: ${PAYPAL_PASSWORD}
-        PAYPAL_SIGNATURE: ${PAYPAL_SIGNATURE}
     container_name: saperstonestudios_php
     restart: always
     depends_on:
@@ -77,10 +73,6 @@ services:
       EMAIL_PASS: ${EMAIL_PASS}
       EMAIL_USER_X: ${EMAIL_USER_X}
       EMAIL_PASS_X: ${EMAIL_PASS_X}
-      CONSUMER_KEY: ${CONSUMER_KEY}
-      CONSUMER_SECRET: ${CONSUMER_SECRET}
-      TOKEN: ${TOKEN}
-      TOKEN_SECRET: ${TOKEN_SECRET}
       CLEAN_UP_AFTER: 60
 volumes:
   mysql:

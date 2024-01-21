@@ -39,11 +39,6 @@ jobs:
           echo 'EMAIL_PASS=${{ secrets.EMAIL_PASS }}' >> .env
           echo 'EMAIL_USER_X=${{ secrets.EMAIL_USER_X }}' >> .env
           echo 'EMAIL_PASS_X=${{ secrets.EMAIL_PASS_X }}' >> .env
-          echo '' >> .env
-          echo '# paypal information' >> .env
-          echo 'PAYPAL_USERNAME=${{ secrets.PAYPAL_USERNAME }}' >> .env
-          echo 'PAYPAL_PASSWORD=${{ secrets.PAYPAL_PASSWORD }}' >> .env
-          echo 'PAYPAL_SIGNATURE=${{ secrets.PAYPAL_SIGNATURE }}' >> .env
 
       - name: Set up Gmail Credentials
         run: echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
