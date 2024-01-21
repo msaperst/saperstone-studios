@@ -15,8 +15,16 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
-      - name: Build Composer File
-        run: composer install
+      - name: Setup PHP with PECL extension 🔧
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.3'
+          extensions: imagick
+
+      - name: Install 🔧
+        run: |
+          composer validate
+          composer install --prefer-dist --no-progress --no-suggest
 
       - name: Dependency Check
         uses: dependency-check/Dependency-Check_Action@1.1.0

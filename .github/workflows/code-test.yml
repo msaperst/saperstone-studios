@@ -7,13 +7,13 @@ on:
 jobs:
   unit-testing:
     name: Unit Testing
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
-      - name: Setup PHP with PECL extension
+      - name: Setup PHP with PECL extension 🔧
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.3'
@@ -36,13 +36,13 @@ jobs:
 
   integration-testing:
     name: Integration Testing
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
-      - name: Setup PHP with PECL extension
+      - name: Setup PHP with PECL extension 🔧
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.3'
