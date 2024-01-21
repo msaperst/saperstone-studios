@@ -13,7 +13,7 @@ class TestBase extends TestCase {
     const reportFile = TestBase::reportDir . 'index.html';
     protected $driver;
     protected $baseUrl;
-    protected $copyright = 'Copyright © Saperstone Studios 2023';
+    protected $copyright = 'Copyright © Saperstone Studios 2024';
 
     public static function setUpBeforeClass() {
         // setup our logging

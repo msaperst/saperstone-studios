@@ -32,6 +32,9 @@ COPY public /var/www/public
 COPY src /var/www/src
 COPY templates /var/www/templates
 
+# compress our css and js
+# TODO
+
 # install plugins
 ARG MPDF_VERSION=7.1.9
 ENV MPDF_VERSION="${MPDF_VERSION}"

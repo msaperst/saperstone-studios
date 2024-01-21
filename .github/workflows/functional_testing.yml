@@ -1,149 +1,86 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: End To End Testing
+name: Functional Testing
 
-on: [ pull_request ]
+on:
+  pull_request:
+    branches: [ develop ]
 
 jobs:
-  functional_test:
-    name: Functional Testing
+  page_tests:
+    name: Page Testing
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
-      - name: Setup env file ⚙
-        run: |
-          echo "# tool hosting information" > .env
-          echo "HTTP_PORT=70" >> .env
-          echo "DOMAIN=localhost" >> .env
-          echo "WS_PROTOCOL=ws" >> .env
-          echo "WS_PORT=70" >> .env
-          echo "" >> .env
-          echo "# database information" >> .env
-          echo "MYSQL_ROOT_PASSWORD=xFRcwhHSF4aHxpGv7n5DuzSz" >> .env
-          echo "MYSQL_PORT=3206" >> .env
-          echo "MYSQL_DATABASE=snnap" >> .env
-          echo "MYSQL_USER=snnap" >> .env
-          echo "MYSQL_PASSWORD=vGvmKAcPLeQpQ7gEKckN89dB" >> .env
-          echo "" >> .env
-          echo "# api information" >> .env
-          echo "API_PORT=3001" >> .env
-          echo "API_LIMIT=10000" >> .env
-          echo "" >> .env
-          echo "# third party information" >> .env
-          echo "GA_TRACKING_CODE=UA-000000-01" >> .env
-          echo "GEOAPIFY_API_KEY=${{ secrets.GEOAPIFY_API_KEY }}" >> .env
-          echo "" >> .env
-          echo "# email info" >> .env
-          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
-          echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
-
-      - name: Setup key files ⚙
-        run: |
-          mkdir -p api/certs
-          echo "${{ secrets.KEY }}" > api/certs/key-rsa.pem
-          echo "${{ secrets.CERT }}" > api/certs/cert.pem
-
-      - name: Build Dockerfile 🐋
-        run: docker-compose -f docker-compose.yml up -d --build
-
-      - name: Setup Node ☕
-        uses: actions/setup-node@v1
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: 16.x
-
-      - name: Install 🔧
-        run: | 
-          npm ci
-          cd api; npm ci
-
-      - name: Functional Test 🔒
-        run: |
-          export $(grep -v '^#' .env | xargs)
-          docker exec snnap_mysql ./setup-database.sh
-          APP=http://localhost:70 npm run test
-
-      - name: Retrieve Docker API Logs
-        if: always()
-        run: docker logs snnap_api
-
-      - name: Archive Test Results 📊
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: Functional Test Results
-          path: 'Selenium Test Results'
-
-  accessibility_test:
-    name: Accessibility Testing
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v3
-
-      - name: Setup env file ⚙
-        run: |
-          echo "# tool hosting information" > .env
-          echo "HTTP_PORT=70" >> .env
-          echo "DOMAIN=localhost" >> .env
-          echo "WS_PROTOCOL=ws" >> .env
-          echo "WS_PORT=70" >> .env
-          echo "" >> .env
-          echo "# database information" >> .env
-          echo "MYSQL_ROOT_PASSWORD=xFRcwhHSF4aHxpGv7n5DuzSz" >> .env
-          echo "MYSQL_PORT=3206" >> .env
-          echo "MYSQL_DATABASE=snnap" >> .env
-          echo "MYSQL_USER=snnap" >> .env
-          echo "MYSQL_PASSWORD=vGvmKAcPLeQpQ7gEKckN89dB" >> .env
-          echo "" >> .env
-          echo "# api information" >> .env
-          echo "API_PORT=3001" >> .env
-          echo "API_LIMIT=10000" >> .env
-          echo "" >> .env
-          echo "# third party information" >> .env
-          echo "GA_TRACKING_CODE=UA-000000-01" >> .env
-          echo "GEOAPIFY_API_KEY=${{ secrets.GEOAPIFY_API_KEY }}" >> .env
-          echo "" >> .env
-          echo "# email info" >> .env
-          echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
-          echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
-
-      - name: Setup key files ⚙
-        run: |
-          mkdir -p api/certs
-          echo "${{ secrets.KEY }}" > api/certs/key-rsa.pem
-          echo "${{ secrets.CERT }}" > api/certs/cert.pem
-
-      - name: Build Dockerfile 🐋
-        run: docker-compose -f docker-compose.yml up -d --build
-
-      - name: Setup Node ☕
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16.x
+          php-version: '7.3'
+          extensions: imagick
 
       - name: Install 🔧
         run: |
-          npm ci
-          cd api; npm ci
+          composer validate
+          composer install --prefer-dist --no-progress --no-suggest
+          pear install Mail
+          pear install Mail_Mime
+          pear install Auth_SASL
+          pear install pear/Net_SMTP
 
-      - name: Accessibility Test 🔒
+      - name: Set up env file
         run: |
-          export $(grep -v '^#' .env | xargs)
-          docker exec snnap_mysql ./setup-database.sh
-          APP=http://localhost:70 npm run test:accessibility
+          echo '# tool hosting information' > .env
+          echo 'ADMIN_PORT=9090' >> .env
+          echo 'HTTP_PORT=90' >> .env
+          echo 'HTTPS_PORT=9443' >> .env
+          echo 'SERVER_NAME=victor' >> .env
+          echo '' >> .env
+          echo '# database information' >> .env
+          echo 'DB_ROOT=${{ secrets.DB_ROOT }}' >> .env
+          echo 'DB_PORT=3406' >> .env
+          echo 'DB_NAME=saperstone-studios' >> .env
+          echo 'DB_USER=${{ secrets.DB_USER }}' >> .env
+          echo 'DB_PASS=${{ secrets.DB_PASS }}' >> .env
+          echo '' >> .env
+          echo '# email information' >> .env
+          echo 'EMAIL_CONTACT=msaperst+sstest@gmail.com' >> .env
+          echo 'EMAIL_ACTIONS=msaperst+sstest@gmail.com' >> .env
+          echo 'EMAIL_SELECTS=msaperst+sstest@gmail.com' >> .env
+          echo 'EMAIL_CONTRACTS=msaperst+sstest@gmail.com' >> .env
+          echo 'EMAIL_HOST=ssl://smtp.gmail.com' >> .env
+          echo 'EMAIL_PORT=465' >> .env
+          echo 'EMAIL_USER=${{ secrets.EMAIL_USER }}' >> .env
+          echo 'EMAIL_PASS=${{ secrets.EMAIL_PASS }}' >> .env
+          echo 'EMAIL_USER_X=${{ secrets.EMAIL_USER_X }}' >> .env
+          echo 'EMAIL_PASS_X=${{ secrets.EMAIL_PASS_X }}' >> .env
+          echo '' >> .env
+          echo '# twitter information' >> .env
+          echo 'CONSUMER_KEY=${{ secrets.CONSUMER_KEY }}' >> .env
+          echo 'CONSUMER_SECRET=${{ secrets.CONSUMER_SECRET }}' >> .env
+          echo 'TOKEN=${{ secrets.TOKEN }}' >> .env
+          echo 'TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}' >> .env
+          echo '' >> .env
+          echo '# paypal information' >> .env
+          echo 'PAYPAL_USERNAME=${{ secrets.PAYPAL_USERNAME }}' >> .env
+          echo 'PAYPAL_PASSWORD=${{ secrets.PAYPAL_PASSWORD }}' >> .env
+          echo 'PAYPAL_SIGNATURE=${{ secrets.PAYPAL_SIGNATURE }}' >> .env
 
-      - name: Retrieve Docker API Logs
-        if: always()
-        run: docker logs snnap_api
+      - name: Set up Gmail Credentials
+        run: echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
 
-      - name: Archive Test Results 📊
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: Accessibility Test Results
-          path: 'Selenium Test Results'
+      - name: Set up Gmail Token
+        run: echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
+
+      - name: Launch App
+        run: |
+          docker-compose up --build -d
+          composer clean
+          composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Page Tests
+        run: |
+          echo "placeholder"
