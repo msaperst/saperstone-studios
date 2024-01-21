@@ -55,7 +55,7 @@ jobs:
           pear install Mail
           pear install Mail_Mime
           pear install Auth_SASL
-          pear install pear/Net_SMTP
+          sudo pear install pear/Net_SMTP
 
       - name: Set up env file
         run: |
