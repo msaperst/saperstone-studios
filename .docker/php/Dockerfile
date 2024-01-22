@@ -1,15 +1,12 @@
-FROM php:7.3.0-apache
+FROM php:7.4-apache
 
 # setup additional tooling
-RUN apt-get update && \
-        apt-get install -yy mysql-client && \
-        apt-get install -yy imagemagick && \
-        apt-get install -yy libpng-dev libzip-dev wget zip unzip
+RUN apt update
+RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip libonig-dev
+
 # setup mail plugins
-RUN pear install Mail && \
-        pear install Mail_Mime && \
-        pear install Auth_SASL && \
-        pear install pear/Net_SMTP
+RUN pear install Mail Mail_Mime Auth_SASL pear/Net_SMTP
+
 # install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
 #    php -r "if (hash_file('sha384', 'composer-setup.php') === 'e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
@@ -23,7 +20,6 @@ COPY .docker/php/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 COPY .docker/php/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
 COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 RUN a2enmod rewrite expires speling ssl
-RUN docker-php-ext-configure zip --with-libzip
 RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd
 
 # copy over files
@@ -32,19 +28,12 @@ COPY public /var/www/public
 COPY src /var/www/src
 COPY templates /var/www/templates
 
+# compress our css and js
+# TODO
+
 # install plugins
-ARG MPDF_VERSION=7.1.9
+ARG MPDF_VERSION=8.0.4
 ENV MPDF_VERSION="${MPDF_VERSION}"
-ARG PAYPAL_VERSION=3.9.1
-ENV PAYPAL_VERSION="${PAYPAL_VERSION}"
-ARG PAYPAL_USERNAME=""
-ENV PAYPAL_USERNAME="${PAYPAL_USERNAME}"
-ARG PAYPAL_PASSWORD=""
-ENV PAYPAL_PASSWORD="${PAYPAL_PASSWORD}"
-ARG PAYPAL_SIGNATURE=""
-ENV PAYPAL_SIGNATURE="${PAYPAL_SIGNATURE}"
-ARG TWITTER_VERSION=3.1.0
-ENV TWITTER_VERSION="${TWITTER_VERSION}"
 
 RUN mkdir /var/www/resources
 ## install jSignature plugin
@@ -57,17 +46,6 @@ RUN cd /var/www/public/js && \
 ## install mPDF
 RUN cd /var/www/ && \
         composer require mpdf/mpdf:${MPDF_VERSION}
-## install/configure paypal plugin
-RUN cd /var/www/resources && \
-        wget --quiet https://github.com/paypal/merchant-sdk-php/archive/v${PAYPAL_VERSION}.tar.gz && \
-        tar -xf v${PAYPAL_VERSION}.tar.gz && \
-        rm v${PAYPAL_VERSION}.tar.gz
-RUN cd /var/www/resources/merchant-sdk-php-${PAYPAL_VERSION}/samples && \
-        php -f install.php && \
-        sed -i 's/mode = sandbox/mode = live/' sdk_config.ini && \
-        sed -i 's/acct1.UserName =/acct1.UserName = ${PAYPAL_USERNAME}/' sdk_config.ini && \
-        sed -i 's/acct1.Password =/acct1.Password = ${PAYPAL_PASSWORD}/' sdk_config.ini && \
-        sed -i 's/acct1.Signature =/acct1.Signature = ${PAYPAL_SIGNATURE}/' sdk_config.ini
 ## install/configure ua parser plugin
 RUN cd /var/www/src && \
         wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php
@@ -75,13 +53,6 @@ RUN cd /var/www/src && \
 RUN cd /var/www/resources && \
         wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \
         mv stream\?q\=PHP_BrowsCapINI php_browscap.ini
-## install/configure twitter plugin
-RUN cd /var/www/resources && \
-        wget --quiet https://github.com/jublo/codebird-php/archive/${TWITTER_VERSION}.tar.gz && \
-        tar -xf ${TWITTER_VERSION}.tar.gz && \
-        rm ${TWITTER_VERSION}.tar.gz && \
-        rm codebird-php-${TWITTER_VERSION}/*.* && \
-        rm -r codebird-php-${TWITTER_VERSION}/test
 
 # try setting the timezone
 ARG TZ=America/New_York

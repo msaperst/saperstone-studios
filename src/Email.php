@@ -12,7 +12,7 @@ class Email {
     private $message;
     private $smtp;
     private $logLocation = '/var/www/logs';
-    private $myFile;
+    private $myFile = '/var/www/logs/emails.txt';
 
     function __construct($to, $from, $subject) {
         if (Strings::endsWith($to, "@saperstonestudios.com>")) {
@@ -38,7 +38,6 @@ class Email {
         if (!file_exists($this->logLocation)) {
             mkdir($this->logLocation, 0700);
         }
-        $this->myFile = $this->logLocation . '/emails.txt';
     }
 
     public function setHtml($html) {

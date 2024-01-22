@@ -1,0 +1,70 @@
+# Builds and scans the docker container, using the anchore plugin
+# https://github.com/marketplace/actions/anchore-container-scan
+
+name: Container Scanning
+
+on:
+  pull_request:
+    branches: [ develop ]
+  schedule:
+    - cron: '23 22 * * 1'
+jobs:
+  api:
+    name: PHP Container Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: imagick
+
+      - name: Build Dockerfile 🐋
+        run: |
+          docker build -t saperstone-studios/php:latest -f .docker/php/Dockerfile .
+
+      - name: Scan Image 🕵️‍♂️
+        id: scan-api
+        uses: anchore/scan-action@v3
+        with:
+          image: "saperstone-studios/php:latest"
+          fail-build: true
+          severity-cutoff: high
+
+      - name: Upload Anchore Scan SARIF Report 📊
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.scan-api.outputs.sarif }}
+          category: php
+
+  sql:
+    name: SQL Container Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Build Dockerfile 🐋
+        run: |
+          docker build -t saperstone-studios/sql:latest -f .docker/sql/Dockerfile .
+
+      - name: Scan Image 🕵️‍♂️
+        id: scan-sql
+        uses: anchore/scan-action@v3
+        with:
+          image: "saperstone-studios/sql:latest"
+          fail-build: true
+          severity-cutoff: high
+
+      - name: Upload Anchore Scan SARIF Report 📊
+        if: always()
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.scan-sql.outputs.sarif }}
+          category: sql

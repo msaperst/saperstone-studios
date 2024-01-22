@@ -307,7 +307,6 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview']);
             $this->assertEquals("10", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRow("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
             $this->assertEquals($blogId, $blogImages['blog']);
             $this->assertEquals(1, $blogImages['contentGroup']);
@@ -377,7 +376,6 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;"));
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;"));
             $blogTexts = $this->sql->getRow("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
@@ -461,7 +459,6 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview']);
             $this->assertEquals("33", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . substr($blogDetails['preview'], 6)));
             $blogImages = $this->sql->getRow("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
             $this->assertEquals($blogId, $blogImages['blog']);

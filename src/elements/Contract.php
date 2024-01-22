@@ -454,9 +454,13 @@ class Contract {
         $this->content = $sql->escapeString($params['content']);
 
         //set up our file
-        $this->file = DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' . DIRECTORY_SEPARATOR . $this->name . ' - ' . date('Y-m-d') . ' - ' . ucfirst($this->type) . ' Contract.pdf';
-        $sql->executeStatement("UPDATE `contracts` SET `name` = '{$this->name}', `address` = '{$this->address}', `number` = '{$this->number}',
-                `email` = '{$this->email}', `signature` = '{$this->signature}', `initial` = '{$this->initial}', `content` = '{$this->content}', 
+        $this->file = DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' .
+            DIRECTORY_SEPARATOR . str_replace("/", "-", $this->name) .
+            ' - ' . date('Y-m-d') . ' - ' . ucfirst($this->type) . ' Contract.pdf';
+        $sql->executeStatement("UPDATE `contracts` SET `name` = '{$this->name}',
+                `address` = '{$this->address}', `number` = '{$this->number}',
+                `email` = '{$this->email}', `signature` = '{$this->signature}',
+                `initial` = '{$this->initial}', `content` = '{$this->content}',
                 `file` = '{$this->file}' WHERE `id` = {$this->id};");
         $sql->disconnect();
 

@@ -56,7 +56,7 @@ class SqlIntegrationTest extends TestCase {
 
     public function testGetRows() {
         $rows = $this->sql->getRows("SELECT * FROM reviews;");
-        $this->assertEquals(14, sizeOf($rows));
+        $this->assertEquals(17, sizeOf($rows));
         $rows = $this->sql->getRows("SELECT * FROM review;");
         $this->assertEquals(array(), $rows);
         $this->sql->disconnect();
@@ -65,7 +65,7 @@ class SqlIntegrationTest extends TestCase {
     }
 
     public function testGetRowCount() {
-        $this->assertEquals(14, $this->sql->getRowCount("SELECT * FROM reviews;"));
+        $this->assertEquals(17, $this->sql->getRowCount("SELECT * FROM reviews;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM review;"));
         $this->sql->disconnect();
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM reviews;"));
