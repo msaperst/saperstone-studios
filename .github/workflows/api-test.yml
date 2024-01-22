@@ -54,6 +54,7 @@ jobs:
       - name: Set up Folders
         run: |
           chmod -r content
+          mkdir -m 777 content/albums
           mkdir -m 777 logs
           mkdir -m 777 tmp
 
