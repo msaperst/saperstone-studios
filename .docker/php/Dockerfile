@@ -32,7 +32,7 @@ COPY templates /var/www/templates
 # TODO
 
 # install plugins
-ARG MPDF_VERSION=7.1.9
+ARG MPDF_VERSION=8.0.4
 ENV MPDF_VERSION="${MPDF_VERSION}"
 
 RUN mkdir /var/www/resources
