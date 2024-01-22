@@ -46,11 +46,14 @@ jobs:
           echo 'EMAIL_USER_X=${{ secrets.EMAIL_USER_X }}' >> .env
           echo 'EMAIL_PASS_X=${{ secrets.EMAIL_PASS_X }}' >> .env
 
-      - name: Set up Gmail Credentials
-        run: echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
+      - name: Set up Gmail Credentials and Token
+        run: |
+          echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
+          echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
 
-      - name: Set up Gmail Token
-        run: echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
+      - name: Set up Folders
+        run: |
+          mkdir -m 777 logs
 
       - name: Launch App
         run: |
