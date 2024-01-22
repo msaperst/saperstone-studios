@@ -17,6 +17,12 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: imagick
+
       - name: Build Dockerfile 🐋
         run: |
           docker build -t saperstone-studios/php:latest -f .docker/php/Dockerfile .
