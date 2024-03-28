@@ -251,12 +251,16 @@ if (isset ( $_GET ['id'] )) {
         late and overdraft charges.
     </p>
     <p>
-        <strong>Limit on Liability.</strong> Absent willful misconduct or
-        infringement by Photographer of intellectual property rights of any
-        third party, the liability of Photographer to Client arising out of
-        the Services shall not exceed the fees paid to Photographer hereunder.
-        In no event shall Photographer have any liability for special,
-        incidental, indirect, consequential or punitive damages hereunder.
+        <strong>Limit on Liability.</strong> In the event Photographer becomes 
+        injured or is unable to photograph services as specified, the Photographer
+        will make all attempts to find a replacement photographer. If the 
+        Photographer is unable to find a replacement photographer, then liability 
+        is limited to a refund of any payments received. The Photographer undertakes 
+        reasonable efforts to safeguard and prevent loss or damage to your photographs. 
+        In the unlikely event that images may be lost, stolen or destroyed for reasons 
+        in or beyond Photographers control, liability is limited to the return of 
+        payments received for the services provided or part thereof according to the 
+        percentage of images supplied.
     </p>
     <p>
         <strong>COVID-19.</strong> All events and activities as part of Session
