@@ -37,6 +37,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/php
+          tags: |
+            type=ref,event=branch
+            type=sha
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
@@ -87,6 +90,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/sql
+          tags: |
+            type=ref,event=branch
+            type=sha
 
       - name: Build and push Docker image
         id: push
