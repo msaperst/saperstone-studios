@@ -51,7 +51,7 @@ jobs:
           context: .
           file: .docker/php/Dockerfile
           push: true
-          tags: saperstone-studios/php:latest
+          tags: ghcr.io/msaperst/saperstone-studios/php:develop
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
@@ -95,7 +95,7 @@ jobs:
           context: .
           file: .docker/sql/Dockerfile
           push: true
-          tags: saperstone-studios/sql:latest
+          tags: ghcr.io/msaperst/saperstone-studios/sql:develop
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
