@@ -11,8 +11,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  api:
-    name: Build API Container
+  php:
+    name: Build PHP Container
     runs-on: ubuntu-latest
 
     permissions:

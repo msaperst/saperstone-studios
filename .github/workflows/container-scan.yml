@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '23 22 * * 1'
 jobs:
-  api:
+  php:
     name: PHP Container Scan
     runs-on: ubuntu-latest
 
@@ -28,7 +28,7 @@ jobs:
           docker build -t saperstone-studios/php:latest -f .docker/php/Dockerfile .
 
       - name: Scan Image 🕵️‍♂️
-        id: scan-api
+        id: scan-php
         uses: anchore/scan-action@v3
         with:
           image: "saperstone-studios/php:latest"
@@ -39,7 +39,7 @@ jobs:
         if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: ${{ steps.scan-api.outputs.sarif }}
+          sarif_file: ${{ steps.scan-php.outputs.sarif }}
           category: php
 
   sql:
