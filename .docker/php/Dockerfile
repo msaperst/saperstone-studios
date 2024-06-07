@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:7.4-apache-buster
 
 # setup additional tooling
 RUN apt update
