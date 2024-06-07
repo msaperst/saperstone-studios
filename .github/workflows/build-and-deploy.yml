@@ -36,7 +36,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/php
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
@@ -51,13 +51,13 @@ jobs:
           context: .
           file: .docker/php/Dockerfile
           push: true
-          tags: ghcr.io/msaperst/saperstone-studios/php:develop
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/php
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
@@ -86,7 +86,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/sql
 
       - name: Build and push Docker image
         id: push
@@ -95,12 +95,12 @@ jobs:
           context: .
           file: .docker/sql/Dockerfile
           push: true
-          tags: ghcr.io/msaperst/saperstone-studios/sql:develop
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/sql
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
