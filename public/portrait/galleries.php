@@ -38,6 +38,7 @@ $user = User::fromSystem();
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
     
     // get our gallery images
+    $sql = new Sql ();
     $images = $sql->getRows( "SELECT * FROM `gallery_images` WHERE gallery = '{$gallery->getId()}' ORDER BY `sequence`;" );
     $sql->disconnect ();
     ?>
