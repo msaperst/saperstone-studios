@@ -25,7 +25,7 @@ $navUser = User::fromSystem();
                 <li><a href="/wedding/retouch.php">Retouch</a></li>
                 <li><a href="/wedding/reviews.php?c=2">Raves</a></li>
             </ul></li>
-<!--        <li class="dropdown"><a href="javascript:void(0);"
+        <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">B'Nai Mitzvahs<strong
                 class="caret"></strong></a>
             <ul class="dropdown-menu">
@@ -33,7 +33,7 @@ $navUser = User::fromSystem();
                 <li><a href="/b-nai-mitzvah/gallery.php?w=72">Gallery</a></li>
                 <li><a href="/b-nai-mitzvah/retouch.php">Retouch</a></li>
                 <li><a href="/b-nai-mitzvah/reviews.php?c=4">Raves</a></li>
-            </ul></li> -->
+            </ul></li
         <li class="dropdown"><a href="javascript:void(0);"
             class="dropdown-toggle" data-toggle="dropdown">Commercial<strong
                 class="caret"></strong></a>

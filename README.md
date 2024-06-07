@@ -18,8 +18,7 @@ To build and deploy locally, simply run
 docker-compose up --build
 ```
 
-### Jenkins
-
+### Pipeline
 
 ## Testing
 All the testing is managed by `composer`. To run tests, ensure `composer` is
@@ -59,3 +58,10 @@ reports are generated:
 
 ### Running UI Tests
 
+## Code Management
+When email issue pop, it's possible that the oauth token has expire. If you need
+a new `credentials.json` file, instructions are here: 
+https://developers.google.com/gmail/api/quickstart/js. When updating the 
+`credentials.json` file, delete the `token.json` file and then run a test from the
+commandline. When it pauses, hit enter to get the correct prompts. Be sure to 
+update the secrets in GHA.

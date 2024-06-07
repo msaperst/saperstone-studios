@@ -37,7 +37,7 @@ $user = User::fromSystem();
             <div class="col-lg-12">
                 <h2 class="page-header text-center">Photography Services</h2>
             </div>
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-6 col-xs-12">
                 <div section='Portraits'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Portraits</span> <img
@@ -50,7 +50,7 @@ $user = User::fromSystem();
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-6 col-xs-12">
                 <div section='Weddings'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Weddings</span> <img
@@ -62,19 +62,19 @@ $user = User::fromSystem();
                     </div>
                 </div>
             </div>
-<!--            <div class="col-md-6 col-xs-12">-->
-<!--                <div section='Mitzvahs'-->
-<!--                     class="hovereffect img-portfolio--><?php //if ($user->isAdmin ()) { echo " editable horizontal"; } ?><!--">-->
-<!--                    <span class='preview-title'>B'nai Mitzvahs</span> <img-->
-<!--                            class="img-responsive" src="/img/main/mitzvahs.jpg--><?php //echo $rand; ?><!--"-->
-<!--                            width="100%" alt="B'nai Mitzvahs">-->
-<!--                    <div class="overlay">-->
-<!--                        <br /> <br /> <br /> <a class="info" href="/b-nai-mitzvah/index.php">See-->
-<!--                            More</a>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-6 col-xs-12">
+                <div section='Mitzvahs'
+                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
+                    <span class='preview-title'>B'nai Mitzvahs</span> <img
+                            class="img-responsive" src="/img/main/mitzvahs.jpg<?php echo $rand; ?>"
+                            width="100%" alt="B'nai Mitzvahs">
+                    <div class="overlay">
+                        <br /> <br /> <br /> <a class="info" href="/b-nai-mitzvah/index.php">See
+                            More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xs-12">
                 <div section='Commercial'
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Commercial</span> <img
