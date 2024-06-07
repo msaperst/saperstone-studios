@@ -3,7 +3,7 @@ var my_id;
 
 $(function () {
     //setup our cookie consent policy, unless we're on the privacy policy page
-    if (top.location.pathname !== '/Privacy-Policy.php') {
+    if (top.location.pathname !== '/Privacy-Policy.php' && typeof $('body').bsgdprcookies === "function") {
         $('body').bsgdprcookies();
     }
 
