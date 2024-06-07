@@ -1,0 +1,72 @@
+name: UI Testing
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  page_tests:
+    name: Page Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: imagick
+
+      - name: Install 🔧
+        run: |
+          composer validate
+          composer install --prefer-dist --no-progress --no-suggest
+          pear install Mail
+          pear install Mail_Mime
+          pear install Auth_SASL
+          pear install pear/Net_SMTP
+
+      - name: Set up env file
+        run: |
+          echo '# tool hosting information' > .env
+          echo 'ADMIN_PORT=9090' >> .env
+          echo 'HTTP_PORT=90' >> .env
+          echo 'HTTPS_PORT=9443' >> .env
+          echo 'SERVER_NAME=victor' >> .env
+          echo '' >> .env
+          echo '# database information' >> .env
+          echo 'DB_ROOT=${{ secrets.DB_ROOT }}' >> .env
+          echo 'DB_PORT=3406' >> .env
+          echo 'DB_NAME=saperstone-studios' >> .env
+          echo 'DB_USER=${{ secrets.DB_USER }}' >> .env
+          echo 'DB_PASS=${{ secrets.DB_PASS }}' >> .env
+          echo '' >> .env
+          echo '# email information' >> .env
+          echo 'EMAIL_CONTACT=msaperst+sstest@gmail.com' >> .env
+          echo 'EMAIL_ACTIONS=msaperst+sstest@gmail.com' >> .env
+          echo 'EMAIL_SELECTS=msaperst+sstest@gmail.com' >> .env
+          echo 'EMAIL_CONTRACTS=msaperst+sstest@gmail.com' >> .env
+          echo 'EMAIL_HOST=ssl://smtp.gmail.com' >> .env
+          echo 'EMAIL_PORT=465' >> .env
+          echo 'EMAIL_USER=${{ secrets.EMAIL_USER }}' >> .env
+          echo 'EMAIL_PASS=${{ secrets.EMAIL_PASS }}' >> .env
+          echo 'EMAIL_USER_X=${{ secrets.EMAIL_USER_X }}' >> .env
+          echo 'EMAIL_PASS_X=${{ secrets.EMAIL_PASS_X }}' >> .env
+
+      - name: Set up Gmail Credentials
+        run: echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
+
+      - name: Set up Gmail Token
+        run: echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
+
+      - name: Launch App
+        run: |
+          docker-compose up --build -d
+          composer clean
+          composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Page Tests
+        run: |
+          echo "placeholder"

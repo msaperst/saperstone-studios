@@ -60,7 +60,6 @@ class GetBlogsSearchDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails[0]['preview']);
         $this->assertEquals(0, $blogsDetails[0]['offset']);
         $this->assertEquals(1, $blogsDetails[0]['active']);
-        $this->assertEquals(0, $blogsDetails[0]['twitter']);
         $this->assertEquals(998, $blogsDetails[1]['id']);
         $this->assertEquals('Sample Blog', $blogsDetails[1]['title']);
         $this->assertNull($blogsDetails[1]['safe_title']);
@@ -68,7 +67,6 @@ class GetBlogsSearchDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails[1]['preview']);
         $this->assertEquals(0, $blogsDetails[1]['offset']);
         $this->assertEquals(1, $blogsDetails[1]['active']);
-        $this->assertEquals(0, $blogsDetails[1]['twitter']);
         $this->assertEquals(997, $blogsDetails[2]['id']);
         $this->assertEquals('Sample Blog', $blogsDetails[2]['title']);
         $this->assertNull($blogsDetails[2]['safe_title']);
@@ -76,7 +74,6 @@ class GetBlogsSearchDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails[2]['preview']);
         $this->assertEquals(0, $blogsDetails[2]['offset']);
         $this->assertEquals(1, $blogsDetails[2]['active']);
-        $this->assertEquals(0, $blogsDetails[2]['twitter']);
     }
 
     public function testGetBlogSecond() {
@@ -97,7 +94,6 @@ class GetBlogsSearchDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails[0]['preview']);
         $this->assertEquals(0, $blogsDetails[0]['offset']);
         $this->assertEquals(1, $blogsDetails[0]['active']);
-        $this->assertEquals(0, $blogsDetails[0]['twitter']);
     }
 
     public function testGetBlogText() {
@@ -116,7 +112,6 @@ class GetBlogsSearchDetailsTest extends TestCase {
         $this->assertEquals('', $blogsDetails[0]['preview']);
         $this->assertEquals(0, $blogsDetails[0]['offset']);
         $this->assertEquals(1, $blogsDetails[0]['active']);
-        $this->assertEquals(0, $blogsDetails[0]['twitter']);
     }
 
     public function testGetBlogTextNext() {

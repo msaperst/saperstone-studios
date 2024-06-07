@@ -329,7 +329,6 @@ class UpdateBlogPostTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-999.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRow("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 999;");
             $this->assertEquals(999, $blogImages['blog']);
             $this->assertEquals(1, $blogImages['contentGroup']);
@@ -396,7 +395,6 @@ class UpdateBlogPostTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-999.jpg", $blogDetails['preview']);
             $this->assertEquals("10", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRow("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 999;");
             $this->assertEquals(999, $blogImages['blog']);
             $this->assertEquals(1, $blogImages['contentGroup']);
@@ -460,7 +458,6 @@ class UpdateBlogPostTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-999.jpg", $blogDetails['preview']);
             $this->assertEquals("0", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertEquals("0", $blogDetails['twitter']);
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 999;"));
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = 999;"));
             $blogTexts = $this->sql->getRow("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = 999;");
@@ -538,7 +535,6 @@ class UpdateBlogPostTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-999.jpg", $blogDetails['preview']);
             $this->assertEquals("33", $blogDetails['offset']);
             $this->assertEquals(1, $blogDetails['active']);
-            $this->assertNotEquals("0", $blogDetails['twitter']);
             $blogImages = $this->sql->getRow("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = 999;");
             $this->assertEquals(999, $blogImages['blog']);
             $this->assertEquals(1, $blogImages['contentGroup']);
@@ -560,8 +556,6 @@ class UpdateBlogPostTest extends TestCase {
         } finally {
             $_SERVER['SERVER_NAME'] = "www.examples.com";
             $_SERVER['SERVER_PORT'] = "90";
-            $socialMedia = new SocialMedia();
-            $socialMedia->removeBlogFromTwitter(Blog::withId(999));
             unset($_SERVER['SERVER_NAME']);
             unset($_SERVER['SERVER_PORT']);
             // cleanup

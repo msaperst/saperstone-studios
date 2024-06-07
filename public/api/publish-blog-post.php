@@ -17,5 +17,4 @@ $sql->disconnect();
 
 $sm = new SocialMedia ();
 $sm->generateRSS();
-$sm->publishBlogToTwitter($blog);
 exit ();

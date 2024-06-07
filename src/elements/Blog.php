@@ -12,7 +12,6 @@ class Blog {
     private $preview;
     private $offset = 0;
     private $active = 0;
-    private $twitter = 0;
     private $tags = array();
     private $comments = array();
     private $content = array();
@@ -53,7 +52,6 @@ class Blog {
         $blog->preview = $blog->raw['preview'];
         $blog->offset = $blog->raw['offset'];
         $blog->active = $blog->raw['active'];
-        $blog->twitter = $blog->raw['twitter'];
         $blog->tags = $sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = $id;");
         $blog->raw['tags'] = $blog->tags;      //putting the tags back in
         // content
@@ -233,13 +231,6 @@ class Blog {
     }
 
     /**
-     * @return int
-     */
-    public function getTwitter(): int {
-        return $this->twitter;
-    }
-
-    /**
      * @return array
      */
     public function getContent(): array {
@@ -355,15 +346,8 @@ class Blog {
             if ($this->active != $originalStatus) {
                 // if we have a change in status
                 $sql->executeStatement("UPDATE `blog_details` SET `active` = '{$this->active}' WHERE `id` = {$this->id};");
-                $socialMedia = new SocialMedia ();
+                $socialMedia = new SocialMedia();
                 $socialMedia->generateRSS();
-                if ($this->active == 1) {
-                    // if we just published it
-                    $this->twitter = $socialMedia->publishBlogToTwitter($this);
-                } else {
-                    // if we're archiving it
-                    $this->twitter = $socialMedia->removeBlogFromTwitter($this);
-                }
             }
         }
 

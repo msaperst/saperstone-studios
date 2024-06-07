@@ -55,10 +55,6 @@ $sql->disconnect();
                 <h2>Investing in Custom Photography</h2>
             </div>
             <div class="col-md-12">
-                <p>Eight hour wedding coverage begins at $3,600. All packages
-                    include an engagement session, 2nd photographer, an online web
-                    gallery to share with family and friends and digital images on a
-                    custom USB with a personal print release.</p>
                 <p>
                     <a href='/contact.php'>Drop me a line</a> for more of the details
                     or head on over to see what the <a href='experience.php'>wedding
