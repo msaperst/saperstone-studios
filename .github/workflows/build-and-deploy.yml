@@ -117,6 +117,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Setup SSH Key
+        run: |
+          mkdir ~/.ssh/
+          echo "${{ secrets.PRODUCTION_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
       - name: Pull and Deploy Latest
         run: |
           ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml stop'
