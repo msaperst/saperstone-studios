@@ -51,11 +51,7 @@ jobs:
           context: .
           file: .docker/php/Dockerfile
           push: true
-<<<<<<< Updated upstream
-          tags: ${{ steps.meta.outputs.tags }}
-=======
           tags: saperstone-studios/php:latest
->>>>>>> Stashed changes
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
@@ -99,11 +95,7 @@ jobs:
           context: .
           file: .docker/sql/Dockerfile
           push: true
-<<<<<<< Updated upstream
-          tags: ${{ steps.meta.outputs.tags }}
-=======
           tags: saperstone-studios/sql:latest
->>>>>>> Stashed changes
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
