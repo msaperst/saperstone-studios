@@ -24,14 +24,15 @@ $sql->disconnect();
             <ul class="dropdown-menu">
                 <?php
                 for ($i = 0; $i < count($galleries); $i++) {
-                    $gallery = $galleries [$i];
+                    $id = $galleries[$i]['id'];
+                    $title = $galleries[$i]['title'];
                     $sql = new Sql ();
-                    $subGalleries = $sql->getRows("SELECT * FROM `galleries` WHERE parent = '" . $gallery ['id'] . "';");
+                    $subGalleries = $sql->getRows("SELECT * FROM `galleries` WHERE parent = '" . $id . "';");
                     $sql->disconnect();
                     if (sizeof($subGalleries) == 0) {
-                        echo "<li><a href='galleries.php?w=" . $gallery['id'] . "'>" . $gallery['title'] . "</a></li>";
+                        echo "<li><a href='galleries.php?w=" . $id . "'>" . $title . "</a></li>";
                     } else {
-                        echo "<li><a href='gallery.php?w=" . $gallery['id'] . "'>" . $gallery['title'] . "</a></li>";
+                        echo "<li><a href='gallery.php?w=" . $id . "'>" . $title . "</a></li>";
                     }
                 }
                 ?>
