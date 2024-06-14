@@ -669,10 +669,8 @@ function downloadImages(album, what) {
             label: ' Download',
             cssClass: 'btn-success',
             action: function (dialogInItself) {
-                var $button = this; // 'this' here is a jQuery
-                // object that
-                // wrapping the <button> DOM element.
-                var modal = $button.closest('.modal-content');
+                let $button = this; // 'this' here is a jQuery object that wrapping the <button> DOM element.
+                let modal = $button.closest('.modal-content');
                 modal.find('.bootstrap-dialog-body').append('<div id="compressing-download" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>We are compressing your images for download. They should automatically start downloading shortly.</div>');
                 $button.spin();
                 dialogInItself.enableButtons(false);
@@ -683,7 +681,10 @@ function downloadImages(album, what) {
                     what: what
                 }, "json").done(function (data) {
                     data = jQuery.parseJSON(data);
-                    if (data.hasOwnProperty('file')) {
+                    if (data.hasOwnProperty('message')) {
+                        modal.find('.bootstrap-dialog-body').append('<div id="download-email-address-alert" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.message + '<br/><br/><input style="width:430px; display:inline; margin-right:20px;" placeholder="Email" type="email" class="form-control" id="download-email-address"/><button onClick="submitDownloadEmail(\'' + data.file + '\')" class="btn btn-info">Submit</button></div>');
+                        $button.remove();
+                    } else if (data.hasOwnProperty('file')) {
                         window.location = data.file;
                         dialogInItself.close();
                     } else if (data.hasOwnProperty('error')) {
@@ -712,6 +713,30 @@ function downloadImages(album, what) {
                 dialogInItself.close();
             }
         }]
+    });
+}
+
+function submitDownloadEmail(file) {
+    $.post("/api/download-send-email.php", {
+        email: $('#download-email-address').val(),
+        file: file,
+    }).done(function (data) {
+        if (data !== "") {
+            $('.bootstrap-dialog-body').append('<div class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
+        } else {
+            $('.modal-backdrop').remove();
+            $('.modal').remove();
+        }
+    }).fail(function (xhr, status, error) {
+        if (xhr.responseText !== "") {
+            $('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+        } else if (error === "Unauthorized") {
+            $('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+        } else {
+            $('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+        }
+    }).always(function () {
+        $('#download-email-address-alert').remove();
     });
 }
 

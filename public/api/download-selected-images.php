@@ -90,7 +90,13 @@ if (!is_dir("../tmp/")) {
     mkdir("../tmp/");
 }
 $myFile = "../tmp/{$album->getName()} " . date("Y-m-d H-i-s") . ".zip";
-$command = `zip -j "$myFile" $images`;
+if (count($image_array) > 100) {
+    system("zip -j '$myFile' $images > /dev/null 2>&1 &");
+    $response ['message'] = "Due to the large number of images, this download will take a while. " .
+        "Please enter your email to receive a link to the files once they are ready for download";
+} else {
+    $command = `zip -j "$myFile" $images`;
+}
 $response ['file'] = $myFile;
 echo json_encode($response);
 //remove our file after a specified amount of time
@@ -101,7 +107,7 @@ $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()},
 $sql->disconnect();
 
 // send email
-$email = new Email("Actions <"  . getenv('EMAIL_ACTIONS') . ">", "Actions <actions@saperstonestudios.com>", "Someone Downloaded Something");
+$email = new Email("Actions <" . getenv('EMAIL_ACTIONS') . ">", "Actions <actions@saperstonestudios.com>", "Someone Downloaded Something");
 
 $html = "<html><body>";
 $html .= "<p>This is an automatically generated message from Saperstone Studios</p>";
@@ -128,7 +134,8 @@ try {
 exit();
 
 // our function to see if an array of files contains the expected file
-function doesArrayContainFile($array, $file) {
+function doesArrayContainFile($array, $file)
+{
     foreach ($array as $element) {
         $match = true;
         foreach ($element as $key => $value) {
