@@ -8,7 +8,6 @@ $file = $argv[2];
 $counter = 0;
 do {
     if (file_exists($file)) {
-        printf('The file was found: %s', date("d-m-Y h:i:s"));
         break;
     }
     sleep(1);   //  or whatever …
