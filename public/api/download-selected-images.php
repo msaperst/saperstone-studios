@@ -89,7 +89,9 @@ if ($images == "") {
 if (!is_dir("../tmp/")) {
     mkdir("../tmp/");
 }
-$myFile = "../tmp/{$album->getName()} " . date("Y-m-d H-i-s") . ".zip";
+$name = str_replace('"', "", $album->getName());
+$name = str_replace("'", "", $name);
+$myFile = "../tmp/$name " . date("Y-m-d H-i-s") . ".zip";
 if (count($image_array) > 100) {
     system("zip -j '$myFile' $images > /dev/null 2>&1 &");
     $response ['message'] = "Due to the large number of images, this download will take a while. " .

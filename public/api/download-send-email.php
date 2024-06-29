@@ -13,4 +13,6 @@ try {
     exit();
 }
 
+$file = str_replace('"', "", $file);
+$file = str_replace("'", "", $file);
 system("bash -c 'sleep 300; php -f ../../bin/send-download-email.php $email \"$file\";' > /dev/null 2>&1 &");
