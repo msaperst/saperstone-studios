@@ -409,6 +409,9 @@ footer {
     .carousel .carousel {
         height: 70%;
     }
+    #meet-leigh-ann {
+        width: 50%;
+    }
 }
 
 /* For our image tiling */

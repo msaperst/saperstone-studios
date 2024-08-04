@@ -50,12 +50,12 @@ $sql->disconnect();
     <!-- About Leigh Ann Section -->
     <div class="row">
         <div class="col-md-12">
-            <img src='img/leigh-ann.jpg' alt="Leigh Ann" align='right'
+            <img id='meet-leigh-ann' src='img/leigh-ann.jpg' alt="Leigh Ann" align='right'
                  style='margin: 0px 0px 20px 20px;'/>
             <p>Hey! My name is Leigh Ann and I'm the Wham Bam Boss Lady at Saperstone Studios! We've recently
                 moved to the East Valley of Arizona and I need friends! When you reach out, be sure to tell me:
                 <ul>
-                    <li>Your favorite taco joint (the food here is so amazong!)</li>
+                    <li>Your favorite taco joint (the food here is so amazing!)</li>
                     <li>Favorite hike when it's not a bah gillian degrees out - that's the technical term</li>
                 </ul>
             </p>
