@@ -45,7 +45,7 @@ $user = User::fromSystem();
             <div class="col-md-4">
                 <h3>Contact Details</h3>
                 <p>
-                    5012 Whisper Willow Dr<br>Fairfax, VA 22030<br>
+                    Chanlder, AZ 85249<br>
                 </p>
                 <p>
                     <em class="fa fa-phone"></em> <abbr title="Phone">P</abbr>: <a
