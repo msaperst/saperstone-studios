@@ -112,5 +112,8 @@ INSERT IGNORE INTO `galleries` VALUES (96, 90, 'mounted.jpg', 'Mounted', 'Mounte
 INSERT IGNORE INTO `galleries` VALUES (97, 56, 'chiropractic-care-branding-session.jpg', 'Chiropractic Care', NULL);
 INSERT IGNORE INTO `galleries` VALUES (98, 56, 'life-coach-branding-session.jpg', 'Life Coach', NULL);
 
+-- removing this gallery temporarily
+UPDATE `galleries` SET parent = NULL WHERE id = 58;
+
 /*!40000 ALTER TABLE `galleries` ENABLE KEYS */;
 UNLOCK TABLES;
