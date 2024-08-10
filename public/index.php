@@ -42,9 +42,9 @@ $user = User::fromSystem();
                     family in Northern Virginia! I'll still be frequenting Fairfax, Burke, Springfield, McLean,
                     Oakton, Herndon and Washington, DC as I have <a href="/b-nai-mitzvah/index.php">Mitzvahs</a> and
                     <a href="/wedding/index.php">Weddings</a> booked through 2026 and will be back in town to capture
-                    those clients' milestones. <a href="https://app.acuityscheduling.com/schedule.php?owner=32987573"
+                    those clients' milestones. <!-- <a href="https://app.acuityscheduling.com/schedule.php?owner=32987573"
                                                   target="_blank">Here</a> is my updated calendar to see when you can
-                    book a Mini photography session or a full family photography session in Virginia.</p>
+                    book a Mini photography session or a full family photography session in Virginia. --></p>
                 <p>If you're here in Arizona I'm beyond excited to be here with you. We're an adventurous family of four
                     that loves the outdoors and hiking. I'm bubbling with excitement to document families in this
                     gorgeous new landscape and have already started scouting out the area.
