@@ -325,8 +325,8 @@ $session->initialize();
                 <p>If there are any questions regarding this privacy policy, you may
                     contact us using the information below.</p>
                 <p>
-                    Saperstone Studios<br /> 5012 Whisper Willow Dr<br /> Fairfax,
-                    Virginia 22030<br /> United States<br /> <a target='_blank'
+                    Saperstone Studios<br /> 6144 S Teresa Dr<br /> Chandler,
+                    Arizona 85249<br /> United States<br /> <a target='_blank'
                         href='mailto:contact@saperstonestudios.com'>contact@saperstonestudios.com</a><br />
                     <a target="_blank" href="tel:5712660004">(571) 266-0004</a><br />
                 </p>
@@ -342,5 +342,4 @@ $session->initialize();
     <!-- /.container -->
 
 </body>
-
 </html>

@@ -1,35 +1,35 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $user = User::fromSystem();
 $user->forceAdmin();
 
-$contract = array ();
+$contract = array();
 $contract ['name'] = "";
 $contract ['address'] = "";
 $contract ['number'] = "";
 $contract ['email'] = "";
 
 // get the id if set, and pull these values
-if (isset ( $_GET ['id'] )) {
+if (isset ($_GET ['id'])) {
     $sql = new Sql ();
-    $contract = $sql->getRow( "SELECT * FROM contracts WHERE id = {$_GET['id']};" );
-    $contract ['lineItems'] = $sql->getRows( "SELECT * FROM contract_line_items WHERE contract = {$_GET['id']};" );
-    $sql->disconnect ();
+    $contract = $sql->getRow("SELECT * FROM contracts WHERE id = {$_GET['id']};");
+    $contract ['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = {$_GET['id']};");
+    $sql->disconnect();
 }
 ?>
 
 <div>
     <h2>Saperstone Studios LLC. Partnership Contract</h2>
-    <input id='contract-type' type='hidden' value='partnership' />
+    <input id='contract-type' type='hidden' value='partnership'/>
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> (the "Photographer") and <u>&nbsp;<input
-            id='contract-name' class='form-control'
-            style='width: initial; display: initial;' type='text'
-            placeholder='Client Name' value='<?php echo $contract ['name']; ?>' />&nbsp;
-        </u>(the "Client").<br /> <strong>Whereas</strong>, Client wishes to partner with
+                    id='contract-name' class='form-control'
+                    style='width: initial; display: initial;' type='text'
+                    placeholder='Client Name' value='<?php echo $contract ['name']; ?>'/>&nbsp;
+        </u>(the "Client").<br/> <strong>Whereas</strong>, Client wishes to partner with
         Photographer to mutually benefit each other's businesses in which Photographer
         provides photography services in exchange for marketing opportunities through
         Client's business. Both parties agree to engage in this relationship for 1 year
@@ -43,26 +43,30 @@ if (isset ( $_GET ['id'] )) {
         <li><strong>Services.</strong> Photographer hereby agrees to provide the photography
             services set forth on the attached Statement of Services (the "Services") to
             the best of her abilities. Client hereby agrees to provide marketing and accurate
-            representation of Photographer services in exchange for provided Services.</li>
+            representation of Photographer services in exchange for provided Services.
+        </li>
         <li><strong>Compensation.</strong> Photographer agrees to provide all services
-            as listed below.</li>
+            as listed below.
+        </li>
         <li><strong>Session Details.</strong> Client may terminate this Contract at any
             time upon 30 days advance written notice. If Client chooses to terminate
             contract early without due cause, Client shall be liable for all expenses
             incurred and equivalent value of services provided by Photographer. Photographer
             shall have the right to terminate this Agreement upon 30 days advance written
-            notice.</li>
+            notice.
+        </li>
         <li><strong>Standard Terms.</strong> Attached hereto is a statement of Standard
             Terms and Conditions which will apply to the relationship between Photographer
             and Client; such terms and conditions are incorporated herein by this reference.
             In witness whereof, the undersigned have caused this Contract to be executed as
-            of the date first above written.</li>
+            of the date first above written.
+        </li>
     </ol>
     <p>
         <strong>In witness whereof</strong>, the undersigned have caused this
         Contract to be executed as of the date first above written.
-    
-    
+
+
     <h4>Client:</h4>
     <div class='row'>
         <div class='col-md-3'>
@@ -70,7 +74,7 @@ if (isset ( $_GET ['id'] )) {
         </div>
         <div class='col-md-9'>
             <input id='contract-name-signature' class='form-control keep'
-                type='text' placeholder='Client Name' disabled />
+                   type='text' placeholder='Client Name' disabled/>
         </div>
     </div>
     <div class='row'>
@@ -79,7 +83,7 @@ if (isset ( $_GET ['id'] )) {
         </div>
         <div class='col-md-9'>
             <textarea id='contract-signature' class='form-control' type='text'
-                placeholder='Client Digital Signature' disabled></textarea>
+                      placeholder='Client Digital Signature' disabled></textarea>
         </div>
     </div>
     <div class='row'>
@@ -88,8 +92,8 @@ if (isset ( $_GET ['id'] )) {
         </div>
         <div class='col-md-9'>
             <textarea id='contract-address' class='form-control keep' type='text'
-                placeholder='Client Business Address'
-                value='<?php echo $contract ['address']; ?>'></textarea>
+                      placeholder='Client Business Address'
+                      value='<?php echo $contract ['address']; ?>'></textarea>
         </div>
     </div>
     <div class='row'>
@@ -98,8 +102,8 @@ if (isset ( $_GET ['id'] )) {
         </div>
         <div class='col-md-9'>
             <input id='contract-number' class='form-control keep' type='tel'
-                placeholder='Client Phone Number'
-                value='<?php echo $contract ['number']; ?>' />
+                   placeholder='Client Phone Number'
+                   value='<?php echo $contract ['number']; ?>'/>
         </div>
     </div>
     <div class='row'>
@@ -108,8 +112,8 @@ if (isset ( $_GET ['id'] )) {
         </div>
         <div class='col-md-9'>
             <input id='contract-email' class='form-control keep' type='email'
-                placeholder='Client Email'
-                value='<?php echo $contract ['email']; ?>' />
+                   placeholder='Client Email'
+                   value='<?php echo $contract ['email']; ?>'/>
         </div>
     </div>
     <h4>Photographer:</h4>
@@ -118,7 +122,7 @@ if (isset ( $_GET ['id'] )) {
             <strong>Name:</strong>
         </div>
         <div class='col-md-9'>
-            Saperstone Studios<br /> Leigh Ann Saperstone
+            Saperstone Studios<br/> Leigh Ann Saperstone
         </div>
     </div>
     <div class='row'>
@@ -126,7 +130,7 @@ if (isset ( $_GET ['id'] )) {
             <strong>Address: </strong>
         </div>
         <div class='col-md-9'>
-            5012 Whisper Willow Dr.<br />Fairfax, VA 22030
+            6144 S Teresa Dr<br/>Chandler, AZ 85249
         </div>
     </div>
     <div class='row'>
@@ -148,7 +152,7 @@ if (isset ( $_GET ['id'] )) {
     </p>
     <h3>Exhibit A: Statement Of Services</h3>
     <input id='contract-session' class='form-control' type='hidden'
-                    placeholder='Session' value='partnership-session' />
+           placeholder='Session' value='partnership-session'/>
     <p>
         <strong>Services.</strong> Photographer hereby agrees to provide the
         photography services for Client as outlined below.
@@ -246,15 +250,15 @@ if (isset ( $_GET ['id'] )) {
         client is liable for all processing, late and overdraft charges.
     </p>
     <p>
-        <strong>Limit on Liability.</strong> In the event Photographer becomes 
+        <strong>Limit on Liability.</strong> In the event Photographer becomes
         injured or is unable to photograph services as specified, the Photographer
-        will make all attempts to find a replacement photographer. If the 
-        Photographer is unable to find a replacement photographer, then liability 
-        is limited to a refund of any payments received. The Photographer undertakes 
-        reasonable efforts to safeguard and prevent loss or damage to your photographs. 
-        In the unlikely event that images may be lost, stolen or destroyed for reasons 
-        in or beyond Photographers control, liability is limited to the return of 
-        payments received for the services provided or part thereof according to the 
+        will make all attempts to find a replacement photographer. If the
+        Photographer is unable to find a replacement photographer, then liability
+        is limited to a refund of any payments received. The Photographer undertakes
+        reasonable efforts to safeguard and prevent loss or damage to your photographs.
+        In the unlikely event that images may be lost, stolen or destroyed for reasons
+        in or beyond Photographers control, liability is limited to the return of
+        payments received for the services provided or part thereof according to the
         percentage of images supplied.
     </p>
     <p>

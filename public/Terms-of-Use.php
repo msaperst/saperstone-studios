@@ -335,8 +335,8 @@ $session->initialize();
                 <p>The full name of SAPERSTONE STUDIOS is SAPERSTONE STUDIOS LLC.</p>
                 <p>SAPERSTONE STUDIOS is registered in FAIRFAX, VA under
                     registration number 46-2778744.</p>
-                <p>SAPERSTONE STUDIOS'S registered address is 5012 Whisper Willow
-                    Dr, Fairfax, VA 22030.</p>
+                <p>SAPERSTONE STUDIOS'S registered address is 6144 S Teresa Dr,
+                    Chandler, AZ 85249.</p>
                 <p>
                     You can contact SAPERSTONE STUDIOS by email to <a target='_blank'
                         href='mailto:contact@saperstonestudios.com'>contact@saperstonestudios.com</a>.
@@ -360,5 +360,4 @@ $session->initialize();
     <!-- /.container -->
 
 </body>
-
 </html>
