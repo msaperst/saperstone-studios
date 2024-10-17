@@ -47,6 +47,11 @@ jobs:
           php-version: '7.4'
           extensions: imagick
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
@@ -96,6 +101,11 @@ jobs:
             type=ref,event=branch
             type=sha
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+          
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
