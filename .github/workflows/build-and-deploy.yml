@@ -54,6 +54,7 @@ jobs:
           context: .
           file: .docker/php/Dockerfile
           platforms: linux/amd64,linux/arm64
+          driver: docker-container
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -102,6 +103,7 @@ jobs:
           context: .
           file: .docker/sql/Dockerfile
           platforms: linux/amd64,linux/arm64
+          driver: docker-container
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
