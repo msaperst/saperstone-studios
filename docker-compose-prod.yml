@@ -1,4 +1,3 @@
-version: '3'
 services:
   mysql:
     image: victor:9086/saperstone-studios/mysql:prod

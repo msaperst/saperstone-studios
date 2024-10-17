@@ -1,7 +1,6 @@
 #!/bin/bash
 DRYRUN=$1;
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )";
-PARENTDIR="$( dirname ${DIR} )";
 
 #wait for database to be available
 while ! mysqladmin ping -h $DB_HOST -P $DB_PORT --silent; do
@@ -20,8 +19,9 @@ for file in ${DIR}/sql/*.sql; do
     mysql --force -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME < "$file" #> /dev/null 2>&1
 done
 
+echo "Finished Setting up DB"
+
 if [ "$DRYRUN" = true ]; then
-    echo "Finished Setting up DB"
     exit 0;
 fi
 
@@ -29,9 +29,8 @@ fi
 #set server name
 echo "export SERVER_NAME='${SERVER_NAME}'" >> /etc/apache2/envvars
 
-#launch apache2
-apache2-foreground
-
 #cleanup sql files
 rm -r bin/sql
-rm bin/setup-database.sh
+
+#launch apache2
+apache2-foreground
