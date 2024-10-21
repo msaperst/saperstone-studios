@@ -1,4 +1,4 @@
-## When we push to develop we'll build the containers and push to github container registry
+## When we push to develop we'll build the containers and push to GitHub container registry
 
 name: Build and Deploy
 
@@ -104,7 +104,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker-container
-          
+
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
@@ -123,21 +123,29 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
-  # deploy:
-  #   name: Deploy
-  #   needs: [ php, sql ]
-  #   runs-on: ubuntu-latest
+  deploy:
+    name: Deploy
+    needs: [ php, sql ]
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Setup SSH Key
-  #       run: |
-  #         mkdir ~/.ssh/
-  #         echo "${{ secrets.PRODUCTION_KEY }}" > ~/.ssh/id_rsa
-  #         chmod 600 ~/.ssh/id_rsa
+    steps:
+      - name: Setup SSH Key
+        run: |
+          mkdir ~/.ssh/
+          echo "${{ secrets.PRODUCTION_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
-  #     - name: Pull and Deploy Latest
-  #       run: |
-  #         ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml stop'
-  #         ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml rm -f'
-  #         ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml pull'
-  #         ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml up -d'
+#      - name: Checkout 🛎️
+#        uses: actions/checkout@v4
+
+#        - name: Copy Over Files
+#          run: |
+#            scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${{ secrets.PRODUCTION_PORT }} backup.sh ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }}:~/
+#            scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${{ secrets.PRODUCTION_PORT }} docker-compose-prod.yml ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }}:~/
+
+      - name: Pull and Deploy Latest
+        run: |
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml stop'
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml rm -f'
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml pull'
+          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker-compose -f docker-compose-prod.yml up -d'
