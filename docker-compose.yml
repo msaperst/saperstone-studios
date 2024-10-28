@@ -20,7 +20,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASS}
   php-myadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: saperstonestudios_php-myadmin
+    container_name: saperstonestudios_phpmyadmin
     restart: always
     depends_on:
     - mysql

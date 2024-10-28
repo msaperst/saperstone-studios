@@ -20,6 +20,13 @@ docker-compose up --build
 
 ### Pipeline
 
+### Certificate
+The ssl certificate is done with certbot for letsencrypt and the certs 
+themselves live on the host machine. Used this 
+[blog post](https://phoenixnap.com/kb/letsencrypt-docker) for basic setup,
+and [this page](https://certbot.eff.org/instructions?ws=apache&os=pip) for 
+jamming in certbot into our php container
+
 ## Testing
 All the testing is managed by `composer`. To run tests, ensure `composer` is
 installed, then run the desired commands from below
