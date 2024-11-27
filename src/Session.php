@@ -56,10 +56,10 @@ class Session {
 
     static function useAnalytics(): bool {
         if (!isset($_COOKIE['CookiePreferences'])) {
-            return false;
+            return true;    // unless users say no, we're sending back to google analytics
         }
         $preferences = json_decode($_COOKIE['CookiePreferences']);
         $server = 'saperstonestudios.com';
-        return (isset ($_SERVER ['HTTP_X_FORWARDED_HOST']) && Strings::endsWith($_SERVER ['HTTP_X_FORWARDED_HOST'], $server) && in_array("analytics", $preferences));
+        return (isset ($_SERVER ['HTTP_HOST']) && Strings::endsWith($_SERVER ['HTTP_HOST'], $server) && in_array("analytics", $preferences));
     }
 }
