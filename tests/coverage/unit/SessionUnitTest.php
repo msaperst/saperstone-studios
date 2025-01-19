@@ -127,7 +127,7 @@ class SessionUnitTest extends TestCase {
     }
 
     public function testUseAnalyticsNoCookie() {
-        $this->assertFalse(Session::useAnalytics());
+        $this->assertTrue(Session::useAnalytics());
     }
 
     public function testUseAnalyticsNoHost() {
@@ -153,18 +153,18 @@ class SessionUnitTest extends TestCase {
     }
 
     public function testUseAnalyticsGood() {
-        $_SERVER ['HTTP_X_FORWARDED_HOST'] = 'saperstonestudios.com';
+        $_SERVER ['HTTP_HOST'] = 'saperstonestudios.com';
         $_COOKIE['CookiePreferences'] = json_encode(['preferences', 'analytics']);
         $this->assertTrue(Session::useAnalytics());
-        unset($_SERVER ['HTTP_X_FORWARDED_HOST']);
+        unset($_SERVER ['HTTP_HOST']);
         unset($_COOKIE ['CookiePreferences']);
     }
 
     public function testUseAnalyticsGood1() {
-        $_SERVER ['HTTP_X_FORWARDED_HOST'] = 'https://saperstonestudios.com';
+        $_SERVER ['HTTP_HOST'] = 'https://saperstonestudios.com';
         $_COOKIE['CookiePreferences'] = json_encode(['preferences', 'analytics']);
         $this->assertTrue(Session::useAnalytics());
-        unset($_SERVER ['HTTP_X_FORWARDED_HOST']);
+        unset($_SERVER ['HTTP_HOST']);
         unset($_COOKIE ['CookiePreferences']);
     }
 

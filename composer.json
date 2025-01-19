@@ -16,6 +16,9 @@
     "google/apiclient": "^2.0",
     "ext-curl": "*"
   },
+  "require": {
+    "ext-mysqli": "*"
+  },
   "autoload-dev": {
     "psr-4": {
       "ui\\bootstrap\\": "tests/ui/bootstrap"

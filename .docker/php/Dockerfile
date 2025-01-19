@@ -2,7 +2,7 @@ FROM php:7.4-apache-buster
 
 # setup additional tooling
 RUN apt update
-RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip libonig-dev
+RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip libonig-dev gnupg
 
 # setup mail plugins
 RUN pear install Mail Mail_Mime Auth_SASL pear/Net_SMTP

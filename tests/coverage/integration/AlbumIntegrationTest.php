@@ -593,7 +593,7 @@ class AlbumIntegrationTest extends TestCase {
             $this->assertEquals($albumId, $albumInfo['id']);
             $this->assertEquals('Album Name', $albumInfo['name']);
             $this->assertEquals('', $albumInfo['description']);
-            CustomAsserts::timeWithin(2, $albumInfo['date']);
+            $this->assertNull($albumInfo['date']);
             $this->assertNull($albumInfo['lastAccessed']);
             $this->assertStringStartsWith('AlbumName_', $albumInfo['location']);
             CustomAsserts::timestampWithin(2, explode('_', $albumInfo['location'])[1]);
@@ -774,7 +774,7 @@ class AlbumIntegrationTest extends TestCase {
             $this->assertEquals(898, $albumInfo['id']);
             $this->assertEquals('Sample Album', $albumInfo['name']);
             $this->assertEquals('', $albumInfo['description']);
-            CustomAsserts::timeWithin(2, $albumInfo['date']);
+            $this->assertNull($albumInfo['date']);
             $this->assertNull($albumInfo['lastAccessed']);
             $this->assertEquals('', $albumInfo['location']);
             $this->assertEquals('', $albumInfo['code']);

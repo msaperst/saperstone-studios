@@ -82,6 +82,30 @@ reports are generated:
 ### Running Code Coverage
 
 ### Running API Tests
+Launch the app
+```bash
+docker compose up --build -d
+```
+Setup local environment variables
+```bash
+set -a
+source .env
+set +a
+export DB_HOST=localhost
+```
+Ensure the api tools are built
+```bash
+composer clean
+composer install --prefer-dist --no-progress --no-suggest
+```
+Ensure the app is up
+```bash
+curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
+```
+Run the tests
+```bash
+COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
+```
 
 ### Running UI Tests
 
