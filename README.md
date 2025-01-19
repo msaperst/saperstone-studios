@@ -11,11 +11,12 @@ When creating new thumbs for retouch:
 `convert Emily.jpg -gravity center -crop 90x90+0+0 +repage Emily.jpg`
 
 ## Deploying
-Everything is orchestrated with Docker and docker-compose
+Everything is orchestrated with Docker and docker compose
+
 ### Locally
 To build and deploy locally, simply run
 ```shell
-docker-compose up --build
+docker compose up --build
 ```
 
 ### Pipeline
@@ -26,6 +27,25 @@ themselves live on the host machine. Used this
 [blog post](https://phoenixnap.com/kb/letsencrypt-docker) for basic setup,
 and [this page](https://certbot.eff.org/instructions?ws=apache&os=pip) for 
 jamming in certbot into our php container
+
+To update the cert, install certbot according to the above instructions, or use the below.
+docker exec into the php container and then run the below commands:
+```bash
+apt update
+apt upgrade
+apt install -y python3 python3-venv libaugeas0
+python3 -m venv /opt/certbot/
+/opt/certbot/bin/pip install --upgrade pip
+/opt/certbot/bin/pip install certbot certbot-apache
+ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+certbot renew --dry-run
+```
+If you get an error about `Error Parsing variable: ${SERVER_NAME}`, go into the apache conf files and 
+update `${SERVER_NAME}` on the first 4 lines to `saperstonestudios.com` and then re-run the dry-run command. 
+If all of the above works, finally run the below command:
+```bash
+certbot renew
+```
 
 ## Testing
 All the testing is managed by `composer`. To run tests, ensure `composer` is
@@ -62,6 +82,30 @@ reports are generated:
 ### Running Code Coverage
 
 ### Running API Tests
+Launch the app
+```bash
+docker compose up --build -d
+```
+Setup local environment variables
+```bash
+set -a
+source .env
+set +a
+export DB_HOST=localhost
+```
+Ensure the api tools are built
+```bash
+composer clean
+composer install --prefer-dist --no-progress --no-suggest
+```
+Ensure the app is up
+```bash
+curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
+```
+Run the tests
+```bash
+COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
+```
 
 ### Running UI Tests
 
