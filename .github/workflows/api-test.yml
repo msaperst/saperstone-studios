@@ -62,7 +62,7 @@ jobs:
 
       - name: Launch App
         run: |
-          docker-compose up --build -d
+          docker compose up --build -d
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
 

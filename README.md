@@ -11,11 +11,12 @@ When creating new thumbs for retouch:
 `convert Emily.jpg -gravity center -crop 90x90+0+0 +repage Emily.jpg`
 
 ## Deploying
-Everything is orchestrated with Docker and docker-compose
+Everything is orchestrated with Docker and docker compose
+
 ### Locally
 To build and deploy locally, simply run
 ```shell
-docker-compose up --build
+docker compose up --build
 ```
 
 ### Pipeline
