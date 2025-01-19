@@ -7,7 +7,7 @@ $nav = "main";
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description"
-    content="Photography and Retouch for Northern Virginia, DC, and Maryland by Saperstone Studios">
+      content="Photography and Retouch for Phoenix Metropolitan area, the East Valley, as well as Northern Virginia, DC, and Maryland">
 <meta name="author" content="Saperstone Studios">
 
 <link rel="apple-touch-icon" sizes="57x57"
@@ -42,8 +42,7 @@ $nav = "main";
     content="/img/favicon/ms-icon-144x144.png?v=2">
 <meta name="theme-color" content="#ffffff">
 
-<title>Photography and Retouch for Northern Virginia, DC, and Maryland by
-    Saperstone Studios</title>
+<title>Photography and Retouch for Phoenix Metropolitan area, the East Valley, as well as Northern Virginia, DC, and Maryland</title>
 <link rel="alternate" type="application/rss+xml" href="/blog.rss"
     title="RSS feed for Saperstone Studios Blogs">
 

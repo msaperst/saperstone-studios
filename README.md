@@ -27,6 +27,25 @@ themselves live on the host machine. Used this
 and [this page](https://certbot.eff.org/instructions?ws=apache&os=pip) for 
 jamming in certbot into our php container
 
+To update the cert, install certbot according to the above instructions, or use the below.
+docker exec into the php container and then run the below commands:
+```bash
+apt update
+apt upgrade
+apt install -y python3 python3-venv libaugeas0
+python3 -m venv /opt/certbot/
+/opt/certbot/bin/pip install --upgrade pip
+/opt/certbot/bin/pip install certbot certbot-apache
+ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+certbot renew --dry-run
+```
+If you get an error about `Error Parsing variable: ${SERVER_NAME}`, go into the apache conf files and 
+update `${SERVER_NAME}` on the first 4 lines to `saperstonestudios.com` and then re-run the dry-run command. 
+If all of the above works, finally run the below command:
+```bash
+certbot renew
+```
+
 ## Testing
 All the testing is managed by `composer`. To run tests, ensure `composer` is
 installed, then run the desired commands from below

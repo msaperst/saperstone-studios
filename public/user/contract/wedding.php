@@ -72,9 +72,9 @@ Photobooth
 Web gallery for sharing
 USB of final images
 $200 print credit'
-                        <?php if ($contract ['session'] == "Platinum Package") {
+                        <?php if ($contract ['session'] == "Premier Package") {
                             echo " selected";
-                        } ?>>Platinum
+                        } ?>>Premier
                         Package
                     </option>
                     <option cost='3600.00'
@@ -85,9 +85,9 @@ Engagement session
 Web gallery for sharing
 USB of final images
 $150 print credit'
-                        <?php if ($contract ['session'] == "Gold Package") {
+                        <?php if ($contract ['session'] == "Lux Package") {
                             echo " selected";
-                        } ?>>Gold
+                        } ?>>Lux
                         Package
                     </option>
                     <option cost='2900.00'
@@ -98,9 +98,9 @@ Engagement session
 Web gallery for sharing
 USB of final images
 $100 print credit'
-                        <?php if ($contract ['session'] == "Silver Package") {
+                        <?php if ($contract ['session'] == "Classic Package") {
                             echo " selected";
-                        } ?>>Silver
+                        } ?>>Classic
                         Package
                     </option>
                     <option cost=''>Custom</option>
