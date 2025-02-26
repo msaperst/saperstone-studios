@@ -29,7 +29,7 @@ jobs:
 
       - name: Upload Coverage 📊
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ut-coverage
           path: reports
@@ -99,7 +99,7 @@ jobs:
 
       - name: Upload Coverage 📊
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: it-coverage
           path: reports

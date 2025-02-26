@@ -25,7 +25,7 @@ function Album(albumId, columns, totalImages) {
     };
 
     $('#album').on('hide.bs.modal', function () {
-        window.location.hash = "";
+        history.pushState("", document.title, window.location.pathname + window.location.search);
     });
 }
 
