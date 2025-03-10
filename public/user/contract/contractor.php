@@ -92,10 +92,10 @@ if (isset ($_GET ['id'])) {
                 </li>
             </ul>
         </li>
-        <li><strong>Image Delivery</strong> The Contractor shall use their own
-            camera equipment and memory cards. RAW files will be uploaded to a
-            web gallery link provided by Saperstone Studios within 1 week of
-            event date.
+        <li><strong>Image Delivery</strong> The Contractor shall use their own camera
+            equipment and Saperstone Studios will provide memory cards for you to
+            photograph on. Memory cards will be returned to Saperstone Studios at
+            the end of the event.
         </li>
 
         <li><strong>Compensation</strong> In consideration of the Services,
