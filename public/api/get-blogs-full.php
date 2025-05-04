@@ -10,8 +10,8 @@ if (isset ($_GET ['start'])) {
 $sql = new Sql();
 $query = "SELECT * FROM `blog_details` WHERE `active` ORDER BY `date` DESC LIMIT $start,1;";
 if (isset ($_GET ['tag'])) {
-    $query = "SELECT DISTINCT blog FROM blog_tags AS a1";
-    $where = " WHERE ";
+    $query = "SELECT DISTINCT id,date FROM blog_tags AS a1";
+    $where = " LEFT JOIN blog_details as details ON a1.blog = details.id WHERE ";
     for ($i = 1; $i <= sizeof($_GET['tag']); $i++) {
         if ($i != 1) {
             $query .= " JOIN blog_tags AS a$i USING (blog) ";
@@ -19,19 +19,9 @@ if (isset ($_GET ['tag'])) {
         $where .= "a$i.tag = " . $_GET['tag'][$i - 1] . " AND ";
     }
     $where = substr($where, 0, -4);
-    $blogs = $sql->getRows($query . $where);
-
-    if (sizeof($blogs) > 0) {
-        $what = "";
-        foreach ($blogs as $blog) {
-            $what .= "id = " . (int)$blog['blog'] . " OR ";
-        }
-        $what = substr($what, 0, -3);
-    } else {
-        $what = 'id = -1';
-    }
-    $query = "SELECT DISTINCT * FROM `blog_details` WHERE `active` AND ( $what ) ORDER BY `date` DESC LIMIT $start,1;";
+    $query .= $where . " ORDER BY details.date DESC, details.id DESC LIMIT $start,1;";
 }
+
 $blogDetails = $sql->getRow($query);
 $sql->disconnect();
 
