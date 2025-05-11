@@ -42,6 +42,10 @@ certbot renew --dry-run
 ```
 If you get an error about `Error Parsing variable: ${SERVER_NAME}`, go into the apache conf files and 
 update `${SERVER_NAME}` on the first 4 lines to `saperstonestudios.com` and then re-run the dry-run command. 
+If you get an error installing a dependency (when doing a `pip install`), sometimes you need to install an 
+older version of that dependency. This happened with `python-augeas`. Version 1.2 kept failing to install,
+and manually installing version 1.1 make the rest of the commands work.
+`/opt/certbot/bin/pip install --force-reinstall -v "python-augeas==1.1"`
 If all of the above works, finally run the below command:
 ```bash
 certbot renew
