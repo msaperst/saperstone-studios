@@ -68,6 +68,68 @@ $nav = "main";
 <!-- Custom Fonts -->
 <script src="https://use.fontawesome.com/5b39eac726.js"></script>
 
+<!-- Ties to Google Business Profile -->
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Saperstone Studios",
+        "image": "https://saperstonestudios.com/img/2014websitelogo250px.png",
+        "@id": "https://saperstonestudios.com",
+        "url": "https://saperstonestudios.com",
+        "telephone": "+1-571-266-0004",
+        "priceRange": "$$",
+        "description": "Saperstone Studios provides professional mitzvah, wedding, portrait, and corporate photography services across the Phoenix metro area.",
+        "areaServed": [
+            {
+                "@type": "City",
+                "name": "Chandler"
+            },
+            {
+                "@type": "City",
+                "name": "Gilbert"
+            },
+            {
+                "@type": "City",
+                "name": "Mesa"
+            },
+            {
+                "@type": "City",
+                "name": "Tempe"
+            },
+            {
+                "@type": "City",
+                "name": "Phoenix"
+            }
+        ],
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Chandler",
+            "addressRegion": "AZ",
+            "addressCountry": "US"
+        },
+        "openingHoursSpecification": [{
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+            ],
+            "opens": "09:00",
+            "closes": "18:00"
+        }],
+        "sameAs": [
+            "https://www.facebook.com/SaperstoneStudios",
+            "https://instagram.com/saperstonestudios",
+            "https://twitter.com/LaSaperstone"
+        ]
+    }
+</script>
+
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
