@@ -32,10 +32,15 @@ $user = User::fromSystem();
 <!-- Page Content -->
 <div class="page-content container">
 
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header text-center">Chandler, AZ Event & Family Photographer</h1>
+        </div>
+    </div>
+
     <!-- Services Section -->
     <div class="row">
         <div class="col-lg-12">
-            <!--            <h1 class="page-header">Photography Services</h1>-->
             <div style="margin-top: 80px; margin-bottom:30px;">
                 <p>If you've heard the news, my family has moved to Phoenix Arizona! We've traded in the humid heat
                     for dry and invested heavily in sunscreen. But don't count me out to photograph your beautiful

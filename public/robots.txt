@@ -1,8 +1,15 @@
+# robots.txt for Saperstone Studios
+# Tells search engines what they can and cannot crawl
+
 User-agent: *
-Disallow: /api/
-Disallow: /albums/
-Disallow: /php/
-Disallow: /logs/
-Disallow: /plugins/
-Disallow: /tmp/
-Disallow: /user/
+Disallow: /cgi-bin/          # Block server scripts
+Disallow: /tmp/              # Block temporary files
+Disallow: /api/              # Block API directory
+Disallow: /user/             # Block user data
+
+# Allow everything else
+Allow: /
+
+# Point search engines to your sitemap
+Sitemap: https://www.saperstonestudios.com/sitemap.xml
+Sitemap: https://www.saperstonestudios.com/sitemap.xml.gz
