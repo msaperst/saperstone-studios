@@ -41,7 +41,7 @@ $user = User::fromSystem();
     <!-- Services Section -->
     <div class="row">
         <div class="col-lg-12">
-            <div style="margin-top: 80px; margin-bottom:30px;">
+            <div style="margin-bottom:30px;">
                 <p>If you've heard the news, my family has moved to Phoenix Arizona! We've traded in the humid heat
                     for dry and invested heavily in sunscreen. But don't count me out to photograph your beautiful
                     family in Northern Virginia! I'll still be frequenting Fairfax, Burke, Springfield, McLean,
