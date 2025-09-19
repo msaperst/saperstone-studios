@@ -105,6 +105,9 @@ jobs:
         with:
           driver: docker-container
 
+      - name: Update the sitexml file
+        run: python bin/create-site-map.py
+
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
