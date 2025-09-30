@@ -1,12 +1,21 @@
 <?php
 // Define our default menu
 $nav = "main";
+$page_title = "Saperstone Studios | Chandler AZ Photography and Retouch";
+if(strpos($_SERVER['REQUEST_URI'], 'blog/post.php') !== false) {
+    try {
+        $blog = Blog::withId($_GET ['p']);
+        $page_title = $blog->getTitle() . " | " . $page_title;
+    } catch (Exception $e) {
+        // do nothing, this will throw a 404 error
+    }
+}
 ?>
 
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Saperstone Studios | Chandler AZ Photographer and Retouch">
+<meta name="description" content="<?php echo $page_title; ?>">
 <meta name="author" content="Saperstone Studios">
 
 <link rel="apple-touch-icon" sizes="57x57"
@@ -41,7 +50,7 @@ $nav = "main";
     content="/img/favicon/ms-icon-144x144.png?v=2">
 <meta name="theme-color" content="#ffffff">
 
-<title>Saperstone Studios | Chandler AZ Photographer and Retouch</title>
+<title><?php echo $page_title; ?></title>
 <link rel="alternate" type="application/rss+xml" href="/blog.rss"
     title="RSS feed for Saperstone Studios Blogs">
 
