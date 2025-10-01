@@ -6,7 +6,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SqlUnitTest extends TestCase {
 
@@ -16,7 +16,7 @@ class SqlUnitTest extends TestCase {
         try {
             new Sql();
         } catch (Exception $e) {
-            $this->assertStringStartsWith('Failed to connect to MySQL: mysqli::__construct(): php_network_getaddresses: getaddrinfo failed:', $e->getMessage());
+            $this->assertStringStartsWith('Failed to connect to MySQL: mysqli_sql_exception: php_network_getaddresses: getaddrinfo for badhost failed:', $e->getMessage());
         } finally {
             putenv("DB_HOST=$DB_HOST");
         }

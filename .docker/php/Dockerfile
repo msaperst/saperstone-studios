@@ -1,4 +1,4 @@
-FROM php:7.4-apache-bullseye
+FROM php:8.4-apache-bullseye
 
 # setup additional tooling
 RUN apt update

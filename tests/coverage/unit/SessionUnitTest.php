@@ -5,20 +5,17 @@ namespace coverage\unit;
 use PHPUnit\Framework\TestCase;
 use Session;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SessionUnitTest extends TestCase {
 
-    /**
-     * @var Session
-     */
-    private $session;
+    private ?Session $session;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->session = new Session();
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->session = NULL;
     }
 
