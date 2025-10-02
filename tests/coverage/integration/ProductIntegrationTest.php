@@ -2,16 +2,24 @@
 
 namespace coverage\integration;
 
+use BadProductException;
+use BadProductTypeException;
+use BadUserException;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Product;
+use ProductException;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class ProductIntegrationTest extends TestCase {
 
-    public function tearDown() {
+    /**
+     * @throws SqlException
+     */
+    public function tearDown(): void {
         $sql = new Sql();
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `products`;")['count'];
         $count++;
@@ -43,6 +51,10 @@ class ProductIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadProductTypeException
+     * @throws BadProductException
+     */
     public function testWithIdGetDataArray() {
         $product = Product::withId(1);
         $productInfo = $product->getDataArray();
@@ -53,6 +65,10 @@ class ProductIntegrationTest extends TestCase {
         $this->assertEquals('100.00', $productInfo['cost']);
     }
 
+    /**
+     * @throws BadProductTypeException
+     * @throws BadProductException
+     */
     public function testGetId() {
         $product = Product::withId(1);
         $this->assertEquals(1, $product->getId());
@@ -187,6 +203,13 @@ class ProductIntegrationTest extends TestCase {
     }
 
 
+    /**
+     * @throws BadUserException
+     * @throws BadProductException
+     * @throws SqlException
+     * @throws ProductException
+     * @throws BadProductTypeException
+     */
     public function testWithParamsString() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $params = [
@@ -195,6 +218,7 @@ class ProductIntegrationTest extends TestCase {
             'price' => 'abcd',
             'cost' => 'df4l'
         ];
+        $productId = 0;
         try {
             $product = Product::withParams($params);
             $productId = $product->create();
@@ -212,6 +236,13 @@ class ProductIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadUserException
+     * @throws BadProductException
+     * @throws SqlException
+     * @throws ProductException
+     * @throws BadProductTypeException
+     */
     public function testWithParamsDollar() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $params = [
@@ -220,6 +251,7 @@ class ProductIntegrationTest extends TestCase {
             'price' => '$12.2345',
             'cost' => '1ge23rt'
         ];
+        $productId = 0;
         try {
             $product = Product::withParams($params);
             $productId = $product->create();
@@ -237,8 +269,16 @@ class ProductIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadUserException
+     * @throws BadProductException
+     * @throws ProductException
+     * @throws SqlException
+     * @throws BadProductTypeException
+     */
     public function testWithParamsGetDataArray() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $productId = 0;
         try {
             $params = [
                 'type' => '1',
@@ -271,6 +311,13 @@ class ProductIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadUserException
+     * @throws BadProductException
+     * @throws SqlException
+     * @throws ProductException
+     * @throws BadProductTypeException
+     */
     public function testUpdate() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         try {
@@ -303,8 +350,12 @@ class ProductIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws SqlException
+     */
     public function testCreateNoPermissionsDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $productId = 0;
         try {
             $params = [
                 'type' => '1',
@@ -325,8 +376,17 @@ class ProductIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws SqlException
+     * @throws BadProductTypeException
+     * @throws BadUserException
+     * @throws BadProductException
+     * @throws ProductException
+     */
     public function testCreateDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $sql = new Sql();
+        $productId = 0;
         try {
             $params = [
                 'type' => '1',
@@ -338,7 +398,6 @@ class ProductIntegrationTest extends TestCase {
             $productId = $product->create();
             $product->delete();
             unset($_SESSION['hash']);
-            $sql = new Sql();
             $this->assertEquals(0, $sql->getRowCount("SELECT * FROM products WHERE id = $productId"));
         } finally {
             $sql->executeStatement("DELETE FROM products WHERE id = $productId");

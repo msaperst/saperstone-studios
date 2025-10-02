@@ -2,14 +2,13 @@
 
 namespace coverage\integration;
 
-use CustomAsserts;
 use Email;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'Gmail.php';
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'Gmail.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class EmailIntegrationTest extends TestCase {
 
@@ -31,10 +30,10 @@ class EmailIntegrationTest extends TestCase {
         $email = new Email('msaperst+sstest@gmail.com', 'la@saperstonestudios.com', 'test');
         $email->setHtml("<b>Test</b> Email");
         $email->setText("Test Email");
-        $email->addAttachment(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'uiTestResultTemplate.html');
+        $email->addAttachment(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'uiTestResultTemplate.html');
         $email->sendEmail();
         // commenting out assertion until I can figure out email credential verification
-        // CustomAsserts::assertEmailEquals('test', 'Test Email', '<b>Test</b> Email', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'uiTestResultTemplate.html');
+        // CustomAsserts::assertEmailEquals('test', 'Test Email', '<b>Test</b> Email', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'uiTestResultTemplate.html');
         $this->assertTrue(true);
     }
 

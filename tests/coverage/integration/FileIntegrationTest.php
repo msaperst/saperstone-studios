@@ -6,8 +6,9 @@ use Exception;
 use File;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class FileIntegrationTest extends TestCase {
 
@@ -86,6 +87,9 @@ class FileIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSingularFileConstructor() {
         $params = [
             'error' => '0',
@@ -99,6 +103,9 @@ class FileIntegrationTest extends TestCase {
         $this->assertEquals('/tmp/file', $files[0]['tmp_name']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testMultipleFileConstructor() {
         $params = [
             'error' => '0',
@@ -114,52 +121,62 @@ class FileIntegrationTest extends TestCase {
         $this->assertEquals('/tmp/file2', $files[1]['tmp_name']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUploadSingleFile() {
         $params = [
             'error' => '0',
             'name' => 'sample.jpeg',
-            'tmp_name' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+            'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
         ];
         $file = new File($params);
-        $files = $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample');
+        $files = $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample');
         $this->assertEquals(1, sizeOf($files));
         $this->assertEquals('sample.jpeg', $files[0]);
-        $this->assertTrue(is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample'));
-        system('rm -rf ' . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample');
+        $this->assertTrue(is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample'));
+        system('rm -rf ' . dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample');
         // TODO - can't verify file, as move_uploaded_file only moves files uploaded by PHP
-//        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
-//        unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+//        $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
+//        unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testUploadMultipleFile() {
         $params = [
             'error' => '0',
             'name' => ['sample1.jpeg', 'sample2.jpeg'],
-            'tmp_name' => [dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg']
+            'tmp_name' => [dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg']
         ];
         $file = new File($params);
-        $files = $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
+        $files = $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
         $this->assertEquals(2, sizeOf($files));
         $this->assertEquals('sample1.jpeg', $files[0]);
         $this->assertEquals('sample2.jpeg', $files[1]);
         // TODO - can't verify file, as move_uploaded_file only moves files uploaded by PHP
-//        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample1.jpeg'));
-//        unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample1.jpeg');
-//        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample2.jpeg'));
-//        unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample2.jpeg');
+//        $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample1.jpeg'));
+//        unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample1.jpeg');
+//        $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample2.jpeg'));
+//        unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample2.jpeg');
     }
 
+    /**
+     * @throws SqlException
+     * @throws Exception
+     */
     public function testAddToDBSingleFileNoAlbumNoFile() {
+        $sql = new Sql();
         try {
-            $sql = new Sql();
             $params = [
                 'error' => '0',
                 'name' => 'sample.jpeg',
-                'tmp_name' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+                'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
             ];
             $file = new File($params);
-            $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $file->addToDatabase('album_images', 'albums', 899, 'album', '/albums/sample/');
             $images = $sql->getRows("SELECT * FROM album_images WHERE album = 899");
             $this->assertEquals(1, sizeof($images));
@@ -176,7 +193,7 @@ class FileIntegrationTest extends TestCase {
             $album = $sql->getRows("SELECT * FROM albums WHERE id = 899");
             $this->assertEquals(0, sizeof($album));
         } finally {
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 899;");
             $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
             $count++;
@@ -185,22 +202,26 @@ class FileIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws SqlException
+     * @throws Exception
+     */
     public function testAddToDBSingleFile() {
+        $sql = new Sql();
         try {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
-            $sql = new Sql();
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`, `images`) VALUES ('899', 'sample-album', 'sample album for testing', 'sample', 4, '123', 1);");
             $sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '899', 'sample', '1', '', 'location', '100', 300, 1);");
             $params = [
                 'error' => '0',
                 'name' => 'sample.jpeg',
-                'tmp_name' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+                'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
             ];
             $file = new File($params);
-            $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample1.jpeg');
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample2.jpeg');
+            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample1.jpeg');
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample2.jpeg');
             $file->addToDatabase('album_images', 'albums', 899, 'album', '/albums/sample/');
             $images = $sql->getRows("SELECT * FROM album_images WHERE album = 899");
             $this->assertEquals(2, sizeof($images));
@@ -228,24 +249,28 @@ class FileIntegrationTest extends TestCase {
             $count++;
             $sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
             $sql->disconnect();
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
         }
     }
 
+    /**
+     * @throws SqlException
+     * @throws Exception
+     */
     public function testAddToDBMultipleFile() {
+        $sql = new Sql();
         try {
             $_SESSION ['hash'] = "5510b5e6fffd897c234cafe499f76146";
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample1.jpeg');
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample2.jpeg');
-            $sql = new Sql();
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample1.jpeg');
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample2.jpeg');
             $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('898', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
             $params = [
                 'error' => '0',
                 'name' => ['sample1.jpeg', 'sample2.jpeg'],
-                'tmp_name' => [dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg']
+                'tmp_name' => [dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg']
             ];
             $file = new File($params);
-            $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
+            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
             $file->addToDatabase('album_images', 'albums', 898, 'album', '/albums/sample/');
             $images = $sql->getRows("SELECT * FROM album_images WHERE album = 898");
             $this->assertEquals(2, sizeof($images));
@@ -287,8 +312,8 @@ class FileIntegrationTest extends TestCase {
             $count++;
             $sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
             $sql->disconnect();
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample1.jpeg');
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample2.jpeg');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample1.jpeg');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample2.jpeg');
         }
     }
 
@@ -297,15 +322,15 @@ class FileIntegrationTest extends TestCase {
             $params = [
                 'error' => '0',
                 'name' => 'sample.jpeg',
-                'tmp_name' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+                'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
             ];
             $file = new File($params);
-            $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $file->resize(2000, 1500);
         } catch (Exception $e) {
             $this->assertEquals('Image does not meet the minimum width requirements of 2000px. Image is 1600 x 1200', $e->getMessage());
-            $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
+            $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
         }
     }
 
@@ -314,55 +339,61 @@ class FileIntegrationTest extends TestCase {
             $params = [
                 'error' => '0',
                 'name' => 'sample.jpeg',
-                'tmp_name' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+                'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
             ];
             $file = new File($params);
-            $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $file->resize(1000, 1500);
         } catch (Exception $e) {
             $this->assertEquals('Image does not meet the minimum height requirements of 1500px. Image is 1600 x 1200', $e->getMessage());
-            $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
+            $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testResize() {
         try {
             $params = [
                 'error' => '0',
                 'name' => 'sample.jpeg',
-                'tmp_name' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+                'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
             ];
             $file = new File($params);
-            $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $file->resize(800, 1000);
-            $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
-            $size = getimagesize(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
+            $size = getimagesize(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $this->assertEquals(800, $size[0]);
             $this->assertEquals(600, $size[1]);
         } finally {
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDontResize() {
         try {
             $params = [
                 'error' => '0',
                 'name' => 'sample.jpeg',
-                'tmp_name' => dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+                'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
             ];
             $file = new File($params);
-            $file->upload(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR);
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $file->resize(800, 0);
-            $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
-            $size = getimagesize(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
+            $size = getimagesize(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $this->assertEquals(1600, $size[0]);
             $this->assertEquals(1200, $size[1]);
         } finally {
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
         }
     }
 }

@@ -9,18 +9,16 @@ use Image;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class ImageIntegrationTest extends TestCase {
-    /**
-     * @var Sql
-     */
-    private $sql;
+
+    private Sql $sql;
 
     /**
      * @throws Exception
      */
-    public function setUp() {
+    public function setUp(): void {
         date_default_timezone_set("America/New_York");
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('899', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
@@ -29,23 +27,23 @@ class ImageIntegrationTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (898, '1', '', '1', '', '/albums/sample/sample.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (899, '1', '', '1', '', '', '300', '400', '1');");
         $oldMask = umask(0);
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums', 0777);
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777);
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/full');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/full', 0777);
-        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg', 0777);
-        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg', 0777);
+        mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums');
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums', 0777);
+        mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample');
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777);
+        mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/full');
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/full', 0777);
+        touch(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg');
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg', 0777);
+        touch(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg');
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg', 0777);
         umask($oldMask);
     }
 
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 899;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`id` = 898;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`id` = 899;");
@@ -58,7 +56,7 @@ class ImageIntegrationTest extends TestCase {
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
         $this->sql->disconnect();
-        system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums'));
     }
 
     public function testNullImageSequence() {
@@ -252,7 +250,7 @@ class ImageIntegrationTest extends TestCase {
             $this->assertEquals("User not authorized to delete image", $e->getMessage());
         }
         $this->assertEquals(2, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
-        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
+        $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
 
     /**
@@ -276,8 +274,8 @@ class ImageIntegrationTest extends TestCase {
         unset($_SESSION ['hash']);
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
         $this->assertEquals(0, $this->sql->getRow("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;")['sequence']);
-        $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
-        $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg'));
+        $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
+        $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg'));
     }
 
     /**
@@ -291,6 +289,6 @@ class ImageIntegrationTest extends TestCase {
         unset($_SESSION ['hash']);
         $this->assertEquals($currentImages - 1, $this->sql->getRowCount("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;"));
         $this->assertEquals(0, $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`gallery` = 1;")['sequence']);
-        $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
+        $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
 }

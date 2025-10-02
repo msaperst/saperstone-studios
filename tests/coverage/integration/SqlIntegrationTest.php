@@ -5,18 +5,19 @@ namespace coverage\integration;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SqlIntegrationTest extends TestCase {
 
-    private $sql;
+    private Sql $sql;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->sql = new Sql();
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->sql->disconnect();
     }
 
@@ -71,6 +72,9 @@ class SqlIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM reviews;"));
     }
 
+    /**
+     * @throws SqlException
+     */
     public function testExecuteStatement() {
         try {
             $this->assertEquals(81, $this->sql->executeStatement("INSERT INTO `tags` (`tag`) VALUES ('test-tag');"));
@@ -101,5 +105,3 @@ class SqlIntegrationTest extends TestCase {
         $this->assertEquals(array(), $this->sql->getEnumValues('users', 'role'));
     }
 }
-
-?>
