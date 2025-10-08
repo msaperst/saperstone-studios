@@ -129,6 +129,6 @@ jobs:
         run: mkdir reports; mv ut/* reports/; mv it/* reports/
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@6
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
