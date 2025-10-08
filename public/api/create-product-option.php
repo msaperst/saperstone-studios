@@ -5,6 +5,9 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
+    if (!isset ($_POST['type'])) {
+        throw new BadProductTypeException("Product id is required");
+    }
     $type = ProductType::withId($_POST['type']);
     $option = $api->retrievePostString('option', 'Product option');
 } catch (Exception $e) {

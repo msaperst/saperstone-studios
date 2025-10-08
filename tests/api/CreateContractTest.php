@@ -25,7 +25,7 @@ class CreateContractTest extends TestCase {
     /**
      *
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
     }
@@ -33,7 +33,7 @@ class CreateContractTest extends TestCase {
     /**
      *
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->disconnect();
     }
@@ -41,7 +41,7 @@ class CreateContractTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-contract.php');
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -55,7 +55,7 @@ class CreateContractTest extends TestCase {
             $this->http->request('POST', 'api/create-contract.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }

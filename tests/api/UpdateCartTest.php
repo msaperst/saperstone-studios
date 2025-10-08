@@ -14,7 +14,7 @@ class UpdateCartTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `cart` (`user`, `album`, `image`, `product`, `count`) VALUES ( '3', '3', '5', '3', '1');");
@@ -24,7 +24,7 @@ class UpdateCartTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (999, '1', '12x19', 100, 10)");
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `user` = '3';");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");

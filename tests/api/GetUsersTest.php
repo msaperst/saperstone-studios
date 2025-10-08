@@ -19,14 +19,14 @@ class GetUsersTest extends TestCase {
     /**
      *
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
     }
 
     /**
      *
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
     }
 

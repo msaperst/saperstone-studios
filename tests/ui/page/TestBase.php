@@ -28,7 +28,7 @@ class TestBase extends TestCase {
         }
     }
 
-    public function setUp() {
+    public function setUp(): void {
         //setup our browser
         $host = 'http://127.0.0.1:4444/wd/hub';
         if (getenv('BROWSER') == 'firefox') {
@@ -39,7 +39,7 @@ class TestBase extends TestCase {
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $screenshot = $this->driver->takeScreenshot();
         $this->driver->takeScreenshot(TestBase::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $this->getName() . '.png');
         $this->driver->quit();

@@ -14,7 +14,7 @@ class DeleteAlbumTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
@@ -31,7 +31,7 @@ class DeleteAlbumTest extends TestCase {
         umask($oldmask);
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 998;");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");

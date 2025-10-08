@@ -14,7 +14,7 @@ class DeleteProductTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (999, 'other', 'Pants')");
@@ -22,7 +22,7 @@ class DeleteProductTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `products` (`product_type`, `size`, `price`, `cost`) VALUES ('999', '12x19', 100, 10)");
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `product_types` WHERE `product_types`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `product_options` WHERE `product_options`.`product_type` = 999;");

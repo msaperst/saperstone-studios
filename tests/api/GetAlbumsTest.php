@@ -25,7 +25,7 @@ class GetAlbumsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('997', 'sample-album', 'sample album for testing', 'sample', 1, '1234');");
@@ -38,7 +38,7 @@ class GetAlbumsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 997;");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 998;");
@@ -133,12 +133,12 @@ class GetAlbumsTest extends TestCase {
         $this->assertEquals(date('Y-m-d'), $albums[$id]['date']);
         $this->assertEquals(0, $albums[$id]['images']);
         $this->assertEquals(5, $albums[$id]['owner']);
-        $this->assertEquals(999, $albums[$id+1]['id']);
-        $this->assertEquals('sample-album', $albums[$id+1]['name']);
-        $this->assertEquals('sample album for testing', $albums[$id+1]['description']);
-        $this->assertEquals(date('Y-m-d'), $albums[$id+1]['date']);
-        $this->assertEquals(0, $albums[$id+1]['images']);
-        $this->assertEquals(4, $albums[$id+1]['owner']);
+        $this->assertEquals(999, $albums[$id + 1]['id']);
+        $this->assertEquals('sample-album', $albums[$id + 1]['name']);
+        $this->assertEquals('sample album for testing', $albums[$id + 1]['description']);
+        $this->assertEquals(date('Y-m-d'), $albums[$id + 1]['date']);
+        $this->assertEquals(0, $albums[$id + 1]['images']);
+        $this->assertEquals(4, $albums[$id + 1]['owner']);
     }
 
     /**

@@ -25,7 +25,7 @@ class GetUserLogTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `user_logs` (`user`, `album`) VALUES (1, '998');");
@@ -35,7 +35,7 @@ class GetUserLogTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = 998;");
         $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = 999;");

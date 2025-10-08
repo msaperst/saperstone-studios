@@ -13,7 +13,7 @@ class IsShareableTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES (999, 'sample-album-no-access', 'sample album for testing without any download access', 'sample', 4, '123');");
@@ -28,7 +28,7 @@ class IsShareableTest extends TestCase {
         }
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999");
         $this->sql->executeStatement("DELETE FROM `share_rights` WHERE `image` LIKE '%99%%'");

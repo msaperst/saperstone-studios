@@ -9,22 +9,22 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class AddNotificationEmailTest extends TestCase {
     /**
      * @var Client
      */
-    private $http;
+    private Client $http;
     /**
      * @var Sql
      */
-    private $sql;
+    private Sql $sql;
 
     /**
      * @throws Exception
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES ('999', 'sample-album', 'sample album for testing', '');");
@@ -33,8 +33,8 @@ class AddNotificationEmailTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
-        $this->http = NULL;
+    public function tearDown(): void {
+        unset($this->http);
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `notification_emails` WHERE `notification_emails`.`album` = 999;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];

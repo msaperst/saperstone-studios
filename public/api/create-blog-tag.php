@@ -13,7 +13,7 @@ try {
 
 $sql = new Sql ();
 $row = $sql->getRow("SELECT * FROM `tags` WHERE `tag` = '$tag';");
-if ($row ['id']) {
+if (isset($row ['id'])) {
     echo "Blog tag already exists";
     $sql->disconnect();
     exit ();

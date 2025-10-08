@@ -25,7 +25,7 @@ class DeleteUserTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `users` (`id`, `usr`, `pass`, `email`, `firstName`, `lastName`, `role`, `hash`) VALUES (999, 'test', 'test', '', '', '', 'downloader', '1234')");
@@ -34,7 +34,7 @@ class DeleteUserTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `users` WHERE `users`.`id` = 999;");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `users`;")['count'];

@@ -10,11 +10,11 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY
 class CheckoutTest extends TestCase {
     private $http;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
     }
 //TODO - uncomment
@@ -26,5 +26,3 @@ class CheckoutTest extends TestCase {
 
     //TODO - need to finish the rest
 }
-
-?>

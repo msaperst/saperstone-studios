@@ -35,7 +35,7 @@ class DownloadSelectedImagesTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (997, 'sample-album-download-all', 'sample album for testing', 'sample');");
@@ -70,7 +70,7 @@ class DownloadSelectedImagesTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 997");
         $this->sql->executeStatement("DELETE FROM `download_rights` WHERE `download_rights`.`album` = '997'");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 997");

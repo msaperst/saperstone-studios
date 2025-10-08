@@ -1,9 +1,12 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
 $api = new Api ();
 
 try {
+    if (!isset ($_POST['album'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_POST['album']);
     $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
 } catch (Exception $e) {

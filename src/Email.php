@@ -1,6 +1,11 @@
 <?php
 
-use cbSchuld\Browser;
+$file = __DIR__ . '/Browser.php';
+if (file_exists($file)) {
+    require_once $file;
+}
+
+use cbschuld\Browser;
 
 require 'autoloader.php';
 require 'Mail.php';

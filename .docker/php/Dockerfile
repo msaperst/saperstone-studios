@@ -33,9 +33,6 @@ COPY templates /var/www/templates
 # TODO
 
 # install plugins
-ARG MPDF_VERSION=8.0.4
-ENV MPDF_VERSION="${MPDF_VERSION}"
-
 RUN mkdir /var/www/resources
 ## install jSignature plugin
 RUN cd /var/www/public/js && \
@@ -44,6 +41,10 @@ RUN cd /var/www/public/js && \
         wget --quiet http://willowsystems.github.io/jSignature/jSignature.zip && \
         unzip -qq jSignature.zip && \
         rm jSignature.zip
+## TODO - might need to add back in the MDF stuff...
+## install/configure ua parser plugin
+RUN cd /var/www/src && \
+        wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php
 ## install browscap ini
 RUN cd /var/www/resources && \
         wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \
