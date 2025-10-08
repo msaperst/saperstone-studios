@@ -1,5 +1,7 @@
 <?php
 
+use cbSchuld\Browser;
+
 require 'autoloader.php';
 require 'Mail.php';
 require 'Mail/mime.php';

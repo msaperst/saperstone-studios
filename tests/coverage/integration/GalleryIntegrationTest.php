@@ -527,7 +527,7 @@ class GalleryIntegrationTest extends TestCase {
             $gallery = Gallery::withId(1);
             $gallery->getParent();
         } catch (TypeError $e) {
-            $this->assertEquals('Return value of Gallery::getParent() must be an instance of Gallery, null returned', $e->getMessage());
+            $this->assertEquals('Gallery::getParent(): Return value must be of type Gallery, null returned', $e->getMessage());
         }
     }
 

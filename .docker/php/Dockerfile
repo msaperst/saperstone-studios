@@ -5,6 +5,7 @@ RUN apt update
 RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip libonig-dev gnupg
 
 # setup mail plugins
+RUN pear channel-update pear.php.net
 RUN pear install Mail Mail_Mime Auth_SASL pear/Net_SMTP
 
 # install composer
@@ -46,9 +47,6 @@ RUN cd /var/www/public/js && \
 ## install mPDF
 RUN cd /var/www/ && \
         composer require mpdf/mpdf:${MPDF_VERSION}
-## install/configure ua parser plugin
-RUN cd /var/www/src && \
-        wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php
 ## install browscap ini
 RUN cd /var/www/resources && \
         wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \

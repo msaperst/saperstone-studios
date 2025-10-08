@@ -135,7 +135,7 @@ class Blog {
             $blog->offset = (int)$params ['preview'] ['offset'];
         }
         //directory to hold blog
-        $blog->directory = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $blog->date);
+        $blog->directory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $blog->date);
         if (!is_dir($blog->directory)) {
             $oldMask = umask(0);
             mkdir($blog->directory, 0775, true);

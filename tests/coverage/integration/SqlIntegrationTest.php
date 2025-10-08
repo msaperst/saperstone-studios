@@ -3,6 +3,7 @@
 namespace coverage\integration;
 
 use Exception;
+use mysqli_sql_exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
 use SqlException;
@@ -58,16 +59,19 @@ class SqlIntegrationTest extends TestCase {
     public function testGetRows() {
         $rows = $this->sql->getRows("SELECT * FROM reviews;");
         $this->assertEquals(17, sizeOf($rows));
-        $rows = $this->sql->getRows("SELECT * FROM review;");
-        $this->assertEquals(array(), $rows);
         $this->sql->disconnect();
-        $rows = $this->sql->getRows("SELECT * FROM reviews;");
-        $this->assertEquals(array(), $rows);
+        $rows = $this->sql->getRows("SELECT * FROM review;");
+        $this->assertEquals(0, sizeOf($rows));
+    }
+
+    public function testGetRowsNoTable() {
+        $this->expectException(mysqli_sql_exception::class);
+        $this->expectExceptionMessage("Table 'saperstone-studios.review' doesn't exist");
+        $this->sql->getRows("SELECT * FROM review;");
     }
 
     public function testGetRowCount() {
         $this->assertEquals(17, $this->sql->getRowCount("SELECT * FROM reviews;"));
-        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM review;"));
         $this->sql->disconnect();
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM reviews;"));
     }

@@ -6,7 +6,7 @@ class Strings {
      * @param int $length
      * @return string
      */
-    static function randomString($length = 10): string {
+    static function randomString(int $length = 10): string {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';

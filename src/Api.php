@@ -32,7 +32,10 @@ class Api {
         }
     }
 
-    function retrieveValidatedPost($variable, $variableName, $validation) {
+    /**
+     * @throws Exception
+     */
+    function retrieveValidatedPost($variable, $variableName, $validation): string {
         if (isset ($_POST [$variable]) && filter_var($_POST [$variable], $validation)) {
             $sql = new Sql();
             $escaped = $sql->escapeString($_POST [$variable]);

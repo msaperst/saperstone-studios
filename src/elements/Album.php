@@ -155,7 +155,7 @@ class Album {
      */
     function create(): int {
         $user = User::fromSystem();
-        if (!$user->isAdmin() && $user->getRole() != "uploader") {
+        if (!$user->isAdmin() && $user->getRole() !== "uploader") {
             throw new AlbumException("User not authorized to create album");
         }
         $sql = new Sql();
@@ -165,7 +165,9 @@ class Album {
         $this->location = $location;
         try {
             $oldMask = umask(0);
-            mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $location, 0775);
+            if (!mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $location, 0775)) {
+                throw new Exception("Mkdir failed: " . error_get_last()['message']);
+            }
             umask($oldMask);
         } catch (Exception $e) {
             $sql->disconnect();

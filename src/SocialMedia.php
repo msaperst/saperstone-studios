@@ -3,13 +3,13 @@
 require_once 'autoloader.php';
 
 class SocialMedia {
-    private $session;
+    private Session $session;
 
     function __construct() {
         $this->session = new Session();
     }
 
-    function generateRSS() {
+    function generateRSS(): void {
         $output = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss';
         $url = $this->session->getBaseURL();
         $feed = fopen($output, 'w') or die ("Unable to open file!");

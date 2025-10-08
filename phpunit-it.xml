@@ -6,8 +6,8 @@
 
     <!-- Define test suites -->
     <testsuites>
-        <testsuite name="Unit Tests">
-            <directory>tests/coverage/unit</directory>
+        <testsuite name="Integration Tests">
+            <directory>tests/coverage/integration</directory>
         </testsuite>
     </testsuites>
 
@@ -21,14 +21,14 @@
     <!-- Code coverage settings -->
     <coverage>
         <report>
-            <clover outputFile="reports/ut-clover.xml"/>
-            <html outputDirectory="reports/ut-coverage"/>
+            <clover outputFile="reports/it-clover.xml"/>
+            <html outputDirectory="reports/it-coverage"/>
         </report>
     </coverage>
 
     <!-- Logging -->
     <logging>
-        <junit outputFile="reports/ut-junit.xml"/>
-        <testdoxHtml outputFile="reports/ut-results.html"/>
+        <junit outputFile="reports/it-junit.xml"/>
+        <testdoxHtml outputFile="reports/it-results.html"/>
     </logging>
 </phpunit>
