@@ -44,9 +44,6 @@ RUN cd /var/www/public/js && \
         wget --quiet http://willowsystems.github.io/jSignature/jSignature.zip && \
         unzip -qq jSignature.zip && \
         rm jSignature.zip
-## install mPDF
-RUN cd /var/www/ && \
-        composer require mpdf/mpdf:${MPDF_VERSION}
 ## install browscap ini
 RUN cd /var/www/resources && \
         wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \
