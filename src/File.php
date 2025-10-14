@@ -88,8 +88,10 @@ class File {
                 sleep(1); //TODO - this is a bug in our keys, should fix this
                 $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Added Image', $nextSeq, $parentId );");
             }
-            // update the image count
-            $sql->executeStatement("UPDATE `$parent` SET `images` = images + 1 WHERE id='$parentId';");
+            if ($parent == 'albums') {
+                // update the image count
+                $sql->executeStatement("UPDATE `$parent` SET `images` = images + 1 WHERE id='$parentId';");
+            }
             $nextSeq++;
         }
         $sql->disconnect();
