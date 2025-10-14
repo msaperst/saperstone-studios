@@ -18,7 +18,7 @@ use Facebook\WebDriver\WebDriverWait;
 use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 
 class ContactFeatureContext implements Context {
     /**

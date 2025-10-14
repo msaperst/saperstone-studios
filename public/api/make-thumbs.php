@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
 $api = new Api ();
 
@@ -36,5 +36,5 @@ if (!$systemUser->isAdmin()) {
     $sql->disconnect();
 }
 
-system(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh {$album->getId()} $markup {$album->getLocation()} > /dev/null 2>&1 &");
+system(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh {$album->getId()} $markup {$album->getLocation()} > /dev/null 2>&1 &");
 exit ();

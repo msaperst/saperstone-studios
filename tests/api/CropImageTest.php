@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CropImageTest extends TestCase {
     private $http;
@@ -87,7 +87,7 @@ class CropImageTest extends TestCase {
     }
 
     public function testNoMaxWidth() {
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -102,7 +102,7 @@ class CropImageTest extends TestCase {
     }
 
     public function testBlankMaxWidth() {
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -118,7 +118,7 @@ class CropImageTest extends TestCase {
     }
 
     public function testNoTop() {
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -134,7 +134,7 @@ class CropImageTest extends TestCase {
     }
 
     public function testBlankTop() {
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -151,7 +151,7 @@ class CropImageTest extends TestCase {
     }
 
     public function testNoBottom() {
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -168,7 +168,7 @@ class CropImageTest extends TestCase {
     }
 
     public function testBlankBottom() {
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -186,8 +186,8 @@ class CropImageTest extends TestCase {
     }
 
     public function testCroppedImageTooSmall() {
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -207,8 +207,8 @@ class CropImageTest extends TestCase {
 
     public function testProperlyResizedImage() {
         try {
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
-            chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+            chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -223,18 +223,18 @@ class CropImageTest extends TestCase {
             ]);
             $this->assertEquals(200, $response->getStatusCode());
             $this->assertEquals('', (string)$response->getBody());
-            $size = getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/flower.jpeg');
+            $size = getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/flower.jpeg');
             $this->assertEquals(300, $size[0]);
             $this->assertEquals(100, $size[1]);
         } finally {
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/flower.jpeg');
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/flower.jpeg');
         }
     }
 
     public function testTopLessThanZero() {
         try {
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
-            chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+            chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg', 0777);
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -249,11 +249,11 @@ class CropImageTest extends TestCase {
             ]);
             $this->assertEquals(200, $response->getStatusCode());
             $this->assertEquals('', (string)$response->getBody());
-            $size = getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/flower.jpeg');
+            $size = getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/flower.jpeg');
             $this->assertEquals(300, $size[0]);
             $this->assertEquals(150, $size[1]);
         } finally {
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/flower.jpeg');
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/flower.jpeg');
         }
     }
 }

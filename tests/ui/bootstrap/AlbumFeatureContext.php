@@ -26,7 +26,7 @@ use ui\models\Album;
 use User;
 use ZipArchive;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
 
 class AlbumFeatureContext implements Context {
@@ -71,7 +71,7 @@ class AlbumFeatureContext implements Context {
     public function cleanup() {
         $sql = new Sql();
         foreach ($this->albumIds as $albumId) {
-            $albumLocation = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
+            $albumLocation = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
             $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
@@ -156,14 +156,14 @@ class AlbumFeatureContext implements Context {
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', 1, '$images');");
         $oldMask = umask(0);
-        if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
-            mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
+        if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
+            mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
         }
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
         for ($i = 0; $i < $images; $i++) {
             $sql->executeStatement("INSERT INTO `album_images` (`album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$albumId', 'Image $i', $i, '', '/albums/sample-album/sample$i.jpg', '400', '300', '1');");
-            system('convert ' . dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg");
-            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg", 0777);
+            system('convert ' . dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg");
+            chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg", 0777);
         }
         umask($oldMask);
         $sql->disconnect();
@@ -180,14 +180,14 @@ class AlbumFeatureContext implements Context {
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', {$this->user->getId()}, '$images');");
         $oldMask = umask(0);
-        if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
-            mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
+        if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
+            mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
         }
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album', 0777);
         for ($i = 0; $i < $images; $i++) {
             $sql->executeStatement("INSERT INTO `album_images` (`album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$albumId', 'Image $i', $i, '', '/albums/sample-album/sample$i.jpg', '400', '300', '1');");
-            system('convert ' . dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg");
-            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg", 0777);
+            system('convert ' . dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg");
+            chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/albums/sample-album/sample$i.jpg", 0777);
         }
         umask($oldMask);
         $sql->disconnect();
@@ -204,8 +204,8 @@ class AlbumFeatureContext implements Context {
         $images = $sql->getRows("SELECT * FROM `album_images` WHERE `album` = $albumId;");
         $sql->disconnect();
         foreach ($images as $image) {
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location']);
-            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location'], 0777);
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . $image['location']);
+            chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . $image['location'], 0777);
         }
         umask($oldMask);
     }
@@ -773,7 +773,7 @@ class AlbumFeatureContext implements Context {
             $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album')));
             //this means we added an album, grab the id, so we can later delete it
             $this->albumIds[] = $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id');
-        } catch (TimeoutException | NoSuchElementException $e) {
+        } catch (TimeoutException|NoSuchElementException $e) {
             // do nothing, we're in an error condition, which is fine
         }
     }
@@ -812,7 +812,7 @@ class AlbumFeatureContext implements Context {
         $this->driver->findElement(WebDriverBy::className('glyphicon-save'))->click();
         try {
             $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save'))));
-        } catch (Exception | TimeoutException | NoSuchElementException $e) {
+        } catch (Exception|TimeoutException|NoSuchElementException $e) {
             // do nothing, we're in an error condition, which is fine
         }
     }
@@ -1758,7 +1758,7 @@ Comment',
      */
     public function iHaveCreatedThumbnailImages($thumbType, $albumId) {
         $sql = new Sql();
-        $albumLocation = dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
+        $albumLocation = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
         $images = $sql->getRows("SELECT * FROM album_images WHERE album = $albumId");
         $sql->disconnect();
         Assert::assertTrue(is_dir($albumLocation . DIRECTORY_SEPARATOR . 'full'));
@@ -1766,19 +1766,19 @@ Comment',
             //ensure original files are in 'full' directory
             $parts = explode(DIRECTORY_SEPARATOR, $image['location']);
             array_splice($parts, 3, 0, "full");
-            CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . implode(DIRECTORY_SEPARATOR, $parts));
+            CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . implode(DIRECTORY_SEPARATOR, $parts));
             switch ($thumbType) {
                 case 'proof':
-                    $file = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower-proof.jpeg';
+                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-proof.jpeg';
                     break;
                 case 'watermark':
-                    $file = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower-watermark.jpeg';
+                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-watermark.jpeg';
                     break;
                 case 'nothing':
-                    $file = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower-thumbed.jpeg';
+                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-thumbed.jpeg';
                     break;
             }
-            CustomAsserts::filesAreEqual($file, dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . $image['location']);
+            CustomAsserts::filesAreEqual($file, dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . $image['location']);
         }
     }
 

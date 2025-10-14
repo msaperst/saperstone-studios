@@ -1,10 +1,13 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 $start = 0;
 $howMany = 999999999999999999;
 
 try {
+    if (!isset ($_GET['albumId'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_GET['albumId']);
 } catch (Exception $e) {
     echo json_encode(array('error' => $e->getMessage()));

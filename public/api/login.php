@@ -1,19 +1,20 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
 $session = new Session();
 $session->initialize();
 $api = new Api();
 
-if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
+if ($systemUser->isLoggedIn() && isset($_POST ['submit']) && $_POST ['submit'] == 'Logout') {
     $sql = new Sql ();
     // note the logout
     $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );");
     $sql->disconnect();
 
     // remove any stored login
-    setcookie('hash', null, -1, '/');
-    setcookie('usr', null, -1, '/');
+    setcookie('hash', '', time() - 3600, '/');
+    setcookie('usr', '', time() - 3600, '/');
+
 
     // destroy the session
     session_unset();
@@ -21,7 +22,7 @@ if ($systemUser->isLoggedIn() && $_POST ['submit'] == 'Logout') {
     exit ();
 }
 
-if ($_POST ['submit'] == 'Login') {
+if (isset($_POST ['submit']) && $_POST ['submit'] == 'Login') {
     try {
         $username = $api->retrievePostString('username', 'Username');
         $password = $api->retrievePostString('password', 'Password');
@@ -41,7 +42,11 @@ if ($_POST ['submit'] == 'Login') {
         echo 'Sorry, your account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.';
         exit();
     }
-    $user->login(boolval((int)$_POST ['rememberMe']));
+    $rememberMe = false;
+    if (isset($_POST ['rememberMe'])) {
+        $rememberMe = boolval((int)$_POST ['rememberMe']);
+    }
+    $user->login($rememberMe);
 }
 
 exit ();

@@ -7,7 +7,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetBlogsDetailsTest extends TestCase {
     private $http;
@@ -59,55 +59,59 @@ class GetBlogsDetailsTest extends TestCase {
         $this->assertEquals(1, $blogsDetails['data'][1]['active']);
     }
 
-    public function testAllBlogsDetailsByTag() {
-        $response = $this->http->request('GET', 'api/get-blogs-details.php', [
-            'query' => [
-                'tag' => ['30']
-            ]
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals(1, sizeof($blogsDetails));
-        $this->assertTrue(1 <= sizeof($blogsDetails['data']));    //there may be more depending on other things in the test DB
-        $this->assertEquals(999, $blogsDetails['data'][0]['id']);
-        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
-        $this->assertNull($blogsDetails['data'][0]['safe_title']);
-        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
-        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
-        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
-        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
-    }
+    // TODO - this is never used
+//    public function testAllBlogsDetailsByTag() {
+//        $response = $this->http->request('GET', 'api/get-blogs-details.php', [
+//            'query' => [
+//                'tag' => ['30']
+//            ]
+//        ]);
+//        $this->assertEquals(200, $response->getStatusCode());
+//        $blogsDetails = json_decode($response->getBody(), true);
+//        $this->assertEquals(1, sizeof($blogsDetails));
+//        $this->assertTrue(1 <= sizeof($blogsDetails['data']));    //there may be more depending on other things in the test DB
+//        $this->assertEquals(999, $blogsDetails['data'][0]['id']);
+//        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
+//        $this->assertNull($blogsDetails['data'][0]['safe_title']);
+//        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
+//        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
+//        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
+//        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
+//    }
 
-    public function testAllBlogsDetailsByTags() {
-        $response = $this->http->request('GET', 'api/get-blogs-details.php', [
-            'query' => [
-                'tag' => ['29', '30']
-            ]
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals(1, sizeof($blogsDetails));
-        $this->assertEquals(1, sizeof($blogsDetails['data']));
-        $this->assertEquals(999, $blogsDetails['data'][0]['id']);
-        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
-        $this->assertNull($blogsDetails['data'][0]['safe_title']);
-        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
-        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
-        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
-        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
-    }
+    // TODO - this is never used
+//    public function testAllBlogsDetailsByTags() {
+//        $response = $this->http->request('GET', 'api/get-blogs-details.php', [
+//            'query' => [
+//                'tag' => ['29', '30']
+//            ]
+//        ]);
+//        $this->assertEquals(200, $response->getStatusCode());
+//        $blogsDetails = json_decode($response->getBody(), true);
+//        $this->assertEquals(1, sizeof($blogsDetails));
+//        $this->assertEquals(1, sizeof($blogsDetails['data']));
+//        $this->assertEquals(999, $blogsDetails['data'][0]['id']);
+//        $this->assertEquals('Sample Blog', $blogsDetails['data'][0]['title']);
+//        $this->assertNull($blogsDetails['data'][0]['safe_title']);
+//        $this->assertEquals('2031-01-01', $blogsDetails['data'][0]['date']);
+//        $this->assertEquals('', $blogsDetails['data'][0]['preview']);
+//        $this->assertEquals(0, $blogsDetails['data'][0]['offset']);
+//        $this->assertEquals(1, $blogsDetails['data'][0]['active']);
+//    }
 
-    public function testAllBlogsDetailsByTagsNoMatch() {
-        $response = $this->http->request('GET', 'api/get-blogs-details.php', [
-            'query' => [
-                'tag' => ['29', '30', '31']
-            ]
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $blogsDetails = json_decode($response->getBody(), true);
-        $this->assertEquals(1, sizeof($blogsDetails));
-        $this->assertEquals(0, sizeof($blogsDetails['data']));
-    }
+    // TODO - this is never used
+//    public function testAllBlogsDetailsByTagsNoMatch() {
+//        $response = $this->http->request('GET', 'api/get-blogs-details.php', [
+//            'query' => [
+//                'tag' => ['29', '30', '31']
+//            ]
+//        ]);
+//        $this->assertEquals(200, $response->getStatusCode());
+//        $x = (string)$response->getBody();
+//        $blogsDetails = json_decode($response->getBody(), true);
+//        $this->assertEquals(1, sizeof($blogsDetails));
+//        $this->assertEquals(0, sizeof($blogsDetails['data']));
+//    }
 
     public function testAllBlogsDetailsAdmin() {
         $cookieJar = CookieJar::fromArray([

@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateBlogPostTest extends TestCase {
     /**
@@ -267,7 +267,7 @@ class CreateBlogPostTest extends TestCase {
      */
     public function testPreviewOffsetOnlyImage() {
         try {
-            touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
+            touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -317,8 +317,8 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals('0', $blogImages['top']);
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;"));
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;"));
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/preview_image-$blogId.jpg"));
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/image.jpg"));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/preview_image-$blogId.jpg"));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/image.jpg"));
         } finally {
             // cleanup
             $cookieJar = CookieJar::fromArray([
@@ -345,7 +345,7 @@ class CreateBlogPostTest extends TestCase {
      */
     public function testNoPreviewOffsetOnlyText() {
         try {
-            touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
+            touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -409,8 +409,8 @@ class CreateBlogPostTest extends TestCase {
     public function testTagsOffsetImagesText() {
         try {
             $oldMask = umask(0);
-            copy(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/image.jpg');
-            chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg', 0777);
+            copy(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/image.jpg');
+            chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg', 0777);
             umask($oldMask);
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -459,7 +459,7 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals("posts/2030/01/01/preview_image-$blogId.jpg", $blogDetails['preview']);
             $this->assertEquals("33", $blogDetails['offset']);
             $this->assertEquals("0", $blogDetails['active']);
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . substr($blogDetails['preview'], 6)));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . substr($blogDetails['preview'], 6)));
             $blogImages = $this->sql->getRow("SELECT * FROM `blog_images` WHERE `blog_images`.`blog` = $blogId;");
             $this->assertEquals($blogId, $blogImages['blog']);
             $this->assertEquals(1, $blogImages['contentGroup']);
@@ -468,7 +468,7 @@ class CreateBlogPostTest extends TestCase {
             $this->assertEquals('647', $blogImages['height']);
             $this->assertEquals('0', $blogImages['left']);
             $this->assertEquals('0', $blogImages['top']);
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . substr($blogImages['location'], 6)));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . substr($blogImages['location'], 6)));
             $blogTags = $this->sql->getRows("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
             $this->assertEquals(2, sizeOf($blogTags));
             $this->assertEquals($blogId, $blogTags[0]['blog']);

@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SignContractTest extends TestCase {
     /**
@@ -355,7 +355,7 @@ class SignContractTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $this->assertEquals('', (string)$response->getBody());
             $contractDetails = $this->sql->getRow("SELECT * FROM contracts WHERE contracts.id = 999");
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5)));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5)));
             $this->assertEquals(999, $contractDetails['id']);
             $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractDetails['link']);
             $this->assertEquals('commercial', $contractDetails['type']);
@@ -377,13 +377,13 @@ class SignContractTest extends TestCase {
             CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract Signed',
                 "This is an automatically generated message from Saperstone Studios\r\n\r\nEleMax has signed their contract, this is a copy of it for your records. \r\n\r\n",
                 '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>EleMax has signed their contract, this is a copy of it for your records. </p></body></html>',
-                dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+                dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
             CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract',
                 "Thank you for signing your contract. You can pay your invoice online at nope!.\r\n\r\n",
                 '<html><body><p>Thank you for signing your contract. You can pay your invoice online <a href=\'nope!\' target=\'_blank\'>here</a>.</p></body></html>',
-                dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+                dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         } finally {
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         }
     }
 
@@ -412,7 +412,7 @@ class SignContractTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $this->assertEquals('', (string)$response->getBody());
             $contractDetails = $this->sql->getRow("SELECT * FROM contracts WHERE contracts.id = 999");
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5)));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5)));
             $this->assertEquals(999, $contractDetails['id']);
             $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractDetails['link']);
             $this->assertEquals('commercial', $contractDetails['type']);
@@ -434,13 +434,13 @@ class SignContractTest extends TestCase {
             CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract Signed',
                 "This is an automatically generated message from Saperstone Studios\r\n\r\nEleMax has signed their contract, this is a copy of it for your records. Don't forget that they have a $10.00 deposit due. \r\n\r\n",
                 '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>EleMax has signed their contract, this is a copy of it for your records. Don\'t forget that they have a $10.00 deposit due. </p></body></html>',
-                dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+                dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
             CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract',
                 "Thank you for signing your contract. Please note you have a $10.00 deposit due. \r\n\r\n",
                 '<html><body><p>Thank you for signing your contract. Please note you have a $10.00 deposit due. </p></body></html>',
-                dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+                dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         } finally {
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
         }
     }
 }

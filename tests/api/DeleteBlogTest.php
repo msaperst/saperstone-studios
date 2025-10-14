@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DeleteBlogTest extends TestCase {
     /**
@@ -33,11 +33,11 @@ class DeleteBlogTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ('999', 29)");
         $this->sql->executeStatement("INSERT INTO `blog_texts` (`blog`, `contentGroup`, `text`) VALUES ('999', '2', 'Some blog text')");
         $oldMask = umask(0);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01', 0777, true);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01', 0777, true);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg', 0777);
         umask($oldMask);
     }
 
@@ -53,7 +53,7 @@ class DeleteBlogTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031'));
         $this->sql->disconnect();
     }
 

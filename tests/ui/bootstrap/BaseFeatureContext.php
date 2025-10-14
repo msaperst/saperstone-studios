@@ -12,7 +12,7 @@ use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Sql;
 use User;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 /**
  * Defines application behat from the specific context.

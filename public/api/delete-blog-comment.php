@@ -1,10 +1,13 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $api = new Api ();
 
 $api->forceLoggedIn();
 
 try {
+    if (!isset ($_POST['comment'])) {
+        throw new BadCommentException("Comment id is required");
+    }
     $comment = Comment::withId($_POST['comment']);
     // check our user permissions
     if (!$comment->canUserGetData()) {

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 $start = 0;
 
@@ -19,13 +19,16 @@ if (isset ($_GET ['tag'])) {
         $where .= "a$i.tag = " . $_GET['tag'][$i - 1] . " AND ";
     }
     $where = substr($where, 0, -4);
-    $query .= $where . " ORDER BY details.date DESC, details.id DESC LIMIT $start,1;";
+    $query .= $where . " ORDER BY details.date, details.id DESC, details.id DESC LIMIT $start,1;";
 }
 
 $blogDetails = $sql->getRow($query);
 $sql->disconnect();
 
 try {
+    if (!isset ($blogDetails ['id'])) {
+        throw new BadBlogException("Blog id is required");
+    }
     $blog = Blog::withId($blogDetails ['id']);
 } catch (Exception $e) {
     exit();

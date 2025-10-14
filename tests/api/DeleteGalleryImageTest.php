@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DeleteGalleryImageTest extends TestCase {
     private $http;
@@ -21,12 +21,12 @@ class DeleteGalleryImageTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '0', '', '/portrait/img/sample/sample1.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '1', '', '/portrait/img/sample/sample2.jpg', '300', '400', '1');");
         $oldmask = umask(0);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg', 0777);
         umask($oldmask);
     }
 
@@ -40,7 +40,7 @@ class DeleteGalleryImageTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `gallery_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
         $this->sql->disconnect();
     }
 
@@ -188,6 +188,6 @@ class DeleteGalleryImageTest extends TestCase {
         $this->assertEquals(300, $images[0]['width']);
         $this->assertEquals(400, $images[0]['height']);
         $this->assertEquals(1, $images[0]['active']);
-        $this->assertFalse(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg'));
+        $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg'));
     }
 }

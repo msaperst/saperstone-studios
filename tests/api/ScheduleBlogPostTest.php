@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class ScheduleBlogPostTest extends TestCase {
     private $http;
@@ -21,9 +21,9 @@ class ScheduleBlogPostTest extends TestCase {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', '2031-01-01', '/posts/2031/01/01/flower.jpeg', 0)");
         $oldmask = umask(0);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01', 0777, true);
-        copy(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/flower.jpeg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/flower.jpeg', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01', 0777, true);
+        copy(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/flower.jpeg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/flower.jpeg', 0777);
         umask($oldmask);
     }
 
@@ -33,7 +33,7 @@ class ScheduleBlogPostTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031'));
         $this->sql->disconnect();
     }
 

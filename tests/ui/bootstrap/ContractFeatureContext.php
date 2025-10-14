@@ -15,7 +15,7 @@ use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 
 class ContractFeatureContext implements Context {
 
@@ -46,7 +46,7 @@ class ContractFeatureContext implements Context {
     public function cleanup() {
         $sql = new Sql();
         foreach ($this->contractIds as $contractId) {
-            $contract = dirname(dirname(dirname(__DIR__))) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
+            $contract = dirname(__DIR__, 3) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
             if (file_exists("$contract") && !is_dir("$contract")) {
                 unlink("$contract");
             }
@@ -153,7 +153,7 @@ class ContractFeatureContext implements Context {
      */
     public function iTheSignedContractExistsFor($contractId) {
         $sql = new Sql();
-        $contract = dirname(dirname(dirname(__DIR__))) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
+        $contract = dirname(__DIR__, 3) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
         $sql->disconnect();
         Assert::assertTrue(file_exists("$contract"));
     }
@@ -170,7 +170,7 @@ class ContractFeatureContext implements Context {
         CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract',
             "Thank you for signing your contract. You can pay your invoice online at nope!.\r\n\r\n",
             '<html><body><p>Thank you for signing your contract. You can pay your invoice online <a href=\'nope!\' target=\'_blank\'>here</a>.</p></body></html>',
-            dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
     }
 
     /**
@@ -185,6 +185,6 @@ class ContractFeatureContext implements Context {
         CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract Signed',
             "This is an automatically generated message from Saperstone Studios\r\n\r\nMax has signed their contract, this is a copy of it for your records. \r\n\r\n",
             '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Max has signed their contract, this is a copy of it for your records. </p></body></html>',
-            dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
     }
 }

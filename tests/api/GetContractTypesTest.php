@@ -7,7 +7,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetContractTypesTest extends TestCase {
     private $http;
@@ -52,13 +52,14 @@ class GetContractTypesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $contractTypes = json_decode($response->getBody(), true);
-        $this->assertEquals(7, sizeof($contractTypes));
+        $this->assertEquals(8, sizeof($contractTypes));
         $this->assertEquals("wedding", $contractTypes[0]);
         $this->assertEquals("portrait", $contractTypes[1]);
         $this->assertEquals("commercial", $contractTypes[2]);
         $this->assertEquals("contractor", $contractTypes[3]);
         $this->assertEquals("event", $contractTypes[4]);
         $this->assertEquals("partnership", $contractTypes[5]);
-        $this->assertEquals("other", $contractTypes[6]);
+        $this->assertEquals("photobooth", $contractTypes[6]);
+        $this->assertEquals("other", $contractTypes[7]);
     }
 }

@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UploadGalleryImagesTest extends TestCase {
     private $http;
@@ -139,7 +139,7 @@ class UploadGalleryImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Image does not meet the minimum width requirements of 1140px. Image is 1000 x 750", json_decode($response->getBody()));
-        $this->assertFalse(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg'));
+        $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg'));
     }
 
     public function testUploadSmallHeight() {
@@ -163,7 +163,7 @@ class UploadGalleryImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Image does not meet the minimum height requirements of 760px. Image is 1600 x 678", json_decode($response->getBody()));
-        $this->assertFalse(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg'));
+        $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg'));
     }
 
     public function testSingleFile() {
@@ -197,8 +197,8 @@ class UploadGalleryImagesTest extends TestCase {
         $this->assertEquals(1013, $images[0]['width']);
         $this->assertEquals(760, $images[0]['height']);
         $this->assertEquals(1, $images[0]['active']);
-        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg'));
-        $size = getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg');
+        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg'));
+        $size = getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg');
         $this->assertEquals(1013, $size[0]);
         $this->assertEquals(760, $size[1]);
     }

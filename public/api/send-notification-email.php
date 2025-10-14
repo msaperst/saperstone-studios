@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $api = new Api ();
 $api->forceAdmin();
 
@@ -13,9 +13,9 @@ try {
 $sql = new Sql ();
 // send out emails to each user, and then mark the db showing they've been updated
 $notifications = $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()} AND contacted = FALSE;");
-foreach( $notifications as $notification) {
+foreach ($notifications as $notification) {
     $to = $notification['email'];
-    if( is_integer($notification['user'])) {
+    if (is_integer($notification['user'])) {
         try {
             $user = User::withId($notification['user']);
             $to = "{$user->getName()} <{$notification['email']}>";

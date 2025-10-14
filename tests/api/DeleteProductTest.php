@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DeleteProductTest extends TestCase {
     private $http;
@@ -124,7 +124,7 @@ class DeleteProductTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `product_types` WHERE `product_type`.`id` = 999;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `product_types` WHERE `product_types`.`id` = 999;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `product_options` WHERE `product_options`.`product_type` = 999;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `products` WHERE `products`.`product_type` = 999;"));
     }

@@ -7,7 +7,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UploadBlogImagesTest extends TestCase {
     private $http;
@@ -72,7 +72,7 @@ class UploadBlogImagesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Image does not meet the minimum width requirements of 1200px. Image is 1000 x 750", json_decode($response->getBody()));
         //TODO - unable to verify image not present
-//        $this->assertFalse(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg'));
+//        $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg'));
     }
 
     public function testSingleFile() {
@@ -93,8 +93,8 @@ class UploadBlogImagesTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['flower.jpeg'], json_decode($response->getBody(), true));
         //TODO - unable to verify image present
-//        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg'));
-//        $size = getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg');
+//        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg'));
+//        $size = getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg');
 //        $this->assertEquals(1013, $size[0]);
 //        $this->assertEquals(760, $size[1]);
     }

@@ -11,7 +11,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 
 class MakeThumbsTest extends TestCase {
@@ -37,11 +37,11 @@ class MakeThumbsTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '1', '', '/albums/sample/flower1.jpeg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '2', '', '/albums/sample/flower2.jpeg', '300', '400', '1');");
         $oldMask = umask(0);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777, true);
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg', 0777);
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777, true);
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg', 0777);
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg', 0777);
         umask($oldMask);
     }
 
@@ -61,7 +61,7 @@ class MakeThumbsTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
         $this->sql->disconnect();
     }
 
@@ -233,20 +233,20 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("", (string)$response->getBody());
         sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
         //ensure original files are in 'full' directory
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
         //checkout new files
         $images = $this->sql->getRows("SELECT * FROM `album_images` WHERE `album_images`.`album` = 998");
-        $this->assertEquals(1000, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['0']);
-        $this->assertEquals(750, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['1']);
+        $this->assertEquals(1000, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['0']);
+        $this->assertEquals(750, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['1']);
         $this->assertEquals(1000, $images[0]['width']);
         $this->assertEquals(750, $images[0]['height']);
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
-        $this->assertEquals(1000, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['0']);
-        $this->assertEquals(750, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['1']);
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
+        $this->assertEquals(1000, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['0']);
+        $this->assertEquals(750, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['1']);
         $this->assertEquals(1000, $images[1]['width']);
         $this->assertEquals(750, $images[1]['height']);
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
     }
 
     /**
@@ -267,20 +267,20 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("", (string)$response->getBody());
         sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
         //ensure original files are in 'full' directory
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
         //checkout new files
         $images = $this->sql->getRows("SELECT * FROM `album_images` WHERE `album_images`.`album` = 999");
-        $this->assertEquals(1000, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['0']);
-        $this->assertEquals(750, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['1']);
+        $this->assertEquals(1000, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['0']);
+        $this->assertEquals(750, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['1']);
         $this->assertEquals(1000, $images[0]['width']);
         $this->assertEquals(750, $images[0]['height']);
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
-        $this->assertEquals(1000, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['0']);
-        $this->assertEquals(750, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['1']);
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
+        $this->assertEquals(1000, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['0']);
+        $this->assertEquals(750, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['1']);
         $this->assertEquals(1000, $images[0]['width']);
         $this->assertEquals(750, $images[0]['height']);
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
         $userLogs = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user_logs`.`album` = 999;");
         $this->assertEquals(4, $userLogs[0]['user']);
         $this->assertEquals('Created Thumbs', $userLogs[0]['action']);
@@ -306,19 +306,19 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals("", (string)$response->getBody());
         sleep(1);   //waiting for process to complete - ugly, but unsure how to do this dynamically
         //ensure original files are in 'full' directory
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
         //checkout new files
         $images = $this->sql->getRows("SELECT * FROM `album_images` WHERE `album_images`.`album` = 998");
-        $this->assertEquals(1000, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['0']);
-        $this->assertEquals(750, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['1']);
+        $this->assertEquals(1000, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['0']);
+        $this->assertEquals(750, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['1']);
         $this->assertEquals(1000, $images[0]['width']);
         $this->assertEquals(750, $images[0]['height']);
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower-thumbed.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
-        $this->assertEquals(1000, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['0']);
-        $this->assertEquals(750, getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['1']);
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-thumbed.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
+        $this->assertEquals(1000, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['0']);
+        $this->assertEquals(750, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['1']);
         $this->assertEquals(1000, $images[0]['width']);
         $this->assertEquals(750, $images[0]['height']);
-        CustomAsserts::filesAreEqual(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower-thumbed.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-thumbed.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
     }
 }

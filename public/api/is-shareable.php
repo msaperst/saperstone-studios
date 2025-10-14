@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
 
 if ($systemUser->isAdmin()) {
@@ -8,6 +8,9 @@ if ($systemUser->isAdmin()) {
 }
 
 try {
+    if (!isset ($_GET['album'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_GET['album']);
 } catch (Exception $e) {
     echo $e->getMessage();
@@ -25,6 +28,9 @@ if ($album->canUserGetData()) {
 }
 
 try {
+    if (!isset ($_GET['image'])) {
+        throw new BadImageException("Image id is required");
+    }
     $image = new Image($album, $_GET['image']);
 } catch (Exception $e) {
     echo $e->getMessage();
@@ -33,7 +39,7 @@ try {
 
 $sql = new Sql ();
 $shareable = $sql->getRow("SELECT album FROM `share_rights` WHERE ( `user` = '{$systemUser->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
-if ($shareable ['album']) {
+if (isset($shareable ['album'])) {
     echo 1;
 } else {
     echo 0;

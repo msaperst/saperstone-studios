@@ -16,7 +16,7 @@ use ZipArchive;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Gmail.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DownloadSelectedImagesTest extends TestCase {
     /**
@@ -47,20 +47,20 @@ class DownloadSelectedImagesTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (999, 'sample-album-no-access', 'sample album for testing without any download access', 'sample');");
 
         $oldMask = umask(0);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777);
         $counter = 0;
         foreach ($this->files as $file) {
             $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('997$counter', 997, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
             $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('998$counter', 998, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
             $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('999$counter', 999, '$file', $counter, '/albums/sample/$file', '600', '400', '1');");
             if ($counter != 4) {
-                touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/$file");
-                chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/$file", 0777);
-                touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/full/$file");
-                chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/sample/full/$file", 0777);
+                touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/sample/$file");
+                chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/sample/$file", 0777);
+                touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/sample/full/$file");
+                chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/sample/full/$file", 0777);
             }
             $counter++;
         }
@@ -89,7 +89,7 @@ class DownloadSelectedImagesTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
         $this->sql->disconnect();
     }
 
@@ -682,6 +682,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
+            $x = (string)$response->getBody();
             $zipFile = json_decode($response->getBody(), true)['file'];
             $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
             CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);

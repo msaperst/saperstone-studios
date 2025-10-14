@@ -1,12 +1,18 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
 $api = new Api ();
 
 $api->forceLoggedIn();
 
 try {
+    if (!isset ($_GET['album'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_GET['album']);
+    if (!isset ($_GET['image'])) {
+        throw new BadImageException("Image id is required");
+    }
     $image = new Image($album, $_GET['image']);
 } catch (Exception $e) {
     echo $e->getMessage();

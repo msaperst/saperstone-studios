@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use SocialMedia;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UpdateBlogPostTest extends TestCase {
     /**
@@ -304,7 +304,7 @@ class UpdateBlogPostTest extends TestCase {
      */
     public function testNoContent() {
         try {
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -344,7 +344,7 @@ class UpdateBlogPostTest extends TestCase {
             $this->assertEquals(2, $blogTexts[0]['contentGroup']);
             $this->assertEquals('Some blog text', $blogTexts[0]['text']);
         } finally {
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/tmp_flower.jpeg');
         }
     }
 
@@ -354,7 +354,7 @@ class UpdateBlogPostTest extends TestCase {
      */
     public function testPreviewOffsetOnlyImage() {
         try {
-            touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
+            touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -405,8 +405,8 @@ class UpdateBlogPostTest extends TestCase {
             $this->assertEquals('0', $blogImages['top']);
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_tags` WHERE `blog_tags`.`blog` = 999;"));
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `blog_texts` WHERE `blog_texts`.`blog` = 999;"));
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/preview_image-999.jpg"));
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/image.jpg"));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/preview_image-999.jpg"));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/blog/2030/01/01/image.jpg"));
         } finally {
             // cleanup
             $cookieJar = CookieJar::fromArray([
@@ -426,7 +426,7 @@ class UpdateBlogPostTest extends TestCase {
      */
     public function testNoPreviewOffsetOnlyText() {
         try {
-            touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
+            touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -466,7 +466,7 @@ class UpdateBlogPostTest extends TestCase {
             $this->assertEquals('Some blog text', $blogTexts['text']);
         } finally {
             // cleanup
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/image.jpg');
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
@@ -485,7 +485,7 @@ class UpdateBlogPostTest extends TestCase {
      */
     public function testTagsOffsetImagesText() {
         try {
-            copy(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/image.jpg');
+            copy(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/image.jpg');
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));

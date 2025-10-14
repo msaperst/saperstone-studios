@@ -1,12 +1,12 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $api = new Api ();
 
 $api->forceAdmin();
 
 try {
     $album = Album::withId($_POST ['album']);
-    if( $_POST['image'] == '*' ) {
+    if ($_POST['image'] == '*') {
         $image = '*';
     } else {
         $image = (new Image($album, $_POST['image']))->getId();

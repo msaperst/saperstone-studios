@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $systemUser = User::fromSystem();
@@ -7,6 +7,9 @@ $api = new Api ();
 
 try {
     $what = $api->retrievePostString('what', 'What to download');
+    if (!isset ($_POST['album'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_POST['album']);
 } catch (Exception $e) {
     echo json_encode(array('error' => $e->getMessage()));
@@ -105,7 +108,9 @@ echo json_encode($response);
 system("bash -c 'sleep " . getenv('CLEAN_UP_AFTER') . "; rm \"$myFile\";' > /dev/null 2>&1 &");
 
 // update our user records table
-$sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode("\n", $image_array) . "', {$album->getId()} );");
+if ($systemUser->getId()) {
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode("\n", $image_array) . "', {$album->getId()} );");
+}
 $sql->disconnect();
 
 // send email
@@ -136,8 +141,7 @@ try {
 exit();
 
 // our function to see if an array of files contains the expected file
-function doesArrayContainFile($array, $file)
-{
+function doesArrayContainFile($array, $file) {
     foreach ($array as $element) {
         $match = true;
         foreach ($element as $key => $value) {

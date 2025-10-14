@@ -4,15 +4,20 @@ namespace api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetFavoritesTest extends TestCase {
     private $http;
     private $sql;
 
+    /**
+     * @throws SqlException
+     */
     public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
@@ -24,6 +29,9 @@ class GetFavoritesTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES (999, 999, 'file1', 1, '/albums/sample/file1', '600', '400', '1');");
     }
 
+    /**
+     * @throws SqlException
+     */
     public function tearDown(): void {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 997");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 997");
@@ -159,7 +167,11 @@ class GetFavoritesTest extends TestCase {
         $this->assertEquals('/albums/sample/file1', $favorites[998][0]['location']);
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function testAuthUserFavoritesAlbum() {
+        sleep(1);
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));
@@ -197,5 +209,3 @@ class GetFavoritesTest extends TestCase {
         $this->assertEquals('/albums/sample/file1', $favorites[0]['location']);
     }
 }
-
-?>
