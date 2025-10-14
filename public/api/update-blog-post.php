@@ -8,7 +8,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $blog = Blog::withId($_POST ['post']);
+    $blog = Blog::withId($api->retrievePostString('post', 'Blog id'));
     $blog->update($_POST);
 } catch (Exception $e) {
     echo $e->getMessage();

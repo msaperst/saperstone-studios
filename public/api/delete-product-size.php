@@ -5,10 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    if (!isset ($_POST['id'])) {
-        throw new BadProductException("Product id is required");
-    }
-    $product = Product::withId($_POST['id']);
+    $product = Product::withId($api->retrievePostString('id', 'Product id'));
     $product->delete();
 } catch (Exception $e) {
     echo $e->getMessage();

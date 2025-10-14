@@ -5,10 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    if (!isset ($_GET['id'])) {
-        throw new BadContractException("Contract id is required");
-    }
-    $contract = Contract::withId($_GET['id']);
+    $contract = Contract::withId($api->retrieveGetString('id', 'Contract id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

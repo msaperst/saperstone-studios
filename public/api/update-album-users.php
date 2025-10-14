@@ -5,7 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $album = Album::withId($_POST ['album']);
+    $album = Album::withId($api->retrievePostString('album', 'Album id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

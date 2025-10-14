@@ -5,8 +5,8 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $gallery = Gallery::withId($_POST['gallery']);
-    $image = new Image($gallery, $_POST['image']);
+    $gallery = Gallery::withId($api->retrievePostString('gallery', 'Gallery id'));
+    $image = new Image($gallery, $api->retrievePostString('image', 'Image id'));
     $title = $api->retrievePostString('title', 'Title');
     $caption = "";
     if (isset ($_POST ['caption']) && $_POST ['caption'] != "") {

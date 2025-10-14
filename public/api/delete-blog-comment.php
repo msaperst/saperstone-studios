@@ -5,10 +5,7 @@ $api = new Api ();
 $api->forceLoggedIn();
 
 try {
-    if (!isset ($_POST['comment'])) {
-        throw new BadCommentException("Comment id is required");
-    }
-    $comment = Comment::withId($_POST['comment']);
+    $comment = Comment::withId($api->retrievePostString('comment', 'Comment id'));
     // check our user permissions
     if (!$comment->canUserGetData()) {
         header('HTTP/1.0 403 Unauthorized');

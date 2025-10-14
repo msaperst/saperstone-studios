@@ -5,10 +5,7 @@ $api = new Api ();
 $api->forceLoggedIn();
 
 try {
-    if (!isset ($_GET['id'])) {
-        throw new BadAlbumException("Album id is required");
-    }
-    $album = Album::withId($_GET['id']);
+    $album = Album::withId($api->retrieveGetString('id', 'Album id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

@@ -5,17 +5,10 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    if (!isset ($_GET['album'])) {
-        throw new BadAlbumException("Album id is required");
-    }
-    $album = Album::withId($_GET['album']);
-    if (!isset ($_GET['image'])) {
-        throw new BadImageException("Image id is required");
-    }
-    if ($_GET['image'] == '*') {
-        $image = '*';
-    } else {
-        $image = (new Image($album, $_GET['image']))->getId();
+    $album = Album::withId($api->retrieveGetString('album', 'Album id'));
+    $image = $api->retrieveGetString('image', 'Image id');
+    if ($image != '*') {
+        $image = (new Image($album, $image))->getId();
     }
 } catch (Exception $e) {
     echo $e->getMessage();

@@ -1,14 +1,12 @@
 <?php
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
+$api = new Api();
 $start = 0;
 $howMany = 999999999999999999;
 
 try {
-    if (!isset ($_GET['albumId'])) {
-        throw new BadAlbumException("Album id is required");
-    }
-    $album = Album::withId($_GET['albumId']);
+    $album = Album::withId($api->retrieveGetString('albumId', 'Album id'));
 } catch (Exception $e) {
     echo json_encode(array('error' => $e->getMessage()));
     exit();

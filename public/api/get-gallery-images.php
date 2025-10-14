@@ -1,15 +1,13 @@
 <?php
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
+$api = new Api();
 $response = array();
 $start = 0;
 $howMany = 999999999999999999;
 
 try {
-    if (!isset ($_GET['gallery'])) {
-        throw new BadGalleryException("Gallery id is required");
-    }
-    $gallery = Gallery::withId($_GET['gallery']);
+    $gallery = Gallery::withId($api->retrieveGetString('gallery', 'Gallery id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

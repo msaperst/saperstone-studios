@@ -5,10 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    if (!isset ($_GET['id'])) {
-        throw new BadGalleryException("Gallery id is required");
-    }
-    $gallery = Gallery::withId($_GET['id']);
+    $gallery = Gallery::withId($api->retrieveGetString('id', 'Gallery id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

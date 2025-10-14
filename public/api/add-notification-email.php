@@ -4,10 +4,7 @@ $systemUser = User::fromSystem();
 $api = new Api ();
 
 try {
-    if (!isset ($_POST['album'])) {
-        throw new BadAlbumException("Album id is required");
-    }
-    $album = Album::withId($_POST['album']);
+    $album = Album::withId($api->retrievePostString('album', 'Album id'));
     $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
 } catch (Exception $e) {
     echo $e->getMessage();
