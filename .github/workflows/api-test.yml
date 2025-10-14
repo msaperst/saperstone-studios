@@ -77,7 +77,7 @@ jobs:
         if: ${{ !cancelled() }}       # run this step even if previous step failed
         with:
           name: API Tests            # Name of the check run which will be created
-          path: reports/api-results.xml    # Path to test results
+          path: reports/api-junit.xml    # Path to test results
           reporter: jest-junit        # Format of test results
 
       - name: Upload HTML test report
