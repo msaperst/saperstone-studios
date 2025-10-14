@@ -34,11 +34,13 @@ jobs:
           name: ut-coverage
           path: reports
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-test-report@v1
+      - name: Test Report
+        uses: dorny/test-reporter@v2
+        if: ${{ !cancelled() }}       # run this step even if previous step failed
         with:
-          report: reports/ut-junit.xml
+          name: Unit Tests            # Name of the check run which will be created
+          path: reports/ut-results.xml    # Path to test results
+          reporter: jest-junit        # Format of test results
 
       - name: Upload HTML test report
         if: always()
@@ -117,11 +119,13 @@ jobs:
           name: it-coverage
           path: reports
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-test-report@v1
+      - name: Test Report
+        uses: dorny/test-reporter@v2
+        if: ${{ !cancelled() }}       # run this step even if previous step failed
         with:
-          report: reports/it-junit.xml
+          name: Integration Tests            # Name of the check run which will be created
+          path: reports/it-results.xml    # Path to test results
+          reporter: jest-junit        # Format of test results
 
       - name: Upload HTML test report
         if: always()
