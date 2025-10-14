@@ -5,6 +5,9 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
+    if (!isset($_FILES['myfile'])) {
+        throw new ImageException('File(s) are required');
+    }
     $file = new File($_FILES ["myfile"]);
     $files = $file->upload('../tmp/');
     $file->resize(1200, 0);

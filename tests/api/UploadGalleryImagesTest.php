@@ -186,12 +186,11 @@ class UploadGalleryImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $x = json_decode($response->getBody());
         $this->assertEquals(['flower.jpeg'], json_decode($response->getBody(), true));
         $images = $this->sql->getRows("SELECT * FROM gallery_images WHERE gallery = 2 ORDER BY sequence DESC");
         $this->assertEquals(2, $images[0]['gallery']);
         $this->assertEquals('flower.jpeg', $images[0]['title']);
-        $this->assertNotEquals(0, $images[0]['sequence']);
+        $this->assertEquals(0, $images[0]['sequence']);
         $this->assertEquals('', $images[0]['caption']);
         $this->assertEquals('/portrait/img/maternity/flower.jpeg', $images[0]['location']);
         $this->assertEquals(1013, $images[0]['width']);

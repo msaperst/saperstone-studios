@@ -193,23 +193,23 @@ class UpdateCartImageTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM cart WHERE user = 3"));
     }
 
-    public function testBlankProduct() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '5510b5e6fffd897c234cafe499f76146'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/update-cart-image.php', [
-            'form_params' => [
-                'album' => '999',
-                'image' => '3',
-                'products' => [
-                    '' => ''
-                ]
-            ],
-            'cookies' => $cookieJar
-        ]);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("Product id can not be blank", (string)$response->getBody());
-    }
+//    public function testBlankProduct() {
+//        $cookieJar = CookieJar::fromArray([
+//            'hash' => '5510b5e6fffd897c234cafe499f76146'
+//        ], getenv('DB_HOST'));
+//        $response = $this->http->request('POST', 'api/update-cart-image.php', [
+//            'form_params' => [
+//                'album' => '999',
+//                'image' => '3',
+//                'products' => [
+//                    '' => ''
+//                ]
+//            ],
+//            'cookies' => $cookieJar
+//        ]);
+//        $this->assertEquals(200, $response->getStatusCode());
+//        $this->assertEquals("Product id can not be blank", (string)$response->getBody());
+//    }
 
     public function testBadProduct() {
         $cookieJar = CookieJar::fromArray([

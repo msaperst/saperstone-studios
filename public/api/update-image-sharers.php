@@ -5,11 +5,10 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $album = Album::withId($_POST ['album']);
-    if ($_POST['image'] == '*') {
-        $image = '*';
-    } else {
-        $image = (new Image($album, $_POST['image']))->getId();
+    $album = Album::withId($api->retrievePostString('album', 'Album id'));
+    $image = $api->retrievePostString('image', 'Image id');
+    if ($image != '*') {
+        $image = (new Image($album, $image))->getId();
     }
 } catch (Exception $e) {
     echo $e->getMessage();

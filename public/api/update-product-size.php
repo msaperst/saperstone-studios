@@ -5,7 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $product = Product::withId($_POST ['id']);
+    $product = Product::withId($api->retrievePostString('id', 'Product id'));
     $product->update($_POST);
 } catch (Exception $e) {
     echo $e->getMessage();

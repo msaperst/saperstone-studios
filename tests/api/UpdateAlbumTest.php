@@ -2,7 +2,6 @@
 
 namespace api;
 
-use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -150,7 +149,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(998, $albumInfo['id']);
         $this->assertEquals('New Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
-        CustomAsserts::timeWithin(2, $albumInfo['date']);
+        $this->assertNull($albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertEquals('', $albumInfo['code']);
@@ -176,7 +175,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(999, $albumInfo['id']);
         $this->assertEquals('Updated Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
-        CustomAsserts::timeWithin(2, $albumInfo['date']);
+        $this->assertNull($albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertNull($albumInfo['code']);

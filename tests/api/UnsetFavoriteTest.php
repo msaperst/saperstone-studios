@@ -161,6 +161,7 @@ class UnsetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
+        sleep(1);
         $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 999,
@@ -168,6 +169,7 @@ class UnsetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
+        sleep(1);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("0", (string)$response->getBody());
         $images = $this->sql->getRows("SELECT * FROM `favorites` WHERE `favorites`.`album` = 999;");

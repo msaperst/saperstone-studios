@@ -5,7 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $user = User::withId($_POST['id']);
+    $user = User::withId($api->retrievePostString('id', 'User id'));
     $user->updatePassword($_POST);
 } catch (Exception $e) {
     echo $e->getMessage();

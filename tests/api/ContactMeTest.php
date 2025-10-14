@@ -33,7 +33,7 @@ class ContactMeTest extends TestCase {
      * @throws GuzzleException
      */
     public function testNoName() {
-        $response = $this->http->request('api/contact-me.php', 'POST');
+        $response = $this->http->request('POST', 'api/contact-me.php');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Name is required", (string)$response->getBody());
     }

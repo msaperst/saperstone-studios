@@ -5,7 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $user = User::withId($_POST ['user']);
+    $user = User::withId($api->retrievePostString('user', 'User id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

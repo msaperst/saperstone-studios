@@ -49,6 +49,7 @@ class UploadBlogImagesTest extends TestCase {
         ], getenv('DB_HOST'));
         $response = $this->http->request('POST', 'api/upload-blog-images.php', [
             'cookies' => $cookieJar
+
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("File(s) are required", json_decode($response->getBody()));
