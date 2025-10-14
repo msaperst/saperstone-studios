@@ -34,6 +34,19 @@ jobs:
           name: ut-coverage
           path: reports
 
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-test-report@v1
+        with:
+          report: reports/ut-junit.xml
+
+      - name: Upload HTML test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: it-test-html
+          path: reports/ut-results.html
+
   integration-testing:
     name: Integration Testing
     runs-on: ubuntu-latest
@@ -103,6 +116,19 @@ jobs:
         with:
           name: it-coverage
           path: reports
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-test-report@v1
+        with:
+          report: reports/it-junit.xml
+
+      - name: Upload HTML test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: it-test-html
+          path: reports/it-results.html
 
   sonar:
     name: SonarCloud
