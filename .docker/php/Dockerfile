@@ -33,7 +33,8 @@ COPY templates /var/www/templates
 # TODO
 
 # install plugins
-RUN mkdir /var/www/resources
+RUN cd /var/www && composer install
+
 ## install jSignature plugin
 RUN cd /var/www/public/js && \
         mkdir jSignature && \
@@ -41,14 +42,6 @@ RUN cd /var/www/public/js && \
         wget --quiet http://willowsystems.github.io/jSignature/jSignature.zip && \
         unzip -qq jSignature.zip && \
         rm jSignature.zip
-## TODO - might need to add back in the MDF stuff...
-## install/configure ua parser plugin
-RUN cd /var/www/src && \
-        wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php
-## install browscap ini
-RUN cd /var/www/resources && \
-        wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \
-        mv stream\?q\=PHP_BrowsCapINI php_browscap.ini
 
 # try setting the timezone
 ARG TZ=America/New_York

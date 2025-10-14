@@ -6,6 +6,9 @@ $api = new Api ();
 $api->forceLoggedIn();
 
 try {
+    if (!isset ($_POST['id'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_POST['id']);
 } catch (Exception $e) {
     echo $e->getMessage();

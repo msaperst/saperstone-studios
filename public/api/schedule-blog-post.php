@@ -5,6 +5,9 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
+    if (!isset ($_POST ['post'])) {
+        throw new BadBlogException("Blog id is required");
+    }
     $blog = Blog::withId($_POST ['post']);
     $date = $api->retrievePostDateTime('date', 'Publish date', 'Y-m-d');
     $time = $api->retrievePostDateTime('time', 'Publish time', 'H:i');

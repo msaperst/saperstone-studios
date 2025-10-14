@@ -12,13 +12,14 @@
     "php-webdriver/webdriver": "^1.10",
     "behat/behat": "3.7.0",
     "emuse/behat-html-formatter": "^0.2.0",
-    "mpdf/mpdf": "8.2.5",
     "google/apiclient": "^2.0",
     "ext-curl": "*"
   },
   "require": {
     "ext-mysqli": "*",
-    "cbschuld/browser.php": "^2.0"
+    "cbschuld/browser.php": "^2.0",
+    "browscap/browscap-php": "^2.1",
+    "mpdf/mpdf": "8.2.5"
   },
   "autoload-dev": {
     "psr-4": {

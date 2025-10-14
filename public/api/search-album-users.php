@@ -5,6 +5,9 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
+    if (!isset ($_GET ['album'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_GET ['album']);
 } catch (Exception $e) {
     echo $e->getMessage();

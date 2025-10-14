@@ -43,7 +43,7 @@ class Blog {
             $sql->disconnect();
             throw new BadBlogException("Blog id does not match any blog posts");
         }
-        $blog->directory = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $blog->raw['date']);
+        $blog->directory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . str_replace("-", "/", $blog->raw['date']);
         $blog->id = $blog->raw['id'];
         $blog->title = $blog->raw['title'];
         $blog->safeTitle = $blog->raw['safe_title'];
@@ -276,7 +276,7 @@ class Blog {
         }
 
         // move and resize our preview image
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview, $this->directory . DIRECTORY_SEPARATOR . 'preview_image.jpg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview, $this->directory . DIRECTORY_SEPARATOR . 'preview_image.jpg');
         $this->preview = $this->directory . DIRECTORY_SEPARATOR . 'preview_image.jpg';
         system("mogrify -resize 360x \"{$this->preview}\" > /dev/null 2>&1");
         system("mogrify -density 72 \"{$this->preview}\" > /dev/null 2>&1");
@@ -287,7 +287,7 @@ class Blog {
         $this->id = $blogId;
         // update our preview image with the blog post id
         rename("{$this->directory}/preview_image.jpg", "{$this->directory}/preview_image-$blogId.jpg");
-        $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-$blogId.jpg", strlen(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
+        $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-$blogId.jpg", strlen(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
         $sql->executeStatement("UPDATE `blog_details` SET `preview` = '{$this->preview}' WHERE `id` = $blogId;");
 
         //create our content
@@ -322,11 +322,11 @@ class Blog {
         // if we have a new image - process it
         if (isset($params['preview']) && isset($params['preview']['img']) && $params['preview']['img'] != '') {
             //setup our new image
-            copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview, $this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg");
+            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview, $this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg");
             $this->preview = $this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg";
             system("mogrify -resize 360x \"{$this->preview}\" > /dev/null 2>&1");
             system("mogrify -density 72 \"{$this->preview}\" > /dev/null 2>&1");
-            $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg", strlen(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
+            $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg", strlen(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
         }
 
         $sql = new Sql();
@@ -386,9 +386,9 @@ class Blog {
         $sql->disconnect();
         // delete our files
         foreach ($images as $image) {
-            unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $image['location']);
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $image['location']);
         }
-        unlink(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview);
+        unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->preview);
         //delete the folder if empty
         if ($this->dirIsEmpty($this->directory)) {     //if the day folder is empty
             rmdir($this->directory);

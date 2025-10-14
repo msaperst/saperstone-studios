@@ -1,7 +1,11 @@
 <?php
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 try {
+    if (!isset ($_POST['id'])) {
+        throw new BadContractException("Contract id is required");
+    }
     $contract = Contract::withId($_POST['id']);
     $file = $contract->sign($_POST);
 } catch (Exception $e) {

@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
@@ -13,6 +14,9 @@ class SetFavoriteTest extends TestCase {
     private $http;
     private $sql;
 
+    /**
+     * @throws SqlException
+     */
     public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
         $this->sql = new Sql();
@@ -20,6 +24,9 @@ class SetFavoriteTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '0', '', '/albums/sample/sample1.jpg', '300', '400', '1');");
     }
 
+    /**
+     * @throws SqlException
+     */
     public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
@@ -178,6 +185,7 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
+        sleep(1);
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999,

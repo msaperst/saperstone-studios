@@ -4,6 +4,9 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
+    if (!isset ($_POST['album'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_POST['album']);
     $message = $api->retrievePostString('message', 'Message');
 } catch (Exception $e) {

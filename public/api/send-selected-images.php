@@ -6,6 +6,9 @@ $systemUser = User::fromSystem();
 $api = new Api ();
 
 try {
+    if (!isset ($_POST ['album'])) {
+        throw new BadAlbumException("Album id is required");
+    }
     $album = Album::withId($_POST ['album']);
 } catch (Exception $e) {
     echo json_encode(array('err' => $e->getMessage()));

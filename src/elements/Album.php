@@ -274,7 +274,7 @@ class Album {
         $sql->executeStatement("DELETE FROM albums_for_users WHERE album='{$this->id}';");
         $sql->disconnect();
         if ($this->location != "") {
-            system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $this->location));
+            system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $this->location));
         }
     }
 }
