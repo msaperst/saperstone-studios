@@ -152,3 +152,25 @@ jobs:
           chromedriver --port=4444 &
           curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
           COMPOSER_PROCESS_TIMEOUT=1200 composer ui-behat-test
+
+      #      - name: Test Report
+      #        uses: dorny/test-reporter@v2
+      #        if: ${{ !cancelled() }}       # run this step even if previous step failed
+      #        with:
+      #          name: UI Page Tests            # Name of the check run which will be created
+      #          path: reports/ui-junit.xml    # Path to test results
+      #          reporter: java-junit        # Format of test results
+
+      #      - name: Upload HTML test report
+      #        if: always()
+      #        uses: actions/upload-artifact@v4
+      #        with:
+      #          name: ui-test-html
+      #          path: reports/ui-results.html
+
+      - name: Upload Custom Report 📊
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: behat
+          path: reports

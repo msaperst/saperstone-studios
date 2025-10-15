@@ -10,7 +10,8 @@
     "ext-json": "*",
     "ext-zip": "*",
     "php-webdriver/webdriver": "^1.15.2",
-    "behat/behat": "3.7.0",
+    "behat/behat": "v3.25.0",
+    "behat/gherkin": ">=4.9.0",
     "emuse/behat-html-formatter": "^0.2.0",
     "google/apiclient": "^2.0",
     "ext-curl": "*"
@@ -36,9 +37,9 @@
     "integration-pre-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3506; docker build -q -f .docker/sql/Dockerfile -t integration_sql .; docker run -d -e TZ='America/New_York' -e MYSQL_ALLOW_EMPTY_PASSWORD=no -e MYSQL_ROOT_PASSWORD=${DB_ROOT} -e MYSQL_DATABASE=${DB_NAME} -e MYSQL_USER=${DB_USER} -e MYSQL_PASSWORD=${DB_PASS} -p ${DB_PORT}:3306 --expose ${DB_PORT} integration_sql; ./bin/setup-database.sh true;",
     "integration-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3506; XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-it.xml",
     "integration-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=integration_sql --format=\"{{.ID}}\"))",
-    "coverage-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3406; XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-ct.xml",
+    "coverage-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-ct.xml",
     "api-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; vendor/bin/phpunit --configuration phpunit-api.xml",
     "ui-page-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export HEADLESS=true; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`;  vendor/bin/phpunit --configuration phpunit-ui.xml",
-    "ui-behat-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; vendor/bin/behat"
+    "ui-behat-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export HEADLESS=true; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; vendor/bin/behat"
   }
 }
