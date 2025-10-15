@@ -31,7 +31,7 @@ class SendNotificationEmailTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES ('999', 'sample-album', 'sample album for testing', '');");
         $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', 'NULL', 'msaperst+sstest@gmail.com', 0);");

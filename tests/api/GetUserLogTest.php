@@ -26,7 +26,7 @@ class GetUserLogTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `user_logs` (`user`, `album`, `action`) VALUES (1, '998', 'Logged In');");
         $this->sql->executeStatement("INSERT INTO `user_logs` (`user`, `album`, `action`) VALUES (1, '999', 'Logged Out');");

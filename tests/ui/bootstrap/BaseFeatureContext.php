@@ -96,7 +96,7 @@ class BaseFeatureContext implements Context {
         }
 
         $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
-        $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
+        $this->baseUrl = 'http://' . getenv('APP_URL') . ':' . getenv('HTTP_PORT') . '/';
         $this->user = new User();
 
         // setup some basic cookies in the browser

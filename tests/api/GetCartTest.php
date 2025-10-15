@@ -26,7 +26,7 @@ class GetCartTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,995,1,2)');
         $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,996,0,0)');

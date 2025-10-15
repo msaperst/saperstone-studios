@@ -54,7 +54,7 @@ class TestBase extends TestCase {
         $desiredCapabilities->setCapability('acceptSslCerts', true);
         $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
         $this->driver->manage()->window()->setSize(new WebDriverDimension(1000, 1000));
-        $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
+        $this->baseUrl = 'http://' . getenv('APP_URL') . ':' . getenv('HTTP_PORT') . '/';
     }
 
     public function tearDown(): void {

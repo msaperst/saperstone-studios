@@ -26,7 +26,7 @@ class DeleteUserTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `users` (`id`, `usr`, `pass`, `email`, `firstName`, `lastName`, `role`, `hash`) VALUES (999, 'test', 'test', '', '', '', 'downloader', '1234')");
     }

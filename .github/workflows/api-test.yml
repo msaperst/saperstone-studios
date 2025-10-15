@@ -26,9 +26,10 @@ jobs:
           echo 'HTTP_PORT=90' >> .env
           echo 'HTTPS_PORT=9443' >> .env
           echo 'SERVER_NAME=victor' >> .env
+          echo 'APP_URL=localhost' >> .env
           echo '' >> .env
           echo '# database information' >> .env
-          echo 'DB_HOST=localhost' >> .env
+          echo 'DB_HOST=127.0.0.1' >> .env
           echo 'DB_ROOT=${{ secrets.DB_ROOT }}' >> .env
           echo 'DB_PORT=3406' >> .env
           echo 'DB_NAME=saperstone-studios' >> .env

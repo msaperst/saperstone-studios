@@ -17,7 +17,7 @@ class ResetPasswordTest extends TestCase {
     private $http;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
     }
 
     public function tearDown(): void {

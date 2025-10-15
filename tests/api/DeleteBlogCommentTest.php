@@ -26,7 +26,7 @@ class DeleteBlogCommentTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('998', '999', 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'msaperst+sstest@gmail.com', 'this is an awesome post')");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('999', '999', 4, 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'msaperst+sstest@gmail.com', 'this is an awesome post')");
