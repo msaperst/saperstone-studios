@@ -19,7 +19,11 @@
     "ext-mysqli": "*",
     "cbschuld/browser.php": "^2.0",
     "browscap/browscap-php": "^2.1",
-    "mpdf/mpdf": "8.2.5"
+    "mpdf/mpdf": "8.2.5",
+    "pear/mail": "^2.0",
+    "pear/mail_mime": "^1.10",
+    "pear/net_smtp": "^1.12",
+    "pear/auth_sasl": "^1.2"
   },
   "autoload-dev": {
     "psr-4": {

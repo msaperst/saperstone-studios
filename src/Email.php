@@ -1,10 +1,9 @@
 <?php
 
-use cbschuld\Browser;
+require_once 'autoloader.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-require 'autoloader.php';
-require 'Mail.php';
-require 'Mail/mime.php';
+use cbschuld\Browser;
 
 class Email {
 

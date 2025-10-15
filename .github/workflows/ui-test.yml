@@ -19,13 +19,6 @@ jobs:
           php-version: '8.4'
           extensions: imagick
 
-      - name: Install 🔧
-        run: |
-          composer validate
-          composer install --prefer-dist --no-progress --no-suggest
-          pear channel-update pear.php.net
-          pear install Mail Mail_Mime Auth_SASL pear/Net_SMTP
-
       - name: Set up env file
         run: |
           echo '# tool hosting information' > .env
