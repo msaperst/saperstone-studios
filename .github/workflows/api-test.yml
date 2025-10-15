@@ -67,10 +67,11 @@ jobs:
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Verify Liveliness
+        run: curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
+
       - name: API Tests
-        run: |
-          curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
-          COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
+        run: COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
 
       - name: Test Report
         uses: dorny/test-reporter@v2
