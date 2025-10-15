@@ -33,7 +33,7 @@ class TestBase extends TestCase {
 
     public function setUp(): void {
         $this->copyright = 'Copyright © Saperstone Studios ' . date("Y");
-        $headless = getenv('HEADLESS') ? getenv('HEADLESS') : 'false';
+        $headless = getenv('HEADLESS');
         //setup our browser
         $host = 'http://127.0.0.1:4444';
         if (getenv('BROWSER') == 'firefox') {
