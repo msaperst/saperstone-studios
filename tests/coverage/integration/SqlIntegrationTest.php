@@ -3,20 +3,22 @@
 namespace coverage\integration;
 
 use Exception;
+use mysqli_sql_exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SqlIntegrationTest extends TestCase {
 
-    private $sql;
+    private Sql $sql;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->sql = new Sql();
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->sql->disconnect();
     }
 
@@ -57,20 +59,26 @@ class SqlIntegrationTest extends TestCase {
     public function testGetRows() {
         $rows = $this->sql->getRows("SELECT * FROM reviews;");
         $this->assertEquals(17, sizeOf($rows));
-        $rows = $this->sql->getRows("SELECT * FROM review;");
-        $this->assertEquals(array(), $rows);
         $this->sql->disconnect();
-        $rows = $this->sql->getRows("SELECT * FROM reviews;");
-        $this->assertEquals(array(), $rows);
+        $rows = $this->sql->getRows("SELECT * FROM review;");
+        $this->assertEquals(0, sizeOf($rows));
+    }
+
+    public function testGetRowsNoTable() {
+        $this->expectException(mysqli_sql_exception::class);
+        $this->expectExceptionMessage("Table 'saperstone-studios.review' doesn't exist");
+        $this->sql->getRows("SELECT * FROM review;");
     }
 
     public function testGetRowCount() {
         $this->assertEquals(17, $this->sql->getRowCount("SELECT * FROM reviews;"));
-        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM review;"));
         $this->sql->disconnect();
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM reviews;"));
     }
 
+    /**
+     * @throws SqlException
+     */
     public function testExecuteStatement() {
         try {
             $this->assertEquals(81, $this->sql->executeStatement("INSERT INTO `tags` (`tag`) VALUES ('test-tag');"));
@@ -101,5 +109,3 @@ class SqlIntegrationTest extends TestCase {
         $this->assertEquals(array(), $this->sql->getEnumValues('users', 'role'));
     }
 }
-
-?>

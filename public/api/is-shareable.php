@@ -1,5 +1,6 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api();
 $systemUser = User::fromSystem();
 
 if ($systemUser->isAdmin()) {
@@ -8,7 +9,7 @@ if ($systemUser->isAdmin()) {
 }
 
 try {
-    $album = Album::withId($_GET['album']);
+    $album = Album::withId($api->retrieveGetString('album', 'Album id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
@@ -25,7 +26,7 @@ if ($album->canUserGetData()) {
 }
 
 try {
-    $image = new Image($album, $_GET['image']);
+    $image = new Image($album, $api->retrieveGetString('image', 'Image id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
@@ -33,7 +34,7 @@ try {
 
 $sql = new Sql ();
 $shareable = $sql->getRow("SELECT album FROM `share_rights` WHERE ( `user` = '{$systemUser->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
-if ($shareable ['album']) {
+if (isset($shareable ['album'])) {
     echo 1;
 } else {
     echo 0;

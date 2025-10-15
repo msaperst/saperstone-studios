@@ -6,15 +6,19 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetBlogsFullTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    /**
+     * @throws SqlException
+     */
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('997', 'Sample Blog', '2031-01-01', '', 0, 1)");
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('998', 'Sample Blog', '2031-01-01', '', 0, 1)");
@@ -28,7 +32,10 @@ class GetBlogsFullTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `blog_texts` (`blog`, `contentGroup`, `text`) VALUES ('999', '2', 'Some blog text')");
     }
 
-    public function tearDown() {
+    /**
+     * @throws SqlException
+     */
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 997;");
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 998;");
@@ -49,30 +56,6 @@ class GetBlogsFullTest extends TestCase {
 
     public function testGetBlogFull() {
         $response = $this->http->request('GET', 'api/get-blogs-full.php');
-        $this->assertEquals(200, $response->getStatusCode());
-        $blogDetails = json_decode($response->getBody(), true);
-        $this->assertEquals("997", $blogDetails['id']);
-        $this->assertEquals("Sample Blog", $blogDetails['title']);
-        $this->assertNull($blogDetails['safe_title']);
-        $this->assertEquals("January 1st, 2031", $blogDetails['date']);
-        $this->assertEquals("", $blogDetails['preview']);
-        $this->assertEquals(0, $blogDetails['offset']);
-        $this->assertEquals(1, $blogDetails['active']);
-        $this->assertEquals(2, sizeof($blogDetails['tags']));
-        $this->assertEquals(29, $blogDetails['tags'][0]['id']);
-        $this->assertEquals('Tea Ceremony', $blogDetails['tags'][0]['tag']);
-        $this->assertEquals(30, $blogDetails['tags'][1]['id']);
-        $this->assertEquals('Trash the Dress', $blogDetails['tags'][1]['tag']);
-        $this->assertEquals(array(), $blogDetails['comments']);
-    }
-
-    public function testGetBlogFullTag() {
-        $response = $this->http->request('GET', 'api/get-blogs-full.php', [
-            'query' => [
-                'tag' => [29],
-                'start' => 1
-            ]
-        ]);
         $this->assertEquals(200, $response->getStatusCode());
         $blogDetails = json_decode($response->getBody(), true);
         $this->assertEquals("999", $blogDetails['id']);
@@ -115,6 +98,30 @@ class GetBlogsFullTest extends TestCase {
         $this->assertEquals('68.98.132.164', $blogDetails['comments'][1]['ip']);
         $this->assertEquals('Anna', $blogDetails['comments'][1]['name']);
         $this->assertNull($blogDetails['comments'][1]['user']);
+    }
+
+    public function testGetBlogFullTag() {
+        $response = $this->http->request('GET', 'api/get-blogs-full.php', [
+            'query' => [
+                'tag' => [29],
+                'start' => 1
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $blogDetails = json_decode($response->getBody(), true);
+        $this->assertEquals("997", $blogDetails['id']);
+        $this->assertEquals("Sample Blog", $blogDetails['title']);
+        $this->assertNull($blogDetails['safe_title']);
+        $this->assertEquals("January 1st, 2031", $blogDetails['date']);
+        $this->assertEquals("", $blogDetails['preview']);
+        $this->assertEquals(0, $blogDetails['offset']);
+        $this->assertEquals(1, $blogDetails['active']);
+        $this->assertEquals(2, sizeof($blogDetails['tags']));
+        $this->assertEquals(29, $blogDetails['tags'][0]['id']);
+        $this->assertEquals('Tea Ceremony', $blogDetails['tags'][0]['tag']);
+        $this->assertEquals(30, $blogDetails['tags'][1]['id']);
+        $this->assertEquals('Trash the Dress', $blogDetails['tags'][1]['tag']);
+        $this->assertEquals(array(), $blogDetails['comments']);
     }
 
     public function testGetBlogFullTags() {
@@ -341,5 +348,3 @@ class GetBlogsFullTest extends TestCase {
         $this->assertNull($blogDetails['comments'][1]['user']);
     }
 }
-
-?>

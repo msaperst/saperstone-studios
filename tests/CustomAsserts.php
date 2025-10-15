@@ -16,7 +16,7 @@ class CustomAsserts {
      * @param $range - how many seconds the timestamp can be off by
      * @param $time - the times we want to check. Should be in "Y-m-d H:i:s" format
      */
-    public static function timeWithin($range, $time) {
+    public static function timeWithin($range, $time): void {
         date_default_timezone_set('America/New_York');
         Assert::assertStringMatchesFormat('%d-%d-%d %d:%d:%d', $time);
         self::timestampWithin($range, strtotime($time));
@@ -26,7 +26,7 @@ class CustomAsserts {
      * @param $range - how many seconds the timestamp can be off by
      * @param $timestamp - the timestamp we want to check. Should be seconds since unix epoch
      */
-    public static function timestampWithin($range, $timestamp) {
+    public static function timestampWithin($range, $timestamp): void {
         date_default_timezone_set('America/New_York');
         $time = time();
         Assert::assertTrue($timestamp <= $time + $range, "Timestamp $timestamp is outside the range +/-$range from now ($time)");
@@ -37,7 +37,7 @@ class CustomAsserts {
      * @param $range - how many seconds the timestamp can be off by
      * @param $time - the times we want to check. Should be in "Y-m-d H-i-s" format
      */
-    public static function dashedTimeWithin($range, $time) {
+    public static function dashedTimeWithin($range, $time): void {
         date_default_timezone_set('America/New_York');
         Assert::assertStringMatchesFormat('%d-%d-%d %d-%d-%d', $time);
         $time = str_replace('-', ':', $time);
@@ -51,7 +51,7 @@ class CustomAsserts {
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public static function successMessage($driver, $message) {
+    public static function successMessage($driver, $message): void {
         self::checkMessage($driver, 'success', $message);
     }
 
@@ -62,7 +62,7 @@ class CustomAsserts {
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    private static function checkMessage($driver, $type, $message) {
+    private static function checkMessage($driver, $type, $message): void {
         $successBy = WebDriverBy::classname("alert-$type");
         $wait = new WebDriverWait($driver, 10);
         $wait->until(WebDriverExpectedCondition::presenceOfElementLocated($successBy));
@@ -77,7 +77,7 @@ $message", $actualMessage, $actualMessage);
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public static function warningMessage($driver, $message) {
+    public static function warningMessage($driver, $message): void {
         self::checkMessage($driver, 'warning', $message);
     }
 
@@ -87,7 +87,7 @@ $message", $actualMessage, $actualMessage);
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public static function infoMessage($driver, $message) {
+    public static function infoMessage($driver, $message): void {
         self::checkMessage($driver, 'info', $message);
     }
 
@@ -97,7 +97,7 @@ $message", $actualMessage, $actualMessage);
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public static function errorMessage($driver, $message) {
+    public static function errorMessage($driver, $message): void {
         self::checkMessage($driver, 'danger', $message);
     }
 
@@ -108,7 +108,7 @@ $message", $actualMessage, $actualMessage);
      * @param null $attachment
      * @throws ExceptionAlias
      */
-    public static function assertEmailEquals($subject, $txt, $html, $attachment = NULL) {
+    public static function assertEmailEquals($subject, $txt, $html, $attachment = NULL): void {
         $gmail = new Gmail($subject);
         try {
             $gmailTxt = $gmail->getEmailTxt();
@@ -134,7 +134,7 @@ $message", $actualMessage, $actualMessage);
      * @param null $attachment
      * @throws ExceptionAlias
      */
-    public static function assertEmailMatches($subject, $txt, $html, $attachment = NULL) {
+    public static function assertEmailMatches($subject, $txt, $html, $attachment = NULL): void {
         $gmail = new Gmail($subject);
         try {
             $gmailTxt = $gmail->getEmailTxt();
@@ -157,7 +157,7 @@ $message", $actualMessage, $actualMessage);
      * @param $a
      * @param $b
      */
-    public static function filesAreEqual($a, $b) {
+    public static function filesAreEqual($a, $b): void {
         // Check if filesize is different
         if (filesize($a) !== filesize($b)) {
             Assert::assertTrue(false);
@@ -181,10 +181,10 @@ $message", $actualMessage, $actualMessage);
      * @param $url
      * @param $code
      */
-    public static function httpCodeEquals($url, $code) {
+    public static function httpCodeEquals($url, $code): void {
         $url = str_replace(" ", '%20', $url);
         $handle = curl_init($url);
-        curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
         curl_exec($handle);
         $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
         curl_close($handle);

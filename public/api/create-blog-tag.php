@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $api = new Api ();
 
 $api->forceAdmin();
@@ -13,7 +13,7 @@ try {
 
 $sql = new Sql ();
 $row = $sql->getRow("SELECT * FROM `tags` WHERE `tag` = '$tag';");
-if ($row ['id']) {
+if (isset($row ['id'])) {
     echo "Blog tag already exists";
     $sql->disconnect();
     exit ();

@@ -1,13 +1,13 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
 $api = new Api ();
 
 $api->forceLoggedIn();
 
 try {
-    $album = Album::withId($_GET['album']);
-    $image = new Image($album, $_GET['image']);
+    $album = Album::withId($api->retrieveGetString('album', 'Album id'));
+    $image = new Image($album, $api->retrieveGetString('image', 'Image id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

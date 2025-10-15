@@ -1,8 +1,10 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+$api = new Api();
 
 try {
-    $contract = Contract::withId($_POST['id']);
+    $contract = Contract::withId($api->retrievePostString('id', 'Contract id'));
     $file = $contract->sign($_POST);
 } catch (Exception $e) {
     echo $e->getMessage();

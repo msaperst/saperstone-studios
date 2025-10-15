@@ -1,12 +1,12 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $api = new Api ();
 
 $api->forceAdmin();
 
 try {
-    $album = Album::withId($_POST['album']);
-    $image = new Image($album, $_POST['image']);
+    $album = Album::withId($api->retrievePostString('album', 'Album id'));
+    $image = new Image($album, $api->retrievePostString('image', 'Image id'));
     $image->delete();
 } catch (Exception $e) {
     echo $e->getMessage();

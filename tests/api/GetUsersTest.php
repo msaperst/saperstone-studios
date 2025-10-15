@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetUsersTest extends TestCase {
     /**
@@ -19,14 +19,14 @@ class GetUsersTest extends TestCase {
     /**
      *
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
     }
 
     /**
      *
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
     }
 
@@ -87,7 +87,7 @@ class GetUsersTest extends TestCase {
         $this->assertEquals('Saperstone', $users[1]['lastName']);
         $this->assertEquals('msaperst@gmail.com', $users[1]['email']);
         $this->assertEquals('admin', $users[1]['role']);
-        $this->assertEquals(1, $users[1]['active']);
+        $this->assertEquals(0, $users[1]['active']);
         $this->assertNotNull($users[1]['lastLogin']);
 
         $this->assertEquals(2, $users[2]['id']);

@@ -5,32 +5,34 @@ namespace ui\bootstrap;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Exception;
+use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Sql;
 use User;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 /**
  * Defines application behat from the specific context.
  */
 class BaseFeatureContext implements Context {
 
-    const reportDir = __DIR__ . '/../../../reports/behat/';
-    const reportFile = BaseFeatureContext::reportDir . 'screenshots.html';
+    const string reportDir = __DIR__ . '/../../../reports/behat/';
+    const string reportFile = BaseFeatureContext::reportDir . 'index.html';
     /**
      * @var RemoteWebDriver
      */
-    private $driver;
-    private $baseUrl;
+    private RemoteWebDriver $driver;
+    private string $baseUrl;
     /**
      * @var User
      */
-    private $user;
-    private $deleteUser = true;
+    private User $user;
+    private bool $deleteUser = true;
 
     public function getDriver(): RemoteWebDriver {
         return $this->driver;
@@ -40,22 +42,22 @@ class BaseFeatureContext implements Context {
         return $this->user;
     }
 
-    public function getBaseUrl() {
+    public function getBaseUrl(): string {
         return $this->baseUrl;
     }
 
-    public function setUser(User $user) {
+    public function setUser(User $user): void {
         $this->user = $user;
     }
 
-    public function dontDeleteUser() {
+    public function dontDeleteUser(): void {
         $this->deleteUser = false;
     }
 
     /**
      * @BeforeSuite
      */
-    public static function setupTestReport() {
+    public static function setupTestReport(): void {
         // setup our logging
         if (!file_exists(BaseFeatureContext::reportDir)) {
             mkdir(BaseFeatureContext::reportDir);
@@ -70,20 +72,31 @@ class BaseFeatureContext implements Context {
      * @BeforeScenario
      * @throws Exception
      */
-    public function setupUser() {
+    public function setupUser(): void {
         // setup our webdriver instance
-        $host = 'http://127.0.0.1:4444/wd/hub';
+        $host = 'http://127.0.0.1:4444';
+        $headless = getenv('HEADLESS');
         if (getenv('BROWSER') == 'firefox') {
             $desiredCapabilities = DesiredCapabilities::firefox();
+            $firefoxOptions = new FirefoxOptions();
+            if ($headless) {
+                $firefoxOptions->addArguments(['-headless']);
+            }
+            $desiredCapabilities->setCapability(FirefoxOptions::CAPABILITY, $firefoxOptions);
         } else {
             $desiredCapabilities = DesiredCapabilities::chrome();
+            $chromeOptions = new ChromeOptions();
+            if ($headless) {
+                $chromeOptions->addArguments(['-headless']);
+            }
+            $desiredCapabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
         }
         if (getenv('PROXY') != NULL) {
             $desiredCapabilities->setCapability(WebDriverCapabilityType::PROXY, ['proxyType' => 'MANUAL', 'httpProxy' => getenv('PROXY'), 'ftpProxy' => NULL, 'sslProxy' => NULL, 'noProxy' => NULL]);
         }
 
         $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
-        $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
+        $this->baseUrl = 'http://' . getenv('APP_URL') . ':' . getenv('HTTP_PORT') . '/';
         $this->user = new User();
 
         // setup some basic cookies in the browser
@@ -110,10 +123,10 @@ class BaseFeatureContext implements Context {
      * @param AfterScenarioScope $scope
      * @throws Exception
      */
-    public function cleanup(AfterScenarioScope $scope) {
+    public function cleanup(AfterScenarioScope $scope): void {
         $scenarioName = $scope->getFeature()->getTitle() . ' : ' . $scope->getScenario()->getTitle() . ' : ' . $scope->getScenario()->getLine();
         $screenshot = $this->driver->takeScreenshot();
-        $this->driver->takeScreenshot(BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $scenarioName . '.png');
+        $this->driver->takeScreenshot(BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . str_replace(':', '-', $scenarioName) . '.png');
         $this->driver->quit();
         // log our screenshot
         $output = fopen(BaseFeatureContext::reportFile, 'a');
@@ -136,7 +149,7 @@ class BaseFeatureContext implements Context {
     /**
      * @AfterSuite
      */
-    public static function cleanupTestReport() {
+    public static function cleanupTestReport(): void {
         // setup our logging
         $output = fopen(BaseFeatureContext::reportFile, 'a');
         fwrite($output, '</body>');

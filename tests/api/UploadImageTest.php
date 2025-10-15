@@ -7,16 +7,16 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UploadImageTest extends TestCase {
     private $http;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
     }
 
@@ -137,7 +137,7 @@ class UploadImageTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Image does not meet the minimum width requirements of 1200px. Image is 1000 x 750", (string)$response->getBody());
-        $this->assertFalse(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg'));
+        $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg'));
     }
 
     public function testSingleFile() {
@@ -165,8 +165,8 @@ class UploadImageTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('', (string)$response->getBody());
-        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg'));
-        $size = getimagesize(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg');
+        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg'));
+        $size = getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg');
         $this->assertEquals(1600, $size[0]);
         $this->assertEquals(1200, $size[1]);
     }

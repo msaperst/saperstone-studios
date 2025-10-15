@@ -1,11 +1,11 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $api = new Api ();
 
 $api->forceAdmin();
 
 try {
-    $album = Album::withId($_GET['album']);
+    $album = Album::withId($api->retrieveGetString('album', 'Album id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

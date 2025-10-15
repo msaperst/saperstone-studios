@@ -16,8 +16,8 @@ use ui\models\Album;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'TestBase.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class AlbumPageLoadTest extends TestBase {
 
@@ -33,7 +33,7 @@ class AlbumPageLoadTest extends TestBase {
     /**
      * @throws Exception
      */
-    public function setUp() {
+    public function setUp(): void {
         parent::setUp();
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('99999', 'sample-album', 'sample album for testing', 'sample', 1, '2345');");
@@ -47,7 +47,7 @@ class AlbumPageLoadTest extends TestBase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 99999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 99999;");
         $this->sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = 99999;");

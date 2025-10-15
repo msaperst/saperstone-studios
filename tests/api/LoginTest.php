@@ -9,18 +9,18 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class LoginTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->disconnect();
     }
@@ -138,32 +138,32 @@ class LoginTest extends TestCase {
     }
 
     public function testLoginNotActive() {
-        $this->sql->executeStatement("UPDATE `users` SET `active` = '0' WHERE `users`.`id` = 1;");
+        $this->sql->executeStatement("UPDATE `users` SET `active` = '0' WHERE `users`.`id` = 3;");
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
                 'submit' => 'Login',
-                'username' => 'msaperst',
-                'password' => 'MaxAvr0m'
+                'username' => 'downloader',
+                'password' => 'password'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Sorry, your account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.', (string)$response->getBody());
-        $this->sql->executeStatement("UPDATE `users` SET `active` = '1' WHERE `users`.`id` = 1;");
+        $this->sql->executeStatement("UPDATE `users` SET `active` = '1' WHERE `users`.`id` = 3;");
     }
 
     public function testLoginSuccessfully() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
                 'submit' => 'Login',
-                'username' => 'lsaperst',
-                'password' => 'idontkno1'
+                'username' => 'downloader',
+                'password' => 'password'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('', (string)$response->getBody());
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 2 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 3 ORDER BY time DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
-        $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 2;");
+        $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 3;");
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
         //TODO - cookie not set
     }

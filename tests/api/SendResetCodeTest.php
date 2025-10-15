@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SendResetCodeTest extends TestCase {
     /**
@@ -26,8 +26,8 @@ class SendResetCodeTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('testUser', 'somepassword', 'Test', 'User', 'msaperst+sstest@gmail.com', 'downloader', '1', 'sdlkjfisudkhfkvlzjh');");
 
@@ -36,7 +36,7 @@ class SendResetCodeTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `users` WHERE email = 'msaperst+sstest@gmail.com';");
         $this->sql->disconnect();

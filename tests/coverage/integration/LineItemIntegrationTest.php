@@ -6,8 +6,9 @@ namespace coverage\integration;
 use LineItem;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class LineItemIntegrationTest extends TestCase {
 
@@ -22,6 +23,9 @@ class LineItemIntegrationTest extends TestCase {
         $this->assertEquals("3, '2', 3, 'foo'", $lineItem->getValues());
     }
 
+    /**
+     * @throws SqlException
+     */
     public function testCreate() {
         $sql = new Sql();
         try {

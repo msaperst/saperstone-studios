@@ -1,8 +1,9 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api();
 
 try {
-    $album = Album::withId($_POST ['id']);
+    $album = Album::withId($api->retrievePostString('id', 'Album id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();

@@ -2,32 +2,23 @@
 
 use Google\Exception as ExceptionAlias;
 
-require dirname(__DIR__) . '/resources/autoload.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
 
 class Gmail {
     /**
      * @var Google_Client
      */
-    private $client;
+    private Google_Client $client;
     /**
      * @var Google_Service_Gmail
      */
-    private $service;
+    private Google_Service_Gmail $service;
 
-    /**
-     * @var string
-     */
-    private $id = NULL;
+    private ?string $id = NULL;
 
-    /**
-     * @var Google_Service_Gmail_Message
-     */
-    private $message;
+    private Google_Service_Gmail_Message $message;
 
-    /**
-     * @var string
-     */
-    private $user = 'me';
+    private string $user = 'me';
 
     /**
      * Gmail constructor.
@@ -39,8 +30,8 @@ class Gmail {
         $this->service = new Google_Service_Gmail($this->client);
         self::setEmail($subject);
         $i = 0;
-        while( $this->id == NULL && $i < 60) {
-            sleep ( 1 );
+        while ($this->id == NULL && $i < 60) {
+            sleep(1);
             self::setEmail($subject);
             $i++;
         }
@@ -70,7 +61,7 @@ class Gmail {
             $client->setAccessToken($accessToken);
         }
 
-        // If there is no previous token or it's expired.
+        // If there is no previous token, or it's expired.
         if ($client->isAccessTokenExpired()) {
             // Refresh the token if possible, else fetch a new one.
             if ($client->getRefreshToken()) {
@@ -102,16 +93,17 @@ class Gmail {
 
     /**
      * @param $subject
+     * @throws \Google\Service\Exception
      */
-    private function setEmail($subject) {
-        $results = $this->service->users_messages->listUsersMessages($this->user, ['maxResults' => 10 ]);
+    private function setEmail($subject): void {
+        $results = $this->service->users_messages->listUsersMessages($this->user, ['maxResults' => 10]);
         if (count($results->getMessages()) != 0) {
             foreach ($results->getMessages() as $message) {
                 $message = $this->service->users_messages->get($this->user, $message->getId(), ['format' => 'full']);
                 $headers = $message->getPayload()->getHeaders();
                 foreach ($headers as $header) {
                     if ($header->getName() == 'Subject') {
-                        if( $header->getValue() == $subject) {
+                        if ($header->getValue() == $subject) {
                             $this->id = $message->getId();
                             $this->message = $this->service->users_messages->get($this->user, $this->id, ['format' => 'full']);
                             return;
@@ -129,7 +121,7 @@ class Gmail {
         $payload = $this->message->getPayload();
         while ($payload->getParts() != NULL) {
             $payload = $payload->getParts();
-            if( $payload[0]->getParts() != NULL) {
+            if ($payload[0]->getParts() != NULL) {
                 $payload = $payload[0];
             } else {
                 $payload = $payload[1];
@@ -153,6 +145,7 @@ class Gmail {
 
     /**
      * @return string|null
+     * @throws \Google\Service\Exception
      */
     function saveAttachment(): ?string {
         $attachmentId = $this->message->getPayload()->getParts()[1]->getBody()->getAttachmentId();
@@ -169,7 +162,10 @@ class Gmail {
         return NULL;
     }
 
-    function deleteEmail() {
+    /**
+     * @throws \Google\Service\Exception
+     */
+    function deleteEmail(): void {
         $labels = new Google_Service_Gmail_ModifyMessageRequest();
         $labels->setRemoveLabelIds(['UNREAD']);
         $this->service->users_messages->modify($this->user, $this->id, $labels);

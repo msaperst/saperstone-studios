@@ -2,13 +2,15 @@
 
 namespace coverage\integration;
 
+use BadGalleryException;
 use Exception;
 use Gallery;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 use TypeError;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GalleryIntegrationTest extends TestCase {
 
@@ -60,36 +62,57 @@ class GalleryIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetId() {
         $gallery = Gallery::withId('1');
         $this->assertEquals(1, $gallery->getId());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetTitle() {
         $gallery = Gallery::withId('1');
         $this->assertEquals('Portrait', $gallery->getTitle());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetCommentEmpty() {
         $gallery = Gallery::withId('1');
         $this->assertEquals('', $gallery->getComment());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetComment() {
         $gallery = Gallery::withId('29');
         $this->assertEquals('Hate making sure your prints are evenly spaced once hung on the wall?  Then this is the art product for you.  Each story grid comes with a paper template to hang on the wall.  Your template indicates where to place metal pegs which then make up a grid system on your wall.  Simply slip the prints onto the metal pegs and voila! Evenly spaced prints! These collages range in overall sizes from 2\' x 3\' all the way up to 4.5\' x 2\' or beyond and are totally customizable. Images are printed on either metal or a lustre photographic paper, your choice.', $gallery->getComment());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetImageEmpty() {
         $gallery = Gallery::withId('1');
         $this->assertEquals('', $gallery->getImage());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetImage() {
         $gallery = Gallery::withId('2');
         $this->assertEquals('maternity.jpg', $gallery->getImage());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetNav() {
         $gallery = Gallery::withId('1');
         $this->assertEquals('portrait', $gallery->getNav());
@@ -124,6 +147,9 @@ class GalleryIntegrationTest extends TestCase {
         //TODO - add a mitzvah sub category
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsBasicPortrait() {
         $gallery = Gallery::withId('1');
         $breadcrumbs = [
@@ -139,6 +165,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsSinglePortrait() {
         $gallery = Gallery::withId('3');
         $breadcrumbs = [
@@ -159,6 +188,9 @@ class GalleryIntegrationTest extends TestCase {
 
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsDoublePortrait() {
         $gallery = Gallery::withId('15');
         $breadcrumbs = [
@@ -182,6 +214,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsBasicWedding() {
         $gallery = Gallery::withId('8');
         $breadcrumbs = [
@@ -197,6 +232,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsSingleWedding() {
         $gallery = Gallery::withId('10');
         $breadcrumbs = [
@@ -216,6 +254,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsDoubleWedding() {
         $gallery = Gallery::withId('25');
         $breadcrumbs = [
@@ -239,6 +280,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsBasicCommercial() {
         $gallery = Gallery::withId('52');
         $breadcrumbs = [
@@ -254,6 +298,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsSingleCommercial() {
         $gallery = Gallery::withId('56');
         $breadcrumbs = [
@@ -273,6 +320,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsDoubleCommercial() {
         $gallery = Gallery::withId('71');
         $breadcrumbs = [
@@ -297,6 +347,9 @@ class GalleryIntegrationTest extends TestCase {
     }
 
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsBasicPortraitProduct() {
         $gallery = Gallery::withId('28');
         $breadcrumbs = [
@@ -320,6 +373,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsSinglePortraitProduct() {
         $gallery = Gallery::withId('33');
         $breadcrumbs = [
@@ -347,6 +403,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsBasicWeddingProduct() {
         $gallery = Gallery::withId('38');
         $breadcrumbs = [
@@ -370,6 +429,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsSingleWeddingProduct() {
         $gallery = Gallery::withId('40');
         $breadcrumbs = [
@@ -397,6 +459,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBreadcrumbsDoubleWeddingProduct() {
         $gallery = Gallery::withId('46');
         $breadcrumbs = [
@@ -428,6 +493,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertEquals($breadcrumbs, $gallery->getBreadcrumbs());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testAllDataLoadedNoParent() {
         $gallery = Gallery::withId(1);
         $galleryInfo = $gallery->getDataArray();
@@ -438,6 +506,9 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertNull($galleryInfo['comment']);
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testAllDataLoadedParent() {
         $gallery = Gallery::withId(2);
         $galleryInfo = $gallery->getDataArray();
@@ -448,15 +519,21 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertNull($galleryInfo['comment']);
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetParentNoParent() {
         try {
             $gallery = Gallery::withId(1);
             $gallery->getParent();
         } catch (TypeError $e) {
-            $this->assertEquals('Return value of Gallery::getParent() must be an instance of Gallery, null returned', $e->getMessage());
+            $this->assertEquals('Gallery::getParent(): Return value must be of type Gallery, null returned', $e->getMessage());
         }
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetParentParent() {
         $gallery = Gallery::withId(2);
         $parent = $gallery->getParent()->getDataArray();
@@ -467,41 +544,66 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertNull($parent['comment']);
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetImageLocation() {
         $gallery = Gallery::withId(0);
         $this->assertEquals('/img/main/leigh-ann/', $gallery->getImageLocation());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetBasicImageLocation() {
         $gallery = Gallery::withId(2);
         $this->assertEquals('/portrait/img/maternity/', $gallery->getImageLocation());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetNestedImageLocation() {
         $gallery = Gallery::withId(13);
         $this->assertEquals('/portrait/img/newborn/favorites/', $gallery->getImageLocation());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetNestedWImageLocation() {
         $gallery = Gallery::withId(18);
         $this->assertEquals('/wedding/img/surprise-proposals/dc-mall/', $gallery->getImageLocation());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetVeryNestedImageLocation() {
         $gallery = Gallery::withId(46);
         $this->assertEquals('/wedding/img/product/heirloom-albums/signature-albums/', $gallery->getImageLocation());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetSpecialImageLocation() {
         $gallery = Gallery::withId(16);
         $this->assertEquals('/img/main/home-studio/', $gallery->getImageLocation());
     }
 
+    /**
+     * @throws BadGalleryException
+     */
     public function testGetProductImageLocation() {
         $gallery = Gallery::withId(29);
         $this->assertEquals('/portrait/img/product/story-grids/', $gallery->getImageLocation());
     }
 
+    /**
+     * @throws SqlException
+     * @throws BadGalleryException
+     */
     public function testUpdateNull() {
         $gallery = Gallery::withId(1);
         $gallery->update(NULL);
@@ -513,6 +615,10 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertNull($galleryInfo['comment']);
     }
 
+    /**
+     * @throws SqlException
+     * @throws BadGalleryException
+     */
     public function testUpdateNothing() {
         $gallery = Gallery::withId(1);
         $gallery->update(['x' => 2]);
@@ -524,6 +630,10 @@ class GalleryIntegrationTest extends TestCase {
         $this->assertNull($galleryInfo['comment']);
     }
 
+    /**
+     * @throws SqlException
+     * @throws BadGalleryException
+     */
     public function testUpdateTitle() {
         try {
             $gallery = Gallery::withId(1);

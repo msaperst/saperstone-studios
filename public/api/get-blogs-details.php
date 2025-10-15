@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
 
 $start = 0;
@@ -18,32 +18,33 @@ if ($systemUser->isAdmin() && isset ($_GET ['a']) && $_GET ['a']) {
 }
 
 $sql = new Sql();
-if (isset ($_GET ['tag'])) {
-    $query = "SELECT DISTINCT blog FROM blog_tags AS a1";
-    $where = " WHERE ";
-    for ($i = 1; $i <= sizeof($_GET['tag']); $i++) {
-        if ($i != 1) {
-            $query .= " JOIN blog_tags AS a$i USING (blog) ";
-        }
-        $where .= "a$i.tag = " . $_GET['tag'][$i - 1] . " AND ";
-    }
-    $where = substr($where, 0, -4);
-    $blogs = $sql->getRows($query . $where);
-
-    if ($whereClause == "") {
-        $whereClause = "WHERE (";
-    } else {
-        $whereClause .= " AND (";
-    }
-    foreach ($blogs as $blog) {
-        $whereClause .= "id = " . (int)$blog['blog'] . " OR ";
-    }
-    $whereClause = substr($whereClause, 0, -3);
-    $whereClause .= ")";
-    $response = $sql->getRows("SELECT DISTINCT * FROM `blog_details` $whereClause ORDER BY `date` DESC LIMIT $start,$howMany;");
-} else {
-    $response = $sql->getRows("SELECT * FROM `blog_details` $whereClause ORDER BY `date` DESC LIMIT $start,$howMany;");
-}
+// TODO - I don't believe the below is ever actually implemented
+//if (isset ($_GET ['tag'])) {
+//    $query = "SELECT DISTINCT blog FROM blog_tags AS a1";
+//    $where = " WHERE ";
+//    for ($i = 1; $i <= sizeof($_GET['tag']); $i++) {
+//        if ($i != 1) {
+//            $query .= " JOIN blog_tags AS a$i USING (blog) ";
+//        }
+//        $where .= "a$i.tag = " . $_GET['tag'][$i - 1] . " AND ";
+//    }
+//    $where = substr($where, 0, -4);
+//    $blogs = $sql->getRows($query . $where);
+//
+//    if ($whereClause == "") {
+//        $whereClause = "WHERE (";
+//    } else {
+//        $whereClause .= " AND (";
+//    }
+//    foreach ($blogs as $blog) {
+//        $whereClause .= "id = " . (int)$blog['blog'] . " OR ";
+//    }
+//    $whereClause = substr($whereClause, 0, -3);
+//    $whereClause .= ")";
+//    $response = $sql->getRows("SELECT DISTINCT * FROM `blog_details` $whereClause ORDER BY `date` DESC LIMIT $start,$howMany;");
+//} else {
+$response = $sql->getRows("SELECT * FROM `blog_details` $whereClause ORDER BY `date` DESC LIMIT $start,$howMany;");
+//}
 
 echo "{\"data\":" . json_encode($response) . "}";
 $sql->disconnect();

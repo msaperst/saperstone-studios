@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SendSelectedImagesTest extends TestCase {
     /**
@@ -28,8 +28,8 @@ class SendSelectedImagesTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('998', 999, 'file-1', 1, '/albums/sample/sample-1.jpg', '600', '400', '1');");
@@ -39,7 +39,7 @@ class SendSelectedImagesTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");

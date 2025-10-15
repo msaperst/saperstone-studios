@@ -2,16 +2,23 @@
 
 namespace coverage\integration;
 
+use BadProductTypeException;
+use BadUserException;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use ProductType;
+use ProductTypeException;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class ProductTypeIntegrationTest extends TestCase {
 
-    public function tearDown() {
+    /**
+     * @throws SqlException
+     */
+    public function tearDown(): void {
         $sql = new Sql();
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `product_types`;")['count'];
         $count++;
@@ -43,6 +50,9 @@ class ProductTypeIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadProductTypeException
+     */
     public function testWithIdGetDataArray() {
         $productType = ProductType::withId(1);
         $productTypeInfo = $productType->getDataArray();
@@ -51,6 +61,9 @@ class ProductTypeIntegrationTest extends TestCase {
         $this->assertEquals('Acrylic Prints', $productTypeInfo['name']);
     }
 
+    /**
+     * @throws BadProductTypeException
+     */
     public function testGetId() {
         $productType = ProductType::withId(1);
         $this->assertEquals(1, $productType->getId());
@@ -130,8 +143,15 @@ class ProductTypeIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadUserException
+     * @throws SqlException
+     * @throws BadProductTypeException
+     * @throws ProductTypeException
+     */
     public function testWithParamsGetDataArray() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $productId = 0;
         try {
             $params = [
                 'category' => 'signature',
@@ -160,6 +180,12 @@ class ProductTypeIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadUserException
+     * @throws SqlException
+     * @throws ProductTypeException
+     * @throws BadProductTypeException
+     */
     public function testUpdate() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         try {
@@ -186,8 +212,12 @@ class ProductTypeIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws SqlException
+     */
     public function testCreateNoPermissionsDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $productId = 0;
         try {
             $params = [
                 'category' => 'signature',
@@ -206,8 +236,16 @@ class ProductTypeIntegrationTest extends TestCase {
         }
     }
 
+    /**
+     * @throws BadUserException
+     * @throws SqlException
+     * @throws BadProductTypeException
+     * @throws ProductTypeException
+     */
     public function testCreateDelete() {
         $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $sql = new Sql();
+        $productId = 0;
         try {
             $params = [
                 'category' => 'signature',
@@ -217,7 +255,6 @@ class ProductTypeIntegrationTest extends TestCase {
             $productId = $product->create();
             $product->delete();
             unset($_SESSION['hash']);
-            $sql = new Sql();
             $this->assertEquals(0, $sql->getRowCount("SELECT * FROM product_types WHERE id = $productId"));
         } finally {
             $sql->executeStatement("DELETE FROM product_types WHERE id = $productId");

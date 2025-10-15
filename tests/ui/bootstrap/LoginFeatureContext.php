@@ -21,7 +21,7 @@ use PHPUnit\Framework\Assert;
 use ui\models\Login;
 use User;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Login.php';
 
 class LoginFeatureContext implements Context {

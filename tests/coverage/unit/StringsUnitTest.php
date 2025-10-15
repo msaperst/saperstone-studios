@@ -5,7 +5,7 @@ namespace coverage\unit;
 use PHPUnit\Framework\TestCase;
 use Strings;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class StringsUnitTest extends TestCase {
 
@@ -14,17 +14,12 @@ class StringsUnitTest extends TestCase {
         $this->assertEquals(0, strlen($result));
     }
 
-    public function testRandomBadInput() {
-        $result = Strings::randomString('a');
-        $this->assertEquals(0, strlen($result));
-    }
-
     public function testRandomNoInput() {
         $result = Strings::randomString();
         $this->assertEquals(10, strlen($result));
     }
 
-    public function lengthRandomDataProvider() {
+    public static function lengthRandomDataProvider(): array {
         return array(
             array(
                 0

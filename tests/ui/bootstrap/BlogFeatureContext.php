@@ -62,7 +62,7 @@ class BlogFeatureContext implements Context {
             $this->sql->executeStatement("DELETE FROM `blog_tags` WHERE `blog_tags`.`blog` = $blogId;");
             $this->sql->executeStatement("DELETE FROM `blog_texts` WHERE `blog_texts`.`blog` = $blogId;");
             $this->sql->executeStatement("DELETE FROM `blog_comments` WHERE `blog_comments`.`blog` = $blogId;");
-            system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/blog/$blogId"));
+            system("rm -rf " . escapeshellarg(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/blog/$blogId"));
         }
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
         $count++;
@@ -93,11 +93,11 @@ class BlogFeatureContext implements Context {
         $this->sql->executeStatement("INSERT INTO `blog_texts` (`blog`, `contentGroup`, `text`) VALUES ('$blogId', '2', 'Some blog text')");
         $this->sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ('$blogId', 29)");
         $oldMask = umask(0);
-        if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/blog/$blogId/01/01")) {
-            mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/blog/$blogId/01/01", 0777, true);
+        if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/blog/$blogId/01/01")) {
+            mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/blog/$blogId/01/01", 0777, true);
         }
-        copy(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/blog/$blogId/01/01/sample.jpg");
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/blog/$blogId/01/01/sample.jpg", 0777);
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/blog/$blogId/01/01/sample.jpg");
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/blog/$blogId/01/01/sample.jpg", 0777);
         umask($oldMask);
     }
 

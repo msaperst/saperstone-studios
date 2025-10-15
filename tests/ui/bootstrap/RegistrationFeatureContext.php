@@ -17,7 +17,7 @@ use Sql;
 use ui\models\Registration;
 use User;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
 
 class RegistrationFeatureContext implements Context {

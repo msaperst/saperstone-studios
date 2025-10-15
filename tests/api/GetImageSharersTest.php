@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetImageSharersTest extends TestCase {
     /**
@@ -25,8 +25,8 @@ class GetImageSharersTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (999, 'sample-album-download-all', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('2', 999, '*');");
@@ -44,7 +44,7 @@ class GetImageSharersTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");

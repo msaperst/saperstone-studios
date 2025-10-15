@@ -6,7 +6,7 @@ namespace coverage\unit;
 use LineItem;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class LineItemUnitTest extends TestCase {
 

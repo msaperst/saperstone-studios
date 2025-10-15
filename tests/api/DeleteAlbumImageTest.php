@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DeleteAlbumImageTest extends TestCase {
     /**
@@ -25,33 +25,33 @@ class DeleteAlbumImageTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4);");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '0', '', '/albums/sample/sample1.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '1', '', '/albums/sample/sample2.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('*', '999', '999');");
         $oldmask = umask(0);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample1.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample1.jpg', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample1.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample1.jpg', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample2.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample2.jpg', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample2.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample2.jpg', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample1.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample1.jpg', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample1.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample1.jpg', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample2.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample2.jpg', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample2.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/sample2.jpg', 0777);
         umask($oldmask);
     }
 
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
@@ -62,14 +62,14 @@ class DeleteAlbumImageTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
         $this->sql->disconnect();
     }
 
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/delete-album-image.php');
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -83,7 +83,7 @@ class DeleteAlbumImageTest extends TestCase {
             $this->http->request('POST', 'api/delete-album-image.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }

@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetCartTest extends TestCase {
     /**
@@ -25,8 +25,8 @@ class GetCartTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,995,1,2)');
         $this->sql->executeStatement('INSERT INTO `cart` VALUES(1,997,996,0,0)');
@@ -43,7 +43,7 @@ class GetCartTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = 997;");
         $this->sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = 998;");
@@ -61,7 +61,7 @@ class GetCartTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/get-cart.php');
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You must be logged in to perform this action", (string)$e->getResponse()->getBody());
         }

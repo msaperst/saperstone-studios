@@ -62,7 +62,7 @@ class GalleryFeatureContext implements Context {
         $count++;
         $sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
         $sql->disconnect();
-        system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
     }
 
     /**
@@ -76,14 +76,14 @@ class GalleryFeatureContext implements Context {
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ($galleryId, '1', 'sample.jpg', 'Gallery $galleryId', NULL);");
         $oldMask = umask(0);
-        if (!is_dir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample')) {
-            mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
+        if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/sample')) {
+            mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
         }
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
         for ($i = 0; $i < $images; $i++) {
             $sql->executeStatement("INSERT INTO `gallery_images` (`gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES ('$galleryId', 'Image $i', $i, '', '/portrait/img/sample/sample$i.jpg', '400', '300', '1');");
-            system('convert ' . dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/portrait/sample/sample$i.jpg");
-            chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "content/portrait/sample/sample$i.jpg", 0777);
+            system('convert ' . dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "resources/flower.jpeg -gravity Center -density 90 -pointsize 200 -annotate 0 'Image $i' " . dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/portrait/sample/sample$i.jpg");
+            chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "content/portrait/sample/sample$i.jpg", 0777);
         }
         umask($oldMask);
         $sql->disconnect();

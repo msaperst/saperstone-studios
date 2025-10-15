@@ -2,20 +2,23 @@
 
 namespace ui\page;
 
+use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Cookie;
+use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverDimension;
 use PHPUnit\Framework\TestCase;
 
 class TestBase extends TestCase {
 
-    const reportDir = __DIR__ . '/../../../reports/ui/';
-    const reportFile = TestBase::reportDir . 'index.html';
-    protected $driver;
-    protected $baseUrl;
-    protected $copyright = 'Copyright © Saperstone Studios 2024';
+    const string reportDir = __DIR__ . '/../../../reports/ui/';
+    const string reportFile = TestBase::reportDir . 'index.html';
+    protected RemoteWebDriver $driver;
+    protected string $baseUrl;
+    protected string $copyright;
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass(): void {
         // setup our logging
         if (!file_exists(TestBase::reportDir)) {
             mkdir(TestBase::reportDir);
@@ -28,38 +31,63 @@ class TestBase extends TestCase {
         }
     }
 
-    public function setUp() {
+    public function setUp(): void {
+        $this->copyright = 'Copyright © Saperstone Studios ' . date("Y");
         //setup our browser
-        $host = 'http://127.0.0.1:4444/wd/hub';
+        $host = 'http://127.0.0.1:4444';
+        $headless = getenv('HEADLESS');
         if (getenv('BROWSER') == 'firefox') {
-            $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::firefox());
+            $desiredCapabilities = DesiredCapabilities::firefox();
+            $firefoxOptions = new FirefoxOptions();
+            if ($headless) {
+                $firefoxOptions->addArguments(['-headless']);
+            }
+            $desiredCapabilities->setCapability(FirefoxOptions::CAPABILITY, $firefoxOptions);
         } else {
-            $this->driver = RemoteWebDriver::create($host, DesiredCapabilities::chrome());
+            $desiredCapabilities = DesiredCapabilities::chrome();
+            $chromeOptions = new ChromeOptions();
+            if ($headless) {
+                $chromeOptions->addArguments(['-headless']);
+            }
+            $desiredCapabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
         }
-        $this->baseUrl = 'http://' . getenv('APP_URL') . ':90/';
+        $desiredCapabilities->setCapability('acceptSslCerts', true);
+        $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
+        $this->driver->manage()->window()->setSize(new WebDriverDimension(1000, 1000));
+        $this->baseUrl = 'http://' . getenv('APP_URL') . ':' . getenv('HTTP_PORT') . '/';
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $screenshot = $this->driver->takeScreenshot();
-        $this->driver->takeScreenshot(TestBase::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $this->getName() . '.png');
+        $this->driver->takeScreenshot(TestBase::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $this->name() . '.png');
         $this->driver->quit();
         $output = fopen(TestBase::reportFile, 'a');
-        fwrite($output, '<p><div style="cursor: pointer;" onclick="toggleImg(this)"><h2 class="r' . $this->getStatus() . '">' . $this->getName() . '</h2>' . $this->getStatusMessage() . '</div><img alt="screenshot" style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
+        fwrite($output, '<p><div style="cursor: pointer;" onclick="toggleImg(this)"><h2 class="r' . $this->status()->asInt() . '">' . $this->name() . '</h2>' . $this->status()->message() . '</div><img alt="screenshot" style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
         fclose($output);
     }
 
-    protected function acceptCookies() {
-        $cookie = new Cookie('CookiePreferences', '["preferences","analytics"]');
+    protected function acceptCookies(): void {
+        $this->driver->get($this->baseUrl);
+        $cookie = [
+            'name' => 'CookiePreferences',
+            'value' => '["preferences","analytics"]',
+            'domain' => getenv('APP_URL'),
+            'path' => '/',
+            'secure' => false,
+            'httpOnly' => false,
+            'expiry' => time() + 3600,
+        ];
         $this->driver->manage()->addCookie($cookie);
-        $cookie = new Cookie('CookieShow', 'true');
+        $cookie['name'] = 'CookieShow';
+        $cookie['value'] = 'true';
         $this->driver->manage()->addCookie($cookie);
     }
 
-    protected function adminLogin() {
+    protected function adminLogin(): void {
         $this->loginAs('1d7505e7f434a7713e84ba399e937191');
     }
 
-    protected function loginAs($hash) {
+    protected function loginAs($hash): void {
         $cookie = new Cookie('hash', $hash);
         $this->driver->manage()->addCookie($cookie);
     }

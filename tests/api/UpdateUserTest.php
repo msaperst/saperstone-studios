@@ -9,7 +9,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UpdateUserTest extends TestCase {
     /**
@@ -21,12 +21,12 @@ class UpdateUserTest extends TestCase {
      */
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->disconnect();
     }
@@ -34,7 +34,7 @@ class UpdateUserTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/update-user.php');
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -48,7 +48,7 @@ class UpdateUserTest extends TestCase {
             $this->http->request('POST', 'api/update-user.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }

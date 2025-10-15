@@ -1,11 +1,8 @@
-FROM php:7.4-apache-bullseye
+FROM php:8.4-apache-bullseye
 
 # setup additional tooling
 RUN apt update
 RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip libonig-dev gnupg
-
-# setup mail plugins
-RUN pear install Mail Mail_Mime Auth_SASL pear/Net_SMTP
 
 # install composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
@@ -32,10 +29,8 @@ COPY templates /var/www/templates
 # TODO
 
 # install plugins
-ARG MPDF_VERSION=8.0.4
-ENV MPDF_VERSION="${MPDF_VERSION}"
+RUN cd /var/www && composer install
 
-RUN mkdir /var/www/resources
 ## install jSignature plugin
 RUN cd /var/www/public/js && \
         mkdir jSignature && \
@@ -43,16 +38,6 @@ RUN cd /var/www/public/js && \
         wget --quiet http://willowsystems.github.io/jSignature/jSignature.zip && \
         unzip -qq jSignature.zip && \
         rm jSignature.zip
-## install mPDF
-RUN cd /var/www/ && \
-        composer require mpdf/mpdf:${MPDF_VERSION}
-## install/configure ua parser plugin
-RUN cd /var/www/src && \
-        wget --quiet https://raw.githubusercontent.com/cbschuld/Browser.php/master/src/Browser.php
-## install browscap ini
-RUN cd /var/www/resources && \
-        wget --quiet http://browscap.org/stream?q=PHP_BrowsCapINI && \
-        mv stream\?q\=PHP_BrowsCapINI php_browscap.ini
 
 # try setting the timezone
 ARG TZ=America/New_York

@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateUserTest extends TestCase {
     /**
@@ -27,15 +27,15 @@ class CreateUserTest extends TestCase {
     /**
      *
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
     }
 
     /**
      *
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->disconnect();
     }

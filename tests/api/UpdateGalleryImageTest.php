@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 use SqlException;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UpdateGalleryImageTest extends TestCase {
     /**
@@ -25,26 +25,26 @@ class UpdateGalleryImageTest extends TestCase {
     /**
      * @throws SqlException
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ('999', '1', 'sample.jpg', 'Sample', NULL);");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '0', '', '/portrait/img/sample/sample1.jpg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '1', '', 'img/sample/sample2.jpg', '300', '400', '1');");
         $oldMask = umask(0);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg', 0777);
         umask($oldMask);
     }
 
     /**
      * @throws SqlException
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `galleries` WHERE `galleries`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`gallery` = 999;");
@@ -54,9 +54,9 @@ class UpdateGalleryImageTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `gallery_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x 5 &.jpg'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/x 5 &.jpg'));
         $this->sql->disconnect();
     }
 
@@ -311,7 +311,7 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals(300, $image['width']);
         $this->assertEquals(400, $image['height']);
         $this->assertEquals(1, $image['active']);
-        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
+        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
     }
 
     /**
@@ -343,7 +343,7 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals(300, $image['width']);
         $this->assertEquals(400, $image['height']);
         $this->assertEquals(1, $image['active']);
-        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/x 5 &.jpg'));
+        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/x 5 &.jpg'));
     }
 
     /**
@@ -374,7 +374,7 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals(300, $image['width']);
         $this->assertEquals(400, $image['height']);
         $this->assertEquals(1, $image['active']);
-        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg'));
+        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg'));
     }
 
     /**
@@ -406,6 +406,6 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals(300, $image['width']);
         $this->assertEquals(400, $image['height']);
         $this->assertEquals(1, $image['active']);
-        $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg'));
+        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample2.jpg'));
     }
 }

@@ -8,17 +8,17 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetAllFavoritesTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '124');");
         $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '998', 996);");
         $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '998', 997);");
         $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (1, '999', 998);");
@@ -31,7 +31,7 @@ class GetAllFavoritesTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '3', '', '', '300', '400', '1');");
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 998;");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");

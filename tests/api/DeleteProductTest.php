@@ -8,21 +8,21 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DeleteProductTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (999, 'other', 'Pants')");
         $this->sql->executeStatement("INSERT INTO `product_options` (`product_type`, `opt`) VALUES ('999', 'Purple')");
         $this->sql->executeStatement("INSERT INTO `products` (`product_type`, `size`, `price`, `cost`) VALUES ('999', '12x19', 100, 10)");
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `product_types` WHERE `product_types`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `product_options` WHERE `product_options`.`product_type` = 999;");
@@ -124,7 +124,7 @@ class DeleteProductTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `product_types` WHERE `product_type`.`id` = 999;"));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `product_types` WHERE `product_types`.`id` = 999;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `product_options` WHERE `product_options`.`product_type` = 999;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `products` WHERE `products`.`product_type` = 999;"));
     }

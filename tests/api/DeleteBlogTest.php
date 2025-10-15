@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class DeleteBlogTest extends TestCase {
     /**
@@ -25,26 +25,26 @@ class DeleteBlogTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', '2031-01-01', 'posts/2031/01/01/preview.jpg', 0)");
         $this->sql->executeStatement("INSERT INTO `blog_images` (`blog`, `contentGroup`, `location`, `width`, `height`, `left`, `top`) VALUES ('999', '1', 'posts/2031/01/01/sample.jpg', 300, 400, 0, 0)");
         $this->sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ('999', 29)");
         $this->sql->executeStatement("INSERT INTO `blog_texts` (`blog`, `contentGroup`, `text`) VALUES ('999', '2', 'Some blog text')");
         $oldMask = umask(0);
-        mkdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01', 0777, true);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg', 0777);
-        touch(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg');
-        chmod(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg', 0777);
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01', 0777, true);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/preview.jpg', 0777);
+        touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg');
+        chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031/01/01/sample.jpg', 0777);
         umask($oldMask);
     }
 
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `blog_images` WHERE `blog_images`.`blog` = 999;");
@@ -53,7 +53,7 @@ class DeleteBlogTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `blog_details`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `blog_details` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/blog/2031'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/blog/2031'));
         $this->sql->disconnect();
     }
 
@@ -61,7 +61,7 @@ class DeleteBlogTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/delete-blog.php');
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -75,7 +75,7 @@ class DeleteBlogTest extends TestCase {
             $this->http->request('POST', 'api/delete-blog.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }

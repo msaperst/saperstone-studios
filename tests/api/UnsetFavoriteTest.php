@@ -7,20 +7,20 @@ use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UnsetFavoriteTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4);");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '0', '', '/albums/sample/sample1.jpg', '300', '400', '1');");
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
@@ -161,6 +161,7 @@ class UnsetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
+        sleep(1);
         $response = $this->http->request('POST', 'api/unset-favorite.php', [
             'form_params' => [
                 'album' => 999,
@@ -168,6 +169,7 @@ class UnsetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
+        sleep(1);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("0", (string)$response->getBody());
         $images = $this->sql->getRows("SELECT * FROM `favorites` WHERE `favorites`.`album` = 999;");

@@ -3,24 +3,34 @@
 namespace coverage\integration;
 
 use Album;
+use AlbumException;
+use BadAlbumException;
+use BadUserException;
 use CustomAsserts;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class AlbumIntegrationTest extends TestCase {
-    /**
-     * @var Sql
-     */
-    private $sql;
+
+    private Sql $sql;
+
+    private string $hash;
+
+    private int $albumId;
 
     /**
-     * @throws Exception
+     * @throws SqlException
      */
-    public function setUp() {
+    public function setUp(): void {
+        if (isset($_SESSION ['hash'])) {
+            $this->hash = $_SESSION ['hash'];
+        }
+        unset($this->albumId);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('898', 'sample-album', 'sample album for testing', '', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('899', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
@@ -29,17 +39,29 @@ class AlbumIntegrationTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '898');");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (1, '899');");
         $oldMask = umask(0);
-        mkdir(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777, true);
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777);
-        touch(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg');
-        chmod(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg', 0777);
+        mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777, true);
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample', 0777);
+        touch(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg');
+        chmod(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg', 0777);
         umask($oldMask);
     }
 
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
+        if (isset($this->hash)) {
+            $_SESSION ['hash'] = $this->hash;
+        } else {
+            unset($_SESSION ['hash']);
+        }
+        if (isset($this->albumId)) {
+            $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $this->albumId;");
+            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
+            $count++;
+            $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
+        }
+        unset($this->albumId);
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 898;");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 899;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 898;");
@@ -53,62 +75,37 @@ class AlbumIntegrationTest extends TestCase {
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
         $this->sql->disconnect();
-        system("rm -rf " . escapeshellarg(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums'));
     }
 
-    /**
-     *
-     */
     public function testNullAlbumId() {
-        try {
-            Album::withId(NULL);
-        } catch (Exception $e) {
-            $this->assertEquals("Album id is required", $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album id is required');
+        Album::withId(NULL);
     }
 
-    /**
-     *
-     */
     public function testBlankAlbumId() {
-        try {
-            Album::withId("");
-        } catch (Exception $e) {
-            $this->assertEquals("Album id can not be blank", $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album id can not be blank');
+        Album::withId("");
     }
 
-    /**
-     *
-     */
     public function testLetterAlbumId() {
-        try {
-            Album::withId("a");
-        } catch (Exception $e) {
-            $this->assertEquals("Album id does not match any albums", $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album id does not match any albums');
+        Album::withId("a");
     }
 
-    /**
-     *
-     */
     public function testBadAlbumId() {
-        try {
-            Album::withId(8999);
-        } catch (Exception $e) {
-            $this->assertEquals("Album id does not match any albums", $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album id does not match any albums');
+        Album::withId(8999);
     }
 
-    /**
-     *
-     */
     public function testBadStringAlbumId() {
-        try {
-            Album::withId("8999");
-        } catch (Exception $e) {
-            $this->assertEquals("Album id does not match any albums", $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album id does not match any albums');
+        Album::withId("8999");
     }
 
     /**
@@ -442,19 +439,19 @@ class AlbumIntegrationTest extends TestCase {
     }
 
     /**
-     * @throws Exception
+     * @throws SqlException
+     * @throws BadAlbumException
+     * @throws BadUserException
      */
     public function testDeleteNoAccess() {
         $album = Album::withId(899);
-        try {
-            $album->delete();
-        } catch (Exception $e) {
-            $this->assertEquals("User not authorized to delete album", $e->getMessage());
-        }
+        $this->expectException(AlbumException::class);
+        $this->expectExceptionMessage('User not authorized to delete album');
+        $album->delete();
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `albums` WHERE `albums`.`id` = 899;"));
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 899;"));
-        $this->assertTrue(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
+        $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
 
     /**
@@ -481,94 +478,75 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums` WHERE `albums`.`id` = 899;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 899;"));
-        $this->assertFalse(file_exists(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample.jpg'));
+        $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample/sample.jpg'));
     }
 
-    /**
-     *
-     */
     public function testWithParamsNullParams() {
-        try {
-            Album::withParams(NULL);
-        } catch (Exception $e) {
-            $this->assertEquals('Album name is required', $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album name is required');
+        Album::withParams(NULL);
     }
 
-    /**
-     *
-     */
     public function testWithParamsNoName() {
-        try {
-            Album::withParams(array());
-        } catch (Exception $e) {
-            $this->assertEquals('Album name is required', $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album name is required');
+        Album::withParams(array());
     }
 
-    /**
-     *
-     */
     public function testWithParamsBlankName() {
         $params = [
             'name' => ''
         ];
-        try {
-            Album::withParams($params);
-        } catch (Exception $e) {
-            $this->assertEquals('Album name can not be blank', $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album name can not be blank');
+        Album::withParams($params);
     }
 
-    /**
-     *
-     */
     public function testWithParamsBadDate() {
         $params = [
             'name' => 'Sample Album',
             'date' => 'some date'
         ];
-        try {
-            Album::withParams($params);
-        } catch (Exception $e) {
-            $this->assertEquals('Album date is not the correct format', $e->getMessage());
-        }
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album date is not the correct format');
+        Album::withParams($params);
     }
 
     /**
-     *
+     * @throws SqlException
+     * @throws BadUserException
+     * @throws BadAlbumException
      */
     public function testWithParamsRegularUser() {
         $params = [
             'name' => 'Sample Album',
             'date' => '2020-01-01'
         ];
-        try {
-            $album = Album::withParams($params);
-            $album->create();
-        } catch (Exception $e) {
-            $this->assertEquals('User not authorized to create album', $e->getMessage());
-        }
+        $this->expectException(AlbumException::class);
+        $this->expectExceptionMessage('User not authorized to create album');
+        $album = Album::withParams($params);
+        $album->create();
     }
 
     /**
-     *
+     * @throws BadUserException
+     * @throws BadAlbumException
+     * @throws SqlException
      */
     public function testWithParamsBadFolder() {
+        $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
+        rename(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/tmp_albums');
         try {
-            $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
-            rename(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp_albums');
             $params = [
                 'name' => 'Sample Album',
                 'date' => '2020-01-01'
             ];
             $album = Album::withParams($params);
+            $this->expectException(AlbumException::class);
+            $this->expectExceptionMessage('mkdir(): No such file or directory<br/>Unable to create album');
             $album->create();
-        } catch (Exception $e) {
-            $this->assertEquals('mkdir(): No such file or directory<br/>Unable to create album', $e->getMessage());
         } finally {
-            unset($_SESSION['hash']);
-            rename(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/tmp_albums', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/albums');
+            rename(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/tmp_albums', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums');
         }
     }
 
@@ -576,44 +554,37 @@ class AlbumIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testWithParamsBasic() {
+        sleep(1);   // putting in a sleep to avoid a duplicate key problem for logging
         date_default_timezone_set("America/New_York");
-        try {
-            $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
-            $params = [
-                'name' => 'Album Name'
-            ];
-            $album = Album::withParams($params);
-            $this->assertEquals('', $album->getId());
-            $this->assertEquals('Album Name', $album->getName());
-            $this->assertEquals('', $album->getOwner());
-            $this->assertEquals('', $album->getLocation());
-            $albumId = $album->create();
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals($albumId, $albumInfo['id']);
-            $this->assertEquals('Album Name', $albumInfo['name']);
-            $this->assertEquals('', $albumInfo['description']);
-            $this->assertNull($albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertStringStartsWith('AlbumName_', $albumInfo['location']);
-            CustomAsserts::timestampWithin(2, explode('_', $albumInfo['location'])[1]);
-            $this->assertEquals('', $albumInfo['code']);
-            $this->assertEquals('4', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-            $albums = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE album = $albumId");
-            $this->assertEquals(1, sizeof($albums));
-            $this->assertEquals(4, $albums[0]['user']);
-            $logs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE album = $albumId ORDER BY time DESC LIMIT 1;");
-            $this->assertEquals(4, $logs['user']);
-            $this->assertEquals('Created Album', $logs['action']);
-            $this->assertNull($logs['what']);
-        } finally {
-            unset($_SESSION['hash']);
-            $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
-            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
-            $count++;
-            $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
-        }
+        $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
+        $params = [
+            'name' => 'Album Name'
+        ];
+        $album = Album::withParams($params);
+        $this->assertEquals('', $album->getId());
+        $this->assertEquals('Album Name', $album->getName());
+        $this->assertEquals('', $album->getOwner());
+        $this->assertEquals('', $album->getLocation());
+        $this->albumId = $album->create();
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals($this->albumId, $albumInfo['id']);
+        $this->assertEquals('Album Name', $albumInfo['name']);
+        $this->assertEquals('', $albumInfo['description']);
+        $this->assertNull($albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertStringStartsWith('AlbumName_', $albumInfo['location']);
+        CustomAsserts::timestampWithin(2, explode('_', $albumInfo['location'])[1]);
+        $this->assertEquals('', $albumInfo['code']);
+        $this->assertEquals('4', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
+        $albums = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE album = $this->albumId");
+        $this->assertEquals(1, sizeof($albums));
+        $this->assertEquals(4, $albums[0]['user']);
+        $logs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE album = $this->albumId ORDER BY time DESC LIMIT 1;");
+        $this->assertEquals(4, $logs['user']);
+        $this->assertEquals('Created Album', $logs['action']);
+        $this->assertNull($logs['what']);
     }
 
     /**
@@ -621,140 +592,126 @@ class AlbumIntegrationTest extends TestCase {
      */
     public function testWithParamsAll() {
         date_default_timezone_set("America/New_York");
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $params = [
-                'name' => 'Album Name',
-                'description' => 'some description',
-                'date' => '2020-01-01'
-            ];
-            $album = Album::withParams($params);
-            $this->assertEquals('', $album->getId());
-            $this->assertEquals('Album Name', $album->getName());
-            $this->assertEquals('', $album->getOwner());
-            $this->assertEquals('', $album->getLocation());
-            $albumId = $album->create();
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals($albumId, $albumInfo['id']);
-            $this->assertEquals('Album Name', $albumInfo['name']);
-            $this->assertEquals('some description', $albumInfo['description']);
-            $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertStringStartsWith('AlbumName_', $albumInfo['location']);
-            CustomAsserts::timestampWithin(2, explode('_', $albumInfo['location'])[1]);
-            $this->assertEquals('', $albumInfo['code']);
-            $this->assertEquals('1', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-        } finally {
-            unset($_SESSION['hash']);
-            $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
-            $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
-            $count++;
-            $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $params = [
+            'name' => 'Album Name',
+            'description' => 'some description',
+            'date' => '2020-01-01'
+        ];
+        $album = Album::withParams($params);
+        $this->assertEquals('', $album->getId());
+        $this->assertEquals('Album Name', $album->getName());
+        $this->assertEquals('', $album->getOwner());
+        $this->assertEquals('', $album->getLocation());
+        $this->albumId = $album->create();
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals($this->albumId, $albumInfo['id']);
+        $this->assertEquals('Album Name', $albumInfo['name']);
+        $this->assertEquals('some description', $albumInfo['description']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertStringStartsWith('AlbumName_', $albumInfo['location']);
+        CustomAsserts::timestampWithin(2, explode('_', $albumInfo['location'])[1]);
+        $this->assertEquals('', $albumInfo['code']);
+        $this->assertEquals('1', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
     }
 
     /**
-     *
+     * @throws SqlException
+     * @throws BadUserException
+     * @throws BadAlbumException
      */
     public function testUpdateNullParams() {
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $album = Album::withId(899);
-            $album->update(NULL);
-        } catch (Exception $e) {
-            $this->assertEquals('Album name is required', $e->getMessage());
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $album = Album::withId(899);
+        $this->expectException(AlbumException::class);
+        $this->expectExceptionMessage('Album name is required');
+        $album->update(NULL);
+
     }
 
     /**
-     *
+     * @throws SqlException
+     * @throws BadUserException
+     * @throws BadAlbumException
      */
     public function testUpdateNoName() {
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $album = Album::withId(899);
-            $album->update(array());
-        } catch (Exception $e) {
-            $this->assertEquals('Album name is required', $e->getMessage());
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $album = Album::withId(899);
+        $this->expectException(AlbumException::class);
+        $this->expectExceptionMessage('Album name is required');
+        $album->update(array());
     }
 
     /**
-     *
+     * @throws SqlException
+     * @throws BadUserException
+     * @throws BadAlbumException
      */
     public function testUpdateBlankName() {
         $params = [
             'name' => ''
         ];
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $album = Album::withId(899);
-            $album->update($params);
-        } catch (Exception $e) {
-            $this->assertEquals('Album name can not be blank', $e->getMessage());
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $album = Album::withId(899);
+        $this->expectException(AlbumException::class);
+        $this->expectExceptionMessage('Album name can not be blank');
+        $album->update($params);
+
     }
 
     /**
-     *
+     * @throws SqlException
+     * @throws BadUserException
+     * @throws BadAlbumException
      */
     public function testUpdateBadDate() {
         $params = [
             'name' => 'Sample Album',
             'date' => 'some date'
         ];
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $album = Album::withId(899);
-            $album->update($params);
-        } catch (Exception $e) {
-            $this->assertEquals('Album date is not the correct format', $e->getMessage());
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $album = Album::withId(899);
+        $this->expectException(AlbumException::class);
+        $this->expectExceptionMessage('Album date is not the correct format');
+        $album->update($params);
+
     }
 
     /**
-     *
+     * @throws SqlException
+     * @throws BadUserException
+     * @throws BadAlbumException
      */
     public function testUpdateUnAuthUser() {
         $params = [
             'name' => 'Sample Album',
             'date' => '2020-01-01'
         ];
-        try {
-            $album = Album::withId(899);
-            $album->update($params);
-        } catch (Exception $e) {
-            $this->assertEquals('User not authorized to update album', $e->getMessage());
-        }
+        $album = Album::withId(899);
+        $this->expectException(AlbumException::class);
+        $this->expectExceptionMessage('User not authorized to update album');
+        $album->update($params);
+
     }
 
     /**
-     *
+     * @throws SqlException
+     * @throws BadUserException
+     * @throws BadAlbumException
      */
     public function testUpdateWrongUser() {
-        try {
-            $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
-            $params = [
-                'name' => 'Sample Album',
-                'date' => '2020-01-01'
-            ];
-            $album = Album::withId(898);
-            $album->update($params);
-        } catch (Exception $e) {
-            $this->assertEquals('User not authorized to update album', $e->getMessage());
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
+        $params = [
+            'name' => 'Sample Album',
+            'date' => '2020-01-01'
+        ];
+        $album = Album::withId(898);
+        $this->expectException(AlbumException::class);
+        $this->expectExceptionMessage('User not authorized to update album');
+        $album->update($params);
     }
 
     /**
@@ -762,202 +719,179 @@ class AlbumIntegrationTest extends TestCase {
      */
     public function testUpdateAdminBasic() {
         date_default_timezone_set("America/New_York");
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $params = [
-                'name' => 'Sample Album'
-            ];
-            $album = Album::withId(898);
-            $album->update($params);
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals(898, $albumInfo['id']);
-            $this->assertEquals('Sample Album', $albumInfo['name']);
-            $this->assertEquals('', $albumInfo['description']);
-            $this->assertNull($albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertEquals('', $albumInfo['location']);
-            $this->assertEquals('', $albumInfo['code']);
-            $this->assertEquals('5', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $params = [
+            'name' => 'Sample Album'
+        ];
+        $album = Album::withId(898);
+        $album->update($params);
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(898, $albumInfo['id']);
+        $this->assertEquals('Sample Album', $albumInfo['name']);
+        $this->assertEquals('', $albumInfo['description']);
+        $this->assertNull($albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertEquals('', $albumInfo['location']);
+        $this->assertEquals('', $albumInfo['code']);
+        $this->assertEquals('5', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
     }
 
     /**
      * @throws Exception
      */
     public function testUpdateAdminBasicCode() {
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $params = [
-                'name' => 'Sample Album',
-                'date' => '2020-01-01',
-                'code' => '1234'
-            ];
-            $album = Album::withId(898);
-            $album->update($params);
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals(898, $albumInfo['id']);
-            $this->assertEquals('Sample Album', $albumInfo['name']);
-            $this->assertEquals('', $albumInfo['description']);
-            $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertEquals('', $albumInfo['location']);
-            $this->assertEquals('1234', $albumInfo['code']);
-            $this->assertEquals('5', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $params = [
+            'name' => 'Sample Album',
+            'date' => '2020-01-01',
+            'code' => '1234'
+        ];
+        $album = Album::withId(898);
+        $album->update($params);
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(898, $albumInfo['id']);
+        $this->assertEquals('Sample Album', $albumInfo['name']);
+        $this->assertEquals('', $albumInfo['description']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertEquals('', $albumInfo['location']);
+        $this->assertEquals('1234', $albumInfo['code']);
+        $this->assertEquals('5', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
     }
 
     /**
      * @throws Exception
      */
     public function testUpdateAdminBasicEmptyCode() {
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $params = [
-                'name' => 'Sample Album',
-                'date' => '2020-01-01',
-                'code' => ''
-            ];
-            $album = Album::withId(898);
-            $album->update($params);
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals(898, $albumInfo['id']);
-            $this->assertEquals('Sample Album', $albumInfo['name']);
-            $this->assertEquals('', $albumInfo['description']);
-            $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertEquals('', $albumInfo['location']);
-            $this->assertEquals('', $albumInfo['code']);
-            $this->assertEquals('5', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $params = [
+            'name' => 'Sample Album',
+            'date' => '2020-01-01',
+            'code' => ''
+        ];
+        $album = Album::withId(898);
+        $album->update($params);
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(898, $albumInfo['id']);
+        $this->assertEquals('Sample Album', $albumInfo['name']);
+        $this->assertEquals('', $albumInfo['description']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertEquals('', $albumInfo['location']);
+        $this->assertEquals('', $albumInfo['code']);
+        $this->assertEquals('5', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
     }
 
     /**
      * @throws Exception
      */
     public function testUpdateAdminBasicNonAdminCode() {
-        try {
-            $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
-            $params = [
-                'name' => 'Sample Album',
-                'date' => '2020-01-01',
-                'code' => '1234'
-            ];
-            $album = Album::withId(899);
-            $album->update($params);
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals(899, $albumInfo['id']);
-            $this->assertEquals('Sample Album', $albumInfo['name']);
-            $this->assertEquals('', $albumInfo['description']);
-            $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertEquals('sample', $albumInfo['location']);
-            $this->assertEquals('', $albumInfo['code']);
-            $this->assertEquals('4', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
+        $params = [
+            'name' => 'Sample Album',
+            'date' => '2020-01-01',
+            'code' => '1234'
+        ];
+        $album = Album::withId(899);
+        $album->update($params);
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(899, $albumInfo['id']);
+        $this->assertEquals('Sample Album', $albumInfo['name']);
+        $this->assertEquals('', $albumInfo['description']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertEquals('sample', $albumInfo['location']);
+        $this->assertEquals('', $albumInfo['code']);
+        $this->assertEquals('4', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
     }
 
     /**
-     *
+     * @throws BadUserException
+     * @throws BadAlbumException
+     * @throws SqlException
+     * @throws AlbumException
      */
     public function testUpdateAdminBasicDuplicateCode() {
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $params = [
-                'name' => 'Sample Album',
-                'date' => '2020-01-01',
-                'code' => '123'
-            ];
-            $album = Album::withId(898);
-            $album->update($params);
-        } catch (Exception $e) {
-            $this->assertEquals('Album code already exists', $e->getMessage());
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals(898, $albumInfo['id']);
-            $this->assertEquals('Sample Album', $albumInfo['name']);
-            $this->assertEquals('', $albumInfo['description']);
-            $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertEquals('', $albumInfo['location']);
-            $this->assertEquals('', $albumInfo['code']);
-            $this->assertEquals('5', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $album = new Album();
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $params = [
+            'name' => 'Sample Album',
+            'date' => '2020-01-01',
+            'code' => '123'
+        ];
+        $album = Album::withId(898);
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album code already exists');
+        $album->update($params);
+
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(898, $albumInfo['id']);
+        $this->assertEquals('Sample Album', $albumInfo['name']);
+        $this->assertEquals('', $albumInfo['description']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertEquals('', $albumInfo['location']);
+        $this->assertEquals('', $albumInfo['code']);
+        $this->assertEquals('5', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
     }
 
     /**
      * @throws Exception
      */
     public function testUpdateAdminBasicNoCodeUpdate() {
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $params = [
-                'name' => 'Sample Album',
-                'date' => '2020-01-01',
-                'code' => '123'
-            ];
-            $album = Album::withId(899);
-            $album->update($params);
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals(899, $albumInfo['id']);
-            $this->assertEquals('Sample Album', $albumInfo['name']);
-            $this->assertEquals('', $albumInfo['description']);
-            $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertEquals('sample', $albumInfo['location']);
-            $this->assertEquals('123', $albumInfo['code']);
-            $this->assertEquals('4', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $params = [
+            'name' => 'Sample Album',
+            'date' => '2020-01-01',
+            'code' => '123'
+        ];
+        $album = Album::withId(899);
+        $album->update($params);
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(899, $albumInfo['id']);
+        $this->assertEquals('Sample Album', $albumInfo['name']);
+        $this->assertEquals('', $albumInfo['description']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertEquals('sample', $albumInfo['location']);
+        $this->assertEquals('123', $albumInfo['code']);
+        $this->assertEquals('4', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
     }
 
     /**
      * @throws Exception
      */
     public function testUpdateAdminFull() {
-        try {
-            $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
-            $params = [
-                'name' => 'Sample Album',
-                'date' => '2020-01-01',
-                'description' => 'some description'
-            ];
-            $album = Album::withId(898);
-            $album->update($params);
-            $albumInfo = $album->getDataArray();
-            $this->assertEquals(9, sizeOf($albumInfo));
-            $this->assertEquals(898, $albumInfo['id']);
-            $this->assertEquals('Sample Album', $albumInfo['name']);
-            $this->assertEquals('some description', $albumInfo['description']);
-            $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
-            $this->assertNull($albumInfo['lastAccessed']);
-            $this->assertEquals('', $albumInfo['location']);
-            $this->assertEquals('', $albumInfo['code']);
-            $this->assertEquals('5', $albumInfo['owner']);
-            $this->assertEquals(0, $albumInfo['images']);
-        } finally {
-            unset($_SESSION['hash']);
-        }
+        $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
+        $params = [
+            'name' => 'Sample Album',
+            'date' => '2020-01-01',
+            'description' => 'some description'
+        ];
+        $album = Album::withId(898);
+        $album->update($params);
+        $albumInfo = $album->getDataArray();
+        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(898, $albumInfo['id']);
+        $this->assertEquals('Sample Album', $albumInfo['name']);
+        $this->assertEquals('some description', $albumInfo['description']);
+        $this->assertEquals('2020-01-01 00:00:00', $albumInfo['date']);
+        $this->assertNull($albumInfo['lastAccessed']);
+        $this->assertEquals('', $albumInfo['location']);
+        $this->assertEquals('', $albumInfo['code']);
+        $this->assertEquals('5', $albumInfo['owner']);
+        $this->assertEquals(0, $albumInfo['images']);
     }
 }

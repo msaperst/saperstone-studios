@@ -8,18 +8,18 @@ use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateBlogTagTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->disconnect();
     }
@@ -106,7 +106,7 @@ class CreateBlogTagTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $tagId = $response->getBody();
+            $tagId = (string)$response->getBody();
             $tagDetails = $this->sql->getRow("SELECT * FROM `tags` WHERE `tags`.`id` = $tagId;");
             $this->assertEquals($tagId, $tagDetails['id']);
             $this->assertEquals('crazyTestTag', $tagDetails['tag']);
@@ -118,5 +118,3 @@ class CreateBlogTagTest extends TestCase {
         }
     }
 }
-
-?>

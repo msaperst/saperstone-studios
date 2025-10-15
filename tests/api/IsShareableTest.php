@@ -7,14 +7,14 @@ use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class IsShareableTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES (999, 'sample-album-no-access', 'sample album for testing without any download access', 'sample', 4, '123');");
         $this->sql->executeStatement("INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('3', 999, '990');");
@@ -28,7 +28,7 @@ class IsShareableTest extends TestCase {
         }
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999");
         $this->sql->executeStatement("DELETE FROM `share_rights` WHERE `image` LIKE '%99%%'");
@@ -42,7 +42,7 @@ class IsShareableTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
         $this->sql->disconnect();
     }
 

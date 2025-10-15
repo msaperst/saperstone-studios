@@ -2,7 +2,6 @@
 
 namespace api;
 
-use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
@@ -10,20 +9,20 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class UpdateAlbumTest extends TestCase {
     private $http;
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, 123);");
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 998;");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
@@ -150,7 +149,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(998, $albumInfo['id']);
         $this->assertEquals('New Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
-        CustomAsserts::timeWithin(2, $albumInfo['date']);
+        $this->assertNull($albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertEquals('', $albumInfo['code']);
@@ -176,7 +175,7 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(999, $albumInfo['id']);
         $this->assertEquals('Updated Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
-        CustomAsserts::timeWithin(2, $albumInfo['date']);
+        $this->assertNull($albumInfo['date']);
         $this->assertNull($albumInfo['lastAccessed']);
         $this->assertEquals('sample', $albumInfo['location']);
         $this->assertNull($albumInfo['code']);

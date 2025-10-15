@@ -1,15 +1,14 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $api = new Api ();
 
 $api->forceAdmin();
 
 try {
-    $album = Album::withId($_GET['album']);
-    if( $_GET['image'] == '*' ) {
-        $image = '*';
-    } else {
-        $image = (new Image($album, $_GET['image']))->getId();
+    $album = Album::withId($api->retrieveGetString('album', 'Album id'));
+    $image = $api->retrieveGetString('image', 'Image id');
+    if ($image != '*') {
+        $image = (new Image($album, $image))->getId();
     }
 } catch (Exception $e) {
     echo $e->getMessage();

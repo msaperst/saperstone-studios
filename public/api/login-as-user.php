@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 $session->initialize();
 $api = new Api ();
@@ -7,7 +7,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $user = User::withId($_POST['id']);
+    $user = User::withId($api->retrievePostString('id', 'User id'));
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
@@ -23,6 +23,6 @@ session_start();
 
 $_SESSION ['usr'] = $user->getUsername();
 $_SESSION ['hash'] = $user->getHash();
-setcookie('hash', null, -1, '/');
-setcookie('usr', null, -1, '/');
+setcookie('hash', '', time() - 3600, '/');
+setcookie('usr', '', time() - 3600, '/');
 exit ();

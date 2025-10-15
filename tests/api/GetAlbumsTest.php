@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class GetAlbumsTest extends TestCase {
     /**
@@ -25,8 +25,8 @@ class GetAlbumsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('997', 'sample-album', 'sample album for testing', 'sample', 1, '1234');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
@@ -38,7 +38,7 @@ class GetAlbumsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 997;");
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 998;");
@@ -133,12 +133,12 @@ class GetAlbumsTest extends TestCase {
         $this->assertEquals(date('Y-m-d'), $albums[$id]['date']);
         $this->assertEquals(0, $albums[$id]['images']);
         $this->assertEquals(5, $albums[$id]['owner']);
-        $this->assertEquals(999, $albums[$id+1]['id']);
-        $this->assertEquals('sample-album', $albums[$id+1]['name']);
-        $this->assertEquals('sample album for testing', $albums[$id+1]['description']);
-        $this->assertEquals(date('Y-m-d'), $albums[$id+1]['date']);
-        $this->assertEquals(0, $albums[$id+1]['images']);
-        $this->assertEquals(4, $albums[$id+1]['owner']);
+        $this->assertEquals(999, $albums[$id + 1]['id']);
+        $this->assertEquals('sample-album', $albums[$id + 1]['name']);
+        $this->assertEquals('sample album for testing', $albums[$id + 1]['description']);
+        $this->assertEquals(date('Y-m-d'), $albums[$id + 1]['date']);
+        $this->assertEquals(0, $albums[$id + 1]['images']);
+        $this->assertEquals(4, $albums[$id + 1]['owner']);
     }
 
     /**

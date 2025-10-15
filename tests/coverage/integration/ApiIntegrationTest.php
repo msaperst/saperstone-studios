@@ -6,113 +6,120 @@ use Api;
 use Exception;
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class ApiIntegrationTest extends TestCase {
 
-    private $api;
+    private API $api;
 
-    public function setUp() {
+    private string $post;
+
+    private string $get;
+
+    public function setUp(): void {
         $this->api = new Api();
+        if (isset($_POST['bar'])) {
+            $this->post = $_POST['bar'];
+        }
+        if (isset($_GET['bar'])) {
+            $this->get = $_GET['bar'];
+        }
+    }
+
+    public function tearDown(): void {
+        if (isset($this->post)) {
+            $_POST['bar'] = $this->post;
+        } else {
+            unset($_POST['bar']);
+        }
+        if (isset($this->get)) {
+            $_GET['bar'] = $this->get;
+        } else {
+            unset($_GET['bar']);
+        }
     }
 
     public function testRetrievePostString() {
         $_POST['bar'] = "foo";
         $this->assertEquals('foo', $this->api->retrievePostString('bar', 'Foo'));
-        unset($_POST);
     }
 
     public function testRetrievePostStringApos() {
         $_POST['bar'] = "foo'";
         $this->assertEquals('foo\\\'', $this->api->retrievePostString('bar', 'Foo'));
-        unset($_POST);
     }
 
     public function testRetrievePostStringQuote() {
         $_POST['bar'] = "foo\"";
         $this->assertEquals('foo\\"', $this->api->retrievePostString('bar', 'Foo'));
-        unset($_POST);
     }
 
     public function testRetrievePostStringSlash() {
         $_POST['bar'] = "foo\\";
         $this->assertEquals('foo\\\\', $this->api->retrievePostString('bar', 'Foo'));
-        unset($_POST);
     }
 
     public function testRetrieveValidatedPostNullFormat() {
         $_POST['bar'] = "foo";
-        try {
-            $this->api->retrieveValidatedPost('bar', 'Foo', NULL);
-        } catch (Exception $e) {
-            $this->assertEquals("Foo is not valid", $e->getMessage());
-        }
-        unset($_POST);
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Foo is not valid');
+        $this->api->retrieveValidatedPost('bar', 'Foo', NULL);
     }
 
     public function testRetrieveValidatedPostBadFormat() {
         $_POST['bar'] = "foo";
-        try {
-            $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_BOOLEAN);
-        } catch (Exception $e) {
-            $this->assertEquals("Foo is not valid", $e->getMessage());
-        }
-        unset($_POST);
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Foo is not valid');
+        $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_BOOLEAN);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRetrieveValidatedPost() {
         $_POST['bar'] = "msaperst+sstest@gmail.com";
         $this->assertEquals("msaperst+sstest@gmail.com", $this->api->retrieveValidatedPost('bar', 'Foo', FILTER_VALIDATE_EMAIL));
-        unset($_POST);
     }
 
     public function testRetrievePostDateTimeNullFormat() {
         $_POST['bar'] = "foo";
-        try {
-            $this->api->retrievePostDateTime('bar', 'Foo', NULL);
-        } catch (Exception $e) {
-            $this->assertEquals("Foo is not the correct format", $e->getMessage());
-        }
-        unset($_POST);
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Foo is not the correct format');
+        $this->api->retrievePostDateTime('bar', 'Foo', NULL);
     }
 
     public function testRetrievePostDateTimeBadFormat() {
         $_POST['bar'] = "foo";
-        try {
-            $this->api->retrievePostDateTime('bar', 'Foo', 'Y-m-d');
-        } catch (Exception $e) {
-            $this->assertEquals("Foo is not the correct format", $e->getMessage());
-        }
-        unset($_POST);
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Foo is not the correct format');
+        $this->api->retrievePostDateTime('bar', 'Foo', 'Y-m-d');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRetrievePostDateTime() {
         $_POST['bar'] = "2020-01-01";
         $this->assertEquals("2020-01-01", $this->api->retrievePostDateTime('bar', 'Foo', 'Y-m-d'));
-        unset($_POST);
     }
 
     public function testRetrieveGetString() {
         $_GET['bar'] = "foo";
         $this->assertEquals('foo', $this->api->retrieveGetString('bar', 'Foo'));
-        unset($_GET);
     }
 
     public function testRetrieveGetStringApos() {
         $_GET['bar'] = "foo'";
         $this->assertEquals('foo\\\'', $this->api->retrieveGetString('bar', 'Foo'));
-        unset($_GET);
     }
 
     public function testRetrieveGetStringQuote() {
         $_GET['bar'] = "foo\"";
         $this->assertEquals('foo\\"', $this->api->retrieveGetString('bar', 'Foo'));
-        unset($_GET);
     }
 
     public function testRetrieveGetStringSlash() {
         $_GET['bar'] = "foo\\";
         $this->assertEquals('foo\\\\', $this->api->retrieveGetString('bar', 'Foo'));
-        unset($_GET);
     }
 }

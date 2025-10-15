@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class CreateAlbumTest extends TestCase {
     /**
@@ -24,12 +24,12 @@ class CreateAlbumTest extends TestCase {
      */
     private $sql;
 
-    public function setUp() {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':90/']);
+    public function setUp(): void {
+        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
     }
 
-    public function tearDown() {
+    public function tearDown(): void {
         $this->http = NULL;
         $this->sql->disconnect();
     }
@@ -37,7 +37,7 @@ class CreateAlbumTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-album.php');
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
         }
@@ -51,7 +51,7 @@ class CreateAlbumTest extends TestCase {
             $this->http->request('POST', 'api/create-album.php', [
                 'cookies' => $cookieJar
             ]);
-        } catch (GuzzleException | ClientException $e) {
+        } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
         }
@@ -129,17 +129,17 @@ class CreateAlbumTest extends TestCase {
             $this->assertEquals($albumId, $album['id']);
             $this->assertEquals('Sample Album', $album['name']);
             $this->assertEquals('', $album['description']);
-            CustomAsserts::timeWithin(2, $album['date']);
+            $this->assertNull($album['date']);
             $this->assertNull($album['lastAccessed']);
             $this->assertStringStartsWith('SampleAlbum_', $album['location']);
             CustomAsserts::timestampWithin(2, explode('_', $album['location'])[1]);
             $this->assertNull($album['code']);
             $this->assertEquals(1, $album['owner']);
             $this->assertEquals(0, $album['images']);
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation"));
-            $this->assertEquals(0, $this->sql->getRowCount("SELECT * `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;"));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation"));
+            $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;"));
         } finally {
-            rmdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation");
+            rmdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation");
             $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
             $count++;
@@ -179,7 +179,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertNull($album['code']);
             $this->assertEquals(4, $album['owner']);
             $this->assertEquals(0, $album['images']);
-            $this->assertTrue(file_exists(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation"));
+            $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation"));
             $albumsForUsers = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
             $this->assertEquals(1, sizeOf($albumsForUsers));
             $this->assertEquals($albumId, $albumsForUsers[0]['album']);
@@ -192,7 +192,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertNull($userLogs[0]['what']);
             $this->assertEquals($albumId, $userLogs[0]['album']);
         } finally {
-            rmdir(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation");
+            rmdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation");
             $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
             $count++;

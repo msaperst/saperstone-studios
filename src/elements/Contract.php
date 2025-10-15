@@ -1,6 +1,7 @@
 <?php
 
 use Mpdf\Mpdf;
+use Mpdf\MpdfException;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
@@ -383,6 +384,7 @@ class Contract {
      * @return string
      * @throws BadContractException
      * @throws SqlException
+     * @throws MpdfException
      */
     function sign($params): string {
         $sql = new Sql();
@@ -470,17 +472,17 @@ class Contract {
         $content = str_replace("\\'", '\'', $content);
 
         // look at some formatting
-        $customCSS = file_get_contents(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'mpdf.css');
-        // setup our footer
+        $customCSS = file_get_contents(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'mpdf.css');
+        // set up our footer
         $footer = "<div align='left'><u>LAS</u>/<img src='{$this->initial}' style='height:20px; vertical-align:text-bottom;' /></div>";
 
         // create/save pdf
-        require dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'autoload.php';
+        require dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
         $mpdf = new Mpdf();
         $mpdf->SetHTMLFooter($footer);
         $mpdf->WriteHTML($customCSS, 1);
         $mpdf->WriteHTML($content);
-        $mpdf->Output(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'public' . $this->file);
+        $mpdf->Output(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . $this->file);
         return $this->file;
     }
 }

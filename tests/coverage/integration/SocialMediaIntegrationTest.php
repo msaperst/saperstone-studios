@@ -5,25 +5,29 @@ namespace coverage\integration;
 use PHPUnit\Framework\TestCase;
 use SocialMedia;
 use Sql;
+use SqlException;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SocialMediaIntegrationTest extends TestCase {
 
-    private $sql;
+    private Sql $sql;
 
-    function setUp() {
+    function setUp(): void {
         $this->sql = new Sql();
-        copy(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/flower.jpeg');
+        copy(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/blog/flower.jpeg');
     }
 
-    function tearDown() {
+    /**
+     * @throws SqlException
+     */
+    function tearDown(): void {
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 996;");
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 997;");
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 998;");
         $this->sql->executeStatement("DELETE FROM `blog_details` WHERE `blog_details`.`id` = 999;");
         $this->sql->disconnect();
-        unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public/blog/flower.jpeg');
+        unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/blog/flower.jpeg');
     }
 
     public function testEmptyBlogFeed() {
@@ -43,12 +47,15 @@ class SocialMediaIntegrationTest extends TestCase {
     <link>http://www.examples.com/blog/</link>
     <language>en</language>
 
-", file_get_contents(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
+", file_get_contents(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
         } finally {
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
         }
     }
 
+    /**
+     * @throws SqlException
+     */
     public function testGenerateRssOneActivePost() {
         try {
             $_SERVER['SERVER_NAME'] = "www.examples.com";
@@ -74,12 +81,15 @@ class SocialMediaIntegrationTest extends TestCase {
       <guid>http://www.examples.com/blog/post.php?p=998</guid>
     </item>
 
-", file_get_contents(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
+", file_get_contents(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
         } finally {
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
         }
     }
 
+    /**
+     * @throws SqlException
+     */
     public function testGenerateRssOrderedPosts() {
         try {
             $_SERVER['SERVER_NAME'] = "www.examples.com";
@@ -119,9 +129,9 @@ class SocialMediaIntegrationTest extends TestCase {
       <guid>http://www.examples.com/blog/post.php?p=998</guid>
     </item>
 
-", file_get_contents(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
+", file_get_contents(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
         } finally {
-            unlink(dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
         }
     }
 }

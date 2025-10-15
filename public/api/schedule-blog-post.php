@@ -1,11 +1,11 @@
 <?php
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $api = new Api ();
 
 $api->forceAdmin();
 
 try {
-    $blog = Blog::withId($_POST ['post']);
+    $blog = Blog::withId($api->retrievePostString('post', 'Blog id'));
     $date = $api->retrievePostDateTime('date', 'Publish date', 'Y-m-d');
     $time = $api->retrievePostDateTime('time', 'Publish time', 'H:i');
 } catch (Exception $e) {

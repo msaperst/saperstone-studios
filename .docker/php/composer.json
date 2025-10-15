@@ -1,5 +1,15 @@
 {
   "config": {
-    "vendor-dir": "/var/www/resources/"
+    "vendor-dir": "/var/www/vendor/"
+  },
+  "require": {
+    "ext-mysqli": "*",
+    "cbschuld/browser.php": "^2.0",
+    "browscap/browscap-php": "^2.1",
+    "mpdf/mpdf": "8.2.5",
+    "pear/mail": "^2.0",
+    "pear/mail_mime": "^1.10",
+    "pear/net_smtp": "^1.12",
+    "pear/auth_sasl": "^1.2"
   }
 }
