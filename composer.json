@@ -38,7 +38,7 @@
     "integration-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=integration_sql --format=\"{{.ID}}\"))",
     "coverage-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export DB_PORT=3406; XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-ct.xml",
     "api-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; vendor/bin/phpunit --configuration phpunit-api.xml",
-    "ui-page-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`;  vendor/bin/phpunit --configuration phpunit-api.xml",
+    "ui-page-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`;  vendor/bin/phpunit --configuration phpunit-ui.xml",
     "ui-behat-test": "export $(grep -v '^#' .env | xargs); export DB_HOST=127.0.0.1; export APP_URL=`ip addr | grep 192 | head -1 | awk '{print $2}' | cut -f1 -d'/'`; vendor/bin/behat"
   }
 }

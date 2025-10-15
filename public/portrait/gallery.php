@@ -1,9 +1,10 @@
 <?php
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api();
 $errors = new Errors();
 
 try {
-    $gallery = Gallery::withId($_GET ['w']);
+    $gallery = Gallery::withId($api->retrieveGetString('w', 'Gallery id'));
 } catch (Exception $e) {
     $errors->throw404();
 }
@@ -96,9 +97,9 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                             echo $rand; ?>"/>
                     <div class="overlay">
                         <br/> <br/> <br/> <a class="info"
-                            <?php
-                            if (sizeof($grandchildren) == 0) {
-                            ?>
+                                <?php
+                                if (sizeof($grandchildren) == 0) {
+                                ?>
                                              href="galleries.php?w=<?php echo $child->getId(); ?>">See More</a>
                         <?php
                         } else {

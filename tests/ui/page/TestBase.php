@@ -33,17 +33,22 @@ class TestBase extends TestCase {
 
     public function setUp(): void {
         $this->copyright = 'Copyright © Saperstone Studios ' . date("Y");
+        $headless = getenv('HEADLESS') ? getenv('HEADLESS') : 'false';
         //setup our browser
         $host = 'http://127.0.0.1:4444';
         if (getenv('BROWSER') == 'firefox') {
             $desiredCapabilities = DesiredCapabilities::firefox();
             $firefoxOptions = new FirefoxOptions();
-            $firefoxOptions->addArguments(['-headless']);
+            if ($headless) {
+                $firefoxOptions->addArguments(['-headless']);
+            }
             $desiredCapabilities->setCapability(FirefoxOptions::CAPABILITY, $firefoxOptions);
         } else {
             $desiredCapabilities = DesiredCapabilities::chrome();
             $chromeOptions = new ChromeOptions();
-            $chromeOptions->addArguments(['-headless']);
+            if ($headless) {
+                $chromeOptions->addArguments(['-headless']);
+            }
             $desiredCapabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
         }
         $desiredCapabilities->setCapability('acceptSslCerts', true);

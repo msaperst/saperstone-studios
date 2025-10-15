@@ -1,9 +1,10 @@
 <?php
-require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api();
 $errors = new Errors();
 
 try {
-    $gallery = Gallery::withId($_GET ['w']);
+    $gallery = Gallery::withId($api->retrieveGetString('w', 'Gallery id'));
 } catch (Exception $e) {
     $errors->throw404();
 }
@@ -19,121 +20,127 @@ $user = User::fromSystem();
 
 <head>
 
-    <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
+    <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
 
     <?php
-    if ($user->isAdmin ()) {
+    if ($user->isAdmin()) {
         ?>
-    <link href="/css/uploadfile.css" rel="stylesheet">
-    <?php
+        <link href="/css/uploadfile.css" rel="stylesheet">
+        <?php
     }
     ?>
 </head>
 
 <body>
 
-    <?php
-    $nav = $gallery->getNav();
-    require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php";
-    
-    // get our gallery images
-    $sql = new Sql ();
-    $images = $sql->getRows( "SELECT * FROM `gallery_images` WHERE gallery = '{$gallery->getId()}' ORDER BY `sequence`;" );
-    $sql->disconnect ();
-    ?>
-    
-    <!-- Page Content -->
-    <div class="page-content container">
+<?php
+$nav = $gallery->getNav();
+require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/nav.php";
 
-        <!-- Page Heading/Breadcrumbs -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header text-center"><?php echo $gallery->getTitle(); ?> Gallery</h1>
-                <ol class="breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <?php foreach( $gallery->getBreadcrumbs() as $breadcrumb ) {
-                        if( $breadcrumb['link'] != '' ) {
-                            echo "<li><a href='{$breadcrumb['link']}'>{$breadcrumb['title']}</a></li>";
-                        } else {
-                            echo "<li class='active'>{$breadcrumb['title']}</li>";
-                        }
-                    } ?>
-                    <?php
-                    if ($user->isAdmin ()) {
-                        ?>
-                    <li class="no-before pull-right"><button
-                            type="button" id="edit-gallery-btn"
-                            class="btn btn-xs btn-warning" data-toggle="tooltip"
-                            data-placement="left" title="Edit Album Details">
-                            <i class="fa fa-pencil-square-o"></i>
-                        </button></li>
-                    <li class="no-before pull-right"
-                        style="padding-right: 5px; display: none;"><button type="button"
-                            id="save-gallery-btn" class="btn btn-xs btn-success"
-                            data-toggle="tooltip" data-placement="left"
-                            title="Save Image Order">
-                            <i class="fa fa-floppy-o"></i>
-                        </button></li>
-                    <li class="no-before pull-right" style="padding-right: 5px;"><button
-                            type="button" id="sort-gallery-btn" class="btn btn-xs btn-info"
-                            data-toggle="tooltip" data-placement="left"
-                            title="Rearrange Album Images">
-                            <i class="fa fa-random"></i>
-                        </button></li>
-                    <?php
+// get our gallery images
+$sql = new Sql ();
+$images = $sql->getRows("SELECT * FROM `gallery_images` WHERE gallery = '{$gallery->getId()}' ORDER BY `sequence`;");
+$sql->disconnect();
+?>
+
+<!-- Page Content -->
+<div class="page-content container">
+
+    <!-- Page Heading/Breadcrumbs -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header text-center"><?php echo $gallery->getTitle(); ?> Gallery</h1>
+            <ol class="breadcrumb">
+                <li><a href="/">Home</a></li>
+                <?php foreach ($gallery->getBreadcrumbs() as $breadcrumb) {
+                    if ($breadcrumb['link'] != '') {
+                        echo "<li><a href='{$breadcrumb['link']}'>{$breadcrumb['title']}</a></li>";
+                    } else {
+                        echo "<li class='active'>{$breadcrumb['title']}</li>";
                     }
+                } ?>
+                <?php
+                if ($user->isAdmin()) {
                     ?>
-                </ol>
-            </div>
+                    <li class="no-before pull-right">
+                        <button
+                                type="button" id="edit-gallery-btn"
+                                class="btn btn-xs btn-warning" data-toggle="tooltip"
+                                data-placement="left" title="Edit Album Details">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </button>
+                    </li>
+                    <li class="no-before pull-right"
+                        style="padding-right: 5px; display: none;">
+                        <button type="button"
+                                id="save-gallery-btn" class="btn btn-xs btn-success"
+                                data-toggle="tooltip" data-placement="left"
+                                title="Save Image Order">
+                            <i class="fa fa-floppy-o"></i>
+                        </button>
+                    </li>
+                    <li class="no-before pull-right" style="padding-right: 5px;">
+                        <button
+                                type="button" id="sort-gallery-btn" class="btn btn-xs btn-info"
+                                data-toggle="tooltip" data-placement="left"
+                                title="Rearrange Album Images">
+                            <i class="fa fa-random"></i>
+                        </button>
+                    </li>
+                    <?php
+                }
+                ?>
+            </ol>
         </div>
-        <!-- /.row -->
-        
-        <?php
-        if ($gallery->getComment() != NULL) {
-            ?>
+    </div>
+    <!-- /.row -->
+
+    <?php
+    if ($gallery->getComment() != NULL) {
+        ?>
         <div class="row">
             <div class="col-lg-12">
                 <p id="gallery-comment"><?php echo $gallery->getComment(); ?></p>
             </div>
         </div>
         <?php
-        }
-        ?>
+    }
+    ?>
 
-        <!-- Services Section -->
-        <div class="row image-grid">
-            <div id="col-0" class="col-md-3 col-sm-6 col-gallery"></div>
-            <div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
-            <div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
-            <div id="col-3" class="col-md-3 col-sm-6 col-gallery"></div>
-        </div>
-        <!-- /.row -->
-
-        <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/footer.php"; ?>
-
+    <!-- Services Section -->
+    <div class="row image-grid">
+        <div id="col-0" class="col-md-3 col-sm-6 col-gallery"></div>
+        <div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
+        <div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
+        <div id="col-3" class="col-md-3 col-sm-6 col-gallery"></div>
     </div>
-    <!-- /.container -->
+    <!-- /.row -->
 
-    <!-- Slideshow Modal -->
-    <div id="<?php echo str_replace("'", "-", str_replace(" ","-",$gallery->getTitle())); ?>"
-        class="modal fade modal-carousel" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><?php echo $gallery->getTitle(); ?> Gallery</h4>
-                </div>
-                <div class="modal-body">
-                    <!-- Carousel -->
-                    <div
-                        id="<?php echo str_replace("'", "-", str_replace(" ","-",$gallery->getTitle())); ?>-carousel"
+    <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/footer.php"; ?>
+
+</div>
+<!-- /.container -->
+
+<!-- Slideshow Modal -->
+<div id="<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>"
+     class="modal fade modal-carousel" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><?php echo $gallery->getTitle(); ?> Gallery</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Carousel -->
+                <div
+                        id="<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>-carousel"
                         class="carousel slide carousel-three-by-two" data-pause="false" data-interval="false">
-                        <!-- Indicators -->
-                        <ol class="carousel-indicators">
+                    <!-- Indicators -->
+                    <ol class="carousel-indicators">
                         <?php
-                        foreach ( $images as $num => $image ) {
+                        foreach ($images as $num => $image) {
                             $class = "";
                             if ($num == 0) {
                                 $class = " class='active'";
@@ -143,10 +150,10 @@ $user = User::fromSystem();
                         ?>
                     </ol>
 
-                        <!-- Wrapper for slides -->
-                        <div class="carousel-inner">
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
                         <?php
-                        foreach ( $images as $num => $image ) {
+                        foreach ($images as $num => $image) {
                             $active_class = "";
                             if ($num == 0) {
                                 $active_class = " active";
@@ -162,67 +169,67 @@ $user = User::fromSystem();
                         ?>
                     </div>
 
-                        <!-- Controls -->
-                        <a class="left carousel-control" onclick="gallery.prev()"> <span class="icon-prev"></span> </a>
-                        <a class="right carousel-control" onclick="gallery.next()"> <span class="icon-next"></span> </a>
-                    </div>
+                    <!-- Controls -->
+                    <a class="left carousel-control" onclick="gallery.prev()"> <span class="icon-prev"></span> </a>
+                    <a class="right carousel-control" onclick="gallery.next()"> <span class="icon-next"></span> </a>
                 </div>
-                <div class="modal-footer">
+            </div>
+            <div class="modal-footer">
                     <span class="pull-left">
                         <?php
-                        if ($user->isAdmin ()) {
+                        if ($user->isAdmin()) {
                             ?>
-                        <button id="delete-image-btn" type="button"
-                            class="btn btn-default btn-danger btn-action">
+                            <button id="delete-image-btn" type="button"
+                                    class="btn btn-default btn-danger btn-action">
                             <em class="fa fa-trash"></em> Delete
                         </button>
-                        <button id="edit-image-btn" type="button"
-                            class="btn btn-default btn-info btn-action">
+                            <button id="edit-image-btn" type="button"
+                                    class="btn btn-default btn-info btn-action">
                             <em class="fa fa-pencil"></em> Edit
                         </button>
-                        <?php
+                            <?php
                         }
                         ?>
                     </span>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
-
         </div>
-    </div>
-    <!-- End of Modal -->
 
-    <!-- Gallery JavaScript -->
-    <script src="/js/gallery.js"></script>
-    
-    <?php
-    if ($user->isAdmin ()) {
-        ?>
+    </div>
+</div>
+<!-- End of Modal -->
+
+<!-- Gallery JavaScript -->
+<script src="/js/gallery.js"></script>
+
+<?php
+if ($user->isAdmin()) {
+    ?>
     <script src="/js/gallery-admin.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>
     <?php
-    }
-    ?>
+}
+?>
 
-    <!-- Script to Activate the Gallery -->
-    <script>
-        var loaded = 0;
-        var total = <?php echo count($images); ?>;
-        var gallery = new Gallery( <?php echo $gallery->getId(); ?>, "<?php echo str_replace("'", "-",str_replace(" ","-",$gallery->getTitle())); ?>", total );
+<!-- Script to Activate the Gallery -->
+<script>
+    var loaded = 0;
+    var total = <?php echo count($images); ?>;
+    var gallery = new Gallery( <?php echo $gallery->getId(); ?>, "<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>", total);
 
-        $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() && loaded < total ) {
-                loaded = gallery.loadImages();
-            }
+    $(window, document).on("scroll resize", function () {
+        if ($('footer').isOnScreen() && loaded < total) {
+            loaded = gallery.loadImages();
+        }
+    });
+
+    $(document).ready(function () {
+        $('#<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>').carousel({
+            interval: false,
+            pause: "false",
         });
-
-        $(document).ready(function() {
-            $('#<?php echo str_replace("'", "-", str_replace(" ","-",$gallery->getTitle())); ?>').carousel({
-                interval: false,
-                pause: "false",
-            });
-        });
-    </script>
+    });
+</script>
 
 </body>
 
