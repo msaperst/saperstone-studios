@@ -70,7 +70,7 @@ jobs:
       - name: Debugging
         run: |
           docker ps
-          cat .env
+          docker logs saperstonestudios_php
 
       - name: Verify Liveliness
         run: curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
