@@ -54,11 +54,10 @@ jobs:
 
       - name: Set up Folders
         run: |
-          chmod -r content
+          chmod -R 777 content
           mkdir -m 777 content/albums
           mkdir -m 777 content/blog
           mkdir -m 777 content/contracts
-          mkdir -m 777 content/main
           mkdir -m 777 logs
           mkdir -m 777 tmp
 
@@ -153,11 +152,10 @@ jobs:
 
       - name: Set up Folders
         run: |
-          chmod -r content
+          chmod -R 777 content
           mkdir -m 777 content/albums
           mkdir -m 777 content/blog
           mkdir -m 777 content/contracts
-          mkdir -m 777 content/main
           mkdir -m 777 logs
           mkdir -m 777 tmp
 
