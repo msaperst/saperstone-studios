@@ -1,9 +1,10 @@
 <?php
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+$api = new Api();
 $errors = new Errors();
 
 try {
-    $album = Album::withId($_GET ['album']);
+    $album = Album::withId($api->retrieveGetString('album', 'Album id'));
 } catch (Exception $e) {
     $errors->throw404();
 }
@@ -96,27 +97,29 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
         <?php
         $notification_emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()} AND contacted = FALSE;");
         if ($user->isAdmin() && sizeof($notification_emails) > 0) {
-        ?>
-        <div class="row">
-            <div class="col-md-offset-2 col-md-8 text-center">Several people have requested updates once images are added to this album.
-                Please be sure to email them once images have added, or updates have been made.</div>
-        </div>
-        <div id="email-list" class="row">
-            <?php
-            foreach ($notification_emails as $notification_email) {
-                echo "<div class='col-md-2 text-truncate'><a href='mailto:{$notification_email['email']}'>{$notification_email['email']}</a></div>";
-            }
             ?>
-        </div>
-        <div class="row">
-            <div class="col-md-4 col-md-offset-4 text-center">
-                <button id="email-users" type="submit" class="btn btn-primary">
-                    <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Email All Users
-                </button>
+            <div class="row">
+                <div class="col-md-offset-2 col-md-8 text-center">Several people have requested updates once images are
+                    added to this album.
+                    Please be sure to email them once images have added, or updates have been made.
+                </div>
             </div>
-        </div>
-        <div class="row page-header"></div>
-        <?php
+            <div id="email-list" class="row">
+                <?php
+                foreach ($notification_emails as $notification_email) {
+                    echo "<div class='col-md-2 text-truncate'><a href='mailto:{$notification_email['email']}'>{$notification_email['email']}</a></div>";
+                }
+                ?>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4 text-center">
+                    <button id="email-users" type="submit" class="btn btn-primary">
+                        <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Email All Users
+                    </button>
+                </div>
+            </div>
+            <div class="row page-header"></div>
+            <?php
         }
         if (count($images) > 0) {
             ?>
@@ -235,29 +238,29 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         if (!$user->isLoggedIn() && !$isAlbumSharable) {
                             ?>
                             <!-- removing share abilities until feature is completed -->
-<!--                            <div class="tooltip-wrapper disabled"-->
-<!--                                 data-toggle="tooltip" data-placement="top"-->
-<!--                                 title="Login or create an account for this feature.">-->
-<!--                            <button id="shareable-image-btn"-->
-<!--                                    type="button" class="btn btn-default" disabled>-->
-<!--                                <em class="fa fa-share"></em> Share-->
-<!--                            </button>-->
-<!--                        </div>-->
+                            <!--                            <div class="tooltip-wrapper disabled"-->
+                            <!--                                 data-toggle="tooltip" data-placement="top"-->
+                            <!--                                 title="Login or create an account for this feature.">-->
+                            <!--                            <button id="shareable-image-btn"-->
+                            <!--                                    type="button" class="btn btn-default" disabled>-->
+                            <!--                                <em class="fa fa-share"></em> Share-->
+                            <!--                            </button>-->
+                            <!--                        </div>-->
                             <?php
                         } else {
                             ?>
                             <!-- removing share abilities until feature is completed -->
-<!--                            <button id="shareable-image-btn" type="button"-->
-<!--                                    class="btn btn-default btn-action btn-success hidden">-->
-<!--                            <em class="fa fa-share"></em> Share-->
-<!--                        </button>-->
-<!--                            <div id="not-shareable-image-btn" class="tooltip-wrapper disabled"-->
-<!--                                 data-toggle="tooltip" data-placement="top"-->
-<!--                                 title="Purchase social media rights to this image in order to share it on social media.">-->
-<!--                            <button type="button" class="btn btn-default btn-action">-->
-<!--                                <em class="fa fa-share"></em> Share-->
-<!--                            </button>-->
-<!--                        </div>-->
+                            <!--                            <button id="shareable-image-btn" type="button"-->
+                            <!--                                    class="btn btn-default btn-action btn-success hidden">-->
+                            <!--                            <em class="fa fa-share"></em> Share-->
+                            <!--                        </button>-->
+                            <!--                            <div id="not-shareable-image-btn" class="tooltip-wrapper disabled"-->
+                            <!--                                 data-toggle="tooltip" data-placement="top"-->
+                            <!--                                 title="Purchase social media rights to this image in order to share it on social media.">-->
+                            <!--                            <button type="button" class="btn btn-default btn-action">-->
+                            <!--                                <em class="fa fa-share"></em> Share-->
+                            <!--                            </button>-->
+                            <!--                        </div>-->
                             <?php
                         }
                         if ($user->isLoggedIn()) {
@@ -352,23 +355,23 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         }
                         if (!$user->isLoggedIn() && !$isAlbumSharable) {
                             ?>
-                                <!-- removing share abilities until feature is completed -->
-<!--                            <div class="tooltip-wrapper disabled"-->
-<!--                                 data-toggle="tooltip" data-placement="top"-->
-<!--                                 title="Login or create an account for this feature.">-->
-<!--                            <button id="shareable-favorites-btn"-->
-<!--                                    type="button" class="btn btn-default" disabled>-->
-<!--                                <em class="fa fa-share"></em> Share Favorites-->
-<!--                            </button>-->
-<!--                        </div>-->
+                            <!-- removing share abilities until feature is completed -->
+                            <!--                            <div class="tooltip-wrapper disabled"-->
+                            <!--                                 data-toggle="tooltip" data-placement="top"-->
+                            <!--                                 title="Login or create an account for this feature.">-->
+                            <!--                            <button id="shareable-favorites-btn"-->
+                            <!--                                    type="button" class="btn btn-default" disabled>-->
+                            <!--                                <em class="fa fa-share"></em> Share Favorites-->
+                            <!--                            </button>-->
+                            <!--                        </div>-->
                             <?php
                         } else {
                             ?>
                             <!-- removing share abilities until feature is completed -->
-<!--                            <button id="shareable-favorites-btn"-->
-<!--                                    type="button" class="btn btn-default btn-action btn-success">-->
-<!--                            <em class="fa fa-share"></em> Share Favorites-->
-<!--                        </button>-->
+                            <!--                            <button id="shareable-favorites-btn"-->
+                            <!--                                    type="button" class="btn btn-default btn-action btn-success">-->
+                            <!--                            <em class="fa fa-share"></em> Share Favorites-->
+                            <!--                        </button>-->
                             <?php
                         }
                         ?>
@@ -416,16 +419,16 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     $row = $sql->getRow("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';");
                     $categories = explode(",", str_replace("'", "", substr($row ['COLUMN_TYPE'], 5, (strlen($row ['COLUMN_TYPE']) - 6))));
                     $categories = array_diff($categories, [
-                        "other"
+                            "other"
                     ]);
 
                     $counter = 0;
                     foreach ($categories as $category) {
                         ?>
                         <li
-                            <?php if ($counter == 0) {
-                                echo " class='active'";
-                            } ?>><a
+                                <?php if ($counter == 0) {
+                                    echo " class='active'";
+                                } ?>><a
                                     href="#<?php echo $category; ?>"><?php echo ucwords($category); ?></a></li>
                         <?php
                         $counter++;
@@ -654,41 +657,42 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
 
 <?php
 if ($user->isAdmin() && sizeof($notification_emails) > 0) {
-?>
-<!-- Submit Selections Modal -->
-<div id="notifications" album-id="<?php echo $album->getId(); ?>"
-     class="modal fade" role="dialog">
-    <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Send Album Update Information</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-                    <em class="fa fa-exclamation-triangle"></em> What message do you want to send to the users?
-                </p>
-                <textarea id="notifications-message" class="form-control" maxlength="999" style="resize: none; height:100px">Images have been posted to album <?php echo $album->getName(); ?>. You can access your images by<?php
-                    if( $album->hasCode() ) {
-                        echo " navigating to https://saperstonestudios.com/#album and entering in album code `{$album->getCode()}`";
-                    } else {
-                        echo " logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album={$album->getId()}";
-                    }
-                    ?>.</textarea>
-            </div>
-            <div class="modal-footer bootstrap-dialog">
-                <button id="notifications-send-btn" type="button"
-                        class="btn btn-default btn-success">
-                    <em class="fa fa-paper-plane"></em> Submit Selection
-                </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    ?>
+    <!-- Submit Selections Modal -->
+    <div id="notifications" album-id="<?php echo $album->getId(); ?>"
+         class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Send Album Update Information</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <em class="fa fa-exclamation-triangle"></em> What message do you want to send to the users?
+                    </p>
+                    <textarea id="notifications-message" class="form-control" maxlength="999"
+                              style="resize: none; height:100px">Images have been posted to album <?php echo $album->getName(); ?>. You can access your images by<?php
+                        if ($album->hasCode()) {
+                            echo " navigating to https://saperstonestudios.com/#album and entering in album code `{$album->getCode()}`";
+                        } else {
+                            echo " logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album={$album->getId()}";
+                        }
+                        ?>.</textarea>
+                </div>
+                <div class="modal-footer bootstrap-dialog">
+                    <button id="notifications-send-btn" type="button"
+                            class="btn btn-default btn-success">
+                        <em class="fa fa-paper-plane"></em> Submit Selection
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- End of Modal -->
-<?php
+    <!-- End of Modal -->
+    <?php
 }
 ?>
 <!-- Actions For the Page -->
@@ -720,24 +724,24 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
         if (!$user->isLoggedIn() && !$isAlbumSharable) {
             ?>
             <!-- removing share abilities until feature is completed -->
-<!--            <span class="text-center"><div-->
-<!--                        class="tooltip-wrapper disabled" data-toggle="tooltip"-->
-<!--                        data-placement="top"-->
-<!--                        title="Login or create an account for this feature.">-->
-<!--                    <button id="shareable-all-btn"-->
-<!--                            type="button" class="btn btn-default" disabled>-->
-<!--                        <em class="fa fa-share"></em> Share All-->
-<!--                    </button>-->
-<!--                </div></span>-->
+            <!--            <span class="text-center"><div-->
+            <!--                        class="tooltip-wrapper disabled" data-toggle="tooltip"-->
+            <!--                        data-placement="top"-->
+            <!--                        title="Login or create an account for this feature.">-->
+            <!--                    <button id="shareable-all-btn"-->
+            <!--                            type="button" class="btn btn-default" disabled>-->
+            <!--                        <em class="fa fa-share"></em> Share All-->
+            <!--                    </button>-->
+            <!--                </div></span>-->
             <?php
         } else {
             ?>
             <!-- removing share abilities until feature is completed -->
             <!--            <span class="text-center"><button-->
-<!--                        id="shareable-all-btn" type="button"-->
-<!--                        class="btn btn-default btn-action btn-success">-->
-<!--                    <em class="fa fa-share"></em> Share All-->
-<!--                </button></span>-->
+            <!--                        id="shareable-all-btn" type="button"-->
+            <!--                        class="btn btn-default btn-action btn-success">-->
+            <!--                    <em class="fa fa-share"></em> Share All-->
+            <!--                </button></span>-->
             <?php
         }
         if (!$user->isLoggedIn()) {

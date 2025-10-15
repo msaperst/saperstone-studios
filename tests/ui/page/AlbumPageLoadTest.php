@@ -272,6 +272,7 @@ Full UA: %s\r\n",
      * @throws TimeoutException
      */
     public function testSlideShowButtonsGuestUser() {
+        $this->acceptCookies();
         $this->driver->get($this->baseUrl);
         $searched [99999] = md5("album2345");
         $cookie = new Cookie('searched', json_encode($searched));

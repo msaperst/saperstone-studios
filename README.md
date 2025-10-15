@@ -108,6 +108,8 @@ reports are generated:
 
 ### Running Code Coverage
 
+TODO
+
 ### Running API Tests
 
 Launch the app
@@ -145,6 +147,24 @@ COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
 ```
 
 ### Running UI Tests
+
+install chromedriver
+
+```bash
+sudo apt install chromium-chromedriver
+```
+
+run chromedriver
+
+```bash
+chromedriver --port=4444
+```
+
+run your tests
+
+```bash
+TBD
+```
 
 ## Code Management
 

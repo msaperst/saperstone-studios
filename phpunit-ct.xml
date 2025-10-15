@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true">
+
+    <!-- Define test suites -->
+    <testsuites>
+        <testsuite name="Coverage Tests">
+            <directory>tests/coverage</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- Source includes/excludes -->
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+
+    <!-- Code coverage settings -->
+    <coverage>
+        <report>
+            <clover outputFile="reports/ct-clover.xml"/>
+            <html outputDirectory="reports/ct-coverage"/>
+        </report>
+    </coverage>
+
+    <!-- Logging -->
+    <logging>
+        <junit outputFile="reports/ct-junit.xml"/>
+        <testdoxHtml outputFile="reports/ct-results.html"/>
+    </logging>
+</phpunit>
