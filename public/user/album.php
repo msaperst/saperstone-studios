@@ -746,35 +746,38 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
         }
         if (!$user->isLoggedIn()) {
             ?>
-            <span class="text-center"><div
-                        class="tooltip-wrapper disabled" data-toggle="tooltip"
-                        data-placement="top"
-                        title="Login or create an account for this feature.">
-                    <button id="cart-btn" type="button"
-                            class="btn btn-default btn-warning" disabled>
-                        <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"
-                                                                           class="error"></strong>
-                    </button>
-                </div></span>
+            <!-- commenting out cart button -->
+            <!--            <span class="text-center"><div-->
+            <!--                        class="tooltip-wrapper disabled" data-toggle="tooltip"-->
+            <!--                        data-placement="top"-->
+            <!--                        title="Login or create an account for this feature.">-->
+            <!--                                        <button id="cart-btn" type="button"-->
+            <!--                                                class="btn btn-default btn-warning" disabled>-->
+            <!--                        <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"-->
+            <!--                                                                           class="error"></strong>-->
+            <!--                    </button>-->
+            <!--                </div></span>-->
             <?php
         } else {
             $result = $sql->getRow("SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '" . $user->getId() . "';");
             if ($result ['total'] > 0) {
                 ?>
-                <span class="text-center"><button id="cart-btn"
-                                                  type="button" class="btn btn-default btn-warning">
-                    <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"
-                                                                       class="error"
-                                                                       style="padding-left: 10px;"><?php echo $result['total']; ?></strong>
-                </button></span>
+                <!-- commenting out cart button -->
+                <!--                <span class="text-center"><button id="cart-btn"-->
+                <!--                                                  type="button" class="btn btn-default btn-warning">-->
+                <!--                    <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"-->
+                <!--                                                                       class="error"-->
+                <!--                                                                       style="padding-left: 10px;">--><?php //echo $result['total']; ?><!--</strong>-->
+                <!--                </button></span>-->
                 <?php
             } else {
                 ?>
-                <span class="text-center"><button id="cart-btn"
-                                                  type="button" class="btn btn-default btn-warning">
-                    <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"
-                                                                       class="error"></strong>
-                </button></span>
+                <!-- commenting out cart button -->
+                <!--                <span class="text-center"><button id="cart-btn"-->
+                <!--                                                  type="button" class="btn btn-default btn-warning">-->
+                <!--                    <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"-->
+                <!--                                                                       class="error"></strong>-->
+                <!--                </button></span>-->
                 <?php
             }
         }
