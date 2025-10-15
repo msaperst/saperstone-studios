@@ -40,7 +40,7 @@ jobs:
         with:
           name: Unit Tests            # Name of the check run which will be created
           path: reports/ut-junit.xml    # Path to test results
-          reporter: jest-junit        # Format of test results
+          reporter: java-junit        # Format of test results
 
       - name: Upload HTML test report
         if: always()
@@ -125,7 +125,7 @@ jobs:
         with:
           name: Integration Tests            # Name of the check run which will be created
           path: reports/it-junit.xml    # Path to test results
-          reporter: jest-junit        # Format of test results
+          reporter: java-junit        # Format of test results
 
       - name: Upload HTML test report
         if: always()
