@@ -34,15 +34,6 @@ jobs:
           name: ut-coverage
           path: reports
 
-      - name: Debug - list reports dir
-        if: always()
-        run: |
-          echo "WORKDIR: $(pwd)"
-          ls -la reports || true
-          [ -f reports/ut-junit.xml ] && wc -c reports/ut-junit.xml || true
-          [ -f reports/ut-junit.xml ] && grep -m1 '<testsuite' reports/ut-junit.xml || true
-          [ -f reports/ut-junit.xml ] && grep -c '<testcase' reports/ut-junit.xml || true
-
       - name: Test Report
         uses: dorny/test-reporter@v2
         if: ${{ !cancelled() }}       # run this step even if previous step failed
