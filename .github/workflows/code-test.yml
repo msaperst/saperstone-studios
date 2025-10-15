@@ -27,13 +27,6 @@ jobs:
       - name: Unit Test 🤞
         run: composer unit-test
 
-      - name: Upload Coverage 📊
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ut-coverage
-          path: reports
-
       - name: Test Report
         uses: dorny/test-reporter@v2
         if: ${{ !cancelled() }}       # run this step even if previous step failed
@@ -48,6 +41,13 @@ jobs:
         with:
           name: ut-test-html
           path: reports/ut-results.html
+
+      - name: Upload Coverage 📊
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ut-coverage
+          path: reports
 
   integration-testing:
     name: Integration Testing
@@ -112,13 +112,6 @@ jobs:
           composer integration-pre-test
           composer integration-test
 
-      - name: Upload Coverage 📊
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: it-coverage
-          path: reports
-
       - name: Test Report
         uses: dorny/test-reporter@v2
         if: ${{ !cancelled() }}       # run this step even if previous step failed
@@ -133,6 +126,13 @@ jobs:
         with:
           name: it-test-html
           path: reports/it-results.html
+
+      - name: Upload Coverage 📊
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: it-coverage
+          path: reports
 
   sonar:
     name: SonarCloud

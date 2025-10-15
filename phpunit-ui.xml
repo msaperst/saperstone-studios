@@ -13,7 +13,7 @@
 
     <!-- Logging -->
     <logging>
-        <junit outputFile="reports/ct-junit.xml"/>
-        <testdoxHtml outputFile="reports/ct-results.html"/>
+        <junit outputFile="reports/ui-junit.xml"/>
+        <testdoxHtml outputFile="reports/ui-results.html"/>
     </logging>
 </phpunit>
