@@ -69,6 +69,7 @@ jobs:
 
       - name: Debugging
         run: |
+          sleep 60
           docker ps
           docker logs saperstonestudios_php
 
