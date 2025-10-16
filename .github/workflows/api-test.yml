@@ -25,7 +25,7 @@ jobs:
           echo 'ADMIN_PORT=9090' >> .env
           echo 'HTTP_PORT=90' >> .env
           echo 'HTTPS_PORT=9443' >> .env
-          echo 'SERVER_NAME=victor' >> .env
+          echo 'SERVER_NAME=localhost' >> .env
           echo 'APP_URL=localhost' >> .env
           echo '' >> .env
           echo '# database information' >> .env
@@ -63,7 +63,9 @@ jobs:
           mkdir -m 777 tmp
 
       - name: Remove SSL Cert For Testing
-        run: sed -i '/letsencrypt/ s/^/#/' .docker/php/default-ssl.conf
+        run: |
+          sed -i '/letsencrypt/ s/^/#/' .docker/php/default-ssl.conf
+
 
       - name: Launch App
         run: |

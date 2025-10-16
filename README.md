@@ -39,13 +39,7 @@ To update the cert, install certbot according to the above instructions, or use 
 docker exec into the php container and then run the below commands:
 
 ```bash
-apt update
-apt upgrade
-apt install -y python3 python3-venv libaugeas0 python3-dev libaugeas-dev gcc python3-augeas libaugeas0 augeas-lenses
-python3 -m venv /opt/certbot/
-/opt/certbot/bin/pip install --upgrade pip
-/opt/certbot/bin/pip install setuptools wheel pycparser certbot certbot-apache
-ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+apt update && apt install -y certbot python3-certbot-apache
 certbot renew --dry-run
 ```
 
@@ -59,6 +53,36 @@ If all of the above works, finally run the below command:
 
 ```bash
 certbot renew
+```
+
+I had issues with the newer certbot implementations, and needed to do a
+manual DNS challenge. This should probably be looked at, and resolved, maybe
+even by setting up certbot as a separate networked container. The command that
+works is:
+
+```bash
+certbot certonly --manual --preferred-challenges dns -d saperstonestudios.com
+```
+
+The better option is to split responsibility, running certbot in a separate
+container. A snippet example is below:
+
+```yaml
+services:
+  web:
+    image: php:8.4-apache-bookworm
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./www:/var/www/html
+    command: certonly --webroot -w /var/www/html -d saperstonestudios.com --email you@example.com --agree-tos --non-interactive
 ```
 
 ## Testing
