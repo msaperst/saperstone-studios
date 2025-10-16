@@ -1,4 +1,4 @@
-FROM php:8.4-apache-bullseye
+FROM php:8.4-apache-bookworm
 
 # setup additional tooling
 RUN apt update
