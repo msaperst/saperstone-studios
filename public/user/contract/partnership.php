@@ -276,7 +276,7 @@ if (isset ($_GET ['id'])) {
     <p>
         <strong>Miscellaneous.</strong> <em>(a)</em> The provisions hereof shall survive termination of
         this Agreement; <em>(b)</em> this Agreement will be governed by the laws of the State of
-        Virginia <em>(c)</em> this Agreement contains the entire agreement between the parties with
+        Arizona <em>(c)</em> this Agreement contains the entire agreement between the parties with
         respect to the subject matter hereof and supersedes all prior understandings among the
         parties with respect thereto; this Agreement may be changed only in writing signed by
         the party against whom enforcement is sought; <em>(d)</em> this Agreement may be executed in

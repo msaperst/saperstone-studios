@@ -72,9 +72,9 @@ Photobooth
 Web gallery for sharing
 USB of final images
 $200 print credit'
-                        <?php if ($contract ['session'] == "Premier Package") {
-                            echo " selected";
-                        } ?>>Premier
+                            <?php if ($contract ['session'] == "Premier Package") {
+                                echo " selected";
+                            } ?>>Premier
                         Package
                     </option>
                     <option cost='3600.00'
@@ -85,9 +85,9 @@ Engagement session
 Web gallery for sharing
 USB of final images
 $150 print credit'
-                        <?php if ($contract ['session'] == "Lux Package") {
-                            echo " selected";
-                        } ?>>Lux
+                            <?php if ($contract ['session'] == "Lux Package") {
+                                echo " selected";
+                            } ?>>Lux
                         Package
                     </option>
                     <option cost='2900.00'
@@ -98,9 +98,9 @@ Engagement session
 Web gallery for sharing
 USB of final images
 $100 print credit'
-                        <?php if ($contract ['session'] == "Classic Package") {
-                            echo " selected";
-                        } ?>>Classic
+                            <?php if ($contract ['session'] == "Classic Package") {
+                                echo " selected";
+                            } ?>>Classic
                         Package
                     </option>
                     <option cost=''>Custom</option>
@@ -423,7 +423,7 @@ $100 print credit'
     <p>
         <strong>Miscellaneous.</strong> (a) The provisions hereof shall
         survive termination of this Agreement; (b) this Agreement will be
-        governed by the laws of the State of Virginia (c) this Agreement
+        governed by the laws of the State of Arizona (c) this Agreement
         contains the entire agreement between the parties with respect to the
         subject matter hereof and supersedes all prior understandings among
         the parties with respect thereto; this Agreement may be changed only
