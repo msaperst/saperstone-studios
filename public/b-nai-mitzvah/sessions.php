@@ -52,7 +52,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <p>Saperstone Studios is a mitzvah photographer based in Chandler, AZ.
                 I've photographed bar and bat mitzvahs at many synagogues in the
-                Northern Virginia/DC metro area including Congregation Olam Tikvah,
+                Phoenix metro area including Congregation Olam Tikvah,
                 Temple Rodef Shalom, Washington Hebrew Congregation, Kehilat
                 Pardes and Congregation Adat Reyim.</p>
             <p>Each mitzvah kid (and event!) is so unique. Not everyone has a hora
@@ -124,7 +124,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                 Family is welcome to join this session as well!</p>
             <ul>
                 <li>Portraits of the mitzvah and family!</li>
-                <li>1 hour session on location within the Northern VA/DC metro area</li>
+                <li>1 hour session on location within the Phoenix metro area</li>
                 <li>50+ fully edited images on USB with personal print release</li>
             </ul>
         </div>

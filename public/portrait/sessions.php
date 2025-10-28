@@ -81,7 +81,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
             </div>
         </div>
         <div class="col-xs-12" style="padding-top: 20px;">
-            <p>Be sure to document your pregnancy with a northern virginia maternity session.
+            <p>Be sure to document your pregnancy with a Phoenix maternity session.
                 Every pregnancy is unique so the exact timing of your session will
                 vary. Generally the best time is between 30 and 34 weeks. We want
                 you to be showing but also comfortable. If you're expecting twins
@@ -89,8 +89,8 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                 an amazing journey and be your maternity photographer!</p>
             <ul>
                 <li>Portraits of you and your significant other. Siblings welcome!</li>
-                <li>1 hour session at your home or on site location in Northern
-                    VA/DC metro area
+                <li>1 hour session at your home or on site location in Phoenix
+                    metro area
                 </li>
                 <li>50+ fully edited images for viewing at your image review
                     session
