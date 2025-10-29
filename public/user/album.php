@@ -265,10 +265,11 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         }
                         if ($user->isLoggedIn()) {
                             ?>
-                            <button id="cart-image-btn" type="button"
-                                    class="btn btn-default btn-warning btn-action">
-                            <em class="fa fa-shopping-cart"></em> Add to Cart
-                        </button>
+                            <!-- commenting out cart button -->
+                            <!--                            <button id="cart-image-btn" type="button"-->
+                            <!--                                    class="btn btn-default btn-warning btn-action">-->
+                            <!--                            <em class="fa fa-shopping-cart"></em> Add to Cart-->
+                            <!--                        </button>-->
                             <?php
                         }
                         ?>

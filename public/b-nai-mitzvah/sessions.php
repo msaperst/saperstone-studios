@@ -50,15 +50,31 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
     <!-- Features Section -->
     <div class="row">
         <div class="col-lg-12">
-            <p>Saperstone Studios is a mitzvah photographer based in Chandler, AZ.
-                I've photographed bar and bat mitzvahs at many synagogues in the
-                Phoenix metro area including Congregation Olam Tikvah,
-                Temple Rodef Shalom, Washington Hebrew Congregation, Kehilat
-                Pardes and Congregation Adat Reyim.</p>
-            <p>Each mitzvah kid (and event!) is so unique. Not everyone has a hora
-                or a candle lighting. Sometimes there's a lasagna making station to
-                donate to people in need. I love hearing about your event and what
-                makes it special for your family.</p>
+            <p>Saperstone Studios is a professional Arizona mitzvah photography studio
+                based in Chandler, Arizona. I specialize in bar mitzvah and bat mitzvah
+                photography throughout the East Valley and Scottsdale, capturing each
+                celebration with a vibrant, fun, and authentic style that highlights the
+                joy, emotion, and energy of your simcha.</p>
+            <p>I proudly photograph at many Arizona synagogues and temples, including:</p>
+            <ul>
+                <li>Temple Beth Sholom of the East Valley – Chandler, AZ</li>
+                <li>Temple Emanuel of Tempe – Tempe, AZ</li>
+                <li>Congregation Beth Israel – Scottsdale, AZ</li>
+                <li>The New Shul – Scottsdale, AZ</li>
+                <li>Temple Kol Ami – Scottsdale, AZ</li>
+                <li>Har Zion Congregation – Scottsdale, AZ</li>
+                <li>Temple Chai – Phoenix (near Scottsdale)</li>
+            </ul>
+            <p>Whether you’re planning a traditional bar mitzvah service, a modern bat mitzvah party,
+                or a family celebration filled with laughter and dancing, I bring years of experience
+                photographing mitzvahs across Arizona’s Jewish community.</p>
+            <p>As a proud member of Temple Emanuel of Tempe, I understand the traditions, details, and
+                family moments that make each mitzvah unique. From portraits and Torah readings to the
+                hora and heartfelt speeches, I capture every special memory with care and creativity.</p>
+
+            <p>If you’re searching for an experienced Scottsdale or East Valley bar/bat mitzvah
+                photographer, Saperstone Studios offers professional storytelling,
+                attention to detail, and images you’ll cherish for a lifetime.</p>
         </div>
 
         <div class="col-lg-12">
