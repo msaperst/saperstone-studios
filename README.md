@@ -64,6 +64,14 @@ works is:
 certbot certonly --manual --preferred-challenges dns -d saperstonestudios.com
 ```
 
+After this, you may need to restart the docker container, or even run the 
+command again, specifying 
+`Renew & replace the certificate (may be subject to CA rate limits)` and
+then restarting the container
+```bash
+docker restart saperstonestudios_php
+```
+
 The better option is to split responsibility, running certbot in a separate
 container. A snippet example is below:
 
