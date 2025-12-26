@@ -157,6 +157,24 @@ class ContactMeTest extends TestCase {
      * @throws GuzzleException
      * @throws Exception
      */
+    public function testHoneyPot() {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'company' => 'Some Company',
+                'name' => 'Max',
+                'phone' => '571-245-3351',
+                'email' => 'msaperst+sstest@gmail.com',
+                'message' => 'Hi There! I am a test email'
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+    }
+
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
     public function testAll() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
