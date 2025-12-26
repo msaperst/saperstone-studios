@@ -19,6 +19,7 @@ $(function () {
                     $('#success > .alert-warning').append('</div>');
 
                     // get values from FORM
+                    var company = $("input#company").val();
                     var name = $("input#name").val();
                     var phone = $("input#phone").val();
                     var email = $("input#email").val();
@@ -34,6 +35,7 @@ $(function () {
                         url: "api/contact-me.php",
                         type: "POST",
                         data: {
+                            company: company,
                             name: name,
                             phone: phone,
                             email: email,
