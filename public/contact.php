@@ -75,6 +75,8 @@ $user = User::fromSystem();
         <div class="col-md-8">
             <h3>Send us a Message</h3>
             <form name="sentMessage" id="contactForm" novalidate>
+                <input type="text" id="loadtime" tabindex="-1" autocomplete="off" style="display:none"
+                       value="<?php echo time(); ?>">
                 <input type="text" id="company" tabindex="-1" autocomplete="off" style="display:none">
                 <div class="control-group form-group">
                     <div class="controls">

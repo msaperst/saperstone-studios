@@ -32,8 +32,34 @@ class ContactMeTest extends TestCase {
     /**
      * @throws GuzzleException
      */
-    public function testNoName() {
+    public function testNoTime() {
         $response = $this->http->request('POST', 'api/contact-me.php');
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Load Time is required", (string)$response->getBody());
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testBlankTime() {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'loadtime' => ''
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("Load Time can not be blank", (string)$response->getBody());
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testNoName() {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'loadtime' => '1234567890'
+            ]
+        ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Name is required", (string)$response->getBody());
     }
@@ -44,6 +70,7 @@ class ContactMeTest extends TestCase {
     public function testBlankName() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => ''
             ]
         ]);
@@ -57,6 +84,7 @@ class ContactMeTest extends TestCase {
     public function testNoPhone() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max'
             ]
         ]);
@@ -70,6 +98,7 @@ class ContactMeTest extends TestCase {
     public function testBlankPhone() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max',
                 'phone' => ''
             ]
@@ -84,6 +113,7 @@ class ContactMeTest extends TestCase {
     public function testNoEmail() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max',
                 'phone' => '1234'
             ]
@@ -98,6 +128,7 @@ class ContactMeTest extends TestCase {
     public function testBlankEmail() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max',
                 'phone' => '1234',
                 'email' => ''
@@ -113,6 +144,7 @@ class ContactMeTest extends TestCase {
     public function testBadEmail() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max',
                 'phone' => '1234',
                 'email' => 'max@max'
@@ -128,6 +160,7 @@ class ContactMeTest extends TestCase {
     public function testNoMessage() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max',
                 'phone' => '1234',
                 'email' => 'msaperst+sstest@gmail.com'
@@ -143,6 +176,7 @@ class ContactMeTest extends TestCase {
     public function testBlankMessage() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max',
                 'phone' => '1234',
                 'email' => 'msaperst+sstest@gmail.com',
@@ -160,6 +194,26 @@ class ContactMeTest extends TestCase {
     public function testHoneyPot() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
+                'company' => 'Some Company',
+                'name' => 'Max',
+                'phone' => '571-245-3351',
+                'email' => 'msaperst+sstest@gmail.com',
+                'message' => 'Hi There! I am a test email'
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+    }
+
+    /**
+     * @throws GuzzleException
+     * @throws Exception
+     */
+    public function testTooFastLoadTime() {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'loadtime' => '12345678901234567890',
                 'company' => 'Some Company',
                 'name' => 'Max',
                 'phone' => '571-245-3351',
@@ -178,6 +232,7 @@ class ContactMeTest extends TestCase {
     public function testAll() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max',
                 'phone' => '571-245-3351',
                 'email' => 'msaperst+sstest@gmail.com',
@@ -207,6 +262,7 @@ Full UA: GuzzleHttp/7
     public function testAllSS() {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
+                'loadtime' => '1234567890',
                 'name' => 'Max',
                 'phone' => '571-245-3351',
                 'email' => 'msaperst@saperstonestudios.com',

@@ -10,6 +10,17 @@ if (!empty($_POST['company'])) {
 $sql = new Sql ();
 $api = new Api ();
 
+// time to submit check
+try {
+    $time = $api->retrievePostString('loadtime', 'Load Time');
+    if (time() - $_POST['loadtime'] < 3) {
+        exit();
+    }
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
+}
+
 $to = 'Contact <' . getenv('EMAIL_CONTACT') . '>';
 if (isset ($_POST ['to']) && $_POST ['to'] != "") {
     $to = $sql->escapeString($_POST ['to']);
