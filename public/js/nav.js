@@ -66,8 +66,9 @@ $(function () {
         forgotPasswordReset();
     });
 
-    if (window.location.hash && window.location.hash === "#album") {
-        findAlbum();
+    var code = getAlbumCodeFromHash();
+    if ((window.location.hash || "").toLowerCase().startsWith("#album")) {
+        findAlbum(code); // pass code (may be null)
     }
 
     // hide remember me option if user declines to use preferences cookies
@@ -92,10 +93,11 @@ $(function () {
 });
 
 window.onhashchange = function () {
-    if (window.location.hash === "#album") {
-        findAlbum();
+    var code = getAlbumCodeFromHash();
+    if ((window.location.hash || "").toLowerCase().startsWith("#album")) {
+        findAlbum(code);
     }
-};
+}
 
 // Cookies
 function createCookie(name, value, days) {
@@ -242,16 +244,31 @@ function resetPasswordForm() {
     $('#forgot-password-reset-password').show();
 }
 
-function findAlbum() {
+function getAlbumCodeFromHash() {
+    // supports: #album=CODE  (URL encoded ok)
+    var h = window.location.hash || "";
+    var m = h.match(/^#album(?:=([^&]+))?/i);
+    return m && m[1] ? decodeURIComponent(m[1]) : null;
+}
+
+
+function findAlbum(prefillCode) {
     BootstrapDialog.show({
         draggable: true,
         title: 'Find An Album',
         message: function () {
             var inputs = '<input placeholder="Album Code" id="find-album-code" type="text" class="form-control"/>';
             if (my_role === 'downloader' || my_role === 'uploader') {
-                inputs += '<div class="checkbox">' + '<label><input id="find-album-add" type="checkbox" value="" checked>Add to my albums</label>' + '</div>';
+                inputs += '<div class="checkbox"><label><input id="find-album-add" type="checkbox" value="" checked>Add to my albums</label></div>';
             }
             return inputs;
+        },
+        onshown: function (dialogRef) {
+            if (!prefillCode) return;
+            $('#find-album-code').val(prefillCode);
+            if (prefillCode.length < 5) return;
+            var $modal = dialogRef.getModal();
+            $modal.find('button.btn-success').trigger('click');
         },
         buttons: [{
             icon: 'glyphicon glyphicon-search',
