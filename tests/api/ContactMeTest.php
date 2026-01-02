@@ -214,8 +214,49 @@ class ContactMeTest extends TestCase {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
                 'loadtime' => '12345678901234567890',
-                'company' => 'Some Company',
                 'name' => 'Max',
+                'phone' => '571-245-3351',
+                'email' => 'msaperst+sstest@gmail.com',
+                'message' => 'Hi There! I am a test email'
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+    }
+
+    public function testInvalidPhoneIsDropped(): void {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'loadtime' => '1234567890',
+                'name' => 'Max',
+                'phone' => 'ABCDEF',
+                'email' => 'msaperst+sstest@gmail.com',
+                'message' => 'Hi There! I am a test email'
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+    }
+
+    public function testGibberishMessageIsDropped(): void {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'loadtime' => '1234567890',
+                'name' => 'Max',
+                'phone' => '571-245-3351',
+                'email' => 'msaperst+sstest@gmail.com',
+                'message' => 'HiThereIamatestEmail'
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+    }
+
+    public function testGibberishNameIsDropped(): void {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'loadtime' => '1234567890',
+                'name' => 'MaxSaperstoneIsHappy',
                 'phone' => '571-245-3351',
                 'email' => 'msaperst+sstest@gmail.com',
                 'message' => 'Hi There! I am a test email'

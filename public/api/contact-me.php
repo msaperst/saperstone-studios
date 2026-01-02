@@ -37,6 +37,37 @@ try {
     exit();
 }
 
+// if the number doesn't look remotely like a phone number, it's probably spam
+$digits = preg_replace('/\D+/', '', $phone);
+if (strlen($digits) < 7) {
+    exit();
+}
+
+// if the message looks like garbage, it's probably spam
+$normalized = trim(preg_replace('/\s+/', ' ', $message));
+$tokens = explode(' ', $normalized);
+if (count($tokens) === 1) {
+    $token = $tokens[0];
+    if (
+        strlen($token) >= 16 &&
+        preg_match('/[a-z]/', $token) &&
+        preg_match('/[A-Z]/', $token)
+    ) {
+        exit();
+    }
+}
+
+// if the name looks like garbage, it's probably spam
+$nameTokens = explode(' ', trim($name));
+if (
+    count($nameTokens) === 1 &&
+    strlen($nameTokens[0]) >= 16 &&
+    preg_match('/[a-z]/', $nameTokens[0]) &&
+    preg_match('/[A-Z]/', $nameTokens[0])
+) {
+    exit();
+}
+
 $referrer = "";
 if (isset ($_SERVER ['HTTP_REFERER'])) {
     $referrer = $_SERVER ['HTTP_REFERER'];
