@@ -676,7 +676,7 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
                     <textarea id="notifications-message" class="form-control" maxlength="999"
                               style="resize: none; height:100px">Images have been posted to album <?php echo $album->getName(); ?>. You can access your images by<?php
                         if ($album->hasCode()) {
-                            echo " navigating to https://saperstonestudios.com/#album and entering in album code `{$album->getCode()}`";
+                            echo " navigating to https://saperstonestudios.com/#album={$album->getCode()}";
                         } else {
                             echo " logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album={$album->getId()}";
                         }

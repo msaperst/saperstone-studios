@@ -404,7 +404,7 @@ Feature: Admin Album
       | msaperst+sstest@gmail.com | 0         |
     When I am on the "user/album.php?album=99999" page
     And I send the user notifications
-    Then I see the email notification set to "Images have been posted to album Album 99999. You can access your images by navigating to https://saperstonestudios.com/#album and entering in album code `code`."
+    Then I see the email notification set to "Images have been posted to album Album 99999. You can access your images by navigating to https://saperstonestudios.com/#album=code."
 
   Scenario: Can't send email notification with blank message
     Given album 99999 has notifications:
