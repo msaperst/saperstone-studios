@@ -4,300 +4,656 @@ $.fn.isOnScreen = function () {
     return bounds.top < window.innerHeight && bounds.bottom > 0;
 };
 
+function getCurrentAlbumCard() {
+    if (window.album && typeof window.album.getCurrentCard === "function") {
+        return window.album.getCurrentCard();
+    }
+    return $('#album-grid .album-card.is-active');
+}
+
+function getCurrentAlbumImage() {
+    return getCurrentAlbumCard();
+}
+
+function getCurrentAlbumImageId() {
+    return getCurrentAlbumImage().attr('image-id');
+}
+
+function getAlbumImageCard(imageId) {
+    return $('#album-grid .album-card[data-image-id="' + imageId + '"]');
+}
+
+function getAlbumImageFromCard(card) {
+    if (!card || !card.length) {
+        return $();
+    }
+    return card;
+}
+
+function toggleFavoriteForImage(imageId) {
+    var card = getAlbumImageCard(imageId);
+    if (!card.length) {
+        return;
+    }
+    var isFavorite = card.attr('data-favorite') === '1';
+    var request = isFavorite ? $.post("/api/unset-favorite.php", {
+        album: card.attr('album-id'),
+        image: card.attr('image-id')
+    }) : $.post("/api/set-favorite.php", {
+        album: card.attr('album-id'),
+        image: card.attr('image-id')
+    });
+
+    request.done(function (count) {
+        updateFavoriteCount(count);
+        card.attr('data-favorite', isFavorite ? '0' : '1');
+        card.toggleClass('is-favorite', !isFavorite);
+        card.find('.album-card-action[data-action="favorite"] em').removeClass('fa-heart error').addClass(!isFavorite ? 'fa-heart error' : 'fa-heart');
+        if (String(getCurrentAlbumImageId()) === String(imageId)) {
+            if (!isFavorite) {
+                setFavorite();
+            } else {
+                unsetFavorite();
+            }
+        }
+    });
+}
+
+function downloadImageFor(imageId) {
+    var card = getAlbumImageCard(imageId);
+    if (!card.length) {
+        return;
+    }
+    $.get("/api/is-downloadable.php", {
+        album: card.attr('album-id'),
+        image: card.attr('image-id')
+    }).done(function (data) {
+        if (data === '1') {
+            downloadImages(card.attr('album-id'), card.attr('image-id'));
+        }
+    });
+}
+
+function submitImageFor(imageId) {
+    var card = getAlbumImageCard(imageId);
+    if (!card.length) {
+        return;
+    }
+    $('#submit').attr('what', card.attr('image-id')).modal();
+}
+
+function createIconButton(action, icon, title, handler, extraClass) {
+    var button = $('<button>');
+    button.attr('type', 'button');
+    button.attr('data-action', action);
+    button.attr('title', title);
+    button.attr('aria-label', title);
+    button.addClass('btn btn-default album-card-action');
+    if (extraClass) {
+        button.addClass(extraClass);
+    }
+    button.append($('<em>').addClass('fa ' + icon));
+    button.click(function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        handler.call(this, event);
+    });
+    return button;
+}
+
+function updateViewerMeta(image) {
+    if (!image || image.length === 0) {
+        $('#album-viewer-image').attr('src', '').attr('alt', '');
+        $('#album-viewer-title').text('');
+        $('#album-viewer-caption').text('');
+        $('#album-viewer-overlay').removeAttr('image-id');
+        return;
+    }
+    $('#album-viewer-overlay').attr('album-id', image.attr('album-id'));
+    $('#album-viewer-overlay').attr('image-id', image.attr('image-id'));
+    $('#album-viewer-image').attr('src', image.attr('data-full-location') || image.attr('data-full-src') || image.attr('data-location') || image.attr('data-src') || image.find('img').attr('src'));
+    $('#album-viewer-image').attr('alt', image.attr('data-title') || image.attr('title') || '');
+    $('#album-viewer-title').text(image.attr('data-title') || image.attr('title') || '');
+    $('#album-viewer-caption').text(image.attr('data-caption') || '');
+}
+
+function updateFavoriteCount(count) {
+    var total = parseInt(count, 10);
+    if (isNaN(total) || total < 0) {
+        total = 0;
+    }
+    if (total > 0) {
+        $('#favorite-count').html(total).css({
+            'padding-left': '10px'
+        });
+    } else {
+        $('#favorite-count').html("").css({
+            'padding-left': ''
+        });
+    }
+}
+
+function updateAlbumCardSpan(card) {
+    if (!card || !card.length) {
+        return;
+    }
+    var element = card.get(0);
+    if (!element || typeof element.getBoundingClientRect !== "function") {
+        return;
+    }
+    var rowHeight = parseFloat($('#album-grid').css('grid-auto-rows')) || 10;
+    var rowGap = parseFloat($('#album-grid').css('gap')) || parseFloat($('#album-grid').css('grid-row-gap')) || 14;
+    var height = parseFloat(card.attr('data-height')) || 1;
+    var width = parseFloat(card.attr('data-width')) || 1;
+    var cardWidth = element.getBoundingClientRect().width;
+    if (!cardWidth) {
+        return;
+    }
+    var renderedHeight = cardWidth * (height / width);
+    var span = Math.ceil((renderedHeight + rowGap) / (rowHeight + rowGap));
+    card.css('grid-row-end', 'span ' + span);
+}
+
+function updateAllAlbumCardSpans() {
+    $('#album-grid .album-card').each(function () {
+        updateAlbumCardSpan($(this));
+    });
+}
+
+function markAlbumCardLoaded(card) {
+    if (!card || !card.length) {
+        return;
+    }
+    card.attr('data-loading', '0');
+    card.attr('data-loaded', '1');
+    card.addClass('is-loaded');
+}
+
+function openViewer() {
+    $('#album-viewer-overlay').removeClass('hidden').attr('aria-hidden', 'false');
+    $('body').addClass('album-viewer-open');
+}
+
+function closeViewer() {
+    $('#album-viewer-overlay').addClass('hidden').attr('aria-hidden', 'true');
+    $('body').removeClass('album-viewer-open');
+}
+
 function Album(albumId, columns, totalImages) {
     var Album = this;
 
     Album.loaded = 0;
+    Album.loading = false;
     Album.albumId = albumId;
     Album.columns = columns;
     Album.totalImages = totalImages;
+    Album.images = [];
+    Album.currentImageId = null;
+    Album.pendingImageId = null;
+    Album.initialized = false;
 
     Album.loadImages();
 
     if (window.location.hash && window.location.hash.length > 1) {
-        Album.setImage(window.location.hash.substr(1));
+        Album.setImage(window.location.hash.substr(1), {
+            scroll: false,
+            updateHash: false,
+            force: true
+        });
     }
 
     window.onhashchange = function () {
         if (window.location.hash.length > 1) {
-            Album.setImage(window.location.hash.substr(1));
+            Album.setImage(window.location.hash.substr(1), {
+                scroll: false,
+                updateHash: false,
+                force: true
+            });
+        } else {
+            Album.currentImageId = null;
+            updateViewerMeta($());
+            closeViewer();
         }
     };
-
-    $('#album').on('hide.bs.modal', function () {
-        history.pushState("", document.title, window.location.pathname + window.location.search);
-    });
 }
 
-Album.prototype.setImage = function (img) {
-    $('#album').modal('show');
-    $('#album-carousel').carousel({
-        interval: false,
-        pause: "false",
-    });
-    var carouselImage = $('#album-carousel .item').index($('#album-carousel .contain[image-id="' + img + '"]').parent());
-    $('#album-carousel').carousel(parseInt(carouselImage));
-    $('#album .btn-action').each(function () {
-        $(this).prop("disabled", true);
-    });
-    getDetails();
-}
-
-Album.prototype.prev = function () {
-    var Album = this;
-
-    var prev = parseInt(parseInt(window.location.hash.substring(1)) - 1);
-    if (prev < 0) {
-        prev = (parseInt(Album.totalImages) - 1);
+Album.prototype.getCurrentCard = function () {
+    if (this.currentImageId === null) {
+        return $();
     }
-    window.location.hash = "#" + prev;
-}
-
-Album.prototype.next = function () {
-    var Album = this;
-
-    var next = parseInt(parseInt(window.location.hash.substring(1)) + 1);
-    if (next >= Album.totalImages) {
-        next = 0;
-    }
-    window.location.hash = "#" + next;
-}
-
-Album.prototype.loadImages = function () {
-    var Album = this;
-    $.get("/api/get-album-images.php", {
-        albumId: Album.albumId,
-        start: Album.loaded,
-        howMany: Album.columns
-    }, function (data) {
-        // load each of our 4 images on the screen
-        $.each(data, function (k, v) {
-            var shortest = {};
-            shortest.height = 999999999;
-            $('.col-gallery').each(function () {
-                if ($(this).height() < shortest.height) {
-                    shortest.obj = $(this);
-                    shortest.height = $(this).height();
-                }
-            });
-            // create our holding div
-            var holder = $('<div>');
-            holder.addClass('gallery hovereffect');
-            var rect = shortest.obj[0].getBoundingClientRect();
-            var width;
-            // `width` is available for IE9+
-            if (rect.width) {
-                width = rect.width;
-                // Calculate width for IE8 and below
-            } else {
-                width = rect.right - rect.left;
-            }
-            // Remove the padding width
-            width -= (parseInt(shortest.obj.css("padding-left")) + parseInt(shortest.obj.css("padding-right")));
-            holder.height(parseInt(v.height * width / v.width));
-            // create our image
-            var img = $('<img>');
-            img.attr('src', v.location);
-            img.attr('alt', v.title);
-            img.attr('image-id', v.sequence);
-            img.attr('width', '100%');
-            // create our overlay
-            var overlay = $('<div>');
-            overlay.addClass('overlay');
-            // our view link
-            var link = $('<a>');
-            link.addClass('info no-border');
-            link.attr('href', '#' + parseInt(v.sequence));
-            // add our image icon
-            var view = $('<i>');
-            view.addClass('fa fa-search fa-2x');
-            // put them all together
-            link.append(view);
-            overlay.append(link);
-            holder.append(img);
-            holder.append(overlay);
-            shortest.obj.append(holder);
-        });
-        // when we done, see if we need to load more
-        if ($('footer').isOnScreen() && Album.totalImages > Album.loaded) {
-            Album.loadImages();
-        }
-    }, "json");
-    Album.loaded += Album.columns;
-    return Album.loaded;
+    return $('#album-grid .album-card[data-image-id="' + this.currentImageId + '"]');
 };
 
-$(document).ready(function () {
-    $('#album-carousel').carousel({
-        interval: false,
-        pause: "false",
-    });
+Album.prototype.getImageCard = function (img) {
+    return $('#album-grid .album-card[data-image-id="' + img + '"]');
+};
 
-    // download an image
-    $('#downloadable-image-btn').click(function () {
-        var img = $('#album-carousel div.active div');
-        downloadImages(img.attr('album-id'), img.attr('image-id'));
-    });
-    // share an image
-    $('#shareable-image-btn').click(function () {
-        var img = $('#album-carousel div.active div');
-        shareImages(img.attr('album-id'), img.attr('image-id'));
-    });
-    // submit an image
-    $('#submit-image-btn').click(function () {
-        var img = $('#album-carousel div.active div');
-        $('#submit').attr('what', img.attr('image-id')).modal();
-    });
-    // quick purchase an image
-    $('#not-downloadable-image-btn').click(function () {
-        var img = $('#album-carousel div.active div');
-        var products = {};
-        products['31'] = 1;
-        $.post("/api/update-cart-image.php", {
-            album: img.attr('album-id'),
-            image: img.attr('image-id'),
-            products: products
-        }).done(function (data) {
-            // update our count on the page
-            $('#cart-count').html(data).css({
-                'padding-left': '10px'
-            });
-            reviewCart();
-        }).fail(function (xhr, status, error) {
-            if (xhr.responseText !== "") {
-                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-            } else if (error === "Unauthorized") {
-                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-            } else {
-                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your cart.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-            }
-        });
-    })
-
-    // download favorite images
-    $('#downloadable-favorites-btn').click(function () {
-        downloadImages($('#favorites').attr('album-id'), 'favorites');
-    });
-    // share favorite images
-    $('#shareable-favorites-btn').click(function () {
-        shareImages($('#favorites').attr('album-id'), 'favorites');
-    });
-    // submit favorite images
-    $('#submit-favorites-btn').click(function () {
-        $('#submit').attr('what', 'favorites').modal();
-    });
-
-    // download all images
-    $('#downloadable-all-btn').click(function () {
-        downloadImages($('#favorites').attr('album-id'), 'all');
-    });
-    // share all images
-    $('#shareable-all-btn').click(function () {
-        shareImages($('#favorites').attr('album-id'), 'all');
-    });
-
-    // our actual submit button
-    $('#submit-send').click(function () {
-        submitImages();
-    });
-
-    // set a favorite
-    $('#set-favorite-image-btn').click(function () {
-        setFavoriteImage();
-    });
-    // unset a favorite
-    $('#unset-favorite-image-btn').click(function () {
-        unsetFavoriteImage();
-    });
-
-    // show our favorites
-    $('#favorite-btn').click(function () {
-        showFavorites();
-    });
-
-    // show our cart image
-    $('#cart-image-btn').click(function () {
-        showCart();
-    });
-    // show different tabs on our cart
-    $(".nav-tabs a").click(function () {
-        $(this).tab('show');
-    });
-    // update our cart
-    $('.product-count input').change(function () {
-        updateCart($(this));
-    });
-    // show our cart review
-    $('#cart-btn,#reviewOrder').click(function () {
-        reviewCart();
-    });
-    // cart purchase options
-    $('#cart-submit').click(function () {
-        submitCart();
-    });
-
-    $('#cart-shipping input').bind("change keyup input", function () {
-        validateCartInput($(this));
-    });
-
-    // on start of slide, disable all buttons
-    $('#album-carousel').on('slide.bs.carousel', function () {
-        $('#album .btn-action').each(function () {
-            $(this).prop("disabled", true);
-        });
-    });
-    // once slide completes, check for a favorite, which will
-    // re-enable
-    $('#album-carousel').on('slid.bs.carousel', function () {
-        getDetails();
-    });
-
-    //submit email
-    $('#notify-submit').click(function () {
-        submitNotifyEmail();
-    });
-});
-
-function getDetails() {
-    $('#album .btn-action').each(function () {
-        $(this).prop("disabled", true);
-    });
-    var img = $('#album-carousel div.active div');
-    $.get("/api/is-favorite.php", {
-        album: img.attr('album-id'),
-        image: img.attr('image-id')
-    }).done(function (data) {
-        if (data === '1') {
+Album.prototype.selectImage = function (img, options) {
+    var Album = this;
+    options = options || {};
+    var card = Album.getImageCard(img);
+    if (!card.length) {
+        Album.pendingImageId = img;
+        return false;
+    }
+    if (!options.force && String(Album.currentImageId) === String(img)) {
+        updateViewerMeta(card);
+        if (card.attr('data-favorite') === '1') {
             setFavorite();
         } else {
             unsetFavorite();
         }
-        $.get("/api/is-downloadable.php", {
-            album: img.attr('album-id'),
-            image: img.attr('image-id')
-        }).done(function (data) {
-            if (data === '1') {
-                setDownloadable();
-            } else {
-                unsetDownloadable();
-            }
-            $.get("/api/is-shareable.php", {
-                album: img.attr('album-id'),
-                image: img.attr('image-id')
-            }).done(function (data) {
-                if (data === '1') {
-                    setShareable();
-                } else {
-                    unsetShareable();
-                }
+        openViewer();
+        return true;
+    }
+    Album.currentImageId = img;
+    Album.pendingImageId = null;
+    $('#album-grid .album-card').removeClass('is-active');
+    card.addClass('is-active');
+    updateViewerMeta(card);
+    if (card.attr('data-favorite') === '1') {
+        setFavorite();
+    } else {
+        unsetFavorite();
+    }
+    openViewer();
+    if (options.updateHash !== false) {
+        var currentHash = window.location.hash.replace('#', '');
+        if (String(currentHash) !== String(img)) {
+            history.replaceState("", document.title, window.location.pathname + window.location.search + '#' + img);
+        }
+    }
+    return true;
+};
 
-                $('#album .btn-action').each(function () {
-                    $(this).prop("disabled", false);
+Album.prototype.setImage = function (img, options) {
+    return this.selectImage(img, options);
+};
+
+Album.prototype.prev = function () {
+    var Album = this;
+    if (Album.currentImageId === null) {
+        return;
+    }
+    var index = -1;
+    $.each(Album.images, function (i, image) {
+        if (String(image.sequence) === String(Album.currentImageId)) {
+            index = i;
+            return false;
+        }
+    });
+    if (index === -1) {
+        return;
+    }
+    index--;
+    if (index < 0) {
+        index = Album.images.length - 1;
+    }
+    if (Album.images[index]) {
+        Album.selectImage(Album.images[index].sequence, {
+            scroll: true,
+            updateHash: true
+        });
+    }
+};
+
+Album.prototype.next = function () {
+    var Album = this;
+    if (Album.currentImageId === null) {
+        return;
+    }
+    var index = -1;
+    $.each(Album.images, function (i, image) {
+        if (String(image.sequence) === String(Album.currentImageId)) {
+            index = i;
+            return false;
+        }
+    });
+    if (index === -1) {
+        return;
+    }
+    index++;
+    if (index >= Album.images.length) {
+        index = 0;
+    }
+    if (Album.images[index]) {
+        Album.selectImage(Album.images[index].sequence, {
+            scroll: true,
+            updateHash: true
+        });
+    }
+};
+
+Album.prototype.removeImage = function (img) {
+    var Album = this;
+    var index = -1;
+    $.each(Album.images, function (i, image) {
+        if (String(image.sequence) === String(img)) {
+            index = i;
+            return false;
+        }
+    });
+    $('#album-grid .album-card[data-image-id="' + img + '"]').remove();
+    if (index !== -1) {
+        Album.images.splice(index, 1);
+    }
+    Album.totalImages = Math.max(0, Album.totalImages - 1);
+    if (String(Album.currentImageId) === String(img)) {
+        Album.currentImageId = null;
+        if (Album.images.length > 0) {
+            var next = Album.images[index] || Album.images[index - 1] || Album.images[0];
+            if (next) {
+                Album.selectImage(next.sequence, {
+                    scroll: false,
+                    updateHash: true,
+                    force: true
                 });
+                return;
+            }
+        }
+        updateViewerMeta($());
+        closeViewer();
+    }
+};
+
+Album.prototype.syncPendingImage = function () {
+    var Album = this;
+    if (Album.pendingImageId !== null && Album.getImageCard(Album.pendingImageId).length) {
+        Album.selectImage(Album.pendingImageId, {
+            scroll: false,
+            updateHash: false,
+            force: true
+        });
+        return true;
+    }
+    return false;
+};
+
+Album.prototype.loadImages = function () {
+    var Album = this;
+    if (Album.initialized) {
+        var loadedNow = 0;
+        $('#album-grid .album-card img[data-src]').each(function () {
+            var img = $(this);
+            if (img.attr('data-loaded') === '1' || img.attr('data-loading') === '1') {
+                return;
+            }
+            var card = img.closest('.album-card');
+            if (!card.length) {
+                return;
+            }
+            var rect = card.get(0).getBoundingClientRect();
+            var threshold = window.innerHeight * 1.5;
+            if (rect.top < threshold && rect.bottom > -threshold * 0.25) {
+                card.attr('data-loading', '1');
+                img.one('load', function () {
+                    markAlbumCardLoaded(card);
+                });
+                img.attr('src', img.attr('data-src'));
+                if (img.get(0).complete && img.get(0).naturalWidth > 0) {
+                    markAlbumCardLoaded(card);
+                }
+                loadedNow++;
+            }
+        });
+        Album.loaded += loadedNow;
+        return Album.loaded;
+    }
+    if (Album.loading) {
+        return Album.loaded;
+    }
+    Album.loading = true;
+    $.get("/api/get-album-images.php", {
+        albumId: Album.albumId,
+        start: Album.loaded,
+        howMany: Album.totalImages
+    }, function (data) {
+        if (typeof data.favoriteCount !== "undefined") {
+            updateFavoriteCount(data.favoriteCount);
+        }
+        $.each(data.images, function (k, v) {
+            var isFavorite = parseInt(v.favorite, 10) === 1;
+            var thumbLocation = v.thumbLocation || v.location;
+            var fullLocation = v.fullLocation || v.location;
+            var card = $('<article>');
+            card.addClass('album-card');
+            card.attr('album-id', Album.albumId);
+            card.attr('image-id', v.sequence);
+            card.attr('data-image-id', v.sequence);
+            card.attr('data-favorite', isFavorite ? '1' : '0');
+            card.toggleClass('is-favorite', isFavorite);
+            card.attr('data-loading', '0');
+            card.attr('data-loaded', '0');
+            card.attr('alt', v.title);
+            card.attr('title', v.title);
+            card.attr('data-title', v.title);
+            card.attr('data-caption', v.caption || '');
+            card.attr('data-location', thumbLocation);
+            card.attr('data-thumb-location', thumbLocation);
+            card.attr('data-full-location', fullLocation);
+            card.attr('data-height', v.height || 1);
+            card.attr('data-width', v.width || 1);
+            card.attr('data-index', Album.images.length);
+
+            var media = $('<button>');
+            media.attr('type', 'button');
+            media.addClass('album-card-media');
+            media.attr('aria-label', 'Open image ' + (v.title || v.sequence));
+
+            var img = $('<img>');
+            img.addClass('album-card-image');
+            img.attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACw=');
+            img.attr('data-src', thumbLocation);
+            img.attr('data-full-src', fullLocation);
+            img.attr('alt', v.title);
+            img.one('load', function () {
+                markAlbumCardLoaded(card);
+            });
+
+            var overlay = $('<div>');
+            overlay.addClass('album-card-overlay');
+
+            var meta = $('<div>');
+            meta.addClass('album-card-meta');
+            meta.append($('<strong>').text(v.title || ('Image ' + v.sequence)));
+            if (v.caption) {
+                meta.append($('<span>').text(v.caption));
+            }
+            overlay.append(meta);
+
+            var actions = $('<div>');
+            actions.addClass('album-card-actions');
+
+            actions.append(createIconButton('view', 'fa-search', 'View image', function () {
+                Album.selectImage(v.sequence, {
+                    scroll: true,
+                    updateHash: true,
+                    force: true
+                });
+            }));
+
+            if (window.albumCanDownload) {
+                actions.append(createIconButton('download', 'fa-download', 'Download image', function () {
+                    downloadImageFor(v.sequence);
+                }));
+            }
+
+            actions.append(createIconButton('submit', 'fa-paper-plane', 'Submit image', function () {
+                submitImageFor(v.sequence);
+            }));
+
+            actions.append(createIconButton('favorite', isFavorite ? 'fa-heart error' : 'fa-heart', 'Toggle favorite', function () {
+                toggleFavoriteForImage(v.sequence);
+            }));
+
+            overlay.append(actions);
+            media.append(img);
+            card.append(media);
+            card.append(overlay);
+            $('#album-grid').append(card);
+            updateAlbumCardSpan(card);
+            Album.images.push({
+                sequence: v.sequence,
+                location: thumbLocation,
+                fullLocation: fullLocation,
+                title: v.title,
+                caption: v.caption || '',
+                favorite: isFavorite
             });
         });
+        Album.initialized = true;
+        Album.loading = false;
+        updateAllAlbumCardSpans();
+        Album.loadImages();
+        Album.syncPendingImage();
+    }, "json").fail(function () {
+        Album.loading = false;
     });
-}
+    return Album.loaded;
+};
+
+$(document).ready(function () {
+    var albumResizeTimer = null;
+
+    $('#album-grid').on('click', '.album-card-media', function (event) {
+        event.preventDefault();
+        var card = $(this).closest('.album-card');
+        var imageId = card.attr('data-image-id');
+        if (window.album && imageId) {
+            window.album.selectImage(imageId, {
+                scroll: true,
+                updateHash: true,
+                force: true
+            });
+        }
+    });
+
+    $('#album-grid').on('click', '.album-card-action', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var card = $(this).closest('.album-card');
+        var imageId = card.attr('data-image-id');
+        var action = $(this).attr('data-action');
+        if (!imageId) {
+            return;
+        }
+        if (action === 'view') {
+            if (window.album) {
+                window.album.selectImage(imageId, {
+                    scroll: true,
+                    updateHash: true,
+                    force: true
+                });
+            }
+        } else if (action === 'download') {
+            downloadImageFor(imageId);
+        } else if (action === 'submit') {
+            submitImageFor(imageId);
+        } else if (action === 'favorite') {
+            toggleFavoriteForImage(imageId);
+        }
+    });
+
+    $('#album-viewer-close').click(function () {
+        history.replaceState("", document.title, window.location.pathname + window.location.search);
+        closeViewer();
+        $('#album-grid .album-card').removeClass('is-active');
+        if (window.album) {
+            window.album.currentImageId = null;
+        }
+    });
+
+    $('#album-viewer-overlay').click(function (event) {
+        if ($(event.target).is('#album-viewer-overlay')) {
+            $('#album-viewer-close').click();
+        }
+    });
+
+    $(document).on('keydown', function (event) {
+        if ($('#album-viewer-overlay').hasClass('hidden')) {
+            return;
+        }
+        if (event.key === 'Escape') {
+            $('#album-viewer-close').click();
+        } else if (event.key === 'ArrowLeft') {
+            if (window.album) {
+                window.album.prev();
+            }
+        } else if (event.key === 'ArrowRight') {
+            if (window.album) {
+                window.album.next();
+            }
+        }
+    });
+
+    $('#album-prev-btn').click(function () {
+        if (window.album) {
+            window.album.prev();
+        }
+    });
+    $('#album-next-btn').click(function () {
+        if (window.album) {
+            window.album.next();
+        }
+    });
+
+    $('#downloadable-image-btn').click(function () {
+        downloadSelectedImage();
+    });
+    $('#submit-image-btn').click(function () {
+        submitSelectedImage();
+    });
+
+    $('#downloadable-favorites-btn').click(function () {
+        downloadImages($('#favorites').attr('album-id'), 'favorites');
+    });
+    $('#submit-favorites-btn').click(function () {
+        $('#submit').attr('what', 'favorites').modal();
+    });
+
+    $('#downloadable-all-btn').click(function () {
+        downloadImages($('#favorites').attr('album-id'), 'all');
+    });
+
+    $('#submit-send').click(function () {
+        submitImages();
+    });
+
+    $('#set-favorite-image-btn').click(function () {
+        setFavoriteImage();
+    });
+    $('#unset-favorite-image-btn').click(function () {
+        unsetFavoriteImage();
+    });
+
+    $('#favorite-btn').click(function () {
+        showFavorites();
+    });
+
+    $(".nav-tabs a").click(function () {
+        $(this).tab('show');
+    });
+    $('.product-count input').change(function () {
+        updateCart($(this));
+    });
+    $('#cart-shipping input').bind("change keyup input", function () {
+        validateCartInput($(this));
+    });
+
+    $('#notify-submit').click(function () {
+        submitNotifyEmail();
+    });
+
+    $(window).on('resize', function () {
+        clearTimeout(albumResizeTimer);
+        albumResizeTimer = setTimeout(function () {
+            updateAllAlbumCardSpans();
+            if (window.album) {
+                window.album.loadImages();
+            }
+        }, 50);
+    });
+});
 
 function calculateCost() {
     var total = 0;
@@ -353,7 +709,10 @@ function validateCartInput(ele) {
 }
 
 function setFavoriteImage() {
-    var img = $('#album-carousel div.active div');
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
     // send our update
     $.post("/api/set-favorite.php", {
         album: img.attr('album-id'),
@@ -374,7 +733,10 @@ function setFavoriteImage() {
 }
 
 function unsetFavoriteImage() {
-    var img = $('#album-carousel div.active div');
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
     // send our update
     $.post("/api/unset-favorite.php", {
         album: img.attr('album-id'),
@@ -394,31 +756,67 @@ function unsetFavoriteImage() {
     });
 }
 
+function toggleFavoriteSelectedImage() {
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
+    $.get("/api/is-favorite.php", {
+        album: img.attr('album-id'),
+        image: img.attr('image-id')
+    }).done(function (data) {
+        if (data === '1') {
+            unsetFavoriteImage();
+        } else {
+            setFavoriteImage();
+        }
+    });
+}
+
+function downloadSelectedImage() {
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
+    $.get("/api/is-downloadable.php", {
+        album: img.attr('album-id'),
+        image: img.attr('image-id')
+    }).done(function (data) {
+        if (data === '1') {
+            downloadImages(img.attr('album-id'), img.attr('image-id'));
+        }
+    });
+}
+
+function submitSelectedImage() {
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
+    $('#submit').attr('what', img.attr('image-id')).modal();
+}
+
 function showFavorites() {
     $('#favorites-list').empty();
     $('#favorites').modal();
+    var albumId = $('#album-viewer-overlay').attr('album-id');
+    if (!albumId && window.album) {
+        albumId = window.album.albumId;
+    }
     $.get("/api/get-favorites.php", {
-        album: $('#album').attr('album-id'),
+        album: albumId,
     }, function (data) {
         $.each(data, function (i) {
             var li = $('<li image-id="' + data[i].sequence + '" class="img-favorite">');
             li.css('background-image', 'url("' + data[i].location + '")');
             li.click(function () {
                 $.post("/api/unset-favorite.php", {
-                    album: $('#album').attr('album-id'),
+                    album: albumId,
                     image: $(this).attr('image-id')
                 }).done(function (data) {
-                    // update our count on the page
-                    if (parseInt(data) > 0) {
-                        $('#favorite-count').html(data).css({
-                            'padding-left': '10px'
-                        });
-                    } else {
-                        $('#favorite-count').html("").css({
-                            'padding-left': ''
-                        });
+                    updateFavoriteCount(data);
+                    if (parseInt(data, 10) <= 0) {
                         $("#downloadable-favorites-btn").prop("disabled", true);
-                        $("#shareable-favorites-btn").prop("disabled", true);
                         $("#submit-favorites-btn").prop("disabled", true);
                     }
                 });
@@ -427,18 +825,19 @@ function showFavorites() {
             $('#favorites-list').append(li);
         });
         $("#downloadable-favorites-btn").prop("disabled", false);
-        $("#shareable-favorites-btn").prop("disabled", false);
         $("#submit-favorites-btn").prop("disabled", false);
         if (!$("#favorites-list").has("li").length) {
             $("#downloadable-favorites-btn").prop("disabled", true);
-            $("#shareable-favorites-btn").prop("disabled", true);
             $("#submit-favorites-btn").prop("disabled", true);
         }
     }, "json");
 }
 
 function showCart() {
-    var img = $('#album-carousel div.active div');
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
     $('#cart-image').modal();
     $('.product-count input').each(function () {
         $(this).val("");
@@ -460,7 +859,10 @@ function showCart() {
 }
 
 function updateCart(input) {
-    var img = $('#album-carousel div.active div');
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
     var row = input.closest('tr');
     var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
     $('.product-total', row).html("$" + (Math.round(price * input.val() * 100) / 100).toFixed(2));
@@ -496,7 +898,6 @@ function updateCart(input) {
 
 function reviewCart() {
     $('#cart-image').modal('hide');
-    $('#album').modal('hide');
     $('#cart').modal();
     $('#cart-items').empty();
     $.get("/api/get-cart.php", function (data) {
@@ -571,31 +972,13 @@ function reviewCart() {
 function setFavorite() {
     $('#set-favorite-image-btn').addClass('hidden');
     $('#unset-favorite-image-btn').removeClass('hidden');
+    $('#album-grid .album-card.is-active .album-card-action[data-action="favorite"] em').removeClass('fa-heart').addClass('fa-heart error');
 }
 
 function unsetFavorite() {
     $('#set-favorite-image-btn').removeClass('hidden');
     $('#unset-favorite-image-btn').addClass('hidden');
-}
-
-function setDownloadable() {
-    $('#not-downloadable-image-btn').addClass('hidden');
-    $('#downloadable-image-btn').removeClass('hidden');
-}
-
-function unsetDownloadable() {
-    $('#not-downloadable-image-btn').removeClass('hidden');
-    $('#downloadable-image-btn').addClass('hidden');
-}
-
-function setShareable() {
-    $('#not-shareable-image-btn').addClass('hidden');
-    $('#shareable-image-btn').removeClass('hidden');
-}
-
-function unsetShareable() {
-    $('#not-shareable-image-btn').removeClass('hidden');
-    $('#shareable-image-btn').addClass('hidden');
+    $('#album-grid .album-card.is-active .album-card-action[data-action="favorite"] em').removeClass('fa-heart error').addClass('fa-heart');
 }
 
 // functions for dealing with the cart
@@ -737,20 +1120,6 @@ function submitDownloadEmail(file) {
         }
     }).always(function () {
         $('#download-email-address-alert').remove();
-    });
-}
-
-function shareImages(album, what) {
-    BootstrapDialog.show({
-        draggable: true,
-        title: '<em class="fa fa-frown-o"></em> Sorry',
-        message: '<em class="fa fa-exclamation-triangle"> This functionality isn\'t available yet. Please check back soon.',
-        buttons: [{
-            label: 'Close',
-            action: function (dialogInItself) {
-                dialogInItself.close();
-            }
-        }]
     });
 }
 

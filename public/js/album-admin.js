@@ -3,11 +3,18 @@ var allUser = {};
 allUser.id = "0";
 allUser.usr = "<i>All Users</i>";
 
+function getAlbumId() {
+    var albumId = $('#album-viewer').attr('album-id');
+    if (!albumId && window.album) {
+        albumId = window.album.albumId;
+    }
+    return albumId;
+}
 
 $(document).ready(function () {
 
     $('#edit-album-btn').click(function () {
-        editAlbum($('#album').attr('album-id'));
+        editAlbum(getAlbumId());
     });
 
     $('#delete-image-btn').click(function () {
@@ -39,7 +46,7 @@ $(document).ready(function () {
 });
 
 function deleteImage() {
-    var img = $('#album-carousel div.active div');
+    var img = (window.album && typeof window.album.getCurrentCard === "function") ? window.album.getCurrentCard() : $('#album-grid .album-card.is-active');
     BootstrapDialog.show({
         draggable: true,
         title: 'Are You Sure?',
@@ -60,11 +67,11 @@ function deleteImage() {
                     image: img.attr('image-id')
                 }).done(function () {
                     dialogInItself.close();
-                    // go to the next image
-                    $('#album-carousel').carousel("next");
-                    // cleanup the dom
-                    $('.gallery img[alt="' + img.attr('alt') + '"]').parent().remove();
-                    img.parent().remove();
+                    if (window.album && typeof window.album.removeImage === "function") {
+                        window.album.removeImage(img.attr('image-id'));
+                    } else {
+                        img.remove();
+                    }
                 }).fail(function (xhr, status, error) {
                     if (xhr.responseText !== "") {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
@@ -85,7 +92,7 @@ function deleteImage() {
 }
 
 function setupImageAccess() {
-    var img = $('#album-carousel div.active div');
+    var img = (window.album && typeof window.album.getCurrentCard === "function") ? window.album.getCurrentCard() : $('#album-grid .album-card.is-active');
     BootstrapDialog.show({
         draggable: true,
         title: 'Who Do You Want To Give Access To For Image <b>' + img.attr('alt') + '</b>?',
@@ -226,7 +233,7 @@ function setupImageAccess() {
             });
             $('#albumDiv').after(albumsDiv);
             $.get("/api/get-album-users.php", {
-                album: $('#album').attr('album-id'),
+                album: getAlbumId(),
             }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#album-users'), album_users[i].user, false);
@@ -328,7 +335,7 @@ function setupAlbumAccess() {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
                 $.get("/api/search-album-users.php", {
-                    album: $('#album').attr('album-id'),
+                    album: getAlbumId(),
                     keyword: keyword
                 }, function (data) {
                     $('.search-results').remove();
@@ -367,7 +374,7 @@ function setupAlbumAccess() {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
                 $.get("/api/search-album-users.php", {
-                    album: $('#album').attr('album-id'),
+                    album: getAlbumId(),
                     keyword: keyword
                 }, function (data) {
                     $('.search-results').remove();
@@ -406,14 +413,14 @@ function setupAlbumAccess() {
             albumsDiv.attr('id', 'album-users');
             albumsDiv.attr('url', 'update-album-users.php');
             albumsDiv.attr('image-id', "*");
-            albumsDiv.attr('album-id', $('#album').attr('album-id'));
+            albumsDiv.attr('album-id', getAlbumId());
             albumsDiv.css({
                 'padding': '10px 0 10px 0',
                 'margin': '0 -5px 0 -5px'
             });
             $('#albumDiv').after(albumsDiv);
             $.get("/api/get-album-users.php", {
-                album: $('#album').attr('album-id'),
+                album: getAlbumId(),
             }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#album-users'), album_users[i].user, false);
@@ -423,14 +430,14 @@ function setupAlbumAccess() {
             downloadsDiv.attr('id', 'download-users');
             downloadsDiv.attr('url', 'update-image-downloaders.php');
             downloadsDiv.attr('image-id', "*");
-            downloadsDiv.attr('album-id', $('#album').attr('album-id'));
+            downloadsDiv.attr('album-id', getAlbumId());
             downloadsDiv.css({
                 'padding': '10px 0 10px 0',
                 'margin': '0 -5px 0 -5px'
             });
             $('#downloadDiv').after(downloadsDiv);
             $.get("/api/get-image-downloaders.php", {
-                album: $('#album').attr('album-id'),
+                album: getAlbumId(),
                 image: "*"
             }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
@@ -441,14 +448,14 @@ function setupAlbumAccess() {
             sharesDiv.attr('id', 'share-users');
             sharesDiv.attr('url', 'update-image-sharers.php');
             sharesDiv.attr('image-id', "*");
-            sharesDiv.attr('album-id', $('#album').attr('album-id'));
+            sharesDiv.attr('album-id', getAlbumId());
             sharesDiv.css({
                 'padding': '10px 0 10px 0',
                 'margin': '0 -5px 0 -5px'
             });
             $('#shareDiv').after(sharesDiv);
             $.get("/api/get-image-sharers.php", {
-                album: $('#album').attr('album-id'),
+                album: getAlbumId(),
                 image: "*"
             }, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
@@ -468,7 +475,7 @@ function viewAllFavorites() {
     $('#favorites-all-title').empty();
     $('#favorites-all-content').empty();
     $.get("/api/get-all-favorites.php", {
-        album: $('#album').attr('album-id')
+        album: getAlbumId()
     }, function (favorites) {
         $('#view-my-favorites-btn').removeClass('hidden').show();
         $('#view-all-favorites-btn').removeClass('disabled').prop("disabled", false).hide();

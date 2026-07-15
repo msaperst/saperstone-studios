@@ -27,7 +27,6 @@ if ($user->isLoggedIn()) {
 }
 
 $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE user = '0' AND album = '{$album->getId()}';");
-$isAlbumSharable = $sql->getRowCount("SELECT * FROM `share_rights` WHERE user = '0' AND album = '{$album->getId()}';");
 ?>
 
 <!DOCTYPE html>
@@ -93,7 +92,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
     <!-- /.row -->
 
     <!-- Services Section -->
-    <div id="album-thumbs" class="row image-grid">
+    <div id="album-thumbs" class="album-page">
         <?php
         $notification_emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()} AND contacted = FALSE;");
         if ($user->isAdmin() && sizeof($notification_emails) > 0) {
@@ -123,28 +122,93 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
         }
         if (count($images) > 0) {
             ?>
-            <div id="col-0" class="col-md-3 col-sm-6 col-gallery"></div>
-            <div id="col-1" class="col-md-3 col-sm-6 col-gallery"></div>
-            <div id="col-2" class="col-md-3 col-sm-6 col-gallery"></div>
-            <div id="col-3" class="col-md-3 col-sm-6 col-gallery"></div>
-            <?php
+            <div id="album-viewer-overlay" class="album-viewer-overlay hidden" album-id="<?php echo $album->getId(); ?>" role="dialog" aria-modal="true" aria-hidden="true">
+                <button id="album-viewer-close" type="button" class="album-viewer-close" aria-label="Close viewer">
+                    <em class="fa fa-times"></em>
+                </button>
+                <div class="album-viewer-shell">
+                    <button id="album-prev-btn" type="button" class="album-nav album-nav-prev" aria-label="Previous image">
+                        <em class="fa fa-chevron-left"></em>
+                    </button>
+
+                    <div class="album-viewer-stage">
+                        <div class="album-viewer-frame">
+                            <img id="album-viewer-image" class="album-viewer-image" src="" alt="">
+
+                            <div class="album-viewer-copy">
+                                <h2 id="album-viewer-title"></h2>
+                                <p id="album-viewer-caption"></p>
+                            </div>
+
+                            <div class="album-viewer-actions">
+                                <?php if ($user->isLoggedIn() || $isAlbumDownloadable) { ?>
+                                    <button id="downloadable-image-btn"
+                                            type="button" class="btn btn-default album-icon-btn btn-success"
+                                            aria-label="Download image">
+                                        <em class="fa fa-download"></em>
+                                    </button>
+                                <?php } ?>
+                                <button id="submit-image-btn" type="button"
+                                        class="btn btn-default album-icon-btn btn-success"
+                                        aria-label="Submit image">
+                                    <em class="fa fa-paper-plane"></em>
+                                </button>
+                                <button id="set-favorite-image-btn" type="button"
+                                        class="btn btn-default album-icon-btn"
+                                        aria-label="Favorite image">
+                                    <em class="fa fa-heart"></em>
+                                </button>
+                                <button id="unset-favorite-image-btn" type="button"
+                                        class="btn btn-default btn-success album-icon-btn hidden"
+                                        aria-label="Remove favorite">
+                                    <em class="fa fa-heart error"></em>
+                                </button>
+                                <?php
+                                if ($user->isAdmin()) {
+                                    ?>
+                                    <button id="access-image-btn" type="button"
+                                            class="btn btn-default btn-info album-icon-btn"
+                                            aria-label="Access image">
+                                        <em class="fa fa-picture-o"></em>
+                                    </button>
+                                    <button id="delete-image-btn" type="button"
+                                            class="btn btn-default btn-danger album-icon-btn"
+                                            aria-label="Delete image">
+                                        <em class="fa fa-trash"></em>
+                                    </button>
+                                    <?php
+                                }
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="album-next-btn" type="button" class="album-nav album-nav-next" aria-label="Next image">
+                        <em class="fa fa-chevron-right"></em>
+                    </button>
+                </div>
+            </div>
+            <div id="album-grid" class="album-grid"></div>
+        <?php
         } else {
             ?>
-            <div class="col-md-offset-2 col-md-8 text-center">Sorry, no images have
-                been uploaded to your gallery yet. You can submit your email to be
-                notified when images are added if you would like. Your email address
-                will not be used for any other purposes.
-            </div>
-            <div class="col-md-4 col-md-offset-4 text-center">
-                <form>
-                    <label class="sr-only" for="cart-email">Email</label> <input
-                            id="notify-email" type="email" placeholder="Email"
-                            class="form-control" value="<?php echo $user->getEmail(); ?>"
-                            required/>
-                </form>
-                <button id="notify-submit" type="submit" class="btn btn-primary">
-                    <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Submit
-                </button>
+            <div class="row">
+                <div class="col-md-offset-2 col-md-8 text-center">Sorry, no images have
+                    been uploaded to your gallery yet. You can submit your email to be
+                    notified when images are added if you would like. Your email address
+                    will not be used for any other purposes.
+                </div>
+                <div class="col-md-4 col-md-offset-4 text-center">
+                    <form>
+                        <label class="sr-only" for="cart-email">Email</label> <input
+                                id="notify-email" type="email" placeholder="Email"
+                                class="form-control" value="<?php echo $user->getEmail(); ?>"
+                                required/>
+                    </form>
+                    <button id="notify-submit" type="submit" class="btn btn-primary">
+                        <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Submit
+                    </button>
+                </div>
             </div>
             <?php
         }
@@ -156,156 +220,6 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
 
 </div>
 <!-- /.container -->
-
-<!-- Slideshow Modal -->
-<div id="album" album-id="<?php echo $album->getId(); ?>"
-     class="modal fade modal-carousel" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><?php echo $album->getName(); ?>
-                    <small><?php echo $album->getDescription(); ?></small>
-                </h4>
-            </div>
-            <div class="modal-body">
-                <!-- Carousel -->
-                <div id="album-carousel"
-                     class="carousel slide carousel-three-by-two" data-pause="false"
-                     data-interval="false">
-                    <!-- Indicators -->
-                    <?php
-                    foreach ($images as $num => $image) {
-                        $class = "";
-                        if ($num == 0) {
-                            $class = " class='active'";
-                        }
-                    }
-                    ?>
-
-                    <!-- Wrapper for slides -->
-                    <div class="carousel-inner">
-                        <?php
-                        foreach ($images as $num => $image) {
-                            $active_class = "";
-                            if ($num == 0) {
-                                $active_class = " active";
-                            }
-                            echo "<div class='item$active_class'>";
-                            echo "    <div class='contain' album-id='{$album->getId()}' image-id='" . $image ['sequence'] . "'";
-                            echo "        alt='" . $image ['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
-                            echo "    <div class='carousel-caption'>";
-                            echo "        <h2>" . $image ['caption'] . "</h2>";
-                            echo "    </div>";
-                            echo "</div>";
-                        }
-                        ?>
-                    </div>
-
-                    <!-- Controls -->
-                    <a class="left carousel-control" onclick="album.prev()"> <span class="icon-prev"></span> </a>
-                    <a class="right carousel-control" onclick="album.next()"> <span class="icon-next"></span> </a>
-                </div>
-            </div>
-            <div class="modal-footer">
-                    <span class="pull-left">
-                        <?php
-                        if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
-                            ?>
-                            <div class="tooltip-wrapper disabled"
-                                 data-toggle="tooltip" data-placement="top"
-                                 title="Login or create an account for this feature.">
-                            <button id="downloadable-image-btn"
-                                    type="button" class="btn btn-default" disabled>
-                                <em class="fa fa-download"></em> Download
-                            </button>
-                        </div>
-                            <?php
-                        } else {
-                            ?>
-                            <button id="downloadable-image-btn"
-                                    type="button"
-                                    class="btn btn-default btn-action btn-success hidden">
-                            <em class="fa fa-download"></em> Download
-                        </button>
-                            <button id="not-downloadable-image-btn" type="button"
-                                    class="btn btn-default btn-action btn-warning hidden">
-                            <em class="fa fa-credit-card"></em> Purchase
-                        </button>
-                            <?php
-                        }
-                        if (!$user->isLoggedIn() && !$isAlbumSharable) {
-                            ?>
-                            <!-- removing share abilities until feature is completed -->
-                            <!--                            <div class="tooltip-wrapper disabled"-->
-                            <!--                                 data-toggle="tooltip" data-placement="top"-->
-                            <!--                                 title="Login or create an account for this feature.">-->
-                            <!--                            <button id="shareable-image-btn"-->
-                            <!--                                    type="button" class="btn btn-default" disabled>-->
-                            <!--                                <em class="fa fa-share"></em> Share-->
-                            <!--                            </button>-->
-                            <!--                        </div>-->
-                            <?php
-                        } else {
-                            ?>
-                            <!-- removing share abilities until feature is completed -->
-                            <!--                            <button id="shareable-image-btn" type="button"-->
-                            <!--                                    class="btn btn-default btn-action btn-success hidden">-->
-                            <!--                            <em class="fa fa-share"></em> Share-->
-                            <!--                        </button>-->
-                            <!--                            <div id="not-shareable-image-btn" class="tooltip-wrapper disabled"-->
-                            <!--                                 data-toggle="tooltip" data-placement="top"-->
-                            <!--                                 title="Purchase social media rights to this image in order to share it on social media.">-->
-                            <!--                            <button type="button" class="btn btn-default btn-action">-->
-                            <!--                                <em class="fa fa-share"></em> Share-->
-                            <!--                            </button>-->
-                            <!--                        </div>-->
-                            <?php
-                        }
-                        if ($user->isLoggedIn()) {
-                            ?>
-                            <!-- commenting out cart button -->
-                            <!--                            <button id="cart-image-btn" type="button"-->
-                            <!--                                    class="btn btn-default btn-warning btn-action">-->
-                            <!--                            <em class="fa fa-shopping-cart"></em> Add to Cart-->
-                            <!--                        </button>-->
-                            <?php
-                        }
-                        ?>
-                        <button id="submit-image-btn" type="button"
-                                class="btn btn-default btn-action btn-success">
-                            <em class="fa fa-paper-plane"></em> Submit
-                        </button>
-                        <button id="set-favorite-image-btn" type="button"
-                                class="btn btn-default btn-action">
-                            <em class="fa fa-heart"></em> Favorite
-                        </button>
-                        <button id="unset-favorite-image-btn" type="button"
-                                class="btn btn-default btn-success btn-action hidden">
-                            <em class="fa fa-heart error"></em> Favorite
-                        </button>
-                        <?php
-                        if ($user->isAdmin()) {
-                            ?>
-                            <button id="access-image-btn" type="button"
-                                    class="btn btn-default btn-info btn-action">
-                            <em class="fa fa-picture-o"></em> Access
-                        </button>
-                            <button id="delete-image-btn" type="button"
-                                    class="btn btn-default btn-danger btn-action">
-                            <em class="fa fa-trash"></em> Delete
-                        </button>
-                            <?php
-                        }
-                        ?>
-                    </span>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal -->
 
 <!-- Favorites Modal -->
 <div id="favorites" album-id="<?php echo $album->getId(); ?>"
@@ -334,48 +248,12 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
             ?>
             <div class="modal-footer">
                     <span class="pull-left">
-                        <?php
-                        if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
-                            ?>
-                            <div class="tooltip-wrapper disabled"
-                                 data-toggle="tooltip" data-placement="top"
-                                 title="Login or create an account for this feature.">
-                            <button id="downloadable-favorites-btn"
-                                    type="button" class="btn btn-default" disabled>
-                                <em class="fa fa-download"></em> Download Favorites
-                            </button>
-                        </div>
-                            <?php
-                        } else {
-                            ?>
+                        <?php if ($user->isLoggedIn() || $isAlbumDownloadable) { ?>
                             <button id="downloadable-favorites-btn"
                                     type="button" class="btn btn-default btn-action btn-success">
                             <em class="fa fa-download"></em> Download Favorites
                         </button>
-                            <?php
-                        }
-                        if (!$user->isLoggedIn() && !$isAlbumSharable) {
-                            ?>
-                            <!-- removing share abilities until feature is completed -->
-                            <!--                            <div class="tooltip-wrapper disabled"-->
-                            <!--                                 data-toggle="tooltip" data-placement="top"-->
-                            <!--                                 title="Login or create an account for this feature.">-->
-                            <!--                            <button id="shareable-favorites-btn"-->
-                            <!--                                    type="button" class="btn btn-default" disabled>-->
-                            <!--                                <em class="fa fa-share"></em> Share Favorites-->
-                            <!--                            </button>-->
-                            <!--                        </div>-->
-                            <?php
-                        } else {
-                            ?>
-                            <!-- removing share abilities until feature is completed -->
-                            <!--                            <button id="shareable-favorites-btn"-->
-                            <!--                                    type="button" class="btn btn-default btn-action btn-success">-->
-                            <!--                            <em class="fa fa-share"></em> Share Favorites-->
-                            <!--                        </button>-->
-                            <?php
-                        }
-                        ?>
+                        <?php } ?>
                         <button id="submit-favorites-btn" type="button"
                                 class="btn btn-default btn-action btn-success">
                             <em class="fa fa-paper-plane"></em> Submit Favorites
@@ -483,10 +361,6 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="reviewOrder" type="button"
-                        class="btn btn-default btn-warning">
-                    <em class="fa fa-shopping-cart"></em> Review Order & Checkout
-                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -593,10 +467,6 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 </div>
             </div>
             <div class="modal-footer bootstrap-dialog">
-                <button id="cart-submit" type="button"
-                        class="btn btn-default btn-success" disabled>
-                    <em class="fa fa-credit-card"></em> Place Order
-                </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -722,29 +592,6 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
                 </button></span>
             <?php
         }
-        if (!$user->isLoggedIn() && !$isAlbumSharable) {
-            ?>
-            <!-- removing share abilities until feature is completed -->
-            <!--            <span class="text-center"><div-->
-            <!--                        class="tooltip-wrapper disabled" data-toggle="tooltip"-->
-            <!--                        data-placement="top"-->
-            <!--                        title="Login or create an account for this feature.">-->
-            <!--                    <button id="shareable-all-btn"-->
-            <!--                            type="button" class="btn btn-default" disabled>-->
-            <!--                        <em class="fa fa-share"></em> Share All-->
-            <!--                    </button>-->
-            <!--                </div></span>-->
-            <?php
-        } else {
-            ?>
-            <!-- removing share abilities until feature is completed -->
-            <!--            <span class="text-center"><button-->
-            <!--                        id="shareable-all-btn" type="button"-->
-            <!--                        class="btn btn-default btn-action btn-success">-->
-            <!--                    <em class="fa fa-share"></em> Share All-->
-            <!--                </button></span>-->
-            <?php
-        }
         if (!$user->isLoggedIn()) {
             ?>
             <!-- commenting out cart button -->
@@ -818,19 +665,22 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
 </nav>
 
 <!-- Gallery JavaScript -->
-<script src="/js/album.js"></script>
+<script>
+    window.albumCanDownload = <?php echo ($user->isLoggedIn() || $isAlbumDownloadable) ? 'true' : 'false'; ?>;
+</script>
+<script src="/js/album.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/album.js'); ?>"></script>
 <?php
 if ($user->isAdmin()) {
     ?>
-    <script src="/js/album-admin.js"></script>
-    <script src="/js/albums-admin.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="/js/album-admin.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/album-admin.js'); ?>"></script>
+    <script src="/js/albums-admin.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-admin.js'); ?>"></script>
+    <script src="/js/jquery.uploadfile.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.uploadfile.js'); ?>"></script>
     <?php
 }
 if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
     ?>
-    <script src="/js/albums-uploader.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="/js/albums-uploader.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-uploader.js'); ?>"></script>
+    <script src="/js/jquery.uploadfile.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.uploadfile.js'); ?>"></script>
     <?php
 }
 ?>
@@ -839,11 +689,8 @@ if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
 <script>
     $('[data-toggle="tooltip"]').tooltip();
     var album = new Album("<?php echo $album->getId(); ?>", 4, <?php echo count($images); ?> );
-    var loaded = 0;
     $(window, document).on("scroll resize", function () {
-        if ($('footer').isOnScreen() && loaded < <?php echo count($images); ?> ) {
-            loaded = album.loadImages();
-        }
+        album.loadImages();
     });
 </script>
 
