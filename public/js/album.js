@@ -387,7 +387,7 @@ Album.prototype.applyFilter = function () {
 
     var favoriteButton = $('#favorite-btn');
     if (!Album.showFavoritesOnly) {
-        // resetting the buttons
+        // Resetting the buttons
         favoriteButton
             .attr('title', 'View favorite images from this album')
             .attr('data-original-title', 'View favorite images from this album');
@@ -396,13 +396,34 @@ Album.prototype.applyFilter = function () {
         $('#downloadable-favorites-btn').hide();
         $('#downloadable-all-btn').show();
         $('#submit-favorites-btn').hide();
-        // resetting the menu
+
+        // --- RESTORE ORIGINAL FAVORITES ---
+        if (Album.originalFavoritesBackup) {
+            $('#album-grid .album-card').each(function () {
+                var card = $(this);
+                var origFav = Album.originalFavoritesBackup[card.attr('data-image-id')] || '0';
+                card.attr('data-favorite', origFav);
+                card.toggleClass('is-favorite', origFav === '1');
+
+                // Restore card favorite heart icons to correct state
+                var isFav = (origFav === '1');
+                card.find('.album-card-action[data-action="favorite"] em')
+                    .removeClass('fa-heart error')
+                    .addClass(isFav ? 'fa-heart error' : 'fa-heart');
+            });
+            // Wipe backup and state
+            Album.originalFavoritesBackup = null;
+            Album.viewingAdminUserFavorites = null;
+        }
+        // ----------------------------------
+
+        // Resetting the menu breadcrumbs
         $('.breadcrumb>li').last().remove();
         var lastLink = $('.breadcrumb>li').last();
         var text = lastLink.text();
-        lastLink.addClass('active').html(text).off("click");
+        lastLink.addClass('active').html(text).off("click").css('cursor', 'unset');
     } else {
-        // setting the buttons
+        // Setting the buttons
         favoriteButton
             .attr('title', 'View all images from this album')
             .attr('data-original-title', 'View all images from this album');
@@ -411,19 +432,25 @@ Album.prototype.applyFilter = function () {
         $('#downloadable-all-btn').hide();
         $('#downloadable-favorites-btn').show();
         $('#submit-favorites-btn').show();
-        // adding favorite to breadcrumbs
+
+        // Adding favorite label to breadcrumbs
         var lastLink = $('.breadcrumb>li').last();
         lastLink.removeClass('active');
         var text = lastLink.text();
         var anchor = $('<a>');
         anchor.text(text);
-        lastLink.html(anchor);
-        lastLink.click(function () {
+        lastLink.html(anchor).css('cursor', 'pointer').off("click").click(function () {
             toggleFavorites();
         });
 
+        // Determine custom breadcrumb label based on active admin target user
+        var breadcrumbLabel = 'Favorites';
+        if (Album.viewingAdminUserFavorites) {
+            breadcrumbLabel = 'Favorites (' + Album.viewingAdminUserFavorites + ')';
+        }
+
         var listItem = $('<li>');
-        listItem.addClass('active').text('Favorites');
+        listItem.addClass('active').text(breadcrumbLabel);
         $('#actions').before(listItem);
     }
     var tooltip = favoriteButton.attr('aria-describedby');

@@ -32,8 +32,8 @@ $(document).ready(function () {
         viewAllFavorites();
     });
 
-    $('#view-my-favorites-btn').click(function () {
-        viewMyFavorites();
+    $('#favorites').on('hidden.bs.modal', function (e) {
+        $('#view-all-favorites-btn').removeClass('disabled').prop("disabled", false);
     });
 
     $('#email-users').click(function () {
@@ -467,59 +467,73 @@ function setupAlbumAccess() {
 }
 
 function viewAllFavorites() {
-    $('#favorites .modal-title span').html("All Favorite Images for");
+    $('#favorites').modal();
     $('#view-all-favorites-btn').addClass('disabled').prop("disabled", true);
     $('#view-all-favorites-btn em').addClass('fa-spinner fa-spin').removeClass('fa-search');
-    $('.modal-body.mine').hide();
-    $('.modal-body.all').removeClass('hidden').show();
-    $('#favorites-all-title').empty();
-    $('#favorites-all-content').empty();
+
     $.get("/api/get-all-favorites.php", {
         album: getAlbumId()
     }, function (favorites) {
-        $('#view-my-favorites-btn').removeClass('hidden').show();
-        $('#view-all-favorites-btn').removeClass('disabled').prop("disabled", false).hide();
         $('#view-all-favorites-btn em').removeClass('fa-spinner fa-spin').addClass('fa-search');
+        $('#favorites-all-title').empty();
+
         $.each(favorites, function (user, favs) {
             var title = $('<li>');
-            var link = $('<a>');
-            link.attr({
-                'data-toggle': 'tab',
-                'href': '#' + user.replace(/\./g, '-') + '-favs'
-            });
-            link.html(user);
+            var link = $('<a href="#">');
 
-            var content = $('<div>');
-            content.attr('id', user.replace(/\./g, '-') + '-favs');
-            content.addClass('tab-pane fade');
-            var list = $('<ul>');
-            list.addClass('list-inline');
-            $.each(favs, function (index, fav) {
-                var item = $('<li image-id="' + fav.sequence + '" class="img-favorite img-favorite-text">');
-                item.css({
-                    'background-image': 'url("' + fav.location + '")',
-                });
-                item.text(fav.title);
-                list.append(item);
-                if (fav.usr !== null) {
-                    link.html(fav.usr);
+            // Determine user label
+            var displayName = user;
+            if (favs.length > 0 && favs[0].usr !== null) {
+                displayName = favs[0].usr;
+            }
+            link.html(displayName);
+
+            // Click handler toggles full-page filtration
+            link.click(function (e) {
+                e.preventDefault();
+                $('#favorites').modal('hide');
+
+                if (window.album) {
+                    // 1. Back up original user favorites if not already backed up
+                    if (!window.album.originalFavoritesBackup) {
+                        window.album.originalFavoritesBackup = {};
+                        $('#album-grid .album-card').each(function () {
+                            var card = $(this);
+                            window.album.originalFavoritesBackup[card.attr('data-image-id')] = card.attr('data-favorite');
+                        });
+                    }
+
+                    // 2. Track whose favorites we are currently viewing
+                    window.album.viewingAdminUserFavorites = displayName;
+
+                    // 3. Collect the sequences (image-ids) of this user's favorites
+                    var favIds = favs.map(function (f) {
+                        return String(f.sequence);
+                    });
+
+                    // 4. Overwrite card favorite flags temporarily
+                    $('#album-grid .album-card').each(function () {
+                        var card = $(this);
+                        var imgId = String(card.attr('data-image-id'));
+                        if (favIds.indexOf(imgId) !== -1) {
+                            card.attr('data-favorite', '1');
+                            card.addClass('is-favorite');
+                        } else {
+                            card.attr('data-favorite', '0');
+                            card.removeClass('is-favorite');
+                        }
+                    });
+
+                    // 5. Force filter visibility and apply
+                    window.album.showFavoritesOnly = true;
+                    window.album.applyFilter();
                 }
             });
-            content.append(list);
 
             title.append(link);
             $('#favorites-all-title').append(title);
-            $('#favorites-all-content').append(content);
         });
     }, "json");
-}
-
-function viewMyFavorites() {
-    $('#favorites .modal-title span').html("My Favorite Images for");
-    $('.modal-body.mine').show();
-    $('.modal-body.all').hide();
-    $('#view-my-favorites-btn').hide();
-    $('#view-all-favorites-btn').show();
 }
 
 function addAlbumUser(ele, user_id, update) {

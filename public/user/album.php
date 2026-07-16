@@ -192,6 +192,17 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         ?>
                         <li class="no-before pull-right">
                             <button
+                                    id="view-all-favorites-btn"
+                                    type="button"
+                                    class="btn btn-xs btn-warning"
+                                    data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    title="View all user favorites">
+                                <em class="fa fa-heart"></em>
+                            </button>
+                        </li>
+                        <li class="no-before pull-right">
+                            <button
                                     id="edit-album-btn"
                                     type="button"
                                     class="btn btn-xs btn-warning"
@@ -341,6 +352,31 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
 
 </div>
 <!-- /.container -->
+
+<?php
+if ($album->canUserGetData()) {
+    ?>
+    <!-- View User Favorites Modal -->
+    <div id="favorites" class="modal fade modal-carousel" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                        <span>View User Favorite Images For</span> <strong><?php echo $album->getName(); ?></strong>
+                    </h4>
+                </div>
+                <div class="modal-body all">
+                    <ul id="favorites-all-title" class="nav nav-tabs"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Modal -->
+    <?php
+}
+?>
 
 <!-- Submit Selections Modal -->
 <div id="submit" album-id="<?php echo $album->getId(); ?>" what=""
