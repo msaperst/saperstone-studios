@@ -563,9 +563,9 @@ body.album-viewer-open {
 .album-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    grid-auto-rows: 10px;
+    grid-auto-rows: 1px;
     grid-auto-flow: dense;
-    gap: 14px;
+    gap: 12px;
 }
 
 .album-card {
@@ -627,6 +627,7 @@ body.album-viewer-open {
     opacity: 0;
     transition: opacity .18s ease;
     z-index: 2;
+    cursor: zoom-in;
 }
 
 .album-card:hover .album-card-overlay,

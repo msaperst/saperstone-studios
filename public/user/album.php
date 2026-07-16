@@ -73,99 +73,125 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 ?>
                 <li class="active"><?php echo $album->getName(); ?></li>
 
-                <!-- album interaction buttons -->
-                <li class="no-before pull-right">
-                    <button
-                            type="button"
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            <?php
-                            if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
-                                ?>
-                                id="disabled-downloadable-all-btn"
-                                class="btn btn-xs"
-                                title="Login or create an account to download images"
-                                disabled
+                <span id="actions">
+                    <li class="no-before pull-right">
+                        <button
+                                type="button"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
                                 <?php
-                            } else {
-                                ?>
-                                id="downloadable-all-btn"
-                                class="btn btn-xs btn-action btn-success"
-                                title="Download all images in this album"
-                                <?php
-                            }
-                            ?>
-                    >
-                        <em class="fa fa-download"></em>
-                    </button>
-                </li>
-                <?php
-                $result = $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId() . "' AND `album` = '{$album->getId()}';");
-                $sql->disconnect();
-                ?>
-                <li class="no-before pull-right">
-                    <button
-                            id="favorite-btn"
-                            type="button"
-                            class="btn btn-xs btn-success"
-                            data-toggle="tooltip"
-                            data-placement="bottom"
-                            title="View favorites from this album"
-                    >
-                        <em class="fa fa-heart error">
-                            <strong
-                                    id="favorite-count"
-                                    class="error"
-                                    <?php
-                                    if ($result ['total'] > 0) {
+                                if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
                                     ?>
-                                    style="padding-left: 10px;"
-                            >
-                                <?php echo $result['total'];
+                                    id="disabled-downloadable-all-btn"
+                                    class="btn btn-xs"
+                                    title="Login or create an account to download images"
+                                    disabled
+                                    <?php
                                 } else {
                                     ?>
-                                    >
+                                    id="downloadable-all-btn"
+                                    class="btn btn-xs btn-action btn-success"
+                                    title="Download all images in this album"
                                     <?php
                                 }
                                 ?>
-                            </strong>
-                        </em>
-                    </button>
-                </li>
-                <?php
-                if ($user->isAdmin()) {
-                    ?>
-                    <li class="no-before pull-right">
-                        <button
-                                id="access-btn"
-                                type="button"
-                                class="btn btn-xs btn-info"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
-                                title="Set access for this album"
                         >
-                            <em class="fa fa-picture-o"></em>
+                            <em class="fa fa-download"></em>
+                        </button>
+                    </li>
+                    <li class="no-before pull-right">
+                        <button
+                                type="button"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                style="display: none"
+                                <?php
+                                if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
+                                    ?>
+                                    id="disabled-downloadable-favorites-btn"
+                                    class="btn btn-xs"
+                                    title="Login or create an account to download images"
+                                    disabled
+                                    <?php
+                                } else {
+                                    ?>
+                                    id="downloadable-favorites-btn"
+                                    class="btn btn-xs btn-action btn-success"
+                                    title="Download all favorite images in this album"
+                                    <?php
+                                }
+                                ?>
+                        >
+                            <em class="fa fa-download"></em>
                         </button>
                     </li>
                     <?php
-                }
-                if ($album->canUserGetData()) {
+                    $result = $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId() . "' AND `album` = '{$album->getId()}';");
+                    $sql->disconnect();
                     ?>
                     <li class="no-before pull-right">
                         <button
-                                id="edit-album-btn"
+                                id="favorite-btn"
                                 type="button"
-                                class="btn btn-xs btn-warning"
+                                class="btn btn-xs btn-success"
                                 data-toggle="tooltip"
                                 data-placement="bottom"
-                                title="Edit Album Details">
-                            <em class="fa fa-pencil-square-o"></em>
+                                title="View favorites from this album"
+                        >
+                            <em class="fa fa-heart error">
+                                <strong
+                                        id="favorite-count"
+                                        class="error"
+                                        <?php
+                                        if ($result ['total'] > 0) {
+                                        ?>
+                                        style="padding-left: 10px;"
+                                >
+                                    <?php echo $result['total'];
+                                    } else {
+                                        ?>
+                                        >
+                                        <?php
+                                    }
+                                    ?>
+                                </strong>
+                            </em>
                         </button>
                     </li>
                     <?php
-                }
-                ?>
-                <!-- end album information buttons -->
+                    if ($user->isAdmin()) {
+                        ?>
+                        <li class="no-before pull-right">
+                            <button
+                                    id="access-btn"
+                                    type="button"
+                                    class="btn btn-xs btn-info"
+                                    data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    title="Set access for this album"
+                            >
+                                <em class="fa fa-picture-o"></em>
+                            </button>
+                        </li>
+                        <?php
+                    }
+                    if ($album->canUserGetData()) {
+                        ?>
+                        <li class="no-before pull-right">
+                            <button
+                                    id="edit-album-btn"
+                                    type="button"
+                                    class="btn btn-xs btn-warning"
+                                    data-toggle="tooltip"
+                                    data-placement="bottom"
+                                    title="Edit album details">
+                                <em class="fa fa-pencil-square-o"></em>
+                            </button>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                </span>
             </ol>
         </div>
     </div>

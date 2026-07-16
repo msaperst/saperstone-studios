@@ -110,7 +110,6 @@ function updateViewerMeta(image) {
     $('#album-viewer-overlay').attr('image-id', image.attr('image-id'));
     $('#album-viewer-image').attr('style', 'background-image: url("' + image.attr('data-location') || image.attr('data-src') + '")');
     $('#album-viewer-image').attr('src', '/img/image.png');
-    // $('#album-viewer-image').attr('alt', image.attr('data-title') || image.attr('title') || '');
     if (window.showImageTitle) {
         $('#album-viewer-title').text(image.attr('data-title') || image.attr('title') || '');
     }
@@ -142,7 +141,7 @@ function updateAlbumCardSpan(card) {
         return;
     }
     var rowHeight = parseFloat($('#album-grid').css('grid-auto-rows')) || 10;
-    var rowGap = parseFloat($('#album-grid').css('gap')) || parseFloat($('#album-grid').css('grid-row-gap')) || 14;
+    var rowGap = parseFloat($('#album-grid').css('gap')) || parseFloat($('#album-grid').css('grid-row-gap')) || 12;
     var height = parseFloat(card.attr('data-height')) || 1;
     var width = parseFloat(card.attr('data-width')) || 1;
     var cardWidth = element.getBoundingClientRect().width;
@@ -150,8 +149,11 @@ function updateAlbumCardSpan(card) {
         return;
     }
     var renderedHeight = cardWidth * (height / width);
-    var span = Math.ceil((renderedHeight + rowGap) / (rowHeight + rowGap));
-    card.css('grid-row-end', 'span ' + span);
+    var span = Math.round((renderedHeight + rowGap) / (rowHeight + rowGap));
+    card.css({
+        'height': renderedHeight + 'px',
+        'grid-row-end': 'span ' + span
+    });
 }
 
 function updateAllAlbumCardSpans() {
@@ -375,28 +377,58 @@ Album.prototype.applyFilter = function () {
 
     $('#album-grid .album-card').each(function () {
         var card = $(this);
-        var favoriteButton = $('#favorite-btn');
 
         if (!Album.showFavoritesOnly) {
             card.show();
-            favoriteButton
-                .attr('title', 'View favorite images from this album')
-                .attr('data-original-title', 'View favorite images from this album');
-            $('#favorite-btn em').addClass('error');
-            $('#favorite-count').show();
         } else {
             card.toggle(card.attr('data-favorite') === '1');
-            favoriteButton
-                .attr('title', 'View all images from this album')
-                .attr('data-original-title', 'View all images from this album');
-            $('#favorite-btn em').removeClass('error');
-            $('#favorite-count').hide();
         }
-
-        var tooltip = favoriteButton.attr('aria-describedby');
-        $('#' + tooltip).remove();
-        favoriteButton.remove('aria-describedby');
     });
+
+    var favoriteButton = $('#favorite-btn');
+    if (!Album.showFavoritesOnly) {
+        // resetting the favorite button
+        favoriteButton
+            .attr('title', 'View favorite images from this album')
+            .attr('data-original-title', 'View favorite images from this album');
+        $('#favorite-btn em').addClass('error');
+        $('#favorite-count').show();
+        // resetting the download button
+        $('#downloadable-favorites-btn').hide();
+        $('#downloadable-all-btn').show();
+        // resetting the menu
+        $('.breadcrumb>li').last().remove();
+        var lastLink = $('.breadcrumb>li').last();
+        var text = lastLink.text();
+        lastLink.addClass('active').html(text).off("click");
+    } else {
+        // setting the favorite button to show favorites only
+        favoriteButton
+            .attr('title', 'View all images from this album')
+            .attr('data-original-title', 'View all images from this album');
+        $('#favorite-btn em').removeClass('error');
+        $('#favorite-count').hide();
+        // setting the download button to download favorites only
+        $('#downloadable-all-btn').hide();
+        $('#downloadable-favorites-btn').show();
+        // adding favorite to breadcrumbs
+        var lastLink = $('.breadcrumb>li').last();
+        lastLink.removeClass('active');
+        var text = lastLink.text();
+        var anchor = $('<a>');
+        anchor.text(text);
+        lastLink.html(anchor);
+        lastLink.click(function () {
+            toggleFavorites();
+        });
+
+        var listItem = $('<li>');
+        listItem.addClass('active').text('Favorites');
+        $('#actions').before(listItem);
+    }
+    var tooltip = favoriteButton.attr('aria-describedby');
+    $('#' + tooltip).remove();
+    favoriteButton.remove('aria-describedby');
 
     updateAllAlbumCardSpans();
     Album.loadImages();     // lazy-load any newly visible images
@@ -478,6 +510,15 @@ Album.prototype.loadImages = function () {
 
             var overlay = $('<div>');
             overlay.addClass('album-card-overlay');
+            overlay.click(function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                Album.selectImage(v.sequence, {
+                    scroll: true,
+                    updateHash: true,
+                    force: true
+                });
+            });
 
             var meta = $('<div>');
             meta.addClass('album-card-meta');
@@ -491,14 +532,6 @@ Album.prototype.loadImages = function () {
 
             var actions = $('<div>');
             actions.addClass('album-card-actions');
-
-            actions.append(createIconButton('view', 'fa-search', 'View image', function () {
-                Album.selectImage(v.sequence, {
-                    scroll: true,
-                    updateHash: true,
-                    force: true
-                });
-            }));
 
             if (window.albumCanDownload) {
                 actions.append(createIconButton('download', 'fa-download', 'Download image', function () {
@@ -541,6 +574,8 @@ Album.prototype.loadImages = function () {
 
 $(document).ready(function () {
     var albumResizeTimer = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const albumId = urlParams.get('album');
 
     $('#album-grid').on('click', '.album-card-media', function (event) {
         event.preventDefault();
@@ -632,14 +667,14 @@ $(document).ready(function () {
     });
 
     $('#downloadable-favorites-btn').click(function () {
-        downloadImages($('#favorites').attr('album-id'), 'favorites');
+        downloadImages(albumId, 'favorites');
     });
     $('#submit-favorites-btn').click(function () {
         $('#submit').attr('what', 'favorites').modal();
     });
 
     $('#downloadable-all-btn').click(function () {
-        downloadImages($('#favorites').attr('album-id'), 'all');
+        downloadImages(albumId, 'all');
     });
 
     $('#submit-send').click(function () {
@@ -654,13 +689,7 @@ $(document).ready(function () {
     });
 
     $('#favorite-btn').click(function () {
-        if (!window.album) {
-            return;
-        }
-
-        window.album.showFavoritesOnly = !window.album.showFavoritesOnly;
-        $(this).toggleClass('active', window.album.showFavoritesOnly);
-        window.album.applyFilter();
+        toggleFavorites();
     });
 
     $(".nav-tabs a").click(function () {
@@ -728,6 +757,16 @@ function unsetFavoriteImage() {
         }
         unsetFavorite();
     });
+}
+
+function toggleFavorites() {
+    if (!window.album) {
+        return;
+    }
+
+    window.album.showFavoritesOnly = !window.album.showFavoritesOnly;
+    $(this).toggleClass('active', window.album.showFavoritesOnly);
+    window.album.applyFilter();
 }
 
 function downloadSelectedImage() {
