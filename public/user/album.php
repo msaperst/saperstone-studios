@@ -72,20 +72,100 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 }
                 ?>
                 <li class="active"><?php echo $album->getName(); ?></li>
+
+                <!-- album interaction buttons -->
+                <li class="no-before pull-right">
+                    <button
+                            type="button"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            <?php
+                            if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
+                                ?>
+                                id="disabled-downloadable-all-btn"
+                                class="btn btn-xs"
+                                title="Login or create an account to download images"
+                                disabled
+                                <?php
+                            } else {
+                                ?>
+                                id="downloadable-all-btn"
+                                class="btn btn-xs btn-action btn-success"
+                                title="Download all images in this album"
+                                <?php
+                            }
+                            ?>
+                    >
+                        <em class="fa fa-download"></em>
+                    </button>
+                </li>
                 <?php
+                $result = $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId() . "' AND `album` = '{$album->getId()}';");
+                $sql->disconnect();
+                ?>
+                <li class="no-before pull-right">
+                    <button
+                            id="favorite-btn"
+                            type="button"
+                            class="btn btn-xs btn-success"
+                            data-toggle="tooltip"
+                            data-placement="bottom"
+                            title="View favorites from this album"
+                    >
+                        <em class="fa fa-heart error">
+                            <strong
+                                    id="favorite-count"
+                                    class="error"
+                                    <?php
+                                    if ($result ['total'] > 0) {
+                                    ?>
+                                    style="padding-left: 10px;"
+                            >
+                                <?php echo $result['total'];
+                                } else {
+                                    ?>
+                                    >
+                                    <?php
+                                }
+                                ?>
+                            </strong>
+                        </em>
+                    </button>
+                </li>
+                <?php
+                if ($user->isAdmin()) {
+                    ?>
+                    <li class="no-before pull-right">
+                        <button
+                                id="access-btn"
+                                type="button"
+                                class="btn btn-xs btn-info"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="Set access for this album"
+                        >
+                            <em class="fa fa-picture-o"></em>
+                        </button>
+                    </li>
+                    <?php
+                }
                 if ($album->canUserGetData()) {
                     ?>
                     <li class="no-before pull-right">
                         <button
-                                type="button" id="edit-album-btn" class="btn btn-xs btn-warning"
-                                data-toggle="tooltip" data-placement="left"
+                                id="edit-album-btn"
+                                type="button"
+                                class="btn btn-xs btn-warning"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
                                 title="Edit Album Details">
-                            <i class="fa fa-pencil-square-o"></i>
+                            <em class="fa fa-pencil-square-o"></em>
                         </button>
                     </li>
                     <?php
                 }
                 ?>
+                <!-- end album information buttons -->
             </ol>
         </div>
     </div>
@@ -223,259 +303,6 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
 </div>
 <!-- /.container -->
 
-<!-- Favorites Modal -->
-<div id="favorites" album-id="<?php echo $album->getId(); ?>"
-     class="modal fade modal-carousel" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">
-                    <span>My Favorite Images for</span> <strong><?php echo $album->getName(); ?></strong>
-                </h4>
-            </div>
-            <div class="modal-body mine">
-                <ul id="favorites-list" class="list-inline"></ul>
-            </div>
-            <?php
-            if ($user->isAdmin()) {
-                ?>
-                <div class="modal-body all hidden">
-                    <ul id="favorites-all-title" class="nav nav-tabs"></ul>
-                    <div id="favorites-all-content" class="tab-content"></div>
-                </div>
-                <?php
-            }
-            ?>
-            <div class="modal-footer">
-                    <span class="pull-left">
-                        <?php if ($user->isLoggedIn() || $isAlbumDownloadable) { ?>
-                            <button id="downloadable-favorites-btn"
-                                    type="button" class="btn btn-default btn-action btn-success">
-                            <em class="fa fa-download"></em> Download Favorites
-                        </button>
-                        <?php } ?>
-                        <button id="submit-favorites-btn" type="button"
-                                class="btn btn-default btn-action btn-success">
-                            <em class="fa fa-paper-plane"></em> Submit Favorites
-                        </button>
-                    </span>
-                <?php
-                if ($user->isAdmin()) {
-                    ?>
-                    <button id="view-all-favorites-btn" type="button"
-                            class="btn btn-default btn-action btn-info">
-                        <em class="fa fa-search"></em> View All Favorites
-                    </button>
-                    <button id="view-my-favorites-btn" type="button"
-                            class="btn btn-default btn-action btn-info hidden">
-                        <em class="fa fa-search"></em> View My Favorites
-                    </button>
-                    <?php
-                }
-                ?>
-                <button type="button" class="btn btn-default"
-                        data-dismiss="modal">Close
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal -->
-
-<!-- Single Image Cart Modal -->
-<div id="cart-image" album-id="<?php echo $album->getId(); ?>"
-     class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">What Product Do You Want?</h4>
-            </div>
-            <div class="modal-body">
-                <ul class="nav nav-tabs">
-                    <?php
-                    $row = $sql->getRow("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'product_types' AND COLUMN_NAME = 'category';");
-                    $categories = explode(",", str_replace("'", "", substr($row ['COLUMN_TYPE'], 5, (strlen($row ['COLUMN_TYPE']) - 6))));
-                    $categories = array_diff($categories, [
-                            "other"
-                    ]);
-
-                    $counter = 0;
-                    foreach ($categories as $category) {
-                        ?>
-                        <li
-                                <?php if ($counter == 0) {
-                                    echo " class='active'";
-                                } ?>><a
-                                    href="#<?php echo $category; ?>"><?php echo ucwords($category); ?></a></li>
-                        <?php
-                        $counter++;
-                    }
-                    ?>
-                </ul>
-                <div class="tab-content">
-                    <?php
-                    $counter = 0;
-                    foreach ($categories as $category) {
-                        ?>
-                        <div id="<?php echo $category; ?>"
-                             class="row tab-pane fade<?php if ($counter == 0) {
-                                 echo " in active";
-                             } ?>">
-                            <?php
-                            foreach ($sql->getRows("SELECT `id`,`name` FROM `product_types` WHERE `category` = '$category';") as $r) {
-                                ?>
-                                <div class="col-md-4 col-sm-6"
-                                     product-type='<?php echo $r['id']; ?>'>
-                                    <h3><?php echo ucwords($r['name']); ?></h3>
-                                    <table class="table borderless">
-                                        <?php
-                                        foreach ($sql->getRows("SELECT * FROM `products` WHERE `product_type` = '" . $r ['id'] . "';") as $s) {
-                                            $max = "";
-                                            if ($r ['id'] == "10") {
-                                                $max = " max='1'";
-                                            }
-                                            ?>
-                                            <tr product-id='<?php echo $s['id']; ?>'>
-                                                <td class="product-size"><?php echo $s['size']; ?></td>
-                                                <td class="product-count"><input class="form-control input-sm"
-                                                                                 type="number"
-                                                                                 min="0" <?php echo $max; ?> /></td>
-                                                <td class="product-price">$<?php echo $s['price']; ?></td>
-                                                <td class="product-total" style="width: 25%">--</td>
-                                            </tr>
-                                            <?php
-                                        }
-                                        ?>
-                                    </table>
-                                </div>
-                                <?php
-                            }
-                            ?>
-                        </div>
-                        <?php
-                        $counter++;
-                    }
-                    ?>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal -->
-
-<!-- Gallery Cart Modal -->
-<div id="cart" album-id="<?php echo $album->getId(); ?>" class="modal fade"
-     role="dialog">
-    <div class="modal-dialog modal-lg">
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Review Your Cart</h4>
-            </div>
-            <div class="modal-body">
-                <div id="cart-shipping">
-                    <div class="row">
-                        <p class="text-center">Shipping Information</p>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 has-error">
-                            <label class="sr-only" for="cart-name">Name</label> <input
-                                    id="cart-name" type="text" placeholder="Name"
-                                    class="form-control" value="<?php echo $user->getName(); ?>"
-                                    required/>
-                        </div>
-                        <div class="col-md-4 has-error">
-                            <label class="sr-only" for="cart-email">Email</label> <input
-                                    id="cart-email" type="email" placeholder="Email"
-                                    class="form-control" value="<?php echo $user->getEmail(); ?>"
-                                    required/>
-                        </div>
-                        <div class="col-md-4 has-error">
-                            <label class="sr-only" for="cart-phone">Phone</label> <input
-                                    id="cart-phone" type="tel" placeholder="Phone"
-                                    class="form-control" required/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 has-error">
-                            <label class="sr-only" for="cart-address">Address</label> <input
-                                    id="cart-address" type="text" placeholder="Address"
-                                    class="form-control" required/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 has-error">
-                            <label class="sr-only" for="cart-city">City</label> <input
-                                    id="cart-city" type="text" placeholder="City"
-                                    class="form-control" required/>
-                        </div>
-                        <div class="col-md-4 has-error">
-                            <label class="sr-only" for="cart-state">State</label> <input
-                                    id="cart-state" type="text" placeholder="State"
-                                    class="form-control" required/>
-                        </div>
-                        <div class="col-md-4 has-error">
-                            <label class="sr-only" for="cart-zip">Zip</label> <input
-                                    id="cart-zip" type="text" placeholder="Zip Code"
-                                    class="form-control" required/>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <p></p>
-                    <p class="text-center">Please confirm details for each item</p>
-                </div>
-                <div class="row">
-                    <table id="cart-table" class="table">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Preview</th>
-                            <th>Product</th>
-                            <th>Size</th>
-                            <th>Price</th>
-                            <th>Options</th>
-                        </tr>
-                        </thead>
-                        <tbody id="cart-items">
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <th colspan="3">
-
-                            <th>Tax:</th>
-                            <th id="cart-tax"></th>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <td colspan="3"></td>
-                            <!--                                     <td colspan="3"><label class="sr-only" for="cart-coupon">Coupon</label> -->
-                            <!--                                         <input id="cart-coupon" type="text" placeholder="Coupon Code" -->
-                            <!--                                         class="form-control" /></td> -->
-                            <th id="cart-total"></th>
-                            <th></th>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer bootstrap-dialog">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End of Modal -->
-
 <!-- Submit Selections Modal -->
 <div id="submit" album-id="<?php echo $album->getId(); ?>" what=""
      class="modal fade" role="dialog">
@@ -568,66 +395,6 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
     <?php
 }
 ?>
-<!-- Actions For the Page -->
-<nav class="navbar navbar-actions navbar-fixed-bottom breadcrumb">
-    <div class="container text-center">
-
-        <?php
-        if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
-            ?>
-            <span class="text-center"><div
-                        class="tooltip-wrapper disabled" data-toggle="tooltip"
-                        data-placement="top"
-                        title="Login or create an account for this feature.">
-                    <button id="downloadable-all-btn"
-                            type="button" class="btn btn-default" disabled>
-                        <em class="fa fa-download"></em> Download All
-                    </button>
-                </div></span>
-            <?php
-        } else {
-            ?>
-            <span class="text-center"><button
-                        id="downloadable-all-btn" type="button"
-                        class="btn btn-default btn-action btn-success">
-                    <em class="fa fa-download"></em> Download All
-                </button></span>
-            <?php
-        }
-        ?>
-        <?php
-        $result = $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId() . "' AND `album` = '{$album->getId()}';");
-        $sql->disconnect();
-        if ($result ['total'] > 0) {
-            ?>
-            <span class="text-center"><button id="favorite-btn"
-                                              type="button" class="btn btn-default btn-success">
-                    <em class="fa fa-heart error"></em> Favorites <strong
-                            id="favorite-count" class="error"
-                            style="padding-left: 10px;"><?php echo $result['total']; ?></strong>
-                </button></span>
-            <?php
-        } else {
-            ?>
-            <span class="text-center"><button id="favorite-btn"
-                                              type="button" class="btn btn-default btn-success">
-                    <em class="fa fa-heart error"></em> Favorites <strong
-                            id="favorite-count" class="error"></strong>
-                </button></span>
-            <?php
-        }
-        if ($user->isAdmin()) {
-            ?>
-            <span class="text-center"><button id="access-btn"
-                                              type="button" class="btn btn-default btn-info">
-                    <em class="fa fa-picture-o"></em> Set Access
-                </button></span>
-            <?php
-        }
-        ?>
-
-    </div>
-</nav>
 
 <!-- Gallery JavaScript -->
 <script>

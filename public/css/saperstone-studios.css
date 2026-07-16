@@ -59,6 +59,12 @@ input[type=number] {
     padding-right: 0;
 }
 
+.no-before {
+    padding-left: 12px;
+    position: relative;
+    top: -1px;
+}
+
 .no-before:before {
     content: none !important;
 }
@@ -105,10 +111,6 @@ blockquote p {
 
 .list-social-icons a:hover, .social-buttons a:hover {
     color: #980f7f;
-}
-
-.row li {
-    padding-bottom: 10px;
 }
 
 /* Our Forms */
