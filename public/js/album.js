@@ -387,30 +387,30 @@ Album.prototype.applyFilter = function () {
 
     var favoriteButton = $('#favorite-btn');
     if (!Album.showFavoritesOnly) {
-        // resetting the favorite button
+        // resetting the buttons
         favoriteButton
             .attr('title', 'View favorite images from this album')
             .attr('data-original-title', 'View favorite images from this album');
         $('#favorite-btn em').addClass('error');
         $('#favorite-count').show();
-        // resetting the download button
         $('#downloadable-favorites-btn').hide();
         $('#downloadable-all-btn').show();
+        $('#submit-favorites-btn').hide();
         // resetting the menu
         $('.breadcrumb>li').last().remove();
         var lastLink = $('.breadcrumb>li').last();
         var text = lastLink.text();
         lastLink.addClass('active').html(text).off("click");
     } else {
-        // setting the favorite button to show favorites only
+        // setting the buttons
         favoriteButton
             .attr('title', 'View all images from this album')
             .attr('data-original-title', 'View all images from this album');
         $('#favorite-btn em').removeClass('error');
         $('#favorite-count').hide();
-        // setting the download button to download favorites only
         $('#downloadable-all-btn').hide();
         $('#downloadable-favorites-btn').show();
+        $('#submit-favorites-btn').show();
         // adding favorite to breadcrumbs
         var lastLink = $('.breadcrumb>li').last();
         lastLink.removeClass('active');

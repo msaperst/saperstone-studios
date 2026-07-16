@@ -74,57 +74,6 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 <li class="active"><?php echo $album->getName(); ?></li>
 
                 <span id="actions">
-                    <li class="no-before pull-right">
-                        <button
-                                type="button"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
-                                <?php
-                                if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
-                                    ?>
-                                    id="disabled-downloadable-all-btn"
-                                    class="btn btn-xs"
-                                    title="Login or create an account to download images"
-                                    disabled
-                                    <?php
-                                } else {
-                                    ?>
-                                    id="downloadable-all-btn"
-                                    class="btn btn-xs btn-action btn-success"
-                                    title="Download all images in this album"
-                                    <?php
-                                }
-                                ?>
-                        >
-                            <em class="fa fa-download"></em>
-                        </button>
-                    </li>
-                    <li class="no-before pull-right">
-                        <button
-                                type="button"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
-                                style="display: none"
-                                <?php
-                                if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
-                                    ?>
-                                    id="disabled-downloadable-favorites-btn"
-                                    class="btn btn-xs"
-                                    title="Login or create an account to download images"
-                                    disabled
-                                    <?php
-                                } else {
-                                    ?>
-                                    id="downloadable-favorites-btn"
-                                    class="btn btn-xs btn-action btn-success"
-                                    title="Download all favorite images in this album"
-                                    <?php
-                                }
-                                ?>
-                        >
-                            <em class="fa fa-download"></em>
-                        </button>
-                    </li>
                     <?php
                     $result = $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId() . "' AND `album` = '{$album->getId()}';");
                     $sql->disconnect();
@@ -156,6 +105,70 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                     ?>
                                 </strong>
                             </em>
+                        </button>
+                    </li>
+                    <li class="no-before pull-right">
+                        <button
+                                id="submit-favorites-btn"
+                                type="button"
+                                class="btn btn-xs btn-success"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                title="Submit album favorites as selection"
+                                style="display: none"
+                        >
+                            <em class="fa fa-paper-plane"></em>
+                        </button>
+                    </li>
+                    <li class="no-before pull-right">
+                        <button
+                                type="button"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                style="display: none"
+                                <?php
+                                if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
+                                    ?>
+                                    id="disabled-downloadable-favorites-btn"
+                                    class="btn btn-xs"
+                                    title="Login or create an account to download images"
+                                    disabled
+                                    <?php
+                                } else {
+                                    ?>
+                                    id="downloadable-favorites-btn"
+                                    class="btn btn-xs btn-action btn-success"
+                                    title="Download all favorite images in this album"
+                                    <?php
+                                }
+                                ?>
+                        >
+                            <em class="fa fa-download"></em>
+                        </button>
+                    </li>
+                    <li class="no-before pull-right">
+                        <button
+                                type="button"
+                                data-toggle="tooltip"
+                                data-placement="bottom"
+                                <?php
+                                if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
+                                    ?>
+                                    id="disabled-downloadable-all-btn"
+                                    class="btn btn-xs"
+                                    title="Login or create an account to download images"
+                                    disabled
+                                    <?php
+                                } else {
+                                    ?>
+                                    id="downloadable-all-btn"
+                                    class="btn btn-xs btn-action btn-success"
+                                    title="Download all images in this album"
+                                    <?php
+                                }
+                                ?>
+                        >
+                            <em class="fa fa-download"></em>
                         </button>
                     </li>
                     <?php
