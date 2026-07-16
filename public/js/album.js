@@ -103,7 +103,7 @@ function createIconButton(action, icon, title, handler, extraClass) {
 
 function updateViewerMeta(image) {
     if (!image || image.length === 0) {
-        $('#album-viewer-image').attr('src', '').attr('alt', '');
+        $('#album-viewer-image').attr('src', '/img/image.png').attr('alt', '');
         $('#album-viewer-title').text('');
         $('#album-viewer-caption').text('');
         $('#album-viewer-overlay').removeAttr('image-id');
@@ -111,9 +111,12 @@ function updateViewerMeta(image) {
     }
     $('#album-viewer-overlay').attr('album-id', image.attr('album-id'));
     $('#album-viewer-overlay').attr('image-id', image.attr('image-id'));
-    $('#album-viewer-image').attr('src', image.attr('data-full-location') || image.attr('data-full-src') || image.attr('data-location') || image.attr('data-src') || image.find('img').attr('src'));
-    $('#album-viewer-image').attr('alt', image.attr('data-title') || image.attr('title') || '');
-    $('#album-viewer-title').text(image.attr('data-title') || image.attr('title') || '');
+    $('#album-viewer-image').attr('style', 'background-image: url("' + image.attr('data-location') || image.attr('data-src') + '")');
+    $('#album-viewer-image').attr('src', '/img/image.png');
+    // $('#album-viewer-image').attr('alt', image.attr('data-title') || image.attr('title') || '');
+    if (window.showImageTitle) {
+        $('#album-viewer-title').text(image.attr('data-title') || image.attr('title') || '');
+    }
     $('#album-viewer-caption').text(image.attr('data-caption') || '');
 }
 
@@ -413,8 +416,6 @@ Album.prototype.loadImages = function () {
         }
         $.each(data.images, function (k, v) {
             var isFavorite = parseInt(v.favorite, 10) === 1;
-            var thumbLocation = v.thumbLocation || v.location;
-            var fullLocation = v.fullLocation || v.location;
             var card = $('<article>');
             card.addClass('album-card');
             card.attr('album-id', Album.albumId);
@@ -424,13 +425,9 @@ Album.prototype.loadImages = function () {
             card.toggleClass('is-favorite', isFavorite);
             card.attr('data-loading', '0');
             card.attr('data-loaded', '0');
-            card.attr('alt', v.title);
-            card.attr('title', v.title);
             card.attr('data-title', v.title);
             card.attr('data-caption', v.caption || '');
-            card.attr('data-location', thumbLocation);
-            card.attr('data-thumb-location', thumbLocation);
-            card.attr('data-full-location', fullLocation);
+            card.attr('data-location', v.location);
             card.attr('data-height', v.height || 1);
             card.attr('data-width', v.width || 1);
             card.attr('data-index', Album.images.length);
@@ -439,13 +436,12 @@ Album.prototype.loadImages = function () {
             media.attr('type', 'button');
             media.addClass('album-card-media');
             media.attr('aria-label', 'Open image ' + (v.title || v.sequence));
+            media.attr('style', 'background-image: url("' + v.location + '")');
 
             var img = $('<img>');
             img.addClass('album-card-image');
             img.attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACw=');
-            img.attr('data-src', thumbLocation);
-            img.attr('data-full-src', fullLocation);
-            img.attr('alt', v.title);
+            img.attr('data-src', '/img/image.png');
             img.one('load', function () {
                 markAlbumCardLoaded(card);
             });
@@ -455,7 +451,9 @@ Album.prototype.loadImages = function () {
 
             var meta = $('<div>');
             meta.addClass('album-card-meta');
-            meta.append($('<strong>').text(v.title || ('Image ' + v.sequence)));
+            if (window.showImageTitle) {
+                meta.append($('<strong>').text(v.title || ('Image ' + v.sequence)));
+            }
             if (v.caption) {
                 meta.append($('<span>').text(v.caption));
             }
@@ -494,8 +492,7 @@ Album.prototype.loadImages = function () {
             updateAlbumCardSpan(card);
             Album.images.push({
                 sequence: v.sequence,
-                location: thumbLocation,
-                fullLocation: fullLocation,
+                location: v.location,
                 title: v.title,
                 caption: v.caption || '',
                 favorite: isFavorite

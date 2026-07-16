@@ -122,12 +122,14 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
         }
         if (count($images) > 0) {
             ?>
-            <div id="album-viewer-overlay" class="album-viewer-overlay hidden" album-id="<?php echo $album->getId(); ?>" role="dialog" aria-modal="true" aria-hidden="true">
+            <div id="album-viewer-overlay" class="album-viewer-overlay hidden" album-id="<?php echo $album->getId(); ?>"
+                 role="dialog" aria-modal="true" aria-hidden="true">
                 <button id="album-viewer-close" type="button" class="album-viewer-close" aria-label="Close viewer">
                     <em class="fa fa-times"></em>
                 </button>
                 <div class="album-viewer-shell">
-                    <button id="album-prev-btn" type="button" class="album-nav album-nav-prev" aria-label="Previous image">
+                    <button id="album-prev-btn" type="button" class="album-nav album-nav-prev"
+                            aria-label="Previous image">
                         <em class="fa fa-chevron-left"></em>
                     </button>
 
@@ -189,7 +191,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 </div>
             </div>
             <div id="album-grid" class="album-grid"></div>
-        <?php
+            <?php
         } else {
             ?>
             <div class="row">
@@ -592,43 +594,6 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
                 </button></span>
             <?php
         }
-        if (!$user->isLoggedIn()) {
-            ?>
-            <!-- commenting out cart button -->
-            <!--            <span class="text-center"><div-->
-            <!--                        class="tooltip-wrapper disabled" data-toggle="tooltip"-->
-            <!--                        data-placement="top"-->
-            <!--                        title="Login or create an account for this feature.">-->
-            <!--                                        <button id="cart-btn" type="button"-->
-            <!--                                                class="btn btn-default btn-warning" disabled>-->
-            <!--                        <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"-->
-            <!--                                                                           class="error"></strong>-->
-            <!--                    </button>-->
-            <!--                </div></span>-->
-            <?php
-        } else {
-            $result = $sql->getRow("SELECT SUM(`count`) AS total FROM `cart` WHERE `user` = '" . $user->getId() . "';");
-            if ($result ['total'] > 0) {
-                ?>
-                <!-- commenting out cart button -->
-                <!--                <span class="text-center"><button id="cart-btn"-->
-                <!--                                                  type="button" class="btn btn-default btn-warning">-->
-                <!--                    <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"-->
-                <!--                                                                       class="error"-->
-                <!--                                                                       style="padding-left: 10px;">--><?php //echo $result['total']; ?><!--</strong>-->
-                <!--                </button></span>-->
-                <?php
-            } else {
-                ?>
-                <!-- commenting out cart button -->
-                <!--                <span class="text-center"><button id="cart-btn"-->
-                <!--                                                  type="button" class="btn btn-default btn-warning">-->
-                <!--                    <em class="fa fa-shopping-cart"></em> Cart <strong id="cart-count"-->
-                <!--                                                                       class="error"></strong>-->
-                <!--                </button></span>-->
-                <?php
-            }
-        }
         ?>
         <?php
         $result = $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId() . "' AND `album` = '{$album->getId()}';");
@@ -667,6 +632,7 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
 <!-- Gallery JavaScript -->
 <script>
     window.albumCanDownload = <?php echo ($user->isLoggedIn() || $isAlbumDownloadable) ? 'true' : 'false'; ?>;
+    window.showImageTitle = <?php echo $user->isAdmin() ? 'true' : 'false'; ?>;
 </script>
 <script src="/js/album.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/album.js'); ?>"></script>
 <?php
