@@ -83,7 +83,22 @@ class File {
         }
         foreach ($this->files as $file) {
             $size = getimagesize($this->location . $file);
-            $sql->executeStatement("INSERT INTO `$database` VALUES (NULL, '$parentId', '$file', '$nextSeq', '', '{$locationPrefix}$file', '{$size[0]}', '{$size[1]}', 1);");
+            $width = $size[0];
+            $height = $size[1];
+
+            echo "got the image";
+            var_dump(function_exists('exif_read_data'));
+            if (function_exists('exif_read_data')) {
+                echo "trying to rotate image";
+                $exif = @exif_read_data($this->location . $file);
+
+                if (!empty($exif['Orientation']) && in_array($exif['Orientation'], [5, 6, 7, 8])) {
+                    // 90° or 270° rotation: swap width and height
+                    [$width, $height] = [$height, $width];
+                }
+            }
+            $sql->executeStatement("INSERT INTO `$database` VALUES (NULL, '$parentId', '$file', '$nextSeq', '', '{$locationPrefix}$file', '$width', '$height', 1);");
+
             if (!$systemUser->isAdmin() && $systemUser->isActive()) {
                 sleep(1); //TODO - this is a bug in our keys, should fix this
                 $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Added Image', $nextSeq, $parentId );");
