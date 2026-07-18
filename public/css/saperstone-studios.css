@@ -968,3 +968,80 @@ img.protect {
 .collapse-content {
     display: none;
 }
+
+/***** New Album CSS For Modernizing Design *****/
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    padding: 15px 5px;
+}
+
+.fav-user-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Slick hover state to show interactivity */
+.fav-user-card:hover {
+    transform: translateY(-3px);
+    border-color: #00ab9e; /* Studio Accent Color */
+    box-shadow: 0 10px 15px -3px rgba(0, 171, 158, 0.1), 0 4px 6px -2px rgba(0, 171, 158, 0.05);
+}
+
+.fav-user-card .user-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.fav-user-card .user-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: background 0.2s ease;
+}
+
+.fav-user-card:hover .user-icon-wrapper {
+    background: #e6f7f6;
+    color: #00ab9e;
+}
+
+.fav-user-card .user-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #1e293b;
+    word-break: break-all;
+    line-height: 1.2;
+}
+
+.fav-user-card .favorite-badge {
+    align-self: flex-start;
+    background: #fee2e2;
+    color: #ef4444;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}

@@ -76,7 +76,6 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 <span id="actions">
                     <?php
                     $result = $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '" . $user->getId() . "' AND `album` = '{$album->getId()}';");
-                    $sql->disconnect();
                     ?>
                     <li class="no-before pull-right">
                         <button
@@ -225,6 +224,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
     <div id="album-thumbs" class="album-page">
         <?php
         $notification_emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()} AND contacted = FALSE;");
+        $sql->disconnect();
         if ($user->isAdmin() && sizeof($notification_emails) > 0) {
             ?>
             <div class="row">
@@ -368,7 +368,7 @@ if ($album->canUserGetData()) {
                     </h4>
                 </div>
                 <div class="modal-body all">
-                    <ul id="favorites-all-title" class="nav nav-tabs"></ul>
+                    <!-- Our dynamic grid gets injected here -->
                 </div>
             </div>
         </div>
@@ -379,8 +379,7 @@ if ($album->canUserGetData()) {
 ?>
 
 <!-- Submit Selections Modal -->
-<div id="submit" album-id="<?php echo $album->getId(); ?>" what=""
-     class="modal fade" role="dialog">
+<div id="submit" album-id="<?php echo $album->getId(); ?>" what="" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">

@@ -110,9 +110,7 @@ function setupImageAccess() {
             searchAlbumInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
-                $.get("/api/search-users.php", {
-                    keyword: keyword
-                }, function (data) {
+                $.get("/api/search-users.php", {keyword: keyword}, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     $.each(data, function (key, user) {
@@ -147,10 +145,7 @@ function setupImageAccess() {
             searchDownloadInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
-                $.get("/api/search-album-users.php", {
-                    album: img.attr('album-id'),
-                    keyword: keyword
-                }, function (data) {
+                $.get("/api/search-album-users.php", {album: img.attr('album-id'), keyword: keyword}, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     results_ul.append(createUserBullet("download-users", allUser));
@@ -186,10 +181,7 @@ function setupImageAccess() {
             searchUploadInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
-                $.get("/api/search-album-users.php", {
-                    album: img.attr('album-id'),
-                    keyword: keyword
-                }, function (data) {
+                $.get("/api/search-album-users.php", {album: img.attr('album-id'), keyword: keyword}, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     results_ul.append(createUserBullet("share-users", allUser));
@@ -297,9 +289,7 @@ function setupAlbumAccess() {
             searchAlbumInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
-                $.get("/api/search-users.php", {
-                    keyword: keyword
-                }, function (data) {
+                $.get("/api/search-users.php", {keyword: keyword}, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     $.each(data, function (key, user) {
@@ -334,10 +324,7 @@ function setupAlbumAccess() {
             searchDownloadInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
-                $.get("/api/search-album-users.php", {
-                    album: getAlbumId(),
-                    keyword: keyword
-                }, function (data) {
+                $.get("/api/search-album-users.php", {album: getAlbumId(), keyword: keyword}, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     results_ul.append(createUserBullet("download-users", allUser));
@@ -373,10 +360,7 @@ function setupAlbumAccess() {
             searchUploadInput.on("keyup focus", function () {
                 var search_ele = $(this);
                 var keyword = search_ele.val();
-                $.get("/api/search-album-users.php", {
-                    album: getAlbumId(),
-                    keyword: keyword
-                }, function (data) {
+                $.get("/api/search-album-users.php", {album: getAlbumId(), keyword: keyword}, function (data) {
                     $('.search-results').remove();
                     var results_ul = $('<ul class="dropdown-menu search-results">');
                     results_ul.append(createUserBullet("share-users", allUser));
@@ -436,10 +420,7 @@ function setupAlbumAccess() {
                 'margin': '0 -5px 0 -5px'
             });
             $('#downloadDiv').after(downloadsDiv);
-            $.get("/api/get-image-downloaders.php", {
-                album: getAlbumId(),
-                image: "*"
-            }, function (album_users) {
+            $.get("/api/get-image-downloaders.php", {album: getAlbumId(), image: "*"}, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#download-users'), album_users[i].user, false);
                 }
@@ -454,10 +435,7 @@ function setupAlbumAccess() {
                 'margin': '0 -5px 0 -5px'
             });
             $('#shareDiv').after(sharesDiv);
-            $.get("/api/get-image-sharers.php", {
-                album: getAlbumId(),
-                image: "*"
-            }, function (album_users) {
+            $.get("/api/get-image-sharers.php", {album: getAlbumId(), image: "*"}, function (album_users) {
                 for (var i = 0, len = album_users.length; i < len; i++) {
                     addAlbumUser($('#share-users'), album_users[i].user, false);
                 }
@@ -475,64 +453,96 @@ function viewAllFavorites() {
         album: getAlbumId()
     }, function (favorites) {
         $('#view-all-favorites-btn em').removeClass('fa-spinner fa-spin').addClass('fa-search');
-        $('#favorites-all-title').empty();
+
+        // Target the modal-body and clean it out
+        var modalBody = $('#favorites .modal-body.all').empty();
+
+        // Create our modern grid container
+        var grid = $('<div class="favorites-grid">');
 
         $.each(favorites, function (user, favs) {
-            var title = $('<li>');
-            var link = $('<a href="#">');
+            // Skip empty favorites lists to keep it clean
+            if (!favs || favs.length === 0) return;
 
-            // Determine user label
+            // Determine if the key looks like an IP address
+            var isIP = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(user);
+
+            // Format Display Name
             var displayName = user;
-            if (favs.length > 0 && favs[0].usr !== null) {
+            if (favs[0].usr !== null) {
                 displayName = favs[0].usr;
+                isIP = false; // Mark as registered if an actual username is attached
             }
-            link.html(displayName);
 
-            // Click handler toggles full-page filtration
-            link.click(function (e) {
+            // Build the card container
+            var card = $('<div class="fav-user-card">');
+
+            // Meta Section (Icon + Name)
+            var metaSection = $('<div class="user-meta">');
+            var iconClass = isIP ? 'fa-laptop' : 'fa-user';
+            var iconWrapper = $('<div class="user-icon-wrapper">').append($('<em>').addClass('fa ' + iconClass));
+            var nameSpan = $('<div class="user-name">').text(displayName);
+
+            metaSection.append(iconWrapper).append(nameSpan);
+
+            // Badge Section (Favorite Count Indicator)
+            var badgeText = favs.length + ' Item' + (favs.length === 1 ? '' : 's');
+            var favoriteBadge = $('<div class="favorite-badge">')
+                .append($('<em>').addClass('fa fa-heart'))
+                .append($('<span>').text(badgeText));
+
+            card.append(metaSection).append(favoriteBadge);
+
+            // Re-apply our slick filter logic on click
+            card.click(function (e) {
                 e.preventDefault();
                 $('#favorites').modal('hide');
 
                 if (window.album) {
-                    // 1. Back up original user favorites if not already backed up
+                    // Back up original user favorites if not already backed up
                     if (!window.album.originalFavoritesBackup) {
                         window.album.originalFavoritesBackup = {};
                         $('#album-grid .album-card').each(function () {
-                            var card = $(this);
-                            window.album.originalFavoritesBackup[card.attr('data-image-id')] = card.attr('data-favorite');
+                            var cardElement = $(this);
+                            window.album.originalFavoritesBackup[cardElement.attr('data-image-id')] = cardElement.attr('data-favorite');
                         });
                     }
 
-                    // 2. Track whose favorites we are currently viewing
                     window.album.viewingAdminUserFavorites = displayName;
 
-                    // 3. Collect the sequences (image-ids) of this user's favorites
                     var favIds = favs.map(function (f) {
                         return String(f.sequence);
                     });
 
-                    // 4. Overwrite card favorite flags temporarily
+                    // Overwrite main layout card favorite flags temporarily
                     $('#album-grid .album-card').each(function () {
-                        var card = $(this);
-                        var imgId = String(card.attr('data-image-id'));
+                        var cardElement = $(this);
+                        var imgId = String(cardElement.attr('data-image-id'));
                         if (favIds.indexOf(imgId) !== -1) {
-                            card.attr('data-favorite', '1');
-                            card.addClass('is-favorite');
+                            cardElement.attr('data-favorite', '1');
+                            cardElement.addClass('is-favorite');
                         } else {
-                            card.attr('data-favorite', '0');
-                            card.removeClass('is-favorite');
+                            cardElement.attr('data-favorite', '0');
+                            cardElement.removeClass('is-favorite');
                         }
                     });
 
-                    // 5. Force filter visibility and apply
                     window.album.showFavoritesOnly = true;
                     window.album.applyFilter();
                 }
             });
 
-            title.append(link);
-            $('#favorites-all-title').append(title);
+            grid.append(card);
         });
+
+        // If no user favorites exist in this album, show an empty state
+        if (grid.children().length === 0) {
+            grid = $('<div class="text-center text-muted" style="padding: 40px 0;">')
+                .append($('<em class="fa fa-heart-o" style="font-size: 40px; margin-bottom: 15px; display: block;"></em>'))
+                .append($('<p>').text('No users have added favorites to this album yet.'));
+        }
+
+        modalBody.append(grid);
     }, "json");
 }
 
