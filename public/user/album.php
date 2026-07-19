@@ -500,7 +500,6 @@ if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
     // Cache selectors for performance
     var $window = $(window);
     var $breadcrumb = $('.breadcrumb');
-    var logo;
     var $logo1 = $('#nav-logo-link');
     var $logo2 = $('#nav-logo-link-2');
 
@@ -524,6 +523,7 @@ if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
         // 4. Evaluate whether the page has scrolled enough to lock the element
         if ($window.scrollTop() > (initialBreadcrumbTop - effectiveFixedTop)) {
             $breadcrumb.addClass('breadcrumb-fixed').css('top', effectiveFixedTop + 'px');
+            $('.breadcrumb-fixed').css('width', $('.page-header').width() + 'px');
             $logo1.hide();
             $logo2.hide();
         } else {

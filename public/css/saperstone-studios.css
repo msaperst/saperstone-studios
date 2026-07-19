@@ -243,10 +243,10 @@ blockquote p {
 
 .breadcrumb-fixed {
     position: fixed !important;
-    left: 0;
-    right: 0;
     z-index: 1030;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
 }
 
 .navbar-nav > li > a:hover, .navbar-nav > li > a:focus {
