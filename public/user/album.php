@@ -496,8 +496,41 @@ if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
 <script>
     $('[data-toggle="tooltip"]').tooltip();
     var album = new Album("<?php echo $album->getId(); ?>", 4, <?php echo count($images); ?> );
-    $(window, document).on("scroll resize", function () {
+
+    // Cache selectors for performance
+    var $window = $(window);
+    var $breadcrumb = $('.breadcrumb');
+    var logo;
+    var $logo1 = $('#nav-logo-link');
+    var $logo2 = $('#nav-logo-link-2');
+
+    // 1. Calculate the initial distance from the top of the page to the breadcrumbs
+    var initialBreadcrumbTop = $breadcrumb.offset().top;
+
+    $window.on("scroll resize", function () {
+        // Run your existing gallery lazy loader
         album.loadImages();
+
+        // 2. Dynamically measure the exact bottom position of your fixed header bar
+        var navbarBottom = $('.navbar-fixed-top').outerHeight();
+
+        // 3. Determine the target gap (50px below the viewport top)
+        var desiredTopPosition = 80;
+
+        // If the navbar height pushes past 50px (e.g., due to alerts),
+        // pin it exactly to the bottom edge of the navbar so it doesn't clip underneath.
+        var effectiveFixedTop = Math.max(desiredTopPosition, navbarBottom);
+
+        // 4. Evaluate whether the page has scrolled enough to lock the element
+        if ($window.scrollTop() > (initialBreadcrumbTop - effectiveFixedTop)) {
+            $breadcrumb.addClass('breadcrumb-fixed').css('top', effectiveFixedTop + 'px');
+            $logo1.hide();
+            $logo2.hide();
+        } else {
+            $breadcrumb.removeClass('breadcrumb-fixed').css('top', '');
+            $logo1.show();
+            $logo2.show();
+        }
     });
 </script>
 

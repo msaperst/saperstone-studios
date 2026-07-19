@@ -740,50 +740,40 @@ $(document).ready(function () {
 
 function setFavoriteImage() {
     var img = getCurrentAlbumImage();
-    if (img.length === 0) {
-        return;
-    }
-    // send our update
-    $.post("/api/set-favorite.php", {
-        album: img.attr('album-id'),
-        image: img.attr('image-id')
-    }).done(function (data) {
-        // update our count on the page
-        if (parseInt(data) > 0) {
-            $('#favorite-count').html(data).css({
-                'padding-left': '10px'
-            });
-        } else {
-            $('#favorite-count').html("").css({
-                'padding-left': ''
-            });
-        }
+    if (img.length === 0) return;
+    var imageId = img.attr('image-id');
+
+    $.post("/api/set-favorite.php", {album: img.attr('album-id'), image: imageId}).done(function (data) {
+        updateFavoriteCount(data);
         setFavorite();
+        syncCardFavoriteState(imageId, true);
     });
 }
 
 function unsetFavoriteImage() {
     var img = getCurrentAlbumImage();
-    if (img.length === 0) {
-        return;
-    }
-    // send our update
-    $.post("/api/unset-favorite.php", {
-        album: img.attr('album-id'),
-        image: img.attr('image-id')
-    }).done(function (data) {
-        // update our count on the page
-        if (parseInt(data) > 0) {
-            $('#favorite-count').html(data).css({
-                'padding-left': '10px'
-            });
-        } else {
-            $('#favorite-count').html("").css({
-                'padding-left': ''
-            });
-        }
+    if (img.length === 0) return;
+    var imageId = img.attr('image-id');
+
+    $.post("/api/unset-favorite.php", {album: img.attr('album-id'), image: imageId}).done(function (data) {
+        updateFavoriteCount(data);
         unsetFavorite();
+        syncCardFavoriteState(imageId, false);
     });
+}
+
+function syncCardFavoriteState(imageId, isFavorite) {
+    var card = getAlbumImageCard(imageId);
+    if (!card.length) return;
+
+    var favStr = isFavorite ? '1' : '0';
+    card.attr('data-favorite', favStr);
+    card.toggleClass('is-favorite', isFavorite);
+
+    // Sync the small grid action heart icon inside the thumbnail overlay
+    card.find('.album-card-action[data-action="favorite"] em')
+        .removeClass('fa-heart error')
+        .addClass(isFavorite ? 'fa-heart error' : 'fa-heart');
 }
 
 function toggleFavorites() {
