@@ -113,6 +113,11 @@ function updateViewerMeta(image) {
     if (window.showImageTitle) {
         $('#album-viewer-title').text(image.attr('data-title') || image.attr('title') || '');
     }
+    if (image.attr('data-downloadable') === "1") {
+        $('#downloadable-image-btn').removeClass('hidden').show();
+    } else {
+        $('#downloadable-image-btn').addClass('hidden').hide();
+    }
     $('#album-viewer-caption').text(image.attr('data-caption') || '');
 }
 
@@ -505,6 +510,7 @@ Album.prototype.loadImages = function () {
         }
         $.each(data.images, function (k, v) {
             var isFavorite = parseInt(v.favorite, 10) === 1;
+            var isDownloadable = (parseInt(v.downloadable, 10) === 1);
             var card = $('<article>');
             card.addClass('album-card');
             card.attr('album-id', Album.albumId);
@@ -512,6 +518,7 @@ Album.prototype.loadImages = function () {
             card.attr('data-image-id', v.sequence);
             card.attr('data-favorite', isFavorite ? '1' : '0');
             card.toggleClass('is-favorite', isFavorite);
+            card.attr('data-downloadable', isDownloadable ? '1' : '0')
             card.attr('data-loading', '0');
             card.attr('data-loaded', '0');
             card.attr('data-title', v.title);
@@ -560,7 +567,7 @@ Album.prototype.loadImages = function () {
             var actions = $('<div>');
             actions.addClass('album-card-actions');
 
-            if (window.albumCanDownload) {
+            if (isDownloadable) {
                 actions.append(createIconButton('download', 'fa-download', 'Download image', function () {
                     downloadImageFor(v.sequence);
                 }));
@@ -574,6 +581,22 @@ Album.prototype.loadImages = function () {
                 toggleFavoriteForImage(v.sequence);
             }));
 
+            if (window.showImageTitle) { // True if user is admin[cite: 4]
+                actions.append(createIconButton('access', 'fa-picture-o', 'Access permissions', function () {
+                    // Make sure the thumbnail card is marked active so setupImageAccess finds it
+                    $('#album-grid .album-card').removeClass('is-active');
+                    card.addClass('is-active');
+                    setupImageAccess();
+                }));
+
+                actions.append(createIconButton('delete', 'fa-trash', 'Delete image', function () {
+                    // Make sure the thumbnail card is marked active so deleteImage finds it
+                    $('#album-grid .album-card').removeClass('is-active');
+                    card.addClass('is-active');
+                    deleteImage();
+                }));
+            }
+
             overlay.append(actions);
             media.append(img);
             card.append(media);
@@ -585,7 +608,8 @@ Album.prototype.loadImages = function () {
                 location: v.location,
                 title: v.title,
                 caption: v.caption || '',
-                favorite: isFavorite
+                favorite: isFavorite,
+                downloadable: isDownloadable
             });
         });
         Album.initialized = true;
@@ -640,6 +664,14 @@ $(document).ready(function () {
             submitImageFor(imageId);
         } else if (action === 'favorite') {
             toggleFavoriteForImage(imageId);
+        } else if (action === 'access') {
+            $('#album-grid .album-card').removeClass('is-active');
+            card.addClass('is-active');
+            setupImageAccess();
+        } else if (action === 'delete') {
+            $('#album-grid .album-card').removeClass('is-active');
+            card.addClass('is-active');
+            deleteImage();
         }
     });
 

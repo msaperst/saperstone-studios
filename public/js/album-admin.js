@@ -46,11 +46,13 @@ $(document).ready(function () {
 });
 
 function deleteImage() {
-    var img = (window.album && typeof window.album.getCurrentCard === "function") ? window.album.getCurrentCard() : $('#album-grid .album-card.is-active');
+    var activeCard = $('#album-grid .album-card.is-active');
+    var img = activeCard.length ? activeCard : ((window.album && typeof window.album.getCurrentCard === "function") ? window.album.getCurrentCard() : $());
+
     BootstrapDialog.show({
         draggable: true,
         title: 'Are You Sure?',
-        message: 'Are you sure you want to delete the image <b>' + img.attr('alt') + '</b>',
+        message: 'Are you sure you want to delete the image <b>' + img.attr('data-title') + '</b>',
         buttons: [{
             icon: 'glyphicon glyphicon-trash',
             label: ' Delete',
@@ -92,10 +94,12 @@ function deleteImage() {
 }
 
 function setupImageAccess() {
-    var img = (window.album && typeof window.album.getCurrentCard === "function") ? window.album.getCurrentCard() : $('#album-grid .album-card.is-active');
+    var activeCard = $('#album-grid .album-card.is-active');
+    var img = activeCard.length ? activeCard : ((window.album && typeof window.album.getCurrentCard === "function") ? window.album.getCurrentCard() : $());
+
     BootstrapDialog.show({
         draggable: true,
-        title: 'Who Do You Want To Give Access To For Image <b>' + img.attr('alt') + '</b>?',
+        title: 'Who Do You Want To Give Access To For Image <b>' + img.attr('data-title') + '</b>?',
         message: function () {
             var inputs = $('<div>');
             var albumDiv = $('<div id="albumDiv">');
