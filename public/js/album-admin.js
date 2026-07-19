@@ -69,10 +69,67 @@ function deleteImage() {
                     image: img.attr('image-id')
                 }).done(function () {
                     dialogInItself.close();
+
+                    var imageId = img.attr('image-id');
+                    var wasFavorite = img.attr('data-favorite') === '1';
+
+                    // Sync active local caches before DOM extraction
+                    if (window.album && window.album.images) {
+                        // Remove from the internal lazy loader array tracking cache
+                        var cacheIndex = -1;
+                        $.each(window.album.images, function (i, item) {
+                            if (String(item.sequence) === String(imageId)) {
+                                cacheIndex = i;
+                                return false;
+                            }
+                        });
+                        if (cacheIndex !== -1) {
+                            window.album.images.splice(cacheIndex, 1);
+                        }
+                    }
+
+                    // Revert DOM elements cleanly
                     if (window.album && typeof window.album.removeImage === "function") {
-                        window.album.removeImage(img.attr('image-id'));
+                        window.album.removeImage(imageId);
                     } else {
                         img.remove();
+                    }
+
+                    // If the deleted image was a favorite, recalibrate the total counters
+                    if (wasFavorite) {
+                        var countElement = $('#favorite-count');
+                        var currentCount = parseInt(countElement.text(), 10) || 0;
+                        var newCount = Math.max(0, currentCount - 1);
+
+                        // Use existing method to gracefully adjust strings/spacing
+                        updateFavoriteCount(newCount);
+
+                        // Disable favorite buttons if the user just cleared out their last favorite item
+                        if (newCount <= 0) {
+                            $("#downloadable-favorites-btn").prop("disabled", true);
+                            $("#submit-favorites-btn").prop("disabled", true).hide();
+                        }
+                    }
+
+                    // Recalibrate grid spans and trigger a quick evaluation check on the download rules
+                    updateAllAlbumCardSpans();
+                    if (window.album) {
+                        // If they are looking at a filtered view, hide the empty card space immediately
+                        if (window.album.showFavoritesOnly) { //[cite: 3]
+                            window.album.applyFilter(); //[cite: 3]
+                        } else {
+                            window.album.loadImages(); //[cite: 3]
+                        }
+                    }
+
+                    //check if ANY downloadable items remain on the screen.
+                    // If zero match, disable the overall folder download action utility.
+                    var hasDownloadableImages = $('#album-grid .album-card').filter(function () {
+                        return $(this).find('.album-card-action[data-action="download"]').length > 0;
+                    }).length > 0;
+
+                    if (!hasDownloadableImages) {
+                        $('#downloadable-all-btn').prop('disabled', true).addClass('disabled'); //[cite: 3]
                     }
                 }).fail(function (xhr, status, error) {
                     if (xhr.responseText !== "") {
