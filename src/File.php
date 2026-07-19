@@ -86,10 +86,7 @@ class File {
             $width = $size[0];
             $height = $size[1];
 
-            echo "got the image";
-            var_dump(function_exists('exif_read_data'));
             if (function_exists('exif_read_data')) {
-                echo "trying to rotate image";
                 $exif = @exif_read_data($this->location . $file);
 
                 if (!empty($exif['Orientation']) && in_array($exif['Orientation'], [5, 6, 7, 8])) {
