@@ -283,6 +283,7 @@ Album.prototype.prev = function () {
     if (Album.currentImageId === null) {
         return;
     }
+
     var index = -1;
     $.each(Album.images, function (i, image) {
         if (String(image.sequence) === String(Album.currentImageId)) {
@@ -290,13 +291,31 @@ Album.prototype.prev = function () {
             return false;
         }
     });
+
     if (index === -1) {
         return;
     }
-    index--;
-    if (index < 0) {
-        index = Album.images.length - 1;
-    }
+
+    var steps = 0;
+    var maxSteps = Album.images.length;
+
+    do {
+        index--;
+        if (index < 0) {
+            index = Album.images.length - 1;
+        }
+        steps++;
+
+        if (Album.showFavoritesOnly) {
+            var targetCard = $('#album-grid .album-card[data-image-id="' + Album.images[index].sequence + '"]');
+            if (targetCard.attr('data-favorite') !== '1') {
+                continue;
+            }
+        }
+
+        break;
+    } while (steps < maxSteps);
+
     if (Album.images[index]) {
         Album.selectImage(Album.images[index].sequence, {
             scroll: true,
@@ -310,6 +329,7 @@ Album.prototype.next = function () {
     if (Album.currentImageId === null) {
         return;
     }
+
     var index = -1;
     $.each(Album.images, function (i, image) {
         if (String(image.sequence) === String(Album.currentImageId)) {
@@ -317,13 +337,31 @@ Album.prototype.next = function () {
             return false;
         }
     });
+
     if (index === -1) {
         return;
     }
-    index++;
-    if (index >= Album.images.length) {
-        index = 0;
-    }
+
+    var steps = 0;
+    var maxSteps = Album.images.length;
+
+    do {
+        index++;
+        if (index >= Album.images.length) {
+            index = 0;
+        }
+        steps++;
+
+        if (Album.showFavoritesOnly) {
+            var targetCard = $('#album-grid .album-card[data-image-id="' + Album.images[index].sequence + '"]');
+            if (targetCard.attr('data-favorite') !== '1') {
+                continue;
+            }
+        }
+
+        break;
+    } while (steps < maxSteps);
+
     if (Album.images[index]) {
         Album.selectImage(Album.images[index].sequence, {
             scroll: true,
@@ -377,6 +415,45 @@ Album.prototype.syncPendingImage = function () {
     return false;
 };
 
+function rebuildAlbumBreadcrumbs() {
+    // Always strip out any existing trailing filter items to reset the base
+    $('.breadcrumb > li.filter-crumb').remove();
+
+    if (!window.album || !window.album.showFavoritesOnly) {
+        // If no filter is active, restore the base album node to a clean, non-clickable active text view
+        var baseCrumb = $('.breadcrumb > li').last();
+        var albumName = $('#album-title').text();
+        baseCrumb.addClass('active').html(albumName).off("click").css('cursor', 'unset');
+        return;
+    }
+
+    // If filtering is active, make the base album text a clickable anchor link to clear the filter
+    var baseCrumb = $('.breadcrumb > li').last();
+    baseCrumb.removeClass('active');
+
+    var albumName = $('#album-title').text();
+    var anchor = $('<a href="#"></a>').text(albumName);
+
+    baseCrumb.html(anchor).css('cursor', 'pointer').off("click").click(function (e) {
+        e.preventDefault();
+        if (window.album && window.album.showFavoritesOnly) {
+            toggleFavorites(); // This safely untoggles everything
+        }
+    });
+
+    // Determine custom text label based on whether an admin is viewing a target guest user
+    var label = 'Favorites';
+    if (window.album.viewingAdminUserFavorites) {
+        label = 'Favorites (' + window.album.viewingAdminUserFavorites + ')';
+    }
+
+    // Construct and inject the fresh dynamic path element marked with a distinct class selector
+    var filterCrumb = $('<li class="active filter-crumb"></li>').text(label);
+
+    // Inject it neatly right before your toolbar actions placeholder dropdown array wrapper
+    $('#actions').before(filterCrumb);
+}
+
 Album.prototype.applyFilter = function () {
     var Album = this;
 
@@ -420,13 +497,6 @@ Album.prototype.applyFilter = function () {
             Album.originalFavoritesBackup = null;
             Album.viewingAdminUserFavorites = null;
         }
-        // ----------------------------------
-
-        // Resetting the menu breadcrumbs
-        $('.breadcrumb>li').last().remove();
-        var lastLink = $('.breadcrumb>li').last();
-        var text = lastLink.text();
-        lastLink.addClass('active').html(text).off("click").css('cursor', 'unset');
     } else {
         // Setting the buttons
         favoriteButton
@@ -437,27 +507,9 @@ Album.prototype.applyFilter = function () {
         $('#downloadable-all-btn').hide();
         $('#downloadable-favorites-btn').show();
         $('#submit-favorites-btn').show();
-
-        // Adding favorite label to breadcrumbs
-        var lastLink = $('.breadcrumb>li').last();
-        lastLink.removeClass('active');
-        var text = lastLink.text();
-        var anchor = $('<a>');
-        anchor.text(text);
-        lastLink.html(anchor).css('cursor', 'pointer').off("click").click(function () {
-            toggleFavorites();
-        });
-
-        // Determine custom breadcrumb label based on active admin target user
-        var breadcrumbLabel = 'Favorites';
-        if (Album.viewingAdminUserFavorites) {
-            breadcrumbLabel = 'Favorites (' + Album.viewingAdminUserFavorites + ')';
-        }
-
-        var listItem = $('<li>');
-        listItem.addClass('active').text(breadcrumbLabel);
-        $('#actions').before(listItem);
     }
+    rebuildAlbumBreadcrumbs();
+
     var tooltip = favoriteButton.attr('aria-describedby');
     $('#' + tooltip).remove();
     favoriteButton.remove('aria-describedby');
