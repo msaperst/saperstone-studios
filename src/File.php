@@ -66,8 +66,8 @@ class File {
                 unlink($this->location . $file);
                 throw new Exception("Image does not meet the minimum height requirements of {$height}px. Image is {$size[0]} x {$size[1]}");
             } elseif ($width > 0 && $height > 0) {
-                system("mogrify -resize {$width}x{$height} \"{$this->location}{$file}\"");
-                system("mogrify -density 72 \"{$this->location}{$file}\"");
+                system("mogrify -resize {$width}x{$height} " . escapeshellarg($this->location . $file));
+                system("mogrify -density 72 " . escapeshellarg($this->location . $file));
             }
         }
     }

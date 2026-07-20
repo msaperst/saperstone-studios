@@ -41,6 +41,31 @@ class Email {
         }
     }
 
+    /**
+     * Helper to safely fetch geo info from ipinfo.io without generating PHP warnings.
+     */
+    private function fetchGeoInfo($IP) {
+        // The @ operator suppresses the E_WARNING on a 429 or network failure
+        $response = @file_get_contents("http://ipinfo.io/$IP/json");
+
+        if ($response === false) {
+            return (object)[]; // Return empty object to prevent property access errors
+        }
+
+        $data = json_decode($response);
+        return $data ? $data : (object)[];
+    }
+
+    /**
+     * Helper to sanitize and retrieve resolution input.
+     */
+    private function getResolution() {
+        $sql = new Sql();
+        return (isset($_POST['resolution']) && $_POST['resolution'] != "")
+            ? $sql->escapeString($_POST['resolution'])
+            : "";
+    }
+
     public function setHtml($html) {
         $this->message->setHTMLBody($html);
     }
@@ -56,60 +81,58 @@ class Email {
     public function getUserInfoHtml() {
         $browser = new Browser();
         $session = new Session();
-        $sql = new Sql();
         $IP = $session->getClientIP();
-        $geo_info = json_decode(file_get_contents("http://ipinfo.io/$IP/json"));
-        $resolution = "";
-        if (isset ($_POST ['resolution']) && $_POST ['resolution'] != "") {
-            $resolution = $sql->escapeString($_POST ['resolution']);
-        }
+        $geo_info = $this->fetchGeoInfo($IP);
+        $resolution = $this->getResolution();
+
         $html = "";
-        if (!isset ($geo_info->city)) {
+        if (!isset($geo_info->city)) {
             $html .= "<strong>Location</strong>: unknown (use $IP to manually lookup)<br/>";
         } else {
-            if (isset ($geo_info->postal)) {
-                $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
-            } else {
-                $html .= "<strong>Location</strong>: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
+            $locationStr = $geo_info->city . ", " . $geo_info->region;
+            if (isset($geo_info->postal)) {
+                $locationStr .= " " . $geo_info->postal;
             }
+            $html .= "<strong>Location</strong>: " . $locationStr . " - " . $geo_info->country . " (estimated location based on IP: $IP)<br/>";
+
             if (isset($geo_info->hostname)) {
                 $html .= "<strong>Hostname</strong>: " . $geo_info->hostname . "<br/>";
             }
         }
+
         $html .= "<strong>Browser</strong>: " . $browser->getBrowser() . " " . $browser->getVersion() . "<br/>";
         $html .= "<strong>Resolution</strong>: $resolution<br/>";
         $html .= "<strong>OS</strong>: " . $browser->getPlatform() . "<br/>";
-        $html .= "<strong>Full UA</strong>: " . $_SERVER ['HTTP_USER_AGENT'] . "<br/>";
+        $html .= "<strong>Full UA</strong>: " . $_SERVER['HTTP_USER_AGENT'] . "<br/>";
         return $html;
     }
 
     public function getUserInfoText() {
         $browser = new Browser();
         $session = new Session();
-        $sql = new Sql();
         $IP = $session->getClientIP();
-        $geo_info = json_decode(file_get_contents("http://ipinfo.io/$IP/json"));
-        $resolution = "";
-        if (isset ($_POST ['resolution']) && $_POST ['resolution'] != "") {
-            $resolution = $sql->escapeString($_POST ['resolution']);
-        }
+        $geo_info = $this->fetchGeoInfo($IP);
+        $resolution = $this->getResolution();
+
         $text = "";
-        if (!isset ($geo_info->city)) {
+        if (!isset($geo_info->city)) {
             $text .= "Location: unknown (use $IP to manually lookup)\n";
         } else {
-            if (isset ($geo_info->postal)) {
-                $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " " . $geo_info->postal . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
-            } else {
-                $text .= "Location: " . $geo_info->city . ", " . $geo_info->region . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
+            $locationStr = $geo_info->city . ", " . $geo_info->region;
+            if (isset($geo_info->postal)) {
+                $locationStr .= " " . $geo_info->postal;
             }
+            $text .= "Location: " . $locationStr . " - " . $geo_info->country . " (estimated location based on IP: $IP)\n";
+
             if (isset($geo_info->hostname)) {
                 $text .= "Hostname: " . $geo_info->hostname . "\n";
             }
         }
+
         $text .= "Browser: " . $browser->getBrowser() . " " . $browser->getVersion() . "\n";
         $text .= "Resolution: $resolution\n";
         $text .= "OS: " . $browser->getPlatform() . "\n";
-        $text .= "Full UA: " . $_SERVER ['HTTP_USER_AGENT'] . "\n";
+        $text .= "Full UA: " . $_SERVER['HTTP_USER_AGENT'] . "\n";
         return $text;
     }
 
