@@ -221,29 +221,4 @@ $message", $actualMessage, $actualMessage);
         fclose($bh);
         Assert::assertTrue($result);
     }
-
-    /**
-     * @param $url
-     * @param $code
-     */
-    public static function httpCodeEquals($url, $code): void {
-        $url = str_replace(" ", '%20', $url);
-        $handle = curl_init($url);
-
-        // FIX: Force cURL to completely ignore cached sockets and headers
-        curl_setopt($handle, CURLOPT_FRESH_CONNECT, true);
-        curl_setopt($handle, CURLOPT_FORBID_REUSE, true);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
-
-        // Optional: Injected header to bypass web server reverse proxy caching
-        curl_setopt($handle, CURLOPT_HTTPHEADER, [
-            'Cache-Control: no-cache',
-            'Pragma: no-cache'
-        ]);
-
-        curl_exec($handle);
-        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-        curl_close($handle);
-        Assert::assertEquals($code, $httpCode, "Expected HTTP Status $code but got $httpCode for URL: $url");
-    }
 }
