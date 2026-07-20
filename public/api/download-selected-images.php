@@ -90,20 +90,27 @@ if ($images == "") {
 if (!is_dir("../tmp/")) {
     mkdir("../tmp/");
 }
-$name = str_replace('"', "", $album->getName());
-$name = str_replace("'", "", $name);
+$name = str_replace(['"', "'"], "", $album->getName());
 $myFile = "../tmp/$name " . date("Y-m-d H-i-s") . ".zip";
+
+// Explode space-separated file names into an array so we can safely escape each individual path
+$imagePaths = explode(" ", trim($images));
+$escapedImages = implode(" ", array_map('escapeshellarg', $imagePaths));
+$escapedZipPath = escapeshellarg($myFile);
+
 if (count($image_array) > 100) {
-    system("zip -j '$myFile' $images > /dev/null 2>&1 &");
+    // Safely run in the background
+    system("zip -j $escapedZipPath $escapedImages > /dev/null 2>&1 &");
     $response ['message'] = "Due to the large number of images, this download will take a while. " .
         "Please enter your email to receive a link to the files once they are ready for download";
 } else {
-    $command = `zip -j "$myFile" $images`;
+    // Replace backticks with shell_exec using securely escaped arguments
+    $command = shell_exec("zip -j $escapedZipPath $escapedImages");
 }
 $response ['file'] = $myFile;
 echo json_encode($response);
 //remove our file after a specified amount of time
-system("bash -c 'sleep " . getenv('CLEAN_UP_AFTER') . "; rm \"$myFile\";' > /dev/null 2>&1 &");
+system("bash -c 'sleep " . (int)getenv('CLEAN_UP_AFTER') . "; rm " . escapeshellarg($myFile) . ";' > /dev/null 2>&1 &");
 
 // update our user records table
 if ($systemUser->getId()) {

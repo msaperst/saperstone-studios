@@ -288,7 +288,8 @@ class Blog {
         // update our preview image with the blog post id
         rename("{$this->directory}/preview_image.jpg", "{$this->directory}/preview_image-$blogId.jpg");
         $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-$blogId.jpg", strlen(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
-        $sql->executeStatement("UPDATE `blog_details` SET `preview` = '{$this->preview}' WHERE `id` = $blogId;");
+        $escapedPreview = $sql->escapeString($this->preview);
+        $sql->executeStatement("UPDATE `blog_details` SET `preview` = '{$escapedPreview}' WHERE `id` = $blogId;");
 
         //create our content
         foreach ($this->content as $content) {
@@ -327,6 +328,9 @@ class Blog {
             system("mogrify -resize 360x \"{$this->preview}\" > /dev/null 2>&1");
             system("mogrify -density 72 \"{$this->preview}\" > /dev/null 2>&1");
             $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg", strlen(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
+            $sql = new Sql();
+            $this->preview = $sql->escapeString($this->preview);
+            $sql->disconnect();
         }
 
         $sql = new Sql();

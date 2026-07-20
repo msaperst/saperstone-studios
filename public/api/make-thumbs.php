@@ -36,5 +36,11 @@ if (!$systemUser->isAdmin()) {
     $sql->disconnect();
 }
 
-system(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh {$album->getId()} $markup {$album->getLocation()} > /dev/null 2>&1 &");
+$scriptPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh";
+$albumId = (int)$album->getId();
+$escapedMarkup = escapeshellarg($markup);
+$escapedLocation = escapeshellarg($album->getLocation());
+
+system("$scriptPath $albumId $escapedMarkup $escapedLocation > /dev/null 2>&1 &");
+
 exit ();
