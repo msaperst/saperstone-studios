@@ -81,6 +81,6 @@ services:
       EMAIL_PASS: ${EMAIL_PASS}
       EMAIL_USER_X: ${EMAIL_USER_X}
       EMAIL_PASS_X: ${EMAIL_PASS_X}
-      CLEAN_UP_AFTER: 60
+      CLEAN_UP_AFTER: "60"
 volumes:
   mysql:
