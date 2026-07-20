@@ -104,7 +104,6 @@ if (count($image_array) > 100) {
     $response ['message'] = "Due to the large number of images, this download will take a while. " .
         "Please enter your email to receive a link to the files once they are ready for download";
 } else {
-    // Replace backticks with shell_exec using securely escaped arguments
     $command = shell_exec("zip -j $escapedZipPath $escapedImages");
 }
 $response ['file'] = $myFile;
