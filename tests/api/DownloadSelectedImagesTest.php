@@ -1879,9 +1879,16 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $zipFile = json_decode($response->getBody(), true)['file'];
-
-        CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 200);
+        $absoluteZipPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . str_replace('../', '', $zipFile);
+        
+        $this->assertTrue(
+            file_exists($absoluteZipPath),
+            "Expected the ZIP file to exist at: $absoluteZipPath"
+        );
         sleep(65);
-        CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 404);
+        $this->assertFalse(
+            file_exists($absoluteZipPath),
+            "Expected the ZIP file to be deleted from disk, but it still exists at: $absoluteZipPath"
+        );
     }
 }
