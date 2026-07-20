@@ -1881,7 +1881,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         $zipFile = json_decode($response->getBody(), true)['file'];
 
         CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 200);
-        sleep(75);
+        sleep(65);
         CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 404);
     }
 }
