@@ -8,8 +8,6 @@ use Facebook\WebDriver\WebDriverWait;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\Assert;
 
-require_once 'Gmail.php';
-
 class CustomAsserts {
 
     /**
