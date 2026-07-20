@@ -1881,15 +1881,11 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         $zipFile = json_decode($response->getBody(), true)['file'];
         $absoluteZipPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . str_replace('../', '', $zipFile);
 
-        echo system("pwd ");
-        echo dirname($absoluteZipPath);
-        echo system("ls " . dirname($absoluteZipPath));
         $this->assertTrue(
             file_exists($absoluteZipPath),
             "Expected the ZIP file to exist at: $absoluteZipPath"
         );
         sleep(70);
-        echo system("ls " . dirname($absoluteZipPath));
         $this->assertFalse(
             file_exists($absoluteZipPath),
             "Expected the ZIP file to be deleted from disk, but it still exists at: $absoluteZipPath"
