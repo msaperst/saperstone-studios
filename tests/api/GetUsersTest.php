@@ -7,6 +7,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
+use Sql;
 
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
@@ -21,6 +22,12 @@ class GetUsersTest extends TestCase {
      */
     public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->sql = new Sql();
+        $this->sql->executeStatement("UPDATE `users` SET `lastLogin` = CURRENT_TIME WHERE `users`.`id` = 1;");
+        $this->sql->executeStatement("UPDATE `users` SET `lastLogin` = NULL WHERE `users`.`id` = 2;");
+        $this->sql->executeStatement("UPDATE `users` SET `lastLogin` = NULL WHERE `users`.`id` = 3;");
+        $this->sql->executeStatement("UPDATE `users` SET `lastLogin` = NULL WHERE `users`.`id` = 4;");
+        $this->sql->disconnect();
     }
 
     /**
@@ -87,7 +94,7 @@ class GetUsersTest extends TestCase {
         $this->assertEquals('Saperstone', $users[1]['lastName']);
         $this->assertEquals('msaperst@gmail.com', $users[1]['email']);
         $this->assertEquals('admin', $users[1]['role']);
-        $this->assertEquals(0, $users[1]['active']);
+        $this->assertEquals(1, $users[1]['active']);
         $this->assertNotNull($users[1]['lastLogin']);
 
         $this->assertEquals(2, $users[2]['id']);
@@ -97,7 +104,7 @@ class GetUsersTest extends TestCase {
         $this->assertEquals('la@saperstonestudios.com', $users[2]['email']);
         $this->assertEquals('admin', $users[2]['role']);
         $this->assertEquals(1, $users[2]['active']);
-        $this->assertNotNull($users[2]['lastLogin']);
+        $this->assertNull($users[2]['lastLogin']);
 
         $this->assertEquals(3, $users[3]['id']);
         $this->assertEquals('downloader', $users[3]['usr']);
@@ -106,7 +113,7 @@ class GetUsersTest extends TestCase {
         $this->assertEquals('email@example.org', $users[3]['email']);
         $this->assertEquals('downloader', $users[3]['role']);
         $this->assertEquals(1, $users[3]['active']);
-        $this->assertNotNull($users[3]['lastLogin']);
+        $this->assertNull($users[3]['lastLogin']);
 
         $this->assertEquals(4, $users[4]['id']);
         $this->assertEquals('uploader', $users[4]['usr']);
@@ -115,6 +122,6 @@ class GetUsersTest extends TestCase {
         $this->assertEquals('uploader@example.org', $users[4]['email']);
         $this->assertEquals('uploader', $users[4]['role']);
         $this->assertEquals(1, $users[4]['active']);
-        $this->assertNotNull($users[4]['lastLogin']);
+        $this->assertNull($users[4]['lastLogin']);
     }
 }

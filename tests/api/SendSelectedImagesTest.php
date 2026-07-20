@@ -34,6 +34,8 @@ class SendSelectedImagesTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('998', 999, 'file-1', 1, '/albums/sample/sample-1.jpg', '600', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('999', 999, 'file-2', 2, '/albums/sample/sample-2.jpg', '600', '400', '1');");
+        // Ensure every single test starts with a completely clean mailbox slate!
+        CustomAsserts::clearAllEmails();
     }
 
     /**
@@ -43,7 +45,7 @@ class SendSelectedImagesTest extends TestCase {
         $this->http = NULL;
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
-        $this->sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`user` = 4;");
+        $this->sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`user` = '4';");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
@@ -60,6 +62,7 @@ class SendSelectedImagesTest extends TestCase {
         $response = $this->http->request('POST', 'api/send-selected-images.php');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id is required", json_decode($response->getBody(), true)['err']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -73,6 +76,7 @@ class SendSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", json_decode($response->getBody(), true)['err']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -86,6 +90,7 @@ class SendSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", json_decode($response->getBody(), true)['err']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -99,6 +104,7 @@ class SendSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", json_decode($response->getBody(), true)['err']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -114,6 +120,7 @@ class SendSelectedImagesTest extends TestCase {
         } catch (ClientException $e) {
             $this->assertEquals(403, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
+            CustomAsserts::assertEmailCount(0);
         }
     }
 
@@ -132,6 +139,7 @@ class SendSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("What to select is required", json_decode($response->getBody(), true)['err']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -150,6 +158,7 @@ class SendSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("What to select can not be blank", json_decode($response->getBody(), true)['err']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -168,6 +177,7 @@ class SendSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("You have not selected any favorites", json_decode($response->getBody(), true)['err']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -201,7 +211,12 @@ class SendSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", $response->getBody());
-        CustomAsserts::assertEmailMatches('Selects Have Been Made',
+
+        CustomAsserts::assertEmailCount(1);
+        CustomAsserts::assertEmailMatches(
+            'selects@saperstonestudios.com',
+            'selects@saperstonestudios.com',
+            'Selects Have Been Made',
             "This is an automatically generated message from Saperstone Studios\r
 \r
 Someone has made a selection from the sample-album album at %s://%s/user/album.php?album=999.\r
@@ -210,7 +225,8 @@ file-1\r
 file-2\r
 \r
 \t\t",
-            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Someone has made a selection from the <a href=\'%s://%s/user/album.php?album=999\' target=\'_blank\'>sample-album</a> album</p><p><ul><li>file-1</li><li>file-2</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>');
+            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Someone has made a selection from the <a href=\'%s://%s/user/album.php?album=999\' target=\'_blank\'>sample-album</a> album</p><p><ul><li>file-1</li><li>file-2</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>',
+            'saperstonestudios@gmail.com');
     }
 
     /**
@@ -229,6 +245,7 @@ file-2\r
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Image id does not match any images", json_decode($response->getBody(), true)['err']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -244,24 +261,34 @@ file-2\r
                 'album' => '999',
                 'what' => '2',
                 'name' => 'Max',
-                'email' => 'msaperst+sstest@gmail.com',
+                'email' => 'msaperst@gmail.com',
                 'comment' => 'I want this one!'
             ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", $response->getBody());
-        CustomAsserts::assertEmailEquals('Thank You for Making Selects',
+
+        CustomAsserts::assertEmailCount(2);
+        CustomAsserts::assertEmailMatches(
+            'msaperst@gmail.com',
+            'selects@saperstonestudios.com',
+            'Thank You for Making Selects',
             'Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.',
-            '<html><body>Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.</body></html>');
-        CustomAsserts::assertEmailMatches('Selects Have Been Made',
+            '<html><body>Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.</body></html>'
+        );
+        CustomAsserts::assertEmailMatches(
+            'selects@saperstonestudios.com',
+            'selects@saperstonestudios.com',
+            'Selects Have Been Made',
             "This is an automatically generated message from Saperstone Studios\r
 \r
-Max has made a selection from the sample-album album at %s://%s/user/album.php?album=999. Their email address is msaperst+sstest@gmail.com\r
+Max has made a selection from the sample-album album at %s://%s/user/album.php?album=999. Their email address is msaperst@gmail.com\r
 \r
 file-2\r
 \r
 \t\tI want this one!",
-            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href=\'mailto:msaperst+sstest@gmail.com\'>Max</a> has made a selection from the <a href=\'%s://%s/user/album.php?album=999\' target=\'_blank\'>sample-album</a> album</p><p><ul><li>file-2</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I want this one!</p></body></html>');
+            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href=\'mailto:msaperst@gmail.com\'>Max</a> has made a selection from the <a href=\'%s://%s/user/album.php?album=999\' target=\'_blank\'>sample-album</a> album</p><p><ul><li>file-2</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I want this one!</p></body></html>',
+            'saperstonestudios@gmail.com');
     }
 }

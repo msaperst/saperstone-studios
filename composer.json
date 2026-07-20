@@ -7,6 +7,7 @@
   "require-dev": {
     "phpunit/phpunit": "^10.0",
     "guzzlehttp/guzzle": "7.4.5.0",
+    "ramsey/uuid": "4.9.3",
     "ext-json": "*",
     "ext-zip": "*",
     "php-webdriver/webdriver": "^1.15.2",
@@ -34,9 +35,9 @@
   "scripts": {
     "clean": "rm -rf reports;",
     "unit-test": "XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-ut.xml",
-    "integration-pre-test": "export $(grep -v '^#' .env | xargs); export DB_PORT=3506; docker build -q -f .docker/sql/Dockerfile -t integration_sql .; docker run -d -e TZ='America/New_York' -e MYSQL_ALLOW_EMPTY_PASSWORD=no -e MYSQL_ROOT_PASSWORD=${DB_ROOT} -e MYSQL_DATABASE=${DB_NAME} -e MYSQL_USER=${DB_USER} -e MYSQL_PASSWORD=${DB_PASS} -p ${DB_PORT}:3306 --expose ${DB_PORT} integration_sql; ./bin/setup-database.sh true;",
-    "integration-test": "export $(grep -v '^#' .env | xargs); export DB_PORT=3506; XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-it.xml",
-    "integration-post-test": "docker rm $(docker stop $(docker ps -a -q --filter ancestor=integration_sql --format=\"{{.ID}}\"))",
+    "integration-pre-test": "export $(grep -v '^#' .env | xargs); export DB_PORT=3506; docker build -q -f .docker/sql/Dockerfile -t integration_sql .; docker run -d -e TZ='America/New_York' -e MYSQL_ALLOW_EMPTY_PASSWORD=no -e MYSQL_ROOT_PASSWORD=${DB_ROOT} -e MYSQL_DATABASE=${DB_NAME} -e MYSQL_USER=${DB_USER} -e MYSQL_PASSWORD=${DB_PASS} -p ${DB_PORT}:3306 --expose ${DB_PORT} integration_sql; docker run -d --name integration_mailpit -e MP_SMTP_AUTH_ACCEPT_ANY=true -e MP_SMTP_AUTH_ALLOW_INSECURE=true -p 1025:1025 -p 8025:8025 axllent/mailpit; DB_PORT=3506 ./bin/setup-database.sh true;",
+    "integration-test": "export $(grep -v '^#' .env | xargs); export DB_PORT=3506; export EMAIL_HOST=127.0.0.1; XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-it.xml",
+    "integration-post-test": "docker rm -f $(docker stop $(docker ps -a -q --filter ancestor=integration_sql --format=\"{{.ID}}\")) || true; docker rm -f integration_mailpit || true",
     "coverage-test": "export $(grep -v '^#' .env | xargs); XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-ct.xml",
     "api-test": "export $(grep -v '^#' .env | xargs); vendor/bin/phpunit --configuration phpunit-api.xml",
     "ui-page-test": "export $(grep -v '^#' .env | xargs); export HEADLESS=true; vendor/bin/phpunit --configuration phpunit-ui.xml",

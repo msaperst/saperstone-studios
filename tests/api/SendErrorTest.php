@@ -23,6 +23,8 @@ class SendErrorTest extends TestCase {
      */
     public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        // Ensure every single test starts with a completely clean mailbox slate!
+        CustomAsserts::clearAllEmails();
     }
 
     /**
@@ -39,6 +41,7 @@ class SendErrorTest extends TestCase {
         $response = $this->http->request('POST', 'api/send-error.php');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Error is required", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -52,6 +55,7 @@ class SendErrorTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Error can not be blank", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -65,6 +69,7 @@ class SendErrorTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Page is required", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -79,6 +84,7 @@ class SendErrorTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Page can not be blank", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -93,6 +99,7 @@ class SendErrorTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Referral is required", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -108,6 +115,7 @@ class SendErrorTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Referral can not be blank", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -124,7 +132,12 @@ class SendErrorTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", $response->getBody());
-        CustomAsserts::assertEmailMatches('404 Error',
+
+        CustomAsserts::assertEmailCount(1);
+        CustomAsserts::assertEmailMatches(
+            'msaperst@gmail.com',
+            'error@saperstonestudios.com',
+            '404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page localhost/123.html\r
 \t\tThey came from page localhost\r
@@ -154,7 +167,12 @@ Full UA: GuzzleHttp/7\r\n",
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", $response->getBody());
-        CustomAsserts::assertEmailMatches('403 Error',
+
+        CustomAsserts::assertEmailCount(1);
+        CustomAsserts::assertEmailMatches(
+            'msaperst@gmail.com',
+            'error@saperstonestudios.com',
+            '403 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 403 on page localhost/123.html\r
 \t\tThey came from page localhost\r
@@ -187,7 +205,12 @@ Full UA: GuzzleHttp/7\r\n",
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", $response->getBody());
-        CustomAsserts::assertEmailMatches('401 Error',
+
+        CustomAsserts::assertEmailCount(1);
+        CustomAsserts::assertEmailMatches(
+            'msaperst@gmail.com',
+            'error@saperstonestudios.com',
+            '401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page localhost/123.html\r
 \t\tThey came from page localhost\r
