@@ -4,8 +4,6 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
 use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
@@ -37,6 +35,8 @@ class SendNotificationEmailTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', 'NULL', 'msaperst+sstest@gmail.com', 0);");
         $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'msaperst+sstest2@gmail.com', 0);");
         $this->sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`, `contacted`) VALUES ('999', '2', 'msaperst+sstest2@gmail.com', 1);");
+        // Ensure every single test starts with a completely clean mailbox slate!
+        CustomAsserts::clearAllEmails();
     }
 
     /**
@@ -58,6 +58,7 @@ class SendNotificationEmailTest extends TestCase {
         } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
+            CustomAsserts::assertEmailCount(0);
         }
     }
 
@@ -72,6 +73,7 @@ class SendNotificationEmailTest extends TestCase {
         } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
+            CustomAsserts::assertEmailCount(0);
         }
     }
 
@@ -87,6 +89,7 @@ class SendNotificationEmailTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id is required", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -104,6 +107,7 @@ class SendNotificationEmailTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -121,6 +125,7 @@ class SendNotificationEmailTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -138,6 +143,7 @@ class SendNotificationEmailTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -155,6 +161,7 @@ class SendNotificationEmailTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Message is required", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -173,6 +180,7 @@ class SendNotificationEmailTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Message can not be blank", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -197,14 +205,22 @@ class SendNotificationEmailTest extends TestCase {
         $this->assertEquals(1, $notifications[0]['contacted']);
         $this->assertEquals(1, $notifications[1]['contacted']);
         $this->assertEquals(1, $notifications[2]['contacted']);
-        CustomAsserts::assertEmailEquals('Album Updated on Saperstone Studios',
+
+        CustomAsserts::assertEmailCount(2);
+        CustomAsserts::assertEmailMatches(
+            'msaperst+sstest@gmail.com',
+            'noreply@saperstonestudios.com',
+            'Album Updated on Saperstone Studios',
             "An album you requested to be updated about has been updated.\r
 \r
 max@max",
             "<html><body>An album you requested to be updated about has been updated.\r
 \r
 max@max</body></html>");
-        CustomAsserts::assertEmailEquals('Album Updated on Saperstone Studios',
+        CustomAsserts::assertEmailMatches(
+            'msaperst+sstest2@gmail.com',
+            'noreply@saperstonestudios.com',
+            'Album Updated on Saperstone Studios',
             "An album you requested to be updated about has been updated.\r
 \r
 max@max",

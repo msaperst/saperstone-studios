@@ -49,10 +49,20 @@ class GetFavoritesTest extends TestCase {
         $this->sql->disconnect();
     }
 
-    public function testUnAuthUserNoFavorites() {
+    public function testUnAuthUserNoAlbum() {
         $response = $this->http->request('GET', 'api/get-favorites.php');
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(array(), json_decode($response->getBody(), true));
+        $this->assertEquals('Album id is required', (string)$response->getBody());
+    }
+
+    public function testUnAuthUserBlankAlbum() {
+        $response = $this->http->request('GET', 'api/get-favorites.php', [
+            'query' => [
+                'album' => ''
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Album id can not be blank', (string)$response->getBody());
     }
 
     public function testUnAuthUserFavorites() {
@@ -76,14 +86,7 @@ class GetFavoritesTest extends TestCase {
         ]);
         $response = $this->http->request('GET', 'api/get-favorites.php');
         $this->assertEquals(200, $response->getStatusCode());
-        $favorites = json_decode($response->getBody(), true);
-        $this->assertEquals(2, sizeof($favorites));
-        $this->assertEquals(1, sizeof($favorites[997]));
-        $this->assertEquals(1, $favorites[997][0]['sequence']);
-        $this->assertEquals('/albums/sample/file1', $favorites[997][0]['location']);
-        $this->assertEquals(1, sizeof($favorites[998]));
-        $this->assertEquals(1, $favorites[998][0]['sequence']);
-        $this->assertEquals('/albums/sample/file1', $favorites[998][0]['location']);
+        $this->assertEquals('Album id is required', (string)$response->getBody());
     }
 
     public function testUnAuthUserFavoritesAlbum() {
@@ -122,6 +125,9 @@ class GetFavoritesTest extends TestCase {
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/get-favorites.php', [
+            'query' => [
+                'album' => 997
+            ],
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -146,25 +152,14 @@ class GetFavoritesTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->http->request('POST', 'api/set-favorite.php', [
-            'form_params' => [
-                'album' => 998,
-                'image' => '1'
+        $response = $this->http->request('GET', 'api/get-favorites.php', [
+            'query' => [
+                'album' => 998
             ],
             'cookies' => $cookieJar
         ]);
-        $response = $this->http->request('GET', 'api/get-favorites.php', [
-            'cookies' => $cookieJar
-        ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $favorites = json_decode($response->getBody(), true);
-        $this->assertEquals(2, sizeof($favorites));
-        $this->assertEquals(1, sizeof($favorites[997]));
-        $this->assertEquals(1, $favorites[997][0]['sequence']);
-        $this->assertEquals('/albums/sample/file1', $favorites[997][0]['location']);
-        $this->assertEquals(1, sizeof($favorites[998]));
-        $this->assertEquals(1, $favorites[998][0]['sequence']);
-        $this->assertEquals('/albums/sample/file1', $favorites[998][0]['location']);
+        $this->assertEquals(array(), json_decode($response->getBody(), true));
     }
 
     /**

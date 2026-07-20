@@ -4,7 +4,6 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
-use Gmail;
 use Google\Exception as ExceptionAlias;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
@@ -65,6 +64,9 @@ class DownloadSelectedImagesTest extends TestCase {
             $counter++;
         }
         umask($oldMask);
+
+        // Ensure every single test starts with a completely clean mailbox slate!
+        CustomAsserts::clearAllEmails();
     }
 
     /**
@@ -90,6 +92,7 @@ class DownloadSelectedImagesTest extends TestCase {
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
         system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
+        system("rm -f " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/') . '*.zip');
         $this->sql->disconnect();
     }
 
@@ -100,6 +103,7 @@ class DownloadSelectedImagesTest extends TestCase {
         $response = $this->http->request('POST', 'api/download-selected-images.php');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("What to download is required", json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -113,6 +117,7 @@ class DownloadSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("What to download can not be blank", json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -126,6 +131,7 @@ class DownloadSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id is required", json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -140,6 +146,7 @@ class DownloadSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -154,6 +161,7 @@ class DownloadSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -168,6 +176,7 @@ class DownloadSelectedImagesTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -175,6 +184,7 @@ class DownloadSelectedImagesTest extends TestCase {
      * @throws ExceptionAlias
      */
     public function testUnAuthUserDownloadAllOpen() {
+        $zipFile = null;
         try {
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
@@ -183,20 +193,27 @@ class DownloadSelectedImagesTest extends TestCase {
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $x = (string)$response->getBody();
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(4, $za->numFiles);
             for ($i = 0; $i < $za->numFiles; $i++) {
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -211,9 +228,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -222,6 +240,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testUnAuthUserDownloadFavoritesOpen() {
+        $zipFile = null;
         try {
             $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
@@ -248,19 +267,27 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(3, $za->numFiles);
             for ($i = 0; $i < $za->numFiles; $i++) {
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -274,9 +301,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -285,6 +313,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testUnAuthUserDownloadBadWhatOpen() {
+        $zipFile = null;
         try {
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
@@ -293,16 +322,22 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.0.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com', 'Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -314,9 +349,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -325,6 +361,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testUnAuthUserDownloadSingleOpen() {
+        $zipFile = null;
         try {
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
@@ -333,16 +370,23 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com', 'Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -354,9 +398,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -372,6 +417,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.", json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -386,6 +432,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -393,6 +440,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testUnAuthUserDownloadAllLimited() {
+        $zipFile = null;
         try {
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
@@ -402,17 +450,25 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             ]);
             $this->assertEquals(200, $response->getStatusCode());
             $x = (string)$response->getBody();
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(2, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.3.png", $za->statIndex(1)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -425,9 +481,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -436,6 +493,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testUnAuthUserDownloadFavoritesLimited() {
+        $zipFile = null;
         try {
             $this->http->request('POST', 'api/set-favorite.php', [
                 'form_params' => [
@@ -462,16 +520,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -483,9 +549,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -494,6 +561,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testUnAuthUserDownloadSingleGoodLimited() {
+        $zipFile = null;
         try {
             $response = $this->http->request('POST', 'api/download-selected-images.php', [
                 'form_params' => [
@@ -502,16 +570,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -523,9 +599,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -541,6 +618,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -557,6 +635,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
+            CustomAsserts::assertEmailCount(0);
         }
     }
 
@@ -574,6 +653,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
+            CustomAsserts::assertEmailCount(0);
         }
     }
 
@@ -591,6 +671,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
+            CustomAsserts::assertEmailCount(0);
         }
     }
 
@@ -599,6 +680,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAuthUserDownloadAllOpen() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -611,19 +693,27 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(4, $za->numFiles);
             for ($i = 0; $i < $za->numFiles; $i++) {
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -638,9 +728,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -649,6 +740,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAuthUserDownloadFavoritesOpen() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -682,20 +774,27 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $x = (string)$response->getBody();
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile ");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(3, $za->numFiles);
             for ($i = 0; $i < $za->numFiles; $i++) {
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -709,9 +808,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -720,6 +820,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAuthUserDownloadSingleOpen() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -732,16 +833,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -753,9 +862,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -764,6 +874,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAuthUserDownloadAllLimited() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -777,18 +888,26 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             ]);
             $this->assertEquals(200, $response->getStatusCode());
             $x = (string)$response->getBody();
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(3, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(1)['name']);
             $this->assertEquals("file.3.png", $za->statIndex(2)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -802,9 +921,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -813,6 +933,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAuthUserDownloadFavoritesLimited() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -846,17 +967,25 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(2, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(1)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -869,9 +998,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -880,6 +1010,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAuthUserDownloadSingleGoodLimited() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -892,16 +1023,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -913,9 +1052,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -924,6 +1064,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAuthUserDownloadSingleGoodOtherLimited() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146'
@@ -936,16 +1077,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -957,9 +1106,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -979,6 +1129,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -997,6 +1148,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -1036,6 +1188,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -1054,6 +1207,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -1061,6 +1215,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadAllOpen() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1073,19 +1228,27 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(4, $za->numFiles);
             for ($i = 0; $i < $za->numFiles; $i++) {
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -1100,9 +1263,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1111,6 +1275,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadFavoritesOpen() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1144,19 +1309,27 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(3, $za->numFiles);
             for ($i = 0; $i < $za->numFiles; $i++) {
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -1170,9 +1343,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1181,6 +1355,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadSingleOpen() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1193,16 +1368,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-all album at %s://%s/user/album.php?album=997
 
@@ -1214,9 +1397,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1225,6 +1409,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadAllLimited() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1237,19 +1422,27 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(4, $za->numFiles);
             $this->assertEquals("file.0.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.1.png", $za->statIndex(1)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(2)['name']);
             $this->assertEquals("file.3.png", $za->statIndex(3)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -1264,9 +1457,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1275,6 +1469,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadFavoritesLimited() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1308,18 +1503,26 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(3, $za->numFiles);
             $this->assertEquals("file.0.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.1.png", $za->statIndex(1)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(2)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -1333,9 +1536,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1344,6 +1548,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadSingleGoodLimited() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1356,16 +1561,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.2.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -1377,9 +1590,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1388,6 +1602,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadSingleGoodOtherLimited() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1400,16 +1615,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
 
@@ -1421,9 +1644,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1443,6 +1667,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.", json_decode($response->getBody(), true)['error']);
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -1450,6 +1675,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadAllClosed() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1462,19 +1688,27 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-no-access', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-no-access', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(4, $za->numFiles);
             for ($i = 0; $i < $za->numFiles; $i++) {
                 $stat = $za->statIndex($i);
                 $this->assertEquals("file.$i.png", $stat['name']);
             }
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-no-access album at %s://%s/user/album.php?album=999
 
@@ -1489,9 +1723,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1500,6 +1735,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadFavoritesClosed() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1533,18 +1769,26 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-no-access', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-no-access', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(3, $za->numFiles);
             $this->assertEquals("file.0.png", $za->statIndex(0)['name']);
             $this->assertEquals("file.1.png", $za->statIndex(1)['name']);
             $this->assertEquals("file.2.png", $za->statIndex(2)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-no-access album at %s://%s/user/album.php?album=999
 
@@ -1558,9 +1802,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1569,6 +1814,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testAdminUserDownloadSingleClosed() {
+        $zipFile = null;
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -1581,16 +1827,24 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            $this->assertStringStartsWith('../tmp/sample-album-no-access', $zipFile);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipFile, 2)[1])[0]);
-            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipFile' -O download.zip");
-            $this->assertTrue(file_exists('download.zip'));
+            $zipPath = json_decode($response->getBody(), true)['file'];
+            $zipFile = str_replace(' ', '-', basename($zipPath));
+
+            $this->assertStringStartsWith('../tmp/sample-album-no-access', $zipPath);
+            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
+            $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
-            $za->open('download.zip');
+            $za->open($zipFile);
             $this->assertEquals(1, $za->numFiles);
             $this->assertEquals("file.1.png", $za->statIndex(0)['name']);
-            CustomAsserts::assertEmailMatches('Someone Downloaded Something', 'This is an automatically generated message from Saperstone Studios
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'actions@saperstonestudios.com',
+                'actions@saperstonestudios.com',
+                'Someone Downloaded Something',
+                'This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the sample-album-no-access album at %s://%s/user/album.php?album=999
 
@@ -1602,9 +1856,10 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>");
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+                'saperstonestudios@gmail.com');
         } finally {
-            unlink('download.zip');
+            unlink($zipFile);
         }
     }
 
@@ -1613,25 +1868,21 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
      * @throws GuzzleException
      */
     public function testFileDeletedAfter() {
-        try {
-            $cookieJar = CookieJar::fromArray([
-                'hash' => '1d7505e7f434a7713e84ba399e937191'
-            ], getenv('DB_HOST'));
-            $response = $this->http->request('POST', 'api/download-selected-images.php', [
-                'form_params' => [
-                    'what' => '1',
-                    'album' => 999
-                ],
-                'cookies' => $cookieJar
-            ]);
-            $this->assertEquals(200, $response->getStatusCode());
-            $zipFile = json_decode($response->getBody(), true)['file'];
-            CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 200);
-            sleep(65);
-            CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 404);
-        } finally {
-            $gmail = new Gmail('Someone Downloaded Something');
-            $gmail->deleteEmail();
-        }
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+            'form_params' => [
+                'what' => '1',
+                'album' => 999
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $zipFile = json_decode($response->getBody(), true)['file'];
+
+        CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 200);
+        sleep(75);
+        CustomAsserts::httpCodeEquals('http://' . getenv('DB_HOST') . ":90/$zipFile", 404);
     }
 }

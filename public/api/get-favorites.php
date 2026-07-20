@@ -1,6 +1,15 @@
 <?php
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $systemUser = User::fromSystem();
+$api = new Api ();
+
+try {
+    $album = Album::withId($api->retrieveGetString('album', 'Album id'));
+} catch (Exception $e) {
+    echo $e->getMessage();
+    exit();
+}
+
 
 $sql = new Sql();
 $results = $sql->getRows("SELECT album_images.album, album_images.sequence, album_images.location FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '{$systemUser->getIdentifier()}';");
@@ -11,14 +20,13 @@ foreach ($results as $r) {
     $favorites [$album] [] = $r;
 }
 
-if (isset ($_GET ['album'])) {
-    $album = (int)$_GET ['album'];
-    if (isset ($favorites [$album])) {
-        $favorites = $favorites [$album];
-    } else {
-        $favorites = array();
-    }
+$album = (int)$_GET ['album'];
+if (isset ($favorites [$album])) {
+    $favorites = $favorites [$album];
+} else {
+    $favorites = array();
 }
+
 echo json_encode($favorites);
 $sql->disconnect();
 exit ();

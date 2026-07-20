@@ -103,7 +103,7 @@ jobs:
             type=ref,event=branch
             type=sha
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Build
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker-container
@@ -137,15 +137,6 @@ jobs:
           mkdir ~/.ssh/
           echo "${{ secrets.PRODUCTION_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-
-#      - name: Checkout 🛎️
-#        uses: actions/checkout@v4
-
-#        - name: Copy Over Files
-#          run: |
-#            scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${{ secrets.PRODUCTION_PORT }} backup.sh ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }}:~/
-#            scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p ${{ secrets.PRODUCTION_PORT }} docker compose-prod.yml ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }}:~/
-#            ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'mv docker compose-prod.yml docker-compose.yml'
 
       - name: Pull and Deploy Latest
         run: |

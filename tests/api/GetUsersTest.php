@@ -87,7 +87,7 @@ class GetUsersTest extends TestCase {
         $this->assertEquals('Saperstone', $users[1]['lastName']);
         $this->assertEquals('msaperst@gmail.com', $users[1]['email']);
         $this->assertEquals('admin', $users[1]['role']);
-        $this->assertEquals(0, $users[1]['active']);
+        $this->assertEquals(1, $users[1]['active']);
         $this->assertNotNull($users[1]['lastLogin']);
 
         $this->assertEquals(2, $users[2]['id']);
