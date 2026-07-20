@@ -13,6 +13,14 @@ try {
     exit();
 }
 
-$file = str_replace('"', "", $file);
-$file = str_replace("'", "", $file);
-system("bash -c 'sleep 300; php -f ../../bin/send-download-email.php $email \"$file\";' > /dev/null 2>&1 &");
+// Strictly validate that the input matches a proper email format structure
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode(array('error' => 'Invalid email address provided.'));
+    exit();
+}
+
+// Escape both parameters explicitly before spawning the child shell process
+$escapedEmail = escapeshellarg($email);
+$escapedFile = escapeshellarg($file);
+
+system("bash -c 'sleep " . (int)getenv('SEND_EMAIL_AFTER') . "; php -f ../../bin/send-download-email.php $escapedEmail $escapedFile;' > /dev/null 2>&1 &");
