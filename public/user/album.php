@@ -332,7 +332,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 </div>
                 <div class="col-md-4 col-md-offset-4 text-center">
                     <form>
-                        <label class="sr-only" for="cart-email">Email</label> <input
+                        <label class="sr-only" for="notify-email">Email</label> <input
                                 id="notify-email" type="email" placeholder="Email"
                                 class="form-control" value="<?php echo $user->getEmail(); ?>"
                                 required/>
