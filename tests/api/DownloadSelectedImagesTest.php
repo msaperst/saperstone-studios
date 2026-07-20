@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 use Sql;
 use ZipArchive;
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Gmail.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
