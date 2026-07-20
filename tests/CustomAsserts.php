@@ -5,10 +5,8 @@ use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
-use Google\Exception as ExceptionAlias;
+use GuzzleHttp\Client;
 use PHPUnit\Framework\Assert;
-
-require_once 'Gmail.php';
 
 class CustomAsserts {
 
@@ -101,56 +99,103 @@ $message", $actualMessage, $actualMessage);
         self::checkMessage($driver, 'danger', $message);
     }
 
-    /**
-     * @param $subject
-     * @param $txt
-     * @param $html
-     * @param null $attachment
-     * @throws ExceptionAlias
-     */
-    public static function assertEmailEquals($subject, $txt, $html, $attachment = NULL): void {
-        $gmail = new Gmail($subject);
-        try {
-            $gmailTxt = $gmail->getEmailTxt();
-            Assert::assertEquals($txt, $gmailTxt, $gmailTxt);
-            $gmailHtml = $gmail->getEmailHtml();
-            Assert::assertEquals($html, $gmailHtml, $gmailHtml);
-            if ($attachment != NULL) {
-                $filename = $gmail->saveAttachment();
-                self::filesAreEqual($attachment, $filename);
-            }
-        } finally {
-            $gmail->deleteEmail();
-            if (isset($filename) && file_exists($filename)) {
-                unlink($filename);
-            }
-        }
+    private static function getMailpitClient(): Client {
+        // Points to Mailpit's web/API port
+        return new Client(['base_uri' => 'http://localhost:8025/api/v1/']);
     }
 
     /**
-     * @param $subject
-     * @param $txt
-     * @param $html
-     * @param null $attachment
-     * @throws ExceptionAlias
+     * Clears out all captured emails. Call this in your test setUp() or tearDown()
+     * to prevent cross-test email bleed/contamination!
      */
-    public static function assertEmailMatches($subject, $txt, $html, $attachment = NULL): void {
-        $gmail = new Gmail($subject);
-        try {
-            $gmailTxt = $gmail->getEmailTxt();
-            Assert::assertStringMatchesFormat($txt, $gmailTxt, $gmailTxt);
-            $gmailHtml = $gmail->getEmailHtml();
-            Assert::assertStringMatchesFormat($html, $gmailHtml, $gmailHtml);
-            if ($attachment != NULL) {
-                $filename = $gmail->saveAttachment();
-                self::filesAreEqual($attachment, $filename);
-            }
-        } finally {
-            $gmail->deleteEmail();
-            if (isset($filename) && file_exists($filename)) {
-                unlink($filename);
+    public static function clearAllEmails(): void {
+        self::getMailpitClient()->request('DELETE', 'messages');
+    }
+
+    public static function assertEmailCount(int $expectedCount): void {
+        $client = self::getMailpitClient();
+        $response = $client->request('GET', 'messages');
+        $data = json_decode((string)$response->getBody(), true);
+
+        Assert::assertCount($expectedCount, $data['messages'] ?? [], "Expected exactly $expectedCount emails sent.");
+    }
+
+    /**
+     * Finds a specific email and asserts its content, including SMTP credentials and attachments.
+     */
+    public static function assertEmailMatches(
+        string  $expectedTo,
+        string  $expectedFrom,
+        string  $expectedSubject,
+        string  $expectedText,
+        string  $expectedHtml,
+        ?string $expectedAuthUser = null,
+        ?string $expectedAttachmentPath = null // <-- Add optional attachment path
+    ): void {
+        if ($expectedAuthUser === null) {
+            $expectedAuthUser = (string)getenv('EMAIL_USER');
+        }
+
+        $client = self::getMailpitClient();
+        $response = $client->request('GET', 'messages');
+        $data = json_decode((string)$response->getBody(), true);
+
+        $found = false;
+
+        foreach (($data['messages'] ?? []) as $msg) {
+            $messageId = $msg['ID'];
+            $detailResponse = $client->request('GET', "message/{$messageId}");
+            $detail = json_decode((string)$detailResponse->getBody(), true);
+
+            $toAddresses = array_column($detail['To'] ?? [], 'Address');
+            $fromAddress = $detail['From']['Address'] ?? '';
+
+            if (in_array($expectedTo, $toAddresses) && $fromAddress === $expectedFrom && $detail['Subject'] === $expectedSubject) {
+                $found = true;
+
+                // Assert contents
+                Assert::assertStringMatchesFormat($expectedText, $detail['Text'], "Text body did not match.");
+                Assert::assertStringMatchesFormat($expectedHtml, $detail['HTML'], "HTML body did not match.");
+
+                // Assert SMTP Authentication username
+                $actualAuthUser = $detail['Username'] ?? '';
+                Assert::assertEquals($expectedAuthUser, $actualAuthUser, "SMTP Username mismatch.");
+
+                // Assert Attachment if expected
+                if ($expectedAttachmentPath !== null) {
+                    Assert::assertNotEmpty($detail['Attachments'], "Expected an attachment, but none were found.");
+
+                    // Grab the first attachment metadata block
+                    $attachmentMeta = $detail['Attachments'][0];
+                    $partId = $attachmentMeta['PartID'];
+                    $fileName = $attachmentMeta['FileName'];
+
+                    // Verify the file name matches what you expect
+                    $expectedFileName = basename($expectedAttachmentPath);
+                    Assert::assertEquals($expectedFileName, $fileName, "Attachment filename mismatch.");
+
+                    // Download the binary attachment payload from Mailpit
+                    $downloadResponse = $client->request('GET', "message/{$messageId}/part/{$partId}");
+
+                    // Save it to a temporary local file to run your existing comparison logic
+                    $tmpFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $fileName;
+                    file_put_contents($tmpFile, (string)$downloadResponse->getBody());
+
+                    try {
+                        // Use your existing binary file comparison method
+                        self::filesAreEqual($expectedAttachmentPath, $tmpFile);
+                    } finally {
+                        // Clean up the downloaded temp file immediately
+                        if (file_exists($tmpFile)) {
+                            unlink($tmpFile);
+                        }
+                    }
+                }
+                break;
             }
         }
+
+        Assert::assertTrue($found, "Failed asserting that the specified email was sent.");
     }
 
     /**
@@ -175,19 +220,5 @@ $message", $actualMessage, $actualMessage);
         fclose($ah);
         fclose($bh);
         Assert::assertTrue($result);
-    }
-
-    /**
-     * @param $url
-     * @param $code
-     */
-    public static function httpCodeEquals($url, $code): void {
-        $url = str_replace(" ", '%20', $url);
-        $handle = curl_init($url);
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_exec($handle);
-        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-        curl_close($handle);
-        Assert::assertEquals($code, $httpCode, $httpCode);
     }
 }

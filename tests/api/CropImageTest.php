@@ -26,7 +26,8 @@ class CropImageTest extends TestCase {
 
     public function testNotLoggedIn() {
         try {
-            $this->http->request('POST', 'api/crop-image.php');
+            $response = $this->http->request('POST', 'api/crop-image.php');
+            $this->fail("Expected ClientException (401) but the server returned status " . $response->getStatusCode() . " with body: " . (string)$response->getBody());
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());

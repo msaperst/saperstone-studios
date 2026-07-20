@@ -31,6 +31,8 @@ class SendResetCodeTest extends TestCase {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('testUser', 'somepassword', 'Test', 'User', 'msaperst+sstest@gmail.com', 'downloader', '1', 'sdlkjfisudkhfkvlzjh');");
 
+        // Ensure every single test starts with a completely clean mailbox slate!
+        CustomAsserts::clearAllEmails();
     }
 
     /**
@@ -49,6 +51,7 @@ class SendResetCodeTest extends TestCase {
         $response = $this->http->request('POST', 'api/send-reset-code.php');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Email is required", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -62,6 +65,7 @@ class SendResetCodeTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Email can not be blank", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -75,6 +79,7 @@ class SendResetCodeTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Email is not valid", $response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -88,6 +93,7 @@ class SendResetCodeTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Credentials do not match our records", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -97,12 +103,17 @@ class SendResetCodeTest extends TestCase {
     public function testSendResetCode() {
         $response = $this->http->request('POST', 'api/send-reset-code.php', [
             'form_params' => [
-                'email' => 'msaperst+sstest@gmail.com'
+                'email' => 'msaperst@gmail.com'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        CustomAsserts::assertEmailMatches('Reset Key For Saperstone Studios Account',
+
+        CustomAsserts::assertEmailCount(1);
+        CustomAsserts::assertEmailMatches(
+            'msaperst@gmail.com',
+            'noreply@saperstonestudios.com',
+            'Reset Key For Saperstone Studios Account',
             "You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.
 
 \t%s",

@@ -9,6 +9,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
@@ -30,6 +31,8 @@ class CreateUserTest extends TestCase {
     public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
+        // Ensure every single test starts with a completely clean mailbox slate!
+        CustomAsserts::clearAllEmails();
     }
 
     /**
@@ -49,6 +52,7 @@ class CreateUserTest extends TestCase {
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
+            CustomAsserts::assertEmailCount(0);
         }
     }
 
@@ -66,6 +70,7 @@ class CreateUserTest extends TestCase {
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
+            CustomAsserts::assertEmailCount(0);
         }
     }
 
@@ -81,6 +86,7 @@ class CreateUserTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Username is required", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -98,6 +104,7 @@ class CreateUserTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Username can not be blank", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -115,6 +122,7 @@ class CreateUserTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("That username already exists in the system", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -132,6 +140,7 @@ class CreateUserTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Email is required", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -150,6 +159,7 @@ class CreateUserTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Email can not be blank", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -168,6 +178,7 @@ class CreateUserTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Email is not valid", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -186,6 +197,7 @@ class CreateUserTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("That email already exists in the system: try logging in with it", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -205,6 +217,7 @@ class CreateUserTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("Role is not valid", (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -212,6 +225,8 @@ class CreateUserTest extends TestCase {
      * @throws Exception
      */
     public function testNoExtras() {
+        $uuid = Uuid::uuid7()->toString();
+        $userEmail = "{$uuid}@example.com";
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -220,7 +235,7 @@ class CreateUserTest extends TestCase {
             $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
                     'username' => 'MaxMax',
-                    'email' => 'msaperst+sstest@gmail.com',
+                    'email' => $userEmail,
                     'role' => 'downloader'
                 ],
                 'cookies' => $cookieJar
@@ -233,14 +248,16 @@ class CreateUserTest extends TestCase {
             $this->assertNotEquals('', $userDetails['pass']);
             $this->assertEquals('', $userDetails['firstName']);
             $this->assertEquals('', $userDetails['lastName']);
-            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
+            $this->assertEquals($userEmail, $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(32, strlen($userDetails['hash']));
             $this->assertEquals(1, $userDetails['active']);
             CustomAsserts::timeWithin(10, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
-            CustomAsserts::assertEmailMatches('New User Created at Saperstone Studios', "Someone has setup a new user for you at Saperstone Studios. You can login and access the site at https://saperstonestudios.com. Initial credentials have been setup for you as: \r
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches($userEmail, 'noreply@saperstonestudios.com', 'New User Created at Saperstone Studios', "Someone has setup a new user for you at Saperstone Studios. You can login and access the site at https://saperstonestudios.com. Initial credentials have been setup for you as: \r
     Username: MaxMax\r
     Password: %s\r
 For security reasons, once logged in, we recommend you reset your password at https://saperstonestudios.com/user/profile.php",
@@ -258,6 +275,8 @@ For security reasons, once logged in, we recommend you reset your password at ht
      * @throws Exception
      */
     public function testAllData() {
+        $uuid = Uuid::uuid7()->toString();
+        $userEmail = "{$uuid}@example.com";
         try {
             $cookieJar = CookieJar::fromArray([
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -266,7 +285,7 @@ For security reasons, once logged in, we recommend you reset your password at ht
             $response = $this->http->request('POST', 'api/create-user.php', [
                 'form_params' => [
                     'username' => 'MaxMax',
-                    'email' => 'msaperst+sstest@gmail.com',
+                    'email' => $userEmail,
                     'role' => 'downloader',
                     'firstName' => 'Max',
                     'lastName' => 'Saperstone',
@@ -282,14 +301,16 @@ For security reasons, once logged in, we recommend you reset your password at ht
             $this->assertNotEquals('', $userDetails['pass']);
             $this->assertEquals('Max', $userDetails['firstName']);
             $this->assertEquals('Saperstone', $userDetails['lastName']);
-            $this->assertEquals('msaperst+sstest@gmail.com', $userDetails['email']);
+            $this->assertEquals($userEmail, $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
             $this->assertEquals(32, strlen($userDetails['hash']));
             $this->assertEquals(0, $userDetails['active']);
             CustomAsserts::timeWithin(10, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
-            CustomAsserts::assertEmailMatches('New User Created at Saperstone Studios', "Someone has setup a new user for you at Saperstone Studios. You can login and access the site at https://saperstonestudios.com. Initial credentials have been setup for you as: \r
+
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches($userEmail, 'noreply@saperstonestudios.com', 'New User Created at Saperstone Studios', "Someone has setup a new user for you at Saperstone Studios. You can login and access the site at https://saperstonestudios.com. Initial credentials have been setup for you as: \r
     Username: MaxMax\r
     Password: %s\r
 For security reasons, once logged in, we recommend you reset your password at https://saperstonestudios.com/user/profile.php",
