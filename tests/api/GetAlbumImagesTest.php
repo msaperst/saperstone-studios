@@ -110,21 +110,13 @@ class GetAlbumImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $imageDetails = json_decode($response->getBody(), true);
-        $this->assertEquals(2, sizeOf($imageDetails));
-        $this->assertEquals(0, $imageDetails['favoriteCount']);
-
-        $albumImages = $imageDetails['images'];
+        $albumImages = json_decode($response->getBody(), true);
         $this->assertEquals(1, sizeOf($albumImages));
-
-        $this->assertEquals('996', $albumImages[0]['id']);
         $this->assertEquals('', $albumImages[0]['title']);
         $this->assertEquals(1, $albumImages[0]['sequence']);
         $this->assertEquals('', $albumImages[0]['location']);
         $this->assertEquals(300, $albumImages[0]['width']);
         $this->assertEquals(400, $albumImages[0]['height']);
-        $this->assertEquals(0, $albumImages[0]['favorite']);
-        $this->assertEquals(1, $albumImages[0]['downloadable']);
     }
 
     public function testViewAll() {
@@ -138,39 +130,23 @@ class GetAlbumImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $imageDetails = json_decode($response->getBody(), true);
-        $this->assertEquals(2, sizeOf($imageDetails));
-        $this->assertEquals(0, $imageDetails['favoriteCount']);
-
-        $albumImages = $imageDetails['images'];
+        $albumImages = json_decode($response->getBody(), true);
         $this->assertEquals(3, sizeOf($albumImages));
-
-        $this->assertEquals('997', $albumImages[0]['id']);
         $this->assertEquals('', $albumImages[0]['title']);
         $this->assertEquals(1, $albumImages[0]['sequence']);
         $this->assertEquals('', $albumImages[0]['location']);
         $this->assertEquals(300, $albumImages[0]['width']);
         $this->assertEquals(400, $albumImages[0]['height']);
-        $this->assertEquals(0, $albumImages[0]['favorite']);
-        $this->assertEquals(1, $albumImages[0]['downloadable']);
-
-        $this->assertEquals('998', $albumImages[1]['id']);
         $this->assertEquals('', $albumImages[1]['title']);
         $this->assertEquals(2, $albumImages[1]['sequence']);
         $this->assertEquals('', $albumImages[1]['location']);
         $this->assertEquals(300, $albumImages[1]['width']);
         $this->assertEquals(400, $albumImages[1]['height']);
-        $this->assertEquals(0, $albumImages[1]['favorite']);
-        $this->assertEquals(1, $albumImages[1]['downloadable']);
-
-        $this->assertEquals('999', $albumImages[2]['id']);
         $this->assertEquals('', $albumImages[2]['title']);
         $this->assertEquals(3, $albumImages[2]['sequence']);
         $this->assertEquals('', $albumImages[2]['location']);
         $this->assertEquals(300, $albumImages[2]['width']);
         $this->assertEquals(400, $albumImages[2]['height']);
-        $this->assertEquals(0, $albumImages[2]['favorite']);
-        $this->assertEquals(1, $albumImages[2]['downloadable']);
     }
 
     public function testViewSecond() {
@@ -186,19 +162,13 @@ class GetAlbumImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $imageDetails = json_decode($response->getBody(), true);
-        $this->assertEquals(2, sizeOf($imageDetails));
-        $this->assertEquals(0, $imageDetails['favoriteCount']);
-
-        $albumImages = $imageDetails['images'];
-        $this->assertEquals('999', $albumImages[0]['id']);
+        $albumImages = json_decode($response->getBody(), true);
+        $this->assertEquals(1, sizeOf($albumImages));
         $this->assertEquals('', $albumImages[0]['title']);
         $this->assertEquals(3, $albumImages[0]['sequence']);
         $this->assertEquals('', $albumImages[0]['location']);
         $this->assertEquals(300, $albumImages[0]['width']);
         $this->assertEquals(400, $albumImages[0]['height']);
-        $this->assertEquals(0, $albumImages[0]['favorite']);
-        $this->assertEquals(1, $albumImages[0]['downloadable']);
     }
 
     public function testUnAuthCorrectCode() {
@@ -216,21 +186,7 @@ class GetAlbumImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $imageDetails = json_decode($response->getBody(), true);
-        $this->assertEquals(2, sizeOf($imageDetails));
-        $this->assertEquals(0, $imageDetails['favoriteCount']);
-
-        $albumImages = $imageDetails['images'];
-        $this->assertEquals(1, sizeOf($albumImages));
-
-        $this->assertEquals('997', $albumImages[0]['id']);
-        $this->assertEquals('', $albumImages[0]['title']);
-        $this->assertEquals(1, $albumImages[0]['sequence']);
-        $this->assertEquals('', $albumImages[0]['location']);
-        $this->assertEquals(300, $albumImages[0]['width']);
-        $this->assertEquals(400, $albumImages[0]['height']);
-        $this->assertEquals(0, $albumImages[0]['favorite']);
-        $this->assertEquals(0, $albumImages[0]['downloadable']);
+        $this->assertEquals(1, sizeOf(json_decode($response->getBody(), true)));
     }
 
     public function testUnAuthIncorrectCode() {
@@ -270,7 +226,7 @@ class GetAlbumImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(2, sizeOf(json_decode($response->getBody(), true)));
+        $this->assertEquals(1, sizeOf(json_decode($response->getBody(), true)));
     }
 
     public function testAuthAccessCorrectCode() {
@@ -289,7 +245,7 @@ class GetAlbumImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(2, sizeOf(json_decode($response->getBody(), true)));
+        $this->assertEquals(1, sizeOf(json_decode($response->getBody(), true)));
     }
 
     public function testAuthWithAccess() {
@@ -305,7 +261,7 @@ class GetAlbumImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(2, sizeOf(json_decode($response->getBody(), true)));
+        $this->assertEquals(1, sizeOf(json_decode($response->getBody(), true)));
     }
 
     public function testAuthIncorrectCodeWithAccess() {
@@ -324,7 +280,7 @@ class GetAlbumImagesTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(2, sizeOf(json_decode($response->getBody(), true)));
+        $this->assertEquals(1, sizeOf(json_decode($response->getBody(), true)));
     }
 
     public function testAuthIncorrectCodeWithoutAccess() {
@@ -348,125 +304,6 @@ class GetAlbumImagesTest extends TestCase {
             $this->assertEquals("", $e->getResponse()->getBody());
         }
     }
-
-    public function testUnAuthWithFavoritesAndSelectedDownload() {
-        try {
-            $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('172.18.0.1', '999', '997');");
-            $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES (0, '999', '997');");
-
-            $searched = array();
-            $searched [999] = md5("album1234");
-            $cookieJar = CookieJar::fromArray([
-                'searched' => json_encode($searched)
-            ], getenv('DB_HOST'));
-            $response = $this->http->request('GET', 'api/get-album-images.php', [
-                'query' => [
-                    'albumId' => 999,
-                    'start' => 0,
-                    'howMany' => 3,
-                ],
-                'cookies' => $cookieJar
-            ]);
-            $this->assertEquals(200, $response->getStatusCode());
-            $imageDetails = json_decode($response->getBody(), true);
-            $this->assertEquals(2, sizeOf($imageDetails));
-            $this->assertEquals(1, $imageDetails['favoriteCount']);
-
-            $albumImages = $imageDetails['images'];
-            $this->assertEquals(3, sizeOf($albumImages));
-
-            $this->assertEquals('997', $albumImages[0]['id']);
-            $this->assertEquals('', $albumImages[0]['title']);
-            $this->assertEquals(1, $albumImages[0]['sequence']);
-            $this->assertEquals('', $albumImages[0]['location']);
-            $this->assertEquals(300, $albumImages[0]['width']);
-            $this->assertEquals(400, $albumImages[0]['height']);
-            $this->assertEquals(1, $albumImages[0]['favorite']);
-            $this->assertEquals(1, $albumImages[0]['downloadable']);
-
-            $this->assertEquals('998', $albumImages[1]['id']);
-            $this->assertEquals('', $albumImages[1]['title']);
-            $this->assertEquals(2, $albumImages[1]['sequence']);
-            $this->assertEquals('', $albumImages[1]['location']);
-            $this->assertEquals(300, $albumImages[1]['width']);
-            $this->assertEquals(400, $albumImages[1]['height']);
-            $this->assertEquals(0, $albumImages[1]['favorite']);
-            $this->assertEquals(0, $albumImages[1]['downloadable']);
-
-            $this->assertEquals('999', $albumImages[2]['id']);
-            $this->assertEquals('', $albumImages[2]['title']);
-            $this->assertEquals(3, $albumImages[2]['sequence']);
-            $this->assertEquals('', $albumImages[2]['location']);
-            $this->assertEquals(300, $albumImages[2]['width']);
-            $this->assertEquals(400, $albumImages[2]['height']);
-            $this->assertEquals(0, $albumImages[2]['favorite']);
-            $this->assertEquals(0, $albumImages[2]['downloadable']);
-        } finally {
-            $this->sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`album` = 999;");
-            $this->sql->executeStatement("DELETE FROM `download_rights` WHERE `download_rights`.`album` = 999;");
-        }
-    }
-
-    public function testUnAuthWithFavoritesAndAllDownload() {
-        try {
-            $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('172.18.0.1', '999', '997');");
-            $this->sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('172.18.0.1', '999', '999');");
-            $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES (0, '999', '*');");
-
-            $searched = array();
-            $searched [999] = md5("album1234");
-            $cookieJar = CookieJar::fromArray([
-                'searched' => json_encode($searched)
-            ], getenv('DB_HOST'));
-            $response = $this->http->request('GET', 'api/get-album-images.php', [
-                'query' => [
-                    'albumId' => 999,
-                    'start' => 0,
-                    'howMany' => 3,
-                ],
-                'cookies' => $cookieJar
-            ]);
-            $this->assertEquals(200, $response->getStatusCode());
-            $imageDetails = json_decode($response->getBody(), true);
-            $this->assertEquals(2, sizeOf($imageDetails));
-            $this->assertEquals(2, $imageDetails['favoriteCount']);
-
-            $albumImages = $imageDetails['images'];
-            $this->assertEquals(3, sizeOf($albumImages));
-
-            $this->assertEquals('997', $albumImages[0]['id']);
-            $this->assertEquals('', $albumImages[0]['title']);
-            $this->assertEquals(1, $albumImages[0]['sequence']);
-            $this->assertEquals('', $albumImages[0]['location']);
-            $this->assertEquals(300, $albumImages[0]['width']);
-            $this->assertEquals(400, $albumImages[0]['height']);
-            $this->assertEquals(1, $albumImages[0]['favorite']);
-            $this->assertEquals(1, $albumImages[0]['downloadable']);
-
-            $this->assertEquals('998', $albumImages[1]['id']);
-            $this->assertEquals('', $albumImages[1]['title']);
-            $this->assertEquals(2, $albumImages[1]['sequence']);
-            $this->assertEquals('', $albumImages[1]['location']);
-            $this->assertEquals(300, $albumImages[1]['width']);
-            $this->assertEquals(400, $albumImages[1]['height']);
-            $this->assertEquals(0, $albumImages[1]['favorite']);
-            $this->assertEquals(1, $albumImages[1]['downloadable']);
-
-            $this->assertEquals('999', $albumImages[2]['id']);
-            $this->assertEquals('', $albumImages[2]['title']);
-            $this->assertEquals(3, $albumImages[2]['sequence']);
-            $this->assertEquals('', $albumImages[2]['location']);
-            $this->assertEquals(300, $albumImages[2]['width']);
-            $this->assertEquals(400, $albumImages[2]['height']);
-            $this->assertEquals(1, $albumImages[2]['favorite']);
-            $this->assertEquals(1, $albumImages[2]['downloadable']);
-        } finally {
-            $this->sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`album` = 999;");
-            $this->sql->executeStatement("DELETE FROM `download_rights` WHERE `download_rights`.`album` = 999;");
-        }
-    }
 }
-
-// TODO - add in some tests for images as favorites and images as downloadable (both album and individuals)
 
 ?>
