@@ -138,12 +138,12 @@ This download will be available for the next 48 hours',
                 'validuser@gmail.com',
                 'noreply@saperstonestudios.com',
                 'Your Download Is Ready',
-                'You can access your photos at https://saperstonestudios.com/tmp/sample.zip
+                'You can access your photos at https://saperstonestudios.com/tmp/sample 1234.zip
 
 This download will be available for the next 48 hours',
                 "<html><body><p>Your download is ready</p><p>You can access your photos at <a href='https://saperstonestudios.com/tmp/sample 1234.zip'>https://saperstonestudios.com/tmp/sample 1234.zip</a></p><p>This download will be available for the next 48 hours</p></body></html>");
         } finally {
-            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "tmp/sample.zip");
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "tmp/sample 1234.zip");
         }
     }
 }
