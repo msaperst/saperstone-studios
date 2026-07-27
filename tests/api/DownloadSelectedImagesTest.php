@@ -38,7 +38,7 @@ class DownloadSelectedImagesTest extends TestCase {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (997, 'sample-album-download-all', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 997, '*');");
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (998, 'sample-album-download-some', 'sample album for testing', 'sample');");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (998, 'sample album download some', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 998, '9982');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 998, '9983');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('3', 998, '9981');");
@@ -448,12 +448,12 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 ]
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $x = (string)$response->getBody();
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -469,7 +469,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.2.png
 file.3.png
@@ -480,7 +480,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -522,8 +522,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -538,7 +539,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.2.png
 
@@ -548,7 +549,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -572,8 +573,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -588,7 +590,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.2.png
 
@@ -598,7 +600,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -696,7 +698,8 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
             $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[1] . " " . $zipPathParts[2]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -777,7 +780,8 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
             $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[1] . " " . $zipPathParts[2]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile ");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -836,7 +840,8 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
             $this->assertStringStartsWith('../tmp/sample-album-download-all', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[1] . " " . $zipPathParts[2]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -890,8 +895,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -908,7 +914,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.1.png
 file.2.png
@@ -920,7 +926,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -969,8 +975,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -986,7 +993,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.1.png
 file.2.png
@@ -997,7 +1004,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -1025,8 +1032,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -1041,7 +1049,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.2.png
 
@@ -1051,7 +1059,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -1079,8 +1087,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -1095,7 +1104,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.1.png
 
@@ -1105,7 +1114,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -1424,8 +1433,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -1443,7 +1453,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.0.png
 file.1.png
@@ -1456,7 +1466,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -1505,8 +1515,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -1523,7 +1534,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.0.png
 file.1.png
@@ -1535,7 +1546,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -1563,8 +1574,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -1579,7 +1591,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.2.png
 
@@ -1589,7 +1601,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -1617,8 +1629,9 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             $zipPath = json_decode($response->getBody(), true)['file'];
             $zipFile = str_replace(' ', '-', basename($zipPath));
 
-            $this->assertStringStartsWith('../tmp/sample-album-download-some', $zipPath);
-            CustomAsserts::dashedTimeWithin(10, explode('.', explode(' ', $zipPath, 2)[1])[0]);
+            $this->assertStringStartsWith('../tmp/sample album download some', $zipPath);
+            $zipPathParts = preg_split('/[\s.]+/', trim($zipPath), -1, PREG_SPLIT_NO_EMPTY);
+            CustomAsserts::dashedTimeWithin(10, $zipPathParts[4] . " " . $zipPathParts[5]);
             system("wget -q 'http://" . getenv('DB_HOST') . ":90/$zipPath' -O $zipFile");
             $this->assertTrue(file_exists($zipFile));
             $za = new ZipArchive();
@@ -1633,7 +1646,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'Someone Downloaded Something',
                 'This is an automatically generated message from Saperstone Studios
 
-Downloads have been made from the sample-album-download-some album at %s://%s/user/album.php?album=998
+Downloads have been made from the sample album download some album at %s://%s/user/album.php?album=998
 
 file.1.png
 
@@ -1643,7 +1656,7 @@ Location: unknown (use %d.%d.%d.%d to manually lookup)
 Browser: unknown unknown
 Resolution: 
 OS: unknown
-Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample-album-download-some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
+Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
                 'saperstonestudios@gmail.com');
         } finally {
             unlink($zipFile);
@@ -1874,6 +1887,36 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             'form_params' => [
                 'what' => '1',
                 'album' => 999
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $zipFile = json_decode($response->getBody(), true)['file'];
+        $absoluteZipPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . str_replace('../', '', $zipFile);
+
+        $this->assertTrue(
+            file_exists($absoluteZipPath),
+            "Expected the ZIP file to exist at: $absoluteZipPath"
+        );
+        sleep(70);
+        $this->assertFalse(
+            file_exists($absoluteZipPath),
+            "Expected the ZIP file to be deleted from disk, but it still exists at: $absoluteZipPath"
+        );
+    }
+
+    /**
+     * @throws ExceptionAlias
+     * @throws GuzzleException
+     */
+    public function testFileWithSpaceDeletedAfter() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/download-selected-images.php', [
+            'form_params' => [
+                'what' => '1',
+                'album' => 998
             ],
             'cookies' => $cookieJar
         ]);
