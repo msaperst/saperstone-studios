@@ -23,4 +23,11 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 $escapedEmail = escapeshellarg($email);
 $escapedFile = escapeshellarg($file);
 
-system("bash -c 'sleep " . (int)getenv('SEND_EMAIL_AFTER') . "; php -f ../../bin/send-download-email.php $escapedEmail $escapedFile;' > /dev/null 2>&1 &");
+$emailDelay = (int)getenv('SEND_EMAIL_AFTER');
+$cmd = sprintf(
+    "bash -c 'sleep %d; php -f ../../bin/send-download-email.php \"$1\" \"$2\"' _ %s %s > /dev/null 2>&1 &",
+    $emailDelay,
+    escapeshellarg($email),
+    escapeshellarg($file)
+);
+system($cmd);
