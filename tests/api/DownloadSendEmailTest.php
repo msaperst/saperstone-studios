@@ -115,4 +115,35 @@ This download will be available for the next 48 hours',
             unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "tmp/sample.zip");
         }
     }
+
+    public function testSuccessfulExecutionTriggerWithSpace() {
+        try {
+            $response = $this->http->request('POST', 'api/download-send-email.php', [
+                'form_params' => [
+                    'email' => 'validuser@gmail.com',
+                    'file' => '../tmp/sample 1234.zip'
+                ]
+            ]);
+            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals("", (string)$response->getBody());
+            CustomAsserts::assertEmailCount(0);
+            sleep(25);
+            //ensure no email is sent as no file exists
+            CustomAsserts::assertEmailCount(0);
+            // create the file, and then ensure the email is sent
+            touch(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "tmp/sample 1234.zip");
+            sleep(2);
+            CustomAsserts::assertEmailCount(1);
+            CustomAsserts::assertEmailMatches(
+                'validuser@gmail.com',
+                'noreply@saperstonestudios.com',
+                'Your Download Is Ready',
+                'You can access your photos at https://saperstonestudios.com/tmp/sample 1234.zip
+
+This download will be available for the next 48 hours',
+                "<html><body><p>Your download is ready</p><p>You can access your photos at <a href='https://saperstonestudios.com/tmp/sample 1234.zip'>https://saperstonestudios.com/tmp/sample 1234.zip</a></p><p>This download will be available for the next 48 hours</p></body></html>");
+        } finally {
+            unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "tmp/sample 1234.zip");
+        }
+    }
 }

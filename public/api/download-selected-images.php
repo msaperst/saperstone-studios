@@ -109,7 +109,13 @@ if (count($image_array) > 100) {
 $response ['file'] = $myFile;
 echo json_encode($response);
 //remove our file after a specified amount of time
-system("bash -c 'sleep " . (int)getenv('CLEAN_UP_AFTER') . "; rm " . escapeshellarg($myFile) . ";' > /dev/null 2>&1 &");
+$cleanupDelay = (int)getenv('CLEAN_UP_AFTER');
+$cmd = sprintf(
+    "bash -c 'sleep %d; rm -f \"$1\"' _ %s > /dev/null 2>&1 &",
+    $cleanupDelay,
+    escapeshellarg($myFile)
+);
+system($cmd);
 
 // update our user records table
 if ($systemUser->getId()) {
