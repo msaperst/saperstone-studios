@@ -827,11 +827,7 @@ function setFavoriteImage() {
     if (img.length === 0) return;
     var imageId = img.attr('image-id');
 
-    $.post("/api/set-favorite.php", {album: img.attr('album-id'), image: imageId}).done(function (data) {
-        updateFavoriteCount(data);
-        setFavorite();
-        syncCardFavoriteState(imageId, true);
-    });
+    toggleFavoriteForImage(imageId);
 }
 
 function unsetFavoriteImage() {
@@ -839,11 +835,13 @@ function unsetFavoriteImage() {
     if (img.length === 0) return;
     var imageId = img.attr('image-id');
 
-    $.post("/api/unset-favorite.php", {album: img.attr('album-id'), image: imageId}).done(function (data) {
-        updateFavoriteCount(data);
-        unsetFavorite();
-        syncCardFavoriteState(imageId, false);
-    });
+    // Reuse the exact same robust toggle logic used by thumbnails
+    toggleFavoriteForImage(imageId);
+
+    // If we are filtering by favorites, advance to the next valid favorite automatically
+    if (window.album && window.album.showFavoritesOnly) {
+        window.album.next();
+    }
 }
 
 function syncCardFavoriteState(imageId, isFavorite) {
@@ -1007,8 +1005,7 @@ function submitDownloadEmail(file) {
         if (data !== "") {
             $('.bootstrap-dialog-body').append('<div class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
         } else {
-            $('.modal-backdrop').remove();
-            $('.modal').remove();
+            BootstrapDialog.closeAll();
         }
     }).fail(function (xhr, status, error) {
         if (xhr.responseText !== "") {
