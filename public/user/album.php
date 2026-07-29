@@ -38,11 +38,32 @@ $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE 
     <link href="/css/hover-effect.css" rel="stylesheet">
     <link href="/css/uploadfile.css" rel="stylesheet">
     <style>
-        footer {
-            margin-bottom: 55px;
+        .breadcrumb {
+            padding: 15px 20px;
+            font-size: 16px;
+            display: block; /* Restores standard block layout so pull-right works */
+        }
+
+        .breadcrumb.breadcrumb-fixed {
+            border-radius: 0 0 4px 4px;
+        }
+
+        .breadcrumb li button,
+        .breadcrumb li .btn {
+            padding: 5px 8px;
+            font-size: 16px;
+            line-height: 1.3333333;
+        }
+
+        .breadcrumb li button em,
+        .breadcrumb li .btn em {
+            font-size: 18px;
+        }
+
+        .no-before {
+            top: -5px;
         }
     </style>
-
 </head>
 
 <body>
@@ -500,7 +521,7 @@ if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
     // Cache selectors for performance
     var $window = $(window);
     var $breadcrumb = $('.breadcrumb');
-    var $logo1 = $('#nav-logo-link');
+    var $logo1 = $('#nav-logo-link-1');
     var $logo2 = $('#nav-logo-link-2');
 
     // 1. Calculate the initial distance from the top of the page to the breadcrumbs

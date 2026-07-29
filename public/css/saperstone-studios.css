@@ -192,7 +192,7 @@ blockquote p {
     z-index: 99;
 }
 
-#nav-logo-link:after {
+#nav-logo-link-1:after {
     content: '';
     float: left;
     background: transparent;
@@ -247,6 +247,7 @@ blockquote p {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     border-start-start-radius: 0;
     border-start-end-radius: 0;
+    padding-bottom: 6px !important;
 }
 
 .navbar-nav > li > a:hover, .navbar-nav > li > a:focus {

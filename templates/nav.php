@@ -51,10 +51,10 @@ $navSql->disconnect();
             <a id="nav-logo" class="nav-logo-backup" href="/">
                 <img src="/img/2014websitelogo250px.png" alt="Saperstone Studios Logo"/>
             </a>
-            <a id="nav-logo-link" class="nav-logo-link navbar-brand" href="/">
+            <a id="nav-logo-link-1" class="nav-logo-link navbar-brand" href="/">
                 <img
                         class="nav-logo"
-                        id="nav-logo"
+                        id="nav-logo-1"
                         src="/img/2014websitelogo250px.png"
                         alt="Saperstone Studios Logo"/>
             </a>
