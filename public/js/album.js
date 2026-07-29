@@ -4,421 +4,914 @@ $.fn.isOnScreen = function () {
     return bounds.top < window.innerHeight && bounds.bottom > 0;
 };
 
+function getCurrentAlbumCard() {
+    if (window.album && typeof window.album.getCurrentCard === "function") {
+        return window.album.getCurrentCard();
+    }
+    return $('#album-grid .album-card.is-active');
+}
+
+function getCurrentAlbumImage() {
+    return getCurrentAlbumCard();
+}
+
+function getCurrentAlbumImageId() {
+    return getCurrentAlbumImage().attr('image-id');
+}
+
+function getAlbumImageCard(imageId) {
+    return $('#album-grid .album-card[data-image-id="' + imageId + '"]');
+}
+
+function toggleFavoriteForImage(imageId) {
+    var card = getAlbumImageCard(imageId);
+    if (!card.length) {
+        return;
+    }
+    var isFavorite = card.attr('data-favorite') === '1';
+    var request = isFavorite ? $.post("/api/unset-favorite.php", {
+        album: card.attr('album-id'),
+        image: card.attr('image-id')
+    }) : $.post("/api/set-favorite.php", {
+        album: card.attr('album-id'),
+        image: card.attr('image-id')
+    });
+
+    request.done(function (count) {
+        updateFavoriteCount(count);
+        card.attr('data-favorite', isFavorite ? '0' : '1');
+        card.toggleClass('is-favorite', !isFavorite);
+        card.find('.album-card-action[data-action="favorite"] em').removeClass('fa-heart error').addClass(!isFavorite ? 'fa-heart error' : 'fa-heart');
+        if (String(getCurrentAlbumImageId()) === String(imageId)) {
+            if (!isFavorite) {
+                setFavorite();
+            } else {
+                unsetFavorite();
+            }
+        }
+
+        if (window.album && window.album.showFavoritesOnly) {
+            window.album.applyFilter();
+        }
+    });
+}
+
+function downloadImageFor(imageId) {
+    var card = getAlbumImageCard(imageId);
+    if (!card.length) {
+        return;
+    }
+    $.get("/api/is-downloadable.php", {
+        album: card.attr('album-id'),
+        image: card.attr('image-id')
+    }).done(function (data) {
+        if (data === '1') {
+            downloadImages(card.attr('album-id'), card.attr('image-id'));
+        }
+    });
+}
+
+function submitImageFor(imageId) {
+    var card = getAlbumImageCard(imageId);
+    if (!card.length) {
+        return;
+    }
+    $('#submit').attr('what', card.attr('image-id')).modal();
+}
+
+function createIconButton(action, icon, title, handler, extraClass) {
+    var button = $('<button>');
+    button.attr('type', 'button');
+    button.attr('data-action', action);
+    button.attr('title', title);
+    button.attr('aria-label', title);
+    button.addClass('btn btn-default album-card-action');
+    if (extraClass) {
+        button.addClass(extraClass);
+    }
+    button.append($('<em>').addClass('fa ' + icon));
+    button.click(function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        handler.call(this, event);
+    });
+    return button;
+}
+
+function updateViewerMeta(image) {
+    if (!image || image.length === 0) {
+        $('#album-viewer-image').attr('src', '/img/image.png').attr('alt', '');
+        $('#album-viewer-title').text('');
+        $('#album-viewer-caption').text('');
+        $('#album-viewer-overlay').removeAttr('image-id');
+        return;
+    }
+    $('#album-viewer-overlay').attr('album-id', image.attr('album-id'));
+    $('#album-viewer-overlay').attr('image-id', image.attr('image-id'));
+    $('#album-viewer-image').attr('style', 'background-image: url("' + image.attr('data-location') || image.attr('data-src') + '")');
+    $('#album-viewer-image').attr('src', '/img/image.png');
+    if (window.showImageTitle) {
+        $('#album-viewer-title').text(image.attr('data-title') || image.attr('title') || '');
+    }
+    if (image.attr('data-downloadable') === "1") {
+        $('#downloadable-image-btn').removeClass('hidden').show();
+    } else {
+        $('#downloadable-image-btn').addClass('hidden').hide();
+    }
+    $('#album-viewer-caption').text(image.attr('data-caption') || '');
+}
+
+function updateFavoriteCount(count) {
+    var total = parseInt(count, 10);
+    if (isNaN(total) || total < 0) {
+        total = 0;
+    }
+    if (total > 0) {
+        $('#favorite-count').html(total).css({
+            'padding-left': '10px'
+        });
+    } else {
+        $('#favorite-count').html("").css({
+            'padding-left': ''
+        });
+    }
+}
+
+function updateAlbumCardSpan(card) {
+    if (!card || !card.length) {
+        return;
+    }
+    var element = card.get(0);
+    if (!element || typeof element.getBoundingClientRect !== "function") {
+        return;
+    }
+    var rowHeight = parseFloat($('#album-grid').css('grid-auto-rows')) || 10;
+    var rowGap = parseFloat($('#album-grid').css('gap')) || parseFloat($('#album-grid').css('grid-row-gap')) || 12;
+    var height = parseFloat(card.attr('data-height')) || 1;
+    var width = parseFloat(card.attr('data-width')) || 1;
+    var cardWidth = element.getBoundingClientRect().width;
+    if (!cardWidth) {
+        return;
+    }
+    var renderedHeight = cardWidth * (height / width);
+    var span = Math.round((renderedHeight + rowGap) / (rowHeight + rowGap));
+    card.css({
+        'height': renderedHeight + 'px',
+        'grid-row-end': 'span ' + span
+    });
+}
+
+function updateAllAlbumCardSpans() {
+    $('#album-grid .album-card').each(function () {
+        updateAlbumCardSpan($(this));
+    });
+}
+
+function markAlbumCardLoaded(card) {
+    if (!card || !card.length) {
+        return;
+    }
+    card.attr('data-loading', '0');
+    card.attr('data-loaded', '1');
+    card.addClass('is-loaded');
+}
+
+function openViewer() {
+    $('#album-viewer-overlay').removeClass('hidden').attr('aria-hidden', 'false');
+    $('body').addClass('album-viewer-open');
+}
+
+function closeViewer() {
+    $('#album-viewer-overlay').addClass('hidden').attr('aria-hidden', 'true');
+    $('body').removeClass('album-viewer-open');
+}
+
 function Album(albumId, columns, totalImages) {
     var Album = this;
 
     Album.loaded = 0;
+    Album.loading = false;
     Album.albumId = albumId;
     Album.columns = columns;
     Album.totalImages = totalImages;
+    Album.images = [];
+    Album.currentImageId = null;
+    Album.pendingImageId = null;
+    Album.initialized = false;
+    Album.showFavoritesOnly = false;
 
     Album.loadImages();
 
     if (window.location.hash && window.location.hash.length > 1) {
-        Album.setImage(window.location.hash.substr(1));
+        Album.setImage(window.location.hash.substr(1), {
+            scroll: false,
+            updateHash: false,
+            force: true
+        });
     }
 
     window.onhashchange = function () {
         if (window.location.hash.length > 1) {
-            Album.setImage(window.location.hash.substr(1));
+            Album.setImage(window.location.hash.substr(1), {
+                scroll: false,
+                updateHash: false,
+                force: true
+            });
+        } else {
+            Album.currentImageId = null;
+            updateViewerMeta($());
+            closeViewer();
         }
     };
-
-    $('#album').on('hide.bs.modal', function () {
-        history.pushState("", document.title, window.location.pathname + window.location.search);
-    });
 }
 
-Album.prototype.setImage = function (img) {
-    $('#album').modal('show');
-    $('#album-carousel').carousel({
-        interval: false,
-        pause: "false",
-    });
-    var carouselImage = $('#album-carousel .item').index($('#album-carousel .contain[image-id="' + img + '"]').parent());
-    $('#album-carousel').carousel(parseInt(carouselImage));
-    $('#album .btn-action').each(function () {
-        $(this).prop("disabled", true);
-    });
-    getDetails();
-}
-
-Album.prototype.prev = function () {
-    var Album = this;
-
-    var prev = parseInt(parseInt(window.location.hash.substring(1)) - 1);
-    if (prev < 0) {
-        prev = (parseInt(Album.totalImages) - 1);
+Album.prototype.getCurrentCard = function () {
+    if (this.currentImageId === null) {
+        return $();
     }
-    window.location.hash = "#" + prev;
-}
-
-Album.prototype.next = function () {
-    var Album = this;
-
-    var next = parseInt(parseInt(window.location.hash.substring(1)) + 1);
-    if (next >= Album.totalImages) {
-        next = 0;
-    }
-    window.location.hash = "#" + next;
-}
-
-Album.prototype.loadImages = function () {
-    var Album = this;
-    $.get("/api/get-album-images.php", {
-        albumId: Album.albumId,
-        start: Album.loaded,
-        howMany: Album.columns
-    }, function (data) {
-        // load each of our 4 images on the screen
-        $.each(data, function (k, v) {
-            var shortest = {};
-            shortest.height = 999999999;
-            $('.col-gallery').each(function () {
-                if ($(this).height() < shortest.height) {
-                    shortest.obj = $(this);
-                    shortest.height = $(this).height();
-                }
-            });
-            // create our holding div
-            var holder = $('<div>');
-            holder.addClass('gallery hovereffect');
-            var rect = shortest.obj[0].getBoundingClientRect();
-            var width;
-            // `width` is available for IE9+
-            if (rect.width) {
-                width = rect.width;
-                // Calculate width for IE8 and below
-            } else {
-                width = rect.right - rect.left;
-            }
-            // Remove the padding width
-            width -= (parseInt(shortest.obj.css("padding-left")) + parseInt(shortest.obj.css("padding-right")));
-            holder.height(parseInt(v.height * width / v.width));
-            // create our image
-            var img = $('<img>');
-            img.attr('src', v.location);
-            img.attr('alt', v.title);
-            img.attr('image-id', v.sequence);
-            img.attr('width', '100%');
-            // create our overlay
-            var overlay = $('<div>');
-            overlay.addClass('overlay');
-            // our view link
-            var link = $('<a>');
-            link.addClass('info no-border');
-            link.attr('href', '#' + parseInt(v.sequence));
-            // add our image icon
-            var view = $('<i>');
-            view.addClass('fa fa-search fa-2x');
-            // put them all together
-            link.append(view);
-            overlay.append(link);
-            holder.append(img);
-            holder.append(overlay);
-            shortest.obj.append(holder);
-        });
-        // when we done, see if we need to load more
-        if ($('footer').isOnScreen() && Album.totalImages > Album.loaded) {
-            Album.loadImages();
-        }
-    }, "json");
-    Album.loaded += Album.columns;
-    return Album.loaded;
+    return $('#album-grid .album-card[data-image-id="' + this.currentImageId + '"]');
 };
 
-$(document).ready(function () {
-    $('#album-carousel').carousel({
-        interval: false,
-        pause: "false",
-    });
+Album.prototype.getImageCard = function (img) {
+    return $('#album-grid .album-card[data-image-id="' + img + '"]');
+};
 
-    // download an image
-    $('#downloadable-image-btn').click(function () {
-        var img = $('#album-carousel div.active div');
-        downloadImages(img.attr('album-id'), img.attr('image-id'));
-    });
-    // share an image
-    $('#shareable-image-btn').click(function () {
-        var img = $('#album-carousel div.active div');
-        shareImages(img.attr('album-id'), img.attr('image-id'));
-    });
-    // submit an image
-    $('#submit-image-btn').click(function () {
-        var img = $('#album-carousel div.active div');
-        $('#submit').attr('what', img.attr('image-id')).modal();
-    });
-    // quick purchase an image
-    $('#not-downloadable-image-btn').click(function () {
-        var img = $('#album-carousel div.active div');
-        var products = {};
-        products['31'] = 1;
-        $.post("/api/update-cart-image.php", {
-            album: img.attr('album-id'),
-            image: img.attr('image-id'),
-            products: products
-        }).done(function (data) {
-            // update our count on the page
-            $('#cart-count').html(data).css({
-                'padding-left': '10px'
-            });
-            reviewCart();
-        }).fail(function (xhr, status, error) {
-            if (xhr.responseText !== "") {
-                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-            } else if (error === "Unauthorized") {
-                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-            } else {
-                $('#album .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while updating your cart.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-            }
-        });
-    })
-
-    // download favorite images
-    $('#downloadable-favorites-btn').click(function () {
-        downloadImages($('#favorites').attr('album-id'), 'favorites');
-    });
-    // share favorite images
-    $('#shareable-favorites-btn').click(function () {
-        shareImages($('#favorites').attr('album-id'), 'favorites');
-    });
-    // submit favorite images
-    $('#submit-favorites-btn').click(function () {
-        $('#submit').attr('what', 'favorites').modal();
-    });
-
-    // download all images
-    $('#downloadable-all-btn').click(function () {
-        downloadImages($('#favorites').attr('album-id'), 'all');
-    });
-    // share all images
-    $('#shareable-all-btn').click(function () {
-        shareImages($('#favorites').attr('album-id'), 'all');
-    });
-
-    // our actual submit button
-    $('#submit-send').click(function () {
-        submitImages();
-    });
-
-    // set a favorite
-    $('#set-favorite-image-btn').click(function () {
-        setFavoriteImage();
-    });
-    // unset a favorite
-    $('#unset-favorite-image-btn').click(function () {
-        unsetFavoriteImage();
-    });
-
-    // show our favorites
-    $('#favorite-btn').click(function () {
-        showFavorites();
-    });
-
-    // show our cart image
-    $('#cart-image-btn').click(function () {
-        showCart();
-    });
-    // show different tabs on our cart
-    $(".nav-tabs a").click(function () {
-        $(this).tab('show');
-    });
-    // update our cart
-    $('.product-count input').change(function () {
-        updateCart($(this));
-    });
-    // show our cart review
-    $('#cart-btn,#reviewOrder').click(function () {
-        reviewCart();
-    });
-    // cart purchase options
-    $('#cart-submit').click(function () {
-        submitCart();
-    });
-
-    $('#cart-shipping input').bind("change keyup input", function () {
-        validateCartInput($(this));
-    });
-
-    // on start of slide, disable all buttons
-    $('#album-carousel').on('slide.bs.carousel', function () {
-        $('#album .btn-action').each(function () {
-            $(this).prop("disabled", true);
-        });
-    });
-    // once slide completes, check for a favorite, which will
-    // re-enable
-    $('#album-carousel').on('slid.bs.carousel', function () {
-        getDetails();
-    });
-
-    //submit email
-    $('#notify-submit').click(function () {
-        submitNotifyEmail();
-    });
-});
-
-function getDetails() {
-    $('#album .btn-action').each(function () {
-        $(this).prop("disabled", true);
-    });
-    var img = $('#album-carousel div.active div');
-    $.get("/api/is-favorite.php", {
-        album: img.attr('album-id'),
-        image: img.attr('image-id')
-    }).done(function (data) {
-        if (data === '1') {
+Album.prototype.selectImage = function (img, options) {
+    var Album = this;
+    options = options || {};
+    var card = Album.getImageCard(img);
+    if (!card.length) {
+        Album.pendingImageId = img;
+        return false;
+    }
+    if (!options.force && String(Album.currentImageId) === String(img)) {
+        updateViewerMeta(card);
+        if (card.attr('data-favorite') === '1') {
             setFavorite();
         } else {
             unsetFavorite();
         }
-        $.get("/api/is-downloadable.php", {
-            album: img.attr('album-id'),
-            image: img.attr('image-id')
-        }).done(function (data) {
-            if (data === '1') {
-                setDownloadable();
-            } else {
-                unsetDownloadable();
-            }
-            $.get("/api/is-shareable.php", {
-                album: img.attr('album-id'),
-                image: img.attr('image-id')
-            }).done(function (data) {
-                if (data === '1') {
-                    setShareable();
-                } else {
-                    unsetShareable();
-                }
+        openViewer();
+        return true;
+    }
+    Album.currentImageId = img;
+    Album.pendingImageId = null;
+    $('#album-grid .album-card').removeClass('is-active');
+    card.addClass('is-active');
+    updateViewerMeta(card);
+    if (card.attr('data-favorite') === '1') {
+        setFavorite();
+    } else {
+        unsetFavorite();
+    }
+    openViewer();
+    if (options.updateHash !== false) {
+        var currentHash = window.location.hash.replace('#', '');
+        if (String(currentHash) !== String(img)) {
+            history.replaceState("", document.title, window.location.pathname + window.location.search + '#' + img);
+        }
+    }
+    return true;
+};
 
-                $('#album .btn-action').each(function () {
-                    $(this).prop("disabled", false);
+Album.prototype.setImage = function (img, options) {
+    return this.selectImage(img, options);
+};
+
+Album.prototype.prev = function () {
+    var Album = this;
+    if (Album.currentImageId === null) {
+        return;
+    }
+
+    var index = -1;
+    $.each(Album.images, function (i, image) {
+        if (String(image.sequence) === String(Album.currentImageId)) {
+            index = i;
+            return false;
+        }
+    });
+
+    if (index === -1) {
+        return;
+    }
+
+    var steps = 0;
+    var maxSteps = Album.images.length;
+
+    do {
+        index--;
+        if (index < 0) {
+            index = Album.images.length - 1;
+        }
+        steps++;
+
+        if (Album.showFavoritesOnly) {
+            var targetCard = $('#album-grid .album-card[data-image-id="' + Album.images[index].sequence + '"]');
+            if (targetCard.attr('data-favorite') !== '1') {
+                continue;
+            }
+        }
+
+        break;
+    } while (steps < maxSteps);
+
+    if (Album.images[index]) {
+        Album.selectImage(Album.images[index].sequence, {
+            scroll: true,
+            updateHash: true
+        });
+    }
+};
+
+Album.prototype.next = function () {
+    var Album = this;
+    if (Album.currentImageId === null) {
+        return;
+    }
+
+    var index = -1;
+    $.each(Album.images, function (i, image) {
+        if (String(image.sequence) === String(Album.currentImageId)) {
+            index = i;
+            return false;
+        }
+    });
+
+    if (index === -1) {
+        return;
+    }
+
+    var steps = 0;
+    var maxSteps = Album.images.length;
+
+    do {
+        index++;
+        if (index >= Album.images.length) {
+            index = 0;
+        }
+        steps++;
+
+        if (Album.showFavoritesOnly) {
+            var targetCard = $('#album-grid .album-card[data-image-id="' + Album.images[index].sequence + '"]');
+            if (targetCard.attr('data-favorite') !== '1') {
+                continue;
+            }
+        }
+
+        break;
+    } while (steps < maxSteps);
+
+    if (Album.images[index]) {
+        Album.selectImage(Album.images[index].sequence, {
+            scroll: true,
+            updateHash: true
+        });
+    }
+};
+
+Album.prototype.removeImage = function (img) {
+    var Album = this;
+    var index = -1;
+    $.each(Album.images, function (i, image) {
+        if (String(image.sequence) === String(img)) {
+            index = i;
+            return false;
+        }
+    });
+    $('#album-grid .album-card[data-image-id="' + img + '"]').remove();
+    if (index !== -1) {
+        Album.images.splice(index, 1);
+    }
+    Album.totalImages = Math.max(0, Album.totalImages - 1);
+    if (String(Album.currentImageId) === String(img)) {
+        Album.currentImageId = null;
+        if (Album.images.length > 0) {
+            var next = Album.images[index] || Album.images[index - 1] || Album.images[0];
+            if (next) {
+                Album.selectImage(next.sequence, {
+                    scroll: false,
+                    updateHash: true,
+                    force: true
+                });
+                return;
+            }
+        }
+        updateViewerMeta($());
+        closeViewer();
+    }
+};
+
+Album.prototype.syncPendingImage = function () {
+    var Album = this;
+    if (Album.pendingImageId !== null && Album.getImageCard(Album.pendingImageId).length) {
+        Album.selectImage(Album.pendingImageId, {
+            scroll: false,
+            updateHash: false,
+            force: true
+        });
+        return true;
+    }
+    return false;
+};
+
+function rebuildAlbumBreadcrumbs() {
+    // Always strip out any existing trailing filter items to reset the base
+    $('.breadcrumb > li.filter-crumb').remove();
+
+    if (!window.album || !window.album.showFavoritesOnly) {
+        // If no filter is active, restore the base album node to a clean, non-clickable active text view
+        var baseCrumb = $('.breadcrumb > li').last();
+        var albumName = $('#album-title').text();
+        baseCrumb.addClass('active').html(albumName).off("click").css('cursor', 'unset');
+        return;
+    }
+
+    // If filtering is active, make the base album text a clickable anchor link to clear the filter
+    var baseCrumb = $('.breadcrumb > li').last();
+    baseCrumb.removeClass('active');
+
+    var albumName = $('#album-title').text();
+    var anchor = $('<a href="#"></a>').text(albumName);
+
+    baseCrumb.html(anchor).css('cursor', 'pointer').off("click").click(function (e) {
+        e.preventDefault();
+        if (window.album && window.album.showFavoritesOnly) {
+            toggleFavorites(); // This safely untoggles everything
+        }
+    });
+
+    // Determine custom text label based on whether an admin is viewing a target guest user
+    var label = 'Favorites';
+    if (window.album.viewingAdminUserFavorites) {
+        label = 'Favorites (' + window.album.viewingAdminUserFavorites + ')';
+    }
+
+    // Construct and inject the fresh dynamic path element marked with a distinct class selector
+    var filterCrumb = $('<li class="active filter-crumb"></li>').text(label);
+
+    // Inject it neatly right before your toolbar actions placeholder dropdown array wrapper
+    $('#actions').before(filterCrumb);
+}
+
+Album.prototype.applyFilter = function () {
+    var Album = this;
+
+    $('#album-grid .album-card').each(function () {
+        var card = $(this);
+
+        if (!Album.showFavoritesOnly) {
+            card.show();
+        } else {
+            card.toggle(card.attr('data-favorite') === '1');
+        }
+    });
+
+    var favoriteButton = $('#favorite-btn');
+    if (!Album.showFavoritesOnly) {
+        // Resetting the buttons
+        favoriteButton
+            .attr('title', 'View favorite images from this album')
+            .attr('data-original-title', 'View favorite images from this album');
+        $('#favorite-btn em').addClass('error');
+        $('#favorite-count').show();
+        $('#downloadable-favorites-btn').hide();
+        $('#downloadable-all-btn').show();
+        $('#submit-favorites-btn').hide();
+
+        // --- RESTORE ORIGINAL FAVORITES ---
+        if (Album.originalFavoritesBackup) {
+            $('#album-grid .album-card').each(function () {
+                var card = $(this);
+                var origFav = Album.originalFavoritesBackup[card.attr('data-image-id')] || '0';
+                card.attr('data-favorite', origFav);
+                card.toggleClass('is-favorite', origFav === '1');
+
+                // Restore card favorite heart icons to correct state
+                var isFav = (origFav === '1');
+                card.find('.album-card-action[data-action="favorite"] em')
+                    .removeClass('fa-heart error')
+                    .addClass(isFav ? 'fa-heart error' : 'fa-heart');
+            });
+            // Wipe backup and state
+            Album.originalFavoritesBackup = null;
+            Album.viewingAdminUserFavorites = null;
+        }
+    } else {
+        // Setting the buttons
+        favoriteButton
+            .attr('title', 'View all images from this album')
+            .attr('data-original-title', 'View all images from this album');
+        $('#favorite-btn em').removeClass('error');
+        $('#favorite-count').hide();
+        $('#downloadable-all-btn').hide();
+        $('#downloadable-favorites-btn').show();
+        $('#submit-favorites-btn').show();
+    }
+    rebuildAlbumBreadcrumbs();
+
+    var tooltip = favoriteButton.attr('aria-describedby');
+    $('#' + tooltip).remove();
+    favoriteButton.remove('aria-describedby');
+
+    updateAllAlbumCardSpans();
+    Album.loadImages();     // lazy-load any newly visible images
+};
+
+Album.prototype.loadImages = function () {
+    var Album = this;
+    if (Album.initialized) {
+        var loadedNow = 0;
+        $('#album-grid .album-card img[data-src]').each(function () {
+            var img = $(this);
+            if (img.attr('data-loaded') === '1' || img.attr('data-loading') === '1') {
+                return;
+            }
+            var card = img.closest('.album-card');
+            if (!card.length) {
+                return;
+            }
+            var rect = card.get(0).getBoundingClientRect();
+            var threshold = window.innerHeight * 1.5;
+            if (rect.top < threshold && rect.bottom > -threshold * 0.25) {
+                card.attr('data-loading', '1');
+                img.one('load', function () {
+                    markAlbumCardLoaded(card);
+                });
+                img.attr('src', img.attr('data-src'));
+                if (img.get(0).complete && img.get(0).naturalWidth > 0) {
+                    markAlbumCardLoaded(card);
+                }
+                loadedNow++;
+            }
+        });
+        Album.loaded += loadedNow;
+        return Album.loaded;
+    }
+    if (Album.loading) {
+        return Album.loaded;
+    }
+    Album.loading = true;
+    $.get("/api/get-album-images.php", {
+        albumId: Album.albumId,
+        start: Album.loaded,
+        howMany: Album.totalImages
+    }, function (data) {
+        if (typeof data.favoriteCount !== "undefined") {
+            updateFavoriteCount(data.favoriteCount);
+        }
+        $.each(data.images, function (k, v) {
+            var isFavorite = parseInt(v.favorite, 10) === 1;
+            var isDownloadable = (parseInt(v.downloadable, 10) === 1);
+            var card = $('<article>');
+            card.addClass('album-card');
+            card.attr('album-id', Album.albumId);
+            card.attr('image-id', v.sequence);
+            card.attr('data-image-id', v.sequence);
+            card.attr('data-favorite', isFavorite ? '1' : '0');
+            card.toggleClass('is-favorite', isFavorite);
+            card.attr('data-downloadable', isDownloadable ? '1' : '0')
+            card.attr('data-loading', '0');
+            card.attr('data-loaded', '0');
+            card.attr('data-title', v.title);
+            card.attr('data-caption', v.caption || '');
+            card.attr('data-location', v.location);
+            card.attr('data-height', v.height || 1);
+            card.attr('data-width', v.width || 1);
+            card.attr('data-index', Album.images.length);
+
+            var media = $('<button>');
+            media.attr('type', 'button');
+            media.addClass('album-card-media');
+            media.attr('aria-label', 'Open image ' + (v.title || v.sequence));
+            media.attr('style', 'background-image: url("' + v.location + '")');
+
+            var img = $('<img>');
+            img.addClass('album-card-image');
+            img.attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACw=');
+            img.attr('data-src', '/img/image.png');
+            img.one('load', function () {
+                markAlbumCardLoaded(card);
+            });
+
+            var overlay = $('<div>');
+            overlay.addClass('album-card-overlay');
+            overlay.click(function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                Album.selectImage(v.sequence, {
+                    scroll: true,
+                    updateHash: true,
+                    force: true
                 });
             });
+
+            var meta = $('<div>');
+            meta.addClass('album-card-meta');
+            if (window.showImageTitle) {
+                meta.append($('<strong>').text(v.title || ('Image ' + v.sequence)));
+            }
+            if (v.caption) {
+                meta.append($('<span>').text(v.caption));
+            }
+            overlay.append(meta);
+
+            var actions = $('<div>');
+            actions.addClass('album-card-actions');
+
+            if (isDownloadable) {
+                actions.append(createIconButton('download', 'fa-download', 'Download image', function () {
+                    downloadImageFor(v.sequence);
+                }));
+            }
+
+            actions.append(createIconButton('submit', 'fa-paper-plane', 'Submit image', function () {
+                submitImageFor(v.sequence);
+            }));
+
+            actions.append(createIconButton('favorite', isFavorite ? 'fa-heart error' : 'fa-heart', 'Toggle favorite', function () {
+                toggleFavoriteForImage(v.sequence);
+            }));
+
+            if (window.showImageTitle) { // True if user is admin[cite: 4]
+                actions.append(createIconButton('access', 'fa-picture-o', 'Access permissions', function () {
+                    // Make sure the thumbnail card is marked active so setupImageAccess finds it
+                    $('#album-grid .album-card').removeClass('is-active');
+                    card.addClass('is-active');
+                    setupImageAccess();
+                }));
+
+                actions.append(createIconButton('delete', 'fa-trash', 'Delete image', function () {
+                    // Make sure the thumbnail card is marked active so deleteImage finds it
+                    $('#album-grid .album-card').removeClass('is-active');
+                    card.addClass('is-active');
+                    deleteImage();
+                }));
+            }
+
+            overlay.append(actions);
+            media.append(img);
+            card.append(media);
+            card.append(overlay);
+            $('#album-grid').append(card);
+            updateAlbumCardSpan(card);
+            Album.images.push({
+                sequence: v.sequence,
+                location: v.location,
+                title: v.title,
+                caption: v.caption || '',
+                favorite: isFavorite,
+                downloadable: isDownloadable
+            });
         });
+        Album.initialized = true;
+        Album.loading = false;
+        updateAllAlbumCardSpans();
+        Album.loadImages();
+        Album.syncPendingImage();
+    }, "json").fail(function () {
+        Album.loading = false;
     });
-}
+    return Album.loaded;
+};
 
-function calculateCost() {
-    var total = 0;
-    $('#cart-table .item-cost').each(function () {
-        var price = Number($(this).html().replace(/[^0-9\.]+/g, ""));
-        total += price;
-    });
-    var tax = total * 0.06;
-    $('#cart-tax').html("$" + tax.toFixed(2));
-    total += tax;
-    $('#cart-total').html("$" + total.toFixed(2));
-}
+$(document).ready(function () {
+    var albumResizeTimer = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const albumId = urlParams.get('album');
 
-function validateCartInput(ele) {
-    var id = ele.attr('id');
-    var regex = new RegExp(".{3}");
-    if (id === "cart-email") {
-        // email validation
-        regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    } else if (id === "cart-phone") {
-        // telephone validation
-        regex = /^\(?\d{3}\)?\s?-?\d{3}-?\s?\d{4}$/;
-    } else if (id === "cart-address") {
-        // address validation
-        regex = /^\d+\s\w+/;
-    } else if (id === "cart-state") {
-        // state validation
-        regex = /^[A-Z]{2}$/;
-    } else if (id === "cart-zip") {
-        // zip validation
-        regex = new RegExp("^\\d{5}(-\\d{4})?$");
-    }
-    // test our regex
-    if (regex.test(ele.val())) {
-        ele.closest('div').removeClass('has-error');
-    } else {
-        ele.closest('div').addClass('has-error');
-    }
-    // check our item options
-    if (ele.parent().hasClass('item-option')) {
-        if (ele.val() === "") {
-            ele.parent().addClass('has-error');
-        } else {
-            ele.parent().removeClass('has-error');
+    $('#album-grid').on('click', '.album-card-media', function (event) {
+        event.preventDefault();
+        var card = $(this).closest('.album-card');
+        var imageId = card.attr('data-image-id');
+        if (window.album && imageId) {
+            window.album.selectImage(imageId, {
+                scroll: true,
+                updateHash: true,
+                force: true
+            });
         }
-    }
-    // fix our submit button if no errors exist
-    if ($('#cart .has-error').length === 0 && $('#cart-items > tr').length > 0) {
-        $('#cart-submit').prop("disabled", false);
-    } else {
-        $('#cart-submit').prop("disabled", true);
-    }
-}
+    });
+
+    $('#album-grid').on('click', '.album-card-action', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var card = $(this).closest('.album-card');
+        var imageId = card.attr('data-image-id');
+        var action = $(this).attr('data-action');
+        if (!imageId) {
+            return;
+        }
+        if (action === 'view') {
+            if (window.album) {
+                window.album.selectImage(imageId, {
+                    scroll: true,
+                    updateHash: true,
+                    force: true
+                });
+            }
+        } else if (action === 'download') {
+            downloadImageFor(imageId);
+        } else if (action === 'submit') {
+            submitImageFor(imageId);
+        } else if (action === 'favorite') {
+            toggleFavoriteForImage(imageId);
+        } else if (action === 'access') {
+            $('#album-grid .album-card').removeClass('is-active');
+            card.addClass('is-active');
+            setupImageAccess();
+        } else if (action === 'delete') {
+            $('#album-grid .album-card').removeClass('is-active');
+            card.addClass('is-active');
+            deleteImage();
+        }
+    });
+
+    $('#album-viewer-close').click(function () {
+        history.replaceState("", document.title, window.location.pathname + window.location.search);
+        closeViewer();
+        $('#album-grid .album-card').removeClass('is-active');
+        if (window.album) {
+            window.album.currentImageId = null;
+        }
+    });
+
+    $('#album-viewer-overlay').click(function (event) {
+        if ($(event.target).is('#album-viewer-overlay')) {
+            $('#album-viewer-close').click();
+        }
+    });
+
+    $(document).on('keydown', function (event) {
+        if ($('#album-viewer-overlay').hasClass('hidden')) {
+            return;
+        }
+        if (event.key === 'Escape') {
+            $('#album-viewer-close').click();
+        } else if (event.key === 'ArrowLeft') {
+            if (window.album) {
+                window.album.prev();
+            }
+        } else if (event.key === 'ArrowRight') {
+            if (window.album) {
+                window.album.next();
+            }
+        }
+    });
+
+    $('#album-prev-btn').click(function () {
+        if (window.album) {
+            window.album.prev();
+        }
+    });
+    $('#album-next-btn').click(function () {
+        if (window.album) {
+            window.album.next();
+        }
+    });
+
+    $('#downloadable-image-btn').click(function () {
+        downloadSelectedImage();
+    });
+    $('#submit-image-btn').click(function () {
+        submitSelectedImage();
+    });
+
+    $('#downloadable-favorites-btn').click(function () {
+        downloadImages(albumId, 'favorites');
+    });
+    $('#submit-favorites-btn').click(function () {
+        $('#submit').attr('what', 'favorites').modal();
+    });
+
+    $('#downloadable-all-btn').click(function () {
+        downloadImages(albumId, 'all');
+    });
+
+    $('#submit-send').click(function () {
+        submitImages();
+    });
+
+    $('#set-favorite-image-btn').click(function () {
+        setFavoriteImage();
+    });
+    $('#unset-favorite-image-btn').click(function () {
+        unsetFavoriteImage();
+    });
+
+    $('#favorite-btn').click(function () {
+        toggleFavorites();
+    });
+
+    $(".nav-tabs a").click(function () {
+        $(this).tab('show');
+    });
+
+    $('#notify-submit').click(function () {
+        submitNotifyEmail();
+    });
+
+    $(window).on('resize', function () {
+        clearTimeout(albumResizeTimer);
+        albumResizeTimer = setTimeout(function () {
+            updateAllAlbumCardSpans();
+            if (window.album) {
+                window.album.loadImages();
+            }
+        }, 50);
+    });
+});
 
 function setFavoriteImage() {
-    var img = $('#album-carousel div.active div');
-    // send our update
-    $.post("/api/set-favorite.php", {
-        album: img.attr('album-id'),
-        image: img.attr('image-id')
-    }).done(function (data) {
-        // update our count on the page
-        if (parseInt(data) > 0) {
-            $('#favorite-count').html(data).css({
-                'padding-left': '10px'
-            });
-        } else {
-            $('#favorite-count').html("").css({
-                'padding-left': ''
-            });
-        }
-        setFavorite();
-    });
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) return;
+    var imageId = img.attr('image-id');
+
+    toggleFavoriteForImage(imageId);
 }
 
 function unsetFavoriteImage() {
-    var img = $('#album-carousel div.active div');
-    // send our update
-    $.post("/api/unset-favorite.php", {
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) return;
+    var imageId = img.attr('image-id');
+
+    // Reuse the exact same robust toggle logic used by thumbnails
+    toggleFavoriteForImage(imageId);
+
+    // If we are filtering by favorites, advance to the next valid favorite automatically
+    if (window.album && window.album.showFavoritesOnly) {
+        window.album.next();
+    }
+}
+
+function syncCardFavoriteState(imageId, isFavorite) {
+    var card = getAlbumImageCard(imageId);
+    if (!card.length) return;
+
+    var favStr = isFavorite ? '1' : '0';
+    card.attr('data-favorite', favStr);
+    card.toggleClass('is-favorite', isFavorite);
+
+    // Sync the small grid action heart icon inside the thumbnail overlay
+    card.find('.album-card-action[data-action="favorite"] em')
+        .removeClass('fa-heart error')
+        .addClass(isFavorite ? 'fa-heart error' : 'fa-heart');
+}
+
+function toggleFavorites() {
+    if (!window.album) {
+        return;
+    }
+
+    window.album.showFavoritesOnly = !window.album.showFavoritesOnly;
+    $(this).toggleClass('active', window.album.showFavoritesOnly);
+    window.album.applyFilter();
+}
+
+function downloadSelectedImage() {
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
+    $.get("/api/is-downloadable.php", {
         album: img.attr('album-id'),
         image: img.attr('image-id')
     }).done(function (data) {
-        // update our count on the page
-        if (parseInt(data) > 0) {
-            $('#favorite-count').html(data).css({
-                'padding-left': '10px'
-            });
-        } else {
-            $('#favorite-count').html("").css({
-                'padding-left': ''
-            });
+        if (data === '1') {
+            downloadImages(img.attr('album-id'), img.attr('image-id'));
         }
-        unsetFavorite();
     });
+}
+
+function submitSelectedImage() {
+    var img = getCurrentAlbumImage();
+    if (img.length === 0) {
+        return;
+    }
+    $('#submit').attr('what', img.attr('image-id')).modal();
 }
 
 function showFavorites() {
     $('#favorites-list').empty();
     $('#favorites').modal();
+    var albumId = $('#album-viewer-overlay').attr('album-id');
+    if (!albumId && window.album) {
+        albumId = window.album.albumId;
+    }
     $.get("/api/get-favorites.php", {
-        album: $('#album').attr('album-id'),
+        album: albumId,
     }, function (data) {
         $.each(data, function (i) {
             var li = $('<li image-id="' + data[i].sequence + '" class="img-favorite">');
             li.css('background-image', 'url("' + data[i].location + '")');
             li.click(function () {
                 $.post("/api/unset-favorite.php", {
-                    album: $('#album').attr('album-id'),
+                    album: albumId,
                     image: $(this).attr('image-id')
                 }).done(function (data) {
-                    // update our count on the page
-                    if (parseInt(data) > 0) {
-                        $('#favorite-count').html(data).css({
-                            'padding-left': '10px'
-                        });
-                    } else {
-                        $('#favorite-count').html("").css({
-                            'padding-left': ''
-                        });
+                    updateFavoriteCount(data);
+                    if (parseInt(data, 10) <= 0) {
                         $("#downloadable-favorites-btn").prop("disabled", true);
-                        $("#shareable-favorites-btn").prop("disabled", true);
                         $("#submit-favorites-btn").prop("disabled", true);
                     }
                 });
@@ -427,236 +920,24 @@ function showFavorites() {
             $('#favorites-list').append(li);
         });
         $("#downloadable-favorites-btn").prop("disabled", false);
-        $("#shareable-favorites-btn").prop("disabled", false);
         $("#submit-favorites-btn").prop("disabled", false);
         if (!$("#favorites-list").has("li").length) {
             $("#downloadable-favorites-btn").prop("disabled", true);
-            $("#shareable-favorites-btn").prop("disabled", true);
             $("#submit-favorites-btn").prop("disabled", true);
         }
-    }, "json");
-}
-
-function showCart() {
-    var img = $('#album-carousel div.active div');
-    $('#cart-image').modal();
-    $('.product-count input').each(function () {
-        $(this).val("");
-    });
-    $('.product-total').each(function () {
-        $(this).html("--");
-    });
-    $.get("/api/get-cart-image.php", {
-        album: img.attr('album-id'),
-        image: img.attr('image-id'),
-    }, function (data) {
-        for (var i = 0, len = data.length; i < len; i++) {
-            var row = $('#cart-image tr[product-id="' + data[i].product + '"]');
-            var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
-            $('input', row).val(data[i].count);
-            $('.product-total', row).html("$" + (Math.round(price * data[i].count * 100) / 100).toFixed(2));
-        }
-    }, "json");
-}
-
-function updateCart(input) {
-    var img = $('#album-carousel div.active div');
-    var row = input.closest('tr');
-    var price = Number($('.product-price', row).html().replace(/[^0-9\.]+/g, ""));
-    $('.product-total', row).html("$" + (Math.round(price * input.val() * 100) / 100).toFixed(2));
-    if ($('.product-total', row).html() === "$0.00") {
-        $('.product-total', row).html("--");
-    }
-    // update our database
-    var products = {};
-    $('.product-count input').each(function () {
-        var product = $(this).closest('tr').attr('product-id');
-        var count = parseInt($(this).val()) || 0;
-        if (count !== 0) {
-            products[product] = count;
-        }
-    });
-    $.post("/api/update-cart-image.php", {
-        album: img.attr('album-id'),
-        image: img.attr('image-id'),
-        products: products
-    }).done(function (data) {
-        // update our count on the page
-        if (parseInt(data) > 0) {
-            $('#cart-count').html(data).css({
-                'padding-left': '10px'
-            });
-        } else {
-            $('#cart-count').html("").css({
-                'padding-left': ''
-            });
-        }
-    });
-}
-
-function reviewCart() {
-    $('#cart-image').modal('hide');
-    $('#album').modal('hide');
-    $('#cart').modal();
-    $('#cart-items').empty();
-    $.get("/api/get-cart.php", function (data) {
-        for (var i = 0, len = data.length; i < len; i++) {
-            for (var c = 0, zen = data[i].count; c < zen; c++) {
-                var row = $("<tr>");
-                row.attr('product-id', data[i].product);
-                row.attr('product-type', data[i].product_type);
-                row.attr('album-id', data[i].album);
-                row.attr('image-id', data[i].image);
-                row.attr('image-title', data[i].title);
-                var remove = $("<td>");
-                remove.addClass("text-center");
-                var removeIcon = $("<i>");
-                removeIcon.addClass("fa fa-trash error");
-                removeIcon.css({
-                    "cursor": "pointer"
-                });
-                removeIcon = removeFromCart(removeIcon);
-                remove.append(removeIcon);
-                row.append(remove);
-                var preview = $("<td>");
-                var previewDiv = $("<div>");
-                previewDiv.css({
-                    "background-image": "url('" + data[i].location + "')",
-                    "background-size": "cover",
-                    "background-position": "50%",
-                    "width": "50px",
-                    "height": "50px"
-                });
-                preview.append(previewDiv);
-                row.append(preview);
-                var product = $("<td>");
-                product.html(data[i].name);
-                row.append(product);
-                var size = $("<td>");
-                size.html(data[i].size);
-                row.append(size);
-                var price = $("<td>");
-                price.addClass("item-cost");
-                price.html("$" + data[i].price);
-                row.append(price);
-                var options = $("<td>");
-                if (data[i].options.length) {
-                    options.addClass("item-option has-error");
-                    var select = $("<select>");
-                    select.addClass("form-control");
-                    var opt = $('<option>');
-                    opt.html("");
-                    select.append(opt);
-                    for (var j = 0, jen = data[i].options.length; j < jen; j++) {
-                        opt = $('<option>');
-                        opt.html(data[i].options[j]);
-                        select.append(opt);
-                    }
-                    options.append(select);
-                }
-                row.append(options);
-                $('#cart-items').append(row);
-            }
-        }
-        calculateCost();
-        $('#cart-shipping input').each(function () {
-            validateCartInput($(this));
-        });
-        $('#cart-table select').off().bind("change keyup input", function () {
-            validateCartInput($(this));
-        });
     }, "json");
 }
 
 function setFavorite() {
     $('#set-favorite-image-btn').addClass('hidden');
     $('#unset-favorite-image-btn').removeClass('hidden');
+    $('#album-grid .album-card.is-active .album-card-action[data-action="favorite"] em').removeClass('fa-heart').addClass('fa-heart error');
 }
 
 function unsetFavorite() {
     $('#set-favorite-image-btn').removeClass('hidden');
     $('#unset-favorite-image-btn').addClass('hidden');
-}
-
-function setDownloadable() {
-    $('#not-downloadable-image-btn').addClass('hidden');
-    $('#downloadable-image-btn').removeClass('hidden');
-}
-
-function unsetDownloadable() {
-    $('#not-downloadable-image-btn').removeClass('hidden');
-    $('#downloadable-image-btn').addClass('hidden');
-}
-
-function setShareable() {
-    $('#not-shareable-image-btn').addClass('hidden');
-    $('#shareable-image-btn').removeClass('hidden');
-}
-
-function unsetShareable() {
-    $('#not-shareable-image-btn').removeClass('hidden');
-    $('#shareable-image-btn').addClass('hidden');
-}
-
-// functions for dealing with the cart
-function arrayHasJSON(myArray, product, album, image) {
-    var hasJSON = false;
-    for (var i = 0, len = myArray.length; i < len; i++) {
-        if (myArray[i].product === product && myArray[i].album === album && myArray[i].image === image) {
-            hasJSON = true;
-            break;
-        }
-    }
-    return hasJSON;
-}
-
-function incrementProduct(myArray, product, album, image) {
-    $.each(myArray, function (i, obj) {
-        if (obj.product === product && obj.album === album && obj.image === image) {
-            obj.count++;
-        }
-    });
-    return myArray;
-}
-
-function removeFromCart(removeIcon) {
-    removeIcon.click(function () {
-        // TODO - we should really put in a confirm here
-        $(this).closest('tr').remove();
-        calculateCost();
-        // update our database
-        var cart = [];
-        $('#cart-items tr').each(function () {
-            var product = $(this).attr('product-id');
-            var image = $(this).attr('image-id');
-            var album = $(this).attr('album-id');
-            if (arrayHasJSON(cart, product, album, image)) {
-                cart = incrementProduct(cart, product, album, image);
-            } else {
-                var item = {};
-                item.product = $(this).attr('product-id');
-                item.album = $(this).attr('album-id');
-                item.image = $(this).attr('image-id');
-                item.count = 1;
-                cart.push(item);
-            }
-        });
-        $.post("/api/update-cart.php", {
-            images: cart
-        }).done(function (data) {
-            // update our count on the page
-            if (parseInt(data) > 0) {
-                $('#cart-count').html(data).css({
-                    'padding-left': '10px'
-                });
-            } else {
-                $('#cart-count').html("").css({
-                    'padding-left': ''
-                });
-            }
-        });
-    });
-    return removeIcon;
+    $('#album-grid .album-card.is-active .album-card-action[data-action="favorite"] em').removeClass('fa-heart error').addClass('fa-heart');
 }
 
 function downloadImages(album, what) {
@@ -724,8 +1005,7 @@ function submitDownloadEmail(file) {
         if (data !== "") {
             $('.bootstrap-dialog-body').append('<div class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data + '</div>');
         } else {
-            $('.modal-backdrop').remove();
-            $('.modal').remove();
+            BootstrapDialog.closeAll();
         }
     }).fail(function (xhr, status, error) {
         if (xhr.responseText !== "") {
@@ -737,20 +1017,6 @@ function submitDownloadEmail(file) {
         }
     }).always(function () {
         $('#download-email-address-alert').remove();
-    });
-}
-
-function shareImages(album, what) {
-    BootstrapDialog.show({
-        draggable: true,
-        title: '<em class="fa fa-frown-o"></em> Sorry',
-        message: '<em class="fa fa-exclamation-triangle"> This functionality isn\'t available yet. Please check back soon.',
-        buttons: [{
-            label: 'Close',
-            action: function (dialogInItself) {
-                dialogInItself.close();
-            }
-        }]
     });
 }
 
@@ -782,70 +1048,6 @@ function submitImages() {
         $('#submit-send').prop("disabled", false);
         $('#submit-send').next().prop("disabled", false);
         $('#submit-send em').addClass('fa fa-paper-plane').removeClass('glyphicon glyphicon-asterisk icon-spin');
-    });
-}
-
-function submitCart() {
-    $('#cart-submit').prop("disabled", true);
-    $('#cart-submit').next().prop("disabled", true);
-    $('#cart-submit em').removeClass('fa fa-credit-card').addClass('glyphicon glyphicon-asterisk icon-spin');
-    $('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Thank you for submitting your request. Your request is being processed, " + "and you should be forwarded to paypal's payment screen within a few seconds. " + "If you are not, please <a class='gen' target='_blank' " + "href='mailto:billingerror@saperstonestudios.com'>contact us</a> and we'll try to resolve " + "your issue as soon as we can.</div>");
-
-    var coupon;
-    if ($('#cart-coupon').val() !== "") {
-        coupon = $('#cart-coupon').val();
-    }
-    var order = [];
-    $('#cart-items tr').each(function () {
-        order.push({
-            product: $(this).attr('product-id'),
-            type: $(this).attr('product-type'),
-            img: $(this).attr('image-id'),
-            title: $(this).attr('image-title'),
-            option: $(this).find('td.item-option select').val()
-        });
-    });
-    var user = {
-        name: $('#cart-name').val(),
-        email: $('#cart-email').val(),
-        phone: $('#cart-phone').val(),
-        address: $('#cart-address').val(),
-        city: $('#cart-city').val(),
-        state: $('#cart-state').val(),
-        zip: $('#cart-zip').val(),
-    };
-    $.post("/api/checkout.php", {
-        user: user,
-        order: order,
-        coupon: coupon
-    }, "json").done(function (data) {
-        data = jQuery.parseJSON(data);
-        if (data.hasOwnProperty('response') && data.response.Ack === "Success") {
-            var link = "https://www.paypal.com/webscr?cmd=_express-checkout&token=" + data.response.Token;
-            $('#cart .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Please wait while you are forwarded to paypal to pay your invoice. Alternatively, you can go to <a class='gen' href='" + link + "'>this link</a></div>.");
-            window.location = link;
-        } else if (data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.Errors.LongMessage === "This transaction cannot be processed. The amount to be charged is zero.") {
-            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Because your request was totaled for $0, there is no need to be forwarded to paypal. We will be contacting you shortly with more details about your order.</div>");
-            // TODO - do stuff
-        } else if (data.hasOwnProperty('response') && data.response.Ack === "Failure" && data.response.hasOwnProperty('Errors')) {
-            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.response.Errors.LongMessage + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        } else if (data.hasOwnProperty('error')) {
-            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>" + data.error + "<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        } else {
-            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        }
-    }).fail(function (xhr, status, error) {
-        if (xhr.responseText !== "") {
-            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if (error === "Unauthorized") {
-            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-        } else {
-            $('#cart .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>There was a problem with submitting your order.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        }
-    }).always(function () {
-        $('#cart-submit').prop("disabled", false);
-        $('#cart-submit').next().prop("disabled", false);
-        $('#cart-submit em').addClass('fa fa-credit-card').removeClass('glyphicon glyphicon-asterisk icon-spin');
     });
 }
 
