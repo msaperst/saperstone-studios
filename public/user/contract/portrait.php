@@ -68,7 +68,7 @@ if (isset ($_GET ['id'])) {
                         placeholder='Invoice Link'
                         value='<?php echo $contract ['invoice']; ?>'/> <br/> Checks
                 should be made payable to <em>Saperstone Studios</em> and mailed to
-                <em>6144 S Teresa Dr, Chandler AZ 85249</em>.
+                <em>5701 S Quartz St, Gilbert AZ 85298</em>.
             </p></li>
         <li><strong>Term.</strong> The initial term of this Contract shall
             commence on the date hereof and terminate upon completion of the
@@ -153,7 +153,7 @@ if (isset ($_GET ['id'])) {
             <strong>Address: </strong>
         </div>
         <div class='col-md-9'>
-            6144 S Teresa Dr<br/>Chandler, AZ 85249
+            5701 S Quartz St<br/>Gilbert, AZ 85298
         </div>
     </div>
     <div class='row'>

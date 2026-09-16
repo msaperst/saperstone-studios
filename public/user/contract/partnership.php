@@ -130,7 +130,7 @@ if (isset ($_GET ['id'])) {
             <strong>Address: </strong>
         </div>
         <div class='col-md-9'>
-            6144 S Teresa Dr<br/>Chandler, AZ 85249
+            5701 S Quartz St<br/>Gilbert, AZ 85298
         </div>
     </div>
     <div class='row'>

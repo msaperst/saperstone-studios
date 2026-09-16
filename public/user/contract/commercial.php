@@ -89,8 +89,8 @@ if (isset ($_GET ['id'])) {
                 <br/> <input id='contract-invoice' class='form-control' type='text'
                              placeholder='Invoice Link'
                              value='<?php echo $contract ['invoice']; ?>'/> <br/>Checks should
-                be made payable to <em>Saperstone Studios</em> and mailed to <em>6144
-                    S Teresa Dr, Chandler AZ 85249</em>. Final balance is due with
+                be made payable to <em>Saperstone Studios</em> and mailed to <em>5701
+                    S Quartz St, Gilbert AZ 85298</em>. Final balance is due with
                 delivered invoice, paid no later than 30 days of delivery, in
                 compliance with Terms and Conditions.
             </p>
@@ -186,7 +186,7 @@ if (isset ($_GET ['id'])) {
             <strong>Address: </strong>
         </div>
         <div class='col-md-9'>
-            6144 S Teresa Dr<br/>Chandler, AZ 85249
+            5701 S Quartz St<br/>Gilbert, AZ 85298
         </div>
     </div>
     <div class='row'>
