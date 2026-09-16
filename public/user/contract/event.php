@@ -31,9 +31,9 @@ if (isset ($_GET ['id'])) {
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> (the "Photographer") and
-        <u>&nbsp;</u><label><u><input id='contract-name' class='form-control' style='width: initial; display: initial;'
-                                      type='text' placeholder='Client Name'
-                                      value='<?php echo $contract ['name']; ?>'/></u></label><u>&nbsp;</u>
+        <u>&nbsp;<input id='contract-name' class='form-control' style='width: initial; display: initial;'
+                        type='text' placeholder='Client Name' aria-label='Contract Name'
+                        value='<?php echo $contract ['name']; ?>'/>&nbsp;</u>
         (the "Client").<br/> <strong>Whereas</strong>, Client wishes to
         engage Photographer to provide certain photography services and
         Photographer is willing to accept such engagement, all on the terms
@@ -49,8 +49,8 @@ if (isset ($_GET ['id'])) {
         </li>
         <li><strong>Session Details.</strong> The above session with take
             place at the below location on
-            <label><input id='contract-date' class='form-control' style='width: initial; display: initial;'
-                          type='date' placeholder='Date' value='<?php echo $contract ['date']; ?>'/></label>
+            <input id='contract-date' class='form-control' style='width: initial; display: initial;'
+                   aria-label='Contract Date' type='date' placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
             at
             <br/>
             <label style='width: 100%'><textarea id='contract-location' class='form-control' type='text'
@@ -59,15 +59,14 @@ if (isset ($_GET ['id'])) {
         <li><strong>Compensation.</strong> In consideration of the Services,
             Client agrees to pay Photographer the following amounts as follows:
             <p>
-                <label><input id='contract-session' class='form-control' style='width: initial; display: initial;'
-                              type='text' placeholder='Session' value='<?php echo $contract ['session']; ?>'/></label>:
-                $<label><input id='contract-amount' class='form-control' style='width: initial; display: initial;'
-                               type='number' step='0.01' min='0' placeholder='Amount'
-                               value='<?php echo $contract ['amount']; ?>'/></label>
+                <input id='contract-session' class='form-control' style='width: initial; display: initial;' type='text'
+                       aria-label='Session' placeholder='Session' value='<?php echo $contract ['session']; ?>'/>:
+                $<input id='contract-amount' class='form-control' style='width: initial; display: initial;'
+                        aria-label='Amount' type='number' step='0.01' min='0' placeholder='Amount'
+                        value='<?php echo $contract ['amount']; ?>'/>
                 <br/>
-                <label style='width: 100%'><input id='contract-invoice' class='form-control' type='text'
-                                                  placeholder='Invoice Link'
-                                                  value='<?php echo $contract ['invoice']; ?>'/></label>
+                <input id='contract-invoice' class='form-control' type='text' aria-label='Invoice Link'
+                       placeholder='Invoice Link' value='<?php echo $contract ['invoice']; ?>'/>
                 <br/>
                 Checks should be made payable to <em>Saperstone Studios</em> and mailed to <em>5701 S Quartz St,
                     Gilbert
@@ -75,9 +74,9 @@ if (isset ($_GET ['id'])) {
             </p>
             <p>
                 Photographer will reserve date as soon as non-refundable deposit of
-                $<label><input id='contract-deposit' class='form-control'
-                               style='width: initial; display: initial;' type='number' step='0.01' min='0'
-                               placeholder='Deposit' value='<?php echo $contract ['deposit']; ?>'/></label>
+                $<input id='contract-deposit' class='form-control' style='width: initial; display: initial;'
+                        aria-label='Deposit' type='number' step='0.01' min='0' placeholder='Deposit'
+                        value='<?php echo $contract ['deposit']; ?>'/>
                 and contract is received <br/> Checks should be made payable to <em>Saperstone Studios</em> and mailed
                 to <em>5701 S Quartz St, Gilbert AZ 85298</em> <br/>Remaining balance due 3 weeks prior to event date.
             </p>

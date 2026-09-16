@@ -105,13 +105,16 @@ if (isset ($_GET ['id'])) {
             foreach ($contract ['lineItems'] as $lineItem) {
                 ?>
                 <span class='contract-line-item'>
-                    <label><input class='form-control contract-item' style='width: initial; display: initial;'
-                                  type='text' placeholder='Item' value='<?php echo $lineItem['item']; ?>'/></label>:
-                    $<label><input class='form-control contract-amount' style='width: initial; display: initial;'
-                                   type='number' step='0.01' min='0' placeholder='Amount'
-                                   value='<?php echo $lineItem['amount']; ?>'/></label> /
-                    <label><input class='form-control contract-unit' style='width: initial; display: initial;'
-                                  type='text' placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/></label>
+                    <input class='form-control contract-item' style='width: initial; display: initial;'
+                           aria-label='Item' type='text' placeholder='Item'
+                           value='<?php echo $lineItem['item']; ?>'/>:
+                    $<input class='form-control contract-amount' style='width: initial; display: initial;'
+                            type='number' step='0.01' min='0' placeholder='Amount' aria-label='Amount'
+                            value='<?php echo $lineItem['amount']; ?>'/>
+                    /
+                    <input class='form-control contract-unit' style='width: initial; display: initial;'
+                           aria-label='Unit' type='text' placeholder='Unit'
+                           value='<?php echo $lineItem['unit']; ?>'/>
                     <button type="button" class="btn btn-xs btn-danger remove-contract-line-item-btn"
                             data-toggle="tooltip" data-placement="right" title="Remove Line Item">
                         <em class="fa fa-minus"></em>

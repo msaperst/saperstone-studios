@@ -32,9 +32,9 @@ if (isset ($_GET ['id'])) {
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> (the "Photographer") and
-        <u>&nbsp;</u><input id='contract-name' class='form-control' style='width: initial; display: initial;'
-                            type='text' placeholder='Client Name'
-                            value='<?php echo $contract ['name']; ?>'/></u></label><u>&nbsp;</u>
+        <u>&nbsp;<input id='contract-name' class='form-control' style='width: initial; display: initial;'
+                        type='text' placeholder='Client Name' aria-label='Contract Name'
+                        value='<?php echo $contract ['name']; ?>'/>&nbsp;</u>
         (the "Client").<br/> <strong>Whereas</strong>, Client wishes to
         engage Photographer to provide certain photography services and
         Photographer is willing to accept such engagement, all on the terms
@@ -55,20 +55,18 @@ if (isset ($_GET ['id'])) {
                 foreach ($contract ['lineItems'] as $lineItem) {
                     ?>
                     <span class='contract-line-item'>
-                        <label>
                             <input class='form-control contract-item' style='width: initial; display: initial;'
-                                   type='text' placeholder='Item' value='<?php echo $lineItem['item']; ?>'/>:
-                            </label>
-                        $<label><input class='form-control contract-amount' style='width: initial; display: initial;'
-                                       type='number' step='0.01' min='0' placeholder='Amount'
-                                       value='<?php echo $lineItem['amount']; ?>'/>
-                        </label> /
-                        <label><input class='form-control contract-unit' style='width: initial; display: initial;'
-                                      type='text' placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/></label>
-                        <button type="button"
-                                class="btn btn-xs btn-danger remove-contract-line-item-btn"
-                                data-toggle="tooltip" data-placement="right"
-                                title="Remove Line Item">
+                                   aria-label='Item' type='text' placeholder='Item'
+                                   value='<?php echo $lineItem['item']; ?>'/>:
+                        $<input class='form-control contract-amount' style='width: initial; display: initial;'
+                                type='number' step='0.01' min='0' placeholder='Amount' aria-label='Amount'
+                                value='<?php echo $lineItem['amount']; ?>'/>
+                        /
+                        <input class='form-control contract-unit' style='width: initial; display: initial;'
+                               aria-label='Unit' type='text' placeholder='Unit'
+                               value='<?php echo $lineItem['unit']; ?>'/>
+                        <button type="button" class="btn btn-xs btn-danger remove-contract-line-item-btn"
+                                data-toggle="tooltip" data-placement="right" title="Remove Line Item">
                             <em class="fa fa-minus"></em>
                         </button>
                     </span>
@@ -80,9 +78,8 @@ if (isset ($_GET ['id'])) {
                     <em class="fa fa-plus"></em>
                 </button>
                 <br/>
-                <label style='width: 100%'><input id='contract-invoice' class='form-control' type='text'
-                                                  placeholder='Invoice Link'
-                                                  value='<?php echo $contract ['invoice']; ?>'/></label>
+                <input id='contract-invoice' class='form-control' type='text' placeholder='Invoice Link'
+                       aria-label='Invoice Link' value='<?php echo $contract ['invoice']; ?>'/>
                 <br/>Checks should be made payable to <em>Saperstone Studios</em> and mailed to <em>5701
                     S Quartz St, Gilbert AZ 85298</em>. Final balance is due with delivered invoice, paid no later than
                 30 days of delivery, in compliance with Terms and Conditions.

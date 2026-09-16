@@ -26,9 +26,9 @@ if (isset ($_GET ['id'])) {
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> (the "Photographer") and
-        <u>&nbsp;</u><label><u><input id='contract-name' class='form-control' style='width: initial; display: initial;'
-                                      type='text' placeholder='Client Name'
-                                      value='<?php echo $contract ['name']; ?>'/></u></label><u>&nbsp;</u>
+        <u>&nbsp;<input id='contract-name' class='form-control' style='width: initial; display: initial;'
+                        aria-label='Client Name' type='text' placeholder='Client Name'
+                        value='<?php echo $contract ['name']; ?>'/>&nbsp;</u>
         (the "Client").<br/> <strong>Whereas</strong>, Client wishes to partner with
         Photographer to mutually benefit each other's businesses in which Photographer
         provides photography services in exchange for marketing opportunities through
