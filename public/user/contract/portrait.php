@@ -30,9 +30,9 @@ if (isset ($_GET ['id'])) {
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> (the "Photographer") and
-        <label><u><input id='contract-name' class='form-control'
-                         style='width: initial; display: initial;' type='text' placeholder='Client Name'
-                         value='<?php echo $contract ['name']; ?>'/></u></label>
+        <u>&nbsp;</u><label><u><input id='contract-name' class='form-control'
+                                      style='width: initial; display: initial;' type='text' placeholder='Client Name'
+                                      value='<?php echo $contract ['name']; ?>'/></u></label><u>&nbsp;</u>
         (the "Client").<br/> <strong>Whereas</strong>, Client wishes to
         engage Photographer to provide certain photography services and
         Photographer is willing to accept such engagement, all on the terms
@@ -172,7 +172,7 @@ if (isset ($_GET ['id'])) {
     </div>
     </p>
     <h3>Exhibit A: Statement Of Services</h3>
-    <div class='row'>
+    <div class='row contract-form-row'>
         <div class='col-md-3'>
             <label for='contract-session-dup'>Project/Assignment:</label>
         </div>
