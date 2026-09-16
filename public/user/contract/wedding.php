@@ -37,11 +37,10 @@ if (isset ($_GET ['id'])) {
     <input id='contract-type' type='hidden' value='wedding'/>
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
-            Studios&nbsp;</u> (the "Photographer") and <u>&nbsp;
-            <label for='contract-name'></label>
-            <input id='contract-name' class='form-control' style='width: initial; display: initial;' type='text'
-                   placeholder='Client Name' value='<?php echo $contract ['name']; ?>'/>&nbsp;
-        </u> (the "Client").<br/> <strong>Whereas</strong>, Client wishes to
+            Studios&nbsp;</u> (the "Photographer") and
+        <label><u><input id='contract-name' class='form-control' style='width: initial; display: initial;' type='text'
+                         placeholder='Client Name' value='<?php echo $contract ['name']; ?>'/></u></label>&nbsp;
+        (the "Client").<br/> <strong>Whereas</strong>, Client wishes to
         engage Photographer to provide certain photography services and
         Photographer is willing to accept such engagement, all on the terms
         and conditions set forth herein.<br/> <strong>Now therefore</strong>,
@@ -57,13 +56,13 @@ if (isset ($_GET ['id'])) {
         <li><strong>Compensation.</strong> In consideration of the Services,
             Client agrees to pay Photographer the following amounts as follows:
             <p>
-                <label for='contract-session'></label>
-                <select id='contract-session' class='form-control'
-                        style='width: initial; display: initial;' type='text' placeholder='Wedding Package'
-                        value='<?php echo $contract ['session']; ?>'>
-                    <option cost=''></option>
-                    <option cost='4300.00'
-                            details='800+ color managed and retouched images with print release
+                <label for='contract-amount'><select id='contract-session' class='form-control'
+                                                     style='width: initial; display: initial;' type='text'
+                                                     placeholder='Wedding Package'
+                                                     value='<?php echo $contract ['session']; ?>'>
+                        <option cost=''></option>
+                        <option cost='4300.00'
+                                details='800+ color managed and retouched images with print release
 9 hours of wedding day coverage
 2nd photographer
 Engagement session
@@ -72,59 +71,54 @@ Photobooth
 Web gallery for sharing
 USB of final images
 $200 print credit'
-                            <?php if ($contract ['session'] == "Premier Package") {
-                                echo " selected";
-                            } ?>>Premier
-                        Package
-                    </option>
-                    <option cost='3600.00'
-                            details='700 color managed and retouched images with print release
+                                <?php if ($contract ['session'] == "Premier Package") {
+                                    echo " selected";
+                                } ?>>Premier
+                            Package
+                        </option>
+                        <option cost='3600.00'
+                                details='700 color managed and retouched images with print release
 8 hours of wedding day coverage
 2nd Photographer
 Engagement session
 Web gallery for sharing
 USB of final images
 $150 print credit'
-                            <?php if ($contract ['session'] == "Lux Package") {
-                                echo " selected";
-                            } ?>>Lux
-                        Package
-                    </option>
-                    <option cost='2900.00'
-                            details='500 color managed and retouched images with print release
+                                <?php if ($contract ['session'] == "Lux Package") {
+                                    echo " selected";
+                                } ?>>Lux
+                            Package
+                        </option>
+                        <option cost='2900.00'
+                                details='500 color managed and retouched images with print release
 5 hours of wedding day coverage
 2nd Photographer
 Engagement session
 Web gallery for sharing
 USB of final images
 $100 print credit'
-                            <?php if ($contract ['session'] == "Classic Package") {
-                                echo " selected";
-                            } ?>>Classic
-                        Package
-                    </option>
-                    <option cost=''>Custom</option>
-                </select>:
-                $<label for='contract-amount'></label><input id='contract-amount' class='form-control'
-                                                             style='width: initial; display: initial;' type='number'
-                                                             step='0.01'
-                                                             min='0' placeholder='Amount'
-                                                             value='<?php echo $contract ['amount']; ?>'/><br/>
-                <label for='contract-invoice'></label>
-                <input id='contract-invoice' class='form-control' type='text'
-                       placeholder='Invoice Link' value='<?php echo $contract ['invoice']; ?>'/>
+                                <?php if ($contract ['session'] == "Classic Package") {
+                                    echo " selected";
+                                } ?>>Classic
+                            Package
+                        </option>
+                        <option cost=''>Custom</option>
+                    </select></label>:
+                $<input id='contract-amount' class='form-control' style='width: initial; display: initial;'
+                        type='number' step='0.01' min='0' placeholder='Amount'
+                        value='<?php echo $contract ['amount']; ?>'/><br/>
+                <label style='width: 100%;'><input id='contract-invoice' class='form-control' type='text'
+                                                   placeholder='Invoice Link'
+                                                   value='<?php echo $contract ['invoice']; ?>'/></label>
             </p>
             <p>
                 Non-refundable deposit of
-                $<label for='contract-deposit'></label><input id='contract-deposit'
-                                                              class='form-control'
-                                                              style='width: initial; display: initial;'
-                                                              type='number' step='0.01' min='0' placeholder='Deposit'
-                                                              value='<?php echo $contract ['deposit']; ?>'/>
+                $<label><input id='contract-deposit' class='form-control' style='width: initial; display: initial;'
+                               type='number' step='0.01' min='0' placeholder='Deposit'
+                               value='<?php echo $contract ['deposit']; ?>'/></label>
                 and contract to reserve the date
-                <label for='contract-date'></label>
-                <input id='contract-date' class='form-control' style='width: initial; display: initial;' type='date'
-                       placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
+                <label><input id='contract-date' class='form-control' style='width: initial; display: initial;'
+                              type='date' placeholder='Date' value='<?php echo $contract ['date']; ?>'/></label>
                 <br/>
                 Checks should be made payable to <em>Saperstone Studios</em> and
                 mailed to <em>5701 S Quartz St, Gilbert AZ 85298</em> <br/>Remaining
@@ -148,50 +142,45 @@ $100 print credit'
     <h4>Client:</h4>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Name:</strong>
+            <label for='contract-name-signature'>Name:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-name-signature'></label>
             <input id='contract-name-signature' class='form-control keep' type='text' placeholder='Client Name'
                    disabled/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Signature:</strong>
+            <label for='contract-signature'>Signature:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-signature'></label>
             <textarea id='contract-signature' class='form-control' type='text'
                       placeholder='Client Digital Signature' disabled></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Address:</strong>
+            <label for='contract-address'>Address:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-address'></label>
             <textarea id='contract-address' class='form-control keep' type='text'
                       placeholder='Client Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Phone Number:</strong>
+            <label for='contract-number'>Phone Number:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-number'></label>
             <input id='contract-number' class='form-control keep' type='tel'
                    placeholder='Client Phone Number' value='<?php echo $contract ['number']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Email: </strong>
+            <label for='contract-email'>Email: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-email'></label>
             <input id='contract-email' class='form-control keep' type='email'
                    placeholder='Client Email' value='<?php echo $contract ['email']; ?>'/>
         </div>
@@ -199,40 +188,36 @@ $100 print credit'
     <h4>Ceremony Venue:</h4>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Name: </strong>
+            <label for='contract-ceremony-venue-name'>Name: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-ceremony-venue-name'></label>
             <input id='contract-ceremony-venue-name' class='form-control keep' type='text'
                    placeholder='Ceremony Venue Name' value='<?php echo $contract ['ceremony-name']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Address: </strong>
+            <label for='contract-ceremony-venue-address'>Address: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-ceremony-venue-address'></label>
             <textarea id='contract-ceremony-venue-address' class='form-control keep' type='text'
                       placeholder='Ceremony Venue Address'><?php echo $contract ['ceremony-address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Phone Number: </strong>
+            <label for='contract-ceremony-venue-number'>Phone Number: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-ceremony-venue-number'></label>
             <input id='contract-ceremony-venue-number' class='form-control keep' type='text'
                    placeholder='Ceremony Venue Phone Number' value='<?php echo $contract ['ceremony-number']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Email: </strong>
+            <label for='contract-ceremony-venue-email'>Email: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-ceremony-venue-email'></label>
             <input id='contract-ceremony-venue-email' class='form-control keep' type='text'
                    placeholder='Ceremony Venue Email' value='<?php echo $contract ['ceremony-email']; ?>'/>
         </div>
@@ -240,30 +225,27 @@ $100 print credit'
     <h4>Reception Venue:</h4>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Name: </strong>
+            <label for='contract-reception-venue-name'>Name: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-reception-venue-name'></label>
             <input id='contract-reception-venue-name' class='form-control keep' type='text'
                    placeholder='Reception Venue Name' value='<?php echo $contract ['ceremony-name']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Address: </strong>
+            <label for='contract-reception-venue-address'>Address: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-reception-venue-address'></label>
             <textarea id='contract-reception-venue-address' class='form-control keep' type='text'
                       placeholder='Reception Venue Address'><?php echo $contract ['ceremony-address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Phone Number: </strong>
+            <label for='contract-reception-venue-number'>Phone Number: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-reception-venue-number'></label>
             <input id='contract-reception-venue-number' class='form-control keep'
                    type='text' placeholder='Reception Venue Phone Number'
                    value='<?php echo $contract ['ceremony-number']; ?>'/>
@@ -271,10 +253,9 @@ $100 print credit'
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Email: </strong>
+            <label for='contract-reception-venue-email'>Email: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-reception-venue-email'></label>
             <input id='contract-reception-venue-email' class='form-control keep' type='text'
                    placeholder='Reception Venue Email' value='<?php echo $contract ['ceremony-email']; ?>'/>
         </div>
@@ -316,19 +297,17 @@ $100 print credit'
     <h3>Exhibit A: Statement Of Services</h3>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Project/Assignment:</strong>
+            <label for='contract-session-dup'>Project/Assignment:</label>
         </div>
         <div class='col-md-9'>
             Wedding Photography |
-            <label for='contract-session-dup'></label>
             <input id='contract-session-dup' class='form-control' style='width: initial; display: initial;' type='text'
                    placeholder='Wedding Package' value='<?php echo $contract ['session']; ?>' disabled/>
             | photojournalistic style documentation
         </div>
     </div>
-    <label for='contract-details'></label>
-    <textarea id='contract-details' class='form-control' type='text'
-              placeholder='Wedding Package Details'><?php echo $contract ['details']; ?></textarea>
+    <label style='width: 100%;'><textarea id='contract-details' class='form-control' type='text'
+                                          placeholder='Wedding Package Details'><?php echo $contract ['details']; ?></textarea></label>
     <h3>Standard Terms and Conditions</h3>
     <p>
         <strong>Copyright.</strong> The photographs produced by Photographer
@@ -341,7 +320,7 @@ $100 print credit'
         be sold or used for business, advertising, or trade purposes without
         written authorization from Photographer. Photographer retains creative
         control over the images produced and all decisions made by
-        Photographer with regards to edits are deemed final.
+        Photographer in regard to edits are deemed final.
     </p>
     <p>
         <strong>Credit.</strong> In any publication, display, exhibit or other
@@ -410,9 +389,9 @@ $100 print credit'
         Client's deposit is not refunded, however, may be put towards a future
         event or photography session, subject to Photographer availability.
         Photographer reserves the right to send subcontractor familiar
-        with Photographer process and style. All pre and post activities
+        with Photographer process and style. All pre- and post-activities
         will still be performed by Photographer; e.g. scheduling, reviews,
-        post processing, image delivery, etc.
+        post-processing, image delivery, etc.
     </p>
     <p>
         <strong>Permissions.</strong> Client shall be solely responsible for

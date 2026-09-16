@@ -105,19 +105,13 @@ if (isset ($_GET ['id'])) {
             foreach ($contract ['lineItems'] as $lineItem) {
                 ?>
                 <span class='contract-line-item'>
-                    <label>
-                        <input class='form-control contract-item' style='width: initial; display: initial;' type='text'
-                               placeholder='Item' value='<?php echo $lineItem['item']; ?>'/>
-                    </label>:
-                    $<label>
-                        <input class='form-control contract-amount' style='width: initial; display: initial;'
-                               type='number' step='0.01' min='0' placeholder='Amount'
-                               value='<?php echo $lineItem['amount']; ?>'/>
-                    </label> /
-                    <label>
-                        <input class='form-control contract-unit' style='width: initial; display: initial;' type='text'
-                               placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/>
-                    </label>
+                    <label><input class='form-control contract-item' style='width: initial; display: initial;'
+                                  type='text' placeholder='Item' value='<?php echo $lineItem['item']; ?>'/></label>:
+                    $<label><input class='form-control contract-amount' style='width: initial; display: initial;'
+                                   type='number' step='0.01' min='0' placeholder='Amount'
+                                   value='<?php echo $lineItem['amount']; ?>'/></label> /
+                    <label><input class='form-control contract-unit' style='width: initial; display: initial;'
+                                  type='text' placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/></label>
                     <button type="button" class="btn btn-xs btn-danger remove-contract-line-item-btn"
                             data-toggle="tooltip" data-placement="right" title="Remove Line Item">
                         <em class="fa fa-minus"></em>
@@ -132,14 +126,13 @@ if (isset ($_GET ['id'])) {
                 <em class="fa fa-plus"></em>
             </button>
             <br/></li>
-        <li><strong>Session Details</strong> The above session will take place at the below location on
-            <label for='contract-date'></label>
+        <li><label for='contract-date'>Session Details</label> The above session will take place at the below location
+            on
             <input id='contract-date' class='form-control' style='width: initial; display: initial;' type='date'
                    placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
             <br/>
-            <label for='contract-location'></label>
-            <textarea id='contract-location' class='form-control' type='text'
-                      placeholder='Session Address'><?php echo $contract ['location']; ?></textarea>
+            <label style='width: 100%'><textarea id='contract-location' class='form-control' type='text'
+                                                 placeholder='Session Address'><?php echo $contract ['location']; ?></textarea></label>
         </li>
     </ol>
     </p>
@@ -147,60 +140,54 @@ if (isset ($_GET ['id'])) {
     <h4>AGREED and ACCEPTED:</h4>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Business Name:</strong>
+            <label for='contract-name'>Business Name:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-name'></label>
             <input id='contract-name' class='form-control' type='text' placeholder='Contractor Business Name'
                    value='<?php echo $contract ['name']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Name:</strong>
+            <label for='contract-name-signature'>Contractor Name:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-name-signature'></label>
             <input id='contract-name-signature' class='form-control keep' type='text' placeholder='Contractor Name'
                    disabled/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Signature:</strong>
+            <label for='contract-signature'>Contractor Signature:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-signature'></label>
             <textarea id='contract-signature' class='form-control' type='text'
                       placeholder='Contractor Digital Signature' disabled></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Address:</strong>
+            <label for='contract-address'>Contractor Address:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-address'></label>
             <textarea id='contract-address' class='form-control keep' type='text'
                       placeholder='Contractor Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Phone Number:</strong>
+            <label for='contract-number'>Contractor Phone Number:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-number'></label>
             <input id='contract-number' class='form-control keep' type='tel'
                    placeholder='Contractor Phone Number' value='<?php echo $contract ['number']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Email: </strong>
+            <label for='contract-email'>Contractor Email: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-email'></label>
             <input id='contract-email' class='form-control keep' type='email'
                    placeholder='Contractor Email' value='<?php echo $contract ['email']; ?>'/>
         </div>

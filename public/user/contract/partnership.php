@@ -25,11 +25,10 @@ if (isset ($_GET ['id'])) {
     <input id='contract-type' type='hidden' value='partnership'/>
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
-            Studios&nbsp;</u> (the "Photographer") and <u>&nbsp;
-            <label for='contract-name'></label>
-            <input id='contract-name' class='form-control' style='width: initial; display: initial;' type='text'
-                   placeholder='Client Name' value='<?php echo $contract ['name']; ?>'/>&nbsp;
-        </u>(the "Client").<br/> <strong>Whereas</strong>, Client wishes to partner with
+            Studios&nbsp;</u> (the "Photographer") and
+        <label><u><input id='contract-name' class='form-control' style='width: initial; display: initial;' type='text'
+                         placeholder='Client Name' value='<?php echo $contract ['name']; ?>'/></u></label>
+        (the "Client").<br/> <strong>Whereas</strong>, Client wishes to partner with
         Photographer to mutually benefit each other's businesses in which Photographer
         provides photography services in exchange for marketing opportunities through
         Client's business. Both parties agree to engage in this relationship for 1 year
@@ -70,50 +69,45 @@ if (isset ($_GET ['id'])) {
     <h4>Client:</h4>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Name:</strong>
+            <label for='contract-name-signature'>Name:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-name-signature'></label>
             <input id='contract-name-signature' class='form-control keep'
                    type='text' placeholder='Client Name' disabled/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Signature:</strong>
+            <label for='contract-signature'>Signature:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-signature'></label>
             <textarea id='contract-signature' class='form-control' type='text'
                       placeholder='Client Digital Signature' disabled></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Address:</strong>
+            <label for='contract-address'>Address:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-address'></label>
             <textarea id='contract-address' class='form-control keep' type='text'
                       placeholder='Client Business Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Phone Number:</strong>
+            <label for='contract-number'>Phone Number:</label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-number'></label>
             <input id='contract-number' class='form-control keep' type='tel'
                    placeholder='Client Phone Number' value='<?php echo $contract ['number']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Email: </strong>
+            <label for='contract-email'>Email: </label>
         </div>
         <div class='col-md-9'>
-            <label for='contract-email'></label>
             <input id='contract-email' class='form-control keep' type='email'
                    placeholder='Client Email' value='<?php echo $contract ['email']; ?>'/>
         </div>
