@@ -164,8 +164,7 @@ $100 print credit'
         </div>
         <div class='col-md-9'>
             <textarea id='contract-address' class='form-control keep' type='text'
-                      placeholder='Client Address'
-                      value='<?php echo $contract ['address']; ?>'></textarea>
+                      placeholder='Client Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
@@ -204,10 +203,8 @@ $100 print credit'
             <strong>Address: </strong>
         </div>
         <div class='col-md-9'>
-            <textarea id='contract-ceremony-venue-address'
-                      class='form-control keep' type='text'
-                      placeholder='Ceremony Venue Address'
-                      value='<?php echo $contract ['ceremony-address']; ?>'></textarea>
+            <textarea id='contract-ceremony-venue-address' class='form-control keep' type='text'
+                      placeholder='Ceremony Venue Address'><?php echo $contract ['ceremony-address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
@@ -246,10 +243,8 @@ $100 print credit'
             <strong>Address: </strong>
         </div>
         <div class='col-md-9'>
-            <textarea id='contract-reception-venue-address'
-                      class='form-control keep' type='text'
-                      placeholder='Reception Venue Address'
-                      value='<?php echo $contract ['ceremony-address']; ?>'></textarea>
+            <textarea id='contract-reception-venue-address' class='form-control keep' type='text'
+                      placeholder='Reception Venue Address'><?php echo $contract ['ceremony-address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
@@ -320,8 +315,7 @@ $100 print credit'
         </div>
     </div>
     <textarea id='contract-details' class='form-control' type='text'
-              placeholder='Wedding Package Details'
-              value='<?php echo $contract ['details']; ?>'></textarea>
+              placeholder='Wedding Package Details'><?php echo $contract ['details']; ?></textarea>
     <h3>Standard Terms and Conditions</h3>
     <p>
         <strong>Copyright.</strong> The photographs produced by Photographer

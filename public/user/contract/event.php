@@ -53,8 +53,7 @@ if (isset ($_GET ['id'])) {
                                                   type='date' placeholder='Date'
                                                   value='<?php echo $contract ['date']; ?>'/> at <br/> <textarea
                     id='contract-location' class='form-control' type='text'
-                    placeholder='Session Address'
-                    value='<?php echo $contract ['location']; ?>'></textarea></li>
+                    placeholder='Session Address'><?php echo $contract ['location']; ?></textarea></li>
         <li><strong>Compensation.</strong> In consideration of the Services,
             Client agrees to pay Photographer the following amounts as follows:
             <p>
@@ -121,8 +120,7 @@ if (isset ($_GET ['id'])) {
         </div>
         <div class='col-md-9'>
             <textarea id='contract-address' class='form-control keep' type='text'
-                      placeholder='Client Address'
-                      value='<?php echo $contract ['address']; ?>'></textarea>
+                      placeholder='Client Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
@@ -193,8 +191,7 @@ if (isset ($_GET ['id'])) {
         </div>
     </div>
     <textarea id='contract-details' class='form-control' type='text'
-              placeholder='Event Details'
-              value='<?php echo $contract ['details']; ?>'></textarea>
+              placeholder='Event Details'><?php echo $contract ['details']; ?></textarea>
     <h3>Standard Terms and Conditions</h3>
     <p>
         <strong>Copyright.</strong> The photographs produced by Photographer

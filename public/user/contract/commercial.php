@@ -16,13 +16,7 @@ $contract ['date'] = "";
 $contract ['location'] = "";
 $contract ['amount'] = "";
 $contract ['invoice'] = "";
-$contract ['lineItems'] = array(
-        array(
-                'item' => '',
-                'amount' => '',
-                'unit' => ''
-        )
-);
+$contract ['lineItems'] = array(array('item' => '', 'amount' => '', 'unit' => ''));
 // get the id if set, and pull these values
 if (isset ($_GET ['id'])) {
     $sql = new Sql ();
@@ -96,13 +90,15 @@ if (isset ($_GET ['id'])) {
             </p>
         </li>
         <li><strong>Session Details.</strong> The above session with take
-            place at the below location on <input id='contract-date'
-                                                  class='form-control' style='width: initial; display: initial;'
-                                                  type='date' placeholder='Date'
-                                                  value='<?php echo $contract ['date']; ?>'/> <br/> <textarea
-                    id='contract-location' class='form-control' type='text'
-                    placeholder='Session Address'
-                    value='<?php echo $contract ['location']; ?>'></textarea></li>
+            place at the below location on
+            <input id='contract-date'
+                   class='form-control' style='width: initial; display: initial;'
+                   type='date' placeholder='Date'
+                   value='<?php echo $contract ['date']; ?>'/>
+            <br/>
+            <textarea id='contract-location' class='form-control' type='text'
+                      placeholder='Session Address'><?php echo $contract ['location']; ?></textarea>
+        </li>
         <li><strong>Term.</strong> The initial term of this Contract shall
             commence on the date hereof and terminate upon completion of the
             services. Client may terminate this Contract at any time upon 30 days
@@ -148,8 +144,7 @@ if (isset ($_GET ['id'])) {
         </div>
         <div class='col-md-9'>
             <textarea id='contract-address' class='form-control keep' type='text'
-                      placeholder='Client Address'
-                      value='<?php echo $contract ['address']; ?>'></textarea>
+                      placeholder='Client Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
@@ -216,9 +211,11 @@ if (isset ($_GET ['id'])) {
                    placeholder='Session' value='<?php echo $contract ['session']; ?>'/>
         </div>
     </div>
-    <textarea id='contract-details' class='form-control' type='text'
-              placeholder='Session Details'
-              value='<?php echo $contract ['details']; ?>'>Up to one hour photo session to include:
+    <textarea id='contract-details' class='form-control' type='text' placeholder='Session Details'><?php
+        if (!empty($contract ['details'])) {
+            echo $contract ['details'];
+        } else {
+            echo 'Up to one hour photo session to include:
 
 Business Headshots:
 - Web gallery for viewing/making selects
@@ -228,7 +225,9 @@ Business Headshots:
 
 Office Photos:
 - All images delivered via web gallery for download
-- Print release for marketing/web needs</textarea>
+- Print release for marketing/web needs';
+        }
+        ?></textarea>
     <h3>Standard Terms and Conditions</h3>
     <p>
         <strong>Copyright.</strong> The photographs produced by Photographer

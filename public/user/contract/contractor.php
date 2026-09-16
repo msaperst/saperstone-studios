@@ -115,13 +115,13 @@ if (isset ($_GET ['id'])) {
                             class='form-control contract-unit'
                             style='width: initial; display: initial;' type='text'
                             placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/>
-                <button type="button"
-                        class="btn btn-xs btn-danger remove-contract-line-item-btn"
-                        data-toggle="tooltip" data-placement="right"
-                        title="Remove Line Item">
-                    <em class="fa fa-minus"></em>
-                </button>
-        </span>
+                    <button type="button"
+                            class="btn btn-xs btn-danger remove-contract-line-item-btn"
+                            data-toggle="tooltip" data-placement="right"
+                            title="Remove Line Item">
+                        <em class="fa fa-minus"></em>
+                    </button>
+            </span>
                 <?php
             }
             ?>
@@ -131,14 +131,13 @@ if (isset ($_GET ['id'])) {
                 <em class="fa fa-plus"></em>
             </button>
             <br/></li>
-        <li><strong>Session Details</strong> The above session will take place
-            at the below location on <input id='contract-date'
-                                            class='form-control' style='width: initial; display: initial;'
-                                            type='date' placeholder='Date'
-                                            value='<?php echo $contract ['date']; ?>'/> <br/> <textarea
-                    id='contract-location' class='form-control' type='text'
-                    placeholder='Session Address'
-                    value='<?php echo $contract ['location']; ?>'></textarea></li>
+        <li><strong>Session Details</strong> The above session will take place at the below location on
+            <input id='contract-date' class='form-control' style='width: initial; display: initial;' type='date'
+                   placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
+            <br/>
+            <textarea id='contract-location' class='form-control' type='text'
+                      placeholder='Session Address'><?php echo $contract ['location']; ?></textarea>
+        </li>
     </ol>
     </p>
 
@@ -178,8 +177,7 @@ if (isset ($_GET ['id'])) {
         </div>
         <div class='col-md-9'>
             <textarea id='contract-address' class='form-control keep' type='text'
-                      placeholder='Contractor Address'
-                      value='<?php echo $contract ['address']; ?>'></textarea>
+                      placeholder='Contractor Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>

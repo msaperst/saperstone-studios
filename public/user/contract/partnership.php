@@ -92,8 +92,7 @@ if (isset ($_GET ['id'])) {
         </div>
         <div class='col-md-9'>
             <textarea id='contract-address' class='form-control keep' type='text'
-                      placeholder='Client Business Address'
-                      value='<?php echo $contract ['address']; ?>'></textarea>
+                      placeholder='Client Business Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
