@@ -25,10 +25,10 @@ if (isset ($_GET ['id'])) {
     <input id='contract-type' type='hidden' value='partnership'/>
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
-            Studios&nbsp;</u> (the "Photographer") and <u>&nbsp;<input
-                    id='contract-name' class='form-control'
-                    style='width: initial; display: initial;' type='text'
-                    placeholder='Client Name' value='<?php echo $contract ['name']; ?>'/>&nbsp;
+            Studios&nbsp;</u> (the "Photographer") and <u>&nbsp;
+            <label for='contract-name'></label>
+            <input id='contract-name' class='form-control' style='width: initial; display: initial;' type='text'
+                   placeholder='Client Name' value='<?php echo $contract ['name']; ?>'/>&nbsp;
         </u>(the "Client").<br/> <strong>Whereas</strong>, Client wishes to partner with
         Photographer to mutually benefit each other's businesses in which Photographer
         provides photography services in exchange for marketing opportunities through
@@ -73,6 +73,7 @@ if (isset ($_GET ['id'])) {
             <strong>Name:</strong>
         </div>
         <div class='col-md-9'>
+            <label for='contract-name-signature'></label>
             <input id='contract-name-signature' class='form-control keep'
                    type='text' placeholder='Client Name' disabled/>
         </div>
@@ -82,6 +83,7 @@ if (isset ($_GET ['id'])) {
             <strong>Signature:</strong>
         </div>
         <div class='col-md-9'>
+            <label for='contract-signature'></label>
             <textarea id='contract-signature' class='form-control' type='text'
                       placeholder='Client Digital Signature' disabled></textarea>
         </div>
@@ -91,6 +93,7 @@ if (isset ($_GET ['id'])) {
             <strong>Address:</strong>
         </div>
         <div class='col-md-9'>
+            <label for='contract-address'></label>
             <textarea id='contract-address' class='form-control keep' type='text'
                       placeholder='Client Business Address'><?php echo $contract ['address']; ?></textarea>
         </div>
@@ -100,9 +103,9 @@ if (isset ($_GET ['id'])) {
             <strong>Phone Number:</strong>
         </div>
         <div class='col-md-9'>
+            <label for='contract-number'></label>
             <input id='contract-number' class='form-control keep' type='tel'
-                   placeholder='Client Phone Number'
-                   value='<?php echo $contract ['number']; ?>'/>
+                   placeholder='Client Phone Number' value='<?php echo $contract ['number']; ?>'/>
         </div>
     </div>
     <div class='row'>
@@ -110,9 +113,9 @@ if (isset ($_GET ['id'])) {
             <strong>Email: </strong>
         </div>
         <div class='col-md-9'>
+            <label for='contract-email'></label>
             <input id='contract-email' class='form-control keep' type='email'
-                   placeholder='Client Email'
-                   value='<?php echo $contract ['email']; ?>'/>
+                   placeholder='Client Email' value='<?php echo $contract ['email']; ?>'/>
         </div>
     </div>
     <h4>Photographer:</h4>
@@ -180,9 +183,9 @@ if (isset ($_GET ['id'])) {
         communications by Client (such as website, newsletter, marketing materials or
         annual report). Additionally, the files delivered may only be reproduced for
         Client’s use and cannot under any circumstances be sold, licensed, or used by a
-        third-party without written authorization from Photographer. Photographer retains
+        third party without written authorization from Photographer. Photographer retains
         creative control over the images produced and all decisions made by Photographer
-        with regards to edits are deemed final.
+        in regard to edits are deemed final.
     </p>
     <p>
         <strong>Models.</strong> All models needed for above services provided by Photographer
