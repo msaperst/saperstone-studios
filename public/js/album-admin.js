@@ -4,7 +4,10 @@ allUser.id = "0";
 allUser.usr = "<i>All Users</i>";
 
 function getAlbumId() {
-    var albumId = $('#album-viewer').attr('album-id');
+    let albumId = $('#album-viewer').attr('album-id');
+    if (!albumId) {
+        albumId = $('#album').attr('album-id');
+    }
     if (!albumId && window.album) {
         albumId = window.album.albumId;
     }

@@ -16,13 +16,7 @@ $contract ['date'] = "";
 $contract ['location'] = "";
 $contract ['amount'] = "";
 $contract ['invoice'] = "";
-$contract ['lineItems'] = array(
-        array(
-                'item' => '',
-                'amount' => '',
-                'unit' => ''
-        )
-);
+$contract ['lineItems'] = array(array('item' => '', 'amount' => '', 'unit' => ''));
 // get the id if set, and pull these values
 if (isset ($_GET ['id'])) {
     $sql = new Sql ();
@@ -37,11 +31,11 @@ if (isset ($_GET ['id'])) {
     <input id='contract-type' type='hidden' value='commercial'/>
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
-            Studios&nbsp;</u> (the "Photographer") and <u>&nbsp;<input
-                    id='contract-name' class='form-control'
-                    style='width: initial; display: initial;' type='text'
-                    placeholder='Client Name' value='<?php echo $contract ['name']; ?>'/>&nbsp;
-        </u>(the "Client").<br/> <strong>Whereas</strong>, Client wishes to
+            Studios&nbsp;</u> (the "Photographer") and
+        <u>&nbsp;<input id='contract-name' class='form-control' style='width: initial; display: initial;'
+                        type='text' placeholder='Client Name' aria-label='Contract Name'
+                        value='<?php echo $contract ['name']; ?>'/>&nbsp;</u>
+        (the "Client").<br/> <strong>Whereas</strong>, Client wishes to
         engage Photographer to provide certain photography services and
         Photographer is willing to accept such engagement, all on the terms
         and conditions set forth herein.<br/> <strong>Now therefore</strong>,
@@ -60,49 +54,46 @@ if (isset ($_GET ['id'])) {
                 <?php
                 foreach ($contract ['lineItems'] as $lineItem) {
                     ?>
-                    <span class='contract-line-item'> <input
-                                class='form-control contract-item'
-                                style='width: initial; display: initial;' type='text'
-                                placeholder='Item' value='<?php echo $lineItem['item']; ?>'/>: $<input
-                                class='form-control contract-amount'
-                                style='width: initial; display: initial;' type='number' step='0.01'
-                                min='0' placeholder='Amount'
-                                value='<?php echo $lineItem['amount']; ?>'/> / <input
-                                class='form-control contract-unit'
-                                style='width: initial; display: initial;' type='text'
-                                placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/>
-                    <button type="button"
-                            class="btn btn-xs btn-danger remove-contract-line-item-btn"
-                            data-toggle="tooltip" data-placement="right"
-                            title="Remove Line Item">
-                        <em class="fa fa-minus"></em>
-                    </button>
-                </span>
+                    <span class='contract-line-item'>
+                            <input class='form-control contract-item' style='width: initial; display: initial;'
+                                   aria-label='Item' type='text' placeholder='Item'
+                                   value='<?php echo $lineItem['item']; ?>'/>:
+                        $<input class='form-control contract-amount' style='width: initial; display: initial;'
+                                type='number' step='0.01' min='0' placeholder='Amount' aria-label='Amount'
+                                value='<?php echo $lineItem['amount']; ?>'/>
+                        /
+                        <input class='form-control contract-unit' style='width: initial; display: initial;'
+                               aria-label='Unit' type='text' placeholder='Unit'
+                               value='<?php echo $lineItem['unit']; ?>'/>
+                        <button type="button" class="btn btn-xs btn-danger remove-contract-line-item-btn"
+                                data-toggle="tooltip" data-placement="right" title="Remove Line Item">
+                            <em class="fa fa-minus"></em>
+                        </button>
+                    </span>
                     <?php
                 }
                 ?>
-                <button id="add-contract-line-item-btn" type="button"
-                        class="btn btn-xs btn-success" data-toggle="tooltip"
-                        data-placement="right" title="Add New Line Item">
+                <button id="add-contract-line-item-btn" type="button" class="btn btn-xs btn-success"
+                        data-toggle="tooltip" data-placement="right" title="Add New Line Item">
                     <em class="fa fa-plus"></em>
                 </button>
-                <br/> <input id='contract-invoice' class='form-control' type='text'
-                             placeholder='Invoice Link'
-                             value='<?php echo $contract ['invoice']; ?>'/> <br/>Checks should
-                be made payable to <em>Saperstone Studios</em> and mailed to <em>6144
-                    S Teresa Dr, Chandler AZ 85249</em>. Final balance is due with
-                delivered invoice, paid no later than 30 days of delivery, in
-                compliance with Terms and Conditions.
+                <br/>
+                <input id='contract-invoice' class='form-control' type='text' placeholder='Invoice Link'
+                       aria-label='Invoice Link' value='<?php echo $contract ['invoice']; ?>'/>
+                <br/>Checks should be made payable to <em>Saperstone Studios</em> and mailed to <em>5701
+                    S Quartz St, Gilbert AZ 85298</em>. Final balance is due with delivered invoice, paid no later than
+                30 days of delivery, in compliance with Terms and Conditions.
             </p>
         </li>
-        <li><strong>Session Details.</strong> The above session with take
-            place at the below location on <input id='contract-date'
-                                                  class='form-control' style='width: initial; display: initial;'
-                                                  type='date' placeholder='Date'
-                                                  value='<?php echo $contract ['date']; ?>'/> <br/> <textarea
-                    id='contract-location' class='form-control' type='text'
-                    placeholder='Session Address'
-                    value='<?php echo $contract ['location']; ?>'></textarea></li>
+        <li><label for='contract-date'>Session Details.</label> The above session with take
+            place at the below location on
+
+            <input id='contract-date' class='form-control' style='width: initial; display: initial;' type='date'
+                   placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
+            <br/>
+            <label style='width: 100%'><textarea id='contract-location' class='form-control' type='text'
+                                                 placeholder='Session Address'><?php echo $contract ['location']; ?></textarea></label>
+        </li>
         <li><strong>Term.</strong> The initial term of this Contract shall
             commence on the date hereof and terminate upon completion of the
             services. Client may terminate this Contract at any time upon 30 days
@@ -122,11 +113,10 @@ if (isset ($_GET ['id'])) {
         <strong>In witness whereof</strong>, the undersigned have caused this
         Contract to be executed as of the date first above written.
 
-
     <h4>Client:</h4>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Name:</strong>
+            <label for='contract-name-signature'>Name:</label>
         </div>
         <div class='col-md-9'>
             <input id='contract-name-signature' class='form-control keep'
@@ -135,7 +125,7 @@ if (isset ($_GET ['id'])) {
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Signature:</strong>
+            <label for='contract-signature'>Signature:</label>
         </div>
         <div class='col-md-9'>
             <textarea id='contract-signature' class='form-control' type='text'
@@ -144,32 +134,29 @@ if (isset ($_GET ['id'])) {
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Address:</strong>
+            <label for='contract-address'>Address:</label>
         </div>
         <div class='col-md-9'>
             <textarea id='contract-address' class='form-control keep' type='text'
-                      placeholder='Client Address'
-                      value='<?php echo $contract ['address']; ?>'></textarea>
+                      placeholder='Client Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Phone Number:</strong>
+            <label for='contract-number'>Phone Number:</label>
         </div>
         <div class='col-md-9'>
             <input id='contract-number' class='form-control keep' type='tel'
-                   placeholder='Client Phone Number'
-                   value='<?php echo $contract ['number']; ?>'/>
+                   placeholder='Client Phone Number' value='<?php echo $contract ['number']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Email: </strong>
+            <label for='contract-email'>Email:</label>
         </div>
         <div class='col-md-9'>
             <input id='contract-email' class='form-control keep' type='email'
-                   placeholder='Client Email'
-                   value='<?php echo $contract ['email']; ?>'/>
+                   placeholder='Client Email' value='<?php echo $contract ['email']; ?>'/>
         </div>
     </div>
     <h4>Photographer:</h4>
@@ -186,7 +173,7 @@ if (isset ($_GET ['id'])) {
             <strong>Address: </strong>
         </div>
         <div class='col-md-9'>
-            6144 S Teresa Dr<br/>Chandler, AZ 85249
+            5701 S Quartz St<br/>Gilbert, AZ 85298
         </div>
     </div>
     <div class='row'>
@@ -207,18 +194,21 @@ if (isset ($_GET ['id'])) {
     </div>
     </p>
     <h3>Exhibit A: Statement Of Services</h3>
-    <div class='row'>
+    <div class='row contract-form-row'>
         <div class='col-md-3'>
-            <strong>Project/Assignment:</strong>
+            <label for='contract-session'>Project/Assignment:</label>
         </div>
         <div class='col-md-9'>
             <input id='contract-session' class='form-control' type='text'
                    placeholder='Session' value='<?php echo $contract ['session']; ?>'/>
         </div>
     </div>
-    <textarea id='contract-details' class='form-control' type='text'
-              placeholder='Session Details'
-              value='<?php echo $contract ['details']; ?>'>Up to one hour photo session to include:
+    <label style='width: 100%'><textarea id='contract-details' class='form-control' type='text'
+                                         placeholder='Session Details'><?php
+            if (!empty($contract ['details'])) {
+                echo $contract ['details'];
+            } else {
+                echo 'Up to one hour photo session to include:
 
 Business Headshots:
 - Web gallery for viewing/making selects
@@ -228,7 +218,9 @@ Business Headshots:
 
 Office Photos:
 - All images delivered via web gallery for download
-- Print release for marketing/web needs</textarea>
+- Print release for marketing/web needs';
+            }
+            ?></textarea></label>
     <h3>Standard Terms and Conditions</h3>
     <p>
         <strong>Copyright.</strong> The photographs produced by Photographer
@@ -345,4 +337,4 @@ Office Photos:
         assign its duties or obligations hereunder without the prior written
         consent of the other party hereto.
     </p>
-</div>
+    </p></div>
