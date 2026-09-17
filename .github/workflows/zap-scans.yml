@@ -40,6 +40,10 @@ jobs:
           fail_action: false
           artifact_name: zap-baseline-report
 
+      - name: Add ZAP results to job summary
+        if: always()
+        run: python3 .github/scripts/zap-summary.py report_json.json baseline
+
   full:
     name: ZAP Full Scan
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.scan == 'full')
@@ -59,3 +63,7 @@ jobs:
           allow_issue_writing: false
           fail_action: false
           artifact_name: zap-full-report
+
+      - name: Add ZAP results to job summary
+        if: always()
+        run: python3 .github/scripts/zap-summary.py report_json.json full
