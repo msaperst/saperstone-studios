@@ -27,6 +27,58 @@ docker compose up --build
 
 ### Pipeline
 
+Production deployment is handled by GitHub Actions and a self-hosted runner on
+the DietPi production server. The repository is private because the production
+runner is a persistent host with Docker access and should never execute workflows
+submitted by untrusted public pull requests.
+
+On a push to `develop`, GitHub-hosted runners build the PHP and SQL images and
+push them to GitHub Container Registry (GHCR). Builds and tests remain on
+GitHub-hosted runners so the lightweight DietPi server does not perform CI work.
+After both images are available, the deploy job is sent to the self-hosted runner
+with the `saperstone-production` label.
+
+The production runner executes only the deployment commands locally:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+The production server does not accept inbound SSH connections from GitHub. The
+self-hosted runner maintains an outbound connection to GitHub, allowing the
+server firewall to expose only the application ports (HTTP/HTTPS).
+
+#### Production runner
+
+The runner is installed at `/home/github-runner/actions-runner` and runs as the
+dedicated `github-runner` user through systemd. The runner has Docker access but
+does not have general sudo access.
+
+The runner is repository-scoped and has the labels:
+
+- `self-hosted`
+- `Linux`
+- `ARM64`
+- `saperstone-production`
+
+The deployment configuration remains on the production host in
+`/home/dietpi/docker-compose.yml` and `/home/dietpi/.env`; production secrets are
+not copied into GitHub Actions. The `.env` file is owned by the
+`saperstone-deploy` group with mode `640`, allowing `dietpi` to manage it and the
+runner to read it without making it world-readable.
+
+The MySQL container is available only on the internal Docker Compose network; its
+port is not published on the production host. The PHP container connects to it at
+`mysql:3306`.
+
+To check the runner service on the production host:
+
+```bash
+cd /home/github-runner/actions-runner
+sudo ./svc.sh status
+```
+
 ### Certificate
 
 The ssl certificate is done with certbot for letsencrypt and the certs
@@ -129,10 +181,9 @@ integration tests
 composer integration-test
 ```
 
-This will not only run the integration tests, but also calculate the code
-coverage for the integration tests. The most useful results are displayed
-on the commandline, but if you want something for the record, the below
-reports are generated:
+This will not only run the integration tests, but also calculate the code coverage
+for the integration tests. The most useful results are displayed on the commandline,
+but if you want something for the record, the below reports are generated:
 
 * junit: `reports/it-junit.xml`
 * testdox: `reports/it-results.html`
