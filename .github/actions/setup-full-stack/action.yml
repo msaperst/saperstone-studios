@@ -32,7 +32,7 @@ runs:
         EMAIL_PORT=1025
         EMAIL_USER=ci
         EMAIL_PASS=dummypassword
-        EMAIL_USER_X=ci
+        EMAIL_USER_X=alternate-ci
         EMAIL_PASS_X=dummypassword
         EOF
 
