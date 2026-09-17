@@ -8,7 +8,9 @@ For instructions on running the test suites yourself, see [Testing](testing.md).
 
 Pull requests targeting `develop` run several independent workflows. Keeping the checks separate makes it easier to identify whether a failure is in application behavior, browser behavior, dependencies, or security scanning.
 
-API, UI/Page, UI/Behat, and ZAP jobs all exercise the same full Docker Compose application. They use `bin/setup-ci-environment.sh` to create the common CI `.env`, prepare test folders, and disable the production Let's Encrypt certificate reference before launching the stack. Suite-specific setup remains in the individual workflow.
+API, UI/Page, UI/Behat, and ZAP jobs all exercise the same full Docker Compose application. They use the local composite action at `.github/actions/setup-full-stack/action.yml` to create the common CI `.env`, prepare test folders, disable the production Let's Encrypt certificate reference, launch the Docker Compose stack, and wait for the application to become available on port 90. Suite-specific dependencies and test commands remain in the individual workflows.
+
+The shared stack uses fixed local-only CI credentials for MySQL and Mailpit. These values are not production credentials and do not require GitHub secrets. Tests that communicate with external services still configure their required secrets in their own workflow steps.
 
 ### Unit and integration tests
 
@@ -24,7 +26,7 @@ This workflow runs for both pull requests to `develop` and pushes to `develop`.
 
 ### API tests
 
-`.github/workflows/api-test.yml` runs for pull requests to `develop`. It uses the shared full-stack CI setup, builds and launches the application with Docker Compose, waits for the HTTP endpoint to become available, and runs `composer api-test`.
+`.github/workflows/api-test.yml` runs for pull requests to `develop`. It uses the shared full-stack CI action and runs `composer api-test` after its Composer dependencies are installed.
 
 JUnit results are published as a GitHub test report and the HTML report is uploaded as a workflow artifact.
 
@@ -32,7 +34,7 @@ JUnit results are published as a GitHub test report and the HTML report is uploa
 
 `.github/workflows/ui-test.yml` runs two browser-oriented jobs for pull requests to `develop`.
 
-**Page Testing** uses the shared full-stack CI setup, starts ChromeDriver, and runs `composer ui-page-test`. JUnit, HTML, and custom report artifacts are retained by the workflow.
+**Page Testing** uses the shared full-stack CI action, installs and starts ChromeDriver, and runs `composer ui-page-test`. JUnit, HTML, and custom report artifacts are retained by the workflow.
 
 **Behat Testing** uses the same application/browser setup and runs `composer ui-behat-test`. The Behat report directory is uploaded as a workflow artifact.
 
@@ -54,7 +56,7 @@ These jobs additionally configure Gmail test credentials because portions of the
 
 ### ZAP scans
 
-`.github/workflows/zap_scans.yml` defines OWASP ZAP baseline and full web application scans for pull requests and weekly scheduled execution. Each scan uses the same shared full-stack CI setup as the API and UI tests, waits for the application on port 90, and scans that running application.
+`.github/workflows/zap_scans.yml` defines OWASP ZAP baseline and full web application scans for pull requests and weekly scheduled execution. Each scan uses the shared full-stack CI action and scans the running application on port 90.
 
 ## Reports and artifacts
 
