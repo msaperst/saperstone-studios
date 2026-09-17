@@ -33,6 +33,7 @@ echo "Deploying successful build ${latest_sha}."
 cd "${DEPLOY_DIR}"
 docker compose pull
 docker compose up -d
+docker image prune -f
 
 mkdir -p "${STATE_DIR}"
 printf '%s\n' "${latest_sha}" > "${STATE_FILE}"
