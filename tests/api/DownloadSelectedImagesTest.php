@@ -228,7 +228,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -301,7 +301,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -349,7 +349,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -398,7 +398,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -481,7 +481,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -550,7 +550,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -601,7 +601,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: <br/><strong>Email</strong>: <a href='mailto:'></a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -731,7 +731,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -812,7 +812,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -867,7 +867,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -927,7 +927,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1005,7 +1005,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1060,7 +1060,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1115,7 +1115,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Download User<br/><strong>Email</strong>: <a href='mailto:email@example.org'>email@example.org</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1272,7 +1272,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1352,7 +1352,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1406,7 +1406,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=997' target='_blank'>sample-album-download-all</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1467,7 +1467,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1547,7 +1547,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1602,7 +1602,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1657,7 +1657,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=998' target='_blank'>sample album download some</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1736,7 +1736,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li><li>file.3.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1815,7 +1815,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.0.png</li><li>file.1.png</li><li>file.2.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
@@ -1869,7 +1869,7 @@ Browser: unknown unknown
 Resolution: 
 OS: unknown
 Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Downloads have been made from the <a href='%s://%s/user/album.php?album=999' target='_blank'>sample-album-no-access</a> album</p><p><ul><li>file.1.png</li></ul></p><br/><p><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href='mailto:msaperst@gmail.com'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>",
-                'saperstonestudios@gmail.com');
+                'alternate-ci');
         } finally {
             unlink($zipFile);
         }
