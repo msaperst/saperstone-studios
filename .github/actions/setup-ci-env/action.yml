@@ -1,0 +1,50 @@
+name: Set up CI environment
+description: Create the common .env file used by CI tests
+
+inputs:
+  db-port:
+    description: Database port written to .env
+    required: false
+    default: '3406'
+  email-host:
+    description: Email host written to .env
+    required: false
+    default: saperstonestudios_mailpit
+
+runs:
+  using: composite
+  steps:
+    - name: Set up environment
+      shell: bash
+      env:
+        DB_PORT: ${{ inputs.db-port }}
+        EMAIL_HOST: ${{ inputs.email-host }}
+      run: |
+        cat > .env <<EOF
+        # tool hosting information
+        ADMIN_PORT=9090
+        HTTP_PORT=90
+        HTTPS_PORT=9443
+        SERVER_NAME=localhost
+        APP_URL=localhost
+
+        # database information
+        DB_HOST=127.0.0.1
+        DB_ROOT=ci-root-password
+        DB_PORT=${DB_PORT}
+        DB_NAME=saperstone-studios
+        DB_USER=ci
+        DB_PASS=ci-password
+
+        # email information
+        EMAIL_CONTACT=contact@saperstonestudios.com
+        EMAIL_ACTIONS=actions@saperstonestudios.com
+        EMAIL_SELECTS=selects@saperstonestudios.com
+        EMAIL_CONTRACTS=contracts@saperstonestudios.com
+        EMAIL_HOST=${EMAIL_HOST}
+        EMAIL_PORT=1025
+        EMAIL_USER=ci
+        EMAIL_PASS=dummypassword
+        EMAIL_USER_X=alternate-ci
+        EMAIL_PASS_X=dummypassword
+        EOF
