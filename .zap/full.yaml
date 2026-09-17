@@ -33,6 +33,28 @@ env:
     progressToStdout: true
 
 jobs:
+  - type: requestor
+    parameters:
+      user: zap-ci
+    requests:
+      - url: http://localhost:90/api/get-users.php
+        name: Verify authenticated admin session
+        method: GET
+        responseCode: 200
+    tests:
+      - name: ZAP authentication succeeded
+        type: stats
+        statistic: stats.auth.success
+        site: http://localhost:90
+        operator: ">="
+        value: 1
+        onFail: error
+      - name: Authenticated endpoint returned the ZAP CI user
+        type: url
+        url: http://localhost:90/api/get-users.php
+        responseBodyRegex: '"usr":"zap-ci"'
+        onFail: error
+
   - type: spider
     parameters:
       context: saperstone-studios
