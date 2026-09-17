@@ -1065,3 +1065,17 @@ img.protect {
     align-items: center;
     gap: 6px;
 }
+
+/* for our contracts */
+label > input, label > u > input, label > textarea {
+    font-weight: normal !important;
+}
+
+.contract-form-row {
+    display: flex;
+    align-items: center;
+}
+
+.contract-form-row label {
+    margin-bottom: 0;
+}
