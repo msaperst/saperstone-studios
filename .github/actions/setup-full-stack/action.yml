@@ -1,0 +1,55 @@
+name: Set up full-stack test application
+description: Configure and launch the common Docker Compose application used by full-stack CI tests
+
+runs:
+  using: composite
+  steps:
+    - name: Set up environment
+      shell: bash
+      run: |
+        cat > .env <<'EOF'
+        # tool hosting information
+        ADMIN_PORT=9090
+        HTTP_PORT=90
+        HTTPS_PORT=9443
+        SERVER_NAME=localhost
+        APP_URL=localhost
+
+        # database information
+        DB_HOST=127.0.0.1
+        DB_ROOT=ci-root-password
+        DB_PORT=3406
+        DB_NAME=saperstone-studios
+        DB_USER=ci
+        DB_PASS=ci-password
+
+        # email information
+        EMAIL_CONTACT=contact@saperstonestudios.com
+        EMAIL_ACTIONS=actions@saperstonestudios.com
+        EMAIL_SELECTS=selects@saperstonestudios.com
+        EMAIL_CONTRACTS=contracts@saperstonestudios.com
+        EMAIL_HOST=saperstonestudios_mailpit
+        EMAIL_PORT=1025
+        EMAIL_USER=ci
+        EMAIL_PASS=dummypassword
+        EMAIL_USER_X=ci
+        EMAIL_PASS_X=dummypassword
+        EOF
+
+    - name: Set up folders
+      shell: bash
+      run: |
+        chmod -R 777 content
+        mkdir -m 777 -p content/albums content/blog content/contracts logs tmp
+
+    - name: Disable production SSL certificate
+      shell: bash
+      run: sed -i '/letsencrypt/ s/^/#/' .docker/php/default-ssl.conf
+
+    - name: Launch application
+      shell: bash
+      run: docker compose up --build -d
+
+    - name: Verify application liveliness
+      shell: bash
+      run: curl --retry 50 -f --retry-all-errors --retry-delay 5 -s -o /dev/null "http://localhost:90/"
