@@ -65,8 +65,7 @@ class CustomAsserts {
         $wait = new WebDriverWait($driver, 10);
         $wait->until(WebDriverExpectedCondition::presenceOfElementLocated($successBy));
         $actualMessage = $driver->findElement($successBy)->getText();
-        Assert::assertEquals("×
-$message", $actualMessage, $actualMessage);
+        Assert::assertEquals("×\n$message", $actualMessage, $actualMessage);
     }
 
     /**
@@ -122,6 +121,8 @@ $message", $actualMessage, $actualMessage);
 
     /**
      * Finds a specific email and asserts its content, including SMTP credentials and attachments.
+     * Passing an auth-user value selects the alternate test account; the actual expected
+     * username comes from EMAIL_USER_X so local and CI environments use the same contract.
      */
     public static function assertEmailMatches(
         string  $expectedTo,
@@ -132,9 +133,7 @@ $message", $actualMessage, $actualMessage);
         ?string $expectedAuthUser = null,
         ?string $expectedAttachmentPath = null // <-- Add optional attachment path
     ): void {
-        if ($expectedAuthUser === null) {
-            $expectedAuthUser = (string)getenv('EMAIL_USER');
-        }
+        $expectedAuthUser = (string)getenv($expectedAuthUser === null ? 'EMAIL_USER' : 'EMAIL_USER_X');
 
         $client = self::getMailpitClient();
         $response = $client->request('GET', 'messages');
@@ -203,11 +202,9 @@ $message", $actualMessage, $actualMessage);
      * @param $b
      */
     public static function filesAreEqual($a, $b): void {
-        // Check if filesize is different
         if (filesize($a) !== filesize($b)) {
             Assert::assertTrue(false);
         }
-        // Check if content is different
         $ah = fopen($a, 'rb');
         $bh = fopen($b, 'rb');
         $result = true;
