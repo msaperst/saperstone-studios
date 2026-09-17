@@ -13,10 +13,11 @@ The Compose application includes the web/PHP service and SQL database. Productio
 Some of the important top-level areas are:
 
 - `.docker/` - Dockerfiles and container configuration.
-- `.github/workflows/` - GitHub Actions CI, security, build, and deployment workflows.
+- `.github/workflows/` - GitHub Actions CI, security, and production-image workflows.
 - `bin/` - repository utility and setup scripts.
 - `content/` - application content used by the site and local/test environments.
 - `docs/` - development and operational documentation.
+- `ops/` - production deployment scripts and systemd units.
 - `tests/` - automated test suites.
 - `composer.json` - PHP dependencies and the canonical local test commands.
 - `docker-compose.yml` - local application orchestration.
@@ -49,9 +50,9 @@ The project has multiple test layers rather than a single all-in-one test comman
 
 ## Continuous delivery
 
-Changes are validated through pull requests targeting `develop`. Once changes reach `develop`, GitHub-hosted runners build the PHP and SQL images for AMD64 and ARM64 and publish them to GHCR. A repository-scoped self-hosted runner on production then pulls and deploys those images.
+Changes are validated through pull requests targeting `develop`. Once changes reach `develop`, GitHub-hosted runners build the PHP and SQL images for AMD64 and ARM64 and publish them to GHCR. The DietPi production server independently checks for successful builds and pulls/deploys new images; GitHub Actions does not execute deployment commands on production.
 
-See [Deployment](deployment.md) for the delivery flow and [Self-Hosted Production Runner](self-hosted-runner.md) for runner setup and recovery.
+See [Deployment](deployment.md) for the delivery flow and [Production Pull Deployment](production-pull-deployment.md) for production-side setup and recovery.
 
 ## Site map generation
 
