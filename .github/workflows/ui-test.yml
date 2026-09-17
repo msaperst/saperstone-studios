@@ -19,22 +19,13 @@ jobs:
           php-version: '8.4'
           extensions: imagick
 
-      - name: Set up CI environment
-        env:
-          DB_ROOT: ${{ secrets.DB_ROOT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_USER_X: ${{ secrets.EMAIL_USER_X }}
-        run: bash bin/setup-ci-environment.sh
+      - name: Set up full-stack test application
+        uses: ./.github/actions/setup-full-stack
 
       - name: Set up Gmail Credentials and Token
         run: |
           echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
           echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
-
-      - name: Launch App
-        run: docker compose up --build -d
 
       - name: System Setup
         run: |
@@ -42,9 +33,6 @@ jobs:
           composer install --prefer-dist --no-progress --no-suggest
           sudo apt install chromium-chromedriver
           chromedriver --port=4444 &
-
-      - name: Verify Liveliness
-        run: curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
 
       - name: Page Tests
         run: COMPOSER_PROCESS_TIMEOUT=1200 composer ui-page-test
@@ -85,22 +73,13 @@ jobs:
           php-version: '8.4'
           extensions: imagick
 
-      - name: Set up CI environment
-        env:
-          DB_ROOT: ${{ secrets.DB_ROOT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_USER_X: ${{ secrets.EMAIL_USER_X }}
-        run: bash bin/setup-ci-environment.sh
+      - name: Set up full-stack test application
+        uses: ./.github/actions/setup-full-stack
 
       - name: Set up Gmail Credentials and Token
         run: |
           echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
           echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
-
-      - name: Launch App
-        run: docker compose up --build -d
 
       - name: System Setup
         run: |
@@ -108,9 +87,6 @@ jobs:
           composer install --prefer-dist --no-progress --no-suggest
           sudo apt install chromium-chromedriver
           chromedriver --port=4444 &
-
-      - name: Verify Liveliness
-        run: curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
 
       - name: Behat Tests
         run: COMPOSER_PROCESS_TIMEOUT=1200 composer ui-behat-test
