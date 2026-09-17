@@ -1,0 +1,88 @@
+name: ZAP Scans
+
+on:
+  pull_request:
+    branches: [ develop ]
+  schedule:
+    - cron: '23 22 * * 1'
+  workflow_dispatch:
+    inputs:
+      scan:
+        description: 'ZAP scan to run'
+        required: true
+        default: full
+        type: choice
+        options:
+          - baseline
+          - full
+
+permissions:
+  contents: read
+
+env:
+  ZAP_USERNAME: zap-ci
+  ZAP_PASSWORD: zap-ci-password
+
+jobs:
+  zap:
+    name: ZAP Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Select ZAP scan
+        id: scan
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_SCAN: ${{ inputs.scan }}
+        run: |
+          if [[ "${EVENT_NAME}" == "pull_request" ]]; then
+            scan="baseline"
+          elif [[ "${EVENT_NAME}" == "schedule" ]]; then
+            scan="full"
+          else
+            scan="${REQUESTED_SCAN}"
+          fi
+
+          echo "scan=${scan}" >> "${GITHUB_OUTPUT}"
+          echo "Selected ZAP ${scan} scan."
+
+      - name: Checkout 🛎️
+        uses: actions/checkout@v5
+
+      - name: Set up full-stack test application
+        uses: ./.github/actions/setup-full-stack
+
+      - name: Create ZAP CI user
+        run: |
+          source .env
+          docker compose exec -T mysql mysql \
+            -u root \
+            -p"${DB_ROOT}" \
+            "${DB_NAME}" \
+            -e "INSERT INTO users VALUES (9000, '${ZAP_USERNAME}', MD5('${ZAP_PASSWORD}'), 'ZAP', 'CI', 'zap-ci@example.org', 'admin', MD5('zap-ci-session'), 1, NOW(), NULL, NULL) ON DUPLICATE KEY UPDATE pass=VALUES(pass), role='admin', active=1;"
+
+      - name: Run authenticated ZAP scan
+        uses: zaproxy/action-af@v0.3.0
+        with:
+          plan: '.zap/${{ steps.scan.outputs.scan }}.yaml'
+          docker_env_vars: |
+            ZAP_USERNAME
+            ZAP_PASSWORD
+
+      - name: Add ZAP results to job summary
+        if: always()
+        env:
+          ZAP_SCAN: ${{ steps.scan.outputs.scan }}
+        run: python3 .github/scripts/zap-summary.py report_json.json "${ZAP_SCAN}"
+
+      - name: Upload ZAP reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-${{ steps.scan.outputs.scan }}-report
+          path: |
+            report_html.html
+            report_json.json
+            report_md.md
+          if-no-files-found: warn

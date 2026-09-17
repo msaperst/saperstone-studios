@@ -1,0 +1,95 @@
+---
+env:
+  contexts:
+    - name: saperstone-studios
+      urls:
+        - http://localhost:90
+      includePaths:
+        - http://localhost:90.*
+      authentication:
+        method: form
+        parameters:
+          loginPageUrl: http://localhost:90/
+          loginRequestUrl: http://localhost:90/api/login.php
+          loginRequestBody: "username={%username%}&password={%password%}&rememberMe=0&submit=Login"
+        verification:
+          method: poll
+          loggedInRegex: "200 OK"
+          loggedOutRegex: "401 Unauthorized"
+          pollFrequency: 60
+          pollUnits: requests
+          pollUrl: http://localhost:90/api/get-users.php
+          pollPostData: ""
+      sessionManagement:
+        method: cookie
+      users:
+        - name: zap-ci
+          credentials:
+            username: ${ZAP_USERNAME}
+            password: ${ZAP_PASSWORD}
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - type: requestor
+    parameters:
+      user: zap-ci
+    requests:
+      - url: http://localhost:90/api/get-users.php
+        name: Verify authenticated admin session
+        method: GET
+        responseCode: 200
+    tests:
+      - name: ZAP authentication succeeded
+        type: stats
+        statistic: stats.auth.success
+        site: http://localhost:90
+        operator: ">="
+        value: 1
+        onFail: error
+
+  - type: spider
+    parameters:
+      context: saperstone-studios
+      user: zap-ci
+      url: http://localhost:90/
+      maxDuration: 10
+      logoutAvoidance: true
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 10
+
+  - type: activeScan
+    parameters:
+      context: saperstone-studios
+      user: zap-ci
+      maxRuleDurationInMins: 5
+      maxScanDurationInMins: 30
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 10
+
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: /zap/wrk
+      reportFile: report_html.html
+      reportTitle: Saperstone Studios ZAP Full Scan
+
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: /zap/wrk
+      reportFile: report_json.json
+      reportTitle: Saperstone Studios ZAP Full Scan
+
+  - type: report
+    parameters:
+      template: traditional-md
+      reportDir: /zap/wrk
+      reportFile: report_md.md
+      reportTitle: Saperstone Studios ZAP Full Scan
