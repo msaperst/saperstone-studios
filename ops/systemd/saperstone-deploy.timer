@@ -1,0 +1,11 @@
+[Unit]
+Description=Check for successful Saperstone Studios builds
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Persistent=true
+Unit=saperstone-deploy.service
+
+[Install]
+WantedBy=timers.target
