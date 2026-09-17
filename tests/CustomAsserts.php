@@ -121,8 +121,6 @@ class CustomAsserts {
 
     /**
      * Finds a specific email and asserts its content, including SMTP credentials and attachments.
-     * Passing an auth-user value selects the alternate test account; the actual expected
-     * username comes from EMAIL_USER_X so local and CI environments use the same contract.
      */
     public static function assertEmailMatches(
         string  $expectedTo,
@@ -133,7 +131,9 @@ class CustomAsserts {
         ?string $expectedAuthUser = null,
         ?string $expectedAttachmentPath = null // <-- Add optional attachment path
     ): void {
-        $expectedAuthUser = (string)getenv($expectedAuthUser === null ? 'EMAIL_USER' : 'EMAIL_USER_X');
+        if ($expectedAuthUser === null) {
+            $expectedAuthUser = (string)getenv('EMAIL_USER');
+        }
 
         $client = self::getMailpitClient();
         $response = $client->request('GET', 'messages');
