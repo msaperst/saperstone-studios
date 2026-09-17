@@ -74,11 +74,10 @@ jobs:
           sudo pear install Mail Mail_Mime pear/Net_SMTP
 
       - name: Set up CI environment
-        uses: ./.github/actions/setup-full-stack
+        uses: ./.github/actions/setup-ci-env
         with:
           db-port: '3506'
           email-host: 127.0.0.1
-          launch-application: 'false'
 
       - name: Integration Test 🤞
         run: |
