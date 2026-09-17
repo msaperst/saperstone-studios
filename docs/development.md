@@ -45,17 +45,13 @@ docker compose up --build -d
 
 ## Testing
 
-The project has multiple test layers rather than a single all-in-one test command. Unit, integration, API, browser/UI, Behat, static/security, dependency, and container checks are run independently in CI.
-
-See [CI and Testing](ci-testing.md) for the commands, workflow triggers, reports, and supporting services used by each suite.
+The project has multiple test layers rather than a single all-in-one test command. See [Testing](testing.md) for instructions on running the suites locally and [Continuous Integration](ci.md) for the automated validation performed by GitHub Actions.
 
 ## Continuous delivery
 
 Changes are validated through pull requests targeting `develop`. Once changes reach `develop`, GitHub-hosted runners build the PHP and SQL images for AMD64 and ARM64 and publish them to GHCR. A repository-scoped self-hosted runner on production then pulls and deploys those images.
 
-Production does not build application source and does not require GitHub to SSH into the server.
-
-For self-hosted runner setup and recovery, see [Self-Hosted Production Runner](self-hosted-runner.md).
+See [Deployment](deployment.md) for the delivery flow and [Self-Hosted Production Runner](self-hosted-runner.md) for runner setup and recovery.
 
 ## Site map generation
 
