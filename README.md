@@ -55,6 +55,9 @@ The runner is installed at `/home/github-runner/actions-runner` and runs as the
 dedicated `github-runner` user through systemd. The runner has Docker access but
 does not have general sudo access.
 
+For complete installation, security, verification, and recovery instructions,
+see [Self-Hosted Production Runner](docs/self-hosted-runner.md).
+
 The runner is repository-scoped and has the labels:
 
 - `self-hosted`
