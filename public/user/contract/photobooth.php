@@ -16,11 +16,11 @@ $contract ['date'] = "";
 $contract ['location'] = "";
 $contract ['amount'] = "";
 $contract ['lineItems'] = array(
-    array(
-        'item' => '',
-        'amount' => '',
-        'unit' => ''
-    )
+        array(
+                'item' => '',
+                'amount' => '',
+                'unit' => ''
+        )
 );
 // get the id if set, and pull these values
 if (isset ($_GET ['id'])) {
@@ -102,24 +102,20 @@ if (isset ($_GET ['id'])) {
             <?php
             foreach ($contract ['lineItems'] as $lineItem) {
                 ?>
-                <span class='contract-line-item'> <input
-                            class='form-control contract-item'
-                            style='width: initial; display: initial;' type='text'
-                            placeholder='Item' value='<?php echo $lineItem['item']; ?>'/>: $<input
-                            class='form-control contract-amount'
-                            style='width: initial; display: initial;' type='number' step='0.01'
-                            min='0' placeholder='Amount'
-                            value='<?php echo $lineItem['amount']; ?>'/> / <input
-                            class='form-control contract-unit'
-                            style='width: initial; display: initial;' type='text'
-                            placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/>
-                <button type="button"
-                        class="btn btn-xs btn-danger remove-contract-line-item-btn"
-                        data-toggle="tooltip" data-placement="right"
-                        title="Remove Line Item">
-                    <em class="fa fa-minus"></em>
-                </button>
-        </span>
+                <span class='contract-line-item'>
+                    <input class='form-control contract-item' style='width: initial; display: initial;'
+                           aria-label='Item' type='text' placeholder='Item' value='<?php echo $lineItem['item']; ?>'/>:
+                    $<input class='form-control contract-amount' style='width: initial; display: initial;'
+                            aria-label='Amount' type='number' step='0.01' min='0' placeholder='Amount'
+                            value='<?php echo $lineItem['amount']; ?>'/></label>
+                    /
+                    <input class='form-control contract-unit' style='width: initial; display: initial;'
+                           aria-label='Unit' type='text' placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/>
+                    <button type="button" class="btn btn-xs btn-danger remove-contract-line-item-btn"
+                            data-toggle="tooltip" data-placement="right" title="Remove Line Item">
+                        <em class="fa fa-minus"></em>
+                    </button>
+                </span>
                 <?php
             }
             ?>
@@ -130,40 +126,39 @@ if (isset ($_GET ['id'])) {
             </button>
             <br/></li>
         <li><strong>Session Details</strong> The above session will take place
-            at the below location on <input id='contract-date'
-                                            class='form-control' style='width: initial; display: initial;'
-                                            type='date' placeholder='Date'
-                                            value='<?php echo $contract ['date']; ?>'/> <br/> <textarea
-                    id='contract-location' class='form-control' type='text'
-                    placeholder='Session Address'
-                    value='<?php echo $contract ['location']; ?>'></textarea></li>
+            at the below location on
+            <input id='contract-date' class='form-control' style='width: initial; display: initial;' type='date'
+                   aria-label='Date'
+                   placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
+            <br/>
+            <label style='width: 100%;'><textarea id='contract-location' class='form-control' type='text'
+                                                  placeholder='Session Address'><?php echo $contract ['location']; ?></textarea></label>
+        </li>
     </ol>
     </p>
-
 
     <h4>AGREED and ACCEPTED:</h4>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Business Name:</strong>
+            <label for='contract-name'>Business Name:</label>
         </div>
         <div class='col-md-9'>
-            <input id='contract-name' class='form-control' type='text'
-                   placeholder='Contractor Business Name'
+            <input id='contract-name' class='form-control' type='text' placeholder='Contractor Business Name'
                    value='<?php echo $contract ['name']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Name:</strong>
+            <label for='contract-name-signature'>Contractor Name:</label>
         </div>
         <div class='col-md-9'>
-            <input id='contract-name-signature' class='form-control keep'
-                   type='text' placeholder='Contractor Name' disabled/>
+            <input id='contract-name-signature' class='form-control keep' type='text' placeholder='Contractor Name'
+                   disabled/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Signature:</strong>
+            <label for='contract-signature'>Contractor Signature:</label>
         </div>
         <div class='col-md-9'>
             <textarea id='contract-signature' class='form-control' type='text'
@@ -172,31 +167,28 @@ if (isset ($_GET ['id'])) {
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Address:</strong>
+            <label for='contract-address'>Contractor Address:</label>
         </div>
         <div class='col-md-9'>
             <textarea id='contract-address' class='form-control keep' type='text'
-                      placeholder='Contractor Address'
-                      value='<?php echo $contract ['address']; ?>'></textarea>
+                      placeholder='Contractor Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Phone Number:</strong>
+            <label for='contract-number'>Contractor Phone Number:</label>
         </div>
         <div class='col-md-9'>
-            <input id='contract-number' class='form-control keep' type='tel'
-                   placeholder='Contractor Phone Number'
+            <input id='contract-number' class='form-control keep' type='tel' placeholder='Contractor Phone Number'
                    value='<?php echo $contract ['number']; ?>'/>
         </div>
     </div>
     <div class='row'>
         <div class='col-md-3'>
-            <strong>Contractor Email: </strong>
+            <label for='contract-email'>Contractor Email: </label>
         </div>
         <div class='col-md-9'>
-            <input id='contract-email' class='form-control keep' type='email'
-                   placeholder='Contractor Email'
+            <input id='contract-email' class='form-control keep' type='email' placeholder='Contractor Email'
                    value='<?php echo $contract ['email']; ?>'/>
         </div>
     </div>
@@ -214,7 +206,7 @@ if (isset ($_GET ['id'])) {
             <strong>Address: </strong>
         </div>
         <div class='col-md-9'>
-            6144 S Teresa Dr<br/>Chandler, AZ 85249
+            5701 S Quartz St<br/>Gilbert, AZ 85298
         </div>
     </div>
     <div class='row'>
