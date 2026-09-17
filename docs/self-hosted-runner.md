@@ -23,8 +23,6 @@ must be treated as a privileged deployment agent.
   runner connects outbound to GitHub.
 - Production secrets remain in the production host's `.env` file rather than
   being copied into the GitHub Actions workflow.
-- Only the PHP application's HTTP/HTTPS ports are published on the production
-  host. MySQL remains internal to the Docker Compose network.
 
 ## 1. Create the runner account
 
@@ -210,26 +208,10 @@ docker compose up -d
 The deployment does not need to stop or remove the existing containers first.
 Docker Compose recreates containers when their image or configuration changes.
 
-Verify the application and database containers are running:
+Verify the containers are running:
 
 ```bash
 docker ps
-```
-
-MySQL should show its internal container ports without a host mapping such as
-`0.0.0.0:<port>->3306`.
-
-Verify PHP can reach MySQL through the Compose network:
-
-```bash
-docker exec saperstonestudios_php php -r \
-    '$s=@fsockopen("mysql",3306,$e,$m,5); echo $s ? "MySQL reachable\n" : "FAILED: $e $m\n";'
-```
-
-Expected output:
-
-```text
-MySQL reachable
 ```
 
 ## Maintenance and troubleshooting
