@@ -52,6 +52,7 @@ jobs:
       - name: Authenticated endpoint returned the ZAP CI user
         type: url
         url: http://localhost:90/api/get-users.php
+        operator: and
         responseBodyRegex: '"usr":"zap-ci"'
         onFail: error
 
