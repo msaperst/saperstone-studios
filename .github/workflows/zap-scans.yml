@@ -19,6 +19,10 @@ on:
 permissions:
   contents: read
 
+env:
+  ZAP_USERNAME: zap-ci
+  ZAP_PASSWORD: zap-ci-password
+
 jobs:
   baseline:
     name: ZAP Baseline Scan
@@ -32,17 +36,33 @@ jobs:
       - name: Set up full-stack test application
         uses: ./.github/actions/setup-full-stack
 
-      - name: ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.15.0
+      - name: Create ZAP CI user
+        run: |
+          source .env
+          docker compose exec -T mysql mysql             -u root             -p"${DB_ROOT}"             "${DB_NAME}"             -e "INSERT INTO users VALUES (9000, '${ZAP_USERNAME}', MD5('${ZAP_PASSWORD}'), 'ZAP', 'CI', 'zap-ci@example.org', 'admin', MD5('zap-ci-session'), 1, NOW(), NULL, NULL) ON DUPLICATE KEY UPDATE pass=VALUES(pass), role='admin', active=1;"
+
+      - name: ZAP Authenticated Baseline Scan
+        uses: zaproxy/action-af@v0.3.0
         with:
-          target: 'http://localhost:90/'
-          allow_issue_writing: false
-          fail_action: false
-          artifact_name: zap-baseline-report
+          plan: '.zap/baseline.yaml'
+          docker_env_vars: |
+            ZAP_USERNAME
+            ZAP_PASSWORD
 
       - name: Add ZAP results to job summary
         if: always()
         run: python3 .github/scripts/zap-summary.py report_json.json baseline
+
+      - name: Upload ZAP baseline reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-baseline-report
+          path: |
+            report_html.html
+            report_json.json
+            report_md.md
+          if-no-files-found: warn
 
   full:
     name: ZAP Full Scan
@@ -56,14 +76,30 @@ jobs:
       - name: Set up full-stack test application
         uses: ./.github/actions/setup-full-stack
 
-      - name: ZAP Full Scan
-        uses: zaproxy/action-full-scan@v0.13.0
+      - name: Create ZAP CI user
+        run: |
+          source .env
+          docker compose exec -T mysql mysql             -u root             -p"${DB_ROOT}"             "${DB_NAME}"             -e "INSERT INTO users VALUES (9000, '${ZAP_USERNAME}', MD5('${ZAP_PASSWORD}'), 'ZAP', 'CI', 'zap-ci@example.org', 'admin', MD5('zap-ci-session'), 1, NOW(), NULL, NULL) ON DUPLICATE KEY UPDATE pass=VALUES(pass), role='admin', active=1;"
+
+      - name: ZAP Authenticated Full Scan
+        uses: zaproxy/action-af@v0.3.0
         with:
-          target: 'http://localhost:90/'
-          allow_issue_writing: false
-          fail_action: false
-          artifact_name: zap-full-report
+          plan: '.zap/full.yaml'
+          docker_env_vars: |
+            ZAP_USERNAME
+            ZAP_PASSWORD
 
       - name: Add ZAP results to job summary
         if: always()
         run: python3 .github/scripts/zap-summary.py report_json.json full
+
+      - name: Upload ZAP full reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-full-report
+          path: |
+            report_html.html
+            report_json.json
+            report_md.md
+          if-no-files-found: warn
