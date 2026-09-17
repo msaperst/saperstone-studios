@@ -129,18 +129,11 @@ jobs:
   deploy:
     name: Deploy
     needs: [ php, sql ]
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, saperstone-production ]
 
     steps:
-      - name: Setup SSH Key
-        run: |
-          mkdir ~/.ssh/
-          echo "${{ secrets.PRODUCTION_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
       - name: Pull and Deploy Latest
+        working-directory: /home/dietpi
         run: |
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker compose stop'
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker compose rm -f'
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker compose pull'
-          ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_USERNAME }}@${{ secrets.PRODUCTION }} -p ${{ secrets.PRODUCTION_PORT }} 'cd ${{ secrets.PRODUCTION_PATH }}; docker compose up -d'
+          docker compose pull
+          docker compose up -d
