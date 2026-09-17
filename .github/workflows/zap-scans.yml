@@ -1,8 +1,6 @@
 name: ZAP Scans
 
 on:
-  push:
-    branches: [ develop, ci/repair-zap-scans ]
   pull_request:
     branches: [ develop ]
   schedule:
