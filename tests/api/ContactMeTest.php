@@ -333,7 +333,7 @@ Full UA: GuzzleHttp/7
 
 \t\tHi There! I am a test email",
             "<html><body>This is an automatically generated message from Saperstone Studios<br/><strong>Name</strong>: {$senderName}<br/><strong>Phone</strong>: 571-245-3351<br/><strong>Email</strong>: <a href='mailto:{$senderEmail}'>{$senderEmail}</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hi There! I am a test email<br/><br/></body></html>",
-            'saperstonestudios@gmail.com'
+            'alternate-ci'
         );
     }
 
@@ -367,7 +367,7 @@ Full UA: GuzzleHttp/7
             'Thank you for contacting Saperstone Studios',
             'Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.',
             '<html><body>Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.</body></html>',
-            'saperstonestudios@gmail.com'
+            'alternate-ci'
         );
 
         // 3. VERIFY EMAIL #2: The notification alert sent to the Site Owner
@@ -387,7 +387,7 @@ Full UA: GuzzleHttp/7
 
 \t\tHi There! I am a test email",
             "<html><body>This is an automatically generated message from Saperstone Studios<br/><strong>Name</strong>: {$senderName}<br/><strong>Phone</strong>: 571-245-3351<br/><strong>Email</strong>: <a href='mailto:{$senderEmail}'>{$senderEmail}</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hi There! I am a test email<br/><br/></body></html>",
-            'saperstonestudios@gmail.com'
+            'alternate-ci'
         );
     }
 }

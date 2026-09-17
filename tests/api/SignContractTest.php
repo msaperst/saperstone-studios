@@ -396,7 +396,7 @@ class SignContractTest extends TestCase {
                 'Saperstone Studios Commercial Contract Signed',
                 "This is an automatically generated message from Saperstone Studios\r\n\r\nEleMax has signed their contract, this is a copy of it for your records. \r\n\r\n",
                 '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>EleMax has signed their contract, this is a copy of it for your records. </p></body></html>',
-                'saperstonestudios@gmail.com',
+                'alternate-ci',
                 dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
             CustomAsserts::assertEmailMatches(
                 'msaperst@gmail.com',
@@ -463,7 +463,7 @@ class SignContractTest extends TestCase {
                 'Saperstone Studios Commercial Contract Signed',
                 "This is an automatically generated message from Saperstone Studios\r\n\r\nEleMax has signed their contract, this is a copy of it for your records. Don't forget that they have a $10.00 deposit due. \r\n\r\n",
                 '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>EleMax has signed their contract, this is a copy of it for your records. Don\'t forget that they have a $10.00 deposit due. </p></body></html>',
-                'saperstonestudios@gmail.com',
+                'alternate-ci',
                 dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
             CustomAsserts::assertEmailMatches(
                 'msaperst@gmail.com',

@@ -73,34 +73,11 @@ jobs:
           sudo pear channel-update pear.php.net
           sudo pear install Mail Mail_Mime pear/Net_SMTP
 
-      - name: Set up env file
-        run: |
-          echo '# tool hosting information' > .env
-          echo 'ADMIN_PORT=9090' >> .env
-          echo 'HTTP_PORT=90' >> .env
-          echo 'HTTPS_PORT=9443' >> .env
-          echo 'SERVER_NAME=localhost' >> .env
-          echo 'APP_URL=localhost' >> .env
-          echo '' >> .env
-          echo '# database information' >> .env
-          echo 'DB_HOST=127.0.0.1' >> .env
-          echo 'DB_ROOT=${{ secrets.DB_ROOT }}' >> .env
-          echo 'DB_PORT=3506' >> .env
-          echo 'DB_NAME=saperstone-studios' >> .env
-          echo 'DB_USER=${{ secrets.DB_USER }}' >> .env
-          echo 'DB_PASS=${{ secrets.DB_PASS }}' >> .env
-          echo '' >> .env
-          echo '# email information' >> .env
-          echo 'EMAIL_CONTACT=contact@saperstonestudios.com' >> .env
-          echo 'EMAIL_ACTIONS=actions@saperstonestudios.com' >> .env
-          echo 'EMAIL_SELECTS=selects@saperstonestudios.com' >> .env
-          echo 'EMAIL_CONTRACTS=contracts@saperstonestudios.com' >> .env
-          echo 'EMAIL_HOST=127.0.0.1' >> .env
-          echo 'EMAIL_PORT=1025' >> .env
-          echo 'EMAIL_USER=${{ secrets.EMAIL_USER }}' >> .env
-          echo 'EMAIL_PASS=dummypassword' >> .env
-          echo 'EMAIL_USER_X=${{ secrets.EMAIL_USER_X }}' >> .env
-          echo 'EMAIL_PASS_X=dummypassword' >> .env
+      - name: Set up CI environment
+        uses: ./.github/actions/setup-ci-env
+        with:
+          db-port: '3506'
+          email-host: 127.0.0.1
 
       - name: Integration Test 🤞
         run: |

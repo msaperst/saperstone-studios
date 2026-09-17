@@ -226,7 +226,7 @@ file-2\r
 \r
 \t\t",
             '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Someone has made a selection from the <a href=\'%s://%s/user/album.php?album=999\' target=\'_blank\'>sample-album</a> album</p><p><ul><li>file-1</li><li>file-2</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>',
-            'saperstonestudios@gmail.com');
+            'alternate-ci');
     }
 
     /**
@@ -289,6 +289,6 @@ file-2\r
 \r
 \t\tI want this one!",
             '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href=\'mailto:msaperst@gmail.com\'>Max</a> has made a selection from the <a href=\'%s://%s/user/album.php?album=999\' target=\'_blank\'>sample-album</a> album</p><p><ul><li>file-2</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I want this one!</p></body></html>',
-            'saperstonestudios@gmail.com');
+            'alternate-ci');
     }
 }

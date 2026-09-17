@@ -65,8 +65,7 @@ class CustomAsserts {
         $wait = new WebDriverWait($driver, 10);
         $wait->until(WebDriverExpectedCondition::presenceOfElementLocated($successBy));
         $actualMessage = $driver->findElement($successBy)->getText();
-        Assert::assertEquals("×
-$message", $actualMessage, $actualMessage);
+        Assert::assertEquals("×\n$message", $actualMessage, $actualMessage);
     }
 
     /**
@@ -203,11 +202,9 @@ $message", $actualMessage, $actualMessage);
      * @param $b
      */
     public static function filesAreEqual($a, $b): void {
-        // Check if filesize is different
         if (filesize($a) !== filesize($b)) {
             Assert::assertTrue(false);
         }
-        // Check if content is different
         $ah = fopen($a, 'rb');
         $bh = fopen($b, 'rb');
         $result = true;
