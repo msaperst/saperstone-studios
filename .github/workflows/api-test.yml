@@ -19,23 +19,13 @@ jobs:
           php-version: '8.4'
           extensions: imagick
 
-      - name: Set up CI environment
-        env:
-          DB_ROOT: ${{ secrets.DB_ROOT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_USER_X: ${{ secrets.EMAIL_USER_X }}
-        run: bash bin/setup-ci-environment.sh
+      - name: Set up full-stack test application
+        uses: ./.github/actions/setup-full-stack
 
-      - name: Launch App
+      - name: System Setup
         run: |
-          docker compose up --build -d
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
-
-      - name: Verify Liveliness
-        run: curl --retry 50 -f --retry-all-errors --retry-delay 5  -s -o /dev/null "http://localhost:90/"
 
       - name: API Tests
         run: COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
