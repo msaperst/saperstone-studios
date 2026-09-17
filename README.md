@@ -71,10 +71,6 @@ not copied into GitHub Actions. The `.env` file is owned by the
 `saperstone-deploy` group with mode `640`, allowing `dietpi` to manage it and the
 runner to read it without making it world-readable.
 
-The MySQL container is available only on the internal Docker Compose network; its
-port is not published on the production host. The PHP container connects to it at
-`mysql:3306`.
-
 To check the runner service on the production host:
 
 ```bash
