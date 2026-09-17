@@ -56,13 +56,15 @@ These jobs additionally configure Gmail test credentials because portions of the
 
 ### ZAP scans
 
-`.github/workflows/zap_scans.yml` defines OWASP ZAP baseline and full web application scans for pull requests and weekly scheduled execution. Each scan uses the shared full-stack CI action and scans the running application on port 90.
+`.github/workflows/zap-scans.yml` runs OWASP ZAP baseline and full web application scans for pull requests, weekly scheduled execution, and manual dispatch. Each job uses the shared full-stack CI action to launch the current application and scans it at `http://localhost:90/`.
+
+The baseline and full scans retain separate ZAP report artifacts. Findings are currently reported without failing the workflow while the refreshed scans are validated and any application-specific false positives are identified. Once the scan output is understood, CI gating can be tightened with targeted ZAP rules rather than suppressing findings globally.
 
 ## Reports and artifacts
 
 The functional workflows publish JUnit results directly into GitHub where configured. HTML, coverage, and custom reports are retained as workflow artifacts so additional detail is available after a run.
 
-When diagnosing a CI failure, start with the failing job log and GitHub test report. Use the uploaded artifacts when TestDox, coverage, or browser-test detail is needed.
+When diagnosing a CI failure, start with the failing job log and GitHub test report. Use the uploaded artifacts when TestDox, coverage, browser-test, or ZAP scan detail is needed.
 
 ## What is not CI
 
