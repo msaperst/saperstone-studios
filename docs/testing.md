@@ -62,11 +62,11 @@ This runs the unit and integration suites and merges their Clover coverage outpu
 
 ## Full-stack test environment
 
-API, UI/Page, UI/Behat, and ZAP CI jobs use the same full Docker Compose application. `bin/setup-ci-environment.sh` is the canonical setup for that CI environment: it writes the common `.env`, prepares writable test folders, and disables the production Let's Encrypt certificate reference for local CI.
+API, UI/Page, UI/Behat, and ZAP CI jobs use the same full Docker Compose application. The local composite GitHub Action at `.github/actions/setup-full-stack/action.yml` is the canonical CI setup. It writes the common `.env`, prepares writable test folders, disables the production Let's Encrypt certificate reference, launches the application with Docker Compose, and waits for HTTP port 90 to become available.
 
-The script expects `DB_ROOT`, `DB_USER`, and `DB_PASS` in its environment. CI supplies those values from GitHub secrets. It uses Mailpit for application email so the running test application does not send through production SMTP.
+The shared stack uses fixed local-only CI credentials for MySQL and Mailpit, so standing up the application does not depend on repository secrets. Tests that require external services, such as Gmail-related browser behavior, configure those credentials separately in their workflow.
 
-After setup, the full application is launched with:
+For manual local testing, create a suitable local `.env`, prepare the required content/log/tmp directories, disable the production certificate reference when necessary, and launch the application with:
 
 ```bash
 docker compose up --build -d
@@ -134,4 +134,4 @@ composer ui-behat-test
 | UI page tests | `composer ui-page-test` |
 | Behat UI tests | `composer ui-behat-test` |
 
-Some browser and email-related tests require additional credentials. The workflows under `.github/workflows/` define those suite-specific additions; `bin/setup-ci-environment.sh` defines the common full-stack CI application environment.
+Some browser and email-related tests require additional credentials. The workflows under `.github/workflows/` define those suite-specific additions; `.github/actions/setup-full-stack/action.yml` defines the common full-stack CI application environment.
