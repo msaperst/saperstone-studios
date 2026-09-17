@@ -11,11 +11,9 @@ Both jobs build multi-platform images for:
 - `linux/amd64`
 - `linux/arm64`
 
-The images are published to GHCR with branch and commit-SHA tags. The PHP job also regenerates the site map with `python bin/create-site-map.py` before building the image.
+The images are published to GHCR with branch and commit-SHA tags and build provenance attestations. The PHP job also regenerates the site map with `python bin/create-site-map.py` before building the image.
 
-GitHub Actions does not deploy to production and no self-hosted GitHub Actions runner is attached to the web server.
-
-Instead, the DietPi host checks every five minutes for the newest successful production-image workflow run on `develop`. When it sees a successful commit that has not been deployed, it runs:
+The DietPi host checks every five minutes for the newest successful production-image workflow run on `develop`. When it sees a successful commit that has not been deployed, it runs:
 
 ```bash
 docker compose pull
