@@ -56,15 +56,17 @@ These jobs additionally configure Gmail test credentials because portions of the
 
 ### ZAP scans
 
-`.github/workflows/zap-scans.yml` runs OWASP ZAP baseline and full web application scans for pull requests, weekly scheduled execution, and manual dispatch. Each job uses the shared full-stack CI action to launch the current application and scans it at `http://localhost:90/`.
+`.github/workflows/zap-scans.yml` runs the OWASP ZAP baseline scan for pull requests targeting `develop`. The deeper full scan runs weekly and can also be started manually; manual dispatch can select either scan. Both use the shared full-stack CI action and scan the application at `http://localhost:90/`.
 
-The baseline and full scans retain separate ZAP report artifacts. Findings are currently reported without failing the workflow while the refreshed scans are validated and any application-specific false positives are identified. Once the scan output is understood, CI gating can be tightened with targeted ZAP rules rather than suppressing findings globally.
+Each ZAP job writes a severity summary and its Medium/High alert types directly to the GitHub Actions job summary. Detailed HTML, JSON, and Markdown reports remain available as separate workflow artifacts.
+
+Findings currently do not fail the workflow while the refreshed scans are validated, authenticated coverage is added, and application-specific findings are classified. Once the initial findings are understood, CI gating will use targeted ZAP rules so actionable Medium-or-higher findings block pull requests without globally suppressing accepted findings.
 
 ## Reports and artifacts
 
 The functional workflows publish JUnit results directly into GitHub where configured. HTML, coverage, and custom reports are retained as workflow artifacts so additional detail is available after a run.
 
-When diagnosing a CI failure, start with the failing job log and GitHub test report. Use the uploaded artifacts when TestDox, coverage, browser-test, or ZAP scan detail is needed.
+When diagnosing a CI failure, start with the failing job log and GitHub test report. ZAP's job summary provides its routine security overview; use the uploaded artifacts when detailed ZAP evidence or other TestDox, coverage, or browser-test output is needed.
 
 ## What is not CI
 
