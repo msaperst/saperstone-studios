@@ -16,27 +16,25 @@ For repository layout, local setup, retouch thumbnail generation, and other deve
 
 ## Testing and CI
 
-The project uses separate unit, integration, API, UI, Behat, dependency, static-analysis, and container/security workflows. Pull requests to `develop` run the applicable validation workflows before changes are merged.
+Automated validation includes unit, integration, API, UI, Behat, dependency, static-analysis, and security checks.
 
-For the complete CI/test overview, local commands, reports, and workflow behavior, see [CI and Testing](docs/ci-testing.md).
+See [Testing](docs/testing.md) for running tests locally and [Continuous Integration](docs/ci.md) for the GitHub Actions validation workflows.
 
 ## Deployment
 
-Production deployment is handled by GitHub Actions. On a push to `develop`, GitHub-hosted runners build the PHP and SQL images for AMD64 and ARM64 and publish them to GitHub Container Registry (GHCR). After both images are available, the deployment job runs on the repository-scoped `saperstone-production` self-hosted runner on the DietPi production server.
+On a push to `develop`, GitHub-hosted runners build and publish the production Docker images. A repository-scoped self-hosted runner on the DietPi production server then pulls and deploys the prebuilt images.
 
-The production runner deploys the prebuilt images with:
+See [Deployment](docs/deployment.md) for the delivery flow and [Self-Hosted Production Runner](docs/self-hosted-runner.md) for runner installation, security, maintenance, and recovery.
 
-```bash
-docker compose pull
-docker compose up -d
-```
+## Certificate maintenance
 
-GitHub does not SSH into production; the self-hosted runner maintains an outbound connection to GitHub. Production secrets and Compose configuration remain on the production host.
-
-For installation, security, verification, and recovery instructions, see [Self-Hosted Production Runner](docs/self-hosted-runner.md).
+TLS certificate renewal and the known Certbot troubleshooting procedures are documented in [TLS Certificate Maintenance](docs/certificates.md).
 
 ## Documentation
 
 - [Development Guide](docs/development.md) - local development, repository structure, and developer notes.
-- [CI and Testing](docs/ci-testing.md) - automated test suites, security checks, reports, and build/deploy flow.
+- [Testing](docs/testing.md) - running the automated test suites locally.
+- [Continuous Integration](docs/ci.md) - GitHub Actions validation, security checks, reports, and artifacts.
+- [Deployment](docs/deployment.md) - production image build and continuous-delivery flow.
+- [TLS Certificate Maintenance](docs/certificates.md) - recurring certificate renewal and troubleshooting.
 - [Self-Hosted Production Runner](docs/self-hosted-runner.md) - production runner setup, permissions, maintenance, and recovery.
