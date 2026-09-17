@@ -6,6 +6,15 @@ on:
   schedule:
     - cron: '23 22 * * 1'
   workflow_dispatch:
+    inputs:
+      scan:
+        description: 'ZAP scan to run'
+        required: true
+        default: full
+        type: choice
+        options:
+          - baseline
+          - full
 
 permissions:
   contents: read
@@ -13,6 +22,7 @@ permissions:
 jobs:
   baseline:
     name: ZAP Baseline Scan
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.scan == 'baseline')
     runs-on: ubuntu-latest
 
     steps:
@@ -32,6 +42,7 @@ jobs:
 
   full:
     name: ZAP Full Scan
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.scan == 'full')
     runs-on: ubuntu-latest
 
     steps:
