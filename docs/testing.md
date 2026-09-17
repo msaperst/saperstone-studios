@@ -2,7 +2,7 @@
 
 This document covers running the Saperstone Studios automated test suites locally. For the GitHub Actions workflows that execute these checks automatically, see [Continuous Integration](ci.md).
 
-All test commands are managed through Composer. Install dependencies before running the suites:
+All functional test commands are managed through Composer. Install dependencies before running the suites:
 
 ```bash
 composer install
@@ -60,34 +60,27 @@ composer coverage-test
 
 This runs the unit and integration suites and merges their Clover coverage output.
 
-## API tests
+## Full-stack test environment
 
-The API tests exercise a running application. Start the application first:
+API, UI/Page, UI/Behat, and ZAP CI jobs use the same full Docker Compose application. `bin/setup-ci-environment.sh` is the canonical setup for that CI environment: it writes the common `.env`, prepares writable test folders, and disables the production Let's Encrypt certificate reference for local CI.
+
+The script expects `DB_ROOT`, `DB_USER`, and `DB_PASS` in its environment. CI supplies those values from GitHub secrets. It uses Mailpit for application email so the running test application does not send through production SMTP.
+
+After setup, the full application is launched with:
 
 ```bash
 docker compose up --build -d
 ```
 
-Load the local environment and point database access at the locally exposed database:
+The CI application is available over HTTP on port 90. Functional suites then run through their Composer commands; browser suites additionally start ChromeDriver. ZAP scans the same running application directly.
 
-```bash
-set -a
-source .env
-set +a
-export DB_HOST=localhost
-```
+## API tests
 
-Ensure the Composer dependencies are clean and installed:
+With the full-stack test environment running, ensure Composer dependencies are clean and installed:
 
 ```bash
 composer clean
 composer install --prefer-dist --no-progress --no-suggest
-```
-
-Verify the application is available. The CI environment uses port 90:
-
-```bash
-curl --retry 50 -f --retry-all-errors --retry-delay 5 -s -o /dev/null "http://localhost:90/"
 ```
 
 Then run:
@@ -100,7 +93,7 @@ The API suite writes its JUnit and HTML results beneath `reports/`.
 
 ## UI page tests
 
-The UI page tests require a running application and ChromeDriver. On Debian/Ubuntu, ChromeDriver can be installed with:
+The UI page tests use the same full-stack application and require ChromeDriver. On Debian/Ubuntu, ChromeDriver can be installed with:
 
 ```bash
 sudo apt install chromium-chromedriver
@@ -112,7 +105,7 @@ Start ChromeDriver:
 chromedriver --port=4444
 ```
 
-With the Docker Compose application running, execute:
+Then execute:
 
 ```bash
 composer ui-page-test
@@ -141,4 +134,4 @@ composer ui-behat-test
 | UI page tests | `composer ui-page-test` |
 | Behat UI tests | `composer ui-behat-test` |
 
-Some browser and email-related tests require additional environment variables or credentials. The corresponding workflow under `.github/workflows/` is the canonical reference for the complete environment used in CI.
+Some browser and email-related tests require additional credentials. The workflows under `.github/workflows/` define those suite-specific additions; `bin/setup-ci-environment.sh` defines the common full-stack CI application environment.
