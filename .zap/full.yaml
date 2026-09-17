@@ -6,6 +6,8 @@ env:
         - http://localhost:90
       includePaths:
         - http://localhost:90.*
+      excludePaths:
+        - http://localhost:90/api/login\\.php.*
       authentication:
         method: form
         parameters:
