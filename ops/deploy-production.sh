@@ -5,7 +5,7 @@ REPOSITORY="msaperst/saperstone-studios"
 WORKFLOW="build-and-deploy.yml"
 BRANCH="develop"
 DEPLOY_DIR="/home/dietpi"
-STATE_DIR="/var/lib/saperstone-deploy"
+STATE_DIR="/home/dietpi/.local/state/saperstone-deploy"
 STATE_FILE="${STATE_DIR}/last-deployed-sha"
 
 latest_sha="$({
