@@ -22,9 +22,9 @@ See [Testing](docs/testing.md) for running tests locally and [Continuous Integra
 
 ## Deployment
 
-On a push to `develop`, GitHub-hosted runners build and publish the production Docker images. A repository-scoped self-hosted runner on the DietPi production server then pulls and deploys the prebuilt images.
+On a push to `develop`, GitHub-hosted runners build and publish the production Docker images. The DietPi production server independently checks for successful builds and pulls/deploys new images.
 
-See [Deployment](docs/deployment.md) for the delivery flow and [Self-Hosted Production Runner](docs/self-hosted-runner.md) for runner installation, security, maintenance, and recovery.
+See [Deployment](docs/deployment.md) for the delivery flow and [Production Pull Deployment](docs/production-pull-deployment.md) for production-side setup, security, maintenance, and recovery.
 
 ## Certificate maintenance
 
@@ -36,5 +36,5 @@ TLS certificate renewal and the known Certbot troubleshooting procedures are doc
 - [Testing](docs/testing.md) - running the automated test suites locally.
 - [Continuous Integration](docs/ci.md) - GitHub Actions validation, security checks, reports, and artifacts.
 - [Deployment](docs/deployment.md) - production image build and continuous-delivery flow.
+- [Production Pull Deployment](docs/production-pull-deployment.md) - production polling, deployment timer, security, and recovery.
 - [TLS Certificate Maintenance](docs/certificates.md) - recurring certificate renewal and troubleshooting.
-- [Self-Hosted Production Runner](docs/self-hosted-runner.md) - production runner setup, permissions, maintenance, and recovery.
