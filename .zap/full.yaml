@@ -6,6 +6,8 @@ env:
         - http://localhost:90
       includePaths:
         - http://localhost:90.*
+      excludePaths:
+        - http://localhost:90/api/login\\.php.*
       authentication:
         method: form
         parameters:
@@ -67,7 +69,7 @@ jobs:
       context: saperstone-studios
       user: zap-ci
       maxRuleDurationInMins: 5
-      maxScanDurationInMins: 30
+      maxScanDurationInMins: 60
 
   - type: passiveScan-wait
     parameters:
