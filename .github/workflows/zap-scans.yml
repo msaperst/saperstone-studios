@@ -63,12 +63,15 @@ jobs:
             -e "INSERT INTO users VALUES (9000, '${ZAP_USERNAME}', MD5('${ZAP_PASSWORD}'), 'ZAP', 'CI', 'zap-ci@example.org', 'admin', MD5('zap-ci-session'), 1, NOW(), NULL, NULL) ON DUPLICATE KEY UPDATE pass=VALUES(pass), role='admin', active=1;"
 
       - name: Run authenticated ZAP scan
-        uses: zaproxy/action-af@v0.3.0
-        with:
-          plan: '.zap/${{ steps.scan.outputs.scan }}.yaml'
-          docker_env_vars: |
-            ZAP_USERNAME
-            ZAP_PASSWORD
+        run: |
+          docker pull ghcr.io/zaproxy/zaproxy:stable
+          docker run --rm \
+            --network=host \
+            -v "$PWD:/zap/wrk/:rw" \
+            -e ZAP_USERNAME \
+            -e ZAP_PASSWORD \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap.sh -cmd -autorun "/zap/wrk/.zap/${{ steps.scan.outputs.scan }}.yaml"
 
       - name: Add ZAP results to job summary
         if: always()
