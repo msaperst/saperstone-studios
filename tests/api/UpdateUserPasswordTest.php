@@ -180,7 +180,7 @@ class UpdateUserPasswordTest extends TestCase {
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = 4;");
             $this->assertEquals(4, $userDetails['id']);
             $this->assertEquals('uploader', $userDetails['usr']);
-            $this->assertEquals(md5('newpassword'), $userDetails['pass']);
+            $this->assertTrue(password_verify('newpassword', $userDetails['pass']));
             $this->assertEquals('Upload', $userDetails['firstName']);
             $this->assertEquals('User', $userDetails['lastName']);
             $this->assertEquals('uploader@example.org', $userDetails['email']);

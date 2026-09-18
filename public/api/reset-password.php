@@ -24,7 +24,7 @@ try {
     exit();
 }
 $sql = new Sql();
-$sql->executeStatement("UPDATE users SET pass = ?, resetKey = NULL WHERE email = ? AND resetKey = ?", [md5($password), $email, $code]);
+$sql->executeStatement("UPDATE users SET pass = ?, resetKey = NULL WHERE email = ? AND resetKey = ?", [password_hash($password, PASSWORD_DEFAULT), $email, $code]);
 $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Reset Password', NULL, NULL)", [$user->getId()]);
 $sql->disconnect();
 $user->login(false);

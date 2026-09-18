@@ -19,9 +19,7 @@ $contract ['invoice'] = "";
 $contract ['location'] = "";
 // get the id if set, and pull these values
 if (isset ($_GET ['id'])) {
-    $sql = new Sql ();
-    $contract = $sql->getRow("SELECT * FROM contracts WHERE id = ?", [$_GET['id']]);
-    $sql->disconnect();
+    $contract = Contract::withId($_GET['id'])->getDataArray();
 }
 ?>
 

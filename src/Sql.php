@@ -58,7 +58,11 @@ class Sql {
         if (!$this->connected) {
             return array();
         }
-        return $this->query($selectStatement, $params)->fetch_assoc();
+        $result = $this->query($selectStatement, $params);
+        if (!$result instanceof mysqli_result) {
+            return null;
+        }
+        return $result->fetch_assoc();
     }
 
     /**
@@ -118,10 +122,10 @@ class Sql {
      * @return mysqli_result|bool
      */
     private function query(string $statement, array $params = []): mysqli_result|bool {
-        if (empty($params)) {
-            return $this->mysqli->query($statement);
-        }
-        return $this->mysqli->execute_query($statement, array_values($params));
+        $prepared = $this->mysqli->prepare($statement);
+        $prepared->execute(array_values($params));
+        $result = $prepared->get_result();
+        return $result === false ? true : $result;
     }
 
     /**

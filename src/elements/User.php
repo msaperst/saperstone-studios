@@ -67,7 +67,7 @@ class User {
                 throw new BadUserException("Password can not be blank");
             }
         }
-        $user->md5Pass = md5($user->password);
+        $user->md5Pass = password_hash($user->password, PASSWORD_DEFAULT);
         // some common values
         $sql->disconnect();
         $user->hash = md5($user->username . $user->password);
@@ -240,12 +240,30 @@ class User {
      */
     static function fromLogin($username, $password): User {
         $sql = new Sql();
-        $row = $sql->getRow("SELECT * FROM users WHERE usr = ? AND pass = ?", [$username, md5($password)]);
+        $row = $sql->getRow("SELECT * FROM users WHERE usr = ?", [$username]);
+        if ($row != null && self::passwordMatches($password, $row['pass'])) {
+            if (password_needs_rehash($row['pass'], PASSWORD_DEFAULT)) {
+                $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [password_hash($password, PASSWORD_DEFAULT), $row['id']]);
+            }
+        } else {
+            $row = null;
+        }
         $sql->disconnect();
         if ($row == null) {
             throw new BadUserException('Credentials do not match our records');
         }
         return User::withId($row['id']);
+    }
+
+    /**
+     * Supports existing MD5 credentials only long enough to replace them with
+     * PHP's current password hash after a successful login.
+     */
+    private static function passwordMatches(string $password, string $storedHash): bool {
+        if (password_get_info($storedHash)['algo'] !== null) {
+            return password_verify($password, $storedHash);
+        }
+        return hash_equals($storedHash, md5($password)); // NOSONAR legacy migration path only
     }
 
     /**
@@ -415,9 +433,12 @@ class User {
         } elseif (!$systemUser->isAdmin() && $params ['curPass'] == "") {
             $sql->disconnect();
             throw new BadUserException("Current password can not be blank");
-        } elseif (!$systemUser->isAdmin() && $sql->getRowCount("SELECT * FROM users WHERE id = ? AND pass = ?", [$systemUser->getId(), md5($params['curPass'])]) == 0) {
-            $sql->disconnect();
-            throw new BadUserException("Current password does not match our records");
+        } elseif (!$systemUser->isAdmin()) {
+            $currentUser = $sql->getRow("SELECT pass FROM users WHERE id = ?", [$systemUser->getId()]);
+            if ($currentUser === null || !self::passwordMatches($params['curPass'], $currentUser['pass'])) {
+                $sql->disconnect();
+                throw new BadUserException("Current password does not match our records");
+            }
         }
         // need to ensure repeated password matches
         if (!isset ($params['passwordConfirm'])) {
@@ -431,7 +452,7 @@ class User {
             throw new BadUserException("Password does not match password confirmation");
         }
         $this->password = $params['password'];
-        $this->md5Pass = md5($this->password);
+        $this->md5Pass = password_hash($this->password, PASSWORD_DEFAULT);
         $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [$this->md5Pass, $this->getId()]);
     }
 
