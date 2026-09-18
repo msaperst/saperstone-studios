@@ -9,9 +9,9 @@ $errors = new Errors();
 if (! isset ( $_GET ['s'] ) || $_GET ['s'] == '' ) {
     $errors->throw404();
 } else {
-    $search = $sql->escapeString( $_GET ['s'] );
+    $search = $_GET['s'];
 }
-$posts = $sql->getRows( "SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE ( `title` LIKE '%$search%' OR `safe_title` LIKE '%$search%' ) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE '%$search%') AS x GROUP BY `blog`;" );
+$posts = $sql->getRows("SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE (`title` LIKE ? OR `safe_title` LIKE ?) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE ?) AS x GROUP BY `blog`", ["%$search%", "%$search%", "%$search%"]);
 $sql->disconnect();
 ?>
 

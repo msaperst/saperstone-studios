@@ -12,7 +12,7 @@ try {
 }
 
 $sql = new Sql ();
-$sql->executeStatement("UPDATE `blog_details` SET `active` = '1' WHERE `id` = '{$blog->getId()}';");
+$sql->executeStatement("UPDATE `blog_details` SET `active` = 1 WHERE `id` = ?", [$blog->getId()]);
 $sql->disconnect();
 
 $sm = new SocialMedia ();

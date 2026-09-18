@@ -25,8 +25,8 @@ $contract ['lineItems'] = array(
 // get the id if set, and pull these values
 if (isset ($_GET ['id'])) {
     $sql = new Sql ();
-    $contract = $sql->getRow("SELECT * FROM contracts WHERE id = {$_GET['id']};");
-    $contract ['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = {$_GET['id']};");
+    $contract = $sql->getRow("SELECT * FROM contracts WHERE id = ?", [$_GET['id']]);
+    $contract ['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = ?", [$_GET['id']]);
     $sql->disconnect();
 }
 ?>

@@ -29,7 +29,7 @@ class Product {
         $product = new Product();
         $id = (int)$id;
         $sql = new Sql();
-        $product->raw = $sql->getRow("SELECT * FROM products WHERE id = $id;");
+        $product->raw = $sql->getRow("SELECT * FROM products WHERE id = ?", [$id]);
         $sql->disconnect();
         if (!isset($product->raw) || !isset($product->raw['id'])) {
             throw new BadProductException("Product id does not match any products");
@@ -78,7 +78,7 @@ class Product {
             $sql->disconnect();
             throw new BadProductException("Product size can not be blank");
         }
-        $product->size = $sql->escapeString($params ['size']);
+        $product->size = $params['size'];
         //product price
         if (!isset ($params['price'])) {
             $sql->disconnect();
@@ -121,7 +121,7 @@ class Product {
             throw new ProductException("User not authorized to create product");
         }
         $sql = new Sql();
-        $lastId = $sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (NULL, '{$this->type->getId()}', '{$this->size}', '{$this->price}', '{$this->cost}');");
+        $lastId = $sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (NULL, ?, ?, ?, ?)", [$this->type->getId(), $this->size, $this->price, $this->cost]);
         $sql->disconnect();
         $this->id = $lastId;
         $product = static::withId($lastId);
@@ -142,8 +142,8 @@ class Product {
         }
         self::setVals($this, $params);
         $sql = new Sql();
-        $sql->executeStatement("UPDATE `products` SET `product_type` = '{$this->type->getId()}', `size` = '{$this->size}', `cost` = '{$this->cost}' , `price` = '{$this->price}' WHERE `products`.`id` = {$this->id};");
-        $this->raw = $sql->getRow("SELECT * FROM products WHERE id = {$this->getId()};");
+        $sql->executeStatement("UPDATE `products` SET `product_type` = ?, `size` = ?, `cost` = ?, `price` = ? WHERE `products`.`id` = ?", [$this->type->getId(), $this->size, $this->cost, $this->price, $this->id]);
+        $this->raw = $sql->getRow("SELECT * FROM products WHERE id = ?", [$this->getId()]);
         $sql->disconnect();
     }
 
@@ -158,7 +158,7 @@ class Product {
             throw new ProductException("User not authorized to delete product");
         }
         $sql = new Sql();
-        $sql->executeStatement("DELETE FROM products WHERE id='{$this->id}';");
+        $sql->executeStatement("DELETE FROM products WHERE id = ?", [$this->id]);
         $sql->disconnect();
     }
 }

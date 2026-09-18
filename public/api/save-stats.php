@@ -13,7 +13,7 @@ $systemUser = User::fromSystem();
 if ($systemUser->isLoggedIn()) {
     $user = $systemUser->getId();
 } else {
-    $user = "NULL";
+    $user = null;
 }
 
 // get some location information
@@ -22,12 +22,12 @@ $ip = $session->getClientIP();
 // get our browser information
 $browser = new Browser ();
 
-$width = $height = "NULL";
+$width = $height = null;
 // get some additional screen information
 if (isset ($_GET ['resolution']) && strpos($_GET ['resolution'], 'x') !== false) {
     $temp = explode("x", urldecode($_GET ['resolution']));
-    $width = "'" . $temp [0] . "'";
-    $height = "'" . $temp [1] . "'";
+    $width = $temp[0];
+    $height = $temp[1];
 }
 
 // get where we came from
@@ -44,6 +44,6 @@ $isRobot = (int)$browser->isRobot();
 $isTablet = (int)$browser->isTablet();
 
 $sql = new Sql ();
-$sql->executeStatement("INSERT INTO `usage` (`user`, `ip`, `browser`, `version`, `width`, `height`, `os`, `url`, `isTablet`, `isMobile`, `isAOL`, `isFacebook`, `isRobot`, `ua`) VALUES ($user, '$ip', '{$browser->getBrowser()}', '{$browser->getVersion()}', $width, $height, '{$browser->getPlatform()}', '$referrer', $isTablet, $isMobile, $isAol, $isFacebook, $isRobot, '{$browser->getUserAgent()}');");
+$sql->executeStatement("INSERT INTO `usage` (`user`, `ip`, `browser`, `version`, `width`, `height`, `os`, `url`, `isTablet`, `isMobile`, `isAOL`, `isFacebook`, `isRobot`, `ua`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [$user, $ip, $browser->getBrowser(), $browser->getVersion(), $width, $height, $browser->getPlatform(), $referrer, $isTablet, $isMobile, $isAol, $isFacebook, $isRobot, $browser->getUserAgent()]);
 $sql->disconnect();
 exit ();

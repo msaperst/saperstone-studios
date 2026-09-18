@@ -13,6 +13,6 @@ try {
 }
 
 $sql = new Sql ();
-$sql->executeStatement("INSERT INTO `product_options` (`product_type`, `opt`) VALUES ('{$type->getId()}', '$option');");
+$sql->executeStatement("INSERT INTO `product_options` (`product_type`, `opt`) VALUES (?, ?)", [$type->getId(), $option]);
 $sql->disconnect();
 exit ();

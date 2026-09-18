@@ -13,6 +13,6 @@ try {
 }
 
 $sql = new Sql();
-$sql->executeStatement("DELETE FROM `product_options` WHERE `product_type` = '{$type->getId()}' AND `opt` = '$option';");
+$sql->executeStatement("DELETE FROM `product_options` WHERE `product_type` = ? AND `opt` = ?", [$type->getId(), $option]);
 $sql->disconnect();
 exit ();

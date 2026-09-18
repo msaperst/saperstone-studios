@@ -38,7 +38,7 @@ class Blog {
         $blog = new Blog();
         $id = (int)$id;
         $sql = new Sql();
-        $blog->raw = $sql->getRow("SELECT * FROM blog_details WHERE id = $id;");
+        $blog->raw = $sql->getRow("SELECT * FROM blog_details WHERE id = ?", [$id]);
         if (!isset($blog->raw) || !isset($blog->raw['id'])) {
             $sql->disconnect();
             throw new BadBlogException("Blog id does not match any blog posts");
@@ -52,21 +52,21 @@ class Blog {
         $blog->preview = $blog->raw['preview'];
         $blog->offset = $blog->raw['offset'];
         $blog->active = $blog->raw['active'];
-        $blog->tags = $sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = $id;");
+        $blog->tags = $sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = ?", [$id]);
         $blog->raw['tags'] = $blog->tags;      //putting the tags back in
         // content
         $blog->raw['content'] = array();
-        foreach ($sql->getRows("SELECT * FROM `blog_images` WHERE blog = $id;") as $image) {
+        foreach ($sql->getRows("SELECT * FROM `blog_images` WHERE blog = ?", [$id]) as $image) {
             $blog->raw['content'][$image['contentGroup']] [] = $image;
             $blog->content[] = new BlogImage($blog, $image['contentGroup'], $image);
         }
-        foreach ($sql->getRows("SELECT * FROM `blog_texts` WHERE blog = $id;") as $text) {
+        foreach ($sql->getRows("SELECT * FROM `blog_texts` WHERE blog = ?", [$id]) as $text) {
             $blog->raw['content'][$text['contentGroup']] [] = $text;
             $text['group'] = $text['contentGroup'];  //KLUDGE for my ugly naming convention
             $blog->content[] = new BlogText($blog, $text);
         }
         // comments
-        foreach ($sql->getRows("SELECT * FROM `blog_comments` WHERE blog = $id ORDER BY date desc;") as $comment) {
+        foreach ($sql->getRows("SELECT * FROM `blog_comments` WHERE blog = ? ORDER BY date desc", [$id]) as $comment) {
             $blog->comments[] = Comment::withId($comment['id']);
         }
         $blog->raw['comments'] = array();      //putting the comments back in
@@ -105,7 +105,7 @@ class Blog {
             $sql->disconnect();
             throw new BadBlogException("Blog title can not be blank");
         }
-        $blog->title = $sql->escapeString($params ['title']);
+        $blog->title = $params['title'];
         //blog date
         if (!isset ($params['date'])) {
             $sql->disconnect();
@@ -114,12 +114,12 @@ class Blog {
             $sql->disconnect();
             throw new BadBlogException("Blog date can not be blank");
         } else {
-            if (!Strings::isDateFormatted($sql->escapeString($params ['date']))) {
+            if (!Strings::isDateFormatted($params['date'])) {
                 $sql->disconnect();
                 throw new BadBlogException("Blog date is not the correct format");
             }
         }
-        $blog->date = $sql->escapeString($params ['date']);
+        $blog->date = $params['date'];
         //blog preview image
         if (!isset ($params ['preview'] ['img'])) {
             $sql->disconnect();
@@ -128,7 +128,7 @@ class Blog {
             $sql->disconnect();
             throw new BadBlogException("Blog preview image can not be blank");
         }
-        $blog->preview = $sql->escapeString($params ['preview'] ['img']);
+        $blog->preview = $params['preview']['img'];
         //blog preview offset
         $blog->offset = 0;
         if (isset ($params ['preview'] ['offset'])) {
@@ -283,13 +283,12 @@ class Blog {
 
         // write our initial blog information
         $sql = new Sql();
-        $blogId = $sql->executeStatement("INSERT INTO `blog_details` ( `title`, `date`, `preview`, `offset` ) VALUES ('{$this->title}', '{$this->date}', '{$this->preview}', '{$this->offset}' );");
+        $blogId = $sql->executeStatement("INSERT INTO `blog_details` (`title`, `date`, `preview`, `offset`) VALUES (?, ?, ?, ?)", [$this->title, $this->date, $this->preview, $this->offset]);
         $this->id = $blogId;
         // update our preview image with the blog post id
         rename("{$this->directory}/preview_image.jpg", "{$this->directory}/preview_image-$blogId.jpg");
         $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-$blogId.jpg", strlen(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
-        $escapedPreview = $sql->escapeString($this->preview);
-        $sql->executeStatement("UPDATE `blog_details` SET `preview` = '{$escapedPreview}' WHERE `id` = $blogId;");
+        $sql->executeStatement("UPDATE `blog_details` SET `preview` = ? WHERE `id` = ?", [$this->preview, $blogId]);
 
         //create our content
         foreach ($this->content as $content) {
@@ -299,7 +298,7 @@ class Blog {
 
         //create our tags
         foreach ($this->tags as $tag) {
-            $sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ($blogId, $tag)");
+            $sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES (?, ?)", [$blogId, $tag]);
         }
         $sql->disconnect();
         $blog = static::withId($blogId);
@@ -328,19 +327,16 @@ class Blog {
             system("mogrify -resize 360x \"{$this->preview}\" > /dev/null 2>&1");
             system("mogrify -density 72 \"{$this->preview}\" > /dev/null 2>&1");
             $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg", strlen(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
-            $sql = new Sql();
-            $this->preview = $sql->escapeString($this->preview);
-            $sql->disconnect();
         }
 
         $sql = new Sql();
         // update our basic information
-        $sql->executeStatement("UPDATE `blog_details` SET `title` = '{$this->title}', `date` = '{$this->date}', `offset` = '{$this->offset}' WHERE `id` = {$this->id};");
+        $sql->executeStatement("UPDATE `blog_details` SET `title` = ?, `date` = ?, `offset` = ? WHERE `id` = ?", [$this->title, $this->date, $this->offset, $this->id]);
 
         // update our tags
-        $sql->executeStatement("DELETE FROM blog_tags WHERE blog='{$this->id}';");
+        $sql->executeStatement("DELETE FROM blog_tags WHERE blog = ?", [$this->id]);
         foreach ($this->tags as $tag) {
-            $sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES ({$this->id}, $tag)");
+            $sql->executeStatement("INSERT INTO `blog_tags` (`blog`, `tag`) VALUES (?, ?)", [$this->id, $tag]);
         }
 
         // update our status
@@ -349,7 +345,7 @@ class Blog {
             $this->active = (int)$params ['active'];
             if ($this->active != $originalStatus) {
                 // if we have a change in status
-                $sql->executeStatement("UPDATE `blog_details` SET `active` = '{$this->active}' WHERE `id` = {$this->id};");
+                $sql->executeStatement("UPDATE `blog_details` SET `active` = ? WHERE `id` = ?", [$this->active, $this->id]);
                 $socialMedia = new SocialMedia();
                 $socialMedia->generateRSS();
             }
@@ -358,8 +354,8 @@ class Blog {
         if (isset($params['content']) && !empty($params['content'])) {
             self::setContent($this, $params);
             // update our content
-            $sql->executeStatement("DELETE FROM blog_texts WHERE blog='{$this->id}';");
-            $sql->executeStatement("DELETE FROM blog_images WHERE blog='{$this->id}';");
+            $sql->executeStatement("DELETE FROM blog_texts WHERE blog = ?", [$this->id]);
+            $sql->executeStatement("DELETE FROM blog_images WHERE blog = ?", [$this->id]);
             foreach ($this->content as $content) {
                 $content->setBlog($this);
                 $content->create();
@@ -380,13 +376,13 @@ class Blog {
             throw new BlogException("User not authorized to delete blog post");
         }
         $sql = new Sql();
-        $images = $sql->getRows("SELECT * FROM blog_images WHERE blog='{$this->id}';");
+        $images = $sql->getRows("SELECT * FROM blog_images WHERE blog = ?", [$this->id]);
         //clean up our database
-        $sql->executeStatement("DELETE FROM blog_details WHERE id='{$this->id}';");
-        $sql->executeStatement("DELETE FROM blog_images WHERE blog='{$this->id}';");
-        $sql->executeStatement("DELETE FROM blog_tags WHERE blog='{$this->id}';");
-        $sql->executeStatement("DELETE FROM blog_texts WHERE blog='{$this->id}';");
-        $sql->executeStatement("DELETE FROM blog_comments WHERE blog='{$this->id}';");
+        $sql->executeStatement("DELETE FROM blog_details WHERE id = ?", [$this->id]);
+        $sql->executeStatement("DELETE FROM blog_images WHERE blog = ?", [$this->id]);
+        $sql->executeStatement("DELETE FROM blog_tags WHERE blog = ?", [$this->id]);
+        $sql->executeStatement("DELETE FROM blog_texts WHERE blog = ?", [$this->id]);
+        $sql->executeStatement("DELETE FROM blog_comments WHERE blog = ?", [$this->id]);
         $sql->disconnect();
         // delete our files
         foreach ($images as $image) {

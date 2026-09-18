@@ -29,7 +29,7 @@ class Gallery {
         $gallery = new Gallery();
         $sql = new Sql();
         $id = (int)$id;
-        $gallery->raw = $sql->getRow("SELECT * FROM galleries WHERE id = $id;");
+        $gallery->raw = $sql->getRow("SELECT * FROM galleries WHERE id = ?", [$id]);
         if (!isset($gallery->raw) || !isset($gallery->raw['id'])) {
             $sql->disconnect();
             throw new BadGalleryException("Gallery id does not match any galleries");
@@ -158,10 +158,10 @@ class Gallery {
     function update($params) {
         $sql = new Sql();
         if (isset ($params ['title'])) {
-            $this->title = $sql->escapeString($params ['title']);
+            $this->title = $params['title'];
         }
-        $sql->executeStatement("UPDATE galleries SET title='{$this->title}' WHERE id='{$this->id}';");
-        $this->raw = $sql->getRow("SELECT * FROM galleries WHERE id = {$this->id};");
+        $sql->executeStatement("UPDATE galleries SET title = ? WHERE id = ?", [$this->title, $this->id]);
+        $this->raw = $sql->getRow("SELECT * FROM galleries WHERE id = ?", [$this->id]);
         $sql->disconnect();
     }
 }

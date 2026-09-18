@@ -20,7 +20,7 @@ try {
 
 //update the title and caption
 $sql = new Sql();
-$sql->executeStatement("UPDATE gallery_images SET title = '{$title}', caption = '{$caption}' WHERE gallery='{$gallery->getId()}' AND id='{$image->getId()}';");
+$sql->executeStatement("UPDATE gallery_images SET title = ?, caption = ? WHERE gallery = ? AND id = ?", [$title, $caption, $gallery->getId(), $image->getId()]);
 $sql->disconnect();
 //rename the file if it needs it
 if ($filename != $image->getLocation()) {
@@ -37,7 +37,7 @@ if ($filename != $image->getLocation()) {
     if (file_exists($originalFile) && !file_exists($newFile)) {
         rename("$originalFile", "$newFile");
         $sql = new Sql();
-        $sql->executeStatement("UPDATE gallery_images SET location = '{$filename}' WHERE gallery='{$gallery->getId()}' AND id='{$image->getId()}';");
+        $sql->executeStatement("UPDATE gallery_images SET location = ? WHERE gallery = ? AND id = ?", [$filename, $gallery->getId(), $image->getId()]);
         $sql->disconnect();
     } else {
         echo "Unable to find original image to rename!";

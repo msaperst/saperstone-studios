@@ -54,23 +54,23 @@ class Sql {
      * @param $selectStatement
      * @return array|null
      */
-    function getRow($selectStatement): ?array {
+    function getRow($selectStatement, array $params = []): ?array {
         if (!$this->connected) {
             return array();
         }
-        return $this->mysqli->query($selectStatement)->fetch_assoc();
+        return $this->query($selectStatement, $params)->fetch_assoc();
     }
 
     /**
      * @param $selectStatement
      * @return array
      */
-    function getRows($selectStatement): array {
+    function getRows($selectStatement, array $params = []): array {
         $rows = array();
         if (!$this->connected) {
             return $rows;
         }
-        $result = $this->mysqli->query($selectStatement);
+        $result = $this->query($selectStatement, $params);
         if ($result == NULL) {
             return $rows;
         }
@@ -84,11 +84,11 @@ class Sql {
      * @param $selectStatement
      * @return int
      */
-    function getRowCount($selectStatement): int {
+    function getRowCount($selectStatement, array $params = []): int {
         if (!$this->connected) {
             return 0;
         }
-        $rows = $this->mysqli->query($selectStatement);
+        $rows = $this->query($selectStatement, $params);
         if ($rows == NULL) {
             return 0;
         }
@@ -100,12 +100,39 @@ class Sql {
      * @return string
      * @throws SqlException
      */
-    function executeStatement($statement): string {
+    function executeStatement($statement, array $params = []): string {
         if (!$this->connected) {
             throw new SqlException("Not connected, unable to execute statement: '$statement'");
         }
-        $this->mysqli->query($statement);
+        $this->query($statement, $params);
         return $this->mysqli->insert_id;
+    }
+
+    /**
+     * Executes SQL, using a prepared statement whenever values are supplied.
+     * Keeping values separate from the statement ensures they can never be
+     * interpreted as SQL syntax.
+     *
+     * @param string $statement
+     * @param array $params
+     * @return mysqli_result|bool
+     */
+    private function query(string $statement, array $params = []): mysqli_result|bool {
+        if (empty($params)) {
+            return $this->mysqli->query($statement);
+        }
+        return $this->mysqli->execute_query($statement, array_values($params));
+    }
+
+    /**
+     * Validates and quotes a table or column identifier. Identifiers cannot be
+     * represented by SQL parameter placeholders, so they require an allowlist.
+     */
+    function quoteIdentifier(string $identifier): string {
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $identifier)) {
+            throw new InvalidArgumentException('Invalid SQL identifier');
+        }
+        return "`$identifier`";
     }
 
     /**
@@ -117,7 +144,8 @@ class Sql {
         if (!$this->connected) {
             return array();
         }
-        $type = $this->mysqli->query("SHOW COLUMNS FROM {$table} WHERE Field = '{$field}'")->fetch_assoc()['Type'];
+        $table = $this->quoteIdentifier($table);
+        $type = $this->query("SHOW COLUMNS FROM {$table} WHERE Field = ?", [$field])->fetch_assoc()['Type'];
         preg_match("/^enum\(\'(.*)\'\)$/", $type, $matches);
         return explode("','", $matches[1]);
     }

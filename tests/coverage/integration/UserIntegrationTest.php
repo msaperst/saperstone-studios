@@ -151,6 +151,24 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals(899, $user->getId());
     }
 
+    public function testFromLoginRejectsSqlInjectionUsername() {
+        $this->expectException(BadUserException::class);
+        $this->expectExceptionMessage('Credentials do not match our records');
+        User::fromLogin("test' OR 1=1 -- ", 'anything');
+    }
+
+    public function testFromResetRejectsSqlInjectionCode() {
+        $this->expectException(BadUserException::class);
+        $this->expectExceptionMessage('Credentials do not match our records');
+        User::fromReset('test@example.com', "' OR 1=1 -- ");
+    }
+
+    public function testFromEmailRejectsSqlInjection() {
+        $this->expectException(BadUserException::class);
+        $this->expectExceptionMessage('Credentials do not match our records');
+        User::fromEmail("nobody@example.com' OR 1=1 -- ");
+    }
+
     public function testFromEmailNoMatch() {
         $this->expectException(BadUserException::class);
         $this->expectExceptionMessage('Credentials do not match our records');

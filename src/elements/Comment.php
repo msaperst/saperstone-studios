@@ -33,7 +33,7 @@ class Comment {
         $comment = new Comment();
         $id = (int)$id;
         $sql = new Sql();
-        $comment->raw = $sql->getRow("SELECT * FROM blog_comments WHERE id = $id;");
+        $comment->raw = $sql->getRow("SELECT * FROM blog_comments WHERE id = ?", [$id]);
         if (!isset($comment->raw) || !isset($comment->raw['id'])) {
             $sql->disconnect();
             throw new BadCommentException("Comment id does not match any comments");
@@ -70,11 +70,11 @@ class Comment {
         $sql = new Sql ();
         // name is optional
         if (isset ($params ['name']) && $params ['name'] != "") {
-            $comment->name = $sql->escapeString($params ['name']);
+            $comment->name = $params['name'];
         }
         //email is optional
         if (isset ($params ['email']) && $params ['email'] != "") {
-            $comment->email = $sql->escapeString($params ['email']);
+            $comment->email = $params['email'];
         }
         //message is required
         if (!isset ($params['message'])) {
@@ -84,14 +84,14 @@ class Comment {
             $sql->disconnect();
             throw new BadCommentException("Message can not be blank");
         }
-        $comment->comment = $sql->escapeString($params ['message']);
+        $comment->comment = $params['message'];
         $sql->disconnect();
         // determine our user
         $user = User::fromSystem();
         if ($user->getId() != "") {
-            $comment->user = "'" . $user->getId() . "'";
+            $comment->user = $user->getId();
         } else {
-            $comment->user = "NULL";
+            $comment->user = null;
         }
         return $comment;
     }
@@ -128,7 +128,7 @@ class Comment {
         $session = new Session();
         $session->initialize();
         $sql = new Sql();
-        $commentId = $sql->executeStatement("INSERT INTO blog_comments ( blog, user, name, date, ip, email, comment ) VALUES ({$this->blog->getId()}, {$this->user}, '{$this->name}', CURRENT_TIMESTAMP, '{$session->getClientIP()}', '{$this->email}', '{$this->comment}' );");
+        $commentId = $sql->executeStatement("INSERT INTO blog_comments (blog, user, name, date, ip, email, comment) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)", [$this->blog->getId(), $this->user, $this->name, $session->getClientIP(), $this->email, $this->comment]);
         $this->id = $commentId;
         $sql->disconnect();
         $comment = static::withId($commentId);
@@ -147,7 +147,7 @@ class Comment {
             throw new CommentException("User not authorized to delete comment");
         }
         $sql = new Sql();
-        $sql->executeStatement("DELETE FROM blog_comments WHERE id={$this->id};");
+        $sql->executeStatement("DELETE FROM blog_comments WHERE id = ?", [$this->id]);
         $sql->disconnect();
     }
 }

@@ -12,6 +12,6 @@ try {
 }
 
 $sql = new Sql();
-echo json_encode($sql->getRow("SELECT title FROM galleries WHERE galleries.id = {$gallery->getId()}"));
+echo json_encode($sql->getRow("SELECT title FROM galleries WHERE galleries.id = ?", [$gallery->getId()]));
 $sql->disconnect();
 exit ();

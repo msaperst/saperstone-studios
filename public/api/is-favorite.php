@@ -12,7 +12,7 @@ try {
 }
 
 $sql = new Sql ();
-$favorite = $sql->getRow("SELECT user FROM `favorites` WHERE `user` = '{$systemUser->getIdentifier()}' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}';");
+$favorite = $sql->getRow("SELECT user FROM `favorites` WHERE `user` = ? AND `album` = ? AND `image` = ?", [$systemUser->getIdentifier(), $album->getId(), $image->getId()]);
 if (isset($favorite ['user'])) {
     echo 1;
 } else {

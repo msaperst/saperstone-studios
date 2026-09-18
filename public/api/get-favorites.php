@@ -12,7 +12,7 @@ try {
 
 
 $sql = new Sql();
-$results = $sql->getRows("SELECT album_images.album, album_images.sequence, album_images.location FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '{$systemUser->getIdentifier()}';");
+$results = $sql->getRows("SELECT album_images.album, album_images.sequence, album_images.location FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = ?", [$systemUser->getIdentifier()]);
 $favorites = array();
 foreach ($results as $r) {
     $album = $r ['album'];

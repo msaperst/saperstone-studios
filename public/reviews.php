@@ -9,13 +9,13 @@ $errors = new Errors();
 $where = '';
 if (isset ($_GET ['c'])) {
     $category = (int)$_GET ['c'];
-    $details = $sql->getRow("SELECT * FROM `review_types` WHERE id = '$category';");
+    $details = $sql->getRow("SELECT * FROM `review_types` WHERE id = ?", [$category]);
     if (!isset($details ['name'])) {
         $errors->throw404();
     }
-    $where = " WHERE `category` = $category";
+    $where = " WHERE `category` = ?";
 }
-$reviews = $sql->getRows("SELECT * FROM `reviews`$where;");
+$reviews = $sql->getRows("SELECT * FROM `reviews`$where", isset($category) ? [$category] : []);
 $sql->disconnect();
 ?>
 <!DOCTYPE html>
