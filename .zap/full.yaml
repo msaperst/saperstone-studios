@@ -69,7 +69,7 @@ jobs:
       context: saperstone-studios
       user: zap-ci
       maxRuleDurationInMins: 5
-      maxScanDurationInMins: 30
+      maxScanDurationInMins: 60
 
   - type: passiveScan-wait
     parameters:
