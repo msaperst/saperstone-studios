@@ -12,7 +12,7 @@ try {
 }
 $sql = new Sql ();
 // send out emails to each user, and then mark the db showing they've been updated
-$notifications = $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()} AND contacted = FALSE;");
+$notifications = $sql->getRows("SELECT * FROM notification_emails WHERE album = ? AND contacted = FALSE", [$album->getId()]);
 foreach ($notifications as $notification) {
     $to = $notification['email'];
     if (is_integer($notification['user'])) {
@@ -35,7 +35,7 @@ foreach ($notifications as $notification) {
     $email->setHtml($html);
     try {
         $email->sendEmail();
-        $sql->executeStatement("UPDATE `notification_emails` SET contacted = TRUE WHERE album = {$album->getId()} AND email = '{$notification['email']}';");
+        $sql->executeStatement("UPDATE `notification_emails` SET contacted = TRUE WHERE album = ? AND email = ?", [$album->getId(), $notification['email']]);
     } catch (Exception $e) {
         echo $e->getMessage() . "\n<br/>";
     }

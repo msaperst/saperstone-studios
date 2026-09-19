@@ -26,7 +26,7 @@ try {
 
 $sql = new Sql();
 if ($what == "favorites") {
-    $selected = array_column($sql->getRows("SELECT album_images.title FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '{$systemUser->getIdentifier()}' AND favorites.album = '{$album->getId()}';"), 'title');
+    $selected = array_column($sql->getRows("SELECT album_images.title FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = ? AND favorites.album = ?", [$systemUser->getIdentifier(), $album->getId()]), 'title');
     if (empty($selected)) {
         echo json_encode(array('err' => "You have not selected any favorites"));
         $sql->disconnect();

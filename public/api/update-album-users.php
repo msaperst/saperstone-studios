@@ -12,10 +12,10 @@ try {
 }
 
 $sql = new Sql ();
-$sql->executeStatement("DELETE FROM albums_for_users WHERE album = {$album->getId()}");
+$sql->executeStatement("DELETE FROM albums_for_users WHERE album = ?", [$album->getId()]);
 if (isset ($_POST ['users']) && is_array($_POST ['users'])) {
     foreach ($_POST ['users'] as $user) {
-        $sql->executeStatement("INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '$user', '{$album->getId()}' );");
+        $sql->executeStatement("INSERT INTO albums_for_users (`user`, `album`) VALUES (?, ?)", [$user, $album->getId()]);
     }
 }
 $sql->disconnect();

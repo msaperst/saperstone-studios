@@ -3,6 +3,7 @@
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Album {
+    private const SELECT_BY_ID = "SELECT * FROM albums WHERE id = ?";
 
     private $raw;
     private $id;
@@ -199,7 +200,7 @@ class Album {
         $album = new Album();
         $id = (int)$id;
         $sql = new Sql();
-        $album->raw = $sql->getRow("SELECT * FROM albums WHERE id = ?", [$id]);
+        $album->raw = $sql->getRow(self::SELECT_BY_ID, [$id]);
         if (!isset($album->raw) || !isset($album->raw['id'])) {
             $sql->disconnect();
             throw new BadAlbumException("Album id does not match any albums");
@@ -239,7 +240,7 @@ class Album {
         self::setVals($this, $params);
         $sql = new Sql();
         $sql->executeStatement("UPDATE albums SET name = ?, description = ?, date = ?, code = NULL WHERE id = ?", [$this->name, $this->description, $this->date, $this->getId()]);
-        $this->raw = $sql->getRow("SELECT * FROM albums WHERE id = ?", [$this->getId()]);
+        $this->raw = $sql->getRow(self::SELECT_BY_ID, [$this->getId()]);
         if (isset ($params['code']) && $params['code'] != "" && $user->isAdmin()) {
             $code = $params['code'];
             $codeExist = $sql->getRowCount("SELECT * FROM `albums` WHERE code = ?", [$code]);
@@ -251,7 +252,7 @@ class Album {
                 throw new BadAlbumException("Album code already exists");
             }
         }
-        $this->raw = $sql->getRow("SELECT * FROM albums WHERE id = ?", [$this->getId()]);
+        $this->raw = $sql->getRow(self::SELECT_BY_ID, [$this->getId()]);
         $sql->disconnect();
     }
 

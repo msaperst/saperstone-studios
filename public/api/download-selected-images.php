@@ -17,7 +17,7 @@ try {
 
 // check for album access
 $sql = new Sql();
-$isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE user = '0' AND album = '{$album->getId()}';");
+$isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE user = '0' AND album = ?", [$album->getId()]);
 if (!$systemUser->isLoggedIn() && !$isAlbumDownloadable) {
     header('HTTP/1.0 401 Unauthorized');
     $sql->disconnect();
@@ -29,11 +29,11 @@ $userId = $systemUser->getIdentifier();
 //TODO - might need to ensure that the user has access to the album
 // determine what the user can download
 $downloadable = array();
-foreach ($sql->getRows("SELECT * FROM `download_rights` WHERE `user` = '" . $systemUser->getId() . "' OR ( `user` = '0' AND `album` != '*');") as $r) {
+foreach ($sql->getRows("SELECT * FROM `download_rights` WHERE `user` = ? OR (`user` = '0' AND `album` != '*')", [$systemUser->getId()]) as $r) {
     if (($r ['album'] == "*" && $r ['image'] == "*") || ($r ['album'] == $album->getId() && $r ['image'] == "*")) {
-        $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = {$album->getId()};"));
+        $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = ?", [$album->getId()]));
     } elseif ($r ['album'] == $album->getId()) {
-        $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = {$album->getId()} AND id = " . $r ['image'] . ";"));
+        $downloadable = array_merge($downloadable, $sql->getRows("SELECT * FROM album_images WHERE album = ? AND id = ?", [$album->getId(), $r['image']]));
     }
 }
 $downloadable = array_unique($downloadable, SORT_REGULAR);
@@ -41,11 +41,11 @@ $downloadable = array_unique($downloadable, SORT_REGULAR);
 // determine what the user wants to download
 $desired = array();
 if ($what == "all") {
-    $desired = $sql->getRows("SELECT album_images.* FROM album_images WHERE album = '{$album->getId()}';");
+    $desired = $sql->getRows("SELECT album_images.* FROM album_images WHERE album = ?", [$album->getId()]);
 } elseif ($what == "favorites") {
-    $desired = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = '$userId' AND favorites.album = '{$album->getId()}';");
+    $desired = $sql->getRows("SELECT album_images.* FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = ? AND favorites.album = ?", [$userId, $album->getId()]);
 } else {
-    $desired = $sql->getRows("SELECT * FROM album_images WHERE album = '{$album->getId()}' AND sequence = '" . (int)$what . "';");
+    $desired = $sql->getRows("SELECT * FROM album_images WHERE album = ? AND sequence = ?", [$album->getId(), (int)$what]);
 }
 
 // determine what we will download
@@ -119,7 +119,7 @@ system($cmd);
 
 // update our user records table
 if ($systemUser->getId()) {
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Downloaded', '" . implode("\n", $image_array) . "', {$album->getId()} );");
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Downloaded', ?, ?)", [$systemUser->getId(), implode("\n", $image_array), $album->getId()]);
 }
 $sql->disconnect();
 

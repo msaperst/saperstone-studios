@@ -8,7 +8,8 @@ if (isset ($_GET ['start'])) {
 }
 
 $sql = new Sql();
-$query = "SELECT * FROM `blog_details` WHERE `active` ORDER BY `date` DESC, `id` DESC LIMIT $start,1;";
+$query = "SELECT * FROM `blog_details` WHERE `active` ORDER BY `date` DESC, `id` DESC LIMIT ?, 1";
+$params = [$start];
 if (isset ($_GET ['tag'])) {
     $query = "SELECT DISTINCT id,date FROM blog_tags AS a1";
     $where = " LEFT JOIN blog_details as details ON a1.blog = details.id WHERE ";
@@ -16,13 +17,14 @@ if (isset ($_GET ['tag'])) {
         if ($i != 1) {
             $query .= " JOIN blog_tags AS a$i USING (blog) ";
         }
-        $where .= "a$i.tag = " . $_GET['tag'][$i - 1] . " AND ";
+        $where .= "a$i.tag = ? AND ";
     }
     $where = substr($where, 0, -4);
-    $query .= $where . " ORDER BY details.date DESC, details.id DESC LIMIT $start,1;";
+    $query .= $where . " ORDER BY details.date DESC, details.id DESC LIMIT ?, 1";
+    $params = array_merge(array_values($_GET['tag']), [$start]);
 }
 
-$blogDetails = $sql->getRow($query);
+$blogDetails = $sql->getRow($query, $params);
 $sql->disconnect();
 
 try {

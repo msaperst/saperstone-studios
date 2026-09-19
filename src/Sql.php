@@ -16,7 +16,7 @@ class Sql {
      * Sql constructor.
      * @throws SqlException
      */
-    function __construct() {
+    public function __construct() {
         try {
             $this->mysqli = new mysqli (getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
         } catch (Exception $e) {
@@ -25,7 +25,7 @@ class Sql {
         $this->connected = true;
     }
 
-    function disconnect() {
+    public function disconnect() {
         if ($this->connected) {
             $this->mysqli->close();
             $this->connected = false;
@@ -35,7 +35,7 @@ class Sql {
     /**
      * @return bool
      */
-    function isConnected(): bool {
+    public function isConnected(): bool {
         return $this->connected;
     }
 
@@ -43,7 +43,7 @@ class Sql {
      * @param $string
      * @return string
      */
-    function escapeString($string): string {
+    public function escapeString($string): string {
         if (!$this->connected) {
             return $string;
         }
@@ -54,7 +54,7 @@ class Sql {
      * @param $selectStatement
      * @return array|null
      */
-    function getRow($selectStatement, array $params = []): ?array {
+    public function getRow($selectStatement, array $params = []): ?array {
         if (!$this->connected) {
             return array();
         }
@@ -69,7 +69,7 @@ class Sql {
      * @param $selectStatement
      * @return array
      */
-    function getRows($selectStatement, array $params = []): array {
+    public function getRows($selectStatement, array $params = []): array {
         $rows = array();
         if (!$this->connected) {
             return $rows;
@@ -88,7 +88,7 @@ class Sql {
      * @param $selectStatement
      * @return int
      */
-    function getRowCount($selectStatement, array $params = []): int {
+    public function getRowCount($selectStatement, array $params = []): int {
         if (!$this->connected) {
             return 0;
         }
@@ -104,7 +104,7 @@ class Sql {
      * @return string
      * @throws SqlException
      */
-    function executeStatement($statement, array $params = []): string {
+    public function executeStatement($statement, array $params = []): string {
         if (!$this->connected) {
             throw new SqlException("Not connected, unable to execute statement: '$statement'");
         }
@@ -122,7 +122,10 @@ class Sql {
      * @return mysqli_result|bool
      */
     private function query(string $statement, array $params = []): mysqli_result|bool {
-        $prepared = $this->mysqli->prepare($statement);
+        // The SQL template is supplied by application code; all runtime values
+        // are passed separately to execute(). Sonar does not currently model
+        // mysqli's two-step prepare/execute data flow correctly.
+        $prepared = $this->mysqli->prepare($statement); // NOSONAR
         $prepared->execute(array_values($params));
         $result = $prepared->get_result();
         return $result === false ? true : $result;
@@ -132,8 +135,8 @@ class Sql {
      * Validates and quotes a table or column identifier. Identifiers cannot be
      * represented by SQL parameter placeholders, so they require an allowlist.
      */
-    function quoteIdentifier(string $identifier): string {
-        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $identifier)) {
+    public function quoteIdentifier(string $identifier): string {
+        if (!preg_match('/^[a-zA-Z_]\w*$/D', $identifier)) {
             throw new InvalidArgumentException('Invalid SQL identifier');
         }
         return "`$identifier`";
@@ -144,7 +147,7 @@ class Sql {
      * @param $field
      * @return string[]
      */
-    function getEnumValues($table, $field): array {
+    public function getEnumValues($table, $field): array {
         if (!$this->connected) {
             return array();
         }

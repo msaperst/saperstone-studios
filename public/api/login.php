@@ -8,7 +8,7 @@ $api = new Api();
 if ($systemUser->isLoggedIn() && isset($_POST ['submit']) && $_POST ['submit'] == 'Logout') {
     $sql = new Sql ();
     // note the logout
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL );");
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Logged Out', NULL, NULL)", [$systemUser->getId()]);
     $sql->disconnect();
 
     // remove any stored login
