@@ -15,9 +15,10 @@ COPY .docker/php/composer.json /var/www/
 RUN rm -r /var/www/html
 COPY .docker/php/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 COPY .docker/php/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
+COPY .docker/php/security-headers.conf /etc/apache2/conf-available/security-headers.conf
 COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY .docker/php/security.ini /usr/local/etc/php/conf.d/security.ini
-RUN a2enmod rewrite expires speling ssl
+RUN a2enmod headers rewrite expires speling ssl && a2enconf security-headers
 RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif
 
 # copy over files
