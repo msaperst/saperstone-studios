@@ -146,11 +146,11 @@ $navSql->disconnect();
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Login to Your Account</h4>
             </div>
-            <form>
+            <form id="login-form" method="post" action="/api/login.php">
                 <div class="modal-body">
-                    <input class="form-control" id="login-user" type="text" name="user"
+                    <input class="form-control" id="login-user" type="text" name="username"
                            placeholder="Username"/> <input class="form-control"
-                                                           id="login-pass" type="password" name="pass"
+                                                           id="login-pass" type="password" name="password"
                                                            placeholder="Password"/>
                     <span>
                         <div class="checkbox">
@@ -166,7 +166,8 @@ $navSql->disconnect();
                 </div>
             </form>
             <div class="modal-footer">
-                <button id="login-submit" type="submit" class="btn btn-primary">Login</button>
+                <button id="login-submit" form="login-form" name="submit" value="Login"
+                        type="submit" class="btn btn-primary">Login</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
