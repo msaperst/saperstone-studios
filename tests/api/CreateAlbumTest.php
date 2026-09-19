@@ -165,7 +165,7 @@ class CreateAlbumTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $albumId = $response->getBody();
+            $albumId = (int)(string)$response->getBody();
             $this->assertEquals(1, preg_match("/^[\d]+$/", $albumId));
             $album = $this->sql->getRow("SELECT * FROM `albums` WHERE `albums`.`id` = $albumId;");
             $this->assertEquals($albumId, $album['id']);

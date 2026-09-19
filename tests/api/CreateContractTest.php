@@ -311,7 +311,7 @@ class CreateContractTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $contractId = $response->getBody();
+            $contractId = (int)(string)$response->getBody();
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = $contractId;");
             $this->assertEquals($contractId, $contractDetails['id']);
             $this->assertEquals(md5($contractId . "weddingMaxMaxMaxfunsies"), $contractDetails['link']);

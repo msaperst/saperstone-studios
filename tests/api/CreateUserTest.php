@@ -294,7 +294,7 @@ For security reasons, once logged in, we recommend you reset your password at ht
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $userId = $response->getBody();
+            $userId = (int)(string)$response->getBody();
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = $userId;");
             $this->assertEquals($userId, $userDetails['id']);
             $this->assertEquals('MaxMax', $userDetails['usr']);
