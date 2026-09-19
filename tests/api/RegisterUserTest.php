@@ -181,9 +181,9 @@ class RegisterUserTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $userId = $response->getBody();
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = $userId;");
-            $this->assertEquals($userId, $userDetails['id']);
+            $this->assertSame((string)$userId, (string)$userDetails['id']);
             $this->assertEquals('MaxMax', $userDetails['usr']);
-            $this->assertEquals('827ccb0eea8a706c4c34a16891f84e7b', $userDetails['pass']);
+            $this->assertTrue(password_verify('12345', $userDetails['pass']));
             $this->assertEquals('', $userDetails['firstName']);
             $this->assertEquals('', $userDetails['lastName']);
             $this->assertEquals($userEmail, $userDetails['email']);
@@ -232,9 +232,9 @@ class RegisterUserTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $userId = (string)$response->getBody();
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = $userId;");
-            $this->assertEquals($userId, $userDetails['id']);
+            $this->assertSame((string)$userId, (string)$userDetails['id']);
             $this->assertEquals('MaxMax', $userDetails['usr']);
-            $this->assertEquals('5f4dcc3b5aa765d61d8327deb882cf99', $userDetails['pass']);
+            $this->assertTrue(password_verify('password', $userDetails['pass']));
             $this->assertEquals('Max', $userDetails['firstName']);
             $this->assertEquals('Saperstone', $userDetails['lastName']);
             $this->assertEquals($userEmail, $userDetails['email']);

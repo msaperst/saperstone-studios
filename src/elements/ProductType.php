@@ -26,7 +26,7 @@ class ProductType {
         $productType = new ProductType();
         $id = (int)$id;
         $sql = new Sql();
-        $productType->raw = $sql->getRow("SELECT * FROM product_types WHERE id = $id;");
+        $productType->raw = $sql->getRow("SELECT * FROM product_types WHERE id = ?", [$id]);
         $sql->disconnect();
         if (!isset($productType->raw) || !isset($productType->raw['id'])) {
             throw new BadProductTypeException("Product id does not match any products");
@@ -65,7 +65,7 @@ class ProductType {
             $sql->disconnect();
             throw new BadProductTypeException ("Product category is not valid");
         }
-        $productType->category = $sql->escapeString($params ['category']);
+        $productType->category = $params['category'];
         //product name
         if (!isset ($params['name'])) {
             $sql->disconnect();
@@ -74,7 +74,7 @@ class ProductType {
             $sql->disconnect();
             throw new BadProductTypeException("Product name can not be blank");
         }
-        $productType->name = $sql->escapeString($params ['name']);
+        $productType->name = $params['name'];
         $sql->disconnect();
         return $productType;
     }
@@ -99,7 +99,7 @@ class ProductType {
             throw new ProductTypeException("User not authorized to create product type");
         }
         $sql = new Sql();
-        $lastId = $sql->executeStatement("INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (NULL, '{$this->category}', '{$this->name}');");
+        $lastId = $sql->executeStatement("INSERT INTO `product_types` (`id`, `category`, `name`) VALUES (NULL, ?, ?)", [$this->category, $this->name]);
         $sql->disconnect();
         $this->id = $lastId;
         $productType = static::withId($lastId);
@@ -120,8 +120,8 @@ class ProductType {
         }
         self::setVals($this, $params);
         $sql = new Sql();
-        $sql->executeStatement("UPDATE `product_types` SET `category` = '{$this->category}', `name` = '{$this->name}' WHERE `product_types`.`id` = {$this->id};");
-        $this->raw = $sql->getRow("SELECT * FROM product_types WHERE id = {$this->getId()};");
+        $sql->executeStatement("UPDATE `product_types` SET `category` = ?, `name` = ? WHERE `product_types`.`id` = ?", [$this->category, $this->name, $this->id]);
+        $this->raw = $sql->getRow("SELECT * FROM product_types WHERE id = ?", [$this->getId()]);
         $sql->disconnect();
     }
 
@@ -136,9 +136,9 @@ class ProductType {
             throw new BadProductTypeException("User not authorized to delete product type");
         }
         $sql = new Sql();
-        $sql->executeStatement("DELETE FROM product_types WHERE id='{$this->id}';");
-        $sql->executeStatement("DELETE FROM products WHERE product_type='{$this->id}';");
-        $sql->executeStatement("DELETE FROM product_options WHERE product_type='{$this->id}';");
+        $sql->executeStatement("DELETE FROM product_types WHERE id = ?", [$this->id]);
+        $sql->executeStatement("DELETE FROM products WHERE product_type = ?", [$this->id]);
+        $sql->executeStatement("DELETE FROM product_options WHERE product_type = ?", [$this->id]);
         $sql->disconnect();
     }
 }

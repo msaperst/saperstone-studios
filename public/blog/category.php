@@ -7,16 +7,16 @@ if (!isset ($_GET ['t']) || $_GET ['t'] == "") {
     $errors->throw404();
 } else {
     $categories = array_map('intval', explode(',', $_GET ['t']));
-    $where = "`id` = '" . implode("' OR `id` = '", $categories) . "';";
+    $placeholders = implode(',', array_fill(0, count($categories), '?'));
 }
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$tags = array_column($sql->getRows("SELECT tag FROM `tags` WHERE $where"), 'tag');
+$tags = array_column($sql->getRows("SELECT tag FROM `tags` WHERE `id` IN ($placeholders)", $categories), 'tag');
 if (empty ($tags)) {
     $errors->throw404();
 }
-$postCount = $sql->getRowCount("SELECT * FROM `blog_tags` WHERE " . str_replace("id", "tag", $where));
+$postCount = $sql->getRowCount("SELECT * FROM `blog_tags` WHERE `tag` IN ($placeholders)", $categories);
 $sql->disconnect();
 ?>
 

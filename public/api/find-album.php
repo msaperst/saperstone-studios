@@ -11,7 +11,7 @@ try {
 }
 
 $sql = new Sql();
-$r = $sql->getRow("SELECT * FROM albums WHERE code = '$code';");
+$r = $sql->getRow("SELECT * FROM albums WHERE code = ?", [$code]);
 if (isset($r ['id'])) {
     $_SESSION ["searched"] [$r ['id']] = md5("album" . $code);
     if (isset($_COOKIE['CookiePreferences'])) {
@@ -33,9 +33,9 @@ if (isset($r ['id'])) {
 }
 
 if ($systemUser->isLoggedIn() && isset ($_GET ['albumAdd']) && $_GET ['albumAdd'] == 1) {
-    $s = $sql->getRow("SELECT * FROM albums_for_users WHERE user = '" . $systemUser->getId() . "' AND album = '" . $r ['id'] . "';");
+    $s = $sql->getRow("SELECT * FROM albums_for_users WHERE user = ? AND album = ?", [$systemUser->getId(), $r['id']]);
     if (!isset($s ['user'])) {
-        $sql->executeStatement("INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '" . $systemUser->getId() . "', '" . $r ['id'] . "' );");
+        $sql->executeStatement("INSERT INTO albums_for_users (`user`, `album`) VALUES (?, ?)", [$systemUser->getId(), $r['id']]);
     }
 }
 

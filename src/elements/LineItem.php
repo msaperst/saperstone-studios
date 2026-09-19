@@ -36,7 +36,7 @@ class LineItem {
      */
     function create() {
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `contract_line_items` (`contract`, `item`, `amount`, `unit`) VALUES ({$this->getValues()});");
+        $sql->executeStatement("INSERT INTO `contract_line_items` (`contract`, `item`, `amount`, `unit`) VALUES (?, ?, ?, ?)", [$this->contract, $this->item, $this->amount, $this->unit]);
         $sql->disconnect();
     }
 }

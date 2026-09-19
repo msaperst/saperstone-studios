@@ -75,7 +75,9 @@ class File {
     function addToDatabase($database, $parent, $parentId, $parentCol, $locationPrefix) {
         $systemUser = User::fromSystem();
         $sql = new Sql();
-        $nextSeq = $sql->getRow("SELECT MAX(sequence) as next FROM $database WHERE $parentCol = '$parentId';")['next'];
+        $databaseIdentifier = $sql->quoteIdentifier($database);
+        $parentColumnIdentifier = $sql->quoteIdentifier($parentCol);
+        $nextSeq = $sql->getRow("SELECT MAX(sequence) as next FROM $databaseIdentifier WHERE $parentColumnIdentifier = ?", [$parentId])['next'];
         if (is_numeric($nextSeq)) {
             $nextSeq++;
         } else {
@@ -94,15 +96,16 @@ class File {
                     [$width, $height] = [$height, $width];
                 }
             }
-            $sql->executeStatement("INSERT INTO `$database` VALUES (NULL, '$parentId', '$file', '$nextSeq', '', '{$locationPrefix}$file', '$width', '$height', 1);");
+            $sql->executeStatement("INSERT INTO $databaseIdentifier VALUES (NULL, ?, ?, ?, '', ?, ?, ?, 1)", [$parentId, $file, $nextSeq, $locationPrefix . $file, $width, $height]);
 
             if (!$systemUser->isAdmin() && $systemUser->isActive()) {
                 sleep(1); //TODO - this is a bug in our keys, should fix this
-                $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Added Image', $nextSeq, $parentId );");
+                $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Added Image', ?, ?)", [$systemUser->getId(), $nextSeq, $parentId]);
             }
             if ($parent == 'albums') {
                 // update the image count
-                $sql->executeStatement("UPDATE `$parent` SET `images` = images + 1 WHERE id='$parentId';");
+                $parentIdentifier = $sql->quoteIdentifier($parent);
+                $sql->executeStatement("UPDATE $parentIdentifier SET `images` = images + 1 WHERE id = ?", [$parentId]);
             }
             $nextSeq++;
         }

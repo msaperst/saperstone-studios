@@ -38,8 +38,8 @@ $images = $sql->getRows("SELECT
         album_images.sequence, 
         IF(favorites.image IS NULL, 0, 1) AS favorite,
         IF(
-            {$isAdmin} = 1 OR 
-            {$canManageData} = 1 OR 
+            ? = 1 OR
+            ? = 1 OR
             download_rights.album IS NOT NULL, 
             1, 0
         ) AS downloadable
@@ -47,16 +47,16 @@ $images = $sql->getRows("SELECT
     JOIN `albums` ON album_images.album = albums.id 
     LEFT JOIN favorites ON favorites.album = album_images.album 
         AND favorites.image = album_images.id 
-        AND favorites.user = '" . $user->getIdentifier() . "' 
+        AND favorites.user = ?
     LEFT JOIN download_rights ON 
-        (download_rights.user = '" . $user->getIdentifier() . "' OR download_rights.user = '0')
+        (download_rights.user = ? OR download_rights.user = '0')
         AND (download_rights.album = album_images.album OR download_rights.album = '*')
         AND (download_rights.image = album_images.id OR download_rights.image = '*')
-    WHERE albums.id = '{$album->getId()}' 
+    WHERE albums.id = ?
     ORDER BY `sequence` 
-    LIMIT $start,$howMany;");
+    LIMIT ?, ?", [$isAdmin, $canManageData, $user->getIdentifier(), $user->getIdentifier(), $album->getId(), $start, $howMany]);
 $publicRoot = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public';
-$favoriteCount = $sql->getRow("SELECT COUNT(*) AS total FROM favorites WHERE user = '" . $user->getIdentifier() . "' AND album = '{$album->getId()}';");
+$favoriteCount = $sql->getRow("SELECT COUNT(*) AS total FROM favorites WHERE user = ? AND album = ?", [$user->getIdentifier(), $album->getId()]);
 echo json_encode(array(
     'images' => $images,
     'favoriteCount' => (int)$favoriteCount['total']

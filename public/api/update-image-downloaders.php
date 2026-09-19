@@ -16,12 +16,11 @@ try {
 }
 
 $sql = new Sql();
-$sql->executeStatement("DELETE FROM `download_rights` WHERE `album` = '{$album->getId()}' AND `image` = '$image'");
+$sql->executeStatement("DELETE FROM `download_rights` WHERE `album` = ? AND `image` = ?", [$album->getId(), $image]);
 
 if (isset ($_POST ['users']) && is_array($_POST ['users'])) {
     foreach ($_POST ['users'] as $user) {
-        $user = $sql->escapeString($user);
-        $sql->executeStatement("INSERT INTO `download_rights` ( `user`, `album`, `image` ) VALUES ( '$user', '{$album->getId()}', '$image' );");
+        $sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES (?, ?, ?)", [$user, $album->getId(), $image]);
     }
 }
 $sql->disconnect();

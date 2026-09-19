@@ -34,14 +34,14 @@ class Image {
         $sql = new Sql();
         $sequence = (int)$sequence;
         if ($container instanceof Album) {
-            $this->raw = $sql->getRow("SELECT * FROM album_images WHERE album = {$container->getId()} AND sequence = $sequence;");
+            $this->raw = $sql->getRow("SELECT * FROM album_images WHERE album = ? AND sequence = ?", [$container->getId(), $sequence]);
             if (!isset($this->raw) || !isset($this->raw['id'])) {
                 $sql->disconnect();
                 throw new BadImageException("Image id does not match any images");
             }
             $this->album = $this->raw['album'];
         } elseif ($container instanceof Gallery) {
-            $this->raw = $sql->getRow("SELECT * FROM gallery_images WHERE gallery = {$container->getId()} AND id = $sequence;");
+            $this->raw = $sql->getRow("SELECT * FROM gallery_images WHERE gallery = ? AND id = ?", [$container->getId(), $sequence]);
             if (!isset($this->raw) || !isset($this->raw['id'])) {
                 $sql->disconnect();
                 throw new BadImageException("Image id does not match any images");
@@ -107,21 +107,21 @@ class Image {
         $sql = new Sql();
         if ($this->album != NULL) {
             // if we're in an album, delete from the table
-            $sql->executeStatement("DELETE FROM album_images WHERE album='{$this->album}' AND id='{$this->getId()}';");
-            $sql->executeStatement("UPDATE albums SET images = images - 1 WHERE id='{$this->album}';");
+            $sql->executeStatement("DELETE FROM album_images WHERE album = ? AND id = ?", [$this->album, $this->getId()]);
+            $sql->executeStatement("UPDATE albums SET images = images - 1 WHERE id = ?", [$this->album]);
             // need to re-sequence images in mysql table
             $sql->executeStatement("SET @seq:=-1;");
-            $sql->executeStatement("UPDATE album_images SET sequence=(@seq:=@seq+1) WHERE album='{$this->album}' ORDER BY `sequence`;");
+            $sql->executeStatement("UPDATE album_images SET sequence=(@seq:=@seq+1) WHERE album = ? ORDER BY `sequence`", [$this->album]);
             // cleanup other tables
-            $sql->executeStatement("DELETE FROM `favorites` WHERE `album` = '{$this->album}' AND `image` = '{$this->getId()}';");
-            $sql->executeStatement("DELETE FROM `download_rights` WHERE `album` = '{$this->album}' AND `image` = '{$this->getId()}';");
+            $sql->executeStatement("DELETE FROM `favorites` WHERE `album` = ? AND `image` = ?", [$this->album, $this->getId()]);
+            $sql->executeStatement("DELETE FROM `download_rights` WHERE `album` = ? AND `image` = ?", [$this->album, $this->getId()]);
         }
         if ($this->gallery != NULL) {
             // if we're in a gallery, delete from the table
-            $sql->executeStatement("DELETE FROM gallery_images WHERE gallery='{$this->gallery}' AND id='{$this->getId()}';");
+            $sql->executeStatement("DELETE FROM gallery_images WHERE gallery = ? AND id = ?", [$this->gallery, $this->getId()]);
             // need to re-sequence images in mysql table
             $sql->executeStatement("SET @seq:=-1;");
-            $sql->executeStatement("UPDATE gallery_images SET sequence=(@seq:=@seq+1) WHERE gallery='{$this->gallery}' ORDER BY `sequence`;");
+            $sql->executeStatement("UPDATE gallery_images SET sequence=(@seq:=@seq+1) WHERE gallery = ? ORDER BY `sequence`", [$this->gallery]);
         }
         $sql->disconnect();
 

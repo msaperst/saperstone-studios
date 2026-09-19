@@ -10,13 +10,14 @@ if (isset ($_GET ['noadmin']) && $_GET ['noadmin'] == "1") {
 }
 
 $sql = new Sql ();
+$params = [];
 $query = "SELECT usage.browser,COUNT(usage.version) as count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE `usage`.`isRobot` = 0 $noAdmin GROUP BY `usage`.`browser`;";
 if (isset ($_GET ['browser']) && $_GET ['browser'] != "") {
-    $browser = $sql->escapeString($_GET ['browser']);
-    $query = "SELECT usage.version as browser,COUNT(usage.version) as count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE `usage`.`browser` = '$browser' AND `usage`.`isRobot` = 0 $noAdmin GROUP BY `usage`.`version`;";
+    $query = "SELECT usage.version as browser,COUNT(usage.version) as count FROM `usage` LEFT JOIN `users` ON `usage`.`user` <=> `users`.`id` WHERE `usage`.`browser` = ? AND `usage`.`isRobot` = 0 $noAdmin GROUP BY `usage`.`version`;";
+    $params[] = $_GET['browser'];
 }
 $response = array();
-foreach ($sql->getRows($query) as $r) {
+foreach ($sql->getRows($query, $params) as $r) {
     $response [$r ['browser']] = $r ['count'];
 }
 $sql->disconnect();

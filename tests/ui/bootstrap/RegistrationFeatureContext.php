@@ -435,7 +435,7 @@ class RegistrationFeatureContext implements Context {
         $sql = new Sql();
         $userDetails = $sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = {$this->user->getId()};");
         Assert::assertEquals($this->username, $userDetails['usr']);
-        Assert::assertEquals(md5($this->password), $userDetails['pass']);
+        Assert::assertTrue(password_verify($this->password, $userDetails['pass']));
         Assert::assertEquals($this->firstName, $userDetails['firstName']);
         Assert::assertEquals($this->lastName, $userDetails['lastName']);
         Assert::assertEquals($this->email, $userDetails['email']);

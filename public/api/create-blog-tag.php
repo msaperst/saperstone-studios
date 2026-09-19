@@ -12,14 +12,14 @@ try {
 }
 
 $sql = new Sql ();
-$row = $sql->getRow("SELECT * FROM `tags` WHERE `tag` = '$tag';");
+$row = $sql->getRow("SELECT * FROM `tags` WHERE `tag` = ?", [$tag]);
 if (isset($row ['id'])) {
     echo "Blog tag already exists";
     $sql->disconnect();
     exit ();
 }
 
-$last_id = $sql->executeStatement("INSERT INTO tags ( tag ) VALUES ('$tag');");
+$last_id = $sql->executeStatement("INSERT INTO tags (tag) VALUES (?)", [$tag]);
 echo $last_id;
 $sql->disconnect();
 exit ();

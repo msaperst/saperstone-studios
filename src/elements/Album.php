@@ -3,6 +3,7 @@
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Album {
+    private const SELECT_BY_ID = "SELECT * FROM albums WHERE id = ?";
 
     private $raw;
     private $id;
@@ -47,22 +48,22 @@ class Album {
             $sql->disconnect();
             throw new BadAlbumException("Album name can not be blank");
         }
-        $album->name = $sql->escapeString($params ['name']);
+        $album->name = $params['name'];
         //album description
         if (isset ($params ['description']) && $params ['description'] != "") {
-            $album->description = $sql->escapeString($params ['description']);
+            $album->description = $params['description'];
         } else {
             $album->description = '';
         }
         // album date
         if (isset ($params ['date']) && $params ['date'] != "") {
-            if (!Strings::isDateFormatted($sql->escapeString($params ['date']))) {
+            if (!Strings::isDateFormatted($params['date'])) {
                 $sql->disconnect();
                 throw new BadAlbumException("Album date is not the correct format");
             }
-            $album->date = "'" . $sql->escapeString($params ['date']) . "'";
+            $album->date = $params['date'];
         } else {
-            $album->date = 'NULL';
+            $album->date = null;
         }
         $sql->disconnect();
         return $album;
@@ -173,10 +174,10 @@ class Album {
             $sql->disconnect();
             throw new AlbumException($e->getMessage() . "<br/>Unable to create album");
         }
-        $lastId = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES ('$this->name', '$this->description', $this->date, '$this->location', {$user->getId()});");
+        $lastId = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES (?, ?, ?, ?, ?)", [$this->name, $this->description, $this->date, $this->location, $user->getId()]);
         if ($user->getRole() == "uploader") {
-            $sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES ({$user->getId()}, $lastId);");
-            $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Created Album', NULL, $lastId );");
+            $sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (?, ?)", [$user->getId(), $lastId]);
+            $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Created Album', NULL, ?)", [$user->getId(), $lastId]);
         }
         $sql->disconnect();
         $this->id = $lastId;
@@ -199,7 +200,7 @@ class Album {
         $album = new Album();
         $id = (int)$id;
         $sql = new Sql();
-        $album->raw = $sql->getRow("SELECT * FROM albums WHERE id = $id;");
+        $album->raw = $sql->getRow(self::SELECT_BY_ID, [$id]);
         if (!isset($album->raw) || !isset($album->raw['id'])) {
             $sql->disconnect();
             throw new BadAlbumException("Album id does not match any albums");
@@ -215,7 +216,7 @@ class Album {
         $album->owner = $album->raw['owner'];
         //consider changing this to an array of matching images
         $album->images = $album->raw['images'];
-        $album->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = {$album->id};"), 'user');
+        $album->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = ?", [$album->id]), 'user');
         $sql->disconnect();
         return $album;
     }
@@ -238,20 +239,20 @@ class Album {
         }
         self::setVals($this, $params);
         $sql = new Sql();
-        $sql->executeStatement("UPDATE albums SET name='{$this->name}', description='{$this->description}', date={$this->date}, code=NULL WHERE id='{$this->getId()}';");
-        $this->raw = $sql->getRow("SELECT * FROM albums WHERE id = {$this->getId()};");
+        $sql->executeStatement("UPDATE albums SET name = ?, description = ?, date = ?, code = NULL WHERE id = ?", [$this->name, $this->description, $this->date, $this->getId()]);
+        $this->raw = $sql->getRow(self::SELECT_BY_ID, [$this->getId()]);
         if (isset ($params['code']) && $params['code'] != "" && $user->isAdmin()) {
-            $code = $sql->escapeString($params['code']);
-            $codeExist = $sql->getRowCount("SELECT * FROM `albums` WHERE code = '$code';");
+            $code = $params['code'];
+            $codeExist = $sql->getRowCount("SELECT * FROM `albums` WHERE code = ?", [$code]);
             if ($codeExist == 0) {
                 $this->code = $code;
-                $sql->executeStatement("UPDATE albums SET code='$code' WHERE id='{$this->getId()}';");
+                $sql->executeStatement("UPDATE albums SET code = ? WHERE id = ?", [$code, $this->getId()]);
             } else {
                 $sql->disconnect();
                 throw new BadAlbumException("Album code already exists");
             }
         }
-        $this->raw = $sql->getRow("SELECT * FROM albums WHERE id = {$this->getId()};");
+        $this->raw = $sql->getRow(self::SELECT_BY_ID, [$this->getId()]);
         $sql->disconnect();
     }
 
@@ -269,9 +270,9 @@ class Album {
             throw new AlbumException("User not authorized to delete album");
         }
         $sql = new Sql();
-        $sql->executeStatement("DELETE FROM albums WHERE id='{$this->id}';");
-        $sql->executeStatement("DELETE FROM album_images WHERE album='{$this->id}';");
-        $sql->executeStatement("DELETE FROM albums_for_users WHERE album='{$this->id}';");
+        $sql->executeStatement("DELETE FROM albums WHERE id = ?", [$this->id]);
+        $sql->executeStatement("DELETE FROM album_images WHERE album = ?", [$this->id]);
+        $sql->executeStatement("DELETE FROM albums_for_users WHERE album = ?", [$this->id]);
         $sql->disconnect();
         if ($this->location != "") {
             system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $this->location));

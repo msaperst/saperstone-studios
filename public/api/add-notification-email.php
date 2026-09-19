@@ -13,6 +13,6 @@ try {
 
 // update our mysql database
 $sql = new Sql ();
-$sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`) VALUES ('{$album->getId()}', '{$systemUser->getIdentifier()}', '$email');");
+$sql->executeStatement("INSERT INTO `notification_emails` (`album`, `user`, `email`) VALUES (?, ?, ?)", [$album->getId(), $systemUser->getIdentifier(), $email]);
 $sql->disconnect();
 exit ();

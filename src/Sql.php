@@ -16,7 +16,7 @@ class Sql {
      * Sql constructor.
      * @throws SqlException
      */
-    function __construct() {
+    public function __construct() {
         try {
             $this->mysqli = new mysqli (getenv('DB_HOST') . ":" . getenv('DB_PORT'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
         } catch (Exception $e) {
@@ -25,7 +25,7 @@ class Sql {
         $this->connected = true;
     }
 
-    function disconnect() {
+    public function disconnect() {
         if ($this->connected) {
             $this->mysqli->close();
             $this->connected = false;
@@ -35,7 +35,7 @@ class Sql {
     /**
      * @return bool
      */
-    function isConnected(): bool {
+    public function isConnected(): bool {
         return $this->connected;
     }
 
@@ -43,7 +43,7 @@ class Sql {
      * @param $string
      * @return string
      */
-    function escapeString($string): string {
+    public function escapeString($string): string {
         if (!$this->connected) {
             return $string;
         }
@@ -54,23 +54,27 @@ class Sql {
      * @param $selectStatement
      * @return array|null
      */
-    function getRow($selectStatement): ?array {
+    public function getRow($selectStatement, array $params = []): ?array {
         if (!$this->connected) {
             return array();
         }
-        return $this->mysqli->query($selectStatement)->fetch_assoc();
+        $result = $this->query($selectStatement, $params);
+        if (!$result instanceof mysqli_result) {
+            return null;
+        }
+        return $result->fetch_assoc();
     }
 
     /**
      * @param $selectStatement
      * @return array
      */
-    function getRows($selectStatement): array {
+    public function getRows($selectStatement, array $params = []): array {
         $rows = array();
         if (!$this->connected) {
             return $rows;
         }
-        $result = $this->mysqli->query($selectStatement);
+        $result = $this->query($selectStatement, $params);
         if ($result == NULL) {
             return $rows;
         }
@@ -84,11 +88,11 @@ class Sql {
      * @param $selectStatement
      * @return int
      */
-    function getRowCount($selectStatement): int {
+    public function getRowCount($selectStatement, array $params = []): int {
         if (!$this->connected) {
             return 0;
         }
-        $rows = $this->mysqli->query($selectStatement);
+        $rows = $this->query($selectStatement, $params);
         if ($rows == NULL) {
             return 0;
         }
@@ -100,12 +104,42 @@ class Sql {
      * @return string
      * @throws SqlException
      */
-    function executeStatement($statement): string {
+    public function executeStatement($statement, array $params = []): string {
         if (!$this->connected) {
             throw new SqlException("Not connected, unable to execute statement: '$statement'");
         }
-        $this->mysqli->query($statement);
+        $this->query($statement, $params);
         return $this->mysqli->insert_id;
+    }
+
+    /**
+     * Executes SQL, using a prepared statement whenever values are supplied.
+     * Keeping values separate from the statement ensures they can never be
+     * interpreted as SQL syntax.
+     *
+     * @param string $statement
+     * @param array $params
+     * @return mysqli_result|bool
+     */
+    private function query(string $statement, array $params = []): mysqli_result|bool {
+        // The SQL template is supplied by application code; all runtime values
+        // are passed separately to execute(). Sonar does not currently model
+        // mysqli's two-step prepare/execute data flow correctly.
+        $prepared = $this->mysqli->prepare($statement); // NOSONAR
+        $prepared->execute(array_values($params));
+        $result = $prepared->get_result();
+        return $result === false ? true : $result;
+    }
+
+    /**
+     * Validates and quotes a table or column identifier. Identifiers cannot be
+     * represented by SQL parameter placeholders, so they require an allowlist.
+     */
+    public function quoteIdentifier(string $identifier): string {
+        if (!preg_match('/^[a-zA-Z_]\w*$/D', $identifier)) {
+            throw new InvalidArgumentException('Invalid SQL identifier');
+        }
+        return "`$identifier`";
     }
 
     /**
@@ -113,11 +147,12 @@ class Sql {
      * @param $field
      * @return string[]
      */
-    function getEnumValues($table, $field): array {
+    public function getEnumValues($table, $field): array {
         if (!$this->connected) {
             return array();
         }
-        $type = $this->mysqli->query("SHOW COLUMNS FROM {$table} WHERE Field = '{$field}'")->fetch_assoc()['Type'];
+        $table = $this->quoteIdentifier($table);
+        $type = $this->query("SHOW COLUMNS FROM {$table} WHERE Field = ?", [$field])->fetch_assoc()['Type'];
         preg_match("/^enum\(\'(.*)\'\)$/", $type, $matches);
         return explode("','", $matches[1]);
     }

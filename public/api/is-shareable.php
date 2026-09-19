@@ -33,7 +33,7 @@ try {
 }
 
 $sql = new Sql ();
-$shareable = $sql->getRow("SELECT album FROM `share_rights` WHERE ( `user` = '{$systemUser->getIdentifier()}' OR `user` = '0' ) AND ( `album` = '{$album->getId()}' OR `album` = '*' ) AND ( `image` = '{$image->getId()}' OR `image` = '*' );");
+$shareable = $sql->getRow("SELECT album FROM `share_rights` WHERE (`user` = ? OR `user` = '0') AND (`album` = ? OR `album` = '*') AND (`image` = ? OR `image` = '*')", [$systemUser->getIdentifier(), $album->getId(), $image->getId()]);
 if (isset($shareable ['album'])) {
     echo 1;
 } else {

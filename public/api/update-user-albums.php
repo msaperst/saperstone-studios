@@ -24,10 +24,10 @@ if (isset ($_POST ['albums']) && is_array($_POST ['albums'])) {
 }
 
 $sql = new Sql ();
-$sql->executeStatement("DELETE FROM albums_for_users WHERE user = {$user->getId()}");
+$sql->executeStatement("DELETE FROM albums_for_users WHERE user = ?", [$user->getId()]);
 
 foreach ($albums as $album) {
-    $sql->executeStatement("INSERT INTO albums_for_users ( `user`, `album` ) VALUES ( '{$user->getId()}', '{$album->getId()}' );");
+    $sql->executeStatement("INSERT INTO albums_for_users (`user`, `album`) VALUES (?, ?)", [$user->getId(), $album->getId()]);
 }
 $sql->disconnect();
 exit ();

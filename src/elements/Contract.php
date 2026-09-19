@@ -44,8 +44,7 @@ class Contract {
         }
         $contract = new Contract();
         $sql = new Sql();
-        $link = $sql->escapeString($link);
-        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE link = '$link';");
+        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE link = ?", [$link]);
         $sql->disconnect();
         if (!isset($contract->raw) || !isset($contract->raw['id'])) {
             throw new BadContractException("Contract link does not match any contracts");
@@ -77,7 +76,7 @@ class Contract {
         $contract->initial = $contract->raw['initial'];
         $contract->file = $contract->raw['file'];
         $sql = new Sql();
-        $contract->raw['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = {$contract->id};");
+        $contract->raw['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = ?", [$contract->id]);
         $sql->disconnect();
         foreach ($contract->raw['lineItems'] as $lineItem) {
             $contract->lineItems[] = new LineItem($lineItem['contract'], $lineItem['item'], $lineItem['amount'], $lineItem['unit']);
@@ -112,7 +111,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException ("Contract type is not valid");
         }
-        $contract->type = $sql->escapeString($params ['type']);
+        $contract->type = $params['type'];
         //contract name
         if (!isset ($params['name'])) {
             $sql->disconnect();
@@ -121,7 +120,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract name can not be blank");
         }
-        $contract->name = $sql->escapeString($params ['name']);
+        $contract->name = $params['name'];
         //contract session
         if (!isset ($params['session'])) {
             $sql->disconnect();
@@ -130,7 +129,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract session can not be blank");
         }
-        $contract->session = $sql->escapeString($params ['session']);
+        $contract->session = $params['session'];
         //contract content
         if (!isset ($params['content'])) {
             $sql->disconnect();
@@ -139,7 +138,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract content can not be blank");
         }
-        $contract->content = $sql->escapeString($params ['content']);
+        $contract->content = $params['content'];
         $contract = self::setOptionalItems($contract, $params);
         // our line items
         $contract->lineItems = array();
@@ -148,10 +147,10 @@ class Contract {
                 $amount = floatval(str_replace('$', '', $lineItem ['amount']));
                 $item = $unit = NULL;
                 if (isset ($lineItem ['item']) && $lineItem ['item'] != "") {
-                    $item = $sql->escapeString($lineItem ['item']);
+                    $item = $lineItem['item'];
                 }
                 if (isset ($lineItem ['unit']) && $lineItem ['unit'] != "") {
-                    $unit = $sql->escapeString($lineItem ['unit']);
+                    $unit = $lineItem['unit'];
                 }
                 $contract->lineItems[] = new LineItem($contract->getId(), $item, $amount, $unit);
             }
@@ -176,33 +175,33 @@ class Contract {
             $contract->deposit = floatval(str_replace('$', '', $params ['deposit']));
         }
         if (isset ($params ['address']) && $params ['address'] != "") {
-            $contract->address = $sql->escapeString($params ['address']);
+            $contract->address = $params['address'];
         }
         if (isset ($params ['number']) && $params ['number'] != "") {
-            $contract->number = $sql->escapeString($params ['number']);
+            $contract->number = $params['number'];
         }
         if (isset ($params ['email']) && $params ['email'] != "") {
             if (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
                 $sql->disconnect();
                 throw new BadContractException("Contract email is not valid");
             }
-            $contract->email = $sql->escapeString($params ['email']);
+            $contract->email = $params['email'];
         }
         if (isset ($params ['date']) && $params ['date'] != "") {
-            if (!Strings::isDateFormatted($sql->escapeString($params ['date']))) {
+            if (!Strings::isDateFormatted($params['date'])) {
                 $sql->disconnect();
                 throw new BadContractException("Contract date is not the correct format");
             }
-            $contract->date = $sql->escapeString($params ['date']);
+            $contract->date = $params['date'];
         }
         if (isset ($params ['location']) && $params ['location'] != "") {
-            $contract->location = $sql->escapeString($params ['location']);
+            $contract->location = $params['location'];
         }
         if (isset ($params ['details']) && $params ['details'] != "") {
-            $contract->details = $sql->escapeString($params ['details']);
+            $contract->details = $params['details'];
         }
         if (isset ($params ['invoice']) && $params ['invoice'] != "") {
-            $contract->invoice = $sql->escapeString($params ['invoice']);
+            $contract->invoice = $params['invoice'];
         }
         $sql->disconnect();
         return $contract;
@@ -270,11 +269,10 @@ class Contract {
         if (!$user->isAdmin()) {
             throw new ContractException("User not authorized to create contract");
         }
-        list($address, $number, $email, $date, $location, $details, $invoice) = $this->nullify();
         $sql = new Sql();
-        $lastId = $sql->executeStatement("INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,`session`, `details`, `amount`, `deposit`, `invoice`, `content`) VALUES ('','{$this->type}','{$this->name}',$address,$number,$email,$date,$location,'{$this->session}',$details, {$this->amount},{$this->deposit},$invoice,'{$this->content}');");
+        $lastId = $sql->executeStatement("INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,`session`, `details`, `amount`, `deposit`, `invoice`, `content`) VALUES ('', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [$this->type, $this->name, $this->address, $this->number, $this->email, $this->date, $this->location, $this->session, $this->details, $this->amount, $this->deposit, $this->invoice, $this->content]);
         $link = md5($lastId . $this->type . $this->name . $this->session);
-        $sql->executeStatement("UPDATE `contracts` SET `link` = '$link' WHERE `id` = $lastId;");
+        $sql->executeStatement("UPDATE `contracts` SET `link` = ? WHERE `id` = ?", [$link, $lastId]);
         foreach ($this->lineItems as $lineItem) {
             /* @var $lineItem LineItem */
             $lineItem->setContract($lastId);
@@ -291,38 +289,6 @@ class Contract {
     /**
      * @return array
      */
-    private function nullify(): array {
-        $address = "NULL";
-        if ($this->address != NULL) {
-            $address = "'{$this->address}'";
-        }
-        $number = "NULL";
-        if ($this->number != NULL) {
-            $number = "'{$this->number}'";
-        }
-        $email = "NULL";
-        if ($this->email != NULL) {
-            $email = "'{$this->email}'";
-        }
-        $date = "NULL";
-        if ($this->date != NULL) {
-            $date = "'{$this->date}'";
-        }
-        $location = "NULL";
-        if ($this->location != NULL) {
-            $location = "'{$this->location}'";
-        }
-        $details = "NULL";
-        if ($this->details != NULL) {
-            $details = "'{$this->details}'";
-        }
-        $invoice = "NULL";
-        if ($this->invoice != NULL) {
-            $invoice = "'{$this->invoice}'";
-        }
-        return array($address, $number, $email, $date, $location, $details, $invoice);
-    }
-
     /**
      * @param $id
      * @return Contract
@@ -337,7 +303,7 @@ class Contract {
         $contract = new Contract();
         $id = (int)$id;
         $sql = new Sql();
-        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE id = $id;");
+        $contract->raw = $sql->getRow("SELECT * FROM contracts WHERE id = ?", [$id]);
         $sql->disconnect();
         if (!isset($contract->raw) || !isset($contract->raw['id'])) {
             throw new BadContractException("Contract id does not match any contracts");
@@ -366,16 +332,15 @@ class Contract {
             throw new ContractException("Contract has already been signed, unable to update");
         }
         self::setVals($this, $params);
-        list($address, $number, $email, $date, $location, $details, $invoice) = $this->nullify();
         $sql = new Sql();
-        $sql->executeStatement("UPDATE `contracts` SET `type` = '{$this->type}', `name` = '{$this->name}', `address` = $address, `number` = $number, `email` = $email, `date` = $date, `location` = $location, `session` = '{$this->session}', `details` = $details, `amount` = {$this->amount}, `deposit` = {$this->deposit}, `invoice` = $invoice, `content` = '{$this->content}' WHERE `id` = {$this->id};");
-        $sql->executeStatement("DELETE FROM `contract_line_items` WHERE `contract` = {$this->id};");
+        $sql->executeStatement("UPDATE `contracts` SET `type` = ?, `name` = ?, `address` = ?, `number` = ?, `email` = ?, `date` = ?, `location` = ?, `session` = ?, `details` = ?, `amount` = ?, `deposit` = ?, `invoice` = ?, `content` = ? WHERE `id` = ?", [$this->type, $this->name, $this->address, $this->number, $this->email, $this->date, $this->location, $this->session, $this->details, $this->amount, $this->deposit, $this->invoice, $this->content, $this->id]);
+        $sql->executeStatement("DELETE FROM `contract_line_items` WHERE `contract` = ?", [$this->id]);
         foreach ($this->lineItems as $lineItem) {
             /* @var $lineItem LineItem */
             $lineItem->create();
         }
-        $this->raw = $sql->getRow("SELECT * FROM contracts WHERE id = {$this->getId()};");
-        $this->raw['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = {$this->id};");
+        $this->raw = $sql->getRow("SELECT * FROM contracts WHERE id = ?", [$this->getId()]);
+        $this->raw['lineItems'] = $sql->getRows("SELECT * FROM contract_line_items WHERE contract = ?", [$this->id]);
         $sql->disconnect();
     }
 
@@ -396,7 +361,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract contact name can not be blank");
         }
-        $this->name = $sql->escapeString($params['name']);
+        $this->name = $params['name'];
         //contract address
         if (!isset ($params['address'])) {
             $sql->disconnect();
@@ -405,7 +370,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract contact address can not be blank");
         }
-        $this->address = $sql->escapeString($params['address']);
+        $this->address = $params['address'];
         //contract number
         if (!isset ($params['number'])) {
             $sql->disconnect();
@@ -414,7 +379,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract contact number can not be blank");
         }
-        $this->number = $sql->escapeString($params['number']);
+        $this->number = $params['number'];
         //contract email
         if (!isset ($params['email'])) {
             $sql->disconnect();
@@ -426,7 +391,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract contact email is not valid");
         }
-        $this->email = $sql->escapeString($params['email']);
+        $this->email = $params['email'];
         //contract signature
         if (!isset ($params['signature'])) {
             $sql->disconnect();
@@ -435,7 +400,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract signature can not be blank");
         }
-        $this->signature = $sql->escapeString($params['signature']);
+        $this->signature = $params['signature'];
         //contract initial
         if (!isset ($params['initial'])) {
             $sql->disconnect();
@@ -444,7 +409,7 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract initials can not be blank");
         }
-        $this->initial = $sql->escapeString($params['initial']);
+        $this->initial = $params['initial'];
         //contract content
         if (!isset ($params['content'])) {
             $sql->disconnect();
@@ -453,17 +418,13 @@ class Contract {
             $sql->disconnect();
             throw new BadContractException("Contract content can not be blank");
         }
-        $this->content = $sql->escapeString($params['content']);
+        $this->content = $params['content'];
 
         //set up our file
         $this->file = DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . 'contracts' .
             DIRECTORY_SEPARATOR . str_replace("/", "-", $this->name) .
             ' - ' . date('Y-m-d') . ' - ' . ucfirst($this->type) . ' Contract.pdf';
-        $sql->executeStatement("UPDATE `contracts` SET `name` = '{$this->name}',
-                `address` = '{$this->address}', `number` = '{$this->number}',
-                `email` = '{$this->email}', `signature` = '{$this->signature}',
-                `initial` = '{$this->initial}', `content` = '{$this->content}',
-                `file` = '{$this->file}' WHERE `id` = {$this->id};");
+        $sql->executeStatement("UPDATE `contracts` SET `name` = ?, `address` = ?, `number` = ?, `email` = ?, `signature` = ?, `initial` = ?, `content` = ?, `file` = ? WHERE `id` = ?", [$this->name, $this->address, $this->number, $this->email, $this->signature, $this->initial, $this->content, $this->file, $this->id]);
         $sql->disconnect();
 
         // sanitize out content

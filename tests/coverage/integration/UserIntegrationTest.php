@@ -149,6 +149,27 @@ class UserIntegrationTest extends TestCase {
     public function testFromLoginMatch() {
         $user = User::fromLogin('test', 'user');
         $this->assertEquals(899, $user->getId());
+        $storedHash = $this->sql->getRow("SELECT pass FROM users WHERE id = ?", [899])['pass'];
+        $this->assertTrue(password_verify('user', $storedHash));
+        $this->assertNotSame(md5('user'), $storedHash);
+    }
+
+    public function testFromLoginRejectsSqlInjectionUsername() {
+        $this->expectException(BadUserException::class);
+        $this->expectExceptionMessage('Credentials do not match our records');
+        User::fromLogin("test' OR 1=1 -- ", 'anything');
+    }
+
+    public function testFromResetRejectsSqlInjectionCode() {
+        $this->expectException(BadUserException::class);
+        $this->expectExceptionMessage('Credentials do not match our records');
+        User::fromReset('test@example.com', "' OR 1=1 -- ");
+    }
+
+    public function testFromEmailRejectsSqlInjection() {
+        $this->expectException(BadUserException::class);
+        $this->expectExceptionMessage('Credentials do not match our records');
+        User::fromEmail("nobody@example.com' OR 1=1 -- ");
     }
 
     public function testFromEmailNoMatch() {
@@ -754,7 +775,7 @@ class UserIntegrationTest extends TestCase {
         $userDetails = $user->getDataArray();
         $this->assertEquals($this->id, $userDetails['id']);
         $this->assertEquals('testUser', $userDetails['usr']);
-        $this->assertEquals(md5('12345'), $userDetails['pass']);
+        $this->assertTrue(password_verify('12345', $userDetails['pass']));
         $this->assertEquals('', $userDetails['firstName']);
         $this->assertEquals('', $userDetails['lastName']);
         $this->assertEquals('test@example.org', $userDetails['email']);
@@ -788,7 +809,7 @@ class UserIntegrationTest extends TestCase {
         $userDetails = $user->getDataArray();
         $this->assertEquals($this->id, $userDetails['id']);
         $this->assertEquals('testUser', $userDetails['usr']);
-        $this->assertEquals(md5('12345'), $userDetails['pass']);
+        $this->assertTrue(password_verify('12345', $userDetails['pass']));
         $this->assertEquals('', $userDetails['firstName']);
         $this->assertEquals('', $userDetails['lastName']);
         $this->assertEquals('test@example.org', $userDetails['email']);
@@ -1196,7 +1217,7 @@ class UserIntegrationTest extends TestCase {
         $userDetails = $user->getDataArray();
         $this->assertEquals(4, $userDetails['id']);
         $this->assertEquals('uploader', $userDetails['usr']);
-        $this->assertEquals(md5('newpassword'), $userDetails['pass']);
+        $this->assertTrue(password_verify('newpassword', $userDetails['pass']));
         $this->assertEquals('Upload', $userDetails['firstName']);
         $this->assertEquals('User', $userDetails['lastName']);
         $this->assertEquals('uploader@example.org', $userDetails['email']);
@@ -1228,7 +1249,7 @@ class UserIntegrationTest extends TestCase {
         $userDetails = $user->getDataArray();
         $this->assertEquals(4, $userDetails['id']);
         $this->assertEquals('uploader', $userDetails['usr']);
-        $this->assertEquals(md5('newpassword'), $userDetails['pass']);
+        $this->assertTrue(password_verify('newpassword', $userDetails['pass']));
         $this->assertEquals('Upload', $userDetails['firstName']);
         $this->assertEquals('User', $userDetails['lastName']);
         $this->assertEquals('uploader@example.org', $userDetails['email']);

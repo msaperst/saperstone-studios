@@ -16,15 +16,15 @@ try {
 $sql = new Sql ();
 if ($systemUser->isLoggedIn()) {
     // update our user records table
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$systemUser->getId()}, CURRENT_TIMESTAMP, 'Set Favorite', '{$image->getId()}', {$album->getId()} );");
+    $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Set Favorite', ?, ?)", [$systemUser->getId(), $image->getId(), $album->getId()]);
 }
 
 // update our mysql database
-$exists = $sql->getRowCount("SELECT * FROM `favorites` WHERE `user` = '{$userId}' AND `album` = '{$album->getId()}' AND `image` = '{$image->getId()}'");
+$exists = $sql->getRowCount("SELECT * FROM `favorites` WHERE `user` = ? AND `album` = ? AND `image` = ?", [$userId, $album->getId(), $image->getId()]);
 if ($exists == 0) {
-    $sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('$userId', '{$album->getId()}', '{$image->getId()}');");
+    $sql->executeStatement("INSERT INTO `favorites` (`user`, `album`, `image`) VALUES (?, ?, ?)", [$userId, $album->getId(), $image->getId()]);
 }
 // get our new favorite count for the album
-echo $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = '$userId' AND `album` = '{$album->getId()}';") ['total'];
+echo $sql->getRow("SELECT COUNT(*) AS total FROM `favorites` WHERE `user` = ? AND `album` = ?", [$userId, $album->getId()])['total'];
 $sql->disconnect();
 exit ();

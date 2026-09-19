@@ -38,7 +38,7 @@ class BlogText {
             $sql->disconnect();
             throw new BadBlogTextException("Blog content text can not be blank");
         }
-        $this->text = $sql->escapeString($params['text']);
+        $this->text = $params['text'];
         $sql->disconnect();
     }
 
@@ -83,7 +83,7 @@ class BlogText {
         }
         //add the text to the db
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `blog_texts` ( `blog`, `contentGroup`, `text` ) VALUES ({$this->blog->getId()}, {$this->group}, '{$this->text}');");
+        $sql->executeStatement("INSERT INTO `blog_texts` (`blog`, `contentGroup`, `text`) VALUES (?, ?, ?)", [$this->blog->getId(), $this->group, $this->text]);
         $sql->disconnect();
     }
 }

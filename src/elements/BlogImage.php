@@ -71,14 +71,12 @@ class BlogImage {
             throw new BadBlogImageException("Blog image height can not be blank");
         }
         $this->height = (int)$params['height'];
-        $sql = new Sql();
         if (!isset ($params['location'])) {
             throw new BadBlogImageException("Blog image location is required");
         } elseif ($params['location'] === "") {
             throw new BadBlogImageException("Blog image location can not be blank");
         }
-        $this->location = $sql->escapeString($params['location']);
-        $sql->disconnect();
+        $this->location = $params['location'];
     }
 
     /**
@@ -136,7 +134,7 @@ class BlogImage {
         system("mogrify -density 72 \"{$fullLocation}\"");
         $this->location = $newLocation;
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `blog_images` ( `blog`, `contentGroup`, `location`, `top`, `left`, `width`, `height` ) VALUES ({$this->blog->getId()}, {$this->group}, '{$this->location}', {$this->top}, {$this->left}, {$this->width}, {$this->height});");
+        $sql->executeStatement("INSERT INTO `blog_images` (`blog`, `contentGroup`, `location`, `top`, `left`, `width`, `height`) VALUES (?, ?, ?, ?, ?, ?, ?)", [$this->blog->getId(), $this->group, $this->location, $this->top, $this->left, $this->width, $this->height]);
         $sql->disconnect();
     }
 }

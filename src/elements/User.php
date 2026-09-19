@@ -47,15 +47,15 @@ class User {
         } elseif (!preg_match('/^[\w]{5,}$/', $params ['username'])) {
             $sql->disconnect();
             throw new BadUserException("Username is not valid: it must be at least 5 characters, and contain only letters numbers and underscores");
-        } elseif ($sql->getRowCount("SELECT * FROM users WHERE usr = '" . $sql->escapeString($params ['username']) . "'") > 0) {
+        } elseif ($sql->getRowCount("SELECT * FROM users WHERE usr = ?", [$params['username']]) > 0) {
             $sql->disconnect();
             throw new BadUserException ("That username already exists in the system");
         }
-        $user->username = $sql->escapeString($params ['username']);
+        $user->username = $params['username'];
         $user = self::setBasicValues($user, $params);
         //set the password - admins are not expected to provide one, but could
         if (isset($params['password']) && $params['password'] != "") {
-            $user->password = $sql->escapeString($params['password']);
+            $user->password = $params['password'];
         } elseif ($systemUser->isAdmin()) {
             $user->password = static::generatePassword();
         } else {
@@ -67,7 +67,7 @@ class User {
                 throw new BadUserException("Password can not be blank");
             }
         }
-        $user->md5Pass = md5($user->password);
+        $user->md5Pass = password_hash($user->password, PASSWORD_DEFAULT);
         // some common values
         $sql->disconnect();
         $user->hash = md5($user->username . $user->password);
@@ -90,7 +90,11 @@ class User {
         if ($hash != NULL) {
             try {
                 $sql = new Sql();
-                $user = User::withId($sql->getRow("SELECT * FROM users WHERE hash='{$hash}';")['id']);
+                $row = $sql->getRow("SELECT id FROM users WHERE hash = ?", [$hash]);
+                if ($row === null) {
+                    throw new BadUserException("Invalid user token provided");
+                }
+                $user = User::withId($row['id']);
                 $sql->disconnect();
                 $user->isLoggedIn = true;
             } catch (Exception $e) {
@@ -114,7 +118,7 @@ class User {
         $user = new User();
         $id = (int)$id;
         $sql = new Sql();
-        $user->raw = $sql->getRow("SELECT * FROM users WHERE id = $id;");
+        $user->raw = $sql->getRow("SELECT * FROM users WHERE id = ?", [$id]);
         $sql->disconnect();
         if (!isset($user->raw) || !isset($user->raw['id'])) {
             throw new BadUserException("User id does not match any users");
@@ -157,11 +161,11 @@ class User {
         } elseif (!filter_var($params['email'], FILTER_VALIDATE_EMAIL)) {
             $sql->disconnect();
             throw new BadUserException("Email is not valid");
-        } elseif ($sql->getRowCount("SELECT * FROM users WHERE email = '" . $sql->escapeString($params ['email']) . "' && id != $id") > 0) {
+        } elseif ($sql->getRowCount("SELECT * FROM users WHERE email = ? AND id != ?", [$params['email'], $id]) > 0) {
             $sql->disconnect();
             throw new BadUserException("That email already exists in the system: try logging in with it");
         }
-        $user->email = $sql->escapeString($params['email']);
+        $user->email = $params['email'];
         //sets if the user as active - only an admin can make a user inactive
         if ($user->active == '') {
             $user->active = 1;
@@ -179,14 +183,14 @@ class User {
                 $sql->disconnect();
                 throw new BadUserException("Role is not valid");
             }
-            $user->role = $sql->escapeString($params['role']);
+            $user->role = $params['role'];
         }
         //optional values
         if (isset ($params ['firstName'])) {
-            $user->firstName = $sql->escapeString($params ['firstName']);
+            $user->firstName = $params['firstName'];
         }
         if (isset ($params ['lastName'])) {
-            $user->lastName = $sql->escapeString($params ['lastName']);
+            $user->lastName = $params['lastName'];
         }
         return $user;
     }
@@ -220,7 +224,7 @@ class User {
      */
     static function fromReset($email, $code): User {
         $sql = new Sql();
-        $row = $sql->getRow("SELECT * FROM users WHERE email='$email' AND resetKey='$code';");
+        $row = $sql->getRow("SELECT * FROM users WHERE email = ? AND resetKey = ?", [$email, $code]);
         $sql->disconnect();
         if ($row == null) {
             throw new BadUserException('Credentials do not match our records');
@@ -236,12 +240,30 @@ class User {
      */
     static function fromLogin($username, $password): User {
         $sql = new Sql();
-        $row = $sql->getRow("SELECT * FROM users WHERE usr='$username' AND pass='" . md5($password) . "';");
+        $row = $sql->getRow("SELECT * FROM users WHERE usr = ?", [$username]);
+        if ($row != null && self::passwordMatches($password, $row['pass'])) {
+            if (password_needs_rehash($row['pass'], PASSWORD_DEFAULT)) {
+                $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [password_hash($password, PASSWORD_DEFAULT), $row['id']]);
+            }
+        } else {
+            $row = null;
+        }
         $sql->disconnect();
         if ($row == null) {
             throw new BadUserException('Credentials do not match our records');
         }
         return User::withId($row['id']);
+    }
+
+    /**
+     * Supports existing MD5 credentials only long enough to replace them with
+     * PHP's current password hash after a successful login.
+     */
+    private static function passwordMatches(string $password, string $storedHash): bool {
+        if (password_get_info($storedHash)['algo'] !== null) {
+            return password_verify($password, $storedHash);
+        }
+        return hash_equals($storedHash, md5($password)); // NOSONAR legacy migration path only
     }
 
     /**
@@ -251,7 +273,7 @@ class User {
      */
     static function fromEmail($email): User {
         $sql = new Sql();
-        $row = $sql->getRow("SELECT * FROM users WHERE email='$email';");
+        $row = $sql->getRow("SELECT * FROM users WHERE email = ?", [$email]);
         $sql->disconnect();
         if ($row == null) {
             throw new BadUserException('Credentials do not match our records');
@@ -341,14 +363,14 @@ class User {
      */
     function create(): int {
         $sql = new Sql();
-        $lastId = $sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('{$this->username}', '{$this->md5Pass}', '{$this->firstName}', '{$this->lastName}', '{$this->email}', '{$this->role}', '{$this->active}', '{$this->hash}');");
+        $lastId = $sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [$this->username, $this->md5Pass, $this->firstName, $this->lastName, $this->email, $this->role, $this->active, $this->hash]);
         $systemUser = User::fromSystem();
         if (!$systemUser->isAdmin()) {
             $message = 'Registered';
         } else {
             $message = 'Created';
         }
-        $sql->executeStatement("INSERT INTO `user_logs` VALUES ( $lastId, CURRENT_TIMESTAMP, '$message', NULL, NULL );");
+        $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, ?, NULL, NULL)", [$lastId, $message]);
         $sql->disconnect();
         $this->id = $lastId;
         $user = static::withId($lastId);
@@ -374,7 +396,7 @@ class User {
         }
         self::setBasicValues($this, $params);
         $sql = new Sql();
-        $sql->executeStatement("UPDATE users SET firstName='{$this->firstName}', lastName='{$this->lastName}', email='{$this->email}', role='{$this->role}', active='{$this->active}' WHERE id='{$this->getId()}';");
+        $sql->executeStatement("UPDATE users SET firstName = ?, lastName = ?, email = ?, role = ?, active = ? WHERE id = ?", [$this->firstName, $this->lastName, $this->email, $this->role, $this->active, $this->getId()]);
 
         //password is optional, but if it is set, current password must be passed, and must match
         if (isset ($params ['password']) && $params ['password'] != "") {
@@ -382,7 +404,7 @@ class User {
         }
         //TODO - admin used to be able to change username, can't do that any longer
         //must be unique from all other users
-        $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL );");
+        $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL)", [$this->id]);
         $sql->disconnect();
         $this->raw = static::withId($this->id)->getDataArray();
     }
@@ -411,9 +433,12 @@ class User {
         } elseif (!$systemUser->isAdmin() && $params ['curPass'] == "") {
             $sql->disconnect();
             throw new BadUserException("Current password can not be blank");
-        } elseif (!$systemUser->isAdmin() && $sql->getRowCount("SELECT * FROM users WHERE id = '{$systemUser->getId()}' AND pass = '" . md5($sql->escapeString($params ['curPass'])) . "'") == 0) {
-            $sql->disconnect();
-            throw new BadUserException("Current password does not match our records");
+        } elseif (!$systemUser->isAdmin()) {
+            $currentUser = $sql->getRow("SELECT pass FROM users WHERE id = ?", [$systemUser->getId()]);
+            if ($currentUser === null || !self::passwordMatches($params['curPass'], $currentUser['pass'])) {
+                $sql->disconnect();
+                throw new BadUserException("Current password does not match our records");
+            }
         }
         // need to ensure repeated password matches
         if (!isset ($params['passwordConfirm'])) {
@@ -426,9 +451,9 @@ class User {
             $sql->disconnect();
             throw new BadUserException("Password does not match password confirmation");
         }
-        $this->password = $sql->escapeString($params ['password']);
-        $this->md5Pass = md5($this->password);
-        $sql->executeStatement("UPDATE users SET pass='{$this->md5Pass}' WHERE id='{$this->getId()}';");
+        $this->password = $params['password'];
+        $this->md5Pass = password_hash($this->password, PASSWORD_DEFAULT);
+        $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [$this->md5Pass, $this->getId()]);
     }
 
     /**
@@ -442,7 +467,7 @@ class User {
             throw new UserException("User not authorized to delete user");
         }
         $sql = new Sql();
-        $sql->executeStatement("DELETE FROM users WHERE id='{$this->id}';");
+        $sql->executeStatement("DELETE FROM users WHERE id = ?", [$this->id]);
         $sql->disconnect();
     }
 
@@ -468,11 +493,11 @@ class User {
             }
         }
         $sql = new Sql();
-        $sql->executeStatement("UPDATE `users` SET lastLogin=CURRENT_TIMESTAMP WHERE id={$this->id};");
+        $sql->executeStatement("UPDATE `users` SET lastLogin = CURRENT_TIMESTAMP WHERE id = ?", [$this->id]);
         $user = static::withId($this->id);
         $this->lastLogin = $user->lastLogin;
         $this->raw = $user->getDataArray();
-        $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$this->id}, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL );");
+        $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL)", [$this->id]);
         $sql->disconnect();
     }
 
@@ -491,7 +516,7 @@ class User {
     function setResetCode(): string {
         $sql = new Sql();
         $resetCode = Strings::randomString(8);
-        $sql->executeStatement("UPDATE users SET resetKey='$resetCode' WHERE id={$this->id};");
+        $sql->executeStatement("UPDATE users SET resetKey = ? WHERE id = ?", [$resetCode, $this->id]);
         $user = static::withId($this->id);
         $this->resetKey = $resetCode;
         $this->raw = $user->getDataArray();

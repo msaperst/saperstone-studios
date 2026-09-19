@@ -12,7 +12,7 @@ try {
 }
 
 $sql = new Sql();
-$imgs = $sql->getRowCount("SELECT * FROM gallery_images WHERE gallery = {$gallery->getId()}");
+$imgs = $sql->getRowCount("SELECT * FROM gallery_images WHERE gallery = ?", [$gallery->getId()]);
 if (isset ($_POST ['imgs']) && is_array($_POST ['imgs']) && sizeof($_POST ['imgs']) == $imgs) {
     $imgs = $_POST ['imgs'];
 } else {
@@ -23,7 +23,7 @@ if (isset ($_POST ['imgs']) && is_array($_POST ['imgs']) && sizeof($_POST ['imgs
 
 for ($x = 0; $x < sizeof($imgs); $x++) {
     $img = $imgs [$x];
-    $sql->executeStatement("UPDATE gallery_images SET sequence=$x WHERE id='" . (int)$img ['id'] . "';");
+    $sql->executeStatement("UPDATE gallery_images SET sequence = ? WHERE id = ?", [$x, (int)$img['id']]);
 }
 $sql->disconnect();
 exit ();
