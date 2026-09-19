@@ -199,7 +199,7 @@ class ResetPasswordTest extends TestCase {
             $userInfo = $sql->getRow("SELECT * FROM users WHERE id = 4");
             $this->assertTrue(password_verify('password1', $userInfo['pass']));
             $this->assertNull($userInfo['resetKey']);
-            $rows = $sql->getRows("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 2;");
+            $rows = $sql->getRows("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC, id DESC LIMIT 2;");
             $this->assertEquals('Logged In', $rows[0]['action']);
             $this->assertEquals('Reset Password', $rows[1]['action']);
         } finally {

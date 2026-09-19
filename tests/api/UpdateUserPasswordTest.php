@@ -188,7 +188,7 @@ class UpdateUserPasswordTest extends TestCase {
             $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
             $this->assertNull($userDetails['resetKey']);
-            $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC");
+            $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");
             $this->assertEquals(4, $userLogs['user']);
             $this->assertEquals('Updated User', $userLogs['action']);
             $this->assertNull($userLogs['what']);

@@ -221,7 +221,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl);
         $this->loginAs('5510b5e6fffd897c234cafe499f76146');
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` ORDER BY time DESC");
+        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` ORDER BY time DESC, id DESC");
         $this->assertEquals(3, $userLogs['user']);
         CustomAsserts::timeWithin(2, $userLogs['time']);
         $this->assertEquals('Visited Album', $userLogs['action']);

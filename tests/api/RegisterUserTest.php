@@ -193,7 +193,7 @@ class RegisterUserTest extends TestCase {
             CustomAsserts::timeWithin(5, $userDetails['created']);
             CustomAsserts::timeWithin(5, $userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
-            $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 2;");
+            $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC, id DESC LIMIT 2;");
             $this->assertEquals('Logged In', $log[0]['action']);
             $this->assertEquals('Registered', $log[1]['action']);
 
@@ -244,7 +244,7 @@ class RegisterUserTest extends TestCase {
             CustomAsserts::timeWithin(5, $userDetails['created']);
             CustomAsserts::timeWithin(5, $userDetails['lastLogin']);
             $this->assertNull($userDetails['resetKey']);
-            $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC LIMIT 2;");
+            $log = $this->sql->getRows("SELECT * FROM `user_logs` WHERE `user` = $userId ORDER BY time DESC, id DESC LIMIT 2;");
             $this->assertEquals('Logged In', $log[0]['action']);
             $this->assertEquals('Registered', $log[1]['action']);
             CustomAsserts::assertEmailMatches(

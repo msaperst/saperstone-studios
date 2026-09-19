@@ -580,7 +580,7 @@ class AlbumIntegrationTest extends TestCase {
         $albums = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE album = $this->albumId");
         $this->assertEquals(1, sizeof($albums));
         $this->assertEquals(4, $albums[0]['user']);
-        $logs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE album = $this->albumId ORDER BY time DESC LIMIT 1;");
+        $logs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE album = $this->albumId ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals(4, $logs['user']);
         $this->assertEquals('Created Album', $logs['action']);
         $this->assertNull($logs['what']);
