@@ -32,7 +32,7 @@ if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
 if (!$systemUser->isAdmin()) {
     // update our user records table
     $sql = new Sql ();
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, ?)", [$systemUser->getId(), $album->getId()]);
+    $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Created Thumbs', NULL, ?)", [$systemUser->getId(), $album->getId()]);
     $sql->disconnect();
 }
 

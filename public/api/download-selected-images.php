@@ -119,7 +119,7 @@ system($cmd);
 
 // update our user records table
 if ($systemUser->getId()) {
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Downloaded', ?, ?)", [$systemUser->getId(), implode("\n", $image_array), $album->getId()]);
+    $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Downloaded', ?, ?)", [$systemUser->getId(), implode("\n", $image_array), $album->getId()]);
 }
 $sql->disconnect();
 

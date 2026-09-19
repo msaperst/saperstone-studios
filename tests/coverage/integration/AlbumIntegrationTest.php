@@ -554,7 +554,6 @@ class AlbumIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testWithParamsBasic() {
-        sleep(1);   // putting in a sleep to avoid a duplicate key problem for logging
         date_default_timezone_set("America/New_York");
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
         $params = [

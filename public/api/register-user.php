@@ -10,7 +10,6 @@ try {
 }
 echo $lastId;
 
-sleep(1);   //put in a sleep, otherwise there will be a conflict in the user log
 $user->login(false);
 
 $to = "{$user->getName()} <{$user->getEmail()}>";

@@ -99,8 +99,7 @@ class File {
             $sql->executeStatement("INSERT INTO $databaseIdentifier VALUES (NULL, ?, ?, ?, '', ?, ?, ?, 1)", [$parentId, $file, $nextSeq, $locationPrefix . $file, $width, $height]);
 
             if (!$systemUser->isAdmin() && $systemUser->isActive()) {
-                sleep(1); //TODO - this is a bug in our keys, should fix this
-                $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Added Image', ?, ?)", [$systemUser->getId(), $nextSeq, $parentId]);
+                $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Added Image', ?, ?)", [$systemUser->getId(), $nextSeq, $parentId]);
             }
             if ($parent == 'albums') {
                 // update the image count

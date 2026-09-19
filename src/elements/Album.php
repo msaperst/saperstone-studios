@@ -177,7 +177,7 @@ class Album {
         $lastId = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES (?, ?, ?, ?, ?)", [$this->name, $this->description, $this->date, $this->location, $user->getId()]);
         if ($user->getRole() == "uploader") {
             $sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (?, ?)", [$user->getId(), $lastId]);
-            $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Created Album', NULL, ?)", [$user->getId(), $lastId]);
+            $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Created Album', NULL, ?)", [$user->getId(), $lastId]);
         }
         $sql->disconnect();
         $this->id = $lastId;
