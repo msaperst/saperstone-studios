@@ -357,7 +357,7 @@ class NavigationFeatureContext implements Context {
             if ($row['what'] == 'NULL') {
                 $what = 'NULL';
             }
-            $sql->executeStatement("INSERT INTO user_logs VALUE( {$row['user']}, '{$row['time']}', '{$row['action']}', $what, '{$row['album']}');");
+            $sql->executeStatement("INSERT INTO user_logs (`user`, `time`, `action`, `what`, `album`) VALUE( {$row['user']}, '{$row['time']}', '{$row['action']}', $what, '{$row['album']}');");
         }
         $sql->disconnect();
     }

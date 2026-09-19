@@ -23,7 +23,7 @@ if (!$user->isAdmin()) {
     $sql->executeStatement("UPDATE `albums` SET `lastAccessed` = now() WHERE id = '{$album->getId()}';");
 }
 if ($user->isLoggedIn()) {
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES ( {$user->getId()}, CURRENT_TIMESTAMP, 'Visited Album', NULL, {$album->getId()} );");
+    $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Visited Album', NULL, ?)", [$user->getId(), $album->getId()]);
 }
 
 $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE user = '0' AND album = '{$album->getId()}';");

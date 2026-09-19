@@ -766,7 +766,7 @@ class UserIntegrationTest extends TestCase {
         $_COOKIE ['hash'] = "1d7505e7f434a7713e84ba399e937191";
         $user = User::withParams($params);
         $this->id = $user->create();
-        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = $this->id ORDER BY time DESC");
+        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = $this->id ORDER BY time DESC, id DESC");
         $this->assertEquals($this->id, $userLogs['user']);
         $this->assertEquals('Created', $userLogs['action']);
         $this->assertNull($userLogs['what']);
@@ -800,7 +800,7 @@ class UserIntegrationTest extends TestCase {
         ];
         $user = User::withParams($params);
         $this->id = $user->create();
-        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = $this->id ORDER BY time DESC");
+        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = $this->id ORDER BY time DESC, id DESC");
         $this->assertEquals($this->id, $userLogs['user']);
         $this->assertEquals('Registered', $userLogs['action']);
         $this->assertNull($userLogs['what']);
@@ -844,7 +844,7 @@ class UserIntegrationTest extends TestCase {
         $user->login(false);
         $userInfo = $user->getDataArray();
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         //TODO - check session
         //TODO - check no cookies
@@ -860,7 +860,7 @@ class UserIntegrationTest extends TestCase {
         $user->login(true);
         $userInfo = $user->getDataArray();
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         //TODO - check session
         //TODO - check no cookies
@@ -877,7 +877,7 @@ class UserIntegrationTest extends TestCase {
         $user->login(true);
         $userInfo = $user->getDataArray();
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         //TODO - check session
         //TODO - check no cookies
@@ -894,7 +894,7 @@ class UserIntegrationTest extends TestCase {
         $user->login(true);
         $userInfo = $user->getDataArray();
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         //TODO - check session
         //TODO - check no cookies
@@ -911,7 +911,7 @@ class UserIntegrationTest extends TestCase {
         $user->login(true);
         $userInfo = $user->getDataArray();
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         //TODO - check session
         //TODO - check cookies
@@ -1021,7 +1021,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
         $this->assertEquals(1, $userDetails['active']);
         $this->assertNull($userDetails['resetKey']);
-        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC");
+        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");
         $this->assertEquals(4, $userLogs['user']);
         $this->assertEquals('Updated User', $userLogs['action']);
         $this->assertNull($userLogs['what']);
@@ -1055,7 +1055,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
         $this->assertEquals(1, $userDetails['active']);
         $this->assertNull($userDetails['resetKey']);
-        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC");
+        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");
         $this->assertEquals(4, $userLogs['user']);
         $this->assertEquals('Updated User', $userLogs['action']);
         $this->assertNull($userLogs['what']);
@@ -1089,7 +1089,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
         $this->assertEquals(0, $userDetails['active']);
         $this->assertNull($userDetails['resetKey']);
-        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC");
+        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");
         $this->assertEquals(4, $userLogs['user']);
         $this->assertEquals('Updated User', $userLogs['action']);
         $this->assertNull($userLogs['what']);
@@ -1225,7 +1225,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
         $this->assertEquals(1, $userDetails['active']);
         $this->assertNull($userDetails['resetKey']);
-        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC");
+        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");
         $this->assertEquals(4, $userLogs['user']);
         $this->assertEquals('Updated User', $userLogs['action']);
         $this->assertNull($userLogs['what']);
@@ -1257,7 +1257,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
         $this->assertEquals(1, $userDetails['active']);
         $this->assertNull($userDetails['resetKey']);
-        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC");
+        $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");
         $this->assertEquals(4, $userLogs['user']);
         $this->assertEquals('Updated User', $userLogs['action']);
         $this->assertNull($userLogs['what']);

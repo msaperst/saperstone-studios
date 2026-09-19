@@ -36,7 +36,8 @@ $(function () {
         }
     });
 
-    $('#login-submit').click(function () {
+    $('#login-submit').click(function (event) {
+        event.preventDefault();
         submitLogin();
     });
 

@@ -188,7 +188,7 @@ class FileIntegrationTest extends TestCase {
             $this->assertEquals(1600, $images[0]['width']);
             $this->assertEquals(1200, $images[0]['height']);
             $this->assertEquals(1, $images[0]['active']);
-            $logs = $sql->getRows("SELECT * FROM user_logs WHERE album = 899 ORDER BY time DESC");
+            $logs = $sql->getRows("SELECT * FROM user_logs WHERE album = 899 ORDER BY time DESC, id DESC");
             $this->assertEquals(0, sizeof($logs));
             $album = $sql->getRows("SELECT * FROM albums WHERE id = 899");
             $this->assertEquals(0, sizeof($album));
@@ -233,7 +233,7 @@ class FileIntegrationTest extends TestCase {
             $this->assertEquals(1600, $images[1]['width']);
             $this->assertEquals(1200, $images[1]['height']);
             $this->assertEquals(1, $images[1]['active']);
-            $logs = $sql->getRows("SELECT * FROM user_logs WHERE album = 899 ORDER BY time DESC");
+            $logs = $sql->getRows("SELECT * FROM user_logs WHERE album = 899 ORDER BY time DESC, id DESC");
             $this->assertEquals(0, sizeof($logs));
             $album = $sql->getRow("SELECT * FROM albums WHERE id = 899");
             $this->assertEquals(2, $album['images']);
@@ -290,7 +290,7 @@ class FileIntegrationTest extends TestCase {
             $this->assertEquals(1600, $images[1]['width']);
             $this->assertEquals(1200, $images[1]['height']);
             $this->assertEquals(1, $images[1]['active']);
-            $logs = $sql->getRows("SELECT * FROM user_logs WHERE album = 898 ORDER BY time DESC");
+            $logs = $sql->getRows("SELECT * FROM user_logs WHERE album = 898 ORDER BY time DESC, id DESC");
             $this->assertEquals(3, $logs[0]['user']);
             $this->assertEquals('Added Image', $logs[0]['action']);
             $this->assertEquals(1, $logs[0]['what']);

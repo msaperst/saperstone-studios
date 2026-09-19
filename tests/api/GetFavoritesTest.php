@@ -166,7 +166,6 @@ class GetFavoritesTest extends TestCase {
      * @throws GuzzleException
      */
     public function testAuthUserFavoritesAlbum() {
-        sleep(1);
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));

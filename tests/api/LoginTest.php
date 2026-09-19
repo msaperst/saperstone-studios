@@ -64,7 +64,7 @@ class LoginTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 1 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 1 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged Out', $log['action']);
         //TODO - assert cookie doesn't exist anymore
     }
@@ -161,7 +161,7 @@ class LoginTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('', (string)$response->getBody());
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 3 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 3 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 3;");
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
@@ -180,7 +180,7 @@ class LoginTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('', (string)$response->getBody());
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 3 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 3 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 3;");
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
@@ -203,7 +203,7 @@ class LoginTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('', (string)$response->getBody());
-        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC LIMIT 1;");
+        $log = $this->sql->getRow("SELECT * FROM `user_logs` WHERE `user` = 4 ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 4;");
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);

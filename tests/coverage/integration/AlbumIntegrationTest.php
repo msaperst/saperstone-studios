@@ -554,7 +554,6 @@ class AlbumIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testWithParamsBasic() {
-        sleep(1);   // putting in a sleep to avoid a duplicate key problem for logging
         date_default_timezone_set("America/New_York");
         $_SESSION ['hash'] = "c90788c0e409eac6a95f6c6360d8dbf7";
         $params = [
@@ -581,7 +580,7 @@ class AlbumIntegrationTest extends TestCase {
         $albums = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE album = $this->albumId");
         $this->assertEquals(1, sizeof($albums));
         $this->assertEquals(4, $albums[0]['user']);
-        $logs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE album = $this->albumId ORDER BY time DESC LIMIT 1;");
+        $logs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE album = $this->albumId ORDER BY time DESC, id DESC LIMIT 1;");
         $this->assertEquals(4, $logs['user']);
         $this->assertEquals('Created Album', $logs['action']);
         $this->assertNull($logs['what']);

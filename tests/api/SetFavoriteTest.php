@@ -20,6 +20,7 @@ class SetFavoriteTest extends TestCase {
     public function setUp(): void {
         $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
+        $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `album` = 999 AND `action` = 'Set Favorite'");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4);");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '0', '', '/albums/sample/sample1.jpg', '300', '400', '1');");
     }
@@ -32,6 +33,7 @@ class SetFavoriteTest extends TestCase {
         $this->sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = 999;");
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = 999;");
         $this->sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`album` = 999;");
+        $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `album` = 999 AND `action` = 'Set Favorite'");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
@@ -185,7 +187,6 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        sleep(1);
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'form_params' => [
                 'album' => 999,
@@ -200,5 +201,8 @@ class SetFavoriteTest extends TestCase {
         $this->assertEquals(1, $images[0]['user']);
         $this->assertEquals(999, $images[0]['album']);
         $this->assertEquals('999', $images[0]['image']);
+        $logs = $this->sql->getRows("SELECT `id` FROM `user_logs` WHERE `user` = 1 AND `album` = 999 AND `action` = 'Set Favorite'");
+        $this->assertCount(2, $logs);
+        $this->assertNotSame($logs[0]['id'], $logs[1]['id']);
     }
 }

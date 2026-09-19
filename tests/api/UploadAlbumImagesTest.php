@@ -171,7 +171,7 @@ class UploadAlbumImagesTest extends TestCase {
         $this->assertEquals(1600, $images[0]['width']);
         $this->assertEquals(1200, $images[0]['height']);
         $this->assertEquals(1, $images[0]['active']);
-        $logs = $this->sql->getRows("SELECT * FROM user_logs WHERE album = 998 ORDER BY time DESC");
+        $logs = $this->sql->getRows("SELECT * FROM user_logs WHERE album = 998 ORDER BY time DESC, id DESC");
         $this->assertEquals(0, sizeof($logs));
         $album = $this->sql->getRow("SELECT * FROM albums WHERE id = 998");
         $this->assertEquals(1, $album['images']);
@@ -209,7 +209,7 @@ class UploadAlbumImagesTest extends TestCase {
         $this->assertEquals(1600, $images[0]['width']);
         $this->assertEquals(1200, $images[0]['height']);
         $this->assertEquals(1, $images[0]['active']);
-        $logs = $this->sql->getRows("SELECT * FROM user_logs WHERE album = 999 ORDER BY time DESC");
+        $logs = $this->sql->getRows("SELECT * FROM user_logs WHERE album = 999 ORDER BY time DESC, id DESC");
         $this->assertEquals(1, sizeof($logs));
         $this->assertEquals(4, $logs[0]['user']);
         $this->assertEquals('Added Image', $logs[0]['action']);

@@ -370,7 +370,7 @@ class User {
         } else {
             $message = 'Created';
         }
-        $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, ?, NULL, NULL)", [$lastId, $message]);
+        $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, ?, NULL, NULL)", [$lastId, $message]);
         $sql->disconnect();
         $this->id = $lastId;
         $user = static::withId($lastId);
@@ -404,7 +404,7 @@ class User {
         }
         //TODO - admin used to be able to change username, can't do that any longer
         //must be unique from all other users
-        $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL)", [$this->id]);
+        $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Updated User', NULL, NULL)", [$this->id]);
         $sql->disconnect();
         $this->raw = static::withId($this->id)->getDataArray();
     }
@@ -497,7 +497,7 @@ class User {
         $user = static::withId($this->id);
         $this->lastLogin = $user->lastLogin;
         $this->raw = $user->getDataArray();
-        $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL)", [$this->id]);
+        $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Logged In', NULL, NULL)", [$this->id]);
         $sql->disconnect();
     }
 

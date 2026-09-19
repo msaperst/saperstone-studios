@@ -16,7 +16,7 @@ try {
 $sql = new Sql ();
 if ($systemUser->isLoggedIn()) {
     // update our user records table
-    $sql->executeStatement("INSERT INTO `user_logs` VALUES (?, CURRENT_TIMESTAMP, 'Set Favorite', ?, ?)", [$systemUser->getId(), $image->getId(), $album->getId()]);
+    $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Set Favorite', ?, ?)", [$systemUser->getId(), $image->getId(), $album->getId()]);
 }
 
 // update our mysql database
