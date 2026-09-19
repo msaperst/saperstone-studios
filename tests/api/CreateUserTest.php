@@ -243,7 +243,7 @@ class CreateUserTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $userId = (string)$response->getBody();
             $userDetails = $this->sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = $userId;");
-            $this->assertEquals($userId, $userDetails['id']);
+            $this->assertSame((string)$userId, (string)$userDetails['id']);
             $this->assertEquals('MaxMax', $userDetails['usr']);
             $this->assertNotEquals('', $userDetails['pass']);
             $this->assertEquals('', $userDetails['firstName']);

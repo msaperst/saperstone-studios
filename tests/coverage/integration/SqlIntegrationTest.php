@@ -141,7 +141,7 @@ class SqlIntegrationTest extends TestCase {
     }
 
     public function testParameterCountMismatchThrows(): void {
-        $this->expectException(mysqli_sql_exception::class);
+        $this->expectException(\ValueError::class);
         $this->sql->getRow("SELECT * FROM users WHERE usr = ?", []);
     }
 

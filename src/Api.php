@@ -18,10 +18,7 @@ class Api {
                     return floatval(str_replace('$', '', $_POST [$variable]));
                 case "string":
                 default:
-                    $sql = new Sql();
-                    $escaped = $sql->escapeString($_POST [$variable]);
-                    $sql->disconnect();
-                    return $escaped;
+                    return $_POST [$variable];
             }
         } else {
             if (!isset ($_POST [$variable])) {
@@ -37,10 +34,7 @@ class Api {
      */
     function retrieveValidatedPost($variable, $variableName, $validation): string {
         if (isset ($_POST [$variable]) && filter_var($_POST [$variable], $validation)) {
-            $sql = new Sql();
-            $escaped = $sql->escapeString($_POST [$variable]);
-            $sql->disconnect();
-            return $escaped;
+            return $_POST [$variable];
         } else {
             if (!isset ($_POST [$variable])) {
                 throw new Exception("$variableName is required");
@@ -54,9 +48,7 @@ class Api {
 
     function retrievePostDateTime($variable, $variableName, $format) {
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
-            $sql = new Sql();
-            $date = $sql->escapeString($_POST [$variable]);
-            $sql->disconnect();
+            $date = $_POST [$variable];
             $d = DateTime::createFromFormat($format, $date);
             if (!($d && $d->format($format) === $date)) {
                 throw new Exception("$variableName is not the correct format");
@@ -93,10 +85,7 @@ class Api {
                     return floatval(str_replace('$', '', $_GET [$variable]));
                 case "string":
                 default:
-                    $sql = new Sql();
-                    $escaped = $sql->escapeString($_GET [$variable]);
-                    $sql->disconnect();
-                    return $escaped;
+                    return $_GET [$variable];
             }
         } else {
             if (!isset ($_GET [$variable])) {

@@ -130,7 +130,7 @@ class CreateProductTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $productId = $response->getBody();
             $productDetails = $this->sql->getRow("SELECT * FROM `product_types` WHERE `product_types`.`id` = $productId;");
-            $this->assertEquals($productId, $productDetails['id']);
+            $this->assertSame((string)$productId, (string)$productDetails['id']);
             $this->assertEquals('signature', $productDetails['category']);
             $this->assertEquals('explosion', $productDetails['name']);
         } finally {

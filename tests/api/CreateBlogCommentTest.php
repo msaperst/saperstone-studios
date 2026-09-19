@@ -106,7 +106,7 @@ class CreateBlogCommentTest extends TestCase {
         $commentId = $response->getBody();
         $this->assertEquals(1, preg_match("/^[\d]+$/", $commentId));
         $blogComment = $this->sql->getRow("SELECT * FROM `blog_comments` WHERE `blog_comments`.`id` = $commentId;");
-        $this->assertEquals($commentId, $blogComment['id']);
+        $this->assertSame((string)$commentId, (string)$blogComment['id']);
         $this->assertEquals(999, $blogComment['blog']);
         $this->assertEquals(1, $blogComment['user']);
         $this->assertEquals('', $blogComment['name']);
@@ -129,7 +129,7 @@ class CreateBlogCommentTest extends TestCase {
         $commentId = $response->getBody();
         $this->assertEquals(1, preg_match("/^[\d]+$/", $commentId));
         $blogComment = $this->sql->getRow("SELECT * FROM `blog_comments` WHERE `blog_comments`.`id` = $commentId;");
-        $this->assertEquals($commentId, $blogComment['id']);
+        $this->assertSame((string)$commentId, (string)$blogComment['id']);
         $this->assertEquals(999, $blogComment['blog']);
         $this->assertNull($blogComment['user']);
         $this->assertEquals('MaxMaxMaxMax', $blogComment['name']);

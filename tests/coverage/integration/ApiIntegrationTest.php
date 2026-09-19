@@ -46,17 +46,17 @@ class ApiIntegrationTest extends TestCase {
 
     public function testRetrievePostStringApos() {
         $_POST['bar'] = "foo'";
-        $this->assertEquals('foo\\\'', $this->api->retrievePostString('bar', 'Foo'));
+        $this->assertEquals('foo\'', $this->api->retrievePostString('bar', 'Foo'));
     }
 
     public function testRetrievePostStringQuote() {
         $_POST['bar'] = "foo\"";
-        $this->assertEquals('foo\\"', $this->api->retrievePostString('bar', 'Foo'));
+        $this->assertEquals('foo"', $this->api->retrievePostString('bar', 'Foo'));
     }
 
     public function testRetrievePostStringSlash() {
         $_POST['bar'] = "foo\\";
-        $this->assertEquals('foo\\\\', $this->api->retrievePostString('bar', 'Foo'));
+        $this->assertEquals('foo\\', $this->api->retrievePostString('bar', 'Foo'));
     }
 
     public function testRetrieveValidatedPostNullFormat() {
@@ -110,16 +110,16 @@ class ApiIntegrationTest extends TestCase {
 
     public function testRetrieveGetStringApos() {
         $_GET['bar'] = "foo'";
-        $this->assertEquals('foo\\\'', $this->api->retrieveGetString('bar', 'Foo'));
+        $this->assertEquals('foo\'', $this->api->retrieveGetString('bar', 'Foo'));
     }
 
     public function testRetrieveGetStringQuote() {
         $_GET['bar'] = "foo\"";
-        $this->assertEquals('foo\\"', $this->api->retrieveGetString('bar', 'Foo'));
+        $this->assertEquals('foo"', $this->api->retrieveGetString('bar', 'Foo'));
     }
 
     public function testRetrieveGetStringSlash() {
         $_GET['bar'] = "foo\\";
-        $this->assertEquals('foo\\\\', $this->api->retrieveGetString('bar', 'Foo'));
+        $this->assertEquals('foo\\', $this->api->retrieveGetString('bar', 'Foo'));
     }
 }

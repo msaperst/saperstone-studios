@@ -224,7 +224,7 @@ class CreateContractTest extends TestCase {
             $this->assertEquals(200, $response->getStatusCode());
             $contractId = (string)$response->getBody();
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = $contractId;");
-            $this->assertEquals($contractId, $contractDetails['id']);
+            $this->assertSame((string)$contractId, (string)$contractDetails['id']);
             $this->assertEquals(md5($contractId . "weddingMaxMaxMaxfunsies"), $contractDetails['link']);
             $this->assertEquals('wedding', $contractDetails['type']);
             $this->assertEquals('MaxMaxMax', $contractDetails['name']);
