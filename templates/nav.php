@@ -5,6 +5,8 @@ $DOCUMENT_ROOT = "DOCUMENT_ROOT";
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $navSql = new Sql ();
 $navUser = User::fromSystem();
+$navSession = new Session();
+$csrfToken = $navSession->getCsrfToken();
 $query = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
 if ($navSql->getRowCount($query)) {
 ?>
@@ -148,6 +150,8 @@ $navSql->disconnect();
             </div>
             <form id="login-form" method="post" action="/api/login.php">
                 <div class="modal-body">
+                    <input id="csrf-token" type="hidden" name="csrf_token"
+                           value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>"/>
                     <input class="form-control" id="login-user" type="text" name="username"
                            placeholder="Username"/> <input class="form-control"
                                                            id="login-pass" type="password" name="password"
