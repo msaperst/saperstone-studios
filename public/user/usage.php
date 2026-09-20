@@ -14,7 +14,9 @@ $user->forceAdmin();
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
     <link
     href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
-    rel="stylesheet">
+    rel="stylesheet"
+    integrity="sha384-YcTv91pbdpZ4It88TK5bVHIGTuPqoSi0CpPF9UA9eRicGHEJ3lpQZajpytN4rLkp"
+    crossorigin="anonymous">
 
 </head>
 
@@ -84,9 +86,13 @@ $user->forceAdmin();
     <!-- /.container -->
 
     <script
-        src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+        src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"
+        integrity="sha384-89aj/hOsfOyfD0Ll+7f2dobA15hDyiNb8m1dJ+rJuqgrGR+PVqNU8pybx4pbF3Cc"
+        crossorigin="anonymous"></script>
     <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js"
+        integrity="sha384-n0coGvWsD/djLiolh8NacrXbdjGodGbH6kuQLcwWZkPXicsUBF+5kp1qpH+TEAUg"
+        crossorigin="anonymous"></script>
     <script src="/js/usage.js"></script>
 </body>
 

@@ -15,7 +15,9 @@ $sql = new Sql ();
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
     <link
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
-    rel="stylesheet">
+    rel="stylesheet"
+    integrity="sha384-Je6/yfVqKlz/140LeySLv95dqJvjJkRTekqU15aZ9XJF5hRATXzV0sBgDZ2+lWyK"
+    crossorigin="anonymous">
 
 </head>
 

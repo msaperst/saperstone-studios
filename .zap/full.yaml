@@ -44,6 +44,17 @@ jobs:
         replacementString: "hash=3fa5449987c49f7b606bcbeabe5c9927"
         tokenProcessing: false
 
+  # Google Tag Manager serves mutable JavaScript, so a fixed SRI hash would
+  # eventually block analytics. Limit the exception to this exact tag rather
+  # than suppressing rule 90003 for other external resources.
+  - type: alertFilter
+    alertFilters:
+      - ruleId: 90003
+        ruleName: Sub Resource Integrity Attribute Missing
+        newRisk: False Positive
+        context: saperstone-studios
+        evidence: '<script async src="https://www.googletagmanager.com/gtag/js?id=G-L6F5KNQDY1"></script>'
+
   - type: requestor
     parameters:
       user: zap-ci

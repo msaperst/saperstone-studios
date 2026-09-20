@@ -16,6 +16,16 @@ RISK_NAMES = {
 }
 
 
+def reportable_alerts(alerts: list[dict]) -> list[dict]:
+    """Return alerts that still have findings and are not accepted false positives."""
+    return [
+        alert
+        for alert in alerts
+        if alert.get("instances")
+        and "false positive" not in str(alert.get("riskdesc", "")).lower()
+    ]
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print("Usage: zap-summary.py <report-json> <scan-name>", file=sys.stderr)
@@ -41,6 +51,7 @@ def main() -> int:
     alerts = []
     for site in report.get("site", []):
         alerts.extend(site.get("alerts", []))
+    alerts = reportable_alerts(alerts)
 
     counts = Counter(str(alert.get("riskcode", "0")) for alert in alerts)
 

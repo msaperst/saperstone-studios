@@ -70,14 +70,20 @@ if (strpos($_SERVER['REQUEST_URI'], 'blog/post.php') !== false) {
         crossorigin="anonymous">
 <link
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css"
-        rel="stylesheet">
+        rel="stylesheet"
+        integrity="sha384-Je6/yfVqKlz/140LeySLv95dqJvjJkRTekqU15aZ9XJF5hRATXzV0sBgDZ2+lWyK"
+        crossorigin="anonymous">
 
 <!-- Custom CSS -->
 <link href="/css/modern-business.css?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/css/modern-business.css'); ?>" rel="stylesheet">
 <link href="/css/saperstone-studios.css?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/css/saperstone-studios.css'); ?>" rel="stylesheet">
 
 <!-- Custom Fonts -->
-<script src="https://use.fontawesome.com/5b39eac726.js"></script>
+<link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+        rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+        crossorigin="anonymous">
 
 <!-- Ties to Google Business Profile -->
 <script type="application/ld+json">
@@ -142,13 +148,6 @@ if (strpos($_SERVER['REQUEST_URI'], 'blog/post.php') !== false) {
         ]
     }
 </script>
-
-<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
 
 <!-- Facebook Pixel Code -->
 <?php
