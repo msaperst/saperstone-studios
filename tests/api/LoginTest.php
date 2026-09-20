@@ -256,7 +256,7 @@ class LoginTest extends TestCase {
         $this->assertGreaterThan(time() + (29 * 24 * 60 * 60), $cookie->getExpires());
         $this->assertLessThanOrEqual(time() + RememberMe::LIFETIME, $cookie->getExpires());
 
-        [$selector, $validator] = explode(':', $cookie->getValue(), 2);
+        [$selector, $validator] = explode(':', urldecode($cookie->getValue()), 2);
         $token = $this->sql->getRow("SELECT * FROM `remember_tokens` WHERE `selector` = ?", [$selector]);
         $this->assertEquals(4, $token['user']);
         $this->assertNotEquals($validator, $token['token_hash']);

@@ -59,13 +59,16 @@ class RememberMe {
     }
 
     public static function forgetCurrent(): void {
+        $hadCookie = isset($_COOKIE[self::COOKIE_NAME]);
         $parts = self::cookieParts();
         if ($parts !== null) {
             $sql = new Sql();
             $sql->executeStatement(self::DELETE_TOKEN_SQL, [$parts[0]]);
             $sql->disconnect();
         }
-        self::clearCookie();
+        if ($hadCookie && isset($_COOKIE[self::COOKIE_NAME])) {
+            self::clearCookie();
+        }
     }
 
     public static function forgetAllForUser(int $userId): void {
