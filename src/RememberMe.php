@@ -4,6 +4,7 @@ class RememberMe {
 
     public const COOKIE_NAME = 'remember_me';
     public const LIFETIME = 30 * 24 * 60 * 60;
+    private const DELETE_TOKEN_SQL = "DELETE FROM `remember_tokens` WHERE `selector` = ?";
 
     public static function remember(int $userId): string {
         $selector = bin2hex(random_bytes(16));
@@ -35,16 +36,9 @@ class RememberMe {
             "SELECT `user`, `token_hash` FROM `remember_tokens` WHERE `selector` = ? AND `expires_at` > CURRENT_TIMESTAMP",
             [$selector]
         );
-        if ($row === null || !hash_equals($row['token_hash'], hash('sha256', $validator))) {
-            $sql->executeStatement("DELETE FROM `remember_tokens` WHERE `selector` = ?", [$selector]);
-            $sql->disconnect();
-            self::clearCookie();
-            return null;
-        }
-
-        $user = User::withId($row['user']);
-        if (!$user->isActive()) {
-            $sql->executeStatement("DELETE FROM `remember_tokens` WHERE `selector` = ?", [$selector]);
+        $user = self::validatedUser($row, $validator);
+        if ($user === null) {
+            $sql->executeStatement(self::DELETE_TOKEN_SQL, [$selector]);
             $sql->disconnect();
             self::clearCookie();
             return null;
@@ -68,7 +62,7 @@ class RememberMe {
         $parts = self::cookieParts();
         if ($parts !== null) {
             $sql = new Sql();
-            $sql->executeStatement("DELETE FROM `remember_tokens` WHERE `selector` = ?", [$parts[0]]);
+            $sql->executeStatement(self::DELETE_TOKEN_SQL, [$parts[0]]);
             $sql->disconnect();
         }
         self::clearCookie();
@@ -86,7 +80,7 @@ class RememberMe {
             $options = [
                 'expires' => time() - 3600,
                 'path' => '/',
-                'secure' => self::isSecureRequest(),
+                'secure' => Session::isSecureRequest(),
                 'httponly' => true,
                 'samesite' => 'Lax'
             ];
@@ -123,7 +117,7 @@ class RememberMe {
             setcookie(self::COOKIE_NAME, $value, [
                 'expires' => $expires,
                 'path' => '/',
-                'secure' => self::isSecureRequest(),
+                'secure' => Session::isSecureRequest(),
                 'httponly' => true,
                 'samesite' => 'Lax'
             ]);
@@ -135,7 +129,7 @@ class RememberMe {
             setcookie(self::COOKIE_NAME, '', [
                 'expires' => time() - 3600,
                 'path' => '/',
-                'secure' => self::isSecureRequest(),
+                'secure' => Session::isSecureRequest(),
                 'httponly' => true,
                 'samesite' => 'Lax'
             ]);
@@ -143,8 +137,11 @@ class RememberMe {
         unset($_COOKIE[self::COOKIE_NAME]);
     }
 
-    private static function isSecureRequest(): bool {
-        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+    private static function validatedUser(?array $row, string $validator): ?User {
+        if ($row === null || !hash_equals($row['token_hash'], hash('sha256', $validator))) {
+            return null;
+        }
+        $user = User::withId($row['user']);
+        return $user->isActive() ? $user : null;
     }
 }

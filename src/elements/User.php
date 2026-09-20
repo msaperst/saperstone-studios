@@ -3,6 +3,8 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class User {
 
+    private const INVALID_USER_TOKEN = "Invalid user token provided";
+
     private $session;
     private $raw;
     private $id;
@@ -80,50 +82,53 @@ class User {
      */
     static function fromSystem(): User {
         $user = new User();
-        $hash = NULL;
-        if (isset ($_SESSION) && isset ($_SESSION ['hash'])) {
-            $hash = $_SESSION ['hash'];
-        }
+        $hash = $_SESSION['hash'] ?? null;
         $allowsPreferenceCookies = Session::allowsPreferenceCookies();
-        if ($hash === null && !$allowsPreferenceCookies) {
+        if ($hash !== null) {
+            return self::authenticatedUserFromHash($hash, false);
+        }
+        if (!$allowsPreferenceCookies) {
             RememberMe::forgetCurrent();
             RememberMe::clearLegacyCookies();
+            return $user;
         }
-        if ($hash === null && $allowsPreferenceCookies) {
-            $rememberedUser = RememberMe::restore();
-            if ($rememberedUser !== null) {
-                $rememberedUser->isLoggedIn = true;
-                return $rememberedUser;
-            }
+        $rememberedUser = RememberMe::restore();
+        if ($rememberedUser !== null) {
+            $rememberedUser->isLoggedIn = true;
+            return $rememberedUser;
         }
-        $legacyCookie = false;
-        if ($hash === null && $allowsPreferenceCookies && isset($_COOKIE['hash'])) {
-            $hash = $_COOKIE['hash'];
-            $legacyCookie = true;
-        }
-        if ($hash != NULL) {
-            try {
-                $sql = new Sql();
-                $row = $sql->getRow("SELECT id FROM users WHERE hash = ?", [$hash]);
-                if ($row === null) {
-                    throw new BadUserException("Invalid user token provided");
-                }
-                $user = User::withId($row['id']);
-                $sql->disconnect();
-                if (!$user->isActive()) {
-                    throw new BadUserException("Invalid user token provided");
-                }
-                $user->isLoggedIn = true;
-                if ($legacyCookie) {
-                    RememberMe::remember((int)$user->getId());
-                    RememberMe::establishSession($user);
-                    RememberMe::clearLegacyCookies();
-                }
-            } catch (Exception $e) {
-                throw new BadUserException("Invalid user token provided");
-            }
+        if (isset($_COOKIE['hash'])) {
+            return self::authenticatedUserFromHash($_COOKIE['hash'], true);
         }
         return $user;
+    }
+
+    private static function authenticatedUserFromHash($hash, bool $legacyCookie): User {
+        $sql = null;
+        try {
+            $sql = new Sql();
+            $row = $sql->getRow("SELECT id FROM users WHERE hash = ?", [$hash]);
+            if ($row === null) {
+                throw new BadUserException(self::INVALID_USER_TOKEN);
+            }
+            $user = User::withId($row['id']);
+            if (!$user->isActive()) {
+                throw new BadUserException(self::INVALID_USER_TOKEN);
+            }
+            $user->isLoggedIn = true;
+            if ($legacyCookie) {
+                RememberMe::remember((int)$user->getId());
+                RememberMe::establishSession($user);
+                RememberMe::clearLegacyCookies();
+            }
+            return $user;
+        } catch (Exception $e) {
+            throw new BadUserException(self::INVALID_USER_TOKEN);
+        } finally {
+            if ($sql !== null) {
+                $sql->disconnect();
+            }
+        }
     }
 
     /**

@@ -14,8 +14,9 @@ class Session {
             session_set_cookie_params([
                 'lifetime' => 0,
                 'path' => '/',
-                'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-                    || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https',
+                // Production is HTTPS and always receives Secure cookies. Local HTTP
+                // development and CI must remain usable without pretending to be TLS.
+                'secure' => self::isSecureRequest(), // NOSONAR reviewed environment-dependent flag
                 'httponly' => true,
                 'samesite' => 'Lax'
             ]);
@@ -87,11 +88,16 @@ class Session {
         return (isset ($_SERVER ['HTTP_HOST']) && Strings::endsWith($_SERVER ['HTTP_HOST'], $server) && in_array("analytics", $preferences));
     }
 
-    static function allowsPreferenceCookies(): bool {
+    public static function allowsPreferenceCookies(): bool {
         if (!isset($_COOKIE['CookiePreferences'])) {
             return true;
         }
         $preferences = json_decode($_COOKIE['CookiePreferences'], true);
         return is_array($preferences) && in_array('preferences', $preferences, true);
+    }
+
+    public static function isSecureRequest(): bool {
+        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
     }
 }
