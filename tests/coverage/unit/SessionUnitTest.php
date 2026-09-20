@@ -16,7 +16,23 @@ class SessionUnitTest extends TestCase {
     }
 
     public function tearDown(): void {
+        unset($_SESSION['csrf_token']);
         $this->session = NULL;
+    }
+
+    public function testCsrfTokenIsGeneratedAndReused() {
+        $token = $this->session->getCsrfToken();
+
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $token);
+        $this->assertSame($token, $this->session->getCsrfToken());
+    }
+
+    public function testCsrfTokenValidation() {
+        $token = $this->session->getCsrfToken();
+
+        $this->assertTrue($this->session->isCsrfTokenValid($token));
+        $this->assertFalse($this->session->isCsrfTokenValid(null));
+        $this->assertFalse($this->session->isCsrfTokenValid('invalid-token'));
     }
 
     public function testNoClientIp() {
