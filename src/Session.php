@@ -11,8 +11,15 @@ class Session {
         if (session_status() != PHP_SESSION_ACTIVE && !headers_sent()) {
             // Starting the session
             session_name('session');
-            // Making the cookie live for 2 weeks
-            session_set_cookie_params(2 * 7 * 24 * 60 * 60);
+            // The Secure value is false only for local HTTP development/CI.
+            // Production HTTPS, including forwarded HTTPS, always receives true.
+            session_set_cookie_params([ // NOSONAR reviewed environment-dependent flag
+                'lifetime' => 0,
+                'path' => '/',
+                'secure' => self::isSecureRequest(),
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
             // Start our session
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
@@ -79,5 +86,18 @@ class Session {
         $preferences = json_decode($_COOKIE['CookiePreferences']);
         $server = 'saperstonestudios.com';
         return (isset ($_SERVER ['HTTP_HOST']) && Strings::endsWith($_SERVER ['HTTP_HOST'], $server) && in_array("analytics", $preferences));
+    }
+
+    public static function allowsPreferenceCookies(): bool {
+        if (!isset($_COOKIE['CookiePreferences'])) {
+            return true;
+        }
+        $preferences = json_decode($_COOKIE['CookiePreferences'], true);
+        return is_array($preferences) && in_array('preferences', $preferences, true);
+    }
+
+    public static function isSecureRequest(): bool {
+        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
     }
 }

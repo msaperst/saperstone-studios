@@ -9,7 +9,7 @@ if (isset($_POST['submit']) && in_array($_POST['submit'], ['Login', 'Logout'], t
     $csrfToken = $_POST['csrf_token'] ?? null;
     if (!$session->isCsrfTokenValid($csrfToken)) {
         http_response_code(403);
-        echo 'Invalid CSRF token';
+        echo 'Your session has expired. Please refresh the page and try again.';
         exit();
     }
 }
@@ -21,8 +21,8 @@ if ($systemUser->isLoggedIn() && isset($_POST ['submit']) && $_POST ['submit'] =
     $sql->disconnect();
 
     // remove any stored login
-    setcookie('hash', '', time() - 3600, '/');
-    setcookie('usr', '', time() - 3600, '/');
+    RememberMe::forgetCurrent();
+    RememberMe::clearLegacyCookies();
 
 
     // destroy the session

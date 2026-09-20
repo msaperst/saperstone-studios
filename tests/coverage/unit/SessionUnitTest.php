@@ -181,5 +181,28 @@ class SessionUnitTest extends TestCase {
         unset($_COOKIE ['CookiePreferences']);
     }
 
+    public function testPreferenceCookiesAllowedBeforeChoice() {
+        unset($_COOKIE['CookiePreferences']);
+        $this->assertTrue(Session::allowsPreferenceCookies());
+    }
+
+    public function testPreferenceCookiesAllowedWhenAccepted() {
+        $_COOKIE['CookiePreferences'] = json_encode(['preferences']);
+        $this->assertTrue(Session::allowsPreferenceCookies());
+        unset($_COOKIE['CookiePreferences']);
+    }
+
+    public function testPreferenceCookiesDeniedWhenRejected() {
+        $_COOKIE['CookiePreferences'] = '[]';
+        $this->assertFalse(Session::allowsPreferenceCookies());
+        unset($_COOKIE['CookiePreferences']);
+    }
+
+    public function testPreferenceCookiesDeniedForInvalidPreferenceCookie() {
+        $_COOKIE['CookiePreferences'] = 'invalid';
+        $this->assertFalse(Session::allowsPreferenceCookies());
+        unset($_COOKIE['CookiePreferences']);
+    }
+
 
 }

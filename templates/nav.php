@@ -159,7 +159,7 @@ $navSql->disconnect();
                     <span>
                         <div class="checkbox">
                             <label id="login-remember-span"><input id="login-remember"
-                                                                   type="checkbox"> Remember me</label>
+                                                                   type="checkbox" name="rememberMe" value="1"> Remember me</label>
                         </div>
                     </span>
                     <div class="login-help">
