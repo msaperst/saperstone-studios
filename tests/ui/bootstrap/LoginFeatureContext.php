@@ -129,9 +129,10 @@ class LoginFeatureContext implements Context {
      * @Given /^I am logged in with saved credentials$/
      */
     public function iAmLoggedInWithSavedCredentials() {
-        $this->driver->manage()->deleteCookieNamed('hash');
-        $cookie = new Cookie('hash', $this->user->getHash());
-        $this->driver->manage()->addCookie($cookie);
+        $login = new Login($this->driver, $this->wait);
+        $login->login($this->user->getUsername(), $this->user->getPassword(), true);
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText($this->user->getUsername())));
+        $this->driver->manage()->deleteCookieNamed('session');
         $this->driver->navigate()->refresh();
     }
 
@@ -316,10 +317,10 @@ class LoginFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see that there is no logon option to remember me$/
+     * @Then /^I see the logon option to remember me$/
      */
-    public function iSeeThatThereIsNoOptionToRememberMe() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('login-remember-span'))->isDisplayed());
+    public function iSeeTheOptionToRememberMe() {
+        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('login-remember-span'))->isDisplayed());
     }
 
     /**
@@ -327,12 +328,13 @@ class LoginFeatureContext implements Context {
      * @throws NoSuchCookieException
      */
     public function iSeeACookieWithMyCredentials() {
-        $hash = $this->driver->manage()->getCookieNamed('hash');
-        Assert::assertNotNull($hash);
-        Assert::assertEquals($this->user->getHash(), $hash->getValue());
-        $usr = $this->driver->manage()->getCookieNamed('usr');
-        Assert::assertNotNull($usr);
-        Assert::assertEquals($this->user->getUsername(), $usr->getValue());
+        $remember = $this->driver->manage()->getCookieNamed('remember_me');
+        Assert::assertNotNull($remember);
+        Assert::assertMatchesRegularExpression('/^[a-f0-9]{32}:[a-f0-9]{64}$/', $remember->getValue());
+        foreach ($this->driver->manage()->getCookies() as $cookie) {
+            Assert::assertNotEquals('hash', $cookie->getName());
+            Assert::assertNotEquals('usr', $cookie->getName());
+        }
     }
 
     /**
@@ -343,6 +345,7 @@ class LoginFeatureContext implements Context {
         foreach ($cookies as $cookie) {
             Assert::assertNotEquals('hash', $cookie->getName());
             Assert::assertNotEquals('usr', $cookie->getName());
+            Assert::assertNotEquals('remember_me', $cookie->getName());
         }
     }
 

@@ -21,8 +21,8 @@ if ($systemUser->isLoggedIn() && isset($_POST ['submit']) && $_POST ['submit'] =
     $sql->disconnect();
 
     // remove any stored login
-    setcookie('hash', '', time() - 3600, '/');
-    setcookie('usr', '', time() - 3600, '/');
+    RememberMe::forgetCurrent();
+    RememberMe::clearLegacyCookies();
 
 
     // destroy the session

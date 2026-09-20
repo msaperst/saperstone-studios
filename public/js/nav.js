@@ -72,15 +72,14 @@ $(function () {
         findAlbum(code); // pass code (may be null)
     }
 
-    // hide remember me option if user declines to use preferences cookies
+    // Saved profile/reset preferences honor cookie consent. The explicit
+    // Remember Me login choice is an authentication cookie and stays available.
     if (cookies === null || !cookies.includes("preferences")) {
         // hide all of the labels containing this
         $('#profile-remember-span').hide();
-        $('#login-remember-span').hide();
         $('#forgot-password-remember-span').hide();
         // ensure everything is unchecked
         $("#profile-remember").prop("checked", false);
-        $('#login-remember').prop("checked", false);
         $('#forgot-password-remember').prop("checked", false);
     }
 

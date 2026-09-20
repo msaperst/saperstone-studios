@@ -45,6 +45,7 @@ class UserIntegrationTest extends TestCase {
         unset($this->id);
 
         $this->sql = new Sql();
+        $this->sql->executeStatement("DELETE FROM `remember_tokens` WHERE `user` IN (4, 899)");
         $this->sql->executeStatement("INSERT INTO `users` (`id`, `usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `hash`, `active`, `created`, `lastLogin`, `resetKey`) VALUES (899, 'test', '" . md5('user') . "', 'test', 'user', 'test@example.com', 'downloader', '12345', '0', '2020-01-01 10:10:10', '2020-01-01 20:10:10', '123')");
     }
 
@@ -52,6 +53,7 @@ class UserIntegrationTest extends TestCase {
      * @throws SqlException
      */
     public function tearDown(): void {
+        $this->sql->executeStatement("DELETE FROM `remember_tokens` WHERE `user` IN (4, 899)");
         if (isset($this->sessionHash)) {
             $_SESSION ['hash'] = $this->sessionHash;
         } else {

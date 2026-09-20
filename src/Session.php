@@ -11,8 +11,14 @@ class Session {
         if (session_status() != PHP_SESSION_ACTIVE && !headers_sent()) {
             // Starting the session
             session_name('session');
-            // Making the cookie live for 2 weeks
-            session_set_cookie_params(2 * 7 * 24 * 60 * 60);
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => '/',
+                'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                    || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https',
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
             // Start our session
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();

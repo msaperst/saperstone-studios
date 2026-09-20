@@ -7,6 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
 use PHPUnit\Framework\TestCase;
+use RememberMe;
 use Sql;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
@@ -31,6 +32,7 @@ class LoginTest extends TestCase {
     }
 
     public function tearDown(): void {
+        $this->sql->executeStatement("DELETE FROM `remember_tokens` WHERE `user` IN (1, 3, 4)");
         $this->http = NULL;
         $this->cookieJar = NULL;
         $this->sql->disconnect();
@@ -188,10 +190,11 @@ class LoginTest extends TestCase {
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 3;");
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
-        //TODO - cookie not set
+        $this->assertNull($this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `remember_tokens` WHERE `user` = 3"));
     }
 
-    public function testLoginRememberMeNoCookies() {
+    public function testLoginRememberMeWithoutCookiePreferences() {
         date_default_timezone_set("America/New_York");
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
@@ -208,7 +211,7 @@ class LoginTest extends TestCase {
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 3;");
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
-        //TODO - cookie not set
+        $this->assertNotNull($this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME));
     }
 
     public function testLoginRememberMeCookies() {
@@ -229,7 +232,37 @@ class LoginTest extends TestCase {
         $this->assertEquals('Logged In', $log['action']);
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 4;");
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
-        //TODO - cookie set
+        $cookie = $this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME);
+        $this->assertNotNull($cookie);
+        $this->assertTrue($cookie->getHttpOnly());
+        $this->assertEquals('Lax', $cookie->toArray()['SameSite']);
+        $this->assertGreaterThan(time() + (29 * 24 * 60 * 60), $cookie->getExpires());
+        $this->assertLessThanOrEqual(time() + RememberMe::LIFETIME, $cookie->getExpires());
+
+        [$selector, $validator] = explode(':', $cookie->getValue(), 2);
+        $token = $this->sql->getRow("SELECT * FROM `remember_tokens` WHERE `selector` = ?", [$selector]);
+        $this->assertEquals(4, $token['user']);
+        $this->assertNotEquals($validator, $token['token_hash']);
+        $this->assertTrue(hash_equals($token['token_hash'], hash('sha256', $validator)));
+
+        // Losing the PHP session simulates a browser restart or back-end session reset.
+        $this->cookieJar->clear(getenv('DB_HOST'), '/', 'session');
+        $response = $this->http->request('GET', '/', ['allow_redirects' => false]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('uploader', $body);
+        $this->assertNotNull($this->cookieJar->getCookieByName('session'));
+
+        $this->assertSame(1, preg_match('/name="csrf_token"[^>]*value="([a-f0-9]{64})"/', $body, $matches));
+        $response = $this->http->request('POST', 'api/login.php', [
+            'form_params' => [
+                'csrf_token' => $matches[1],
+                'submit' => 'Logout'
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertNull($this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `remember_tokens` WHERE `user` = 4"));
     }
     public function testLoginMissingCsrfToken() {
         $response = $this->http->request('POST', 'api/login.php', [

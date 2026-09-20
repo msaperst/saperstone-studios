@@ -81,11 +81,20 @@ class User {
     static function fromSystem(): User {
         $user = new User();
         $hash = NULL;
-        if (isset ($_COOKIE) && isset ($_COOKIE['hash'])) {
-            $hash = $_COOKIE['hash'];
-        }
         if (isset ($_SESSION) && isset ($_SESSION ['hash'])) {
             $hash = $_SESSION ['hash'];
+        }
+        if ($hash === null) {
+            $rememberedUser = RememberMe::restore();
+            if ($rememberedUser !== null) {
+                $rememberedUser->isLoggedIn = true;
+                return $rememberedUser;
+            }
+        }
+        $legacyCookie = false;
+        if ($hash === null && isset($_COOKIE['hash'])) {
+            $hash = $_COOKIE['hash'];
+            $legacyCookie = true;
         }
         if ($hash != NULL) {
             try {
@@ -96,7 +105,15 @@ class User {
                 }
                 $user = User::withId($row['id']);
                 $sql->disconnect();
+                if (!$user->isActive()) {
+                    throw new BadUserException("Invalid user token provided");
+                }
                 $user->isLoggedIn = true;
+                if ($legacyCookie) {
+                    RememberMe::remember((int)$user->getId());
+                    RememberMe::establishSession($user);
+                    RememberMe::clearLegacyCookies();
+                }
             } catch (Exception $e) {
                 throw new BadUserException("Invalid user token provided");
             }
@@ -454,6 +471,7 @@ class User {
         $this->password = $params['password'];
         $this->md5Pass = password_hash($this->password, PASSWORD_DEFAULT);
         $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [$this->md5Pass, $this->getId()]);
+        RememberMe::forgetAllForUser((int)$this->getId());
     }
 
     /**
@@ -482,15 +500,15 @@ class User {
         }
         $session = new Session();
         $session->initialize();
+        session_regenerate_id(true);
         $_SESSION ['usr'] = $this->username;
         $_SESSION ['hash'] = $this->hash;
 
-        if (isset($_COOKIE['CookiePreferences'])) {
-            $preferences = json_decode($_COOKIE['CookiePreferences']);
-            if ($rememberMe && is_array($preferences) && in_array("preferences", $preferences) && !headers_sent()) {
-                setcookie('hash', $this->hash, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-                setcookie('usr', $this->username, time() + 10 * 52 * 7 * 24 * 60 * 60, '/');
-            }
+        RememberMe::clearLegacyCookies();
+        if ($rememberMe) {
+            RememberMe::remember((int)$this->id);
+        } else {
+            RememberMe::forgetCurrent();
         }
         $sql = new Sql();
         $sql->executeStatement("UPDATE `users` SET lastLogin = CURRENT_TIMESTAMP WHERE id = ?", [$this->id]);

@@ -27,10 +27,10 @@ Feature: System Authentication
       |          | password |
       | username |          |
 
-  Scenario: Unable to 'Remember Me'
+  Scenario: 'Remember Me' is available without preference cookies
     Given I have cookies disabled
     When I try to login to the site
-    Then I see that there is no logon option to remember me
+    Then I see the logon option to remember me
 
   Scenario: Able to 'Remember Me'
     Given an enabled user account exists
