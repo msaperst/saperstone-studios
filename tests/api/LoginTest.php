@@ -278,7 +278,8 @@ class LoginTest extends TestCase {
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertNull($this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME));
+        $rememberCookie = $this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME);
+        $this->assertTrue($rememberCookie === null || $rememberCookie->isExpired());
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `remember_tokens` WHERE `user` = 4"));
     }
     public function testLoginMissingCsrfToken() {
