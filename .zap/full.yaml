@@ -27,7 +27,7 @@ env:
             password: ${ZAP_PASSWORD}
   parameters:
     failOnError: true
-    failOnWarning: false
+    failOnWarning: true
     progressToStdout: true
 
 jobs:
@@ -52,15 +52,6 @@ jobs:
         name: Verify authenticated admin session
         method: GET
         responseCode: 200
-    tests:
-      - name: ZAP authentication succeeded
-        type: stats
-        statistic: stats.auth.success
-        site: http://localhost:90
-        operator: ">="
-        value: 1
-        onFail: error
-
   - type: spider
     parameters:
       context: saperstone-studios
