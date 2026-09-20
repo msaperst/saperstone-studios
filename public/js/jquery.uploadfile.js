@@ -7,7 +7,7 @@
  */
 (function ($) {
     if ($.fn.ajaxForm === undefined) {
-        $.getScript(("https:" === document.location.protocol ? "https://" : "http://") + "malsup.github.io/jquery.form.js");
+        $.getScript("/js/jquery.form.min.js");
     }
     var feature = {};
     feature.fileapi = $("<input type='file'/>").get(0).files !== undefined;
