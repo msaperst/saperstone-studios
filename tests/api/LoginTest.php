@@ -5,6 +5,7 @@ namespace api;
 use CustomAsserts;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\SetCookie;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -14,15 +15,34 @@ require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 class LoginTest extends TestCase {
     private $http;
     private $sql;
+    private $cookieJar;
+    private $csrfToken;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->cookieJar = new CookieJar();
+        $this->http = new Client([
+            'base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/',
+            'cookies' => $this->cookieJar
+        ]);
+        $response = $this->http->request('GET', '/');
+        $this->assertSame(1, preg_match('/name="csrf_token"[^>]*value="([a-f0-9]{64})"/', (string)$response->getBody(), $matches));
+        $this->csrfToken = $matches[1];
         $this->sql = new Sql();
     }
 
     public function tearDown(): void {
         $this->http = NULL;
+        $this->cookieJar = NULL;
         $this->sql->disconnect();
+    }
+
+    private function addCookie(string $name, string $value): void {
+        $this->cookieJar->setCookie(new SetCookie([
+            'Name' => $name,
+            'Value' => $value,
+            'Domain' => getenv('DB_HOST'),
+            'Path' => '/'
+        ]));
     }
 
     public function testNoAction() {
@@ -32,12 +52,8 @@ class LoginTest extends TestCase {
     }
 
     public function testNoActionLoggedIn() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
-        $response = $this->http->request('POST', 'api/login.php', [
-            'cookies' => $cookieJar
-        ]);
+        $this->addCookie('hash', '1d7505e7f434a7713e84ba399e937191');
+        $response = $this->http->request('POST', 'api/login.php');
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
     }
@@ -45,6 +61,7 @@ class LoginTest extends TestCase {
     public function testLogoutNotLoggedIn() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Logout'
             ]
         ]);
@@ -53,14 +70,12 @@ class LoginTest extends TestCase {
     }
 
     public function testLogoutLoggedIn() {
-        $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
-        ], getenv('DB_HOST'));
+        $this->addCookie('hash', '1d7505e7f434a7713e84ba399e937191');
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Logout'
-            ],
-            'cookies' => $cookieJar
+            ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
@@ -72,6 +87,7 @@ class LoginTest extends TestCase {
     public function testLoginNoUsername() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login'
             ]
         ]);
@@ -82,6 +98,7 @@ class LoginTest extends TestCase {
     public function testLoginBlankUsername() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => ''
             ]
@@ -93,6 +110,7 @@ class LoginTest extends TestCase {
     public function testLoginNoPassword() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => 'foo'
             ]
@@ -104,6 +122,7 @@ class LoginTest extends TestCase {
     public function testLoginBlankPassword() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => 'foo',
                 'password' => ''
@@ -116,6 +135,7 @@ class LoginTest extends TestCase {
     public function testLoginBadUsername() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => 'foo',
                 'password' => 'bar'
@@ -128,6 +148,7 @@ class LoginTest extends TestCase {
     public function testLoginBadPassword() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => 'msaperst',
                 'password' => 'bar'
@@ -141,6 +162,7 @@ class LoginTest extends TestCase {
         $this->sql->executeStatement("UPDATE `users` SET `active` = '0' WHERE `users`.`id` = 3;");
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => 'downloader',
                 'password' => 'password'
@@ -154,6 +176,7 @@ class LoginTest extends TestCase {
     public function testLoginSuccessfully() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => 'downloader',
                 'password' => 'password'
@@ -172,6 +195,7 @@ class LoginTest extends TestCase {
         date_default_timezone_set("America/New_York");
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => 'downloader',
                 'password' => 'password',
@@ -189,17 +213,15 @@ class LoginTest extends TestCase {
 
     public function testLoginRememberMeCookies() {
         date_default_timezone_set("America/New_York");
-        $cookieJar = CookieJar::fromArray([
-            'CookiePreferences' => '["preferences","analytics"]'
-        ], getenv('DB_HOST'));
+        $this->addCookie('CookiePreferences', '["preferences","analytics"]');
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
+                'csrf_token' => $this->csrfToken,
                 'submit' => 'Login',
                 'username' => 'uploader',
                 'password' => 'password',
                 'rememberMe' => 1
-            ],
-            'cookies' => $cookieJar
+            ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('', (string)$response->getBody());
@@ -208,5 +230,33 @@ class LoginTest extends TestCase {
         $userInfo = $this->sql->getRow("SELECT * FROM `users` WHERE `id` = 4;");
         CustomAsserts::timeWithin(2, $userInfo['lastLogin']);
         //TODO - cookie set
+    }
+    public function testLoginMissingCsrfToken() {
+        $response = $this->http->request('POST', 'api/login.php', [
+            'http_errors' => false,
+            'form_params' => [
+                'submit' => 'Login',
+                'username' => 'downloader',
+                'password' => 'password'
+            ]
+        ]);
+
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals('Invalid CSRF token', (string)$response->getBody());
+    }
+
+    public function testLoginInvalidCsrfToken() {
+        $response = $this->http->request('POST', 'api/login.php', [
+            'http_errors' => false,
+            'form_params' => [
+                'csrf_token' => str_repeat('0', 64),
+                'submit' => 'Login',
+                'username' => 'downloader',
+                'password' => 'password'
+            ]
+        ]);
+
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals('Invalid CSRF token', (string)$response->getBody());
     }
 }
