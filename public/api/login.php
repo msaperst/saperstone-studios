@@ -9,7 +9,7 @@ if (isset($_POST['submit']) && in_array($_POST['submit'], ['Login', 'Logout'], t
     $csrfToken = $_POST['csrf_token'] ?? null;
     if (!$session->isCsrfTokenValid($csrfToken)) {
         http_response_code(403);
-        echo 'Invalid CSRF token';
+        echo 'Your session has expired. Please refresh the page and try again.';
         exit();
     }
 }

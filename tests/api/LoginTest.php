@@ -292,7 +292,7 @@ class LoginTest extends TestCase {
         ]);
 
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertEquals('Invalid CSRF token', (string)$response->getBody());
+        $this->assertEquals('Your session has expired. Please refresh the page and try again.', (string)$response->getBody());
     }
 
     public function testLoginInvalidCsrfToken() {
@@ -307,6 +307,6 @@ class LoginTest extends TestCase {
         ]);
 
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertEquals('Invalid CSRF token', (string)$response->getBody());
+        $this->assertEquals('Your session has expired. Please refresh the page and try again.', (string)$response->getBody());
     }
 }
