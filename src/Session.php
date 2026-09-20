@@ -20,7 +20,7 @@ class Session {
         }
     }
 
-    function getCsrfToken(): string {
+    public function getCsrfToken(): string {
         $this->initialize();
         if (!isset($_SESSION[self::CSRF_TOKEN_KEY]) || !is_string($_SESSION[self::CSRF_TOKEN_KEY])) {
             $_SESSION[self::CSRF_TOKEN_KEY] = bin2hex(random_bytes(32));
@@ -28,7 +28,7 @@ class Session {
         return $_SESSION[self::CSRF_TOKEN_KEY];
     }
 
-    function isCsrfTokenValid($token): bool {
+    public function isCsrfTokenValid($token): bool {
         $this->initialize();
         return is_string($token)
             && isset($_SESSION[self::CSRF_TOKEN_KEY])
