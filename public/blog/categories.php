@@ -14,7 +14,9 @@ $sql->disconnect ();
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
     <link
     href="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud.css"
-    rel="stylesheet">
+    rel="stylesheet"
+    integrity="sha384-bmbMNxNx5UJRg3nIoSFEwRjPmKK31MegSkqlNjFsmGhAF988pBW9ZsQdNL9xcLek"
+    crossorigin="anonymous">
 </head>
 
 <body>
@@ -51,7 +53,9 @@ $sql->disconnect ();
     <!-- /.container -->
 
     <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud-1.0.4.min.js"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud-1.0.4.min.js"
+        integrity="sha384-kY7q7DuOP+WW41bViWAPpY319DRoRI2Oc/nIahugatbE1qgicrItO4gBzIp7kUBy"
+        crossorigin="anonymous"></script>
     <script type="text/javascript">
         /*!
          * Create an array of word objects, each representing a word in the cloud

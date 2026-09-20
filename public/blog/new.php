@@ -33,7 +33,9 @@ $sql->disconnect();
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
     <link
     href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css"
-    rel="stylesheet">
+    rel="stylesheet"
+    integrity="sha384-lI5fxDuBpGLyfE2ACnKBNZ+0kRZ4CtzN8ROZUlI69twizLoKGeVXxhKxOehes/3t"
+    crossorigin="anonymous">
 <link href="/css/uploadfile.css" rel="stylesheet">
 <link href="/css/hover-effect.css" rel="stylesheet">
 
@@ -223,9 +225,13 @@ $sql->disconnect();
     <script src="/js/dragndrop.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>
     <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js"
+        integrity="sha384-1IIwthROMSfhA19NIVJd+SEXxojzNAy1tS30WL5WYNQR0vbroZa5qd8vvOBYwW7o"
+        crossorigin="anonymous"></script>
     <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"
+        integrity="sha384-mwD0+87SDVjJjyfTMQHNVV+IyWDM38MhzdCFZ+SRefmD75v+M5K0R3naFNLnZf1L"
+        crossorigin="anonymous"></script>
     <script>
         $(document).ready(function() {
             <?php

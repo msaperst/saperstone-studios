@@ -14,7 +14,9 @@ $user->forceLogIn();
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
     <link
     href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
-    rel="stylesheet">
+    rel="stylesheet"
+    integrity="sha384-YcTv91pbdpZ4It88TK5bVHIGTuPqoSi0CpPF9UA9eRicGHEJ3lpQZajpytN4rLkp"
+    crossorigin="anonymous">
 <link href="/css/uploadfile.css" rel="stylesheet">
 
 </head>
@@ -114,7 +116,9 @@ $user->forceLogIn();
     <!-- /.container -->
 
     <script
-        src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+        src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"
+        integrity="sha384-89aj/hOsfOyfD0Ll+7f2dobA15hDyiNb8m1dJ+rJuqgrGR+PVqNU8pybx4pbF3Cc"
+        crossorigin="anonymous"></script>
     <script src="/js/jquery.uploadfile.js"></script>
     <?php
     if ($user->isAdmin ()) {
