@@ -85,20 +85,18 @@ class User {
         $hash = $_SESSION['hash'] ?? null;
         $allowsPreferenceCookies = Session::allowsPreferenceCookies();
         if ($hash !== null) {
-            return self::authenticatedUserFromHash($hash, false);
-        }
-        if (!$allowsPreferenceCookies) {
+            $user = self::authenticatedUserFromHash($hash, false);
+        } elseif (!$allowsPreferenceCookies) {
             RememberMe::forgetCurrent();
             RememberMe::clearLegacyCookies();
-            return $user;
-        }
-        $rememberedUser = RememberMe::restore();
-        if ($rememberedUser !== null) {
-            $rememberedUser->isLoggedIn = true;
-            return $rememberedUser;
-        }
-        if (isset($_COOKIE['hash'])) {
-            return self::authenticatedUserFromHash($_COOKIE['hash'], true);
+        } else {
+            $rememberedUser = RememberMe::restore();
+            if ($rememberedUser !== null) {
+                $rememberedUser->isLoggedIn = true;
+                $user = $rememberedUser;
+            } elseif (isset($_COOKIE['hash'])) {
+                $user = self::authenticatedUserFromHash($_COOKIE['hash'], true);
+            }
         }
         return $user;
     }

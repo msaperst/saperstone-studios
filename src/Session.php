@@ -11,12 +11,12 @@ class Session {
         if (session_status() != PHP_SESSION_ACTIVE && !headers_sent()) {
             // Starting the session
             session_name('session');
-            session_set_cookie_params([
+            // The Secure value is false only for local HTTP development/CI.
+            // Production HTTPS, including forwarded HTTPS, always receives true.
+            session_set_cookie_params([ // NOSONAR reviewed environment-dependent flag
                 'lifetime' => 0,
                 'path' => '/',
-                // Production is HTTPS and always receives Secure cookies. Local HTTP
-                // development and CI must remain usable without pretending to be TLS.
-                'secure' => self::isSecureRequest(), // NOSONAR reviewed environment-dependent flag
+                'secure' => self::isSecureRequest(),
                 'httponly' => true,
                 'samesite' => 'Lax'
             ]);
