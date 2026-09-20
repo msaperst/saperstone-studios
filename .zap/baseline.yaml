@@ -7,11 +7,7 @@ env:
       includePaths:
         - http://localhost:90.*
       authentication:
-        method: form
-        parameters:
-          loginPageUrl: http://localhost:90/
-          loginRequestUrl: http://localhost:90/api/login.php
-          loginRequestBody: "username={%username%}&password={%password%}&rememberMe=0&submit=Login&csrf_token=0000000000000000000000000000000000000000000000000000000000000000"
+        method: manual
         verification:
           method: poll
           loggedInRegex: "200 OK"
@@ -33,6 +29,19 @@ env:
     progressToStdout: true
 
 jobs:
+  - type: replacer
+    parameters:
+      deleteAllRules: true
+    rules:
+      - description: Authenticate the ephemeral ZAP CI user
+        url: "http://localhost:90.*"
+        method: ""
+        matchType: req_header
+        matchString: Cookie
+        matchRegex: false
+        replacementString: "hash=3fa5449987c49f7b606bcbeabe5c9927"
+        tokenProcessing: false
+
   - type: requestor
     parameters:
       user: zap-ci
