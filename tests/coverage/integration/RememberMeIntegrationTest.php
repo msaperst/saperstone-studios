@@ -72,6 +72,15 @@ class RememberMeIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `remember_tokens` WHERE `selector` = ?", [$selector]));
     }
 
+    public function testMalformedCookieIsRejectedAndCleared(): void {
+        $_COOKIE[RememberMe::COOKIE_NAME] = 'not-a-valid-remember-token';
+
+        $user = User::fromSystem();
+
+        $this->assertFalse($user->isLoggedIn());
+        $this->assertArrayNotHasKey(RememberMe::COOKIE_NAME, $_COOKIE);
+    }
+
     public function testExpiredTokenIsRejectedAndRevoked(): void {
         $cookieValue = RememberMe::remember(4);
         [$selector] = explode(':', $cookieValue, 2);
