@@ -84,7 +84,12 @@ class User {
         if (isset ($_SESSION) && isset ($_SESSION ['hash'])) {
             $hash = $_SESSION ['hash'];
         }
-        if ($hash === null) {
+        $allowsPreferenceCookies = Session::allowsPreferenceCookies();
+        if ($hash === null && !$allowsPreferenceCookies) {
+            RememberMe::forgetCurrent();
+            RememberMe::clearLegacyCookies();
+        }
+        if ($hash === null && $allowsPreferenceCookies) {
             $rememberedUser = RememberMe::restore();
             if ($rememberedUser !== null) {
                 $rememberedUser->isLoggedIn = true;
@@ -92,7 +97,7 @@ class User {
             }
         }
         $legacyCookie = false;
-        if ($hash === null && isset($_COOKIE['hash'])) {
+        if ($hash === null && $allowsPreferenceCookies && isset($_COOKIE['hash'])) {
             $hash = $_COOKIE['hash'];
             $legacyCookie = true;
         }
@@ -505,7 +510,7 @@ class User {
         $_SESSION ['hash'] = $this->hash;
 
         RememberMe::clearLegacyCookies();
-        if ($rememberMe) {
+        if ($rememberMe && Session::allowsPreferenceCookies()) {
             RememberMe::remember((int)$this->id);
         } else {
             RememberMe::forgetCurrent();

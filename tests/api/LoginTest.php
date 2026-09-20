@@ -214,6 +214,23 @@ class LoginTest extends TestCase {
         $this->assertNotNull($this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME));
     }
 
+    public function testLoginRememberMeWithPreferenceCookiesRejected() {
+        $this->addCookie('CookiePreferences', '[]');
+        $response = $this->http->request('POST', 'api/login.php', [
+            'form_params' => [
+                'csrf_token' => $this->csrfToken,
+                'submit' => 'Login',
+                'username' => 'downloader',
+                'password' => 'password',
+                'rememberMe' => 1
+            ]
+        ]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', (string)$response->getBody());
+        $this->assertNull($this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME));
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `remember_tokens` WHERE `user` = 3"));
+    }
+
     public function testLoginRememberMeCookies() {
         date_default_timezone_set("America/New_York");
         $this->addCookie('CookiePreferences', '["preferences","analytics"]');

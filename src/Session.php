@@ -86,4 +86,12 @@ class Session {
         $server = 'saperstonestudios.com';
         return (isset ($_SERVER ['HTTP_HOST']) && Strings::endsWith($_SERVER ['HTTP_HOST'], $server) && in_array("analytics", $preferences));
     }
+
+    static function allowsPreferenceCookies(): bool {
+        if (!isset($_COOKIE['CookiePreferences'])) {
+            return true;
+        }
+        $preferences = json_decode($_COOKIE['CookiePreferences'], true);
+        return is_array($preferences) && in_array('preferences', $preferences, true);
+    }
 }

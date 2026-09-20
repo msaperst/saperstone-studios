@@ -72,15 +72,17 @@ $(function () {
         findAlbum(code); // pass code (may be null)
     }
 
-    // Saved profile/reset preferences honor cookie consent. The explicit
-    // Remember Me login choice is an authentication cookie and stays available.
+    // Until a visitor makes a choice, keep login fully functional. Once they
+    // explicitly reject preference cookies, do not offer persistent login.
     if (cookies === null || !cookies.includes("preferences")) {
-        // hide all of the labels containing this
         $('#profile-remember-span').hide();
         $('#forgot-password-remember-span').hide();
-        // ensure everything is unchecked
         $("#profile-remember").prop("checked", false);
         $('#forgot-password-remember').prop("checked", false);
+    }
+    if (cookies !== null && !cookies.includes("preferences")) {
+        $('#login-remember-span').hide();
+        $('#login-remember').prop('checked', false);
     }
 
     $('#displayed-alerts .close').click(function () {

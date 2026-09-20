@@ -15,6 +15,7 @@ class RememberMeIntegrationTest extends TestCase {
     private $sessionUser;
     private $rememberCookie;
     private $legacyHashCookie;
+    private $cookiePreferences;
 
     public function setUp(): void {
         $this->sql = new Sql();
@@ -23,7 +24,8 @@ class RememberMeIntegrationTest extends TestCase {
         $this->sessionUser = $_SESSION['usr'] ?? null;
         $this->rememberCookie = $_COOKIE[RememberMe::COOKIE_NAME] ?? null;
         $this->legacyHashCookie = $_COOKIE['hash'] ?? null;
-        unset($_SESSION['hash'], $_SESSION['usr'], $_COOKIE[RememberMe::COOKIE_NAME], $_COOKIE['hash']);
+        $this->cookiePreferences = $_COOKIE['CookiePreferences'] ?? null;
+        unset($_SESSION['hash'], $_SESSION['usr'], $_COOKIE[RememberMe::COOKIE_NAME], $_COOKIE['hash'], $_COOKIE['CookiePreferences']);
     }
 
     public function tearDown(): void {
@@ -32,6 +34,7 @@ class RememberMeIntegrationTest extends TestCase {
         $this->restoreValue($_SESSION, 'usr', $this->sessionUser);
         $this->restoreValue($_COOKIE, RememberMe::COOKIE_NAME, $this->rememberCookie);
         $this->restoreValue($_COOKIE, 'hash', $this->legacyHashCookie);
+        $this->restoreValue($_COOKIE, 'CookiePreferences', $this->cookiePreferences);
         $this->sql->disconnect();
     }
 
@@ -93,6 +96,19 @@ class RememberMeIntegrationTest extends TestCase {
         $this->assertEquals(4, $user->getId());
         $this->assertArrayNotHasKey('hash', $_COOKIE);
         $this->assertEquals(1, $this->sql->getRowCount("SELECT * FROM `remember_tokens` WHERE `user` = 4"));
+    }
+
+    public function testRejectedPreferenceCookiesRevokeRememberedLogin(): void {
+        $cookieValue = RememberMe::remember(4);
+        [$selector] = explode(':', $cookieValue, 2);
+        $_COOKIE[RememberMe::COOKIE_NAME] = $cookieValue;
+        $_COOKIE['CookiePreferences'] = '[]';
+
+        $user = User::fromSystem();
+
+        $this->assertFalse($user->isLoggedIn());
+        $this->assertArrayNotHasKey(RememberMe::COOKIE_NAME, $_COOKIE);
+        $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `remember_tokens` WHERE `selector` = ?", [$selector]));
     }
 
     private function restoreValue(array &$target, string $key, $value): void {

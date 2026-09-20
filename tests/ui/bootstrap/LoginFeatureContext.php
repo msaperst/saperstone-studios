@@ -324,6 +324,13 @@ class LoginFeatureContext implements Context {
     }
 
     /**
+     * @Then /^I don't see the logon option to remember me$/
+     */
+    public function iDonTSeeTheOptionToRememberMe() {
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('login-remember-span'))->isDisplayed());
+    }
+
+    /**
      * @Then /^I see a cookie with my credentials$/
      * @throws NoSuchCookieException
      */

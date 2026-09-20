@@ -27,10 +27,15 @@ Feature: System Authentication
       |          | password |
       | username |          |
 
-  Scenario: 'Remember Me' is available without preference cookies
-    Given I have cookies disabled
+  Scenario: 'Remember Me' is available before cookie preferences are selected
+    Given I haven't reviewed the cookie policy
     When I try to login to the site
     Then I see the logon option to remember me
+
+  Scenario: 'Remember Me' is unavailable when preference cookies are rejected
+    Given I have cookies disabled
+    When I try to login to the site
+    Then I don't see the logon option to remember me
 
   Scenario: Able to 'Remember Me'
     Given an enabled user account exists

@@ -61,13 +61,15 @@
                 },
             ],
             OnAccept: function () {
-                // show remember me option if user accepts to use preferences cookies
+                // Apply the preference immediately when consent is saved.
                 var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
                 if (cookies !== null && cookies.includes("preferences")) {
-                    // hide all of the labels containing this
                     $('#profile-remember-span').show();
                     $('#login-remember-span').show();
                     $('#forgot-password-remember-span').show();
+                } else {
+                    $('#profile-remember-span, #login-remember-span, #forgot-password-remember-span').hide();
+                    $('#profile-remember, #login-remember, #forgot-password-remember').prop('checked', false);
                 }
             }
         };
