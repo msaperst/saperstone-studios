@@ -129,6 +129,7 @@ function eraseCookie(name) {
 
 function submitLogin() {
     $.post("/api/login.php", {
+        csrf_token: $('#csrf-token').val(),
         username: $('#login-user').val(),
         password: $('#login-pass').val(),
         rememberMe: $('#login-remember').is(':checked') ? 1 : 0,
@@ -153,6 +154,7 @@ function submitLogin() {
 
 function logout() {
     $.post("/api/login.php", {
+        csrf_token: $('#csrf-token').val(),
         submit: "Logout"
     }).done(function () {
         if (window.location.pathname.lastIndexOf('/user/', 0) === 0) {

@@ -5,6 +5,15 @@ $session = new Session();
 $session->initialize();
 $api = new Api();
 
+if (isset($_POST['submit']) && in_array($_POST['submit'], ['Login', 'Logout'], true)) {
+    $csrfToken = $_POST['csrf_token'] ?? null;
+    if (!$session->isCsrfTokenValid($csrfToken)) {
+        http_response_code(403);
+        echo 'Invalid CSRF token';
+        exit();
+    }
+}
+
 if ($systemUser->isLoggedIn() && isset($_POST ['submit']) && $_POST ['submit'] == 'Logout') {
     $sql = new Sql ();
     // note the logout

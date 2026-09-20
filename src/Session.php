@@ -2,6 +2,8 @@
 
 class Session {
 
+    private const CSRF_TOKEN_KEY = 'csrf_token';
+
     function __construct() {
     }
 
@@ -16,6 +18,22 @@ class Session {
                 session_start();
             }
         }
+    }
+
+    public function getCsrfToken(): string {
+        $this->initialize();
+        if (!isset($_SESSION[self::CSRF_TOKEN_KEY]) || !is_string($_SESSION[self::CSRF_TOKEN_KEY])) {
+            $_SESSION[self::CSRF_TOKEN_KEY] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION[self::CSRF_TOKEN_KEY];
+    }
+
+    public function isCsrfTokenValid($token): bool {
+        $this->initialize();
+        return is_string($token)
+            && isset($_SESSION[self::CSRF_TOKEN_KEY])
+            && is_string($_SESSION[self::CSRF_TOKEN_KEY])
+            && hash_equals($_SESSION[self::CSRF_TOKEN_KEY], $token);
     }
 
     function getClientIP() {

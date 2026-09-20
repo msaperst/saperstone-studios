@@ -73,8 +73,8 @@ if (strpos($_SERVER['REQUEST_URI'], 'blog/post.php') !== false) {
         rel="stylesheet">
 
 <!-- Custom CSS -->
-<link href="/css/modern-business.css" rel="stylesheet">
-<link href="/css/saperstone-studios.css" rel="stylesheet">
+<link href="/css/modern-business.css?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/css/modern-business.css'); ?>" rel="stylesheet">
+<link href="/css/saperstone-studios.css?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/css/saperstone-studios.css'); ?>" rel="stylesheet">
 
 <!-- Custom Fonts -->
 <script src="https://use.fontawesome.com/5b39eac726.js"></script>
