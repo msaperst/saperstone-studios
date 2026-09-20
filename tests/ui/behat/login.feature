@@ -37,6 +37,12 @@ Feature: System Authentication
     When I try to login to the site
     Then I don't see the logon option to remember me
 
+  Scenario: 'Remember Me' is hidden immediately when preference cookies are rejected
+    Given I have accepted preference cookies
+    When I reject preference cookies without reloading
+    And I try to login to the site
+    Then I don't see the logon option to remember me
+
   Scenario: Able to 'Remember Me'
     Given an enabled user account exists
     When I stay logged in to the site

@@ -60,9 +60,8 @@
                     description: 'Required to collect site visits, browser types, etc.',
                 },
             ],
-            OnAccept: function () {
+            OnAccept: function (cookies) {
                 // Apply the preference immediately when consent is saved.
-                var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
                 if (cookies !== null && cookies.includes("preferences")) {
                     $('#profile-remember-span').show();
                     $('#login-remember-span').show();
@@ -151,11 +150,11 @@
             }, settings.delay);
 
             // When user clicks accept set cookie and close modal
-            $('body').on('click', '#' + settings.id + '-accept-btn', function () {
+            $('body').off('click.bsgdprcookies', '#' + settings.id + '-accept-btn')
+                .on('click.bsgdprcookies', '#' + settings.id + '-accept-btn', function () {
 
                 // Set show cookie
                 CreateCookie('CookieShow', true, settings.expireDays);
-                DisposeModal(settings.id);
 
                 // If 'data-auto' is set to ON, tick all checkboxes because the user has not chosen any option
                 $('input[name="bsgdpr[]"][data-auto="on"]').prop('checked', true);
@@ -171,11 +170,13 @@
                 CreateCookie('CookiePreferences', JSON.stringify(preferences), settings.expireDays);
 
                 // Run callback function
-                settings.OnAccept.call(this);
+                settings.OnAccept.call(this, preferences);
+                DisposeModal(settings.id);
             });
 
             // Show advanced options
-            $('body').on('click', '#' + settings.id + '-advanced-btn', function () {
+            $('body').off('click.bsgdprcookies', '#' + settings.id + '-advanced-btn')
+                .on('click.bsgdprcookies', '#' + settings.id + '-advanced-btn', function () {
                 // Uncheck all checkboxes except for the disabled ones
                 $('input[name="bsgdpr[]"]:not(:disabled)').attr('data-auto', 'off').prop('checked', false);
 

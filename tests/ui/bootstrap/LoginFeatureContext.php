@@ -64,6 +64,30 @@ class LoginFeatureContext implements Context {
     }
 
     /**
+     * @Given /^I have accepted preference cookies$/
+     */
+    public function iHaveAcceptedPreferenceCookies() {
+        $this->driver->manage()->deleteAllCookies();
+        $this->driver->manage()->addCookie(new Cookie('CookieShow', 'true'));
+        $this->driver->manage()->addCookie(new Cookie('CookiePreferences', '["preferences"]'));
+        $this->driver->navigate()->refresh();
+    }
+
+    /**
+     * @When /^I reject preference cookies without reloading$/
+     */
+    public function iRejectPreferenceCookiesWithoutReloading() {
+        $this->driver->findElement(WebDriverBy::id('edit-cookies'))->click();
+        $preferences = WebDriverBy::id('bs-gdpr-cookies-modal-option-preferences');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($preferences));
+        $checkbox = $this->driver->findElement($preferences);
+        if ($checkbox->isSelected()) {
+            $checkbox->click();
+        }
+        $this->driver->findElement(WebDriverBy::id('bs-gdpr-cookies-modal-accept-btn'))->click();
+    }
+
+    /**
      * @Given an enabled user account exists
      * @throws Exception
      */
