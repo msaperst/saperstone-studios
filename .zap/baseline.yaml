@@ -11,7 +11,7 @@ env:
         parameters:
           loginPageUrl: http://localhost:90/
           loginRequestUrl: http://localhost:90/api/login.php
-          loginRequestBody: "username={%username%}&password={%password%}&rememberMe=0&submit=Login&csrf_token="
+          loginRequestBody: "username={%username%}&password={%password%}&rememberMe=0&submit=Login&csrf_token=0000000000000000000000000000000000000000000000000000000000000000"
         verification:
           method: poll
           loggedInRegex: "200 OK"
