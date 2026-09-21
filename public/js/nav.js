@@ -97,7 +97,7 @@ $(function () {
 
     $('#displayed-alerts .close').click(function () {
         var id = $(this).attr('id');
-        createCookie(id, "dismissed", 9999);
+        createCookie(id, 'dismissed');
         // fix the heading size
         var heading = $('.navbar-inverse').css('border-top-width');
         $('.navbar-inverse').css('border-top-width', parseInt(heading) - 60 + "px");
@@ -109,29 +109,6 @@ window.onhashchange = function () {
     if ((window.location.hash || "").toLowerCase().startsWith("#album")) {
         findAlbum(code);
     }
-}
-
-// Cookies
-function createCookie(name, value, days) {
-    var expires = "";
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toGMTString();
-    }
-
-    document.cookie = name + "=" + value + expires + "; path=/";
-}
-
-function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
 }
 
 function getCookiePreferences() {
@@ -177,11 +154,6 @@ function clearMatchingCookies(matches) {
         expireCookie(name, location.hostname);
         expireCookie(name, '.' + location.hostname);
     });
-}
-
-function expireCookie(name, domain) {
-    var domainAttribute = domain === '' ? '' : '; domain=' + domain;
-    document.cookie = name + '=; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + domainAttribute;
 }
 
 function submitLogin() {

@@ -68,7 +68,6 @@ class LoginFeatureContext implements Context {
      */
     public function iHaveAcceptedPreferenceCookies() {
         $this->driver->manage()->deleteAllCookies();
-        $this->driver->manage()->addCookie(new Cookie('CookieShow', 'true'));
         $this->driver->manage()->addCookie(new Cookie('CookiePreferences', '["preferences"]'));
         $this->driver->navigate()->refresh();
     }

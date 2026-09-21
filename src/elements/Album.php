@@ -140,12 +140,20 @@ class Album {
 
     private function doesSessionHaveAlbumCode(): bool {
         // if the search is stored in your session, we're good
-        return isset($_SESSION ['searched'][$this->id]) && $_SESSION ['searched'] [$this->id] == md5("album" . $this->code);
+        return isset($_SESSION ['searched'][$this->id])
+            && is_string($_SESSION ['searched'][$this->id])
+            && hash_equals(hash('sha256', "album" . $this->code), $_SESSION ['searched'] [$this->id]);
     }
 
     private function doesCookieHaveAlbumCode(): bool {
-        // if the search is stored in your cookies, we're good
-        return isset($_COOKIE ['searched']) && isset(json_decode($_COOKIE ['searched'], true) [$this->id]) && json_decode($_COOKIE ['searched'], true) [$this->id] == md5("album" . $this->code);
+        if (!isset($_COOKIE['searched']) || !is_string($_COOKIE['searched'])) {
+            return false;
+        }
+        $searched = json_decode($_COOKIE['searched'], true);
+        return is_array($searched)
+            && isset($searched[$this->id])
+            && is_string($searched[$this->id])
+            && hash_equals(hash('sha256', "album" . $this->code), $searched[$this->id]);
     }
 
     /**

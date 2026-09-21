@@ -58,7 +58,6 @@ class NavigationFeatureContext implements Context {
      * @Given /^I haven't reviewed the cookie policy$/
      */
     public function iHavenTReviewedTheCookiePolicy() {
-        $this->driver->manage()->deleteCookieNamed('CookieShow');
         $this->driver->manage()->deleteCookieNamed('CookiePreferences');
         $this->driver->navigate()->refresh();
     }
@@ -67,8 +66,8 @@ class NavigationFeatureContext implements Context {
      * @Given /^I have reviewed the cookie policy$/
      */
     public function iHaveReviewedTheCookiePolicy() {
-        $this->driver->manage()->deleteCookieNamed('CookieShow');
-        $cookie = new Cookie('CookieShow', 'true');
+        $this->driver->manage()->deleteCookieNamed('CookiePreferences');
+        $cookie = new Cookie('CookiePreferences', '["preferences","analytics","social"]');
         $this->driver->manage()->addCookie($cookie);
         $this->driver->navigate()->refresh();
     }

@@ -180,7 +180,7 @@ Full UA: %s\r\n",
 
     public function testAlbumLoadsSearchedFor() {
         $this->driver->get($this->baseUrl);
-        $searched [99999] = md5("album2345");
+        $searched [99999] = hash('sha256', "album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
@@ -239,7 +239,7 @@ Full UA: %s\r\n",
 
     public function testAlbumGuestToolBar() {
         $this->driver->get($this->baseUrl);
-        $searched [99999] = md5("album2345");
+        $searched [99999] = hash('sha256', "album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
@@ -273,7 +273,7 @@ Full UA: %s\r\n",
      */
     public function testSlideShowButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [99999] = md5("album2345");
+        $searched [99999] = hash('sha256', "album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
@@ -351,7 +351,7 @@ Full UA: %s\r\n",
      */
     public function testFavoritesButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [99999] = md5("album2345");
+        $searched [99999] = hash('sha256', "album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
@@ -421,7 +421,7 @@ Full UA: %s\r\n",
 
     public function testCartModalGuest() {
         $this->driver->get($this->baseUrl);
-        $searched [99999] = md5("album2345");
+        $searched [99999] = hash('sha256', "album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
@@ -447,7 +447,7 @@ Full UA: %s\r\n",
 
     public function testSubmitModalGuest() {
         $this->driver->get($this->baseUrl);
-        $searched [99999] = md5("album2345");
+        $searched [99999] = hash('sha256', "album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
@@ -465,7 +465,7 @@ Full UA: %s\r\n",
 
     public function testButtonsGuestUser() {
         $this->driver->get($this->baseUrl);
-        $searched [99999] = md5("album2345");
+        $searched [99999] = hash('sha256', "album2345");
         $cookie = new Cookie('searched', json_encode($searched));
         $this->driver->manage()->addCookie($cookie);
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');

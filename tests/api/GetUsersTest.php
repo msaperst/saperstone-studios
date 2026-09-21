@@ -78,50 +78,43 @@ class GetUsersTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $users = json_decode($response->getBody(), true)['data'];
-        $this->assertTrue(5 <= sizeof($users));
-        $this->assertEquals(0, $users[0]['id']);
-        $this->assertEquals('<i>All Users</i>', $users[0]['usr']);
-        $this->assertEquals('', $users[0]['firstName']);
-        $this->assertEquals('', $users[0]['lastName']);
-        $this->assertEquals('', $users[0]['email']);
-        $this->assertEquals('admin', $users[0]['role']);
-        $this->assertEquals(0, $users[0]['active']);
-        $this->assertNull($users[0]['lastLogin']);
+        $this->assertTrue(4 <= sizeof($users));
+        $this->assertNotContains(0, array_column($users, 'id'));
 
-        $this->assertEquals(1, $users[1]['id']);
-        $this->assertEquals('msaperst', $users[1]['usr']);
-        $this->assertEquals('Max', $users[1]['firstName']);
+        $this->assertEquals(1, $users[0]['id']);
+        $this->assertEquals('msaperst', $users[0]['usr']);
+        $this->assertEquals('Max', $users[0]['firstName']);
+        $this->assertEquals('Saperstone', $users[0]['lastName']);
+        $this->assertEquals('msaperst@gmail.com', $users[0]['email']);
+        $this->assertEquals('admin', $users[0]['role']);
+        $this->assertEquals(1, $users[0]['active']);
+        $this->assertNotNull($users[0]['lastLogin']);
+
+        $this->assertEquals(2, $users[1]['id']);
+        $this->assertEquals('lsaperst', $users[1]['usr']);
+        $this->assertEquals('Leigh Ann', $users[1]['firstName']);
         $this->assertEquals('Saperstone', $users[1]['lastName']);
-        $this->assertEquals('msaperst@gmail.com', $users[1]['email']);
+        $this->assertEquals('la@saperstonestudios.com', $users[1]['email']);
         $this->assertEquals('admin', $users[1]['role']);
         $this->assertEquals(1, $users[1]['active']);
-        $this->assertNotNull($users[1]['lastLogin']);
+        $this->assertNull($users[1]['lastLogin']);
 
-        $this->assertEquals(2, $users[2]['id']);
-        $this->assertEquals('lsaperst', $users[2]['usr']);
-        $this->assertEquals('Leigh Ann', $users[2]['firstName']);
-        $this->assertEquals('Saperstone', $users[2]['lastName']);
-        $this->assertEquals('la@saperstonestudios.com', $users[2]['email']);
-        $this->assertEquals('admin', $users[2]['role']);
+        $this->assertEquals(3, $users[2]['id']);
+        $this->assertEquals('downloader', $users[2]['usr']);
+        $this->assertEquals('Download', $users[2]['firstName']);
+        $this->assertEquals('User', $users[2]['lastName']);
+        $this->assertEquals('email@example.org', $users[2]['email']);
+        $this->assertEquals('downloader', $users[2]['role']);
         $this->assertEquals(1, $users[2]['active']);
         $this->assertNull($users[2]['lastLogin']);
 
-        $this->assertEquals(3, $users[3]['id']);
-        $this->assertEquals('downloader', $users[3]['usr']);
-        $this->assertEquals('Download', $users[3]['firstName']);
+        $this->assertEquals(4, $users[3]['id']);
+        $this->assertEquals('uploader', $users[3]['usr']);
+        $this->assertEquals('Upload', $users[3]['firstName']);
         $this->assertEquals('User', $users[3]['lastName']);
-        $this->assertEquals('email@example.org', $users[3]['email']);
-        $this->assertEquals('downloader', $users[3]['role']);
+        $this->assertEquals('uploader@example.org', $users[3]['email']);
+        $this->assertEquals('uploader', $users[3]['role']);
         $this->assertEquals(1, $users[3]['active']);
         $this->assertNull($users[3]['lastLogin']);
-
-        $this->assertEquals(4, $users[4]['id']);
-        $this->assertEquals('uploader', $users[4]['usr']);
-        $this->assertEquals('Upload', $users[4]['firstName']);
-        $this->assertEquals('User', $users[4]['lastName']);
-        $this->assertEquals('uploader@example.org', $users[4]['email']);
-        $this->assertEquals('uploader', $users[4]['role']);
-        $this->assertEquals(1, $users[4]['active']);
-        $this->assertNull($users[4]['lastLogin']);
     }
 }

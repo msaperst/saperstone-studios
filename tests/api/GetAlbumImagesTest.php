@@ -203,7 +203,7 @@ class GetAlbumImagesTest extends TestCase {
 
     public function testUnAuthCorrectCode() {
         $searched = array();
-        $searched [999] = md5("album1234");
+        $searched [999] = hash('sha256', "album1234");
         $cookieJar = CookieJar::fromArray([
             'searched' => json_encode($searched)
         ], getenv('DB_HOST'));
@@ -236,7 +236,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testUnAuthIncorrectCode() {
         try {
             $searched = array();
-            $searched [999] = md5("album123");
+            $searched [999] = hash('sha256', "album123");
             $cookieJar = CookieJar::fromArray([
                 'searched' => json_encode($searched)
             ], getenv('DB_HOST'));
@@ -256,7 +256,7 @@ class GetAlbumImagesTest extends TestCase {
 
     public function testAuthCorrectCode() {
         $searched = array();
-        $searched [999] = md5("album1234");
+        $searched [999] = hash('sha256', "album1234");
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode($searched)
@@ -275,7 +275,7 @@ class GetAlbumImagesTest extends TestCase {
 
     public function testAuthAccessCorrectCode() {
         $searched = array();
-        $searched [999] = md5("album1234");
+        $searched [999] = hash('sha256', "album1234");
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7',
             'searched' => json_encode($searched)
@@ -310,7 +310,7 @@ class GetAlbumImagesTest extends TestCase {
 
     public function testAuthIncorrectCodeWithAccess() {
         $searched = array();
-        $searched [999] = md5("album123");
+        $searched [999] = hash('sha256', "album123");
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7',
             'searched' => json_encode($searched)
@@ -330,7 +330,7 @@ class GetAlbumImagesTest extends TestCase {
     public function testAuthIncorrectCodeWithoutAccess() {
         try {
             $searched = array();
-            $searched [999] = md5("album123");
+            $searched [999] = hash('sha256', "album123");
             $cookieJar = CookieJar::fromArray([
                 'hash' => '5510b5e6fffd897c234cafe499f76146',
                 'searched' => json_encode($searched)
@@ -355,7 +355,7 @@ class GetAlbumImagesTest extends TestCase {
             $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES (0, '999', '997');");
 
             $searched = array();
-            $searched [999] = md5("album1234");
+            $searched [999] = hash('sha256', "album1234");
             $cookieJar = CookieJar::fromArray([
                 'searched' => json_encode($searched)
             ], getenv('DB_HOST'));
@@ -414,7 +414,7 @@ class GetAlbumImagesTest extends TestCase {
             $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES (0, '999', '*');");
 
             $searched = array();
-            $searched [999] = md5("album1234");
+            $searched [999] = hash('sha256', "album1234");
             $cookieJar = CookieJar::fromArray([
                 'searched' => json_encode($searched)
             ], getenv('DB_HOST'));

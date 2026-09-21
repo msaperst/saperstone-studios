@@ -17,6 +17,7 @@ class SessionUnitTest extends TestCase {
 
     public function tearDown(): void {
         unset($_SESSION['csrf_token']);
+        unset($_COOKIE['CookiePreferences'], $_COOKIE['searched']);
         $this->session = NULL;
     }
 
@@ -227,5 +228,22 @@ class SessionUnitTest extends TestCase {
         unset($_COOKIE['CookiePreferences']);
     }
 
+    public function testInitializeKeepsSearchedCookieWhenPreferenceCookiesAreAllowed(): void {
+        $_COOKIE['CookiePreferences'] = json_encode(['preferences']);
+        $_COOKIE['searched'] = 'album-access';
+
+        $this->session->initialize();
+
+        $this->assertSame('album-access', $_COOKIE['searched']);
+    }
+
+    public function testInitializeDeletesSearchedCookieWhenPreferenceCookiesAreRejected(): void {
+        $_COOKIE['CookiePreferences'] = '[]';
+        $_COOKIE['searched'] = 'album-access';
+
+        $this->session->initialize();
+
+        $this->assertArrayNotHasKey('searched', $_COOKIE);
+    }
 
 }

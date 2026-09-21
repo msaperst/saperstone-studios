@@ -107,7 +107,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -124,7 +124,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -142,7 +142,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -160,7 +160,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -178,7 +178,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -196,7 +196,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -214,7 +214,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -233,7 +233,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -252,7 +252,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -271,7 +271,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -290,7 +290,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -308,7 +308,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -326,7 +326,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [
@@ -344,7 +344,7 @@ class IsShareableTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146',
             'searched' => json_encode([
-                999 => md5('album123')
+                999 => hash('sha256', 'album123')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/is-shareable.php', [

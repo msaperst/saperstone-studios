@@ -13,17 +13,15 @@ class Session {
             session_name('session');
             // The Secure value is false only for local HTTP development/CI.
             // Production HTTPS, including forwarded HTTPS, always receives true.
-            session_set_cookie_params([ // NOSONAR reviewed environment-dependent flag
-                'lifetime' => 0,
-                'path' => '/',
-                'secure' => self::isSecureRequest(),
-                'httponly' => true,
-                'samesite' => 'Lax'
-            ]);
+            session_set_cookie_params(CookieManager::sessionOptions()); // NOSONAR Secure is enabled for HTTPS requests.
             // Start our session
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
+        }
+
+        if (isset($_COOKIE['searched']) && !self::allowsPreferenceCookies()) {
+            CookieManager::delete('searched');
         }
     }
 

@@ -103,8 +103,6 @@ class BaseFeatureContext implements Context {
         $this->driver->get($this->baseUrl);
         $cookie = new Cookie('CookiePreferences', '["preferences","analytics","social"]');
         $this->driver->manage()->addCookie($cookie);
-        $cookie = new Cookie('CookieShow', 'true');
-        $this->driver->manage()->addCookie($cookie);
         $this->driver->navigate()->refresh();
 
         // setup a basic user

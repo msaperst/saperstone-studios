@@ -13,7 +13,14 @@ echo "Creating Database"
 mysql -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;" > /dev/null 2>&1
 
 #setup our schema
-for file in ${DIR}/sql/*.sql; do
+shopt -s nullglob
+sql_files=("${DIR}"/sql/*.sql)
+if [ ${#sql_files[@]} -eq 0 ]; then
+    echo "No database migration files found in ${DIR}/sql" >&2
+    exit 1
+fi
+
+for file in "${sql_files[@]}"; do
     filename=${file##*/}
     echo "Running ${filename%.sql}";
     mysql --force -h $DB_HOST -P $DB_PORT -u $DB_USER -p$DB_PASS $DB_NAME < "$file" #> /dev/null 2>&1
@@ -29,8 +36,5 @@ fi
 #set server name
 echo "export SERVER_NAME='${SERVER_NAME}'" >> /etc/apache2/envvars
 
-#cleanup sql files
-rm -r bin/sql
-
 #launch apache2
-apache2-foreground
+exec apache2-foreground
