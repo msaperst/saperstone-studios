@@ -5,7 +5,7 @@ $api = new Api ();
 $api->forceAdmin();
 
 $sql = new Sql ();
-$users = $sql->getRows("SELECT id, usr, firstName, lastName, email, role, active, lastLogin FROM users;");
+$users = $sql->getRows("SELECT id, usr, firstName, lastName, email, role, active, lastLogin FROM users WHERE id <> 0;");
 echo "{\"data\":" . json_encode($users) . "}";
 $sql->disconnect();
 exit ();
