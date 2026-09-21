@@ -7,6 +7,7 @@ $api->forceAdmin();
 try {
     $contract = Contract::withId($api->retrievePostString('id', 'Contract id'));
     $contract->update($_POST);
+    echo $contract->getId();
 } catch (Exception $e) {
     echo $e->getMessage();
     exit();
