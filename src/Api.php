@@ -130,7 +130,7 @@ class Api {
      * Set the HTTP status for an API exception while allowing each endpoint to
      * preserve its existing response-body format.
      */
-    static function setErrorResponseCode(Throwable $exception) {
+    public static function setErrorResponseCode(Throwable $exception) {
         if ($exception instanceof SaperstoneStudiosException && !($exception instanceof SqlException)) {
             http_response_code(400);
             return;
