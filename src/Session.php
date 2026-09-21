@@ -13,7 +13,7 @@ class Session {
             session_name('session');
             // The Secure value is false only for local HTTP development/CI.
             // Production HTTPS, including forwarded HTTPS, always receives true.
-            session_set_cookie_params(CookieManager::sessionOptions());
+            session_set_cookie_params(CookieManager::sessionOptions()); // NOSONAR Secure is enabled for HTTPS requests.
             // Start our session
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();

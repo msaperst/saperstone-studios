@@ -17,7 +17,7 @@ session_unset();
 session_destroy();
 
 session_name('session');
-session_set_cookie_params(CookieManager::sessionOptions(60 * 60));
+session_set_cookie_params(CookieManager::sessionOptions(60 * 60)); // NOSONAR Secure is enabled for HTTPS requests.
 session_start();
 session_regenerate_id(true);
 

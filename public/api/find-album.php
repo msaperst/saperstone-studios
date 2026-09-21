@@ -13,7 +13,7 @@ try {
 $sql = new Sql();
 $r = $sql->getRow("SELECT * FROM albums WHERE code = ?", [$code]);
 if (isset($r ['id'])) {
-    $_SESSION ["searched"] [$r ['id']] = md5("album" . $code);
+    $_SESSION ["searched"] [$r ['id']] = hash('sha256', "album" . $code);
     if (isset($_COOKIE['CookiePreferences'])) {
         $preferences = json_decode($_COOKIE['CookiePreferences'], true);
         if (is_array($preferences) && in_array('preferences', $preferences, true)) {
@@ -21,7 +21,7 @@ if (isset($r ['id'])) {
             if (!is_array($searched)) {
                 $searched = [];
             }
-            $searched[$r['id']] = md5("album" . $code);
+            $searched[$r['id']] = hash('sha256', "album" . $code);
             CookieManager::set('searched', json_encode($searched), time() + 30 * 24 * 60 * 60);
         }
     }

@@ -76,7 +76,7 @@ class FindAlbumTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191',
             'searched' => json_encode([
-                999 => md5('albumsearch-for-me')
+                999 => hash('sha256', 'albumsearch-for-me')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/find-album.php', [
@@ -114,7 +114,7 @@ class FindAlbumTest extends TestCase {
         $cookieJar = CookieJar::fromArray([
             'CookiePreferences' => '[]',
             'searched' => json_encode([
-                999 => md5('albumsearch-for-me')
+                999 => hash('sha256', 'albumsearch-for-me')
             ])
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/find-album.php', [
@@ -125,6 +125,10 @@ class FindAlbumTest extends TestCase {
         ]);
 
         $this->assertEquals(999, (string)$response->getBody());
+        $searchedHeader = implode('; ', $response->getHeader('Set-Cookie'));
+        $this->assertStringContainsString('searched=deleted', $searchedHeader);
+        $this->assertStringContainsString('Max-Age=0', $searchedHeader);
+        $cookieJar->clearExpired();
         $this->assertNotContains('searched', array_column($cookieJar->toArray(), 'Name'));
     }
 

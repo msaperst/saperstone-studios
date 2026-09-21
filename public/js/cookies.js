@@ -19,9 +19,9 @@ function createCookie(name, value, days) {
 function readCookie(name) {
     var namePrefix = name + '=';
     var cookies = document.cookie.split(';');
-    for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i].trim();
-        if (cookie.indexOf(namePrefix) === 0) {
+    for (var cookieValue of cookies) {
+        var cookie = cookieValue.trim();
+        if (cookie.startsWith(namePrefix)) {
             return decodeURIComponent(cookie.substring(namePrefix.length));
         }
     }

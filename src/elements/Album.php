@@ -140,7 +140,9 @@ class Album {
 
     private function doesSessionHaveAlbumCode(): bool {
         // if the search is stored in your session, we're good
-        return isset($_SESSION ['searched'][$this->id]) && $_SESSION ['searched'] [$this->id] == md5("album" . $this->code);
+        return isset($_SESSION ['searched'][$this->id])
+            && is_string($_SESSION ['searched'][$this->id])
+            && hash_equals(hash('sha256', "album" . $this->code), $_SESSION ['searched'] [$this->id]);
     }
 
     private function doesCookieHaveAlbumCode(): bool {
@@ -151,7 +153,7 @@ class Album {
         return is_array($searched)
             && isset($searched[$this->id])
             && is_string($searched[$this->id])
-            && hash_equals(md5("album" . $this->code), $searched[$this->id]);
+            && hash_equals(hash('sha256', "album" . $this->code), $searched[$this->id]);
     }
 
     /**

@@ -1134,7 +1134,7 @@ Comment',
         $code = $sql->getRow("SELECT * FROM `albums` WHERE `id` = $albumId;")['code'];
         $sql->disconnect();
         $cookie = $this->driver->manage()->getCookieNamed('searched');
-        Assert::assertEquals(md5('album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
+        Assert::assertEquals(hash('sha256', 'album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
     }
 
     /**

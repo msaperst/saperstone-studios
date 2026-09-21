@@ -311,7 +311,7 @@ class AlbumIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testIsSearchedForSessionMatch() {
-        $_SESSION['searched']['899'] = md5("album123");
+        $_SESSION['searched']['899'] = hash('sha256', "album123");
         $album = Album::withId(899);
         $this->assertTrue($album->isSearchedFor());
         unset($_SESSION['searched']);
@@ -370,7 +370,7 @@ class AlbumIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testIsSearchedForCookieMatch() {
-        $_COOKIE['searched'] = json_encode([899 => md5("album123")]);
+        $_COOKIE['searched'] = json_encode([899 => hash('sha256', "album123")]);
         $album = Album::withId(899);
         $this->assertTrue($album->isSearchedFor());
         unset($_COOKIE['searched']);
@@ -428,7 +428,7 @@ class AlbumIntegrationTest extends TestCase {
      * @throws Exception
      */
     public function testCanUserAccessSearched() {
-        $_SESSION['searched']['899'] = md5("album123");
+        $_SESSION['searched']['899'] = hash('sha256', "album123");
         $album = Album::withId(899);
         $this->assertTrue($album->canUserAccess());
         unset($_SESSION['searched']);
