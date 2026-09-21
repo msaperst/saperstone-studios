@@ -29,7 +29,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "ui\\bootstrap\\": "tests/ui/bootstrap"
+      "ui\\bootstrap\\": "tests/ui/bootstrap",
+      "api\\": "tests/api"
     }
   },
   "scripts": {

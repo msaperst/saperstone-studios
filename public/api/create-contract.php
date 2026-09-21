@@ -8,6 +8,7 @@ try {
     $contract = Contract::withParams($_POST);
     echo $contract->create();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

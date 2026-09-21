@@ -8,6 +8,7 @@ try {
     $user = User::withParams($_POST);
     echo $user->create();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -36,6 +37,7 @@ $email->setHtml($html);
 try {
     $email->sendEmail();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
 }
 exit ();

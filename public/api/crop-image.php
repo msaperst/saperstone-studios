@@ -7,10 +7,12 @@ $api->forceAdmin();
 try {
     $image = $api->retrievePostString('image', 'Image');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
 if (!file_exists($_POST['image'])) {
+    http_response_code(400);
     echo "Image does not exist";
     exit ();
 }
@@ -20,6 +22,7 @@ try {
     $top = $api->retrievePostInt('top', 'Image top');
     $bottom = $api->retrievePostInt('bottom', 'Image bottom');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -38,6 +41,7 @@ system("mogrify -density 72 " . escapeshellarg($image));
 
 // verify that our image can fit in the specified crop
 if (getimagesize($image) [1] < ($height - 1)) {
+    http_response_code(400);
     echo "Cropped image is smaller than the required image";
     unlink($image);
     exit ();

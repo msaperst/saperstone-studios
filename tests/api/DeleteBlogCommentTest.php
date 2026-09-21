@@ -3,7 +3,6 @@
 namespace api;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -26,7 +25,7 @@ class DeleteBlogCommentTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('998', '999', 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'msaperst+sstest@gmail.com', 'this is an awesome post')");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES ('999', '999', 4, 'MaxMaxMax', CURRENT_TIMESTAMP, '127.0.0.1', 'msaperst+sstest@gmail.com', 'this is an awesome post')");
@@ -63,7 +62,7 @@ class DeleteBlogCommentTest extends TestCase {
         $response = $this->http->request('POST', 'api/delete-blog-comment.php', [
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Comment id is required", (string)$response->getBody());
     }
 
@@ -80,7 +79,7 @@ class DeleteBlogCommentTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Comment id can not be blank", (string)$response->getBody());
     }
 
@@ -97,7 +96,7 @@ class DeleteBlogCommentTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Comment id does not match any comments", (string)$response->getBody());
     }
 
@@ -114,7 +113,7 @@ class DeleteBlogCommentTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Comment id does not match any comments", (string)$response->getBody());
     }
 

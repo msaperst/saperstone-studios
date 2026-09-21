@@ -3,7 +3,6 @@
 namespace api;
 
 use CustomAsserts;
-use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
@@ -13,7 +12,7 @@ class DownloadSendEmailTest extends TestCase {
     private $http;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         // Ensure every single test starts with a completely clean mailbox slate!
         CustomAsserts::clearAllEmails();
     }
@@ -28,7 +27,7 @@ class DownloadSendEmailTest extends TestCase {
                 'file' => '../tmp/sample.zip'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $result = json_decode($response->getBody(), true);
         $this->assertEquals("Email address is required", $result['error']);
         CustomAsserts::assertEmailCount(0);
@@ -41,7 +40,7 @@ class DownloadSendEmailTest extends TestCase {
                 'file' => '../tmp/sample.zip'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $result = json_decode($response->getBody(), true);
         $this->assertEquals("Email address can not be blank", $result['error']);
         CustomAsserts::assertEmailCount(0);
@@ -53,7 +52,7 @@ class DownloadSendEmailTest extends TestCase {
                 'email' => 'test@saperstonestudios.com'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $result = json_decode($response->getBody(), true);
         $this->assertEquals("Image file is required", $result['error']);
         CustomAsserts::assertEmailCount(0);
@@ -66,7 +65,7 @@ class DownloadSendEmailTest extends TestCase {
                 'file' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $result = json_decode($response->getBody(), true);
         $this->assertEquals("Image file can not be blank", $result['error']);
         CustomAsserts::assertEmailCount(0);
@@ -79,7 +78,7 @@ class DownloadSendEmailTest extends TestCase {
                 'file' => '../tmp/sample.zip'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $result = json_decode($response->getBody(), true);
         $this->assertEquals("Invalid email address provided.", $result['error']);
         CustomAsserts::assertEmailCount(0);

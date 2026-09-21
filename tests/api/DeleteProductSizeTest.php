@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +14,7 @@ class DeleteProductSizeTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `products` (`id`, `product_type`, `size`, `price`, `cost`) VALUES (999, '1', '12x19', 100, 10)");
     }
@@ -59,7 +58,7 @@ class DeleteProductSizeTest extends TestCase {
         $response = $this->http->request('POST', 'api/delete-product-size.php', [
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Product id is required", (string)$response->getBody());
     }
 
@@ -73,7 +72,7 @@ class DeleteProductSizeTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Product id can not be blank", (string)$response->getBody());
     }
 
@@ -87,7 +86,7 @@ class DeleteProductSizeTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Product id does not match any products", (string)$response->getBody());
     }
 
@@ -101,7 +100,7 @@ class DeleteProductSizeTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Product id does not match any products", (string)$response->getBody());
     }
 

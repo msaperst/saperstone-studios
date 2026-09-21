@@ -5,6 +5,7 @@ $api = new Api();
 try {
     $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -12,6 +13,7 @@ try {
 try {
     $user = User::fromEmail($email);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo "Credentials do not match our records";
     exit();
 }

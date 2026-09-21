@@ -13,6 +13,7 @@ try {
     }
     $comment->delete();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

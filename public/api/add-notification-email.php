@@ -7,6 +7,7 @@ try {
     $album = Album::withId($api->retrievePostString('album', 'Album id'));
     $email = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

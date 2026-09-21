@@ -9,6 +9,7 @@ try {
     $image = new Image($album, $api->retrievePostString('image', 'Image id'));
     $image->delete();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

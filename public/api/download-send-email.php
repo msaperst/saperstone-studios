@@ -9,12 +9,14 @@ try {
     $email = $api->retrievePostString('email', 'Email address');
     $file = $api->retrievePostString('file', 'Image file');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo json_encode(array('error' => $e->getMessage()));
     exit();
 }
 
 // Strictly validate that the input matches a proper email format structure
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    http_response_code(400);
     echo json_encode(array('error' => 'Invalid email address provided.'));
     exit();
 }

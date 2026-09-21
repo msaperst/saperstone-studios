@@ -7,6 +7,7 @@ $api->forceAdmin();
 try {
     $blog = Blog::withId($api->retrievePostString('post', 'Blog id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

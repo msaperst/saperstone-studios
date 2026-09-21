@@ -7,6 +7,7 @@ $api->forceLoggedIn();
 try {
     $album = Album::withId($api->retrieveGetString('id', 'Album id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

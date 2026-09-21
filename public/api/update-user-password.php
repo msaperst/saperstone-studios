@@ -8,6 +8,7 @@ try {
     $user = User::withId($api->retrievePostString('id', 'User id'));
     $user->updatePassword($_POST);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

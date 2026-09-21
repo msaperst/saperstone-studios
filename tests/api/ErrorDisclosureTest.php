@@ -2,17 +2,16 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 
 class ErrorDisclosureTest extends TestCase {
-    private Client $http;
+    private ApiTestClient $http;
     private CookieJar $adminCookies;
 
     public function setUp(): void {
-        $this->http = new Client([
+        $this->http = new ApiTestClient([
             'base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/',
         ]);
         $this->adminCookies = CookieJar::fromArray([

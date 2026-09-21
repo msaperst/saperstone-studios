@@ -7,6 +7,7 @@ $api->forceAdmin();
 try {
     $user = User::withId($api->retrievePostString('user', 'User id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -17,6 +18,7 @@ if (isset ($_POST ['albums']) && is_array($_POST ['albums'])) {
         try {
             $albums[] = Album::withId($album);
         } catch (Exception $e) {
+            Api::setErrorResponseCode($e);
             echo $e->getMessage();
             exit();
         }

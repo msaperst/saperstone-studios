@@ -4,7 +4,6 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -28,7 +27,7 @@ class MakeThumbsTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4);");
@@ -87,7 +86,7 @@ class MakeThumbsTest extends TestCase {
         $response = $this->http->request('POST', 'api/make-thumbs.php', [
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id is required", (string)$response->getBody());
     }
 
@@ -104,7 +103,7 @@ class MakeThumbsTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", (string)$response->getBody());
     }
 
@@ -121,7 +120,7 @@ class MakeThumbsTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
@@ -138,7 +137,7 @@ class MakeThumbsTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
@@ -175,7 +174,7 @@ class MakeThumbsTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Markup is required", (string)$response->getBody());
     }
 
@@ -193,7 +192,7 @@ class MakeThumbsTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Markup can not be blank", (string)$response->getBody());
     }
 
@@ -211,7 +210,7 @@ class MakeThumbsTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Markup is not valid", (string)$response->getBody());
     }
 

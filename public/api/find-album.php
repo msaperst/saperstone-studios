@@ -6,6 +6,7 @@ $api = new Api ();
 try {
     $code = $api->retrieveGetString('code', 'Album code');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -27,6 +28,7 @@ if (isset($r ['id'])) {
     }
     echo $r ['id'];
 } else {
+    http_response_code(400);
     echo "That code does not match any albums";
     $sql->disconnect();
     exit ();

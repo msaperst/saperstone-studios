@@ -4,7 +4,6 @@ namespace api;
 
 use CustomAsserts;
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -24,7 +23,7 @@ class RegisterUserTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         // Ensure every single test starts with a completely clean mailbox slate!
         CustomAsserts::clearAllEmails();
@@ -40,7 +39,7 @@ class RegisterUserTest extends TestCase {
      */
     public function testNoUsername() {
         $response = $this->http->request('POST', 'api/register-user.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Username is required", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -54,7 +53,7 @@ class RegisterUserTest extends TestCase {
                 'username' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Username can not be blank", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -68,7 +67,7 @@ class RegisterUserTest extends TestCase {
                 'username' => 'msaperst'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("That username already exists in the system", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -82,7 +81,7 @@ class RegisterUserTest extends TestCase {
                 'username' => 'MaxMax'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is required", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -97,7 +96,7 @@ class RegisterUserTest extends TestCase {
                 'email' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email can not be blank", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -112,7 +111,7 @@ class RegisterUserTest extends TestCase {
                 'email' => 'max@max'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is not valid", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -127,7 +126,7 @@ class RegisterUserTest extends TestCase {
                 'email' => 'msaperst@gmail.com'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("That email already exists in the system: try logging in with it", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -142,7 +141,7 @@ class RegisterUserTest extends TestCase {
                 'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password is required", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -158,7 +157,7 @@ class RegisterUserTest extends TestCase {
                 'password' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password can not be blank", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }

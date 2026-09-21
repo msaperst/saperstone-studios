@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
@@ -14,7 +13,7 @@ class GetBlogFullTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('998', 'Sample Blog', '2031-01-01', '', 0)");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`id`, `blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES (998, 999, NULL, 'Anna', '2012-10-31 09:56:47', '68.98.132.164', 'annad@annadbruce.com', 'hehehehehe this rules!')");
@@ -44,7 +43,7 @@ class GetBlogFullTest extends TestCase {
 
     public function testNoBlog() {
         $response = $this->http->request('GET', 'api/get-blog-full.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id is required", (string)$response->getBody());
     }
 
@@ -54,7 +53,7 @@ class GetBlogFullTest extends TestCase {
                 'post' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id can not be blank", (string)$response->getBody());
     }
 
@@ -64,7 +63,7 @@ class GetBlogFullTest extends TestCase {
                 'post' => 'a'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
@@ -74,7 +73,7 @@ class GetBlogFullTest extends TestCase {
                 'post' => 9999
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 

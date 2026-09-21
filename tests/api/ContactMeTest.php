@@ -4,7 +4,6 @@ namespace api;
 
 use CustomAsserts;
 use Google\Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 
@@ -22,7 +21,7 @@ class ContactMeTest extends TestCase {
     private $http;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         // Ensure every single test starts with a completely clean mailbox slate!
         CustomAsserts::clearAllEmails();
     }
@@ -36,7 +35,7 @@ class ContactMeTest extends TestCase {
      */
     public function testNoTime() {
         $response = $this->http->request('POST', 'api/contact-me.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Load Time is required", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -50,7 +49,7 @@ class ContactMeTest extends TestCase {
                 'loadtime' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Load Time can not be blank", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -64,7 +63,7 @@ class ContactMeTest extends TestCase {
                 'loadtime' => '1234567890'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Name is required", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -79,7 +78,7 @@ class ContactMeTest extends TestCase {
                 'name' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Name can not be blank", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -94,7 +93,7 @@ class ContactMeTest extends TestCase {
                 'name' => 'Max'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Phone number is required", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -110,7 +109,7 @@ class ContactMeTest extends TestCase {
                 'phone' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Phone number can not be blank", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -126,7 +125,7 @@ class ContactMeTest extends TestCase {
                 'phone' => '1234'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is required", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -143,7 +142,7 @@ class ContactMeTest extends TestCase {
                 'email' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email can not be blank", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -160,7 +159,7 @@ class ContactMeTest extends TestCase {
                 'email' => 'max@max'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is not valid", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -177,7 +176,7 @@ class ContactMeTest extends TestCase {
                 'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Message is required", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -195,7 +194,7 @@ class ContactMeTest extends TestCase {
                 'message' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Message can not be blank", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }

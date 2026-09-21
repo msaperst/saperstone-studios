@@ -7,6 +7,7 @@ $api->forceAdmin();
 try {
     $gallery = Gallery::withId($api->retrievePostString('id', 'Gallery id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -16,6 +17,7 @@ $imgs = $sql->getRowCount("SELECT * FROM gallery_images WHERE gallery = ?", [$ga
 if (isset ($_POST ['imgs']) && is_array($_POST ['imgs']) && sizeof($_POST ['imgs']) == $imgs) {
     $imgs = $_POST ['imgs'];
 } else {
+    http_response_code(400);
     echo "Gallery images are not in the correct format";
     $sql->disconnect();
     exit ();

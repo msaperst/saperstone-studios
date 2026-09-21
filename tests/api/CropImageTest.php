@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +14,7 @@ class CropImageTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
     }
 
@@ -55,7 +54,7 @@ class CropImageTest extends TestCase {
         $response = $this->http->request('POST', 'api/crop-image.php', [
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image is required", (string)$response->getBody());
     }
 
@@ -69,7 +68,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image can not be blank", (string)$response->getBody());
     }
 
@@ -83,7 +82,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image does not exist", (string)$response->getBody());
     }
 
@@ -98,7 +97,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image max-width is required", (string)$response->getBody());
     }
 
@@ -114,7 +113,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image max-width can not be blank", (string)$response->getBody());
     }
 
@@ -130,7 +129,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image top is required", (string)$response->getBody());
     }
 
@@ -147,7 +146,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image top can not be blank", (string)$response->getBody());
     }
 
@@ -164,7 +163,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image bottom is required", (string)$response->getBody());
     }
 
@@ -182,7 +181,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image bottom can not be blank", (string)$response->getBody());
     }
 
@@ -201,7 +200,7 @@ class CropImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Cropped image is smaller than the required image', (string)$response->getBody());
         $this->assertFalse(file_exists('content/blog/tmp_flower.jpeg'));
     }

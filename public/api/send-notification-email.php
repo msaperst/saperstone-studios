@@ -7,6 +7,7 @@ try {
     $album = Album::withId($api->retrievePostString('album', 'Album id'));
     $message = $api->retrievePostString('message', 'Message');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -20,6 +21,7 @@ foreach ($notifications as $notification) {
             $user = User::withId($notification['user']);
             $to = "{$user->getName()} <{$notification['email']}>";
         } catch (Exception $e) {
+            Api::setErrorResponseCode($e);
             //No nothing, it's fine if we don't have the users' name
         }
     }
@@ -37,6 +39,7 @@ foreach ($notifications as $notification) {
         $email->sendEmail();
         $sql->executeStatement("UPDATE `notification_emails` SET contacted = TRUE WHERE album = ? AND email = ?", [$album->getId(), $notification['email']]);
     } catch (Exception $e) {
+        Api::setErrorResponseCode($e);
         echo $e->getMessage() . "\n<br/>";
     }
 }

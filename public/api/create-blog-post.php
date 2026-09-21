@@ -8,6 +8,7 @@ try {
     $blog = Blog::withParams($_POST);
     echo $blog->create();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

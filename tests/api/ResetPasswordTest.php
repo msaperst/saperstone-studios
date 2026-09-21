@@ -3,7 +3,6 @@
 namespace api;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
@@ -17,7 +16,7 @@ class ResetPasswordTest extends TestCase {
     private $http;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
     }
 
     public function tearDown(): void {
@@ -29,7 +28,7 @@ class ResetPasswordTest extends TestCase {
      */
     public function testNoEmail() {
         $response = $this->http->request('POST', 'api/reset-password.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is required", (string)$response->getBody());
     }
 
@@ -42,7 +41,7 @@ class ResetPasswordTest extends TestCase {
                 'email' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email can not be blank", (string)$response->getBody());
     }
 
@@ -55,7 +54,7 @@ class ResetPasswordTest extends TestCase {
                 'email' => 'max@max'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is not valid", (string)$response->getBody());
     }
 
@@ -68,7 +67,7 @@ class ResetPasswordTest extends TestCase {
                 'email' => 'msaperst+sstest@gmail.com'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Code is required", (string)$response->getBody());
     }
 
@@ -82,7 +81,7 @@ class ResetPasswordTest extends TestCase {
                 'code' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Code can not be blank", (string)$response->getBody());
     }
 
@@ -96,7 +95,7 @@ class ResetPasswordTest extends TestCase {
                 'code' => '12345'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password is required", (string)$response->getBody());
     }
 
@@ -111,7 +110,7 @@ class ResetPasswordTest extends TestCase {
                 'password' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password can not be blank", (string)$response->getBody());
     }
 
@@ -126,7 +125,7 @@ class ResetPasswordTest extends TestCase {
                 'password' => 'password'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password confirmation is required", (string)$response->getBody());
     }
 
@@ -142,7 +141,7 @@ class ResetPasswordTest extends TestCase {
                 'passwordConfirm' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password confirmation can not be blank", (string)$response->getBody());
     }
 
@@ -158,7 +157,7 @@ class ResetPasswordTest extends TestCase {
                 'passwordConfirm' => 'p@ssW0rd'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password and confirmation do not match", (string)$response->getBody());
     }
 
@@ -174,7 +173,7 @@ class ResetPasswordTest extends TestCase {
                 'passwordConfirm' => 'password'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Credentials do not match our records", (string)$response->getBody());
     }
 

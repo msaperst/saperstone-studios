@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -21,7 +20,7 @@ class GetUsersTest extends TestCase {
      *
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("UPDATE `users` SET `lastLogin` = CURRENT_TIME WHERE `users`.`id` = 1;");
         $this->sql->executeStatement("UPDATE `users` SET `lastLogin` = NULL WHERE `users`.`id` = 2;");

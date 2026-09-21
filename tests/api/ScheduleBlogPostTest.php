@@ -4,7 +4,6 @@ namespace api;
 
 use DateInterval;
 use DateTime;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +16,7 @@ class ScheduleBlogPostTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', '2031-01-01', '/posts/2031/01/01/flower.jpeg', 0)");
         $oldmask = umask(0);
@@ -67,7 +66,7 @@ class ScheduleBlogPostTest extends TestCase {
         $response = $this->http->request('POST', 'api/schedule-blog-post.php', [
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id is required", (string)$response->getBody());
     }
 
@@ -81,7 +80,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id can not be blank", (string)$response->getBody());
     }
 
@@ -95,7 +94,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
@@ -109,7 +108,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
@@ -123,7 +122,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Publish date is required", (string)$response->getBody());
     }
 
@@ -138,7 +137,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Publish date can not be blank", (string)$response->getBody());
     }
 
@@ -153,7 +152,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Publish date is not the correct format", (string)$response->getBody());
     }
 
@@ -168,7 +167,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Publish time is required", (string)$response->getBody());
     }
 
@@ -184,7 +183,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Publish time can not be blank", (string)$response->getBody());
     }
 
@@ -200,7 +199,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Publish time is not the correct format", (string)$response->getBody());
     }
 
@@ -216,7 +215,7 @@ class ScheduleBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("This time is not in the future, please select a future time to schedule this post", (string)$response->getBody());
     }
 

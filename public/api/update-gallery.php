@@ -8,6 +8,7 @@ try {
     $gallery = Gallery::withId($api->retrievePostString('id', 'Gallery id'));
     $gallery->update($_POST);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

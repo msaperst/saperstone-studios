@@ -11,6 +11,7 @@ try {
     $blog = Blog::withId($api->retrievePostString('post', 'Blog id'));
     $blog->update($_POST);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

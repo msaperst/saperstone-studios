@@ -8,6 +8,7 @@ $api = new Api ();
 try {
     $album = Album::withId($api->retrievePostString('album', 'Album id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo json_encode(array('err' => $e->getMessage()));
     exit();
 }
@@ -20,6 +21,7 @@ if (!$album->canUserAccess()) {
 try {
     $what = $api->retrievePostString('what', 'What to select');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo json_encode(array('err' => $e->getMessage()));
     exit();
 }
@@ -28,6 +30,7 @@ $sql = new Sql();
 if ($what == "favorites") {
     $selected = array_column($sql->getRows("SELECT album_images.title FROM favorites LEFT JOIN album_images ON favorites.album = album_images.album AND favorites.image = album_images.id WHERE favorites.user = ? AND favorites.album = ?", [$systemUser->getIdentifier(), $album->getId()]), 'title');
     if (empty($selected)) {
+        http_response_code(400);
         echo json_encode(array('err' => "You have not selected any favorites"));
         $sql->disconnect();
         exit();
@@ -36,6 +39,7 @@ if ($what == "favorites") {
     try {
         $image = new Image($album, $what);
     } catch (Exception $e) {
+        Api::setErrorResponseCode($e);
         echo json_encode(array('err' => $e->getMessage()));
         $sql->disconnect();
         exit();

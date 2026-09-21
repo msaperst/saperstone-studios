@@ -7,6 +7,7 @@ $api->forceAdmin();
 try {
     $tag = $api->retrievePostString('tag', 'Blog tag');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -14,6 +15,7 @@ try {
 $sql = new Sql ();
 $row = $sql->getRow("SELECT * FROM `tags` WHERE `tag` = ?", [$tag]);
 if (isset($row ['id'])) {
+    http_response_code(400);
     echo "Blog tag already exists";
     $sql->disconnect();
     exit ();

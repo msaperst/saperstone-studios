@@ -7,6 +7,7 @@ $api->forceAdmin();
 try {
     $contract = Contract::withId($api->retrieveGetString('id', 'Contract id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

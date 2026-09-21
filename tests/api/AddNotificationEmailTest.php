@@ -3,7 +3,6 @@
 namespace api;
 
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
@@ -13,9 +12,9 @@ require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 
 class AddNotificationEmailTest extends TestCase {
     /**
-     * @var Client
+     * @var ApiTestClient
      */
-    private Client $http;
+    private ApiTestClient $http;
     /**
      * @var Sql
      */
@@ -25,7 +24,7 @@ class AddNotificationEmailTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES ('999', 'sample-album', 'sample album for testing', '');");
     }
@@ -48,7 +47,7 @@ class AddNotificationEmailTest extends TestCase {
      */
     public function testNoAlbumId() {
         $response = $this->http->request('POST', 'api/add-notification-email.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id is required", (string)$response->getBody());
     }
 
@@ -61,7 +60,7 @@ class AddNotificationEmailTest extends TestCase {
                 'album' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", (string)$response->getBody());
     }
 
@@ -74,7 +73,7 @@ class AddNotificationEmailTest extends TestCase {
                 'album' => 'a'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
@@ -87,7 +86,7 @@ class AddNotificationEmailTest extends TestCase {
                 'album' => 9999
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
@@ -100,7 +99,7 @@ class AddNotificationEmailTest extends TestCase {
                 'album' => 999
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is required", (string)$response->getBody());
     }
 
@@ -114,7 +113,7 @@ class AddNotificationEmailTest extends TestCase {
                 'email' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email can not be blank", (string)$response->getBody());
     }
 
@@ -128,7 +127,7 @@ class AddNotificationEmailTest extends TestCase {
                 'email' => 'max@max'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is not valid", (string)$response->getBody());
     }
 

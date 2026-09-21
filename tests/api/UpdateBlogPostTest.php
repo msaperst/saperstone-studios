@@ -4,7 +4,6 @@ namespace api;
 
 use Blog;
 use Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -28,7 +27,7 @@ class UpdateBlogPostTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('998', 'Sample Blog', '2031-01-01', '', 0)");
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', '2031-01-01', 'posts/2030/01/01/preview_image-999.jpg', 0)");
@@ -92,7 +91,7 @@ class UpdateBlogPostTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-blog-post.php', [
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id is required", (string)$response->getBody());
     }
 
@@ -109,7 +108,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id can not be blank", (string)$response->getBody());
     }
 
@@ -126,7 +125,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
@@ -143,7 +142,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
@@ -160,7 +159,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog title is required", (string)$response->getBody());
     }
 
@@ -178,7 +177,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog title can not be blank", (string)$response->getBody());
     }
 
@@ -196,7 +195,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog date is required", (string)$response->getBody());
     }
 
@@ -215,7 +214,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog date can not be blank", (string)$response->getBody());
     }
 
@@ -234,7 +233,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog date is not the correct format", (string)$response->getBody());
     }
 
@@ -253,7 +252,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog preview image is required", (string)$response->getBody());
     }
 
@@ -273,7 +272,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog preview image is required", (string)$response->getBody());
     }
 
@@ -295,7 +294,7 @@ class UpdateBlogPostTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog preview image can not be blank", (string)$response->getBody());
     }
 

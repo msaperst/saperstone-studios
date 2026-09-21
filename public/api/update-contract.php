@@ -9,6 +9,7 @@ try {
     $contract->update($_POST);
     echo $contract->getId();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

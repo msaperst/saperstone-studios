@@ -8,6 +8,7 @@ try {
     $user = User::fromSystem();
     $user->update($_POST);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

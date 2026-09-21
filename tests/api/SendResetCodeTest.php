@@ -5,7 +5,6 @@ namespace api;
 use CustomAsserts;
 use Exception;
 use Google\Exception as ExceptionAlias;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 use Sql;
@@ -27,7 +26,7 @@ class SendResetCodeTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `users` (`usr`, `pass`, `firstName`, `lastName`, `email`, `role`, `active`, `hash`) VALUES ('testUser', 'somepassword', 'Test', 'User', 'msaperst+sstest@gmail.com', 'downloader', '1', 'sdlkjfisudkhfkvlzjh');");
 
@@ -49,7 +48,7 @@ class SendResetCodeTest extends TestCase {
      */
     public function testNoEmail() {
         $response = $this->http->request('POST', 'api/send-reset-code.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is required", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -63,7 +62,7 @@ class SendResetCodeTest extends TestCase {
                 'email' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email can not be blank", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -77,7 +76,7 @@ class SendResetCodeTest extends TestCase {
                 'email' => '1234@hi'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Email is not valid", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -91,7 +90,7 @@ class SendResetCodeTest extends TestCase {
                 'email' => 'msap@gmail.com'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Credentials do not match our records", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }

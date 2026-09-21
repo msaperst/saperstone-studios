@@ -10,6 +10,7 @@ try {
     $what = $api->retrievePostString('what', 'What to download');
     $album = Album::withId($api->retrievePostString('album', 'Album id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo json_encode(array('error' => $e->getMessage()));
     exit();
 }
@@ -62,6 +63,7 @@ if ($systemUser->isAdmin()) {    // if we're an admin, we can download all files
 }
 
 if (empty ($available)) {
+    http_response_code(400);
     $response ['error'] = "There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.";
     echo json_encode($response);
     $sql->disconnect();
@@ -82,6 +84,7 @@ foreach ($available as $image) {
     }
 }
 if ($images == "") {
+    http_response_code(500);
     $response ['error'] = "No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.";
     echo json_encode($response);
     $sql->disconnect();
