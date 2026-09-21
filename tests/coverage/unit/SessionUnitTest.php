@@ -140,17 +140,17 @@ class SessionUnitTest extends TestCase {
     }
 
     public function testUseAnalyticsNoCookie() {
-        $this->assertTrue(Session::useAnalytics());
+        $this->assertFalse(Session::useAnalytics());
     }
 
     public function testUseAnalyticsNoHost() {
-        $_COOKIE['CookiePreferences'] = '';
+        $_COOKIE['CookiePreferences'] = json_encode(['analytics']);
         $this->assertFalse(Session::useAnalytics());
         unset($_COOKIE ['CookiePreferences']);
     }
 
     public function testUseAnalyticsBadHost() {
-        $_COOKIE['CookiePreferences'] = '';
+        $_COOKIE['CookiePreferences'] = json_encode(['analytics']);
         $_SERVER ['HTTP_X_FORWARDED_HOST'] = '12345';
         $this->assertFalse(Session::useAnalytics());
         unset($_SERVER ['HTTP_X_FORWARDED_HOST']);
@@ -174,11 +174,34 @@ class SessionUnitTest extends TestCase {
     }
 
     public function testUseAnalyticsGood1() {
-        $_SERVER ['HTTP_HOST'] = 'https://saperstonestudios.com';
+        $_SERVER ['HTTP_HOST'] = 'www.saperstonestudios.com';
         $_COOKIE['CookiePreferences'] = json_encode(['preferences', 'analytics']);
         $this->assertTrue(Session::useAnalytics());
         unset($_SERVER ['HTTP_HOST']);
         unset($_COOKIE ['CookiePreferences']);
+    }
+
+    public function testAnalyticsCookiesDeniedBeforeChoice() {
+        unset($_COOKIE['CookiePreferences']);
+        $this->assertFalse(Session::allowsAnalyticsCookies());
+    }
+
+    public function testAnalyticsCookiesDeniedWhenRejected() {
+        $_COOKIE['CookiePreferences'] = json_encode(['preferences']);
+        $this->assertFalse(Session::allowsAnalyticsCookies());
+        unset($_COOKIE['CookiePreferences']);
+    }
+
+    public function testAnalyticsCookiesDeniedForInvalidPreferenceCookie() {
+        $_COOKIE['CookiePreferences'] = 'invalid';
+        $this->assertFalse(Session::allowsAnalyticsCookies());
+        unset($_COOKIE['CookiePreferences']);
+    }
+
+    public function testAnalyticsCookiesAllowedWhenAccepted() {
+        $_COOKIE['CookiePreferences'] = json_encode(['analytics']);
+        $this->assertTrue(Session::allowsAnalyticsCookies());
+        unset($_COOKIE['CookiePreferences']);
     }
 
     public function testPreferenceCookiesAllowedBeforeChoice() {

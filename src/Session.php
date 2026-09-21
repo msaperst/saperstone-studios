@@ -80,12 +80,21 @@ class Session {
     }
 
     static function useAnalytics(): bool {
-        if (!isset($_COOKIE['CookiePreferences'])) {
-            return true;    // unless users say no, we're sending back to google analytics
+        if (!self::allowsAnalyticsCookies()) {
+            return false;
         }
-        $preferences = json_decode($_COOKIE['CookiePreferences']);
+
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? '';
         $server = 'saperstonestudios.com';
-        return (isset ($_SERVER ['HTTP_HOST']) && Strings::endsWith($_SERVER ['HTTP_HOST'], $server) && in_array("analytics", $preferences));
+        return $host === $server || Strings::endsWith($host, '.' . $server);
+    }
+
+    public static function allowsAnalyticsCookies(): bool {
+        if (!isset($_COOKIE['CookiePreferences'])) {
+            return false;
+        }
+        $preferences = json_decode($_COOKIE['CookiePreferences'], true);
+        return is_array($preferences) && in_array('analytics', $preferences, true);
     }
 
     public static function allowsPreferenceCookies(): bool {

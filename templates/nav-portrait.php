@@ -4,10 +4,7 @@ $galleries = $sql->getRows("SELECT * FROM galleries WHERE parent = (SELECT id FR
 $sql->disconnect();
 ?>
 
-<!-- Collect the nav links, forms, and other content for toggling -->
-<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-    <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown"><a href="javascript:void(0);"
+        <li class="dropdown"><a href="#"
                                 class="dropdown-toggle" data-toggle="dropdown">Details<strong
                         class="caret"></strong></a>
             <ul class="dropdown-menu">
@@ -19,7 +16,7 @@ $sql->disconnect();
                 <li><a href="faq.php">FAQs</a></li>
             </ul>
         </li>
-        <li class="dropdown"><a href="javascript:void(0);"
+        <li class="dropdown"><a href="#"
                                 class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
                         class="caret"></strong></a>
             <ul class="dropdown-menu">
@@ -39,7 +36,7 @@ $sql->disconnect();
                 ?>
             </ul>
         </li>
-        <li class="dropdown"><a href="javascript:void(0);"
+        <li class="dropdown"><a href="#"
                                 class="dropdown-toggle" data-toggle="dropdown">Retouch<strong
                         class="caret"></strong></a>
             <ul class="dropdown-menu">
