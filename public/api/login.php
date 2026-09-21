@@ -36,6 +36,7 @@ if (isset($_POST ['submit']) && $_POST ['submit'] == 'Login') {
         $username = $api->retrievePostString('username', 'Username');
         $password = $api->retrievePostString('password', 'Password');
     } catch (Exception $e) {
+        Api::setErrorResponseCode($e);
         echo $e->getMessage();
         exit();
     }
@@ -43,11 +44,13 @@ if (isset($_POST ['submit']) && $_POST ['submit'] == 'Login') {
     try {
         $user = User::fromLogin($username, $password);
     } catch (Exception $e) {
+        Api::setErrorResponseCode($e);
         echo "Credentials do not match our records";
         exit();
     }
 
     if (!$user->isActive()) {
+        http_response_code(400);
         echo 'Sorry, your account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.';
         exit();
     }

@@ -212,6 +212,15 @@ class LoginFeatureContext implements Context {
     }
 
     /**
+     * @When /^I resubmit invalid login credentials$/
+     */
+    public function iResubmitInvalidLoginCredentials() {
+        $this->driver->findElement(WebDriverBy::id('login-user'))->clear()->sendKeys('invalid-user');
+        $this->driver->findElement(WebDriverBy::id('login-pass'))->clear()->sendKeys('invalid-password');
+        $this->driver->findElement(WebDriverBy::id('login-submit'))->click();
+    }
+
+    /**
      * @When /^I logout$/
      */
     public function iLogout() {
@@ -308,6 +317,14 @@ class LoginFeatureContext implements Context {
      */
     public function iSeeAnErrorMessageIndicatingMyCredentialsArenTValid() {
         CustomAsserts::errorMessage($this->driver, 'Credentials do not match our records');
+    }
+
+    /**
+     * @Then /^I see one login error message$/
+     */
+    public function iSeeOneLoginErrorMessage() {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-danger')));
+        Assert::assertCount(1, $this->driver->findElements(WebDriverBy::cssSelector('#login-modal .alert-danger')));
     }
 
     /**

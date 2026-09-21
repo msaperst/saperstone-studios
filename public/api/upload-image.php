@@ -14,6 +14,7 @@ try {
     $file->upload($filePath . DIRECTORY_SEPARATOR);
     $file->resize($minWidth, 0);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

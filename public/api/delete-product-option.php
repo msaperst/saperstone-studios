@@ -8,6 +8,7 @@ try {
     $type = ProductType::withId($api->retrievePostString('type', 'Product id'));
     $option = $api->retrievePostString('option', 'Product option');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

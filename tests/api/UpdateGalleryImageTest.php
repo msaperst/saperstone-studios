@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -26,7 +25,7 @@ class UpdateGalleryImageTest extends TestCase {
      * @throws SqlException
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ('999', '1', 'sample.jpg', 'Sample', NULL);");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '0', '', '/portrait/img/sample/sample1.jpg', '300', '400', '1');");
@@ -99,7 +98,7 @@ class UpdateGalleryImageTest extends TestCase {
         $response = $this->http->request('POST', 'api/update-gallery-image.php', [
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Gallery id is required", (string)$response->getBody());
     }
 
@@ -116,7 +115,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Gallery id can not be blank", (string)$response->getBody());
     }
 
@@ -133,7 +132,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Gallery id does not match any galleries", (string)$response->getBody());
     }
 
@@ -150,7 +149,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Gallery id does not match any galleries", (string)$response->getBody());
     }
 
@@ -167,7 +166,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id is required", (string)$response->getBody());
     }
 
@@ -185,7 +184,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id can not be blank", (string)$response->getBody());
     }
 
@@ -203,7 +202,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id does not match any images", (string)$response->getBody());
     }
 
@@ -221,7 +220,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Title is required", (string)$response->getBody());
     }
 
@@ -240,7 +239,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Title can not be blank", (string)$response->getBody());
     }
 
@@ -259,7 +258,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Filename is required", (string)$response->getBody());
     }
 
@@ -279,7 +278,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Filename can not be blank", (string)$response->getBody());
     }
 
@@ -362,7 +361,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Unable to find original image to rename!", (string)$response->getBody());
         $image = $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 999;");
         $this->assertEquals(999, $image['id']);

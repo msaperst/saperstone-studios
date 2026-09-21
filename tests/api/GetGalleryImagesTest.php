@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -13,7 +12,7 @@ class GetGalleryImagesTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT IGNORE INTO `galleries` VALUES (999, NULL, '', 'sample gallery', NULL);");
         $this->sql->executeStatement("INSERT INTO `gallery_images` (`id`, `gallery`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (996, '998', '', '1', '', '', '300', '400', '1');");
@@ -34,7 +33,7 @@ class GetGalleryImagesTest extends TestCase {
 
     public function testNoGalleryId() {
         $response = $this->http->request('GET', 'api/get-gallery-images.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Gallery id is required", (string)$response->getBody());
     }
 
@@ -44,7 +43,7 @@ class GetGalleryImagesTest extends TestCase {
                 'gallery' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Gallery id can not be blank", (string)$response->getBody());
     }
 
@@ -54,7 +53,7 @@ class GetGalleryImagesTest extends TestCase {
                 'gallery' => '546fchgj78'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Gallery id does not match any galleries", (string)$response->getBody());
     }
 
@@ -64,7 +63,7 @@ class GetGalleryImagesTest extends TestCase {
                 'gallery' => 9999
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Gallery id does not match any galleries", (string)$response->getBody());
     }
 

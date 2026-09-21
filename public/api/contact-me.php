@@ -17,6 +17,7 @@ try {
         exit();
     }
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -33,6 +34,7 @@ try {
     $emailA = $api->retrieveValidatedPost('email', 'Email', FILTER_VALIDATE_EMAIL);
     $message = $api->retrievePostString('message', 'Message');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -115,6 +117,7 @@ $email->setText($text);
 try {
     $email->sendEmail();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     error_log($e->getMessage());
     echo "There was a problem submitting your message. Please try <a class='gen' href=''>reloading</a> the page and resubmitting it, or <a class='gen' href='mailto:contact@saperstonestudios.com'>contact us</a> to resolve the issue.";
     exit();

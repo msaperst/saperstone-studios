@@ -5,6 +5,7 @@ $api = new Api();
 try {
     $album = Album::withId($api->retrievePostString('id', 'Album id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -17,6 +18,7 @@ if (!$album->canUserGetData()) {
 try {
     $album->update($_POST);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

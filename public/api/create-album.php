@@ -15,6 +15,7 @@ try {
     $album = Album::withParams($_POST);
     echo $album->create();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

@@ -5,6 +5,7 @@ $api = new Api();
 try {
     $blog = Blog::withId($api->retrieveGetString('post', 'Blog id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

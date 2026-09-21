@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
@@ -14,7 +13,7 @@ class FindAlbumTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', '', 'search-for-me');");
     }
@@ -31,7 +30,7 @@ class FindAlbumTest extends TestCase {
 
     public function testNoAlbumCode() {
         $response = $this->http->request('GET', 'api/find-album.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album code is required", (string)$response->getBody());
     }
 
@@ -41,7 +40,7 @@ class FindAlbumTest extends TestCase {
                 'code' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album code can not be blank", (string)$response->getBody());
     }
 
@@ -51,7 +50,7 @@ class FindAlbumTest extends TestCase {
                 'code' => 'some crazy code'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("That code does not match any albums", (string)$response->getBody());
     }
 
@@ -137,7 +136,7 @@ class FindAlbumTest extends TestCase {
                 'albumAdd' => 1
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals(999, (string)$response->getBody());
         //UNABLE TO CHECK COOKIE
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;"));
@@ -154,7 +153,7 @@ class FindAlbumTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals(999, (string)$response->getBody());
         //UNABLE TO CHECK COOKIE
         $albums = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;");

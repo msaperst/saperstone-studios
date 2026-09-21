@@ -8,11 +8,13 @@ try {
     $password = $api->retrievePostString('password', 'Password');
     $passwordConfirm = $api->retrievePostString('passwordConfirm', 'Password confirmation');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
 
 if ($password != $passwordConfirm) {
+    http_response_code(400);
     echo "Password and confirmation do not match";
     exit();
 }
@@ -20,6 +22,7 @@ if ($password != $passwordConfirm) {
 try {
     $user = User::fromReset($email, $code);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo "Credentials do not match our records";
     exit();
 }

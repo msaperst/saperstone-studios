@@ -11,6 +11,7 @@ try {
         $image = (new Image($album, $image)->getId());
     }
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

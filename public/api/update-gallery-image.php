@@ -14,6 +14,7 @@ try {
     }
     $filename = $api->retrievePostString('filename', 'Filename');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -31,6 +32,7 @@ if ($filename != $image->getLocation()) {
         $originalFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . explode('/', $_SERVER ['HTTP_REFERER'])[3] . DIRECTORY_SEPARATOR . $image->getLocation();
         $newFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . explode('/', $_SERVER ['HTTP_REFERER'])[3] . DIRECTORY_SEPARATOR . $filename;
     } else {
+        http_response_code(500);
         echo "Unable to find original image to rename!";
         exit();
     }
@@ -40,6 +42,7 @@ if ($filename != $image->getLocation()) {
         $sql->executeStatement("UPDATE gallery_images SET location = ? WHERE gallery = ? AND id = ?", [$filename, $gallery->getId(), $image->getId()]);
         $sql->disconnect();
     } else {
+        http_response_code(500);
         echo "Unable to find original image to rename!";
         exit();
     }

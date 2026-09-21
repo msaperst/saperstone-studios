@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
@@ -14,7 +13,7 @@ class IsDownloadableTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES (999, 'sample-album-no-access', 'sample album for testing without any download access', 'sample', 4, '123');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('3', 999, '990');");
@@ -59,7 +58,7 @@ class IsDownloadableTest extends TestCase {
 
     public function testNoAlbum() {
         $response = $this->http->request('GET', 'api/is-downloadable.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id is required", (string)$response->getBody());
     }
 
@@ -69,7 +68,7 @@ class IsDownloadableTest extends TestCase {
                 'album' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", (string)$response->getBody());
     }
 
@@ -79,7 +78,7 @@ class IsDownloadableTest extends TestCase {
                 'album' => 'a'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
@@ -89,7 +88,7 @@ class IsDownloadableTest extends TestCase {
                 'album' => 9999
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
@@ -116,7 +115,7 @@ class IsDownloadableTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id is required", (string)$response->getBody());
     }
 
@@ -134,7 +133,7 @@ class IsDownloadableTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id can not be blank", (string)$response->getBody());
     }
 
@@ -152,7 +151,7 @@ class IsDownloadableTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id does not match any images", (string)$response->getBody());
     }
 

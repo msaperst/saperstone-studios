@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 
@@ -10,7 +9,7 @@ class AnalyticsConsentTest extends TestCase {
     private Client $http;
 
     public function setUp(): void {
-        $this->http = new Client([
+        $this->http = new ApiTestClient([
             'base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/',
             'headers' => ['X-Forwarded-Host' => 'saperstonestudios.com']
         ]);

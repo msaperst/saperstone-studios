@@ -22,9 +22,9 @@ class Api {
             }
         } else {
             if (!isset ($_POST [$variable])) {
-                throw new Exception("$variableName is required");
+                throw new BadRequestException("$variableName is required");
             } else {
-                throw new Exception("$variableName can not be blank");
+                throw new BadRequestException("$variableName can not be blank");
             }
         }
     }
@@ -37,11 +37,11 @@ class Api {
             return $_POST [$variable];
         } else {
             if (!isset ($_POST [$variable])) {
-                throw new Exception("$variableName is required");
+                throw new BadRequestException("$variableName is required");
             } elseif ($_POST [$variable] == "") {
-                throw new Exception("$variableName can not be blank");
+                throw new BadRequestException("$variableName can not be blank");
             } else {
-                throw new Exception("$variableName is not valid");
+                throw new BadRequestException("$variableName is not valid");
             }
         }
     }
@@ -51,15 +51,15 @@ class Api {
             $date = $_POST [$variable];
             $d = DateTime::createFromFormat($format, $date);
             if (!($d && $d->format($format) === $date)) {
-                throw new Exception("$variableName is not the correct format");
+                throw new BadRequestException("$variableName is not the correct format");
             } else {
                 return $date;
             }
         } else {
             if (!isset ($_POST [$variable])) {
-                throw new Exception("$variableName is required");
+                throw new BadRequestException("$variableName is required");
             } else {
-                throw new Exception("$variableName can not be blank");
+                throw new BadRequestException("$variableName can not be blank");
             }
         }
     }
@@ -89,9 +89,9 @@ class Api {
             }
         } else {
             if (!isset ($_GET [$variable])) {
-                throw new Exception("$variableName is required");
+                throw new BadRequestException("$variableName is required");
             } else {
-                throw new Exception($error = "$variableName can not be blank");
+                throw new BadRequestException("$variableName can not be blank");
             }
         }
     }
@@ -124,5 +124,17 @@ class Api {
             }
             exit ();
         }
+    }
+
+    /**
+     * Set the HTTP status for an API exception while allowing each endpoint to
+     * preserve its existing response-body format.
+     */
+    static function setErrorResponseCode(Throwable $exception) {
+        if ($exception instanceof SaperstoneStudiosException && !($exception instanceof SqlException)) {
+            http_response_code(400);
+            return;
+        }
+        http_response_code(500);
     }
 }

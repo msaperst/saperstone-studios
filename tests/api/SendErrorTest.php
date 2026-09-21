@@ -4,7 +4,6 @@ namespace api;
 
 use CustomAsserts;
 use Google\Exception;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +21,7 @@ class SendErrorTest extends TestCase {
      *
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         // Ensure every single test starts with a completely clean mailbox slate!
         CustomAsserts::clearAllEmails();
     }
@@ -39,7 +38,7 @@ class SendErrorTest extends TestCase {
      */
     public function testNoError() {
         $response = $this->http->request('POST', 'api/send-error.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Error is required", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -53,7 +52,7 @@ class SendErrorTest extends TestCase {
                 'error' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Error can not be blank", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -67,7 +66,7 @@ class SendErrorTest extends TestCase {
                 'error' => '404'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Page is required", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -82,7 +81,7 @@ class SendErrorTest extends TestCase {
                 'page' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Page can not be blank", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -97,7 +96,7 @@ class SendErrorTest extends TestCase {
                 'page' => 'localhost/123.html'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Referral is required", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
@@ -113,7 +112,7 @@ class SendErrorTest extends TestCase {
                 'referrer' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Referral can not be blank", $response->getBody());
         CustomAsserts::assertEmailCount(0);
     }

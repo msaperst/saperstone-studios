@@ -7,6 +7,7 @@ try {
     $album = Album::withId($api->retrieveGetString('album', 'Album id'));
     $image = new Image($album, $api->retrieveGetString('image', 'Image id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

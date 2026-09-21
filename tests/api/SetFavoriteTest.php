@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
@@ -18,7 +17,7 @@ class SetFavoriteTest extends TestCase {
      * @throws SqlException
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("DELETE FROM `user_logs` WHERE `album` = 999 AND `action` = 'Set Favorite'");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4);");
@@ -50,7 +49,7 @@ class SetFavoriteTest extends TestCase {
         $response = $this->http->request('POST', 'api/set-favorite.php', [
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id is required", (string)$response->getBody());
     }
 
@@ -64,7 +63,7 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", (string)$response->getBody());
     }
 
@@ -78,7 +77,7 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
@@ -92,7 +91,7 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", (string)$response->getBody());
     }
 
@@ -106,7 +105,7 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id is required", (string)$response->getBody());
     }
 
@@ -121,7 +120,7 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id can not be blank", (string)$response->getBody());
     }
 
@@ -136,7 +135,7 @@ class SetFavoriteTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id does not match any images", (string)$response->getBody());
     }
 

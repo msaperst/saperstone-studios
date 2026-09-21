@@ -7,6 +7,7 @@ $api = new Api ();
 try {
     $error = $api->retrievePostString('error', 'Error');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -14,6 +15,7 @@ try {
 try {
     $page = $api->retrievePostString('page', 'Page');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -21,6 +23,7 @@ try {
 try {
     $referrer = $api->retrievePostString('referrer', 'Referral');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

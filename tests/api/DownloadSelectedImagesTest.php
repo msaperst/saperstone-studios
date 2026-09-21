@@ -5,7 +5,6 @@ namespace api;
 use CustomAsserts;
 use Exception;
 use Google\Exception as ExceptionAlias;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -34,7 +33,7 @@ class DownloadSelectedImagesTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (997, 'sample-album-download-all', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('0', 997, '*');");
@@ -100,7 +99,7 @@ class DownloadSelectedImagesTest extends TestCase {
      */
     public function testNoWhat() {
         $response = $this->http->request('POST', 'api/download-selected-images.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("What to download is required", json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -114,7 +113,7 @@ class DownloadSelectedImagesTest extends TestCase {
                 'what' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("What to download can not be blank", json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -128,7 +127,7 @@ class DownloadSelectedImagesTest extends TestCase {
                 'what' => 'some-file'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id is required", json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -143,7 +142,7 @@ class DownloadSelectedImagesTest extends TestCase {
                 'album' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -158,7 +157,7 @@ class DownloadSelectedImagesTest extends TestCase {
                 'album' => 'a'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -173,7 +172,7 @@ class DownloadSelectedImagesTest extends TestCase {
                 'album' => 9999
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -414,7 +413,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'album' => 997
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(500, $response->getStatusCode());
         $this->assertEquals("No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.", json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -429,7 +428,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'album' => 997
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -617,7 +616,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                 'album' => 998
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -1135,7 +1134,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -1154,7 +1153,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -1194,7 +1193,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -1213,7 +1212,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.', json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -1677,7 +1676,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(500, $response->getStatusCode());
         $this->assertEquals("No files exist for you to download. Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>contact our System Administrators</a>.", json_decode($response->getBody(), true)['error']);
         CustomAsserts::assertEmailCount(0);
     }

@@ -9,19 +9,19 @@ class File {
     function __construct($files) {
         // perform some basic checks on the input
         if (!isset ($files)) {
-            throw new Exception ('File(s) are required');
+            throw new BadRequestException('File(s) are required');
         } elseif ($files == "") {
-            throw new Exception ('File(s) can not be blank');
+            throw new BadRequestException('File(s) can not be blank');
         } elseif (isset($files['error']) && $files['error'] != '0') {
-            throw new Exception($files['error']);
+            throw new BadRequestException($files['error']);
         } elseif (!isset($files['name'])) {
-            throw new Exception('File name is required');
+            throw new BadRequestException('File name is required');
         } elseif ($files['name'] == '') {
-            throw new Exception('File name can not be blank');
+            throw new BadRequestException('File name can not be blank');
         } elseif (!isset($files['tmp_name'])) {
-            throw new Exception('File upload location is required');
+            throw new BadRequestException('File upload location is required');
         } elseif ($files['tmp_name'] == '') {
-            throw new Exception('File upload location can not be blank');
+            throw new BadRequestException('File upload location can not be blank');
         }
         // extract out all of the files
         if (!is_array($files['name'])) {
@@ -61,10 +61,10 @@ class File {
             $size = getimagesize($this->location . $file);
             if ($size [0] < $width) { //verify the width
                 unlink($this->location . $file);
-                throw new Exception("Image does not meet the minimum width requirements of {$width}px. Image is {$size[0]} x {$size[1]}");
+                throw new BadRequestException("Image does not meet the minimum width requirements of {$width}px. Image is {$size[0]} x {$size[1]}");
             } elseif ($size [1] < $height) {//verify the height
                 unlink($this->location . $file);
-                throw new Exception("Image does not meet the minimum height requirements of {$height}px. Image is {$size[0]} x {$size[1]}");
+                throw new BadRequestException("Image does not meet the minimum height requirements of {$height}px. Image is {$size[0]} x {$size[1]}");
             } elseif ($width > 0 && $height > 0) {
                 system("mogrify -resize {$width}x{$height} " . escapeshellarg($this->location . $file));
                 system("mogrify -density 72 " . escapeshellarg($this->location . $file));

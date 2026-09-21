@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +18,7 @@ class GetFavoritesTest extends TestCase {
      * @throws SqlException
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (997, 'sample-album-download-all', 'sample album for testing', 'sample');");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`) VALUES (998, 'sample-album-download-all', 'sample album for testing', 'sample');");
@@ -51,7 +50,7 @@ class GetFavoritesTest extends TestCase {
 
     public function testUnAuthUserNoAlbum() {
         $response = $this->http->request('GET', 'api/get-favorites.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Album id is required', (string)$response->getBody());
     }
 
@@ -61,7 +60,7 @@ class GetFavoritesTest extends TestCase {
                 'album' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Album id can not be blank', (string)$response->getBody());
     }
 
@@ -85,7 +84,7 @@ class GetFavoritesTest extends TestCase {
             ]
         ]);
         $response = $this->http->request('GET', 'api/get-favorites.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Album id is required', (string)$response->getBody());
     }
 

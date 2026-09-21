@@ -9,6 +9,7 @@ try {
     $album = Album::withId($api->retrievePostString('album', 'Album id'));
     $image = new Image($album, $api->retrievePostString('image', 'Image id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

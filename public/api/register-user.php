@@ -5,6 +5,7 @@ try {
     $user = User::withParams($_POST);
     $lastId = $user->create();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

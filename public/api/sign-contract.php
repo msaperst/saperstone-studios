@@ -7,6 +7,7 @@ try {
     $contract = Contract::withId($api->retrievePostString('id', 'Contract id'));
     $file = $contract->sign($_POST);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

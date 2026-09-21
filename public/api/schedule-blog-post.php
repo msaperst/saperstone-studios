@@ -9,6 +9,7 @@ try {
     $date = $api->retrievePostDateTime('date', 'Publish date', 'Y-m-d');
     $time = $api->retrievePostDateTime('time', 'Publish time', 'H:i');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -17,6 +18,7 @@ $today = new DateTime ();
 $scheduled = new DateTime ("$date $time");
 $howLong = $scheduled->getTimestamp() - $today->getTimestamp();
 if ($howLong <= 0) {
+    http_response_code(400);
     echo "This time is not in the future, please select a future time to schedule this post";
     exit ();
 }

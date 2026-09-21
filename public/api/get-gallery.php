@@ -7,6 +7,7 @@ $api->forceAdmin();
 try {
     $gallery = Gallery::withId($api->retrieveGetString('id', 'Gallery id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

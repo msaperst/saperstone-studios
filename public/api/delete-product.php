@@ -8,6 +8,7 @@ try {
     $type = ProductType::withId($api->retrievePostString('id', 'Product id'));
     $type->delete();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

@@ -3,7 +3,6 @@
 namespace api;
 
 use CustomAsserts;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
@@ -16,7 +15,7 @@ class CreateBlogCommentTest extends TestCase {
     private $sql;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', CURRENT_TIMESTAMP, '', 0)");
     }
@@ -36,7 +35,7 @@ class CreateBlogCommentTest extends TestCase {
 
     public function testNoBlogId() {
         $response = $this->http->request('POST', 'api/create-blog-comment.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id is required", (string)$response->getBody());
     }
 
@@ -46,7 +45,7 @@ class CreateBlogCommentTest extends TestCase {
                 'post' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id can not be blank", (string)$response->getBody());
     }
 
@@ -56,7 +55,7 @@ class CreateBlogCommentTest extends TestCase {
                 'post' => 'a'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
@@ -66,7 +65,7 @@ class CreateBlogCommentTest extends TestCase {
                 'post' => 9999
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog id does not match any blog posts", (string)$response->getBody());
     }
 
@@ -76,7 +75,7 @@ class CreateBlogCommentTest extends TestCase {
                 'post' => 999
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Message is required", (string)$response->getBody());
     }
 
@@ -87,7 +86,7 @@ class CreateBlogCommentTest extends TestCase {
                 'message' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Message can not be blank", (string)$response->getBody());
     }
 

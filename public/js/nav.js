@@ -2,6 +2,16 @@ var my_role;
 var my_id;
 
 $(function () {
+    // Replace stale validation/API errors when a visitor retries an action.
+    $(document).ajaxSend(function (event, xhr, settings) {
+        if ((settings.type || 'GET').toUpperCase() !== 'GET') {
+            $('.alert-danger').remove();
+        }
+    });
+    $(document).on('submit', 'form', function () {
+        $('.alert-danger').remove();
+    });
+
     //setup our cookie consent policy, unless we're on the privacy policy page
     if (top.location.pathname !== '/Privacy-Policy.php' && typeof $('body').bsgdprcookies === "function") {
         $('body').bsgdprcookies();

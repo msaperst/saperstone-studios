@@ -18,6 +18,12 @@ Feature: System Authentication
     When I log in to the site
     Then I see an error message indicating my credentials aren't valid
 
+  Scenario: Retrying login replaces the previous error
+    When I log in to the site
+    Then I see an error message indicating my credentials aren't valid
+    When I resubmit invalid login credentials
+    Then I see one login error message
+
   Scenario Outline: Login with incomplete credentials
     When I log in to the site using credentials "<username>" "<password>"
     Then I see an error message indicating all fields need to be filled in

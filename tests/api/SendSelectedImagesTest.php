@@ -5,7 +5,6 @@ namespace api;
 use CustomAsserts;
 use Exception;
 use Google\Exception as ExceptionAlias;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -29,7 +28,7 @@ class SendSelectedImagesTest extends TestCase {
      * @throws Exception
      */
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `location`, `width`, `height`, `active`) VALUES ('998', 999, 'file-1', 1, '/albums/sample/sample-1.jpg', '600', '400', '1');");
@@ -60,7 +59,7 @@ class SendSelectedImagesTest extends TestCase {
      */
     public function testNoAlbum() {
         $response = $this->http->request('POST', 'api/send-selected-images.php');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id is required", json_decode($response->getBody(), true)['err']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -74,7 +73,7 @@ class SendSelectedImagesTest extends TestCase {
                 'album' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id can not be blank", json_decode($response->getBody(), true)['err']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -88,7 +87,7 @@ class SendSelectedImagesTest extends TestCase {
                 'album' => 'e'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", json_decode($response->getBody(), true)['err']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -102,7 +101,7 @@ class SendSelectedImagesTest extends TestCase {
                 'album' => '9999'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Album id does not match any albums", json_decode($response->getBody(), true)['err']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -137,7 +136,7 @@ class SendSelectedImagesTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("What to select is required", json_decode($response->getBody(), true)['err']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -156,7 +155,7 @@ class SendSelectedImagesTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("What to select can not be blank", json_decode($response->getBody(), true)['err']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -175,7 +174,7 @@ class SendSelectedImagesTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("You have not selected any favorites", json_decode($response->getBody(), true)['err']);
         CustomAsserts::assertEmailCount(0);
     }
@@ -243,7 +242,7 @@ file-2\r
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image id does not match any images", json_decode($response->getBody(), true)['err']);
         CustomAsserts::assertEmailCount(0);
     }

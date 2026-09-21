@@ -10,6 +10,7 @@ $api->forceAdmin();
 try {
     $gallery = Gallery::withId($api->retrievePostString('gallery', 'Gallery id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -26,6 +27,7 @@ try {
     $file->resize('1140', '760');
     $file->addToDatabase('gallery_images', 'galleries', $gallery->getId(), 'gallery', $imageLocation);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo json_encode($e->getMessage());
     exit();
 }

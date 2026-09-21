@@ -3,7 +3,6 @@
 namespace api;
 
 use CustomAsserts;
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Cookie\SetCookie;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +20,7 @@ class LoginTest extends TestCase {
 
     public function setUp(): void {
         $this->cookieJar = new CookieJar();
-        $this->http = new Client([
+        $this->http = new ApiTestClient([
             'base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/',
             'cookies' => $this->cookieJar
         ]);
@@ -93,7 +92,7 @@ class LoginTest extends TestCase {
                 'submit' => 'Login'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Username is required", (string)$response->getBody());
     }
 
@@ -105,7 +104,7 @@ class LoginTest extends TestCase {
                 'username' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Username can not be blank", (string)$response->getBody());
     }
 
@@ -117,7 +116,7 @@ class LoginTest extends TestCase {
                 'username' => 'foo'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password is required", (string)$response->getBody());
     }
 
@@ -130,7 +129,7 @@ class LoginTest extends TestCase {
                 'password' => ''
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Password can not be blank", (string)$response->getBody());
     }
 
@@ -143,7 +142,7 @@ class LoginTest extends TestCase {
                 'password' => 'bar'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Credentials do not match our records", (string)$response->getBody());
     }
 
@@ -156,7 +155,7 @@ class LoginTest extends TestCase {
                 'password' => 'bar'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Credentials do not match our records", (string)$response->getBody());
     }
 
@@ -170,7 +169,7 @@ class LoginTest extends TestCase {
                 'password' => 'password'
             ]
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Sorry, your account has been deactivated. Please <a target="_blank" href="mailto:webmaster@saperstonestudios.com">contact our webmaster</a> to get this resolved.', (string)$response->getBody());
         $this->sql->executeStatement("UPDATE `users` SET `active` = '1' WHERE `users`.`id` = 3;");
     }

@@ -8,6 +8,7 @@ $howMany = 999999999999999999;
 try {
     $album = Album::withId($api->retrieveGetString('albumId', 'Album id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo json_encode(array('error' => $e->getMessage()));
     exit();
 }

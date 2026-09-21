@@ -12,6 +12,7 @@ try {
     }
     $album->delete();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

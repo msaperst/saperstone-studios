@@ -9,6 +9,7 @@ $howMany = 999999999999999999;
 try {
     $gallery = Gallery::withId($api->retrieveGetString('gallery', 'Gallery id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

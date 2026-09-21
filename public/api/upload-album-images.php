@@ -8,6 +8,7 @@ $api->forceLoggedIn();
 try {
     $album = Album::withId($api->retrievePostString('album', 'Album id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -27,6 +28,7 @@ try {
     $files = $file->upload($outputDir);
     $file->addToDatabase('album_images', 'albums', $album->getId(), 'album', $imageLocation);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

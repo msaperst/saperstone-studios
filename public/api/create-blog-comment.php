@@ -5,6 +5,7 @@ try {
     $comment = Comment::withParams($_POST);
     echo $comment->create();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

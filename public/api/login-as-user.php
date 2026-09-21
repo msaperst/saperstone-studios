@@ -9,6 +9,7 @@ $api->forceAdmin();
 try {
     $user = User::withId($api->retrievePostString('id', 'User id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

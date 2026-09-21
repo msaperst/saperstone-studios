@@ -6,6 +6,7 @@ $api = new Api ();
 try {
     $album = Album::withId($api->retrieveGetString('album', 'Album id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

@@ -8,6 +8,7 @@ try {
     $productType = ProductType::withParams($_POST);
     echo $productType->create();
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

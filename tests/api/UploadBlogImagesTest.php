@@ -2,7 +2,6 @@
 
 namespace api;
 
-use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +12,7 @@ class UploadBlogImagesTest extends TestCase {
     private $http;
 
     public function setUp(): void {
-        $this->http = new Client(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
+        $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
     }
 
     public function tearDown(): void {
@@ -51,7 +50,7 @@ class UploadBlogImagesTest extends TestCase {
             'cookies' => $cookieJar
 
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("File(s) are required", json_decode($response->getBody()));
     }
 
@@ -70,7 +69,7 @@ class UploadBlogImagesTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image does not meet the minimum width requirements of 1200px. Image is 1000 x 750", json_decode($response->getBody()));
         //TODO - unable to verify image not present
 //        $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg'));
@@ -91,7 +90,7 @@ class UploadBlogImagesTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals(['flower.jpeg'], json_decode($response->getBody(), true));
         //TODO - unable to verify image present
 //        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg'));

@@ -3,8 +3,10 @@
 namespace coverage\unit;
 
 use Api;
+use BadRequestException;
 use Exception;
 use PHPUnit\Framework\TestCase;
+use SqlException;
 
 // Suppress warnings/notices from autoloader
 @require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
@@ -21,6 +23,7 @@ class ApiUnitTest extends TestCase {
         parent::tearDown();
         $_POST = [];
         $_GET = [];
+        http_response_code(200);
     }
 
     // ------------------------
@@ -175,5 +178,20 @@ class ApiUnitTest extends TestCase {
     public function testRetrieveGetFloatMoney(): void {
         $_GET['bar'] = '$12.245';
         $this->assertEqualsWithDelta(12.245, $this->api->retrieveGetFloat('bar', 'Foo'), 0.001);
+    }
+
+    public function testBadRequestSetsClientErrorStatus(): void {
+        Api::setErrorResponseCode(new BadRequestException('Bad request'));
+        $this->assertSame(400, http_response_code());
+    }
+
+    public function testSqlExceptionSetsServerErrorStatus(): void {
+        Api::setErrorResponseCode(new SqlException('Database failure'));
+        $this->assertSame(500, http_response_code());
+    }
+
+    public function testUnexpectedExceptionSetsServerErrorStatus(): void {
+        Api::setErrorResponseCode(new Exception('Unexpected failure'));
+        $this->assertSame(500, http_response_code());
     }
 }

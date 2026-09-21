@@ -8,6 +8,7 @@ try {
     $product = Product::withId($api->retrievePostString('id', 'Product id'));
     $product->update($_POST);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }

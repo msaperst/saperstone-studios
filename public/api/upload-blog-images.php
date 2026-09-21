@@ -12,6 +12,7 @@ try {
     $files = $file->upload('../tmp/');
     $file->resize(1200, 0);
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo json_encode($e->getMessage());
     exit();
 }

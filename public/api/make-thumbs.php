@@ -8,6 +8,7 @@ $api->forceLoggedIn();
 try {
     $album = Album::withId($api->retrievePostString('id', 'Album id'));
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
@@ -20,11 +21,13 @@ if (!$album->canUserGetData()) {
 try {
     $markup = $api->retrievePostString('markup', 'Markup');
 } catch (Exception $e) {
+    Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
 
 if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
+    http_response_code(400);
     echo "Markup is not valid";
     exit ();
 }
