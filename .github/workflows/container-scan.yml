@@ -12,10 +12,13 @@ jobs:
   php:
     name: PHP Container Scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Setup PHP with PECL extension
         uses: shivammathur/setup-php@v2
@@ -27,44 +30,69 @@ jobs:
         run: |
           docker build -t saperstone-studios/php:latest -f .docker/php/Dockerfile .
 
-      - name: Scan Image 🕵️‍♂️
-        id: scan-php
-        uses: anchore/scan-action@v3
+      - name: Generate complete vulnerability report 🕵️‍♂️
+        id: report-php
+        uses: anchore/scan-action@v7
+        with:
+          image: "saperstone-studios/php:latest"
+          fail-build: false
+          severity-cutoff: high
+          output-format: sarif
+          output-file: php-results.sarif
+
+      - name: Upload Anchore Scan SARIF Report 📊
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: php-results.sarif
+          category: php
+
+      - name: Fail on fixable high or critical vulnerabilities
+        uses: anchore/scan-action@v7
         with:
           image: "saperstone-studios/php:latest"
           fail-build: true
           severity-cutoff: high
-
-      - name: Upload Anchore Scan SARIF Report 📊
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: ${{ steps.scan-php.outputs.sarif }}
-          category: php
+          only-fixed: true
+          output-format: table
 
   sql:
     name: SQL Container Scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Build Dockerfile 🐋
         run: |
           docker build -t saperstone-studios/sql:latest -f .docker/sql/Dockerfile .
 
-      - name: Scan Image 🕵️‍♂️
-        id: scan-sql
-        uses: anchore/scan-action@v3
+      - name: Generate complete vulnerability report 🕵️‍♂️
+        id: report-sql
+        uses: anchore/scan-action@v7
+        with:
+          image: "saperstone-studios/sql:latest"
+          fail-build: false
+          severity-cutoff: high
+          output-format: sarif
+          output-file: sql-results.sarif
+
+      - name: Upload Anchore Scan SARIF Report 📊
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: sql-results.sarif
+          category: sql
+
+      - name: Fail on fixable high or critical vulnerabilities
+        uses: anchore/scan-action@v7
         with:
           image: "saperstone-studios/sql:latest"
           fail-build: true
           severity-cutoff: high
-
-      - name: Upload Anchore Scan SARIF Report 📊
-        if: always()
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: ${{ steps.scan-sql.outputs.sarif }}
-          category: sql
+          only-fixed: true
+          output-format: table
