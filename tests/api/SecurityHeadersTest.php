@@ -7,7 +7,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase;
 
 class SecurityHeadersTest extends TestCase {
-    private Client $http;
+    private ApiTestClient $http;
     private CookieJar $adminCookies;
 
     public function setUp(): void {
