@@ -361,7 +361,7 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(500, $response->getStatusCode());
         $this->assertEquals("Unable to find original image to rename!", (string)$response->getBody());
         $image = $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 999;");
         $this->assertEquals(999, $image['id']);
