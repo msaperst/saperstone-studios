@@ -215,36 +215,6 @@ Full UA: %s\r\n",
     /**
      * @throws Exception
      */
-    public function testUsagePage() {
-        $this->driver->get($this->baseUrl . 'user/usage.php');
-        $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
-        $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('401 Error',
-            "This is an automatically generated message from Saperstone Studios\r
-\t\tSomeone got a 401 on page %s://%s/user/usage.php\r
-\t\tThey came from page Unknown\r
-\t\tYou might want to look into this or take action\r
-\t\tUser information is collected before\r
-\r
-Location: unknown (use %d.%d.%d.%d to manually lookup)\r
-Browser: %s %s\r
-Resolution: %dx%d\r
-OS: %s\r
-Full UA: %s\r\n",
-            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 401 on page <a href=\'%s://%s/user/usage.php\' target=\'_blank\'>%s://%s/user/usage.php</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'Unknown\' target=\'_blank\'>Unknown</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: %s %s<br/><strong>Resolution</strong>: %dx%d<br/><strong>OS</strong>: %s<br/><strong>Full UA</strong>: %s<br/></body></html>');
-    }
-
-    public function testUsagePageAdmin() {
-        $this->driver->get($this->baseUrl);
-        $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/usage.php');
-        $this->assertEquals('Site Usage', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
-        $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testUsersPage() {
         $this->driver->get($this->baseUrl . 'user/users.php');
         $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());

@@ -59,6 +59,11 @@
                     title: 'Analytics',
                     description: 'Required to collect site visits, browser types, etc.',
                 },
+                {
+                    name: 'social',
+                    title: 'Social Media',
+                    description: 'Required to load embedded social media buttons and sharing tools.',
+                },
             ],
             OnAccept: function (cookies) {
                 // Apply the preference immediately when consent is saved.
@@ -171,6 +176,7 @@
 
                 // Run callback function
                 settings.OnAccept.call(this, preferences);
+                $(document).trigger('cookiePreferencesChanged', [preferences]);
                 DisposeModal(settings.id);
             });
 

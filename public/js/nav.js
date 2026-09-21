@@ -7,19 +7,29 @@ $(function () {
         $('body').bsgdprcookies();
     }
 
-    var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
+    var cookies = getCookiePreferences();
+    var analyticsEnabledOnLoad = cookies.includes('analytics');
+    var socialEnabledOnLoad = cookies.includes('social');
 
     my_role = $('#my-user-role').val();
     my_id = $('#my-user-id').val();
 
-    //only save if analytics
-    var resolution = "";
-    if (cookies !== null && cookies.includes("analytics")) {
-        resolution = {resolution: screen.width + "x" + screen.height};
-    }
-    $.ajax({
-        url: '/api/save-stats.php',
-        data: resolution
+    $(document).on('cookiePreferencesChanged', function (event, preferences) {
+        var analyticsEnabled = preferences.includes('analytics');
+        var socialEnabled = preferences.includes('social');
+
+        if (!analyticsEnabled) {
+            clearAnalyticsCookies();
+        }
+        if (!socialEnabled) {
+            clearSocialCookies();
+        }
+
+        // External integrations are rendered or loaded based on the preference
+        // state at page load. Reload only when that state changes.
+        if (analyticsEnabled !== analyticsEnabledOnLoad || socialEnabled !== socialEnabledOnLoad) {
+            location.reload();
+        }
     });
 
     $('#edit-cookies').click(function () {
@@ -74,13 +84,13 @@ $(function () {
 
     // Until a visitor makes a choice, keep login fully functional. Once they
     // explicitly reject preference cookies, do not offer persistent login.
-    if (cookies === null || !cookies.includes("preferences")) {
+    if (!cookies.includes("preferences")) {
         $('#profile-remember-span').hide();
         $('#forgot-password-remember-span').hide();
         $("#profile-remember").prop("checked", false);
         $('#forgot-password-remember').prop("checked", false);
     }
-    if (cookies !== null && !cookies.includes("preferences")) {
+    if (readCookie('CookiePreferences') !== null && !cookies.includes("preferences")) {
         $('#login-remember-span').hide();
         $('#login-remember').prop('checked', false);
     }
@@ -124,8 +134,51 @@ function readCookie(name) {
     return null;
 }
 
-function eraseCookie(name) {
-    createCookie(name, "", -1);
+function getCookiePreferences() {
+    var cookie = readCookie('CookiePreferences');
+    if (cookie === null) {
+        return [];
+    }
+    try {
+        var preferences = JSON.parse(cookie);
+        return Array.isArray(preferences) ? preferences : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function hasCookiePreference(preference) {
+    return getCookiePreferences().includes(preference);
+}
+
+function clearAnalyticsCookies() {
+    clearMatchingCookies(function (name) {
+        return name === '_ga' || name.indexOf('_ga_') === 0 || name === '_gid'
+            || name === '_gat' || name === '_fbp' || name === '_fbc';
+    });
+}
+
+function clearSocialCookies() {
+    clearMatchingCookies(function (name) {
+        return name === '__atuvc' || name === '__atuvs';
+    });
+}
+
+function clearMatchingCookies(matches) {
+    document.cookie.split(';').forEach(function (cookie) {
+        var name = cookie.split('=')[0].trim();
+        if (!matches(name)) {
+            return;
+        }
+        expireCookie(name, '');
+        expireCookie(name, location.hostname);
+        expireCookie(name, '.' + location.hostname);
+    });
+}
+
+function expireCookie(name, domain) {
+    var domainAttribute = domain === '' ? '' : '; domain=' + domain;
+    document.cookie = name + '=; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + domainAttribute;
 }
 
 function submitLogin() {
@@ -241,8 +294,8 @@ function resetPasswordForm() {
     $('#forgot-password-code').show();
     $('#forgot-password-new-password').show();
     $('#forgot-password-new-password-confirm').show();
-    var cookies = jQuery.parseJSON(readCookie('CookiePreferences'));
-    if (cookies !== null && cookies.includes("preferences")) {
+    var cookies = getCookiePreferences();
+    if (cookies.includes("preferences")) {
         $('#forgot-password-remember-span').show();
     }
     $('#forgot-password-reset-password').show();

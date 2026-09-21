@@ -23,14 +23,6 @@ Feature: System Navigation
     When I edit the cookie options
     Then I am prompted to review the privacy policy
 
-  Scenario: Resolution stats sent with cookies
-    Given I have reviewed the cookie policy
-    Then my resolution is logged
-
-  Scenario: Resolution stats not sent without cookies
-    Given I have cookies disabled
-    Then my resolution is not logged
-
   Scenario: Able to search for blog with keyboard
     When I search for "test" blog posts by typing
     Then I see "test" blog posts

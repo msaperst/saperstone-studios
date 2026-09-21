@@ -93,7 +93,9 @@ function loadPost(data, header) {
     details_date.append("<strong>" + data.date + "</strong>");
     details_row.append(details_date);
 
-    details_row.append(addSocialMedias(data));
+    if (socialTrackingAllowed()) {
+        details_row.append(addSocialMedias(data));
+    }
     holder.append(details_row);
 
     // setup our post content
@@ -154,8 +156,10 @@ function loadPost(data, header) {
         var comments_header = (data.comments.length !== 1) ? data.comments.length + " Comments" : data.comments.length + " Comment";
         $('#post-comments h2').html(comments_header);
     }
-    loadSM();
-    addShares(data);
+    if (socialTrackingAllowed()) {
+        loadSM();
+        addShares(data);
+    }
 }
 
 function addSocialMedias(data) {
@@ -255,7 +259,11 @@ function addShares(data) {
     a2a_config.linkurl = link;
     a2a_config.num_services = 10;
 
-    $.getScript("https://static.addtoany.com/menu/page.js");
+    loadExternalScript('addtoany-js', 'https://static.addtoany.com/menu/page.js', function () {
+        if (window.a2a) {
+            window.a2a.init_all();
+        }
+    });
 }
 
 function addComment(comment) {
@@ -290,13 +298,36 @@ function addComment(comment) {
 }
 
 function loadSM() {
-    try {
-        FB.XFBML.parse();
-        twttr.widgets.load();
-        gapi.plusone.go();
-    } catch (err) {
-        setTimeout(loadSM, 100);
+    loadExternalScript('facebook-jssdk', 'https://connect.facebook.net/en_US/all.js#xfbml=1', function () {
+        if (window.FB) {
+            window.FB.XFBML.parse();
+        }
+    });
+}
+
+function socialTrackingAllowed() {
+    return typeof hasCookiePreference === 'function' && hasCookiePreference('social');
+}
+
+function loadExternalScript(id, source, onload) {
+    var existing = document.getElementById(id);
+    if (existing) {
+        if (existing.getAttribute('data-loaded') === 'true') {
+            onload();
+        } else {
+            existing.addEventListener('load', onload, {once: true});
+        }
+        return;
     }
+    var script = document.createElement('script');
+    script.id = id;
+    script.async = true;
+    script.src = source;
+    script.onload = function () {
+        script.setAttribute('data-loaded', 'true');
+        onload();
+    };
+    document.head.appendChild(script);
 }
 
 function deletePost(post) {
@@ -419,24 +450,3 @@ function appendLeadingZeroes(n) {
     }
     return n
 }
-
-// ////////////////////////scripts to load SM/////////////////////////
-(function (d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id))
-        return;
-    js = d.createElement(s);
-    js.id = id;
-    js.src = '//connect.facebook.net/en_US/all.js#xfbml=1';
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
-
-!function (d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (!d.getElementById(id)) {
-        js = d.createElement(s);
-        js.id = id;
-        js.src = '//platform.twitter.com/widgets.js';
-        fjs.parentNode.insertBefore(js, fjs);
-    }
-}(document, 'script', 'twitter-wjs');

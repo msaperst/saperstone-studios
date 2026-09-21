@@ -70,7 +70,7 @@ class TestBase extends TestCase {
         $this->driver->get($this->baseUrl);
         $cookie = [
             'name' => 'CookiePreferences',
-            'value' => '["preferences","analytics"]',
+            'value' => '["preferences","analytics","social"]',
             'domain' => getenv('APP_URL'),
             'path' => '/',
             'secure' => false,

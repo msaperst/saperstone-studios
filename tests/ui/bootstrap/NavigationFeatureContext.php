@@ -59,6 +59,7 @@ class NavigationFeatureContext implements Context {
      */
     public function iHavenTReviewedTheCookiePolicy() {
         $this->driver->manage()->deleteCookieNamed('CookieShow');
+        $this->driver->manage()->deleteCookieNamed('CookiePreferences');
         $this->driver->navigate()->refresh();
     }
 
@@ -233,36 +234,6 @@ class NavigationFeatureContext implements Context {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('bs-gdpr-cookies-modal')));
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('bs-gdpr-cookies-modal'))));
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('bs-gdpr-cookies-modal'))->isDisplayed());
-    }
-
-    /**
-     * @Then /^my resolution is logged$/
-     */
-    public function myResolutionIsLogged() {
-        sleep(1);
-        $this->driver->navigate()->refresh();
-        $sql = new Sql();
-        $userLogs = $sql->getRow("SELECT * FROM `usage` ORDER BY time DESC LIMIT 1;");
-        $sql->disconnect();
-        Assert::assertEquals('Chrome', $userLogs['browser']);
-        Assert::assertEquals('Linux', $userLogs['os']);
-        Assert::assertNotNull($userLogs['width']);
-        Assert::assertNotNull(0, $userLogs['height']);
-    }
-
-    /**
-     * @Then /^my resolution is not logged$/
-     */
-    public function myResolutionIsNotLogged() {
-        sleep(1);
-        $this->driver->navigate()->refresh();
-        $sql = new Sql();
-        $userLogs = $sql->getRow("SELECT * FROM `usage` ORDER BY time DESC LIMIT 1;");
-        $sql->disconnect();
-        Assert::assertEquals('Chrome', $userLogs['browser']);
-        Assert::assertEquals('Linux', $userLogs['os']);
-        Assert::assertNull($userLogs['width']);
-        Assert::assertNull($userLogs['height']);
     }
 
     /**
