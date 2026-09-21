@@ -10,7 +10,7 @@ $subtitle = "Unauthorized";
 
 $message = "Your request requires user authentication.<br/>\n";
 if (!$user->isLoggedIn()) {
-    $message .= "Please <a href='javascript:void(0);' data-toggle='modal' data-target='#login-modal'>Login</a> to access that page.<br/>\n";
+    $message .= "Please <a href='#' data-toggle='modal' data-target='#login-modal'>Login</a> to access that page.<br/>\n";
 } else {
     $message .= "Despite being logged in, your credentials do not give you access to this section of the site.<br/>\n";
 }

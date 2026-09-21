@@ -28,11 +28,14 @@ $(function () {
         // External integrations are rendered or loaded based on the preference
         // state at page load. Reload only when that state changes.
         if (analyticsEnabled !== analyticsEnabledOnLoad || socialEnabled !== socialEnabledOnLoad) {
-            location.reload();
+            setTimeout(function () {
+                location.reload();
+            }, 0);
         }
     });
 
-    $('#edit-cookies').click(function () {
+    $('#edit-cookies').click(function (event) {
+        event.preventDefault();
         $('body').bsgdprcookies('reinit');
     });
 
@@ -57,11 +60,13 @@ $(function () {
         }
     });
 
-    $('#logout-button').click(function () {
+    $('#logout-button').click(function (event) {
+        event.preventDefault();
         logout();
     });
 
-    $("#login-forgot-password").click(function () {
+    $("#login-forgot-password").click(function (event) {
+        event.preventDefault();
         forgotPassword();
     });
 
@@ -69,7 +74,8 @@ $(function () {
         forgotPasswordSubmit();
     });
 
-    $("#forgot-password-prev-code").click(function () {
+    $("#forgot-password-prev-code").click(function (event) {
+        event.preventDefault();
         $('#forgot-password-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Enter your email address above, with your previous reset code and a new password below</div>");
         resetPasswordForm();
     });

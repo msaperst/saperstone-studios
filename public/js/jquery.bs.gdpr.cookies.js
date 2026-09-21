@@ -40,7 +40,6 @@
             acceptButtonLabel: 'Accept',
             allowAdvancedOptions: true,
             advancedTitle: 'Select which cookies you want to accept',
-            advancedAutoOpenDelay: 1000,
             advancedButtonLabel: 'Customize',
             advancedCookiesToSelect: [
                 {
@@ -99,12 +98,12 @@
 
 
             if (settings.allowAdvancedOptions === true) {
-                modalButtons = '<button id="' + settings.id + '-advanced-btn" type="button" class="btn btn-secondary">' + settings.advancedButtonLabel + '</button><button id="' + settings.id + '-accept-btn" type="button" class="btn btn-primary" data-dismiss="modal">' + settings.acceptButtonLabel + '</button>';
+                modalButtons = '<button id="' + settings.id + '-advanced-btn" type="button" class="btn btn-secondary">' + settings.advancedButtonLabel + '</button><button id="' + settings.id + '-accept-btn" type="button" class="btn btn-primary">' + settings.acceptButtonLabel + '</button>';
 
                 // Generate list of available advanced settings
                 var advancedCookiesToSelectList = '';
 
-                preferences = JSON.parse(cookiePreferences);
+                var preferences = ParsePreferences(cookiePreferences);
                 $.each(settings.advancedCookiesToSelect, function (index, field) {
                     if (field.name !== '' && field.title !== '') {
 
@@ -124,9 +123,9 @@
                     }
                 });
 
-                modalBody = '<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>' + '<div id="' + settings.id + '-advanced-types" style="display:none; margin-top: 10px;"><h5 id="' + settings.id + '-advanced-title">' + settings.advancedTitle + '</h5>' + advancedCookiesToSelectList + '</div>';
+                modalBody = '<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>' + '<div id="' + settings.id + '-advanced-types" style="display:none; margin-top: 10px;"><h5 id="' + settings.id + '-advanced-title">' + settings.advancedTitle + '</h5><ul class="list-unstyled">' + advancedCookiesToSelectList + '</ul></div>';
             } else {
-                modalButtons = '<button id="' + settings.id + '-accept-btn" type="button" class="btn btn-primary" data-dismiss="modal">' + settings.acceptButtonLabel + '</button>';
+                modalButtons = '<button id="' + settings.id + '-accept-btn" type="button" class="btn btn-primary">' + settings.acceptButtonLabel + '</button>';
 
                 modalBody = '<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>';
             }
@@ -138,21 +137,19 @@
             var modal = '<div class="modal fade ' + settings.class + '" id="' + settings.id + '" tabindex="-1" role="dialog" aria-labelledby="' + settings.id + '-title" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="' + settings.id + '-title">' + settings.title + '</h5></div><div id="' + settings.id + '-body" class="modal-body" ' + modalBodyStyle + '>' + modalBody + '</div><div class="modal-footer">' + modalButtons + '</div></div></div></div>';
 
             // Show Modal
+            var showDelay = event === 'reinit' ? 0 : settings.delay;
             setTimeout(function () {
                 $($element).append(modal);
 
                 $('#' + settings.id).modal({keyboard: false, backdrop: settings.backdrop});
 
                 if (event === 'reinit' && settings.allowAdvancedOptions === true) {
-
-                    setTimeout(function () {
-                        $('#' + settings.id + '-advanced-btn').trigger('click');
-                        $.each(preferences, function (index, field) {
-                            $('#' + settings.id + '-option-' + field).prop('checked', true);
-                        });
-                    }, settings.advancedAutoOpenDelay)
+                    $('#' + settings.id + '-advanced-btn').trigger('click');
+                    $.each(preferences, function (index, field) {
+                        $('#' + settings.id + '-option-' + field).prop('checked', true);
+                    });
                 }
-            }, settings.delay);
+            }, showDelay);
 
             // When user clicks accept set cookie and close modal
             $('body').off('click.bsgdprcookies', '#' + settings.id + '-accept-btn')
@@ -247,12 +244,27 @@
      * @param {string} id Modal ID without '#'
      */
     function DisposeModal(id) {
-        id = '#' + id;
-        $(id).modal('hide');
-        $(id).on('hidden.bs.modal', function (e) {
-            $(this).modal('dispose');
-            $(id).remove();
+        var $modal = $('#' + id);
+        if ($modal.length === 0) {
+            return;
+        }
+        $modal.one('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal').remove();
         });
+        $modal.modal('hide');
+    }
+
+    function ParsePreferences(cookiePreferences) {
+        if (!cookiePreferences) {
+            return [];
+        }
+        try {
+            var preferences = JSON.parse(cookiePreferences);
+            return Array.isArray(preferences) ? preferences : [];
+        } catch (error) {
+            // A malformed cookie represents no granted optional consent.
+            return [];
+        }
     }
 
     /**

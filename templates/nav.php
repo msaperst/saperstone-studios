@@ -93,12 +93,12 @@ $navSql->disconnect();
         <?php
         if (!$navUser->isLoggedIn()) {
             ?>
-            <li><a id="login-menu-item" href="javascript:void(0);" data-toggle="modal"
+            <li><a id="login-menu-item" href="#" data-toggle="modal"
                    data-target="#login-modal"><em class="fa fa-sign-in"></em> Login</a></li>
             <?php
         } elseif ($navUser->isAdmin()) {
             ?>
-            <li class="dropdown"><a href="javascript:void(0);"
+            <li class="dropdown"><a href="#"
                                     class="dropdown-toggle"
                                     data-toggle="dropdown"><?php echo $navUser->getUsername(); ?><strong
                             class="caret"></strong></a>
@@ -108,21 +108,21 @@ $navSql->disconnect();
                     <li><a href="/user/products.php">Manage Products</a></li>
                     <li><a href="/user/contracts.php">Manage Contracts</a></li>
                     <li><a href="/user/profile.php">Manage Profile</a></li>
-                    <li><a id='logout-button' href="javascript:void(0);"><em
+                    <li><a id='logout-button' href="#"><em
                                     class="fa fa-sign-out"></em> Logout</a></li>
                 </ul>
             </li>
             <?php
         } else {
             ?>
-            <li class="dropdown"><a href="javascript:void(0);"
+            <li class="dropdown"><a href="#"
                                     class="dropdown-toggle"
                                     data-toggle="dropdown"><?php echo $navUser->getUsername(); ?><strong
                             class="caret"></strong></a>
                 <ul class="dropdown-menu">
                     <li><a href="/user/index.php">View Albums</a></li>
                     <li><a href="/user/profile.php">Manage Profile</a></li>
-                    <li><a id='logout-button' href="javascript:void(0);"><em
+                    <li><a id='logout-button' href="#"><em
                                     class="fa fa-sign-out"></em> Logout</a></li>
                 </ul>
             </li>
@@ -163,7 +163,7 @@ $navSql->disconnect();
                     </span>
                     <div class="login-help">
                         <a href="/register.php">Register</a> - <a
-                                id="login-forgot-password" href="javascript:void(0);">Forgot
+                                id="login-forgot-password" href="#">Forgot
                             Username/Password</a>
                     </div>
                 </div>
@@ -191,7 +191,7 @@ $navSql->disconnect();
                 <div id="forgot-password-instructions">
                     A reset code will be sent to your email address. If you already
                     have one, <a id="forgot-password-prev-code"
-                                 href="javascript:void(0);">click here</a>
+                                 href="#">click here</a>
                 </div>
                 <input class="form-control" id="forgot-password-code" type="text"
                        name="code" placeholder="Reset Code" style="display: none;"/> <input
