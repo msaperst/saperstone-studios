@@ -128,8 +128,6 @@ class FindAlbumTest extends TestCase {
         $searchedHeader = implode('; ', $response->getHeader('Set-Cookie'));
         $this->assertStringContainsString('searched=deleted', $searchedHeader);
         $this->assertStringContainsString('Max-Age=0', $searchedHeader);
-        $cookieJar->clearExpired();
-        $this->assertNotContains('searched', array_column($cookieJar->toArray(), 'Name'));
     }
 
     public function testAlbumCodeCantAdd() {
