@@ -6,7 +6,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 
 class AnalyticsConsentTest extends TestCase {
-    private Client $http;
+    private ApiTestClient $http;
 
     public function setUp(): void {
         $this->http = new ApiTestClient([
