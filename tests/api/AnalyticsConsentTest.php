@@ -3,6 +3,7 @@
 namespace api;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 
 class AnalyticsConsentTest extends TestCase {
@@ -11,7 +12,7 @@ class AnalyticsConsentTest extends TestCase {
     public function setUp(): void {
         $this->http = new Client([
             'base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/',
-            'headers' => ['Host' => 'saperstonestudios.com']
+            'headers' => ['X-Forwarded-Host' => 'saperstonestudios.com']
         ]);
     }
 
@@ -21,19 +22,21 @@ class AnalyticsConsentTest extends TestCase {
 
     public function testAnalyticsIsNotLoadedWhenRejected(): void {
         $this->assertAnalyticsNotLoaded([
-            'headers' => $this->preferenceCookieHeader(['preferences'])
+            'cookies' => $this->preferenceCookies(['preferences'])
         ]);
     }
 
     public function testAnalyticsIsNotLoadedForInvalidPreferences(): void {
         $this->assertAnalyticsNotLoaded([
-            'headers' => ['Cookie' => 'CookiePreferences=invalid']
+            'cookies' => CookieJar::fromArray([
+                'CookiePreferences' => 'invalid'
+            ], getenv('DB_HOST'))
         ]);
     }
 
     public function testAnalyticsIsLoadedAfterConsent(): void {
         $response = $this->http->request('GET', '/', [
-            'headers' => $this->preferenceCookieHeader(['analytics'])
+            'cookies' => $this->preferenceCookies(['analytics'])
         ]);
         $body = (string)$response->getBody();
 
@@ -52,9 +55,9 @@ class AnalyticsConsentTest extends TestCase {
         $this->assertStringNotContainsString('facebook.com/tr?id=', $body);
     }
 
-    private function preferenceCookieHeader(array $preferences): array {
-        return [
-            'Cookie' => 'CookiePreferences=' . rawurlencode(json_encode($preferences))
-        ];
+    private function preferenceCookies(array $preferences): CookieJar {
+        return CookieJar::fromArray([
+            'CookiePreferences' => json_encode($preferences)
+        ], getenv('DB_HOST'));
     }
 }

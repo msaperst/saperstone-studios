@@ -49,15 +49,9 @@ $(function () {
         }
     });
 
-    $('#login-submit').click(function (event) {
+    $('#login-form').submit(function (event) {
         event.preventDefault();
         submitLogin();
-    });
-
-    $('.modal-body').keypress(function (e) {
-        if (e.which === 13) {
-            $("#login-submit").trigger("click");
-        }
     });
 
     $('#logout-button').click(function (event) {
