@@ -1,0 +1,17 @@
+# Grype currently compares standard Oracle Linux 9 packages with alternate
+# FIPS-stream errata packages (epoch 10) and reports the latter as upgrades.
+# These exceptions are intentionally limited to the affected advisory/package
+# pairs. Remove them when Grype correctly separates the package streams.
+ignore:
+  - vulnerability: ELSA-2026-50075
+    package:
+      name: openssl
+      type: rpm
+  - vulnerability: ELSA-2026-50075
+    package:
+      name: openssl-libs
+      type: rpm
+  - vulnerability: ELSA-2026-50346
+    package:
+      name: gnutls
+      type: rpm

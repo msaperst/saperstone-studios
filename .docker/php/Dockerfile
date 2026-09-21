@@ -1,14 +1,24 @@
+FROM composer:2 AS composer
+
 FROM php:8.4-apache-bookworm
 
 # setup additional tooling
-RUN apt update
-RUN apt install -y default-mysql-client imagemagick libpng-dev libzip-dev wget zip unzip libonig-dev gnupg
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+        default-mysql-client \
+        gnupg \
+        imagemagick \
+        libonig-dev \
+        libpng-dev \
+        libzip-dev \
+        unzip \
+        wget \
+        zip && \
+    rm -rf /var/lib/apt/lists/*
 
-# install composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-#    php -r "if (hash_file('sha384', 'composer-setup.php') === 'e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
-    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
-    php -r "unlink('composer-setup.php');"
+# Copy Composer from its official image instead of executing a downloaded installer.
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 COPY .docker/php/composer.json /var/www/
 
 # configure apache
@@ -31,13 +41,14 @@ COPY templates /var/www/templates
 # TODO
 
 # install plugins
-RUN cd /var/www && composer install
+RUN cd /var/www && \
+    composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
 ## install jSignature plugin
 RUN cd /var/www/public/js && \
         mkdir jSignature && \
         cd jSignature && \
-        wget --quiet http://willowsystems.github.io/jSignature/jSignature.zip && \
+        wget --quiet https://willowsystems.github.io/jSignature/jSignature.zip && \
         unzip -qq jSignature.zip && \
         rm jSignature.zip
 
