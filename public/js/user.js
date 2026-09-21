@@ -9,7 +9,11 @@ $(document).ready(function () {
             "orderable": false,
             "searchable": false,
             "data": function (row) {
-                return '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.usr + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-user-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.usr + ' Activities"><i class="fa fa-bars"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As ' + row.usr + '"><i class="fa fa-user-secret"></i></button>';
+                var actions = '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.usr + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-user-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.usr + ' Activities"><i class="fa fa-bars"></i></button>';
+                if (Number(row.id) !== 0) {
+                    actions += ' <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As ' + row.usr + '"><i class="fa fa-user-secret"></i></button>';
+                }
+                return actions;
             },
             "targets": 0
         }, {
