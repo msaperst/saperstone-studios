@@ -14,6 +14,17 @@ $sql = new Sql();
 $r = $sql->getRow("SELECT * FROM albums WHERE code = ?", [$code]);
 if (isset($r ['id'])) {
     $_SESSION ["searched"] [$r ['id']] = md5("album" . $code);
+    if (isset($_COOKIE['CookiePreferences'])) {
+        $preferences = json_decode($_COOKIE['CookiePreferences'], true);
+        if (is_array($preferences) && in_array('preferences', $preferences, true)) {
+            $searched = isset($_COOKIE['searched']) ? json_decode($_COOKIE['searched'], true) : [];
+            if (!is_array($searched)) {
+                $searched = [];
+            }
+            $searched[$r['id']] = md5("album" . $code);
+            CookieManager::set('searched', json_encode($searched), time() + 30 * 24 * 60 * 60);
+        }
+    }
     echo $r ['id'];
 } else {
     echo "That code does not match any albums";

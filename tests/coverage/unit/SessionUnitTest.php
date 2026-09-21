@@ -227,25 +227,4 @@ class SessionUnitTest extends TestCase {
         unset($_COOKIE['CookiePreferences']);
     }
 
-    public function testLegacyAlbumAuthorizationMigratesToSession(): void {
-        $authorization = md5('album123');
-        $_COOKIE['searched'] = json_encode([899 => $authorization]);
-
-        $this->session->initialize();
-
-        $this->assertSame($authorization, $_SESSION['searched'][899]);
-        $this->assertArrayNotHasKey('searched', $_COOKIE);
-        unset($_SESSION['searched']);
-    }
-
-    public function testInvalidLegacyAlbumAuthorizationIsDiscarded(): void {
-        $_COOKIE['searched'] = 'invalid';
-
-        $this->session->initialize();
-
-        $this->assertArrayNotHasKey('searched', $_COOKIE);
-        $this->assertArrayNotHasKey('searched', $_SESSION);
-    }
-
-
 }

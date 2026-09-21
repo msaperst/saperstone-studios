@@ -131,7 +131,7 @@ class Album {
         if ($this->code == NULL) {
             // if no code, can't be searched for
             return false;
-        } elseif ($this->doesSessionHaveAlbumCode()) {
+        } elseif ($this->doesSessionHaveAlbumCode() || $this->doesCookieHaveAlbumCode()) {
             return true;
         } else {
             return false;
@@ -141,6 +141,17 @@ class Album {
     private function doesSessionHaveAlbumCode(): bool {
         // if the search is stored in your session, we're good
         return isset($_SESSION ['searched'][$this->id]) && $_SESSION ['searched'] [$this->id] == md5("album" . $this->code);
+    }
+
+    private function doesCookieHaveAlbumCode(): bool {
+        if (!isset($_COOKIE['searched']) || !is_string($_COOKIE['searched'])) {
+            return false;
+        }
+        $searched = json_decode($_COOKIE['searched'], true);
+        return is_array($searched)
+            && isset($searched[$this->id])
+            && is_string($searched[$this->id])
+            && hash_equals(md5("album" . $this->code), $searched[$this->id]);
     }
 
     /**

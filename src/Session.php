@@ -20,14 +20,8 @@ class Session {
             }
         }
 
-        // Migrate existing album access into this browser session once, then
-        // remove the former persistent authorization cookie.
-        if (isset($_COOKIE['searched'])) {
-            $searchedAlbums = json_decode($_COOKIE['searched'], true);
-            if (session_status() === PHP_SESSION_ACTIVE && is_array($searchedAlbums)) {
-                $_SESSION['searched'] = array_merge($_SESSION['searched'] ?? [], $searchedAlbums);
-            }
-            CookieManager::delete('searched', false);
+        if (isset($_COOKIE['searched']) && !self::allowsPreferenceCookies()) {
+            CookieManager::delete('searched');
         }
     }
 

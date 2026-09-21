@@ -87,6 +87,44 @@ class FindAlbumTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(999, (string)$response->getBody());
+        $this->assertContains('searched', array_column($cookieJar->toArray(), 'Name'));
+    }
+
+    public function testAlbumCodePersistsWithPreferenceConsent() {
+        $cookieJar = CookieJar::fromArray([
+            'CookiePreferences' => '["preferences"]'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('GET', 'api/find-album.php', [
+            'query' => [
+                'code' => 'search-for-me',
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(999, (string)$response->getBody());
+        $this->assertContains('searched', array_column($cookieJar->toArray(), 'Name'));
+        $searchedHeader = implode('; ', $response->getHeader('Set-Cookie'));
+        $this->assertStringContainsString('searched=', $searchedHeader);
+        $this->assertStringContainsString('path=/', strtolower($searchedHeader));
+        $this->assertStringContainsString('HttpOnly', $searchedHeader);
+        $this->assertStringContainsString('SameSite=Lax', $searchedHeader);
+    }
+
+    public function testAlbumCodeClearsPersistentAccessWhenPreferencesRejected() {
+        $cookieJar = CookieJar::fromArray([
+            'CookiePreferences' => '[]',
+            'searched' => json_encode([
+                999 => md5('albumsearch-for-me')
+            ])
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('GET', 'api/find-album.php', [
+            'query' => [
+                'code' => 'search-for-me',
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(999, (string)$response->getBody());
         $this->assertNotContains('searched', array_column($cookieJar->toArray(), 'Name'));
     }
 

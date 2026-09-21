@@ -1126,13 +1126,15 @@ Comment',
     }
 
     /**
-     * @Then /^I do not see a persistent album authorization cookie$/
+     * @Then /^I see a cookie with album (\d+)$/
+     * @param $albumId
      */
-    public function iDoNotSeePersistentAlbumAuthorizationCookie() {
-        $cookies = $this->driver->manage()->getCookies();
-        foreach ($cookies as $cookie) {
-            Assert::assertNotSame('searched', $cookie->getName());
-        }
+    public function iSeeACookieWithMyAlbum($albumId) {
+        $sql = new Sql();
+        $code = $sql->getRow("SELECT * FROM `albums` WHERE `id` = $albumId;")['code'];
+        $sql->disconnect();
+        $cookie = $this->driver->manage()->getCookieNamed('searched');
+        Assert::assertEquals(md5('album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
     }
 
     /**
