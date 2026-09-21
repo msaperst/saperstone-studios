@@ -312,7 +312,7 @@ function socialTrackingAllowed() {
 function loadExternalScript(id, source, onload) {
     var existing = document.getElementById(id);
     if (existing) {
-        if (existing.getAttribute('data-loaded') === 'true') {
+        if (existing.dataset.loaded === 'true') {
             onload();
         } else {
             existing.addEventListener('load', onload, {once: true});
@@ -324,7 +324,7 @@ function loadExternalScript(id, source, onload) {
     script.async = true;
     script.src = source;
     script.onload = function () {
-        script.setAttribute('data-loaded', 'true');
+        script.dataset.loaded = 'true';
         onload();
     };
     document.head.appendChild(script);

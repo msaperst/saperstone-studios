@@ -143,6 +143,9 @@ function getCookiePreferences() {
         var preferences = JSON.parse(cookie);
         return Array.isArray(preferences) ? preferences : [];
     } catch (error) {
+        // Recover from a corrupt preference cookie and fail closed until the
+        // visitor makes a new consent choice.
+        expireCookie('CookiePreferences', '');
         return [];
     }
 }

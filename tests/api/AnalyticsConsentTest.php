@@ -3,7 +3,6 @@
 namespace api;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 
 class AnalyticsConsentTest extends TestCase {
@@ -22,21 +21,19 @@ class AnalyticsConsentTest extends TestCase {
 
     public function testAnalyticsIsNotLoadedWhenRejected(): void {
         $this->assertAnalyticsNotLoaded([
-            'cookies' => $this->preferenceCookies(['preferences'])
+            'headers' => $this->preferenceCookieHeader(['preferences'])
         ]);
     }
 
     public function testAnalyticsIsNotLoadedForInvalidPreferences(): void {
         $this->assertAnalyticsNotLoaded([
-            'cookies' => CookieJar::fromArray([
-                'CookiePreferences' => 'invalid'
-            ], getenv('DB_HOST'))
+            'headers' => ['Cookie' => 'CookiePreferences=invalid']
         ]);
     }
 
     public function testAnalyticsIsLoadedAfterConsent(): void {
         $response = $this->http->request('GET', '/', [
-            'cookies' => $this->preferenceCookies(['analytics'])
+            'headers' => $this->preferenceCookieHeader(['analytics'])
         ]);
         $body = (string)$response->getBody();
 
@@ -55,9 +52,9 @@ class AnalyticsConsentTest extends TestCase {
         $this->assertStringNotContainsString('facebook.com/tr?id=', $body);
     }
 
-    private function preferenceCookies(array $preferences): CookieJar {
-        return CookieJar::fromArray([
-            'CookiePreferences' => json_encode($preferences)
-        ], getenv('DB_HOST'));
+    private function preferenceCookieHeader(array $preferences): array {
+        return [
+            'Cookie' => 'CookiePreferences=' . rawurlencode(json_encode($preferences))
+        ];
     }
 }
