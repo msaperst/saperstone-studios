@@ -14,8 +14,10 @@
     $.fn.bsgdprcookies = function (event) {
 
         var $element = $(this);
-        var cookieShow = ReadCookie('CookieShow');
-        var cookiePreferences = ReadCookie('CookiePreferences');
+        var cookiePreferences = readCookie('CookiePreferences');
+        if (readCookie('CookieShow') !== null) {
+            deleteCookie('CookieShow');
+        }
 
         // Set default settings
         var settings = {
@@ -32,7 +34,7 @@
             messageScrollBar: false,
             messageMaxHeightPercent: 25,
             delay: 1500,
-            expireDays: 10 * 52 * 7,
+            expireDays: 365,
             moreLinkActive: true,
             moreLinkLabel: 'Privacy Policy',
             moreLinkNewTab: true,
@@ -77,7 +79,7 @@
             }
         };
 
-        if (!cookieShow || !cookiePreferences || event == 'reinit') {
+        if (!cookiePreferences || event === 'reinit') {
 
             // Make sure that other instances are gone
             DisposeModal(settings.id);
@@ -155,21 +157,18 @@
             $('body').off('click.bsgdprcookies', '#' + settings.id + '-accept-btn')
                 .on('click.bsgdprcookies', '#' + settings.id + '-accept-btn', function () {
 
-                // Set show cookie
-                CreateCookie('CookieShow', true, settings.expireDays);
-
                 // If 'data-auto' is set to ON, tick all checkboxes because the user has not chosen any option
                 $('input[name="bsgdpr[]"][data-auto="on"]').prop('checked', true);
 
                 // Clear user preferences cookie
-                DeleteCookie('CookiePreferences');
+                deleteCookie('CookiePreferences');
 
                 // Set user preferences cookie
                 var preferences = [];
                 $.each($('input[name="bsgdpr[]"]').serializeArray(), function (i, field) {
                     preferences.push(field.value);
                 });
-                CreateCookie('CookiePreferences', JSON.stringify(preferences), settings.expireDays);
+                createCookie('CookiePreferences', JSON.stringify(preferences), settings.expireDays);
 
                 // Run callback function
                 settings.OnAccept.call(this, preferences);
@@ -202,11 +201,6 @@
                 }
             });
         } else {
-            var cookieValue = true;
-            if (cookieShow == 'false') {
-                cookieValue = false;
-            }
-            CreateCookie('CookieShow', cookieValue, settings.expireDays);
             DisposeModal(settings.id);
         }
     }
@@ -215,7 +209,7 @@
      * Returns user preferences saved in cookie
      */
     $.fn.bsgdprcookies.GetUserPreferences = function () {
-        var preferences = ReadCookie('CookiePreferences');
+        var preferences = readCookie('CookiePreferences');
         return JSON.parse(preferences);
     };
 
@@ -227,9 +221,6 @@
     $.fn.bsgdprcookies.PreferenceExists = function (pref) {
         var preferences = $.fn.bsgdprcookies.GetUserPreferences();
 
-        if (ReadCookie('CookieShow') === false) {
-            return false;
-        }
         if (preferences === false || preferences.indexOf(pref) === -1) {
             return false;
         }
@@ -265,48 +256,6 @@
             // A malformed cookie represents no granted optional consent.
             return [];
         }
-    }
-
-    /**
-     * Sets Cookie
-     *
-     * @param {string} name Name of the cookie which you want to create
-     * @param {boolean} value Value for the created cookie
-     * @param {number} days Expire days
-     */
-    function CreateCookie(name, value, days) {
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            var expires = "; expires=" + date.toGMTString();
-        } else var expires = "";
-        document.cookie = name + "=" + value + expires + "; path=/";
-    }
-
-
-    /**
-     * Gets Cookie called 'name'
-     *
-     * @param {string} name Name of the cookie to read
-     */
-    function ReadCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-    }
-
-    /**
-     * Deletes Cookie called 'name;
-     *
-     * @param {string} name Name of the cookie which you want to delete
-     */
-    function DeleteCookie(name) {
-        CreateCookie(name, "", -1);
     }
 
 }(jQuery));

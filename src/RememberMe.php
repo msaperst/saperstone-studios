@@ -79,18 +79,8 @@ class RememberMe {
     }
 
     public static function clearLegacyCookies(): void {
-        if (!headers_sent()) {
-            $options = [
-                'expires' => time() - 3600,
-                'path' => '/',
-                'secure' => Session::isSecureRequest(),
-                'httponly' => true,
-                'samesite' => 'Lax'
-            ];
-            setcookie('hash', '', $options);
-            setcookie('usr', '', $options);
-        }
-        unset($_COOKIE['hash'], $_COOKIE['usr']);
+        CookieManager::delete('hash');
+        CookieManager::delete('usr');
     }
 
     public static function establishSession(User $user): void {
@@ -116,28 +106,11 @@ class RememberMe {
     }
 
     private static function setCookie(string $value, int $expires): void {
-        if (!headers_sent()) {
-            setcookie(self::COOKIE_NAME, $value, [
-                'expires' => $expires,
-                'path' => '/',
-                'secure' => Session::isSecureRequest(),
-                'httponly' => true,
-                'samesite' => 'Lax'
-            ]);
-        }
+        CookieManager::set(self::COOKIE_NAME, $value, $expires);
     }
 
     private static function clearCookie(): void {
-        if (!headers_sent()) {
-            setcookie(self::COOKIE_NAME, '', [
-                'expires' => time() - 3600,
-                'path' => '/',
-                'secure' => Session::isSecureRequest(),
-                'httponly' => true,
-                'samesite' => 'Lax'
-            ]);
-        }
-        unset($_COOKIE[self::COOKIE_NAME]);
+        CookieManager::delete(self::COOKIE_NAME);
     }
 
     private static function validatedUser(?array $row, string $validator): ?User {

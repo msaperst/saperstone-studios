@@ -321,7 +321,7 @@ class AlbumIntegrationTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function testIsSearchedForNoCookie() {
+    public function testIsSearchedForNoSessionSearch() {
         $album = Album::withId(899);
         $this->assertFalse($album->isSearchedFor());
     }
@@ -329,55 +329,23 @@ class AlbumIntegrationTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function testIsSearchedForNoCookieSearch() {
-        $_COOKIE['search'] = array();
+    public function testIsSearchedForNoSessionMatch() {
+        $_SESSION['searched'] = array();
         $album = Album::withId(899);
         $this->assertFalse($album->isSearchedFor());
-        unset($_COOKIE['search']);
+        unset($_SESSION['searched']);
     }
 
     /**
      * @throws Exception
      */
-    public function testIsSearchedForEmptyCookieSearch() {
-        $_COOKIE['searched'] = 'a';
-        $album = Album::withId(899);
-        $this->assertFalse($album->isSearchedFor());
-        unset($_COOKIE['searched']);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testIsSearchedForEmptyCookieSearchArray() {
-        $_COOKIE['searched'] = json_encode(array());
-        $album = Album::withId(899);
-        $this->assertFalse($album->isSearchedFor());
-        unset($_COOKIE['searched']);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testIsSearchedForNoCookieMatch() {
-        $searched = array();
-        $searched[899] = '5';
-        $_COOKIE['searched'] = json_encode($searched);
-        $album = Album::withId(899);
-        $this->assertFalse($album->isSearchedFor());
-        unset($_COOKIE['searched']);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testIsSearchedForCookieMatch() {
-        $searched = array();
-        $searched[899] = md5("album123");
-        $_COOKIE['searched'] = json_encode($searched);
+    public function testPersistentSearchCookieMigratesToSession() {
+        $_COOKIE['searched'] = json_encode([899 => md5("album123")]);
         $album = Album::withId(899);
         $this->assertTrue($album->isSearchedFor());
-        unset($_COOKIE['searched']);
+        $this->assertArrayNotHasKey('searched', $_COOKIE);
+        $this->assertSame(md5("album123"), $_SESSION['searched'][899]);
+        unset($_SESSION['searched']);
     }
 
     /**

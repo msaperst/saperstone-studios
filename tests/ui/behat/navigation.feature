@@ -67,7 +67,7 @@ Feature: System Navigation
     And album 99999 exists with code "good-code"
     When I search for and save album "good-code"
     Then I am taken to the "user/album.php?album=99999" page
-    And I see a cookie with album 99999
+    And I do not see a persistent album authorization cookie
 
   Scenario: Error message for blank album code
     When I search for album ""

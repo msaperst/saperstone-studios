@@ -67,7 +67,9 @@ class FindAlbumTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(999, (string)$response->getBody());
-        //UNABLE TO CHECK COOKIE
+        $cookieNames = array_column($cookieJar->toArray(), 'Name');
+        $this->assertContains('session', $cookieNames);
+        $this->assertNotContains('searched', $cookieNames);
     }
 
     public function testAlbumCodeAgain() {
@@ -85,7 +87,7 @@ class FindAlbumTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(999, (string)$response->getBody());
-        //UNABLE TO CHECK COOKIE
+        $this->assertNotContains('searched', array_column($cookieJar->toArray(), 'Name'));
     }
 
     public function testAlbumCodeCantAdd() {

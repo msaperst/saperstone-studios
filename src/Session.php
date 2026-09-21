@@ -13,17 +13,21 @@ class Session {
             session_name('session');
             // The Secure value is false only for local HTTP development/CI.
             // Production HTTPS, including forwarded HTTPS, always receives true.
-            session_set_cookie_params([ // NOSONAR reviewed environment-dependent flag
-                'lifetime' => 0,
-                'path' => '/',
-                'secure' => self::isSecureRequest(),
-                'httponly' => true,
-                'samesite' => 'Lax'
-            ]);
+            session_set_cookie_params(CookieManager::sessionOptions());
             // Start our session
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
+        }
+
+        // Migrate existing album access into this browser session once, then
+        // remove the former persistent authorization cookie.
+        if (isset($_COOKIE['searched'])) {
+            $searchedAlbums = json_decode($_COOKIE['searched'], true);
+            if (session_status() === PHP_SESSION_ACTIVE && is_array($searchedAlbums)) {
+                $_SESSION['searched'] = array_merge($_SESSION['searched'] ?? [], $searchedAlbums);
+            }
+            CookieManager::delete('searched', false);
         }
     }
 

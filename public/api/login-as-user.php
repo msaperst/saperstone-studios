@@ -17,12 +17,11 @@ session_unset();
 session_destroy();
 
 session_name('session');
-// Making the cookie live for 1 hour
-session_set_cookie_params(60 * 60);
+session_set_cookie_params(CookieManager::sessionOptions(60 * 60));
 session_start();
+session_regenerate_id(true);
 
 $_SESSION ['usr'] = $user->getUsername();
 $_SESSION ['hash'] = $user->getHash();
-setcookie('hash', '', time() - 3600, '/');
-setcookie('usr', '', time() - 3600, '/');
+RememberMe::clearLegacyCookies();
 exit ();

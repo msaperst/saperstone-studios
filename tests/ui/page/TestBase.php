@@ -78,9 +78,6 @@ class TestBase extends TestCase {
             'expiry' => time() + 3600,
         ];
         $this->driver->manage()->addCookie($cookie);
-        $cookie['name'] = 'CookieShow';
-        $cookie['value'] = 'true';
-        $this->driver->manage()->addCookie($cookie);
     }
 
     protected function adminLogin(): void {

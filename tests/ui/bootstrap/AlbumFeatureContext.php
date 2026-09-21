@@ -10,7 +10,6 @@ use Behat\Testwork\Environment\Environment;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Cookie;
-use Facebook\WebDriver\Exception\NoSuchCookieException;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Exception\UnexpectedTagNameException;
@@ -348,12 +347,8 @@ class AlbumFeatureContext implements Context {
      * @param $albumCode
      */
     public function iHaveSearchedForAlbum($albumCode) {
-        $sql = new Sql();
-        $albumId = $sql->getRow("SELECT * FROM albums WHERE code = '$albumCode'")['id'];
-        $sql->disconnect();
-        $searched [$albumId] = md5('album' . $albumCode);
-        $cookie = new Cookie('searched', json_encode($searched));
-        $this->driver->manage()->addCookie($cookie);
+        $this->driver->get($this->baseUrl . '#album' . rawurlencode($albumCode));
+        $this->wait->until(WebDriverExpectedCondition::urlContains('/user/album.php?album='));
     }
 
     /**
@@ -1131,16 +1126,13 @@ Comment',
     }
 
     /**
-     * @Then /^I see a cookie with album (\d+)$/
-     * @param $albumId
-     * @throws NoSuchCookieException
+     * @Then /^I do not see a persistent album authorization cookie$/
      */
-    public function iSeeACookieWithMyAlbum($albumId) {
-        $sql = new Sql();
-        $code = $sql->getRow("SELECT * FROM `albums` WHERE `id` = $albumId;")['code'];
-        $sql->disconnect();
-        $cookie = $this->driver->manage()->getCookieNamed('searched');
-        Assert::assertEquals(md5('album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
+    public function iDoNotSeePersistentAlbumAuthorizationCookie() {
+        $cookies = $this->driver->manage()->getCookies();
+        foreach ($cookies as $cookie) {
+            Assert::assertNotSame('searched', $cookie->getName());
+        }
     }
 
     /**
