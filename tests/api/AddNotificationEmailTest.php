@@ -12,9 +12,9 @@ require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 
 class AddNotificationEmailTest extends TestCase {
     /**
-     * @var Client
+     * @var ApiTestClient
      */
-    private Client $http;
+    private ApiTestClient $http;
     /**
      * @var Sql
      */
