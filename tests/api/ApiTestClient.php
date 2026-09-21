@@ -2,6 +2,7 @@
 
 namespace api;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
