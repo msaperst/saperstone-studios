@@ -90,7 +90,7 @@ class UploadBlogImagesTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['flower.jpeg'], json_decode($response->getBody(), true));
         //TODO - unable to verify image present
 //        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg'));
