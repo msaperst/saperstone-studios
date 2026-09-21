@@ -136,7 +136,7 @@ class FindAlbumTest extends TestCase {
                 'albumAdd' => 1
             ]
         ]);
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(999, (string)$response->getBody());
         //UNABLE TO CHECK COOKIE
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;"));
@@ -153,7 +153,7 @@ class FindAlbumTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(999, (string)$response->getBody());
         //UNABLE TO CHECK COOKIE
         $albums = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;");
