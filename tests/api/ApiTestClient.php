@@ -13,9 +13,10 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ApiTestClient extends Client {
     public function request(string $method, $uri = '', array $options = []): ResponseInterface {
+        $throwAuthorizationErrors = ($options['http_errors'] ?? true) !== false;
         $options['http_errors'] = false;
         $response = parent::request($method, $uri, $options);
-        if (in_array($response->getStatusCode(), [401, 403], true)) {
+        if ($throwAuthorizationErrors && in_array($response->getStatusCode(), [401, 403], true)) {
             throw new ClientException(
                 "Authorization request failed with status {$response->getStatusCode()}",
                 new Request($method, $uri),
