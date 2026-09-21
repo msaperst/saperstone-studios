@@ -285,7 +285,7 @@ class UpdateContractTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals('', (string)$response->getBody());
+            $this->assertEquals('999', (string)$response->getBody());
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = 999;");
             $this->assertEquals(999, $contractDetails['id']);
             $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractDetails['link']);
@@ -375,7 +375,7 @@ class UpdateContractTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
             $this->assertEquals(200, $response->getStatusCode());
-            $this->assertEquals('', (string)$response->getBody());
+            $this->assertEquals('999', (string)$response->getBody());
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = 999;");
             $this->assertEquals(999, $contractDetails['id']);
             $this->assertEquals('8e07fb32bf072e1825df8290a7bcdc57', $contractDetails['link']);
