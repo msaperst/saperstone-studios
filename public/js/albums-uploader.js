@@ -351,6 +351,7 @@ function editAlbum(id) {
                         disableDialogButtons(dialogItself);
                     },
                     onSuccess: function (files, data, xhr, pd) {
+                        $('#thumbnail-warning').show();
                         setTimeout(function () {
                             pd.statusbar.remove();
                         }, 5000);
@@ -359,7 +360,6 @@ function editAlbum(id) {
                         setTimeout(function () {
                             $('.ajax-file-upload-container').hide();
                         }, 5000);
-                        $('#thumbnail-warning').show();
                         if ($('#albums').length) {
                             album_table.ajax.reload(null, false);
                         }
