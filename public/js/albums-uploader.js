@@ -1,7 +1,7 @@
 var album_table;
 
 function thumbnailStatus(row) {
-    if (parseInt(row.images, 10) === 0) {
+    if (Number.parseInt(row.images, 10) === 0) {
         return '<span class="label label-default">N/A</span>';
     }
     if (String(row.thumbsCreated) === '1') {
