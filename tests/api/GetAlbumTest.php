@@ -130,6 +130,8 @@ class GetAlbumTest extends TestCase {
         $this->assertEquals('sample album for testing', $albumInfo['description']);
         $this->assertEquals(date("Y-m-d"), $albumInfo['date']);
         $this->assertEquals('', $albumInfo['code']);
+        $this->assertEquals(0, $albumInfo['imageCount']);
+        $this->assertFalse($albumInfo['needsThumbnails']);
     }
 
     public function testUploaderCanGetOwnAlbum() {
@@ -147,6 +149,8 @@ class GetAlbumTest extends TestCase {
         $this->assertEquals('sample-album', $albumInfo['name']);
         $this->assertEquals('sample album for testing', $albumInfo['description']);
         $this->assertEquals(date("Y-m-d"), $albumInfo['date']);
+        $this->assertEquals(0, $albumInfo['imageCount']);
+        $this->assertFalse($albumInfo['needsThumbnails']);
     }
 }
 
