@@ -250,35 +250,7 @@ function editAlbum(id) {
                     var $button = this;
                     $button.spin();
                     disableDialogButtons(dialogItself);
-                    // send our update
-                    $("#resize-progress").show();
-                    $.post("/api/make-thumbs.php", {
-                        id: id,
-                        markup: "watermark"
-                    }).done(function () {
-                        var myVar = setInterval(function () {
-                            $.get("/tmp/status.txt", function (data) {
-                                $('#resize-progress .progress-bar').html(data);
-                                if (data.indexOf("Done") === 0) {
-                                    clearInterval(myVar);
-                                    $('#resize-progress .progress-bar').removeClass('active');
-                                    setTimeout(function () {
-                                        $('#resize-progress').hide();
-                                    }, 5000);
-                                    $button.stopSpin();
-                                    enableDialogButtons(dialogItself);
-                                    $('#thumbnail-warning').hide();
-                                    if ($('#albums').length) {
-                                        album_table.ajax.reload(null, false);
-                                    }
-                                }
-                                if (data.indexOf("Error") === 0) {
-                                    clearInterval(myVar);
-                                    $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
-                                }
-                            });
-                        }, 100);
-                    });
+                    chooseThumbnailScope(id, data.needsThumbnails, $button, dialogItself);
                 }
             }, {
                 icon: 'glyphicon glyphicon-save',
@@ -392,6 +364,125 @@ function addUser(id) {
         $('#album-users').append(albumSpan);
     }, "json");
 
+}
+
+function chooseThumbnailScope(id, needsThumbnails, button, dialog) {
+    var buttons = [];
+
+    if (needsThumbnails) {
+        buttons.push({
+            icon: 'glyphicon glyphicon-plus',
+            label: ' Missing Only',
+            cssClass: 'btn-warning',
+            action: function (scopeDialog) {
+                scopeDialog.close();
+                chooseThumbnailMarkup(id, button, dialog, "missing");
+            }
+        });
+    }
+
+    buttons.push({
+        icon: 'glyphicon glyphicon-refresh',
+        label: ' Recreate All',
+        cssClass: 'btn-danger',
+        action: function (scopeDialog) {
+            scopeDialog.close();
+            chooseThumbnailMarkup(id, button, dialog, "all");
+        }
+    });
+
+    buttons.push({
+        label: 'Close',
+        action: function (scopeDialog) {
+            button.stopSpin();
+            enableDialogButtons(dialog);
+            scopeDialog.close();
+        }
+    });
+
+    BootstrapDialog.show({
+        draggable: true,
+        title: 'Create Thumbnails',
+        message: needsThumbnails
+            ? 'Some thumbnails are missing. Create only the missing thumbnails, or recreate every thumbnail from the original images.'
+            : 'All thumbnails already exist. Recreate all thumbnails if you want to change the proof or watermark treatment.',
+        buttons: buttons
+    });
+}
+
+function chooseThumbnailMarkup(id, button, dialog, mode) {
+    BootstrapDialog.show({
+        draggable: true,
+        title: 'Thumbnail Treatment',
+        message: 'What do you want to put on the thumbnails?',
+        buttons: [{
+            icon: 'glyphicon glyphicon-eye-close',
+            label: ' Proof',
+            cssClass: 'btn-warning',
+            action: function (markupDialog) {
+                markupDialog.close();
+                makeThumbs(id, button, dialog, "proof", mode);
+            }
+        }, {
+            icon: 'glyphicon glyphicon-eye-open',
+            label: ' Watermark',
+            cssClass: 'btn-info',
+            action: function (markupDialog) {
+                markupDialog.close();
+                makeThumbs(id, button, dialog, "watermark", mode);
+            }
+        }, {
+            icon: 'glyphicon glyphicon-globe',
+            label: ' Nothing',
+            cssClass: 'btn-danger',
+            action: function (markupDialog) {
+                markupDialog.close();
+                makeThumbs(id, button, dialog, "none", mode);
+            }
+        }, {
+            label: 'Close',
+            action: function (markupDialog) {
+                button.stopSpin();
+                enableDialogButtons(dialog);
+                markupDialog.close();
+            }
+        }]
+    });
+}
+
+function makeThumbs(id, button, dialog, markup, mode) {
+    $("#resize-progress").show();
+    $.post("/api/make-thumbs.php", {
+        id: id,
+        markup: markup,
+        mode: mode
+    }).done(function () {
+        var myVar = setInterval(function () {
+            $.get("/tmp/status.txt", function (data) {
+                $('#resize-progress .progress-bar').html(data);
+                if (data.indexOf("Done") === 0) {
+                    clearInterval(myVar);
+                    $('#resize-progress .progress-bar').removeClass('active');
+                    setTimeout(function () {
+                        $('#resize-progress').hide();
+                    }, 5000);
+                    button.stopSpin();
+                    enableDialogButtons(dialog);
+                    $('#thumbnail-warning').hide();
+                    if (typeof refreshAlbumThumbnailImages === "function") {
+                        refreshAlbumThumbnailImages();
+                    }
+                    if ($('#albums').length) {
+                        album_table.ajax.reload(null, false);
+                    }
+                }
+                if (data.indexOf("Error") === 0) {
+                    clearInterval(myVar);
+                    $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
+                }
+            });
+        }, 100);
+    });
 }
 
 function disableDialogButtons(dialog) {
