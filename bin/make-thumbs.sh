@@ -75,6 +75,16 @@ for file in "$location"/*.*; do
     fi
 done
 
+while IFS= read -r image_location; do
+    filename=$(basename "$image_location");
+    if [ ! -f "$location/$filename" ] || [ ! -f "$location/full/$filename" ]; then
+        echo "Error: Thumbnail generation incomplete" > "$output";
+        sleep 1;
+        rm "$output";
+        exit 1;
+    fi
+done < <(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "SELECT location FROM album_images WHERE album = $id;")
+
 if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "UPDATE \`$DB_NAME\`.\`albums\` SET thumbsCreated=TRUE WHERE id='$id';" > /dev/null 2>&1; then
     echo "Error: Unable to update thumbnail status" > "$output";
     sleep 1;
