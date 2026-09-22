@@ -74,7 +74,7 @@ $navUser = User::fromSystem();
 
 <!-- GDPR Cookie Handling -->
 <script src="/js/cookies.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/cookies.js'); ?>"></script>
-<script src="/js/jquery.bs.gdpr.cookies.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.bs.gdpr.cookies.js'); ?>"></script>
+<script src="/js/jquery.bs.preferences.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.bs.preferences.js'); ?>"></script>
 
 <!-- Custom Core JavaScript -->
 <script src="/js/nav.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/nav.js'); ?>"></script>
