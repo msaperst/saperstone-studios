@@ -1,5 +1,15 @@
 var album_table;
 
+function thumbnailStatus(row) {
+    if (parseInt(row.images, 10) === 0) {
+        return '<span class="label label-default">N/A</span>';
+    }
+    if (String(row.thumbsCreated) === '1') {
+        return '<span class="label label-success">Ready</span>';
+    }
+    return '<span class="label label-warning">Missing</span>';
+}
+
 $(document).ready(function () {
     if ($('#albums').length) {
         album_table = $('#albums').DataTable({
@@ -34,6 +44,10 @@ $(document).ready(function () {
                 "data": "images",
                 "className": "album-images",
                 "targets": 4
+            }, {
+                "data": thumbnailStatus,
+                "className": "album-thumbnails",
+                "targets": 5
             }],
             "fnCreatedRow": function (nRow, aData) {
                 $(nRow).attr('album-id', aData.id);
@@ -42,6 +56,10 @@ $(document).ready(function () {
     }
     $('#albums').on('draw.dt search.dt', function () {
         setupEdit();
+    });
+
+    $('#thumbnail-status-filter').change(function () {
+        album_table.column(5).search($(this).val()).draw();
     });
 
     $('#edit-album-btn').click(function () {
@@ -80,6 +98,7 @@ $(document).ready(function () {
                                 "description": $('#new-album-description').val(),
                                 "date": $('#new-album-date').val(),
                                 "images": "0",
+                                "thumbsCreated": "0",
                                 "lastAccessed": "0000-00-00 00:00:00",
                                 "location": "",
                                 "code": ""
@@ -247,6 +266,10 @@ function editAlbum(id) {
                                     }, 5000);
                                     $button.stopSpin();
                                     enableDialogButtons(dialogItself);
+                                    $('#thumbnail-warning').hide();
+                                    if ($('#albums').length) {
+                                        album_table.ajax.reload(null, false);
+                                    }
                                 }
                                 if (data.indexOf("Error") === 0) {
                                     clearInterval(myVar);
@@ -336,6 +359,10 @@ function editAlbum(id) {
                         setTimeout(function () {
                             $('.ajax-file-upload-container').hide();
                         }, 5000);
+                        $('#thumbnail-warning').show();
+                        if ($('#albums').length) {
+                            album_table.ajax.reload(null, false);
+                        }
                         dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-asterisk icon-spin').addClass('glyphicon-upload');
                         enableDialogButtons(dialogItself);
                     },
