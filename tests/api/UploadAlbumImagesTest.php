@@ -16,8 +16,8 @@ class UploadAlbumImagesTest extends TestCase {
     public function setUp(): void {
         $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `thumbsCreated`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5, TRUE);");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`, `thumbsCreated`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123', TRUE);");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (1, '998');");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (1, '999');");
         $oldmask = umask(0);
@@ -174,6 +174,7 @@ class UploadAlbumImagesTest extends TestCase {
         $this->assertEquals(0, sizeof($logs));
         $album = $this->sql->getRow("SELECT * FROM albums WHERE id = 998");
         $this->assertEquals(1, $album['images']);
+        $this->assertEquals(0, $album['thumbsCreated']);
         $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower.jpeg'));
     }
 
