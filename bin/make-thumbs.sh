@@ -39,7 +39,7 @@ if [[ ! -d "$location/full" ]]; then
     chmod 777 "$location/full"
 fi
 
-if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "UPDATE `$DB_NAME`.`albums` SET thumbsCreated=FALSE WHERE id='$id';" > /dev/null 2>&1; then
+if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE albums SET thumbsCreated=FALSE WHERE id='$id';" > /dev/null 2>&1; then
     echo "Error: Unable to update thumbnail status" > "$output"
     sleep 1
     rm "$output"
@@ -86,7 +86,7 @@ while IFS= read -r image_location; do
         file_size=$(echo "$file_info" | cut -d ' ' -f 3)
         width=$(echo "$file_size" | cut -d 'x' -f 1)
         height=$(echo "$file_size" | cut -d 'x' -f 2)
-        mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "UPDATE `$DB_NAME`.`album_images` SET width='$width', height='$height' WHERE album='$id' AND location='$image_location';"
+        mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE album_images SET width='$width', height='$height' WHERE album='$id' AND location='$image_location';"
 
         if [[ "$markup" == "proof" ]]; then
             composite -dissolve 30 -tile ../img/proof.png "$file" "$file"
@@ -110,7 +110,7 @@ while IFS= read -r image_location; do
     fi
 done < <(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "SELECT location FROM album_images WHERE album = $id;")
 
-if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "UPDATE `$DB_NAME`.`albums` SET thumbsCreated=TRUE WHERE id='$id';" > /dev/null 2>&1; then
+if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE albums SET thumbsCreated=TRUE WHERE id='$id';" > /dev/null 2>&1; then
     echo "Error: Unable to update thumbnail status" > "$output"
     sleep 1
     rm "$output"
