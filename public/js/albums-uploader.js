@@ -468,6 +468,10 @@ function chooseThumbnailMarkup(id, button, dialog, mode) {
 }
 
 function makeThumbs(id, button, dialog, markup, mode) {
+    $('#resize-progress .progress-bar')
+        .removeClass('progress-bar-danger')
+        .addClass('active')
+        .html('Starting thumbnail generation...');
     $("#resize-progress").show();
     $.post("/api/make-thumbs.php", {
         id: id,
@@ -496,9 +500,21 @@ function makeThumbs(id, button, dialog, markup, mode) {
                 if (data.indexOf("Error") === 0) {
                     clearInterval(myVar);
                     $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
+                    button.stopSpin();
+                    enableDialogButtons(dialog);
                 }
+            }).fail(function () {
+                // The status file is transient. Keep polling unless the API request itself failed.
             });
         }, 100);
+    }).fail(function (xhr) {
+        var message = xhr.responseText || 'Unable to start thumbnail generation';
+        $('#resize-progress .progress-bar')
+            .html('Error: ' + message)
+            .removeClass('active')
+            .addClass('progress-bar-danger');
+        button.stopSpin();
+        enableDialogButtons(dialog);
     });
 }
 
