@@ -224,7 +224,7 @@ function editAlbum(id) {
                     var $button = this;
                     $button.spin();
                     disableDialogButtons(dialogItself);
-                    chooseThumbnailScope(id, data.needsThumbnails, $button, dialogItself);
+                    chooseThumbnailScope(id, data.imageCount, data.needsThumbnails, $button, dialogItself);
                 }
             }, {
                 icon: 'glyphicon glyphicon-save',
@@ -384,8 +384,25 @@ function addUser(id) {
 
 }
 
-function chooseThumbnailScope(id, needsThumbnails, button, dialog) {
+function chooseThumbnailScope(id, imageCount, needsThumbnails, button, dialog) {
     var buttons = [];
+
+    if (imageCount === 0) {
+        BootstrapDialog.show({
+            draggable: true,
+            title: 'Create Thumbnails',
+            message: 'This album does not have any images to process.',
+            buttons: [{
+                label: 'Close',
+                action: function (scopeDialog) {
+                    button.stopSpin();
+                    enableDialogButtons(dialog);
+                    scopeDialog.close();
+                }
+            }]
+        });
+        return;
+    }
 
     if (needsThumbnails) {
         buttons.push({
