@@ -30,6 +30,8 @@ if [ ! -d "$location/full" ]; then
     chmod 777 "$location/full";
 fi
 
+mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "UPDATE \`$DB_NAME\`.\`albums\` SET thumbsCreated=FALSE WHERE id='$id';" > /dev/null 2>&1;
+
 for file in "$location"/*.*; do
     if [ -f "$file" ]; then    #if it is a file
         filename=$(basename "$file")
@@ -67,6 +69,13 @@ for file in "$location"/*.*; do
         fi
     fi
 done
+
+if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "UPDATE \`$DB_NAME\`.\`albums\` SET thumbsCreated=TRUE WHERE id='$id';" > /dev/null 2>&1; then
+    echo "Error: Unable to update thumbnail status" > "$output";
+    sleep 1;
+    rm "$output";
+    exit 1;
+fi
 
 echo "Done" > "$output";
 sleep 1;
