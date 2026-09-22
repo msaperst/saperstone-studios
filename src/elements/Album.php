@@ -15,6 +15,7 @@ class Album {
     private $code;
     private $owner;
     private $images = array();
+    private $thumbsCreated;
     private $users = array();
 
     /**
@@ -94,6 +95,14 @@ class Album {
 
     public function getCode() {
         return $this->code;
+    }
+
+    public function hasThumbnails(): bool {
+        return (bool)$this->thumbsCreated;
+    }
+
+    public function needsThumbnails(): bool {
+        return (int)$this->images > 0 && !$this->hasThumbnails();
     }
 
     /**
@@ -224,6 +233,7 @@ class Album {
         $album->owner = $album->raw['owner'];
         //consider changing this to an array of matching images
         $album->images = $album->raw['images'];
+        $album->thumbsCreated = $album->raw['thumbsCreated'];
         $album->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = ?", [$album->id]), 'user');
         $sql->disconnect();
         return $album;
