@@ -240,6 +240,11 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(0, $albumInfo['images']);
     }
 
+    public function testDatabaseRejectsDuplicateAlbumCode() {
+        $this->expectException(\mysqli_sql_exception::class);
+        $this->sql->executeStatement("UPDATE albums SET code = '123' WHERE id = 998");
+    }
+
     public function testUpdateAdminRejectsDuplicateCodeDifferentCase() {
         $this->sql->executeStatement("UPDATE albums SET code = 'ExistingCode' WHERE id = 999");
 
