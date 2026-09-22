@@ -15,7 +15,7 @@ while IFS=$'\t' read -r id location; do
 
         while IFS= read -r image_location; do
             has_images=true
-            filename=$(basename "$image_location")
+            filename=${image_location##*/}
             if [[ ! -f "$ALBUM_ROOT/$location/$filename" || ! -f "$ALBUM_ROOT/$location/full/$filename" ]]; then
                 status=0
                 break
