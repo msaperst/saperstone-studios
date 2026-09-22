@@ -76,7 +76,7 @@ for file in "$location"/*.*; do
 done
 
 while IFS= read -r image_location; do
-    filename=$(basename "$image_location");
+    filename=${image_location##*/};
     if [[ ! -f "$location/$filename" || ! -f "$location/full/$filename" ]]; then
         echo "Error: Thumbnail generation incomplete" > "$output";
         sleep 1;
