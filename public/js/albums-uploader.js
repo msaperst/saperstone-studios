@@ -111,9 +111,6 @@ $(document).ready(function () {
                         } else {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                         }
-                        $button.stopSpin();
-                        dialogItself.enableButtons(true);
-                        dialogItself.setClosable(true);
                     }).fail(function (xhr, status, error) {
                         if (xhr.responseText !== "") {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
@@ -122,6 +119,10 @@ $(document).ready(function () {
                         } else {
                             modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                         }
+                    }).always(function () {
+                        $button.stopSpin();
+                        dialogItself.enableButtons(true);
+                        dialogItself.setClosable(true);
                     });
                 }
             }, {
