@@ -28,6 +28,11 @@ done
 
 echo "Finished Setting up DB"
 
+echo "Checking album code uniqueness"
+if ! bash "${DIR}/ensure-album-code-uniqueness.sh"; then
+    exit 1
+fi
+
 echo "Checking thumbnail status"
 bash "${DIR}/update-thumbnail-status.sh"
 
