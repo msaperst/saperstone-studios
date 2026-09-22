@@ -28,6 +28,9 @@ done
 
 echo "Finished Setting up DB"
 
+echo "Checking thumbnail status"
+bash "${DIR}/update-thumbnail-status.sh"
+
 if [ "$DRYRUN" = true ]; then
     exit 0;
 fi
