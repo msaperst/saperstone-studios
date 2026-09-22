@@ -126,6 +126,33 @@ class GetAlbumImagesTest extends TestCase {
         $this->assertEquals(1, $albumImages[0]['downloadable']);
     }
 
+    public function testThumbnailLocationIncludesCacheVersion() {
+        $albumPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample';
+        mkdir($albumPath, 0777, true);
+        touch($albumPath . DIRECTORY_SEPARATOR . 'cache.jpeg');
+        touch($albumPath);
+        $this->sql->executeStatement("UPDATE album_images SET location = '/albums/sample/cache.jpeg' WHERE id = 996");
+
+        try {
+            $cookieJar = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $response = $this->http->request('GET', 'api/get-album-images.php', [
+                'query' => [
+                    'albumId' => 998,
+                    'start' => 0,
+                    'howMany' => 1,
+                ],
+                'cookies' => $cookieJar
+            ]);
+
+            $albumImages = json_decode($response->getBody(), true)['images'];
+            $this->assertMatchesRegularExpression('#^/albums/sample/cache\.jpeg\?v=\d+$#', $albumImages[0]['location']);
+        } finally {
+            system("rm -rf " . escapeshellarg($albumPath));
+        }
+    }
+
     public function testViewAll() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
