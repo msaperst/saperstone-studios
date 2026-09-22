@@ -32,6 +32,13 @@ if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
     exit ();
 }
 
+$mode = $_POST['mode'] ?? 'missing';
+if ($mode != "missing" && $mode != "all") {
+    http_response_code(400);
+    echo "Thumbnail mode is not valid";
+    exit ();
+}
+
 if (!$systemUser->isAdmin()) {
     // update our user records table
     $sql = new Sql ();
@@ -43,7 +50,8 @@ $scriptPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh";
 $albumId = (int)$album->getId();
 $escapedMarkup = escapeshellarg($markup);
 $escapedLocation = escapeshellarg($album->getLocation());
+$escapedMode = escapeshellarg($mode);
 
-system("$scriptPath $albumId $escapedMarkup $escapedLocation > /dev/null 2>&1 &");
+system("$scriptPath $albumId $escapedMarkup $escapedLocation $escapedMode > /dev/null 2>&1 &");
 
 exit ();
