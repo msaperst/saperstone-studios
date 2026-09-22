@@ -13,7 +13,7 @@ while IFS=$'\t' read -r id location image_count; do
         status=1;
         while IFS= read -r image_location; do
             filename=$(basename "$image_location");
-            if [ ! -f "$ALBUM_ROOT/$location/full/$filename" ]; then
+            if [ ! -f "$ALBUM_ROOT/$location/$filename" ] || [ ! -f "$ALBUM_ROOT/$location/full/$filename" ]; then
                 status=0;
                 break;
             fi
