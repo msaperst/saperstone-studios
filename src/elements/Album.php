@@ -110,7 +110,7 @@ class Album {
      * name, description, date, code
      */
     function getDataBasic(): array {
-        return array_diff_key($this->raw, ['id' => '', 'lastAccessed' => '', 'location' => '', 'owner' => '', 'images' => '']);
+        return array_diff_key($this->raw, ['id' => '', 'lastAccessed' => '', 'location' => '', 'owner' => '', 'images' => '', 'thumbsCreated' => '']);
     }
 
     /**
