@@ -7,7 +7,7 @@ output="${PARENT_DIR}/public/tmp/status.txt"
 mkdir -p "$( dirname "${output}" )"
 touch "${output}"
 
-if [[ "$#" -ne 4 ]]; then
+if [[ "$#" -ne 3 ]]; then
     echo "Error: Appropriate album information not provided" > "$output"
     sleep 1
     rm "$output"
@@ -16,8 +16,8 @@ fi
 
 id=$1
 markup=$2
-album=$3
-mode=$4
+mode=$3
+album=$(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "SELECT location FROM albums WHERE id = $id LIMIT 1;")
 location="${PARENT_DIR}/public/albums/$album"
 
 if [[ "$mode" != "missing" && "$mode" != "all" ]]; then
