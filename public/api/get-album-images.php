@@ -57,6 +57,16 @@ $images = $sql->getRows("SELECT
     ORDER BY `sequence` 
     LIMIT ?, ?", [$isAdmin, $canManageData, $user->getIdentifier(), $user->getIdentifier(), $album->getId(), $start, $howMany]);
 $publicRoot = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public';
+$albumPath = $publicRoot . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $album->getLocation();
+$thumbnailVersion = file_exists($albumPath) ? filemtime($albumPath) : false;
+if ($thumbnailVersion !== false) {
+    foreach ($images as &$image) {
+        if ($image['location'] !== '') {
+            $image['location'] .= '?v=' . $thumbnailVersion;
+        }
+    }
+    unset($image);
+}
 $favoriteCount = $sql->getRow("SELECT COUNT(*) AS total FROM favorites WHERE user = ? AND album = ?", [$user->getIdentifier(), $album->getId()]);
 echo json_encode(array(
     'images' => $images,
