@@ -323,6 +323,7 @@ function findAlbum(prefillCode) {
                 var $button = this; // 'this' here is a jQuery object that
                 // wrapping the <button> DOM element.
                 var modal = $button.closest('.modal-content');
+                modal.find('.alert-danger').remove();
                 $button.spin();
                 dialogItself.enableButtons(false);
                 dialogItself.setClosable(false);
