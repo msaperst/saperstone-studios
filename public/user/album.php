@@ -241,6 +241,21 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
     </div>
     <!-- /.row -->
 
+    <?php
+    if ($album->canUserGetData()) {
+        ?>
+        <div id="thumbnail-warning" class="alert alert-warning text-center"<?php
+        if (!$album->needsThumbnails()) {
+            echo ' style="display: none;"';
+        }
+        ?>>
+            <strong>Thumbnails are missing for this album.</strong>
+            Use Edit Album &rarr; Make Thumbnails to generate them.
+        </div>
+        <?php
+    }
+    ?>
+
     <!-- Services Section -->
     <div id="album-thumbs" class="album-page">
         <?php
