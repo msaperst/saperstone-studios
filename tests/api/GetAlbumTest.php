@@ -134,6 +134,36 @@ class GetAlbumTest extends TestCase {
         $this->assertFalse($albumInfo['needsThumbnails']);
     }
 
+    public function testThumbnailStateReflectsCurrentAlbumImages() {
+        $this->sql->executeStatement("UPDATE albums SET images = 2, thumbsCreated = FALSE WHERE id = 998");
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('GET', 'api/get-album.php', [
+            'query' => [
+                'id' => 998
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $albumInfo = json_decode($response->getBody(), true);
+        $this->assertEquals(2, $albumInfo['imageCount']);
+        $this->assertTrue($albumInfo['needsThumbnails']);
+
+        $this->sql->executeStatement("UPDATE albums SET thumbsCreated = TRUE WHERE id = 998");
+        $response = $this->http->request('GET', 'api/get-album.php', [
+            'query' => [
+                'id' => 998
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $albumInfo = json_decode($response->getBody(), true);
+        $this->assertEquals(2, $albumInfo['imageCount']);
+        $this->assertFalse($albumInfo['needsThumbnails']);
+    }
+
     public function testUploaderCanGetOwnAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
