@@ -27,6 +27,9 @@ try {
     $file = new File($_FILES ["myfile"]);
     $files = $file->upload($outputDir);
     $file->addToDatabase('album_images', 'albums', $album->getId(), 'album', $imageLocation);
+    $sql = new Sql();
+    $sql->executeStatement("UPDATE albums SET thumbsCreated = FALSE WHERE id = ?", [$album->getId()]);
+    $sql->disconnect();
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);
     echo $e->getMessage();
