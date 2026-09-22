@@ -19,21 +19,31 @@ if (!$album->canUserGetData()) {
 }
 
 try {
-    $markup = $api->retrievePostString('markup', 'Markup');
+    $requestedMarkup = $api->retrievePostString('markup', 'Markup');
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
 
-if ($markup != "proof" && $markup != "watermark" && $markup != "none") {
+if ($requestedMarkup === "proof") {
+    $markup = "proof";
+} elseif ($requestedMarkup === "watermark") {
+    $markup = "watermark";
+} elseif ($requestedMarkup === "none") {
+    $markup = "none";
+} else {
     http_response_code(400);
     echo "Markup is not valid";
     exit ();
 }
 
-$mode = $_POST['mode'] ?? 'missing';
-if ($mode != "missing" && $mode != "all") {
+$requestedMode = $_POST['mode'] ?? 'missing';
+if ($requestedMode === "missing") {
+    $mode = "missing";
+} elseif ($requestedMode === "all") {
+    $mode = "all";
+} else {
     http_response_code(400);
     echo "Thumbnail mode is not valid";
     exit ();
@@ -48,10 +58,7 @@ if (!$systemUser->isAdmin()) {
 
 $scriptPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh";
 $albumId = (int)$album->getId();
-$escapedMarkup = escapeshellarg($markup);
-$escapedLocation = escapeshellarg($album->getLocation());
-$escapedMode = escapeshellarg($mode);
 
-system("$scriptPath $albumId $escapedMarkup $escapedLocation $escapedMode > /dev/null 2>&1 &");
+system("$scriptPath $albumId $markup $mode > /dev/null 2>&1 &");
 
 exit ();
