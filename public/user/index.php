@@ -77,15 +77,15 @@ $user->forceLogIn();
                 <?php
                 if ($user->isAdmin() || $user->getRole() == "uploader") {
                     ?>
-                    <div class="form-group form-inline text-right">
+                    <span id="thumbnail-status-filter-container" class="form-inline" style="display: none; margin-right: 15px;">
                         <label for="thumbnail-status-filter">Thumbnail Status:</label>
-                        <select id="thumbnail-status-filter" class="form-control">
+                        <select id="thumbnail-status-filter" class="form-control input-sm">
                             <option value="">All</option>
                             <option value="Missing">Missing</option>
                             <option value="Ready">Ready</option>
                             <option value="N/A">N/A</option>
                         </select>
-                    </div>
+                    </span>
                     <?php
                 }
                 ?>
