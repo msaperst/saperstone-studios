@@ -23,6 +23,19 @@ class MakeThumbsTest extends TestCase {
      */
     private $sql;
 
+    private function waitForThumbnailStatus(int $albumId, int $expectedStatus, int $timeoutSeconds = 10): void {
+        $start = microtime(true);
+        do {
+            $status = (int)$this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = ?", [$albumId])['thumbsCreated'];
+            if ($status === $expectedStatus) {
+                return;
+            }
+            usleep(100000);
+        } while (microtime(true) - $start < $timeoutSeconds);
+
+        $this->fail("Album $albumId thumbnail status did not become $expectedStatus within $timeoutSeconds seconds");
+    }
+
     /**
      * @throws Exception
      */
@@ -217,6 +230,54 @@ class MakeThumbsTest extends TestCase {
     /**
      * @throws GuzzleException
      */
+    public function testAdminCreatingThumbsUpdatesAlbumStatus() {
+        $this->sql->executeStatement("UPDATE albums SET thumbsCreated = FALSE WHERE id = 998");
+        $this->assertEquals(0, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 998")['thumbsCreated']);
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/make-thumbs.php', [
+            'form_params' => [
+                'id' => 998,
+                'markup' => 'none'
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+        $this->waitForThumbnailStatus(998, 1);
+        $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 998")['thumbsCreated']);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testUploaderCreatingThumbsUpdatesAlbumStatus() {
+        $this->sql->executeStatement("UPDATE albums SET thumbsCreated = FALSE WHERE id = 999");
+        $this->assertEquals(0, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 999")['thumbsCreated']);
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => 'c90788c0e409eac6a95f6c6360d8dbf7'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/make-thumbs.php', [
+            'form_params' => [
+                'id' => 999,
+                'markup' => 'none'
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
+        $this->waitForThumbnailStatus(999, 1);
+        $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 999")['thumbsCreated']);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function testAdminCanThumbsAnyAlbum() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
@@ -231,7 +292,6 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
         sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
-        $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 998")['thumbsCreated']);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
@@ -266,7 +326,6 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
         sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
-        $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 999")['thumbsCreated']);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
@@ -306,7 +365,6 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
         sleep(1);   //waiting for process to complete - ugly, but unsure how to do this dynamically
-        $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 998")['thumbsCreated']);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
