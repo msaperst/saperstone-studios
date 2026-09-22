@@ -219,7 +219,7 @@ function forgotPassword() {
 }
 
 function forgotPasswordSubmit() {
-    var button = $(this);
+    var button = $('#forgot-password-submit');
     button.prop("disabled", true);
     $.post("/api/send-reset-code.php", {
         email: $('#forgot-password-email').val(),
@@ -228,7 +228,6 @@ function forgotPasswordSubmit() {
         if (data === "") {
             $('#forgot-password-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Reset code has been sent, please enter it below, along with a new password</div>");
             resetPasswordForm();
-            button.prop("disabled", false);
         } else {
             $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }
@@ -240,11 +239,13 @@ function forgotPasswordSubmit() {
         } else {
             $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
+    }).always(function () {
+        button.prop("disabled", false);
     });
 }
 
 function forgotPasswordReset() {
-    var button = $(this);
+    var button = $('#forgot-password-reset-password');
     button.prop("disabled", true);
     $.post("/api/reset-password.php", {
         email: $('#forgot-password-email').val(),
@@ -253,7 +254,6 @@ function forgotPasswordReset() {
         passwordConfirm: $('#forgot-password-new-password-confirm').val(),
         rememberMe: $('#forgot-password-remember').is(':checked') ? 1 : 0,
     }).done(function (data) {
-        button.prop("disabled", false);
         if (data === "") {
             $('#forgot-password-modal .modal-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your password has been successfully reset. Logging you in now.</div>");
             setTimeout(function () {
@@ -270,6 +270,8 @@ function forgotPasswordReset() {
         } else {
             $('#forgot-password-modal .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
+    }).always(function () {
+        button.prop("disabled", false);
     });
 }
 
@@ -321,6 +323,7 @@ function findAlbum(prefillCode) {
                 var $button = this; // 'this' here is a jQuery object that
                 // wrapping the <button> DOM element.
                 var modal = $button.closest('.modal-content');
+                modal.find('.alert-danger').remove();
                 $button.spin();
                 dialogItself.enableButtons(false);
                 dialogItself.setClosable(false);
@@ -329,9 +332,6 @@ function findAlbum(prefillCode) {
                     code: $('#find-album-code').val(),
                     albumAdd: $('#find-album-add').is(':checked') ? 1 : 0,
                 }).done(function (data) {
-                    $button.stopSpin();
-                    dialogItself.enableButtons(true);
-                    dialogItself.setClosable(true);
                     // goto album url if it exists
                     if ($.isNumeric(data) && data !== '0') {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Navigating to album</div>");
@@ -349,6 +349,10 @@ function findAlbum(prefillCode) {
                     } else {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     }
+                }).always(function () {
+                    $button.stopSpin();
+                    dialogItself.enableButtons(true);
+                    dialogItself.setClosable(true);
                 });
             }
         }, {
