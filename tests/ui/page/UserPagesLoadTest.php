@@ -71,7 +71,7 @@ Full UA: %s\r\n",
         $this->assertEquals('Manage Albums', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('add-album-div'))));
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('add-album-btn'))->isDisplayed());
-        $this->assertEquals(7, sizeof($this->driver->findElement(WebDriverBy::id('albums'))->findElement(WebDriverBy::tagName('thead'))->findElements(WebDriverBy::tagName('th'))));
+        $this->assertEquals(8, sizeof($this->driver->findElement(WebDriverBy::id('albums'))->findElement(WebDriverBy::tagName('thead'))->findElements(WebDriverBy::tagName('th'))));
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 

@@ -18,6 +18,8 @@ if (!$album->canUserGetData()) {
 }
 
 $albumInfo = $album->getDataBasic();
+$albumInfo['imageCount'] = (int)$album->getDataArray()['images'];
+$albumInfo['needsThumbnails'] = $album->needsThumbnails();
 $albumInfo ['date'] = substr($albumInfo ['date'], 0, 10);
 if ($albumInfo ['code'] == NULL) {
     $albumInfo ['code'] = "";

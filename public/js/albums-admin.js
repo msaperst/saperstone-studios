@@ -1,6 +1,16 @@
 var album_table;
 var resultsSelected = false;
 
+function thumbnailStatus(row) {
+    if (Number.parseInt(row.images, 10) === 0) {
+        return '<span class="label label-default">N/A</span>';
+    }
+    if (String(row.thumbsCreated) === '1') {
+        return '<span class="label label-success">Ready</span>';
+    }
+    return '<span class="label label-warning">Missing</span>';
+}
+
 $(document).ready(function () {
     if ($('#albums').length) {
         album_table = $('#albums').DataTable({
@@ -32,22 +42,31 @@ $(document).ready(function () {
                 "className": "album-images",
                 "targets": 4
             }, {
+                "data": thumbnailStatus,
+                "className": "album-thumbnails",
+                "targets": 5
+            }, {
                 "data": "lastAccessed",
                 "className": "album-last-accessed",
-                "targets": 5
+                "targets": 6
             }, {
                 "data": "code",
                 "className": "album-code",
-                "targets": 6
+                "targets": 7
             }],
             "fnCreatedRow": function (nRow, aData) {
                 $(nRow).attr('album-id', aData.id);
             }
         });
+        $('#thumbnail-status-filter-container').prependTo('#albums_filter').show();
     }
     $('#albums').on('draw.dt search.dt', function () {
         setupEdit();
         $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    $('#thumbnail-status-filter').change(function () {
+        album_table.column(5).search($(this).val()).draw();
     });
 
     $('#add-album-btn').click(function () {
@@ -81,6 +100,7 @@ $(document).ready(function () {
                                 "description": $('#new-album-description').val(),
                                 "date": $('#new-album-date').val(),
                                 "images": "0",
+                                "thumbsCreated": "0",
                                 "lastAccessed": "0000-00-00 00:00:00",
                                 "location": "",
                                 "code": ""
@@ -204,44 +224,19 @@ function editAlbum(id) {
                     var $button = this;
                     $button.spin();
                     disableDialogButtons(dialogItself);
-                    // need to determine how to make thumbs, with proof all
-                    // over, watermark in corner, or no watermark
-                    BootstrapDialog.show({
-                        draggable: true,
-                        title: 'Make Thumbnails How?',
-                        message: 'What do you want to put on your viewable thumbnails?',
-                        buttons: [{
-                            icon: 'glyphicon glyphicon-eye-close',
-                            label: ' Proof',
-                            cssClass: 'btn-warning',
-                            action: function (dialogInItself) {
-                                dialogInItself.close();
-                                makeThumbs(id, $button, dialogItself, "proof");
-                            }
-                        }, {
-                            icon: 'glyphicon glyphicon-eye-open',
-                            label: ' Watermark',
-                            cssClass: 'btn-info',
-                            action: function (dialogInItself) {
-                                dialogInItself.close();
-                                makeThumbs(id, $button, dialogItself, "watermark");
-                            }
-                        }, {
-                            icon: 'glyphicon glyphicon-globe',
-                            label: ' Nothing',
-                            cssClass: 'btn-danger',
-                            action: function (dialogInItself) {
-                                dialogInItself.close();
-                                makeThumbs(id, $button, dialogItself, "none");
-                            }
-                        }, {
-                            label: 'Close',
-                            action: function (dialogInItself) {
-                                $button.stopSpin();
-                                enableDialogButtons(dialogItself);
-                                dialogInItself.close();
-                            }
-                        }]
+                    $.get("/api/get-album.php", {
+                        id: id
+                    }, function (currentAlbum) {
+                        chooseThumbnailScope(id, currentAlbum.imageCount, currentAlbum.needsThumbnails, $button, dialogItself);
+                    }, "json").fail(function (xhr) {
+                        var message = xhr.responseText || 'Unable to refresh album details';
+                        $('#resize-progress .progress-bar')
+                            .html('Error: ' + message)
+                            .removeClass('active')
+                            .addClass('progress-bar-danger');
+                        $("#resize-progress").show();
+                        $button.stopSpin();
+                        enableDialogButtons(dialogItself);
                     });
                 }
             }, {
@@ -316,6 +311,7 @@ function editAlbum(id) {
                         disableDialogButtons(dialogItself);
                     },
                     onSuccess: function (files, data, xhr, pd) {
+                        $('#thumbnail-warning').show();
                         setTimeout(function () {
                             pd.statusbar.remove();
                         }, 5000);
@@ -324,6 +320,9 @@ function editAlbum(id) {
                         setTimeout(function () {
                             $('.ajax-file-upload-container').hide();
                         }, 5000);
+                        if ($('#albums').length) {
+                            album_table.ajax.reload(null, false);
+                        }
                         dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-asterisk icon-spin').addClass('glyphicon-upload');
                         enableDialogButtons(dialogItself);
                     },
@@ -398,11 +397,117 @@ function addUser(id) {
 
 }
 
-function makeThumbs(id, button, dialog, markup) {
+function chooseThumbnailScope(id, imageCount, needsThumbnails, button, dialog) {
+    var buttons = [];
+
+    if (imageCount === 0) {
+        BootstrapDialog.show({
+            draggable: true,
+            title: 'Create Thumbnails',
+            message: 'This album does not have any images to process.',
+            buttons: [{
+                label: 'Close',
+                action: function (scopeDialog) {
+                    button.stopSpin();
+                    enableDialogButtons(dialog);
+                    scopeDialog.close();
+                }
+            }]
+        });
+        return;
+    }
+
+    if (needsThumbnails) {
+        buttons.push({
+            icon: 'glyphicon glyphicon-plus',
+            label: ' Missing Only',
+            cssClass: 'btn-warning',
+            action: function (scopeDialog) {
+                scopeDialog.close();
+                chooseThumbnailMarkup(id, button, dialog, "missing");
+            }
+        });
+    }
+
+    buttons.push({
+        icon: 'glyphicon glyphicon-refresh',
+        label: ' Recreate All',
+        cssClass: 'btn-danger',
+        action: function (scopeDialog) {
+            scopeDialog.close();
+            chooseThumbnailMarkup(id, button, dialog, "all");
+        }
+    });
+
+    buttons.push({
+        label: 'Close',
+        action: function (scopeDialog) {
+            button.stopSpin();
+            enableDialogButtons(dialog);
+            scopeDialog.close();
+        }
+    });
+
+    BootstrapDialog.show({
+        draggable: true,
+        title: 'Create Thumbnails',
+        message: needsThumbnails
+            ? 'Some thumbnails are missing. Create only the missing thumbnails, or recreate every thumbnail from the original images.'
+            : 'All thumbnails already exist. Recreate all thumbnails if you want to change the proof or watermark treatment.',
+        buttons: buttons
+    });
+}
+
+function chooseThumbnailMarkup(id, button, dialog, mode) {
+    BootstrapDialog.show({
+        draggable: true,
+        title: 'Thumbnail Treatment',
+        message: 'What do you want to put on the thumbnails?',
+        buttons: [{
+            icon: 'glyphicon glyphicon-eye-close',
+            label: ' Proof',
+            cssClass: 'btn-warning',
+            action: function (markupDialog) {
+                markupDialog.close();
+                makeThumbs(id, button, dialog, "proof", mode);
+            }
+        }, {
+            icon: 'glyphicon glyphicon-eye-open',
+            label: ' Watermark',
+            cssClass: 'btn-info',
+            action: function (markupDialog) {
+                markupDialog.close();
+                makeThumbs(id, button, dialog, "watermark", mode);
+            }
+        }, {
+            icon: 'glyphicon glyphicon-globe',
+            label: ' Nothing',
+            cssClass: 'btn-danger',
+            action: function (markupDialog) {
+                markupDialog.close();
+                makeThumbs(id, button, dialog, "none", mode);
+            }
+        }, {
+            label: 'Close',
+            action: function (markupDialog) {
+                button.stopSpin();
+                enableDialogButtons(dialog);
+                markupDialog.close();
+            }
+        }]
+    });
+}
+
+function makeThumbs(id, button, dialog, markup, mode) {
+    $('#resize-progress .progress-bar')
+        .removeClass('progress-bar-danger')
+        .addClass('active')
+        .html('Starting thumbnail generation...');
     $("#resize-progress").show();
     $.post("/api/make-thumbs.php", {
         id: id,
-        markup: markup
+        markup: markup,
+        mode: mode
     }).done(function () {
         var myVar = setInterval(function () {
             $.get("/tmp/status.txt", function (data) {
@@ -415,13 +520,32 @@ function makeThumbs(id, button, dialog, markup) {
                     }, 5000);
                     button.stopSpin();
                     enableDialogButtons(dialog);
+                    $('#thumbnail-warning').hide();
+                    if (typeof refreshAlbumThumbnailImages === "function") {
+                        refreshAlbumThumbnailImages();
+                    }
+                    if ($('#albums').length) {
+                        album_table.ajax.reload(null, false);
+                    }
                 }
                 if (data.indexOf("Error") === 0) {
                     clearInterval(myVar);
                     $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
+                    button.stopSpin();
+                    enableDialogButtons(dialog);
                 }
+            }).fail(function () {
+                // The status file is transient. Keep polling unless the API request itself failed.
             });
         }, 100);
+    }).fail(function (xhr) {
+        var message = xhr.responseText || 'Unable to start thumbnail generation';
+        $('#resize-progress .progress-bar')
+            .html('Error: ' + message)
+            .removeClass('active')
+            .addClass('progress-bar-danger');
+        button.stopSpin();
+        enableDialogButtons(dialog);
     });
 }
 

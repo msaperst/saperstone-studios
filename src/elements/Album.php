@@ -15,6 +15,7 @@ class Album {
     private $code;
     private $owner;
     private $images = array();
+    private $thumbsCreated;
     private $users = array();
 
     /**
@@ -96,12 +97,20 @@ class Album {
         return $this->code;
     }
 
+    public function hasThumbnails(): bool {
+        return (bool)$this->thumbsCreated;
+    }
+
+    public function needsThumbnails(): bool {
+        return (int)$this->images > 0 && !$this->hasThumbnails();
+    }
+
     /**
      * Only return basic information
      * name, description, date, code
      */
     function getDataBasic(): array {
-        return array_diff_key($this->raw, ['id' => '', 'lastAccessed' => '', 'location' => '', 'owner' => '', 'images' => '']);
+        return array_diff_key($this->raw, ['id' => '', 'lastAccessed' => '', 'location' => '', 'owner' => '', 'images' => '', 'thumbsCreated' => '']);
     }
 
     /**
@@ -182,7 +191,7 @@ class Album {
             $sql->disconnect();
             throw new AlbumException($e->getMessage() . "<br/>Unable to create album");
         }
-        $lastId = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`) VALUES (?, ?, ?, ?, ?)", [$this->name, $this->description, $this->date, $this->location, $user->getId()]);
+        $lastId = $sql->executeStatement("INSERT INTO `albums` (`name`, `description`, `date`, `location`, `owner`, `thumbsCreated`) VALUES (?, ?, ?, ?, ?, FALSE)", [$this->name, $this->description, $this->date, $this->location, $user->getId()]);
         if ($user->getRole() == "uploader") {
             $sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (?, ?)", [$user->getId(), $lastId]);
             $sql->executeStatement("INSERT INTO `user_logs` (`user`, `time`, `action`, `what`, `album`) VALUES (?, CURRENT_TIMESTAMP, 'Created Album', NULL, ?)", [$user->getId(), $lastId]);
@@ -224,6 +233,7 @@ class Album {
         $album->owner = $album->raw['owner'];
         //consider changing this to an array of matching images
         $album->images = $album->raw['images'];
+        $album->thumbsCreated = $album->raw['thumbsCreated'];
         $album->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = ?", [$album->id]), 'user');
         $sql->disconnect();
         return $album;

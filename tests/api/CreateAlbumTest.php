@@ -135,6 +135,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertNull($album['code']);
             $this->assertEquals(1, $album['owner']);
             $this->assertEquals(0, $album['images']);
+            $this->assertEquals(0, $album['thumbsCreated']);
             $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation"));
             $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;"));
         } finally {
@@ -178,6 +179,7 @@ class CreateAlbumTest extends TestCase {
             $this->assertNull($album['code']);
             $this->assertEquals(4, $album['owner']);
             $this->assertEquals(0, $album['images']);
+            $this->assertEquals(0, $album['thumbsCreated']);
             $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "content/albums/$albumLocation"));
             $albumsForUsers = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
             $this->assertEquals(1, sizeOf($albumsForUsers));

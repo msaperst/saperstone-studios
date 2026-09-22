@@ -7,10 +7,10 @@ $api->forceLoggedIn();
 
 $response = array();
 if ($systemUser->isAdmin()) {
-    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums.lastAccessed, albums.code FROM albums;";
+    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums.thumbsCreated, albums.lastAccessed, albums.code FROM albums;";
     $params = [];
 } elseif ($systemUser->isUploader()) {
-    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums.owner FROM albums LEFT JOIN albums_for_users ON albums_for_users.album = albums.id WHERE albums_for_users.user = ? OR albums.owner = ? GROUP BY albums.id;";
+    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums.thumbsCreated, albums.owner FROM albums LEFT JOIN albums_for_users ON albums_for_users.album = albums.id WHERE albums_for_users.user = ? OR albums.owner = ? GROUP BY albums.id;";
     $params = [$systemUser->getId(), $systemUser->getId()];
 } else {
     $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = ? GROUP BY albums.id;";

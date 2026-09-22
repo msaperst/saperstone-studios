@@ -27,9 +27,9 @@ class GetAlbumsTest extends TestCase {
     public function setUp(): void {
         $this->http = new ApiTestClient(['base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/']);
         $this->sql = new Sql();
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('997', 'sample-album', 'sample album for testing', 'sample', 1, '1234');");
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
-        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123');");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`, `thumbsCreated`) VALUES ('997', 'sample-album', 'sample album for testing', 'sample', 1, '1234', TRUE);");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `thumbsCreated`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5, FALSE);");
+        $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`, `thumbsCreated`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '123', TRUE);");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (4, '998');");
         $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '999');");
     }
@@ -81,12 +81,13 @@ class GetAlbumsTest extends TestCase {
                 break;
             }
         }
-        $this->assertEquals(7, sizeof($albums[0]));
+        $this->assertEquals(8, sizeof($albums[0]));
         $this->assertEquals(997, $albums[$id]['id']);
         $this->assertEquals('sample-album', $albums[$id]['name']);
         $this->assertEquals('sample album for testing', $albums[$id]['description']);
         $this->assertEquals(date('Y-m-d'), $albums[$id]['date']);
         $this->assertEquals(0, $albums[$id]['images']);
+        $this->assertEquals(1, $albums[$id]['thumbsCreated']);
         $this->assertEquals(0, $albums[$id]['lastAccessed']);
         $this->assertEquals(1234, $albums[$id]['code']);
         $this->assertEquals(998, $albums[$id + 1]['id']);
@@ -94,6 +95,7 @@ class GetAlbumsTest extends TestCase {
         $this->assertEquals('sample album for testing', $albums[$id + 1]['description']);
         $this->assertEquals(date('Y-m-d'), $albums[$id + 1]['date']);
         $this->assertEquals(0, $albums[$id + 1]['images']);
+        $this->assertEquals(0, $albums[$id + 1]['thumbsCreated']);
         $this->assertEquals(0, $albums[$id + 1]['lastAccessed']);
         $this->assertEquals('', $albums[$id + 1]['code']);
         $this->assertEquals(999, $albums[$id + 2]['id']);
@@ -101,6 +103,7 @@ class GetAlbumsTest extends TestCase {
         $this->assertEquals('sample album for testing', $albums[$id + 2]['description']);
         $this->assertEquals(date('Y-m-d'), $albums[$id + 2]['date']);
         $this->assertEquals(0, $albums[$id + 2]['images']);
+        $this->assertEquals(1, $albums[$id + 2]['thumbsCreated']);
         $this->assertEquals(0, $albums[$id + 2]['lastAccessed']);
         $this->assertEquals(123, $albums[$id + 2]['code']);
     }
@@ -125,18 +128,20 @@ class GetAlbumsTest extends TestCase {
                 break;
             }
         }
-        $this->assertEquals(6, sizeof($albums[$id]));
+        $this->assertEquals(7, sizeof($albums[$id]));
         $this->assertEquals(998, $albums[$id]['id']);
         $this->assertEquals('sample-album', $albums[$id]['name']);
         $this->assertEquals('sample album for testing', $albums[$id]['description']);
         $this->assertEquals(date('Y-m-d'), $albums[$id]['date']);
         $this->assertEquals(0, $albums[$id]['images']);
+        $this->assertEquals(0, $albums[$id]['thumbsCreated']);
         $this->assertEquals(5, $albums[$id]['owner']);
         $this->assertEquals(999, $albums[$id + 1]['id']);
         $this->assertEquals('sample-album', $albums[$id + 1]['name']);
         $this->assertEquals('sample album for testing', $albums[$id + 1]['description']);
         $this->assertEquals(date('Y-m-d'), $albums[$id + 1]['date']);
         $this->assertEquals(0, $albums[$id + 1]['images']);
+        $this->assertEquals(1, $albums[$id + 1]['thumbsCreated']);
         $this->assertEquals(4, $albums[$id + 1]['owner']);
     }
 

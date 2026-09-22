@@ -74,6 +74,21 @@ $user->forceLogIn();
                 <?php
                 }
                 ?>
+                <?php
+                if ($user->isAdmin() || $user->getRole() == "uploader") {
+                    ?>
+                    <span id="thumbnail-status-filter-container" class="form-inline" style="display: none; margin-right: 15px;">
+                        <label for="thumbnail-status-filter">Thumbnail Status:</label>
+                        <select id="thumbnail-status-filter" class="form-control input-sm">
+                            <option value="">All</option>
+                            <option value="Missing">Missing</option>
+                            <option value="Ready">Ready</option>
+                            <option value="N/A">N/A</option>
+                        </select>
+                    </span>
+                    <?php
+                }
+                ?>
                 <table id="albums" class="display"
                     style="width: 100%; border-spacing: 0px;">
                     <thead>
@@ -96,6 +111,11 @@ $user->forceLogIn();
                             <th>Album Date</th>
                             <th>Images</th>
                             <?php
+                            if ($user->isAdmin() || $user->getRole() == "uploader") {
+                                ?>
+                            <th>Thumbnails</th>
+                            <?php
+                            }
                             if ($user->isAdmin ()) {
                                 ?>
                             <th>Last Accessed</th>

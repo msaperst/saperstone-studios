@@ -183,6 +183,35 @@ class AlbumIntegrationTest extends TestCase {
     /**
      * @throws Exception
      */
+    public function testHasThumbnails() {
+        $this->sql->executeStatement("UPDATE albums SET images = 1, thumbsCreated = TRUE WHERE id = 899");
+        $album = Album::withId('899');
+        $this->assertTrue($album->hasThumbnails());
+        $this->assertFalse($album->needsThumbnails());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testNeedsThumbnails() {
+        $this->sql->executeStatement("UPDATE albums SET images = 1, thumbsCreated = FALSE WHERE id = 899");
+        $album = Album::withId('899');
+        $this->assertFalse($album->hasThumbnails());
+        $this->assertTrue($album->needsThumbnails());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testEmptyAlbumDoesNotNeedThumbnails() {
+        $this->sql->executeStatement("UPDATE albums SET images = 0, thumbsCreated = FALSE WHERE id = 899");
+        $album = Album::withId('899');
+        $this->assertFalse($album->needsThumbnails());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testBasicDataLoaded() {
         date_default_timezone_set("America/New_York");
         $album = Album::withId(899);
@@ -201,7 +230,7 @@ class AlbumIntegrationTest extends TestCase {
         date_default_timezone_set("America/New_York");
         $album = Album::withId(899);
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals(899, $albumInfo['id']);
         $this->assertEquals('sample-album', $albumInfo['name']);
         $this->assertEquals('sample album for testing', $albumInfo['description']);
@@ -562,7 +591,7 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals('', $album->getLocation());
         $this->albumId = $album->create();
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals($this->albumId, $albumInfo['id']);
         $this->assertEquals('Album Name', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
@@ -600,7 +629,7 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals('', $album->getLocation());
         $this->albumId = $album->create();
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals($this->albumId, $albumInfo['id']);
         $this->assertEquals('Album Name', $albumInfo['name']);
         $this->assertEquals('some description', $albumInfo['description']);
@@ -721,7 +750,7 @@ class AlbumIntegrationTest extends TestCase {
         $album = Album::withId(898);
         $album->update($params);
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals(898, $albumInfo['id']);
         $this->assertEquals('Sample Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
@@ -746,7 +775,7 @@ class AlbumIntegrationTest extends TestCase {
         $album = Album::withId(898);
         $album->update($params);
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals(898, $albumInfo['id']);
         $this->assertEquals('Sample Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
@@ -771,7 +800,7 @@ class AlbumIntegrationTest extends TestCase {
         $album = Album::withId(898);
         $album->update($params);
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals(898, $albumInfo['id']);
         $this->assertEquals('Sample Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
@@ -796,7 +825,7 @@ class AlbumIntegrationTest extends TestCase {
         $album = Album::withId(899);
         $album->update($params);
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals(899, $albumInfo['id']);
         $this->assertEquals('Sample Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
@@ -828,7 +857,7 @@ class AlbumIntegrationTest extends TestCase {
         $album->update($params);
 
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals(898, $albumInfo['id']);
         $this->assertEquals('Sample Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
@@ -853,7 +882,7 @@ class AlbumIntegrationTest extends TestCase {
         $album = Album::withId(899);
         $album->update($params);
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals(899, $albumInfo['id']);
         $this->assertEquals('Sample Album', $albumInfo['name']);
         $this->assertEquals('', $albumInfo['description']);
@@ -878,7 +907,7 @@ class AlbumIntegrationTest extends TestCase {
         $album = Album::withId(898);
         $album->update($params);
         $albumInfo = $album->getDataArray();
-        $this->assertEquals(9, sizeOf($albumInfo));
+        $this->assertEquals(10, sizeOf($albumInfo));
         $this->assertEquals(898, $albumInfo['id']);
         $this->assertEquals('Sample Album', $albumInfo['name']);
         $this->assertEquals('some description', $albumInfo['description']);
