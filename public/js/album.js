@@ -108,7 +108,8 @@ function updateViewerMeta(image) {
     }
     $('#album-viewer-overlay').attr('album-id', image.attr('album-id'));
     $('#album-viewer-overlay').attr('image-id', image.attr('image-id'));
-    $('#album-viewer-image').attr('style', 'background-image: url("' + image.attr('data-location') || image.attr('data-src') + '")');
+    var imageLocation = image.attr('data-location') || image.attr('data-src');
+    $('#album-viewer-image').attr('style', 'background-image: url("' + imageLocation + '")');
     $('#album-viewer-image').attr('src', '/img/image.png');
     if (window.showImageTitle) {
         $('#album-viewer-title').text(image.attr('data-title') || image.attr('title') || '');
@@ -119,6 +120,35 @@ function updateViewerMeta(image) {
         $('#downloadable-image-btn').addClass('hidden').hide();
     }
     $('#album-viewer-caption').text(image.attr('data-caption') || '');
+}
+
+function refreshAlbumThumbnailImages() {
+    var version = Date.now();
+
+    $('#album-grid .album-card').each(function () {
+        var card = $(this);
+        var location = card.attr('data-location');
+        if (!location) {
+            return;
+        }
+
+        location = location.split('?')[0] + '?v=' + version;
+        card.attr('data-location', location);
+        card.find('.album-card-media').css('background-image', 'url("' + location + '")');
+    });
+
+    if (window.album && window.album.images) {
+        $.each(window.album.images, function (index, image) {
+            if (image.location) {
+                image.location = image.location.split('?')[0] + '?v=' + version;
+            }
+        });
+    }
+
+    var activeCard = $('#album-grid .album-card.is-active');
+    if (activeCard.length) {
+        updateViewerMeta(activeCard);
+    }
 }
 
 function updateFavoriteCount(count) {
