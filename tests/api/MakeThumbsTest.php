@@ -231,6 +231,7 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
         sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
+        $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 998")['thumbsCreated']);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
@@ -265,6 +266,7 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
         sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
+        $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 999")['thumbsCreated']);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
@@ -304,6 +306,7 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
         sleep(1);   //waiting for process to complete - ugly, but unsure how to do this dynamically
+        $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 998")['thumbsCreated']);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
