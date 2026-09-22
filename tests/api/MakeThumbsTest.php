@@ -230,6 +230,54 @@ class MakeThumbsTest extends TestCase {
     /**
      * @throws GuzzleException
      */
+    public function testInvalidMode() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/make-thumbs.php', [
+            'form_params' => [
+                'id' => 998,
+                'markup' => 'proof',
+                'mode' => 'pants'
+            ],
+            'cookies' => $cookieJar
+        ]);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals("Thumbnail mode is not valid", (string)$response->getBody());
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testRecreateAllReappliesTreatmentFromOriginals() {
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/make-thumbs.php', [
+            'form_params' => [
+                'id' => 998,
+                'markup' => 'watermark',
+                'mode' => 'all'
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        sleep(5);
+
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function testAdminCreatingThumbsUpdatesAlbumStatus() {
         $this->sql->executeStatement("UPDATE albums SET thumbsCreated = FALSE WHERE id = 998");
         $this->assertEquals(0, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 998")['thumbsCreated']);
