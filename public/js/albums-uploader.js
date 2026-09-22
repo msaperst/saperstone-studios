@@ -250,7 +250,20 @@ function editAlbum(id) {
                     var $button = this;
                     $button.spin();
                     disableDialogButtons(dialogItself);
-                    chooseThumbnailScope(id, data.imageCount, data.needsThumbnails, $button, dialogItself);
+                    $.get("/api/get-album.php", {
+                        id: id
+                    }, function (currentAlbum) {
+                        chooseThumbnailScope(id, currentAlbum.imageCount, currentAlbum.needsThumbnails, $button, dialogItself);
+                    }, "json").fail(function (xhr) {
+                        var message = xhr.responseText || 'Unable to refresh album details';
+                        $('#resize-progress .progress-bar')
+                            .html('Error: ' + message)
+                            .removeClass('active')
+                            .addClass('progress-bar-danger');
+                        $("#resize-progress").show();
+                        $button.stopSpin();
+                        enableDialogButtons(dialogItself);
+                    });
                 }
             }, {
                 icon: 'glyphicon glyphicon-save',
