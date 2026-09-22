@@ -240,6 +240,31 @@ class UpdateAlbumTest extends TestCase {
         $this->assertEquals(0, $albumInfo['images']);
     }
 
+    public function testDatabaseRejectsDuplicateAlbumCode() {
+        $this->expectException(\mysqli_sql_exception::class);
+        $this->sql->executeStatement("UPDATE albums SET code = '123' WHERE id = 998");
+    }
+
+    public function testUpdateAdminRejectsDuplicateCodeDifferentCase() {
+        $this->sql->executeStatement("UPDATE albums SET code = 'ExistingCode' WHERE id = 999");
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-album.php', [
+            'form_params' => [
+                'id' => 998,
+                'name' => 'Updated Album',
+                'code' => 'existingcode'
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals("Album code already exists", (string)$response->getBody());
+        $this->assertNull($this->sql->getRow('SELECT code FROM albums WHERE id = 998')['code']);
+    }
+
     public function testUpdateAdminSetDuplicateCode() {
         date_default_timezone_set("America/New_York");
         $cookieJar = CookieJar::fromArray([

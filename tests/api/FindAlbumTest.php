@@ -54,6 +54,16 @@ class FindAlbumTest extends TestCase {
         $this->assertEquals("That code does not match any albums", (string)$response->getBody());
     }
 
+    public function testAlbumCodeWrongCase() {
+        $response = $this->http->request('GET', 'api/find-album.php', [
+            'query' => [
+                'code' => 'SEARCH-FOR-ME'
+            ]
+        ]);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals("That code does not match any albums", (string)$response->getBody());
+    }
+
     public function testAlbumCode() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'

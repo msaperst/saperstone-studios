@@ -12,7 +12,7 @@ try {
 }
 
 $sql = new Sql();
-$r = $sql->getRow("SELECT * FROM albums WHERE code = ?", [$code]);
+$r = $sql->getRow("SELECT * FROM albums WHERE BINARY code = ?", [$code]);
 if (isset($r ['id'])) {
     $_SESSION ["searched"] [$r ['id']] = hash('sha256', "album" . $code);
     if (isset($_COOKIE['CookiePreferences'])) {
