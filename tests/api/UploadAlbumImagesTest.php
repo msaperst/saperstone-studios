@@ -217,6 +217,7 @@ class UploadAlbumImagesTest extends TestCase {
         $this->assertEquals(999, $logs[0]['album']);
         $album = $this->sql->getRow("SELECT * FROM albums WHERE id = 999");
         $this->assertEquals(1, $album['images']);
+        $this->assertEquals(0, $album['thumbsCreated']);
         $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower.jpeg'));
     }
 }
