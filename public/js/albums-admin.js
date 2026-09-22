@@ -58,6 +58,7 @@ $(document).ready(function () {
                 $(nRow).attr('album-id', aData.id);
             }
         });
+        $('#thumbnail-status-filter-container').prependTo('#albums_filter').show();
     }
     $('#albums').on('draw.dt search.dt', function () {
         setupEdit();
