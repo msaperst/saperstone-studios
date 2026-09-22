@@ -137,7 +137,7 @@ function refreshAlbumThumbnailImages() {
         card.find('.album-card-media').css('background-image', 'url("' + location + '")');
     });
 
-    if (window.album && window.album.images) {
+    if (window.album?.images) {
         $.each(window.album.images, function (index, image) {
             if (image.location) {
                 image.location = image.location.split('?')[0] + '?v=' + version;
