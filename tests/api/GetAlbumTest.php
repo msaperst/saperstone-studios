@@ -125,6 +125,8 @@ class GetAlbumTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('no-store', $response->getHeaderLine('Cache-Control'));
+        $this->assertStringContainsString('no-cache', $response->getHeaderLine('Cache-Control'));
         $albumInfo = json_decode($response->getBody(), true);
         $this->assertEquals('sample-album', $albumInfo['name']);
         $this->assertEquals('sample album for testing', $albumInfo['description']);
