@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
-const {createAlbumDetailContext} = require('./helpers/album-detail-test-utils');
+const {createAlbumDetailContext, plain} = require('./helpers/album-detail-test-utils');
 
 test('album.js toggles a card favorite on and updates the returned count', () => {
     const {context, environment, window} = createAlbumDetailContext();
@@ -22,7 +22,7 @@ test('album.js toggles a card favorite on and updates the returned count', () =>
 
     context.toggleFavoriteForImage('10');
 
-    assert.deepEqual(environment.calls.post[0], {
+    assert.deepEqual(plain(environment.calls.post[0]), {
         url: '/api/set-favorite.php',
         data: {
             album: '7',
@@ -58,7 +58,7 @@ test('album.js toggles the current favorite off and reapplies an active favorite
 
     context.toggleFavoriteForImage('10');
 
-    assert.deepEqual(environment.calls.post[0], {
+    assert.deepEqual(plain(environment.calls.post[0]), {
         url: '/api/unset-favorite.php',
         data: {
             album: '7',
@@ -91,7 +91,7 @@ test('album.js downloads a card only when the API confirms image rights', () => 
     context.downloadImageFor('10');
 
     assert.deepEqual(downloads, [['7', '10']]);
-    assert.deepEqual(environment.calls.get[0], {
+    assert.deepEqual(plain(environment.calls.get[0]), {
         url: '/api/is-downloadable.php',
         data: {
             album: '7',
@@ -138,6 +138,7 @@ test('album.js submits the selected card id without exposing its image URL', () 
 test('album.js refreshes thumbnail cache-busters in both cards and cached metadata', () => {
     const {context, environment, window} = createAlbumDetailContext({
         lengths: {
+            '#album-grid .album-card': 1,
             '#album-grid .album-card.is-active': 0
         }
     });
