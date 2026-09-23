@@ -2,6 +2,10 @@ const assert = require('node:assert/strict');
 const {test} = require('node:test');
 const {loadBrowserScript} = require('./helpers/load-browser-script');
 
+function plain(value) {
+    return JSON.parse(JSON.stringify(value));
+}
+
 function createRequest(calls, type, url, data) {
     calls[type].push({url, data});
     const request = {
@@ -131,23 +135,23 @@ function createContext(addChecked) {
 test('nav findAlbum posts the code when adding the album to the user', () => {
     const {calls} = createContext(true);
 
-    assert.deepEqual(calls.post, [{
+    assert.deepEqual(plain(calls.post), [{
         url: '/api/add-album.php',
         data: {
             code: 'ABC123'
         }
     }]);
-    assert.deepEqual(calls.get, []);
+    assert.deepEqual(plain(calls.get), []);
 });
 
 test('nav findAlbum uses safe GET for lookup-only requests', () => {
     const {calls} = createContext(false);
 
-    assert.deepEqual(calls.get, [{
+    assert.deepEqual(plain(calls.get), [{
         url: '/api/find-album.php',
         data: {
             code: 'ABC123'
         }
     }]);
-    assert.deepEqual(calls.post, []);
+    assert.deepEqual(plain(calls.post), []);
 });
