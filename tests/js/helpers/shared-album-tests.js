@@ -71,6 +71,43 @@ function registerAddAlbumTests(label, scriptPath) {
         assert.equal(environment.element('#album-code-add').prop('disabled'), false);
     });
 
+    test(`${label}: addAlbum displays a non-numeric API response`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.element('#album-code').val('CUSTOM');
+        environment.queueGet('/api/find-album.php', {
+            type: 'success',
+            data: 'Custom album error'
+        });
+
+        context.addAlbum();
+
+        assert.match(
+            environment.element('#add-album-div').appended[0],
+            /Custom album error/
+        );
+        assert.equal(environment.element('#album-code-add').prop('disabled'), false);
+    });
+
+    test(`${label}: addAlbum displays a generic error for failures without details`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.element('#album-code').val('UNKNOWN');
+        environment.queueGet('/api/find-album.php', {
+            type: 'failure',
+            xhr: {
+                responseText: ''
+            },
+            error: 'Server Error'
+        });
+
+        context.addAlbum();
+
+        assert.match(
+            environment.element('#add-album-div').appended[0],
+            /Some unexpected error occurred while searching for your album/
+        );
+        assert.equal(environment.element('#album-code-add').prop('disabled'), false);
+    });
+
     test(`${label}: addAlbum displays an API error and restores the button`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('BAD');
