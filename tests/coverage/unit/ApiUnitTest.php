@@ -13,17 +13,45 @@ use SqlException;
 
 class ApiUnitTest extends TestCase {
     private Api $api;
+    private ?string $requestMethod = null;
 
     protected function setUp(): void {
         parent::setUp();
         $this->api = new Api();
+        $this->requestMethod = $_SERVER['REQUEST_METHOD'] ?? null;
     }
 
     protected function tearDown(): void {
         parent::tearDown();
         $_POST = [];
         $_GET = [];
+        if ($this->requestMethod === null) {
+            unset($_SERVER['REQUEST_METHOD']);
+        } else {
+            $_SERVER['REQUEST_METHOD'] = $this->requestMethod;
+        }
         http_response_code(200);
+    }
+
+    // ------------------------
+    // HTTP Method
+    // ------------------------
+    public function testRequireMethodAllowsMatchingMethod(): void {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        http_response_code(204);
+
+        Api::requireMethod('POST');
+
+        $this->assertSame(204, http_response_code());
+    }
+
+    public function testRequireMethodNormalizesMethodCase(): void {
+        $_SERVER['REQUEST_METHOD'] = 'post';
+        http_response_code(202);
+
+        Api::requireMethod('PoSt');
+
+        $this->assertSame(202, http_response_code());
     }
 
     // ------------------------
