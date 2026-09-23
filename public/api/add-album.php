@@ -22,7 +22,8 @@ $existing = $sql->getRow(
     "SELECT user FROM albums_for_users WHERE user = ? AND album = ?",
     [$systemUser->getId(), $album->getId()]
 );
-if (!isset($existing['user'])) {
+$added = !isset($existing['user']);
+if ($added) {
     $sql->executeStatement(
         "INSERT INTO albums_for_users (`user`, `album`) VALUES (?, ?)",
         [$systemUser->getId(), $album->getId()]
@@ -30,5 +31,9 @@ if (!isset($existing['user'])) {
 }
 $sql->disconnect();
 
-echo $album->getId();
+header('Content-Type: application/json');
+echo json_encode([
+    'id' => $album->getId(),
+    'added' => $added
+]);
 exit();
