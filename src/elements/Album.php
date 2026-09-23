@@ -208,7 +208,7 @@ class Album {
      * @return Album
      * @throws BadAlbumException
      */
-    static function withCode($code): Album {
+    public static function withCode($code): Album {
         if (!isset($code)) {
             throw new BadAlbumException("Album code is required");
         } elseif ($code === "") {
