@@ -6,10 +6,13 @@ function plain(value) {
     return JSON.parse(JSON.stringify(value));
 }
 
-function createRequest(calls, type, url, data) {
+function createRequest(calls, type, url, data, responseData) {
     calls[type].push({url, data});
     const request = {
-        done() {
+        done(callback) {
+            if (responseData !== undefined) {
+                callback(responseData);
+            }
             return request;
         },
         fail() {
@@ -22,7 +25,7 @@ function createRequest(calls, type, url, data) {
     return request;
 }
 
-function createContext(addChecked) {
+function createContext(addChecked, responseData) {
     const calls = {
         get: [],
         post: []
@@ -63,11 +66,18 @@ function createContext(addChecked) {
         }
         return element(value);
     };
-    $.get = (url, data) => createRequest(calls, 'get', url, data);
-    $.post = (url, data) => createRequest(calls, 'post', url, data);
+    $.get = (url, data) => createRequest(calls, 'get', url, data, responseData);
+    $.post = (url, data) => createRequest(calls, 'post', url, data, responseData);
     $.isNumeric = (value) => !Number.isNaN(Number(value));
 
     let dialogConfig;
+    const windowObject = {
+        location: {
+            hash: '',
+            pathname: '/'
+        }
+    };
+
     const context = loadBrowserScript('public/js/nav.js', {
         $,
         BootstrapDialog: {
@@ -75,12 +85,7 @@ function createContext(addChecked) {
                 dialogConfig = config;
             }
         },
-        window: {
-            location: {
-                hash: '',
-                pathname: '/'
-            }
-        },
+        window: windowObject,
         top: {
             location: {
                 pathname: '/'
@@ -129,7 +134,7 @@ function createContext(addChecked) {
 
     dialogConfig.buttons[0].action.call(button, dialog);
 
-    return {calls};
+    return {calls, windowObject};
 }
 
 test('nav findAlbum posts the code when adding the album to the user', () => {
@@ -154,4 +159,13 @@ test('nav findAlbum uses safe GET for lookup-only requests', () => {
         }
     }]);
     assert.deepEqual(plain(calls.post), []);
+});
+
+test('nav findAlbum navigates when an album is already in the user list', () => {
+    const {windowObject} = createContext(true, {
+        id: '42',
+        added: false
+    });
+
+    assert.equal(windowObject.location.href, '/user/album.php?album=42');
 });
