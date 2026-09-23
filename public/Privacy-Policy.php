@@ -112,7 +112,7 @@ $session->initialize();
             <p>Yes. Cookies are small files that a site or its service provider
                 transfers to your computer's hard drive through your Web browser
                 (if you allow) that enables the site's or service provider's
-                systems to recognize your browser and capture and remember certain
+                systems to recognize your browser and capture and remember certain information.
                 Cookies are also used to help us understand your preferences based on previous or current site
                 activity, which enables us to provide you with improved services.
                 We also use cookies to help us compile aggregate data about site
