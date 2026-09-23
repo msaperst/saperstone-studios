@@ -265,7 +265,7 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
             type: 'success',
             data: ''
         });
-        environment.queueGet('/tmp/status.txt', {
+        environment.queueGet('/api/get-thumbnail-status.php', {
             type: 'success',
             data: 'Done'
         });
@@ -304,7 +304,7 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
             type: 'success',
             data: ''
         });
-        environment.queueGet('/tmp/status.txt', {
+        environment.queueGet('/api/get-thumbnail-status.php', {
             type: 'success',
             data: 'Error: Thumbnail generation incomplete'
         });
