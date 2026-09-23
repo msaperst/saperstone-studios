@@ -38,6 +38,12 @@ class SecurityHeadersTest extends TestCase {
             $this->assertSame('nosniff', $response->getHeaderLine('X-Content-Type-Options'), $path);
             $this->assertSame('Apache', $response->getHeaderLine('Server'), $path);
         }
+
+        $html = $this->http->request('GET', 'index.php');
+        $css = $this->http->request('GET', 'css/saperstone-studios.css');
+
+        $this->assertStringStartsWith('text/html', $html->getHeaderLine('Content-Type'));
+        $this->assertStringStartsWith('text/css', $css->getHeaderLine('Content-Type'));
     }
 
     /**
