@@ -23,6 +23,44 @@ class SecurityHeadersTest extends TestCase {
     /**
      * @throws GuzzleException
      */
+    public function testResponseHardeningIsAppliedSiteWide(): void {
+        $requests = [
+            ['GET', 'index.php', []],
+            ['GET', 'user/index.php', ['cookies' => $this->adminCookies]],
+            ['GET', 'api/get-roles.php', ['cookies' => $this->adminCookies]],
+            ['GET', 'css/saperstone-studios.css', []],
+            ['GET', 'does-not-exist', []],
+        ];
+
+        foreach ($requests as [$method, $path, $options]) {
+            $response = $this->http->request($method, $path, $options);
+
+            $this->assertSame('nosniff', $response->getHeaderLine('X-Content-Type-Options'), $path);
+            $this->assertSame('Apache', $response->getHeaderLine('Server'), $path);
+        }
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testPhpVersionIsNotExposed(): void {
+        $requests = [
+            ['GET', 'index.php', []],
+            ['GET', 'user/index.php', ['cookies' => $this->adminCookies]],
+            ['GET', 'api/get-roles.php', ['cookies' => $this->adminCookies]],
+            ['GET', 'does-not-exist', []],
+        ];
+
+        foreach ($requests as [$method, $path, $options]) {
+            $response = $this->http->request($method, $path, $options);
+
+            $this->assertFalse($response->hasHeader('X-Powered-By'), $path);
+        }
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function testContentSecurityPolicyIsAppliedSiteWide(): void {
         $requests = [
             ['GET', 'index.php', []],
