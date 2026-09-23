@@ -41,6 +41,11 @@ class SecurityHeadersTest extends TestCase {
             $this->assertStringContainsString("frame-ancestors 'none'", $headers[0], $path);
             $this->assertStringContainsString("form-action 'self'", $headers[0], $path);
             $this->assertStringContainsString('frame-src https://www.google.com', $headers[0], $path);
+            $this->assertMatchesRegularExpression(
+                '/img-src[^;]*https:\\/\\/cdn\\.datatables\\.net/',
+                $headers[0],
+                $path
+            );
         }
     }
 }
