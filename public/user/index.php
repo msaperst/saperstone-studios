@@ -140,7 +140,7 @@ $user->forceLogIn();
         integrity="sha384-89aj/hOsfOyfD0Ll+7f2dobA15hDyiNb8m1dJ+rJuqgrGR+PVqNU8pybx4pbF3Cc"
         crossorigin="anonymous"></script>
     <script src="/js/jquery.uploadfile.js"></script>
-    <script src="/js/albums-common.js"></script>
+    <script src="/js/albums-common.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-common.js'); ?>"></script>
     <?php
     if ($user->isAdmin ()) {
         ?>
