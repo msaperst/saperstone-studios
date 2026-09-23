@@ -112,9 +112,8 @@ function addAlbum() {
     $("#album-code-add").prop("disabled", true);
     $("#album-code-add em").removeClass('fa fa-plus-circle').addClass('glyphicon glyphicon-asterisk icon-spin');
     // make our call
-    $.get("/api/find-album.php", {
+    $.post("/api/add-album.php", {
         code: $('#album-code').val(),
-        albumAdd: 1,
     }).done(function (data) {
         // goto album url if it exists
         if ($.isNumeric(data) && data !== '0') {
