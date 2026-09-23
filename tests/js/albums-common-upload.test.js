@@ -3,6 +3,10 @@ const {test} = require('node:test');
 const {createJQueryEnvironment} = require('./helpers/jquery-mock');
 const {loadBrowserScript} = require('./helpers/load-browser-script');
 
+function plain(value) {
+    return JSON.parse(JSON.stringify(value));
+}
+
 function createUploadContext(options = {}) {
     const environment = createJQueryEnvironment({
         lengths: {
@@ -97,7 +101,7 @@ test('albums-common.js upload completion refreshes the matching open album and r
     upload.afterUploadAll();
 
     assert.equal(environment.calls.reload.length, 1);
-    assert.deepEqual(environment.calls.get.at(-1), {
+    assert.deepEqual(plain(environment.calls.get.at(-1)), {
         url: '/api/get-album.php',
         data: {
             id: 22
