@@ -42,12 +42,11 @@ $session->initialize();
                 using this website, you accept these terms and conditions in full.
                 If you disagree with these terms and conditions or any part of
                 these terms and conditions, you must not use this website.</p>
-            <p>
-                This website uses cookies. By using this website and agreeing to
-                these terms and conditions, you consent to our SAPERSTONE STUDIOS's
-                use of cookies in accordance with the terms of SAPERSTONE STUDIOS's
-                <a href='Privacy-Policy.php'>privacy policy</a>.
-            </p>
+            <p>Our <a href='/Privacy-Policy.php'>Privacy Policy</a> explains how
+                we handle information and use cookies. Necessary cookies support
+                core site functions. Optional cookies are controlled through the
+                site's cookie preference center; use of the website alone does not
+                grant consent to optional cookies.</p>
         </div>
     </div>
     <div class="row">
@@ -181,7 +180,7 @@ $session->initialize();
         <div class="col-md-12">
             <h4>Limitations of liability</h4>
             <p>SAPERSTONE STUDIOS will not be liable to you (whether under the
-                law of contact, the law of torts or otherwise) in relation to the
+                law of contract, the law of torts or otherwise) in relation to the
                 contents of, or use of, or otherwise in connection with, this
                 website:
 
@@ -335,17 +334,17 @@ $session->initialize();
         <div class="col-md-12">
             <h4>Law and jurisdiction</h4>
             <p>These terms and conditions will be governed by and construed in
-                accordance with VIRGINIA STATE LAW, and any disputes relating to
-                these terms and conditions will be subject to the non-exclusive
-                jurisdiction of the courts of MARICOPA.</p>
+                accordance with ARIZONA STATE LAW. Any disputes relating to these
+                terms and conditions will be subject to the jurisdiction of the
+                state and federal courts located in MARICOPA COUNTY, ARIZONA,
+                except where applicable law requires otherwise.</p>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
             <h4>SAPERSTONE STUDIOS'S details</h4>
             <p>The full name of SAPERSTONE STUDIOS is SAPERSTONE STUDIOS LLC.</p>
-            <p>SAPERSTONE STUDIOS is registered in MARICOPA, AZ under
-                registration number 46-2778744.</p>
+            <p>SAPERSTONE STUDIOS is registered in MARICOPA, AZ.</p>
             <p>SAPERSTONE STUDIOS'S registered address is 5701 S Quartz St,
                 Gilbert, AZ 85298.</p>
             <p>
@@ -361,6 +360,11 @@ $session->initialize();
                 This document was created using a Contractology template available
                 at <a target='_blank' href='http://www.contractology.com'>http://www.contractology.com</a>.
             </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <p><strong>Last updated September 23, 2026</strong></p>
         </div>
     </div>
     <!-- /.row -->
