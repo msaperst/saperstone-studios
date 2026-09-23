@@ -329,8 +329,9 @@ function findAlbum(prefillCode) {
                 dialogItself.setClosable(false);
                 // lookup-only requests are safe GETs; adding the album changes state and must POST.
                 var code = $('#find-album-code').val();
+                var addToAlbums = $('#find-album-add').is(':checked');
                 var request;
-                if ($('#find-album-add').is(':checked')) {
+                if (addToAlbums) {
                     request = $.post("/api/add-album.php", {
                         code: code,
                     });
@@ -340,14 +341,13 @@ function findAlbum(prefillCode) {
                     });
                 }
                 request.done(function (data) {
+                    var albumId = addToAlbums && data ? data.id : data;
                     // goto album url if it exists
-                    if ($.isNumeric(data) && data !== '0') {
+                    if ($.isNumeric(albumId) && String(albumId) !== '0') {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Navigating to album</div>");
-                        window.location.href = '/user/album.php?album=' + data;
-                    } else if (data === '0') {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+                        window.location.href = '/user/album.php?album=' + albumId;
                     } else {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     }
                 }).fail(function (xhr, status, error) {
                     if (xhr.responseText !== "") {
