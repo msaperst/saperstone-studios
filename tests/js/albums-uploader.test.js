@@ -101,3 +101,46 @@ test('albums-uploader.js configures album image uploads for the edited album', (
     assert.equal(environment.uploadOptions.multiple, true);
     assert.equal(environment.uploadOptions.sequential, true);
 });
+
+
+test('albums-uploader.js refreshes visible album cards after uploads finish', () => {
+    const refreshCalls = [];
+    const liveAlbum = {
+        albumId: '29',
+        refreshImages(count) {
+            refreshCalls.push(count);
+        }
+    };
+    const {context, environment} = createAlbumContext(scriptPath, {
+        album: liveAlbum
+    });
+    environment.queueGet('/api/get-album.php', {
+        type: 'success',
+        data: {
+            name: 'Album',
+            description: '',
+            date: '2026-09-22',
+            code: '',
+            imageCount: 1,
+            needsThumbnails: true
+        }
+    });
+
+    context.editAlbum(29);
+    const config = environment.dialogs.at(-1);
+    const dialog = environment.createDialog();
+    config.onshown(dialog);
+
+    environment.queueGet('/api/get-album.php', {
+        type: 'success',
+        data: {
+            imageCount: 4
+        }
+    });
+
+    environment.uploadOptions.afterUploadAll();
+
+    assert.equal(environment.calls.get.at(-1).url, '/api/get-album.php');
+    assert.equal(environment.calls.get.at(-1).data.id, 29);
+    assert.deepEqual(refreshCalls, [4]);
+});

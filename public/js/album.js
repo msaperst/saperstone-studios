@@ -445,6 +445,22 @@ Album.prototype.syncPendingImage = function () {
     return false;
 };
 
+Album.prototype.refreshImages = function (totalImages) {
+    var Album = this;
+    Album.totalImages = totalImages;
+
+    if (Album.images.length >= Album.totalImages) {
+        Album.loadImages();
+        return Album.images.length;
+    }
+
+    Album.loaded = Album.images.length;
+    Album.initialized = false;
+    Album.loading = false;
+    Album.loadImages();
+    return Album.images.length;
+};
+
 function rebuildAlbumBreadcrumbs() {
     // Always strip out any existing trailing filter items to reset the base
     $('.breadcrumb > li.filter-crumb').remove();
@@ -554,17 +570,19 @@ Album.prototype.loadImages = function () {
         var loadedNow = 0;
         $('#album-grid .album-card img[data-src]').each(function () {
             var img = $(this);
-            if (img.attr('data-loaded') === '1' || img.attr('data-loading') === '1') {
-                return;
-            }
             var card = img.closest('.album-card');
             if (!card.length) {
+                return;
+            }
+            if (card.attr('data-loaded') === '1' || card.attr('data-loading') === '1') {
                 return;
             }
             var rect = card.get(0).getBoundingClientRect();
             var threshold = window.innerHeight * 1.5;
             if (rect.top < threshold && rect.bottom > -threshold * 0.25) {
                 card.attr('data-loading', '1');
+                var media = card.find('.album-card-media');
+                media.css('background-image', 'url("' + card.attr('data-location') + '")');
                 img.one('load', function () {
                     markAlbumCardLoaded(card);
                 });
@@ -587,6 +605,9 @@ Album.prototype.loadImages = function () {
         start: Album.loaded,
         howMany: Album.totalImages
     }, function (data) {
+        if (data.images.length > 0) {
+            $('#album-empty-state').remove();
+        }
         if (typeof data.favoriteCount !== "undefined") {
             updateFavoriteCount(data.favoriteCount);
         }
@@ -614,7 +635,6 @@ Album.prototype.loadImages = function () {
             media.attr('type', 'button');
             media.addClass('album-card-media');
             media.attr('aria-label', 'Open image ' + (v.title || v.sequence));
-            media.attr('style', 'background-image: url("' + v.location + '")');
 
             var img = $('<img>');
             img.addClass('album-card-image');

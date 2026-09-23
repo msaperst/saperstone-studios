@@ -9,8 +9,13 @@ function createAlbumContext(scriptPath, options = {}) {
         }
     });
 
+    const windowObject = {
+        album: options.album ?? null
+    };
+
     const globals = {
         $: environment.$,
+        window: windowObject,
         document: environment.document,
         BootstrapDialog: environment.BootstrapDialog,
         setTimeout: environment.setTimeout,
@@ -21,7 +26,7 @@ function createAlbumContext(scriptPath, options = {}) {
     };
 
     const context = loadAlbumScript(scriptPath, globals);
-    return {context, environment};
+    return {context, environment, window: windowObject};
 }
 
 module.exports = {

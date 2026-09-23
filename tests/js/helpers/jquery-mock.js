@@ -18,6 +18,23 @@ class MockElement {
         this.stopSpinCount = 0;
         this.closestResult = null;
         this.uploadOptions = null;
+        this.rect = {top: 0, bottom: 100, width: 300, height: 100};
+        this.nativeElement = {
+            complete: false,
+            naturalWidth: 0,
+            getBoundingClientRect: () => this.rect
+        };
+    }
+
+    get(index) {
+        return index === 0 ? this.nativeElement : undefined;
+    }
+
+    each(callback) {
+        if (this.length > 0) {
+            callback.call(this, 0, this);
+        }
+        return this;
     }
 
     DataTable(config) {
@@ -86,6 +103,21 @@ class MockElement {
         return this;
     }
 
+    toggleClass(className, force) {
+        if (force === undefined) {
+            if (this.classes.has(className)) {
+                this.classes.delete(className);
+            } else {
+                this.classes.add(className);
+            }
+        } else if (force) {
+            this.classes.add(className);
+        } else {
+            this.classes.delete(className);
+        }
+        return this;
+    }
+
     hasClass(className) {
         return this.classes.has(className);
     }
@@ -117,12 +149,22 @@ class MockElement {
         return this;
     }
 
+    removeAttr(name) {
+        this.attributes.delete(name);
+        return this;
+    }
+
     off() {
         this.handlers.clear();
         return this;
     }
 
     on(event, handler) {
+        this.handlers.set(event, handler);
+        return this;
+    }
+
+    one(event, handler) {
         this.handlers.set(event, handler);
         return this;
     }
@@ -333,6 +375,8 @@ function createJQueryEnvironment(options = {}) {
     $.post = function (url, data) {
         return ajax('post', url, data);
     };
+
+    $.fn = MockElement.prototype;
 
     $.isNumeric = function (value) {
         return value !== null && value !== '' && !Number.isNaN(Number(value));
