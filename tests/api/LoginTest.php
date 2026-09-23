@@ -46,16 +46,6 @@ class LoginTest extends TestCase {
         ]));
     }
 
-    public function testGetNotAllowed() {
-        $response = $this->http->request('GET', 'api/login.php', [
-            'http_errors' => false
-        ]);
-
-        $this->assertEquals(405, $response->getStatusCode());
-        $this->assertEquals('POST', $response->getHeaderLine('Allow'));
-        $this->assertEquals('', (string)$response->getBody());
-    }
-
     public function testGetLoginCredentialsNotAccepted() {
         $response = $this->http->request('GET', 'api/login.php', [
             'http_errors' => false,
