@@ -58,19 +58,28 @@ class Session {
     }
 
     function getHost() {
-        return $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER ['HTTP_HOST'];
+        return $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'];
     }
 
     function getBaseURL(): string {
-        $pageURL = 'http';
-        if (isset ($_SERVER ["SERVER_PORT"]) && $_SERVER ["SERVER_PORT"] == "9443") {
-            $pageURL .= "s";
+        $scheme = self::isSecureRequest() ? 'https' : 'http';
+        $forwardedHost = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? '';
+        $httpHost = $_SERVER['HTTP_HOST'] ?? '';
+
+        if ($forwardedHost !== '') {
+            $host = trim(explode(',', $forwardedHost)[0]);
+        } else if ($httpHost !== '') {
+            $host = $httpHost;
+        } else {
+            $host = $this->getServer();
+            $port = (string)($_SERVER['SERVER_PORT'] ?? '');
+            $defaultPort = $scheme === 'https' ? '443' : '80';
+            if ($port !== '' && $port !== $defaultPort) {
+                $host .= ':' . $port;
+            }
         }
-        $pageURL .= "://" . $this->getServer();
-        if ($_SERVER ["SERVER_PORT"] != "90" && $_SERVER ["SERVER_PORT"] != "9443") {
-            $pageURL .= ":" . $_SERVER ["SERVER_PORT"];
-        }
-        return $pageURL;
+
+        return $scheme . '://' . $host;
     }
 
     function getCurrentPage(): string {
