@@ -71,12 +71,8 @@ class LoginTest extends TestCase {
         $this->assertEquals('POST', $response->getHeaderLine('Allow'));
         $this->assertEquals('', (string)$response->getBody());
 
-        $log = $this->sql->getRow(
-            "SELECT * FROM `user_logs` WHERE `user` = 3 AND `action` = 'Logged In' ORDER BY time DESC, id DESC LIMIT 1;"
-        );
-        if ($log !== null) {
-            $this->assertFalse(CustomAsserts::timeWithin(1, $log['time']));
-        }
+        $page = $this->http->request('GET', '/');
+        $this->assertStringContainsString('id="login-menu-item"', (string)$page->getBody());
     }
 
     public function testNoAction() {
