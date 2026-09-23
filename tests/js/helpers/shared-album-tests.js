@@ -129,6 +129,124 @@ function registerAddAlbumTests(label, scriptPath) {
     });
 }
 
+function registerCreateAlbumTests(label, scriptPath) {
+    function runCreate(response) {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.element('#new-album-name').val('Created Album');
+        environment.element('#new-album-description').val('Description');
+        environment.element('#new-album-date').val('2026-09-22');
+        environment.queuePost('/api/create-album.php', response);
+
+        const editCalls = [];
+        context.editAlbum = (id) => editCalls.push(id);
+        context.openCreateAlbumDialog();
+
+        const config = environment.dialogs.at(-1);
+        const dialog = environment.createDialog();
+        const button = environment.createButton('__create_album_button__');
+        button.closestResult = environment.element('__create_album_modal__');
+        config.buttons[0].action.call(button, dialog);
+
+        return {
+            context,
+            environment,
+            config,
+            dialog,
+            button,
+            editCalls,
+            modalBody: environment.element('__create_album_modal__ .bootstrap-dialog-body')
+        };
+    }
+
+    test(`${label}: create album adds the new row and opens the album editor`, () => {
+        const result = runCreate({
+            type: 'success',
+            data: '31'
+        });
+
+        assert.deepEqual(plain(result.environment.calls.post[0]), {
+            url: '/api/create-album.php',
+            data: {
+                name: 'Created Album',
+                description: 'Description',
+                date: '2026-09-22'
+            }
+        });
+        assert.equal(result.environment.calls.rowAdd.length, 1);
+        assert.equal(result.environment.calls.rowAdd[0].id, '31');
+        assert.equal(result.environment.calls.rowAdd[0].name, 'Created Album');
+        assert.equal(result.dialog.closed, true);
+        assert.deepEqual(result.editCalls, ['31']);
+        assert.equal(result.button.stopSpinCount, 1);
+        assert.equal(result.dialog.buttonsEnabled, true);
+        assert.equal(result.dialog.closable, true);
+    });
+
+    test(`${label}: create album treats a zero response as an unexpected error`, () => {
+        const result = runCreate({
+            type: 'success',
+            data: '0'
+        });
+
+        assert.match(
+            result.modalBody.appended[0],
+            /Some unexpected error occurred while creating your album/
+        );
+        assert.equal(result.button.stopSpinCount, 1);
+    });
+
+    test(`${label}: create album displays a custom API response`, () => {
+        const result = runCreate({
+            type: 'success',
+            data: 'Custom create error'
+        });
+
+        assert.match(result.modalBody.appended[0], /Custom create error/);
+        assert.equal(result.button.stopSpinCount, 1);
+    });
+
+    test(`${label}: create album displays an HTTP response error`, () => {
+        const result = runCreate({
+            type: 'failure',
+            xhr: {
+                responseText: 'Album creation failed'
+            }
+        });
+
+        assert.match(result.modalBody.appended[0], /Album creation failed/);
+        assert.equal(result.button.stopSpinCount, 1);
+    });
+
+    test(`${label}: create album reports an expired session`, () => {
+        const result = runCreate({
+            type: 'failure',
+            xhr: {
+                responseText: ''
+            },
+            error: 'Unauthorized'
+        });
+
+        assert.match(result.modalBody.appended[0], /session has timed out/);
+        assert.equal(result.button.stopSpinCount, 1);
+    });
+
+    test(`${label}: create album displays a generic request error`, () => {
+        const result = runCreate({
+            type: 'failure',
+            xhr: {
+                responseText: ''
+            },
+            error: 'Server Error'
+        });
+
+        assert.match(
+            result.modalBody.appended[0],
+            /Some unexpected error occurred while creating your album/
+        );
+        assert.equal(result.button.stopSpinCount, 1);
+    });
+}
+
 function registerSharedAlbumManagementTests(label, scriptPath) {
     test(`${label}: thumbnailStatus distinguishes N/A, ready, and missing thumbnails`, () => {
         const {context} = createAlbumContext(scriptPath);
@@ -391,5 +509,6 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
 
 module.exports = {
     registerAddAlbumTests,
+    registerCreateAlbumTests,
     registerSharedAlbumManagementTests
 };
