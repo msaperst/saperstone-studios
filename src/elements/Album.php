@@ -204,6 +204,29 @@ class Album {
     }
 
     /**
+     * @param $code
+     * @return Album
+     * @throws BadAlbumException
+     */
+    public static function withCode($code): Album {
+        if (!isset($code)) {
+            throw new BadAlbumException("Album code is required");
+        } elseif ($code === "") {
+            throw new BadAlbumException("Album code can not be blank");
+        }
+
+        $sql = new Sql();
+        $row = $sql->getRow("SELECT id FROM albums WHERE BINARY code = ?", [$code]);
+        $sql->disconnect();
+
+        if (!isset($row['id'])) {
+            throw new BadAlbumException("That code does not match any albums");
+        }
+
+        return static::withId($row['id']);
+    }
+
+    /**
      * @param $id
      * @return Album
      * @throws BadAlbumException

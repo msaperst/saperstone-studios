@@ -20,6 +20,7 @@ class HttpMethodTest extends TestCase {
 
     public static function postOnlyEndpoints(): array {
         return [
+            ['add-album.php'],
             ['add-notification-email.php'],
             ['contact-me.php'],
             ['create-album.php'],

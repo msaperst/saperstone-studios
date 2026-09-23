@@ -108,34 +108,41 @@ function openCreateAlbumDialog() {
 }
 
 function addAlbum() {
+    // clear feedback from the previous attempt
+    $('#album-code-add-message').remove();
+
     // spin our button
     $("#album-code-add").prop("disabled", true);
     $("#album-code-add em").removeClass('fa fa-plus-circle').addClass('glyphicon glyphicon-asterisk icon-spin');
     // make our call
-    $.get("/api/find-album.php", {
+    $.post("/api/add-album.php", {
         code: $('#album-code').val(),
-        albumAdd: 1,
     }).done(function (data) {
-        // goto album url if it exists
-        if ($.isNumeric(data) && data !== '0') {
-            $('#add-album-div').append("<div id='album-code-add-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Added album to your list</div>");
-            // refresh our tables
-            album_table.ajax.reload(null, false);
+        var message;
+        if (data && $.isNumeric(data.id) && String(data.id) !== '0') {
+            if (data.added) {
+                $('#add-album-div').append("<div id='album-code-add-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Added album to your list</div>");
+                // refresh our tables only when membership actually changed
+                album_table.ajax.reload(null, false);
+            } else {
+                $('#add-album-div').append("<div id='album-code-add-message' class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Album is already in your list</div>");
+            }
+
+            // Capture this specific element so an older timeout cannot remove a newer message.
+            message = $('#album-code-add-message');
             setTimeout(function () {
-                $('#album-code-add-message').remove();
+                message.remove();
             }, 10000);
-        } else if (data === '0') {
-            $('#add-album-div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         } else {
-            $('#add-album-div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+            $('#add-album-div').append("<div id='album-code-add-message' class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
     }).fail(function (xhr, status, error) {
         if (xhr.responseText !== "") {
-            $('#add-album-div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
+            $('#add-album-div').append("<div id='album-code-add-message' class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
         } else if (error === "Unauthorized") {
-            $('#add-album-div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
+            $('#add-album-div').append("<div id='album-code-add-message' class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
         } else {
-            $('#add-album-div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
+            $('#add-album-div').append("<div id='album-code-add-message' class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while searching for your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
         }
     }).always(function () {
         //fix our button

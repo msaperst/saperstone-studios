@@ -152,9 +152,9 @@ class FindAlbumTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;"));
     }
 
-    public function testAlbumCodeAdded() {
+    public function testAlbumCodeDoesNotAddLoggedInUserViaGet() {
         $cookieJar = CookieJar::fromArray([
-            'hash' => '1d7505e7f434a7713e84ba399e937191'
+            'hash' => '5510b5e6fffd897c234cafe499f76146'
         ], getenv('DB_HOST'));
         $response = $this->http->request('GET', 'api/find-album.php', [
             'query' => [
@@ -165,11 +165,9 @@ class FindAlbumTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(999, (string)$response->getBody());
-        //UNABLE TO CHECK COOKIE
-        $albums = $this->sql->getRows("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 999;");
-        $this->assertEquals(1, sizeOf($albums));
-        $this->assertEquals('1', $albums[0]['user']);
-        $this->assertEquals(999, $albums[0]['album']);
+        $this->assertEquals(0, $this->sql->getRowCount(
+            "SELECT * FROM `albums_for_users` WHERE `user` = 3 AND `album` = 999;"
+        ));
     }
 }
 

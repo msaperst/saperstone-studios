@@ -108,6 +108,36 @@ class AlbumIntegrationTest extends TestCase {
         Album::withId("8999");
     }
 
+    public function testWithCode() {
+        $album = Album::withCode('123');
+        $this->assertEquals(899, $album->getId());
+    }
+
+    public function testWithCodeNull() {
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album code is required');
+        Album::withCode(null);
+    }
+
+    public function testWithCodeBlank() {
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('Album code can not be blank');
+        Album::withCode('');
+    }
+
+    public function testWithCodeIsCaseSensitive() {
+        $this->sql->executeStatement("UPDATE albums SET code = 'AbC123' WHERE id = 899");
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('That code does not match any albums');
+        Album::withCode('abc123');
+    }
+
+    public function testWithCodeNotFound() {
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('That code does not match any albums');
+        Album::withCode('not-a-code');
+    }
+
     /**
      * @throws Exception
      */
