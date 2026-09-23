@@ -10,6 +10,36 @@ function thumbnailStatus(row) {
     return '<span class="label label-warning">Missing</span>';
 }
 
+function albumManagementColumns(actionColumn) {
+    return [actionColumn, {
+        "data": function (row) {
+            return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
+        },
+        "className": "album-name",
+        "targets": 1
+    }, {
+        "data": "description",
+        "className": "album-description",
+        "targets": 2
+    }, {
+        "data": "date",
+        "className": "album-date",
+        "targets": 3
+    }, {
+        "data": "images",
+        "className": "album-images",
+        "targets": 4
+    }, {
+        "data": thumbnailStatus,
+        "className": "album-thumbnails",
+        "targets": 5
+    }];
+}
+
+function setAlbumRowId(nRow, aData) {
+    $(nRow).attr('album-id', aData.id);
+}
+
 function addAlbum() {
     // spin our button
     $("#album-code-add").prop("disabled", true);
