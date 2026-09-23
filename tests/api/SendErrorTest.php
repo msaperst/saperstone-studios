@@ -125,8 +125,8 @@ class SendErrorTest extends TestCase {
         $response = $this->http->request('POST', 'api/send-error.php', [
             'form_params' => [
                 'error' => '404',
-                'page' => 'localhost/123.html',
-                'referrer' => 'localhost'
+                'page' => 'http://localhost:90/123.html',
+                'referrer' => 'Unknown'
             ]
         ]);
         $this->assertEquals(200, $response->getStatusCode());
@@ -138,8 +138,8 @@ class SendErrorTest extends TestCase {
             'error@saperstonestudios.com',
             '404 Error',
             "This is an automatically generated message from Saperstone Studios\r
-\t\tSomeone got a 404 on page localhost/123.html\r
-\t\tThey came from page localhost\r
+\t\tSomeone got a 404 on page http://localhost:90/123.html\r
+\t\tThey came from page Unknown\r
 \t\tYou might want to look into this or take action\r
 \t\tUser information is collected before\r
 \r
@@ -148,7 +148,7 @@ Browser: unknown unknown\r
 Resolution: \r
 OS: unknown\r
 Full UA: GuzzleHttp/7\r\n",
-            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'localhost/123.html\' target=\'_blank\'>localhost/123.html</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'localhost\' target=\'_blank\'>localhost</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>');
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 404 on page <a href=\'http://localhost:90/123.html\' target=\'_blank\'>http://localhost:90/123.html</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page Unknown.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>');
     }
 
     /**
@@ -159,8 +159,8 @@ Full UA: GuzzleHttp/7\r\n",
         $response = $this->http->request('POST', 'api/send-error.php', [
             'form_params' => [
                 'error' => '403',
-                'page' => 'localhost/123.html',
-                'referrer' => 'localhost',
+                'page' => 'http://localhost:90/123.html',
+                'referrer' => 'http://localhost:90/source.html',
                 'resolution' => '200x400'
             ]
         ]);
@@ -173,8 +173,8 @@ Full UA: GuzzleHttp/7\r\n",
             'error@saperstonestudios.com',
             '403 Error',
             "This is an automatically generated message from Saperstone Studios\r
-\t\tSomeone got a 403 on page localhost/123.html\r
-\t\tThey came from page localhost\r
+\t\tSomeone got a 403 on page http://localhost:90/123.html\r
+\t\tThey came from page Unknown\r
 \t\tYou might want to look into this or take action\r
 \t\tUser information is collected before\r
 \r
@@ -183,7 +183,7 @@ Browser: unknown unknown\r
 Resolution: 200x400\r
 OS: unknown\r
 Full UA: GuzzleHttp/7\r\n",
-            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 403 on page <a href=\'localhost/123.html\' target=\'_blank\'>localhost/123.html</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'localhost\' target=\'_blank\'>localhost</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: 200x400<br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>');
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 403 on page <a href=\'http://localhost:90/123.html\' target=\'_blank\'>http://localhost:90/123.html</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'http://localhost:90/source.html\' target=\'_blank\'>http://localhost:90/source.html</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: 200x400<br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>');
     }
 
     /**
@@ -197,8 +197,8 @@ Full UA: GuzzleHttp/7\r\n",
         $response = $this->http->request('POST', 'api/send-error.php', [
             'form_params' => [
                 'error' => '401',
-                'page' => 'localhost/123.html',
-                'referrer' => 'localhost'
+                'page' => 'http://localhost:90/123.html',
+                'referrer' => 'Unknown'
             ],
             'cookies' => $cookieJar
         ]);
@@ -211,8 +211,8 @@ Full UA: GuzzleHttp/7\r\n",
             'error@saperstonestudios.com',
             '401 Error',
             "This is an automatically generated message from Saperstone Studios\r
-\t\tSomeone got a 401 on page localhost/123.html\r
-\t\tThey came from page localhost\r
+\t\tSomeone got a 401 on page http://localhost:90/123.html\r
+\t\tThey came from page Unknown\r
 \t\tYou might want to look into this or take action\r
 \t\tUser information is collected before\r
 \r
@@ -224,6 +224,6 @@ Browser: unknown unknown\r
 Resolution: \r
 OS: unknown\r
 Full UA: GuzzleHttp/7\r\n",
-            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 401 on page <a href=\'localhost/123.html\' target=\'_blank\'>localhost/123.html</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href=\'localhost\' target=\'_blank\'>localhost</a>.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>User Id</strong>: 1<br/><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href=\'mailto:msaperst@gmail.com\'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>');
+            '<html><body>This is an automatically generated message from Saperstone Studios<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a 401 on page <a href=\'http://localhost:90/123.html\' target=\'_blank\'>http://localhost:90/123.html</a><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page Unknown.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/><strong>User Id</strong>: 1<br/><strong>Name</strong>: Max Saperstone<br/><strong>Email</strong>: <a href=\'mailto:msaperst@gmail.com\'>msaperst@gmail.com</a><br/><strong>Location</strong>: unknown (use %d.%d.%d.%d to manually lookup)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: GuzzleHttp/7<br/></body></html>');
     }
 }
