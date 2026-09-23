@@ -286,9 +286,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
             <div class="row page-header"></div>
             <?php
         }
-        if (count($images) > 0) {
-            ?>
-            <div id="album-viewer-overlay" class="album-viewer-overlay hidden" album-id="<?php echo $album->getId(); ?>"
+        ?>
+        <div id="album-viewer-overlay" class="album-viewer-overlay hidden" album-id="<?php echo $album->getId(); ?>"
                  role="dialog" aria-modal="true" aria-hidden="true">
                 <button id="album-viewer-close" type="button" class="album-viewer-close" aria-label="Close viewer">
                     <em class="fa fa-times"></em>
@@ -357,10 +356,11 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                 </div>
             </div>
             <div id="album-grid" class="album-grid"></div>
-            <?php
-        } else {
+
+        <?php
+        if (count($images) === 0) {
             ?>
-            <div class="row">
+            <div id="album-empty-state" class="row">
                 <div class="col-md-offset-2 col-md-8 text-center">Sorry, no images have
                     been uploaded to your gallery yet. You can submit your email to be
                     notified when images are added if you would like. Your email address
@@ -378,6 +378,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     </button>
                 </div>
             </div>
+
             <?php
         }
         ?>
