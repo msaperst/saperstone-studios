@@ -3,7 +3,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PARENT_DIR="$( dirname "${DIR}" )"
 
-output="${PARENT_DIR}/public/tmp/status.txt"
+output="${PARENT_DIR}/status/thumbnail-status.txt"
 mkdir -p "$( dirname "${output}" )"
 touch "${output}"
 

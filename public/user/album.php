@@ -512,6 +512,7 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
     window.showImageTitle = <?php echo $user->isAdmin() ? 'true' : 'false'; ?>;
 </script>
 <script src="/js/album.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/album.js'); ?>"></script>
+<script src="/js/albums-common.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-common.js'); ?>"></script>
 <?php
 if ($user->isAdmin()) {
     ?>
