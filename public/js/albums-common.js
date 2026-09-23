@@ -1,8 +1,5 @@
 // Shared album management helpers.
 
-// HTTP route under the application web root, not the operating system /tmp directory.
-var thumbnailStatusEndpoint = ['', 'tmp', 'status.txt'].join('/');
-
 function thumbnailStatus(row) {
     if (Number.parseInt(row.images, 10) === 0) {
         return '<span class="label label-default">N/A</span>';
@@ -67,7 +64,22 @@ function addUser(id) {
 }
 
 function chooseThumbnailScope(id, imageCount, needsThumbnails, button, dialog) {
-    var buttons = [];
+    var buttons = [{
+        icon: 'glyphicon glyphicon-refresh',
+        label: ' Recreate All',
+        cssClass: 'btn-danger',
+        action: function (scopeDialog) {
+            scopeDialog.close();
+            chooseThumbnailMarkup(id, button, dialog, "all");
+        }
+    }, {
+        label: 'Close',
+        action: function (scopeDialog) {
+            button.stopSpin();
+            enableDialogButtons(dialog);
+            scopeDialog.close();
+        }
+    }];
 
     if (imageCount === 0) {
         BootstrapDialog.show({
@@ -87,7 +99,7 @@ function chooseThumbnailScope(id, imageCount, needsThumbnails, button, dialog) {
     }
 
     if (needsThumbnails) {
-        buttons.push({
+        buttons.unshift({
             icon: 'glyphicon glyphicon-plus',
             label: ' Missing Only',
             cssClass: 'btn-warning',
@@ -97,25 +109,6 @@ function chooseThumbnailScope(id, imageCount, needsThumbnails, button, dialog) {
             }
         });
     }
-
-    buttons.push({
-        icon: 'glyphicon glyphicon-refresh',
-        label: ' Recreate All',
-        cssClass: 'btn-danger',
-        action: function (scopeDialog) {
-            scopeDialog.close();
-            chooseThumbnailMarkup(id, button, dialog, "all");
-        }
-    });
-
-    buttons.push({
-        label: 'Close',
-        action: function (scopeDialog) {
-            button.stopSpin();
-            enableDialogButtons(dialog);
-            scopeDialog.close();
-        }
-    });
 
     BootstrapDialog.show({
         draggable: true,
@@ -179,7 +172,7 @@ function makeThumbs(id, button, dialog, markup, mode) {
         mode: mode
     }).done(function () {
         var myVar = setInterval(function () {
-            $.get(thumbnailStatusEndpoint, function (data) {
+            $.get("/tmp/status.txt", function (data) {
                 $('#resize-progress .progress-bar').html(data);
                 if (data.indexOf("Done") === 0) {
                     clearInterval(myVar);
