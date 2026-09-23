@@ -110,9 +110,32 @@ jobs:
           name: it-coverage
           path: reports
 
+  javascript-unit-testing:
+    name: JavaScript Unit Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 🔧
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: JavaScript Unit Test 🤞
+        run: bash bin/test-js.sh
+
+      - name: Upload Coverage 📊
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: js-coverage
+          path: reports/js-lcov.info
+
   sonar:
     name: SonarCloud
-    needs: [ unit-testing, integration-testing ]
+    needs: [ unit-testing, integration-testing, javascript-unit-testing ]
     runs-on: ubuntu-latest
 
     steps:
@@ -131,8 +154,14 @@ jobs:
           name: it-coverage
           path: it/
 
+      - name: Get JS Coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: js-coverage
+          path: js/
+
       - name: Combine Reports
-        run: mkdir reports; mv ut/* reports/; mv it/* reports/
+        run: mkdir reports; mv ut/* reports/; mv it/* reports/; mv js/* reports/
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v6
