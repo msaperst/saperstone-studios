@@ -46,6 +46,39 @@ class LoginTest extends TestCase {
         ]));
     }
 
+    public function testGetNotAllowed() {
+        $response = $this->http->request('GET', 'api/login.php', [
+            'http_errors' => false
+        ]);
+
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('POST', $response->getHeaderLine('Allow'));
+        $this->assertEquals('', (string)$response->getBody());
+    }
+
+    public function testGetLoginCredentialsNotAccepted() {
+        $response = $this->http->request('GET', 'api/login.php', [
+            'http_errors' => false,
+            'query' => [
+                'submit' => 'Login',
+                'username' => 'downloader',
+                'password' => 'password',
+                'csrf_token' => $this->csrfToken
+            ]
+        ]);
+
+        $this->assertEquals(405, $response->getStatusCode());
+        $this->assertEquals('POST', $response->getHeaderLine('Allow'));
+        $this->assertEquals('', (string)$response->getBody());
+
+        $log = $this->sql->getRow(
+            "SELECT * FROM `user_logs` WHERE `user` = 3 AND `action` = 'Logged In' ORDER BY time DESC, id DESC LIMIT 1;"
+        );
+        if ($log !== null) {
+            $this->assertFalse(CustomAsserts::timeWithin(1, $log['time']));
+        }
+    }
+
     public function testNoAction() {
         $response = $this->http->request('POST', 'api/login.php');
         $this->assertEquals(200, $response->getStatusCode());
