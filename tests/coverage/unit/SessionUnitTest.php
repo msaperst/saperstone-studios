@@ -113,7 +113,7 @@ class SessionUnitTest extends TestCase {
 
     public function testBaseUrlSecure() {
         $_SERVER['SERVER_NAME'] = "saperstonestudios.com";
-        $_SERVER['HTTP_HOST'] = "saperstonestudios.com";
+        $_SERVER['HTTP_HOST'] = "saperstonestudios.com:443";
         $_SERVER['SERVER_PORT'] = "443";
         $_SERVER['HTTPS'] = "on";
         $result = $this->session->getBaseUrl();
