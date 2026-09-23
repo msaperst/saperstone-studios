@@ -34,6 +34,43 @@ function registerAddAlbumTests(label, scriptPath) {
         assert.equal(environment.element('#album-code-add-message').removed, true);
     });
 
+    test(`${label}: addAlbum handles a zero response as an unexpected API error`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.element('#album-code').val('ZERO');
+        environment.queueGet('/api/find-album.php', {
+            type: 'success',
+            data: '0'
+        });
+
+        context.addAlbum();
+
+        assert.match(
+            environment.element('#add-album-div').appended[0],
+            /Some unexpected error occurred while searching for your album/
+        );
+        assert.equal(environment.element('#album-code-add').prop('disabled'), false);
+    });
+
+    test(`${label}: addAlbum reports an expired session for unauthorized failures without a response body`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.element('#album-code').val('EXPIRED');
+        environment.queueGet('/api/find-album.php', {
+            type: 'failure',
+            xhr: {
+                responseText: ''
+            },
+            error: 'Unauthorized'
+        });
+
+        context.addAlbum();
+
+        assert.match(
+            environment.element('#add-album-div').appended[0],
+            /session has timed out/
+        );
+        assert.equal(environment.element('#album-code-add').prop('disabled'), false);
+    });
+
     test(`${label}: addAlbum displays an API error and restores the button`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('BAD');
@@ -241,6 +278,27 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         environment.runIntervalsOnce();
 
         const progress = environment.element('#resize-progress .progress-bar');
+        assert.equal(progress.hasClass('progress-bar-danger'), true);
+        assert.equal(button.stopSpinCount, 1);
+        assert.equal(dialog.buttonsEnabled, true);
+        assert.equal(dialog.closable, true);
+    });
+
+    test(`${label}: makeThumbs uses the fallback message when the request fails without a response body`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queuePost('/api/make-thumbs.php', {
+            type: 'failure',
+            xhr: {
+                responseText: ''
+            }
+        });
+
+        const button = environment.createButton('__thumb_button__');
+        const dialog = environment.createDialog();
+        context.makeThumbs(16, button, dialog, 'none', 'all');
+
+        const progress = environment.element('#resize-progress .progress-bar');
+        assert.equal(progress.html(), 'Error: Unable to start thumbnail generation');
         assert.equal(progress.hasClass('progress-bar-danger'), true);
         assert.equal(button.stopSpinCount, 1);
         assert.equal(dialog.buttonsEnabled, true);
