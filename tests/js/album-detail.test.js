@@ -177,7 +177,9 @@ test('album.js defers the real thumbnail URL when building cards', () => {
 
     assert.equal(media.attr('style'), undefined);
     assert.equal(image.attr('src'), 'data:image/gif;base64,R0lGODlhAQABAAAAACw=');
-    assert.equal(image.attr('data-src'), '/albums/sample/thumbs/10.jpg');
+    assert.equal(image.attr('data-src'), '/img/image.png');
+    assert.notEqual(image.attr('src'), '/albums/sample/thumbs/10.jpg');
+    assert.notEqual(image.attr('data-src'), '/albums/sample/thumbs/10.jpg');
 });
 
 test('album.js loads the real thumbnail only when its card is near the viewport', () => {
@@ -189,10 +191,13 @@ test('album.js loads the real thumbnail only when its card is near the viewport'
     });
     const image = environment.element('#album-grid .album-card img[data-src]');
     const card = environment.element('__lazy_card__');
+    const media = environment.element('__lazy_media__');
     card.rect = {top: 100, bottom: 350, width: 300, height: 250};
+    card.attr('data-location', '/albums/sample/thumbs/lazy.jpg');
+    card.find = (selector) => selector === '.album-card-media' ? media : environment.element('__lazy_find__');
     image.closestResult = card;
     image.attr('src', 'placeholder');
-    image.attr('data-src', '/albums/sample/thumbs/lazy.jpg');
+    image.attr('data-src', '/img/image.png');
 
     const album = Object.create(context.Album.prototype);
     Object.assign(album, {
@@ -205,7 +210,9 @@ test('album.js loads the real thumbnail only when its card is near the viewport'
 
     album.loadImages();
 
-    assert.equal(image.attr('src'), '/albums/sample/thumbs/lazy.jpg');
+    assert.equal(image.attr('src'), '/img/image.png');
+    assert.equal(image.attr('data-src'), '/img/image.png');
+    assert.equal(media.css('background-image'), 'url("/albums/sample/thumbs/lazy.jpg")');
     assert.equal(card.attr('data-loading'), '1');
     assert.equal(album.loaded, 1);
 });
@@ -219,10 +226,13 @@ test('album.js leaves offscreen thumbnail URLs untouched', () => {
     });
     const image = environment.element('#album-grid .album-card img[data-src]');
     const card = environment.element('__offscreen_card__');
+    const media = environment.element('__offscreen_media__');
     card.rect = {top: 2000, bottom: 2250, width: 300, height: 250};
+    card.attr('data-location', '/albums/sample/thumbs/offscreen.jpg');
+    card.find = (selector) => selector === '.album-card-media' ? media : environment.element('__offscreen_find__');
     image.closestResult = card;
     image.attr('src', 'placeholder');
-    image.attr('data-src', '/albums/sample/thumbs/offscreen.jpg');
+    image.attr('data-src', '/img/image.png');
 
     const album = Object.create(context.Album.prototype);
     Object.assign(album, {
@@ -236,6 +246,7 @@ test('album.js leaves offscreen thumbnail URLs untouched', () => {
     album.loadImages();
 
     assert.equal(image.attr('src'), 'placeholder');
+    assert.equal(media.css('background-image'), undefined);
     assert.equal(card.attr('data-loading'), undefined);
     assert.equal(album.loaded, 0);
 });
@@ -250,8 +261,8 @@ test('album.js does not process a card again while its thumbnail is already load
     const card = environment.element('__loading_card__');
     card.attr('data-loading', '1');
     image.closestResult = card;
-    image.attr('src', '/albums/sample/thumbs/current.jpg');
-    image.attr('data-src', '/albums/sample/thumbs/current.jpg');
+    image.attr('src', '/img/image.png');
+    image.attr('data-src', '/img/image.png');
 
     const album = Object.create(context.Album.prototype);
     Object.assign(album, {
