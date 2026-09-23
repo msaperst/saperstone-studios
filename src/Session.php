@@ -79,6 +79,11 @@ class Session {
             }
         }
 
+        $defaultPortSuffix = $scheme === 'https' ? ':443' : ':80';
+        if (substr($host, -strlen($defaultPortSuffix)) === $defaultPortSuffix) {
+            $host = substr($host, 0, -strlen($defaultPortSuffix));
+        }
+
         return $scheme . '://' . $host;
     }
 
