@@ -41,6 +41,9 @@ $session->initialize();
                     favorites, comments, and photographs associated with your services.</li>
                 <li><strong>Communications,</strong> including information you submit through contact,
                     registration, password-reset, and other forms.</li>
+                <li><strong>Gallery notification information,</strong> such as an email address you provide
+                    to be notified when images become available in an album. We use the address only to send
+                    the requested notification and delete it after the notification is sent.</li>
                 <li><strong>Technical information,</strong> such as server logs, IP address, browser and
                     device information, requested pages, and timestamps used to operate, secure, and
                     troubleshoot the site.</li>
@@ -176,10 +179,12 @@ $session->initialize();
             <p>We use reasonable administrative and technical safeguards appropriate to the information we
                 maintain, including HTTPS and access controls. No internet transmission or storage system can
                 be guaranteed completely secure.</p>
-            <p>The website is not directed to children under 13, and we do not knowingly collect personal
-                information directly from children under 13 through account registration or marketing. Our
-                photography services may include photographs of children supplied or authorized by a parent,
-                guardian, school, organization, or client.</p>
+            <p>The website is not directed to children under 13. Some gallery features allow a visitor
+                to provide an email address to request a one-time notification when images become available.
+                We use that address only for the requested notification and delete it after the message is sent.
+                We do not knowingly collect other personal information directly from children under 13 through
+                account registration or marketing. Our photography services may include photographs of children
+                supplied or authorized by a parent, guardian, school, organization, or client.</p>
 
             <h3>Policy changes</h3>
             <p>We may update this policy as our practices or legal obligations change. The effective date at
