@@ -3,7 +3,11 @@ const {test} = require('node:test');
 const {createAlbumDetailContext} = require('./helpers/album-detail-test-utils');
 
 function prepareFilterContext(showFavoritesOnly) {
-    const {context, environment, window} = createAlbumDetailContext();
+    const {context, environment, window} = createAlbumDetailContext({
+        lengths: {
+            '#album-grid .album-card': 1
+        }
+    });
     const card = environment.element('#album-grid .album-card');
     card.attr('data-image-id', '10');
     card.attr('data-favorite', '0');
