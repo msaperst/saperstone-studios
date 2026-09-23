@@ -7,12 +7,15 @@ function plain(value) {
 }
 
 function registerAddAlbumTests(label, scriptPath) {
-    test(`${label}: addAlbum reloads the table and restores the button on success`, () => {
+    test(`${label}: addAlbum reloads the table and restores the button on a new add`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('ABC123');
         environment.queuePost('/api/add-album.php', {
             type: 'success',
-            data: '42'
+            data: {
+                id: '42',
+                added: true
+            }
         });
 
         context.addAlbum();
@@ -28,17 +31,56 @@ function registerAddAlbumTests(label, scriptPath) {
         assert.equal(environment.element('#album-code-add').prop('disabled'), false);
         assert.equal(environment.element('#album-code-add em').hasClass('fa'), true);
         assert.equal(environment.element('#album-code-add em').hasClass('icon-spin'), false);
-
-        environment.runTimeouts();
-        assert.equal(environment.element('#album-code-add-message').removed, true);
     });
 
-    test(`${label}: addAlbum handles a zero response as an unexpected API error`, () => {
+    test(`${label}: addAlbum reports when the album is already in the list without reloading`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.element('#album-code').val('ABC123');
+        environment.queuePost('/api/add-album.php', {
+            type: 'success',
+            data: {
+                id: '42',
+                added: false
+            }
+        });
+
+        context.addAlbum();
+
+        assert.equal(environment.calls.reload.length, 0);
+        assert.match(environment.element('#add-album-div').appended[0], /already in your list/);
+        assert.equal(environment.element('#album-code-add').prop('disabled'), false);
+    });
+
+    test(`${label}: addAlbum clears the previous message before sending another request`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        const previousMessage = environment.element('#album-code-add-message');
+        previousMessage.removed = false;
+        environment.element('#album-code').val('BAD');
+        environment.queuePost('/api/add-album.php', {
+            type: 'failure',
+            xhr: {
+                responseText: 'That code does not match any albums'
+            }
+        });
+
+        context.addAlbum();
+
+        assert.equal(previousMessage.removed, true);
+        assert.match(
+            environment.element('#add-album-div').appended[0],
+            /That code does not match any albums/
+        );
+    });
+
+    test(`${label}: addAlbum handles a zero id as an unexpected API error`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('ZERO');
         environment.queuePost('/api/add-album.php', {
             type: 'success',
-            data: '0'
+            data: {
+                id: '0',
+                added: true
+            }
         });
 
         context.addAlbum();
@@ -70,19 +112,22 @@ function registerAddAlbumTests(label, scriptPath) {
         assert.equal(environment.element('#album-code-add').prop('disabled'), false);
     });
 
-    test(`${label}: addAlbum displays a non-numeric API response`, () => {
+    test(`${label}: addAlbum displays a generic error for a malformed success response`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('CUSTOM');
         environment.queuePost('/api/add-album.php', {
             type: 'success',
-            data: 'Custom album error'
+            data: {
+                id: 'not-a-number',
+                added: true
+            }
         });
 
         context.addAlbum();
 
         assert.match(
             environment.element('#add-album-div').appended[0],
-            /Custom album error/
+            /Some unexpected error occurred while searching for your album/
         );
         assert.equal(environment.element('#album-code-add').prop('disabled'), false);
     });
