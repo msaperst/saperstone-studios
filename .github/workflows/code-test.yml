@@ -29,13 +29,13 @@ jobs:
       - name: Unit Test 🤞
         run: composer unit-test
 
-      - name: Test Report
-        uses: dorny/test-reporter@v2
-        if: ${{ !cancelled() }}       # run this step even if previous step failed
-        with:
-          name: Unit Tests            # Name of the check run which will be created
-          path: reports/ut-junit.xml    # Path to test results
-          reporter: java-junit        # Format of test results
+      - name: Test Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/test-summary.py \
+            --title "PHP Unit Tests" \
+            --junit reports/ut-junit.xml \
+            --clover reports/ut-clover.xml | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Upload HTML test report
         if: always()
@@ -88,13 +88,13 @@ jobs:
           composer integration-pre-test
           composer integration-test
 
-      - name: Test Report
-        uses: dorny/test-reporter@v2
-        if: ${{ !cancelled() }}       # run this step even if previous step failed
-        with:
-          name: Integration Tests            # Name of the check run which will be created
-          path: reports/it-junit.xml    # Path to test results
-          reporter: java-junit        # Format of test results
+      - name: Test Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/test-summary.py \
+            --title "PHP Integration Tests" \
+            --junit reports/it-junit.xml \
+            --clover reports/it-clover.xml | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Upload HTML test report
         if: always()
@@ -126,12 +126,22 @@ jobs:
       - name: JavaScript Unit Test 🤞
         run: bash bin/test-js.sh
 
+      - name: Test Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/test-summary.py \
+            --title "JavaScript Unit Tests" \
+            --junit reports/js-junit.xml \
+            --lcov reports/js-lcov.info | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Upload Coverage 📊
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: js-coverage
-          path: reports/js-lcov.info
+          path: |
+            reports/js-lcov.info
+            reports/js-junit.xml
 
   sonar:
     name: SonarCloud
