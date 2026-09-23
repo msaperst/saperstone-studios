@@ -108,6 +108,23 @@ class AlbumIntegrationTest extends TestCase {
         Album::withId("8999");
     }
 
+    public function testWithCode() {
+        $album = Album::withCode('123');
+        $this->assertEquals(899, $album->getId());
+    }
+
+    public function testWithCodeIsCaseSensitive() {
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('That code does not match any albums');
+        Album::withCode('ABC');
+    }
+
+    public function testWithCodeNotFound() {
+        $this->expectException(BadAlbumException::class);
+        $this->expectExceptionMessage('That code does not match any albums');
+        Album::withCode('not-a-code');
+    }
+
     /**
      * @throws Exception
      */
