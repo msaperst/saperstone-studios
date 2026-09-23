@@ -327,11 +327,19 @@ function findAlbum(prefillCode) {
                 $button.spin();
                 dialogItself.enableButtons(false);
                 dialogItself.setClosable(false);
-                // send our update
-                $.get("/api/find-album.php", {
-                    code: $('#find-album-code').val(),
-                    albumAdd: $('#find-album-add').is(':checked') ? 1 : 0,
-                }).done(function (data) {
+                // lookup-only requests are safe GETs; adding the album changes state and must POST.
+                var code = $('#find-album-code').val();
+                var request;
+                if ($('#find-album-add').is(':checked')) {
+                    request = $.post("/api/add-album.php", {
+                        code: code,
+                    });
+                } else {
+                    request = $.get("/api/find-album.php", {
+                        code: code,
+                    });
+                }
+                request.done(function (data) {
                     // goto album url if it exists
                     if ($.isNumeric(data) && data !== '0') {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Navigating to album</div>");
