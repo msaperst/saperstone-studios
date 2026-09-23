@@ -391,9 +391,11 @@ class UserIntegrationTest extends TestCase {
 
     public function testBadCookieUser() {
         $_COOKIE ['hash'] = "1234567890abcdef1234567890abcdef";
-        $this->expectException(BadUserException::class);
-        $this->expectExceptionMessage('Invalid user token provided');
-        User::fromSystem();
+
+        $user = User::fromSystem();
+
+        $this->assertFalse($user->isLoggedIn());
+        $this->assertFalse(isset($_COOKIE['hash']));
     }
 
     /**

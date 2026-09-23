@@ -68,6 +68,27 @@ class GetUsersTest extends TestCase {
     /**
      * @throws GuzzleException
      */
+    public function testInvalidLegacyAuthCookieReturnsUnauthorizedWithoutErrorDisclosure() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1234567890abcdef1234567890abcdef'
+        ], getenv('DB_HOST'));
+
+        $response = $this->http->request('GET', 'api/get-users.php', [
+            'cookies' => $cookieJar,
+            'http_errors' => false
+        ]);
+        $body = (string)$response->getBody();
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('', $body);
+        $this->assertStringNotContainsString('Fatal error:', $body);
+        $this->assertStringNotContainsString('Warning:', $body);
+        $this->assertStringNotContainsString('/var/www/', $body);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function testUsers() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
