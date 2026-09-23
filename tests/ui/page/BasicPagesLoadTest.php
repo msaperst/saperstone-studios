@@ -59,6 +59,7 @@ class BasicPagesLoadTest extends TestBase {
         $this->assertStringContainsString('Google Analytics and Meta Pixel', $page);
         $this->assertStringContainsString('Facebook SDK and AddToAny', $page);
         $this->assertStringContainsString('Effective September 23, 2026', $page);
+        $this->assertStringContainsString('delete it after the notification is sent', $page);
         $this->assertStringNotContainsString('We do not allow third-party behavioral tracking', $page);
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
