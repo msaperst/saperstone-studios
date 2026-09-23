@@ -112,17 +112,14 @@ $session->initialize();
             <p>Yes. Cookies are small files that a site or its service provider
                 transfers to your computer's hard drive through your Web browser
                 (if you allow) that enables the site's or service provider's
-                systems to recognize your browser and capture and remember certain
-                information. For instance, we use cookies to help us remember and
-                process the items in your shopping cart. They are also used to help
-                us understand your preferences based on previous or current site
+                systems to recognize your browser and capture and remember certain information.
+                Cookies are also used to help us understand your preferences based on previous or current site
                 activity, which enables us to provide you with improved services.
                 We also use cookies to help us compile aggregate data about site
                 traffic and site interaction so that we can offer better site
                 experiences and tools in the future.</p>
             <p>We use cookies to:
             <ul>
-                <li>Help remember and process the items in the shopping cart.</li>
                 <li>Understand and save user's preferences for future visits.</li>
             </ul>
             <p>You can review or edit your current cookie options <span id='edit-cookies'>here</span></p>
@@ -138,8 +135,7 @@ $session->initialize();
             <h4>If users disable cookies in their browser:</h4>
             <p>If you turn cookies off, some features will be disabled. Some of
                 the features that make your site experience more efficient and may
-                not function properly. However, you will still be able to place
-                orders.</p>
+                not function properly. </p>
         </div>
     </div>
     <div class="row">

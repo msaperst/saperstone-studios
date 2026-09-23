@@ -4,7 +4,6 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Testwork\Environment\Environment;
 use CustomAsserts;
@@ -12,7 +11,6 @@ use Exception;
 use Facebook\WebDriver\Cookie;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
-use Facebook\WebDriver\Exception\UnexpectedTagNameException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
@@ -77,7 +75,6 @@ class AlbumFeatureContext implements Context {
             $sql->executeStatement("DELETE FROM `favorites` WHERE `favorites`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `download_rights` WHERE `download_rights`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `share_rights` WHERE `share_rights`.`album` = $albumId;");
-            $sql->executeStatement("DELETE FROM `cart` WHERE `cart`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `notification_emails` WHERE `notification_emails`.`album` = $albumId;");
             if (is_dir($albumLocation)) {
@@ -309,26 +306,7 @@ class AlbumFeatureContext implements Context {
         $sql->disconnect();
     }
 
-    /**
-     * @Given /^album (\d+) image (\d+) has (\d+) "([^"]*)" "([^"]*)" "([^"]*)" in the cart$/
-     * @param $album
-     * @param $image
-     * @param $howMany
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     * @throws Exception
-     */
-    public function albumImageHasInTheCart($album, $image, $howMany, $productCategory, $productSize, $productName) {
-        $sql = new Sql();
-        $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image - 1))['id'];
-        $productType = $sql->getRow("SELECT * FROM product_types WHERE category = '" . strtolower($productCategory) . "' AND name = '$productName';")['id'];
-        $product = $sql->getRow("SELECT * FROM products WHERE product_type = '$productType' AND size = '$productSize';")['id'];
-        $sql->executeStatement("INSERT INTO cart VALUES( {$this->user->getId()}, $album, $img, $product, $howMany)");
-        $sql->disconnect();
-    }
-
-    /**
+        /**
      * @Given /^album (\d+) has notifications:$/
      * @param $albumId
      * @param TableNode $table
@@ -456,27 +434,7 @@ class AlbumFeatureContext implements Context {
         $album->removeFavorite($image);
     }
 
-    /**
-     * @When /^I add the image to my cart$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iAddTheImageToMyCart() {
-        $album = new Album($this->driver, $this->wait);
-        $album->addToCart();
-    }
-
-    /**
-     * @When /^I purchase the image$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iPurchaseTheImage() {
-        $album = new Album($this->driver, $this->wait);
-        $album->purchaseImage();
-    }
-
-    /**
+            /**
      * @When /^I download the image$/
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -516,34 +474,7 @@ class AlbumFeatureContext implements Context {
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album')))));
     }
 
-    /**
-     * @When /^I add (\d+) "([^"]*)" "([^"]*)" "([^"]*)"$/
-     * @param $howMany
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iAdd($howMany, $productCategory, $productSize, $productName) {
-        $album = new Album($this->driver, $this->wait);
-        $album->addSelectionToCart($howMany, $productCategory, $productName, $productSize);
-    }
-
-    /**
-     * @When /^I increase "([^"]*)" "([^"]*)" "([^"]*)" count$/
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iIncreaseCount($productCategory, $productSize, $productName) {
-        $album = new Album($this->driver, $this->wait);
-        $album->increaseSelectionToCart($productCategory, $productName, $productSize);
-    }
-
-    /**
+            /**
      * @When /^I confirm my download$/
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -613,62 +544,7 @@ class AlbumFeatureContext implements Context {
         $album->submitFavorites();
     }
 
-    /**
-     * @When /^I view my cart$/
-     */
-    public function iViewMyCart() {
-        $album = new Album($this->driver, $this->wait);
-        $album->viewCart();
-    }
-
-    /**
-     * @When /^I remove album (\d+) image (\d+) "([^"]*)" "([^"]*)" "([^"]*)" from the cart$/
-     * @param $albumId
-     * @param $image
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     */
-    public function iRemoveAlbumImageFromTheCart($albumId, $image, $productCategory, $productSize, $productName) {
-        $album = new Album($this->driver, $this->wait);
-        $productRows = $album->getCartRows($albumId, $image, $productCategory, $productSize, $productName);
-        $this->driver->wait(WebDriverExpectedCondition::visibilityOf($productRows[0]));
-        $productRows[0]->findElement(WebDriverBy::cssSelector('td > i'))->click();
-    }
-
-    /**
-     * @When /^I provide "([^"]*)" for the shipping "([^"]*)"$/
-     * @param $value
-     * @param $field
-     */
-    public function iProvideForTheContact($value, $field) {
-        $this->driver->findElement(WebDriverBy::id('cart-' . $field))->clear()->sendKeys($value);
-    }
-
-    /**
-     * @When /^I select option "([^"]*)" in cart for album (\d+) image (\d+) "([^"]*)" "([^"]*)" "([^"]*)"$/
-     * @param $option
-     * @param $albumId
-     * @param $image
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     * @throws NoSuchElementException
-     * @throws UnexpectedTagNameException
-     */
-    public function iSelectOptionInCartForAlbumImage($option, $albumId, $image, $productCategory, $productSize, $productName) {
-        $album = new Album($this->driver, $this->wait);
-        $album->selectOption($option, $albumId, $image, $productCategory, $productSize, $productName);
-    }
-
-    /**
-     * @When /^I submit my cart$/
-     */
-    public function iSubmitMyCart() {
-        $this->driver->findElement(WebDriverBy:: id('cart-submit'))->click();
-    }
-
-    /**
+                        /**
      * @When /^I add user (\d+) for album access$/
      * @param $user
      * @throws NoSuchElementException
@@ -1274,167 +1150,7 @@ Comment',
         Assert::assertFalse($this->driver->findElement(WebDriverBy::id('submit'))->isDisplayed());
     }
 
-    /**
-     * @Then /^I see (\d+) "([^"]*)" "([^"]*)" "([^"]*)" price calculated$/
-     * @param $howMany
-     * @param $productCategory
-     * @param $productName
-     * @param $productSize
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iSeePriceCalculated($howMany, $productCategory, $productSize, $productName) {
-        $album = new Album($this->driver, $this->wait);
-        $productRow = $album->getProductRow($productCategory, $productName, $productSize);
-        $sql = new Sql();
-        $productType = $sql->getRow("SELECT * FROM product_types WHERE category = '" . strtolower($productCategory) . "' AND name = '$productName';")['id'];
-        $product = $sql->getRow("SELECT * FROM products WHERE product_type = '$productType' AND size = '$productSize';")['id'];
-        $productPrice = $sql->getRow("SELECT * FROM products WHERE product_type = '$productType' AND size = '$productSize';")['price'];
-        $sql->disconnect();
-        $expected = "$" . number_format((float)$howMany * $productPrice, 2, '.', '');
-        if ($howMany == 0) {
-            $expected = "--";
-        }
-        $this->wait->until(WebDriverExpectedCondition::elementTextIs(WebDriverBy::cssSelector("tr[product-id='$product'] .product-total"), $expected));
-        Assert::assertEquals($expected, $productRow->findElement(WebDriverBy::className('product-total'))->getText());
-    }
-
-    /**
-     * @Then /^I see the cart count is "([^"]*)"$/
-     * @param $cartCount
-     */
-    public function iSeeTheCartCountIs($cartCount) {
-        Assert::assertEquals($cartCount, $this->driver->findElement(WebDriverBy::id('cart-count'))->getText());
-    }
-
-    /**
-     * @Then /^I see (\d+) cart item(s?)$/
-     * @param $count
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iSeeCartItems($count) {
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('cart-table'))));
-        Assert::assertEquals($count, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#cart-items tr'))));
-    }
-
-    /**
-     * @Then /^I see album (\d+) image (\d+) has (\d+) "([^"]*)" "([^"]*)" "([^"]*)" listed$/
-     * @param $albumId
-     * @param $image
-     * @param $howMany
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     */
-    public function iSeeAlbumImageHasListed($albumId, $image, $howMany, $productCategory, $productSize, $productName) {
-        $album = new Album($this->driver, $this->wait);
-        $productRows = $album->getCartRows($albumId, $image, $productCategory, $productSize, $productName);
-        $productPrice = $album->getProductPrice($productCategory, $productSize, $productName);
-        $productOptions = $album->getProductOptions($productCategory, $productName);
-        Assert::assertEquals($howMany, sizeof($productRows));
-        foreach ($productRows as $imageRow) {
-            $this->driver->wait(WebDriverExpectedCondition::visibilityOf($imageRow));
-            Assert::assertTrue($imageRow->isDisplayed());
-            Assert::assertEquals($productName, $imageRow->findElements(WebDriverBy::tagName('td'))[2]->getText());
-            Assert::assertEquals($productSize, $imageRow->findElements(WebDriverBy::tagName('td'))[3]->getText());
-            Assert::assertEquals("$" . number_format((float)$productPrice, 2, '.', ''), $imageRow->findElements(WebDriverBy::tagName('td'))[4]->getText());
-            //are there options?
-            if (sizeof($productOptions) > 0) {
-                Assert::assertTrue($imageRow->findElement(WebDriverBy::cssSelector('td:nth-child(6) > select'))->isDisplayed());
-            } else {
-                Assert::assertEquals('', $imageRow->findElements(WebDriverBy::tagName('td'))[5]->getText());
-            }
-        }
-    }
-
-    /**
-     * @Then /^the place order button is disabled$/
-     */
-    public function thePlaceOrderButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy:: id('cart-submit'))->isEnabled());
-    }
-
-    /**
-     * @Then /^the place order button is enabled$/
-     */
-    public function thePlaceOrderButtonIsEnabled() {
-        Assert::assertTrue($this->driver->findElement(WebDriverBy:: id('cart-submit'))->isEnabled());
-    }
-
-    /**
-     * @Then /^I see option is invalid for "([^"]*)" album (\d+) image (\d+) "([^"]*)" "([^"]*)" "([^"]*)"$/
-     * @param $ord
-     * @param $albumId
-     * @param $image
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     */
-    public function iSeeOptionIsInvalidForAlbumImage($ord, $albumId, $image, $productCategory, $productSize, $productName) {
-        $album = new Album($this->driver, $this->wait);
-        $productRows = $album->getCartRows($albumId, $image, $productCategory, $productSize, $productName);
-        Assert::assertStringContainsString('has-error', $productRows[(intval($ord) - 1)]->findElements(WebDriverBy::tagName('td'))[5]->getAttribute('class'));
-    }
-
-    /**
-     * @Then /^I see option is valid for "([^"]*)" album (\d+) image (\d+) "([^"]*)" "([^"]*)" "([^"]*)"$/
-     * @param $ord
-     * @param $albumId
-     * @param $image
-     * @param $productCategory
-     * @param $productSize
-     * @param $productName
-     */
-    public function iSeeOptionIsValidForAlbumImage($ord, $albumId, $image, $productCategory, $productSize, $productName) {
-        $album = new Album($this->driver, $this->wait);
-        $productRows = $album->getCartRows($albumId, $image, $productCategory, $productSize, $productName);
-        Assert::assertStringNotContainsString('has-error', $productRows[(intval($ord) - 1)]->findElements(WebDriverBy::tagName('td'))[5]->getAttribute('class'));
-    }
-
-    /**
-     * @Then /^cart input "([^"]*)" shows as invalid$/
-     * @param $field
-     */
-    public function cartInputShowsAsInvalid($field) {
-        $input = $this->driver->findElement(WebDriverBy::id('cart-' . $field));
-        Assert::assertStringContainsString('has-error', $input->findElement(WebDriverBy::xpath('..'))->getAttribute('class'));
-    }
-
-    /**
-     * @Then /^I see an info message indicating forwarding to paypal$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iSeeAnInfoMessageIndicatingForwardingToPaypal() {
-        CustomAsserts::infoMessage($this->driver, 'Thank you for submitting your request. Your request is being processed, and you should be forwarded to paypal\'s payment screen within a few seconds. If you are not, please contact us and we\'ll try to resolve your issue as soon as we can.');
-    }
-
-    /**
-     * @Then /^I am forwarded to the paypal page$/
-     */
-    public function iAmForwardedToThePaypalPage() {
-        //TODO - This isn't currently working, need to circle back to this
-        throw new PendingException('Need to fix this functionality');
-    }
-
-    /**
-     * @Then /^I see the tax calculated as \$([0-9]+\.[0-9]{2})$/
-     * @param $tax
-     */
-    public function iSeeTheTaxCalculatedAs($tax) {
-        Assert::assertEquals('$' . $tax, $this->driver->findElement(WebDriverBy::id('cart-tax'))->getText(), $this->driver->findElement(WebDriverBy::id('cart-tax'))->getText());
-    }
-
-    /**
-     * @Then /^I see the total calculated as \$([0-9]+\.[0-9]{2})$/
-     * @param $total
-     */
-    public function iSeeTheTotalCalculatedAs($total) {
-        Assert::assertEquals('$' . $total, $this->driver->findElement(WebDriverBy::id('cart-total'))->getText(), $this->driver->findElement(WebDriverBy::id('cart-total'))->getText());
-    }
-
-    /**
+                                                        /**
      * @Then /^I see album (\d+) album (.*)/
      * @param $albumId
      * @param $albumAttribute

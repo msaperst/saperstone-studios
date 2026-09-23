@@ -287,7 +287,6 @@ Full UA: %s\r\n",
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('shareable-image-btn'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('not-shareable-image-btn'))));
         //removing this button as it is confusing
-        $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('cart-image-btn'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('access-image-btn'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('delete-image-btn'))));
     }
@@ -309,7 +308,6 @@ Full UA: %s\r\n",
 //        $this->assertFalse($this->driver->findElement(WebDriverBy::id('not-shareable-image-btn'))->isDisplayed());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('shareable-image-btn'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('not-shareable-image-btn'))));
-        $this->assertTrue($this->driver->findElement(WebDriverBy::id('cart-image-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('access-image-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('delete-image-btn'))->isEnabled());
     }
@@ -332,7 +330,6 @@ Full UA: %s\r\n",
 //        $this->assertTrue($this->driver->findElement(WebDriverBy::id('not-shareable-image-btn'))->isEnabled());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('shareable-image-btn'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('not-shareable-image-btn'))));
-        $this->assertTrue($this->driver->findElement(WebDriverBy::id('cart-image-btn'))->isEnabled());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('access-image-btn'))));
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('delete-image-btn'))));
     }
@@ -385,59 +382,6 @@ Full UA: %s\r\n",
         $this->assertFalse($this->driver->findElement(WebDriverBy::id('view-my-favorites-btn'))->isDisplayed());
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testFavoritesButtonsDownloaderUser() {
-        $this->sql->executeStatement("INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, '99999');");
-        $this->driver->get($this->baseUrl);
-        $this->loginAs('5510b5e6fffd897c234cafe499f76146');
-        $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $album = new Album($this->driver, $this->wait);
-        $album->openFavorites();
-        $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('favorites-all-title'))));
-        $this->assertEquals('btn btn-default btn-action btn-success', $this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->getAttribute('class'));
-        //removing sharing ability until issue 46 is completed
-//        $this->assertEquals('btn btn-default btn-action btn-success', $this->driver->findElement(WebDriverBy::id('shareable-favorites-btn'))->getAttribute('class'));
-        $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('shareable-favorites-btn'))));
-        $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('view-all-favorites-btn'))));
-        $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('view-my-favorites-btn'))));
-    }
-
-    public function testCartImageModal() {
-        $this->driver->get($this->baseUrl);
-        $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $this->assertEquals('99999', $this->driver->findElement(WebDriverBy::id('cart-image'))->getAttribute('album-id'));
-        $this->assertEquals(4, sizeof($this->driver->findElement(WebDriverBy::id('cart-image'))->findElement(WebDriverBy::className('nav-tabs'))->findElements(WebDriverBy::tagName('li'))));
-    }
-
-    public function testCartModal() {
-        $this->driver->get($this->baseUrl);
-        $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $this->assertEquals('99999', $this->driver->findElement(WebDriverBy::id('cart'))->getAttribute('album-id'));
-    }
-
-    public function testCartModalGuest() {
-        $this->driver->get($this->baseUrl);
-        $searched [99999] = hash('sha256', "album2345");
-        $cookie = new Cookie('searched', json_encode($searched));
-        $this->driver->manage()->addCookie($cookie);
-        $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $this->assertEquals('', $this->driver->findElement(WebDriverBy::id('cart-name'))->getAttribute('value'));
-        $this->assertEquals('', $this->driver->findElement(WebDriverBy::id('cart-email'))->getAttribute('value'));
-    }
-
-    public function testCartModalAdmin() {
-        $this->driver->get($this->baseUrl);
-        $this->adminLogin();
-        $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
-        $this->driver->findElement(WebDriverBy::id('cart-btn'))->click();
-        $this->assertEquals('Max Saperstone', $this->driver->findElement(WebDriverBy::id('cart-name'))->getAttribute('value'));
-        $this->assertEquals('msaperst@gmail.com', $this->driver->findElement(WebDriverBy::id('cart-email'))->getAttribute('value'));
-    }
-
     public function testSubmitModal() {
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
@@ -473,7 +417,6 @@ Full UA: %s\r\n",
         //removing sharing ability until issue 46 is completed
 //        $this->assertFalse($this->driver->findElement(WebDriverBy::id('shareable-all-btn'))->isEnabled());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('shareable-all-btn'))));
-        $this->assertFalse($this->driver->findElement(WebDriverBy::id('cart-btn'))->isEnabled());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('access-btn'))));
     }
 
@@ -485,7 +428,6 @@ Full UA: %s\r\n",
         //removing sharing ability until issue 46 is completed
 //        $this->assertTrue($this->driver->findElement(WebDriverBy::id('shareable-all-btn'))->isEnabled());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('shareable-all-btn'))));
-        $this->assertTrue($this->driver->findElement(WebDriverBy::id('cart-btn'))->isEnabled());
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('access-btn'))->isEnabled());
     }
 
@@ -501,7 +443,6 @@ Full UA: %s\r\n",
         //removing sharing ability until issue 46 is completed
 //        $this->assertTrue($this->driver->findElement(WebDriverBy::id('shareable-all-btn'))->isEnabled());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('shareable-all-btn'))));
-        $this->assertTrue($this->driver->findElement(WebDriverBy::id('cart-btn'))->isEnabled());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('access-btn'))));
     }
 }
