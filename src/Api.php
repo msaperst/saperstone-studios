@@ -9,11 +9,14 @@ class Api {
         $this->user = User::fromSystem();
     }
 
+    protected static function requestMethodMatches(string $method): bool {
+        return strtoupper($_SERVER['REQUEST_METHOD'] ?? '') === strtoupper($method);
+    }
+
     public static function requireMethod(string $method): void {
         $method = strtoupper($method);
-        $requestMethod = strtoupper($_SERVER['REQUEST_METHOD'] ?? '');
 
-        if ($requestMethod !== $method) {
+        if (!self::requestMethodMatches($method)) {
             header('Allow: ' . $method);
             http_response_code(405);
             exit();
