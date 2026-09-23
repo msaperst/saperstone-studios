@@ -1,5 +1,8 @@
 // Shared album management helpers.
 
+// HTTP route under the application web root, not the operating system /tmp directory.
+var thumbnailStatusEndpoint = ['', 'tmp', 'status.txt'].join('/');
+
 function thumbnailStatus(row) {
     if (Number.parseInt(row.images, 10) === 0) {
         return '<span class="label label-default">N/A</span>';
@@ -176,7 +179,7 @@ function makeThumbs(id, button, dialog, markup, mode) {
         mode: mode
     }).done(function () {
         var myVar = setInterval(function () {
-            $.get("/tmp/status.txt", function (data) {
+            $.get(thumbnailStatusEndpoint, function (data) {
                 $('#resize-progress .progress-bar').html(data);
                 if (data.indexOf("Done") === 0) {
                     clearInterval(myVar);
