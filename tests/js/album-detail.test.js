@@ -321,3 +321,43 @@ test('album.js refreshImages appends metadata added after the page initialized',
     assert.equal(album.totalImages, 3);
     assert.equal(environment.element('#album-grid').appended.length, 3);
 });
+
+
+test('album.js shows the first uploaded image without requiring an empty-gallery page refresh', () => {
+    const {context, environment, window} = createAlbumDetailContext();
+    const emptyState = environment.element('#album-empty-state');
+
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success',
+        data: {
+            images: [],
+            favoriteCount: 0
+        }
+    });
+
+    const album = new context.Album('7', 4, 0);
+    window.album = album;
+
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success',
+        data: {
+            images: [{
+                sequence: '1',
+                location: '/albums/sample/thumbs/1.jpg',
+                title: 'First upload',
+                caption: '',
+                height: '800',
+                width: '1200',
+                favorite: '0',
+                downloadable: '1'
+            }],
+            favoriteCount: 0
+        }
+    });
+
+    album.refreshImages(1);
+
+    assert.deepEqual(plain(album.images.map((image) => image.sequence)), ['1']);
+    assert.equal(environment.element('#album-grid').appended.length, 1);
+    assert.equal(emptyState.removed, true);
+});
