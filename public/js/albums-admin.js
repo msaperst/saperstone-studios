@@ -6,36 +6,14 @@ $(document).ready(function () {
         album_table = $('#albums').DataTable({
             "ajax": "/api/get-albums.php",
             "order": [[1, "asc"]],
-            "columnDefs": [{
+            "columnDefs": albumManagementColumns({
                 "orderable": false,
                 "searchable": false,
                 "data": function (row) {
                     return '<button type="button" class="btn btn-xs btn-warning edit-album-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' Album Details"><i class="fa fa-pencil-square-o"></i></button>  <button type="button" class="btn btn-xs btn-success view-album-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' Activities"><i class="fa fa-bars"></i></button>';
                 },
                 "targets": 0
-            }, {
-                "data": function (row) {
-                    return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
-                },
-                "className": "album-name",
-                "targets": 1
-            }, {
-                "data": "description",
-                "className": "album-description",
-                "targets": 2
-            }, {
-                "data": "date",
-                "className": "album-date",
-                "targets": 3
-            }, {
-                "data": "images",
-                "className": "album-images",
-                "targets": 4
-            }, {
-                "data": thumbnailStatus,
-                "className": "album-thumbnails",
-                "targets": 5
-            }, {
+            }).concat([{
                 "data": "lastAccessed",
                 "className": "album-last-accessed",
                 "targets": 6
@@ -43,10 +21,8 @@ $(document).ready(function () {
                 "data": "code",
                 "className": "album-code",
                 "targets": 7
-            }],
-            "fnCreatedRow": function (nRow, aData) {
-                $(nRow).attr('album-id', aData.id);
-            }
+            }]),
+            "fnCreatedRow": setAlbumRowId
         });
         $('#thumbnail-status-filter-container').prependTo('#albums_filter').show();
     }
