@@ -101,7 +101,11 @@ class AddAlbumTest extends TestCase {
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('999', (string)$response->getBody());
+        $this->assertStringStartsWith('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertEquals(
+            ['id' => 999, 'added' => true],
+            json_decode((string)$response->getBody(), true)
+        );
 
         $albums = $this->sql->getRows(
             "SELECT * FROM `albums_for_users` WHERE `user` = 3 AND `album` = 999;"
@@ -111,7 +115,7 @@ class AddAlbumTest extends TestCase {
         $this->assertEquals(999, $albums[0]['album']);
     }
 
-    public function testAddingAlbumAgainIsIdempotent(): void {
+    public function testAddingAlbumAgainReportsExistingMembership(): void {
         $this->sql->executeStatement(
             "INSERT INTO `albums_for_users` (`user`, `album`) VALUES (3, 999);"
         );
@@ -124,7 +128,11 @@ class AddAlbumTest extends TestCase {
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('999', (string)$response->getBody());
+        $this->assertStringStartsWith('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertEquals(
+            ['id' => 999, 'added' => false],
+            json_decode((string)$response->getBody(), true)
+        );
         $this->assertEquals(1, $this->sql->getRowCount(
             "SELECT * FROM `albums_for_users` WHERE `user` = 3 AND `album` = 999;"
         ));
