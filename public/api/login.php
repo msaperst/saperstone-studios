@@ -1,11 +1,6 @@
 <?php
-if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
-    header('Allow: POST');
-    http_response_code(405);
-    exit();
-}
-
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+Api::requireMethod('POST');
 $systemUser = User::fromSystem();
 $session = new Session();
 $session->initialize();
