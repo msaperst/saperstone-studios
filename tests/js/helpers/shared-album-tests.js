@@ -10,18 +10,17 @@ function registerAddAlbumTests(label, scriptPath) {
     test(`${label}: addAlbum reloads the table and restores the button on success`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('ABC123');
-        environment.queueGet('/api/find-album.php', {
+        environment.queuePost('/api/add-album.php', {
             type: 'success',
             data: '42'
         });
 
         context.addAlbum();
 
-        assert.deepEqual(plain(environment.calls.get[0]), {
-            url: '/api/find-album.php',
+        assert.deepEqual(plain(environment.calls.post[0]), {
+            url: '/api/add-album.php',
             data: {
-                code: 'ABC123',
-                albumAdd: 1
+                code: 'ABC123'
             }
         });
         assert.equal(environment.calls.reload.length, 1);
@@ -37,7 +36,7 @@ function registerAddAlbumTests(label, scriptPath) {
     test(`${label}: addAlbum handles a zero response as an unexpected API error`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('ZERO');
-        environment.queueGet('/api/find-album.php', {
+        environment.queuePost('/api/add-album.php', {
             type: 'success',
             data: '0'
         });
@@ -54,7 +53,7 @@ function registerAddAlbumTests(label, scriptPath) {
     test(`${label}: addAlbum reports an expired session for unauthorized failures without a response body`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('EXPIRED');
-        environment.queueGet('/api/find-album.php', {
+        environment.queuePost('/api/add-album.php', {
             type: 'failure',
             xhr: {
                 responseText: ''
@@ -74,7 +73,7 @@ function registerAddAlbumTests(label, scriptPath) {
     test(`${label}: addAlbum displays a non-numeric API response`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('CUSTOM');
-        environment.queueGet('/api/find-album.php', {
+        environment.queuePost('/api/add-album.php', {
             type: 'success',
             data: 'Custom album error'
         });
@@ -91,7 +90,7 @@ function registerAddAlbumTests(label, scriptPath) {
     test(`${label}: addAlbum displays a generic error for failures without details`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('UNKNOWN');
-        environment.queueGet('/api/find-album.php', {
+        environment.queuePost('/api/add-album.php', {
             type: 'failure',
             xhr: {
                 responseText: ''
@@ -111,7 +110,7 @@ function registerAddAlbumTests(label, scriptPath) {
     test(`${label}: addAlbum displays an API error and restores the button`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.element('#album-code').val('BAD');
-        environment.queueGet('/api/find-album.php', {
+        environment.queuePost('/api/add-album.php', {
             type: 'failure',
             xhr: {
                 responseText: 'That code does not match any albums'
