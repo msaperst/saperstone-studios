@@ -174,7 +174,7 @@ Full UA: GuzzleHttp/7\r\n",
             '403 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 403 on page http://localhost:90/123.html\r
-\t\tThey came from page Unknown\r
+\t\tThey came from page http://localhost:90/source.html\r
 \t\tYou might want to look into this or take action\r
 \t\tUser information is collected before\r
 \r
