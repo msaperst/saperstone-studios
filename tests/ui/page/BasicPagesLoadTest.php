@@ -55,12 +55,25 @@ class BasicPagesLoadTest extends TestBase {
     public function testPrivacyPolicyPage() {
         $this->driver->get($this->baseUrl . 'Privacy-Policy.php');
         $this->assertEquals('Privacy Policy', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+        $page = $this->driver->findElement(WebDriverBy::tagName('body'))->getText();
+        $this->assertStringContainsString('Google Analytics and Meta Pixel', $page);
+        $this->assertStringContainsString('Facebook SDK and AddToAny', $page);
+        $this->assertStringContainsString('Effective September 23, 2026', $page);
+        $this->assertStringContainsString('delete it after the notification is sent', $page);
+        $this->assertStringNotContainsString('We do not allow third-party behavioral tracking', $page);
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
     public function testTermsOfUsePage() {
         $this->driver->get($this->baseUrl . 'Terms-of-Use.php');
         $this->assertEquals('Terms of Use', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+        $page = $this->driver->findElement(WebDriverBy::tagName('body'))->getText();
+        $this->assertStringContainsString('use of the website alone does not grant consent', $page);
+        $this->assertStringContainsString('ARIZONA STATE LAW', $page);
+        $this->assertStringContainsString('MARICOPA COUNTY, ARIZONA', $page);
+        $this->assertStringContainsString('SAPERSTONE STUDIOS is registered in MARICOPA, AZ.', $page);
+        $this->assertStringNotContainsString('46-2778744', $page);
+        $this->assertStringNotContainsString('VIRGINIA STATE LAW', $page);
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 

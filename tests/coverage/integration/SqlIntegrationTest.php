@@ -80,6 +80,15 @@ class SqlIntegrationTest extends TestCase {
         $this->assertSame([], $rows);
     }
 
+    public function testLegacyUsageTableWasRemoved(): void {
+        $rows = $this->sql->getRows(
+            "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",
+            [getenv('DB_NAME'), 'usage']
+        );
+
+        $this->assertSame([], $rows);
+    }
+
     public function testGetRowsNoTable() {
         $this->expectException(mysqli_sql_exception::class);
         $this->expectExceptionMessage("Table 'saperstone-studios.review' doesn't exist");

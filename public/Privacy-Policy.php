@@ -6,21 +6,13 @@ $session->initialize();
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
-
 </head>
-
 <body>
-
 <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
 
-<!-- Page Content -->
 <div class="page-content container">
-
-    <!-- Page Heading/Breadcrumbs -->
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header text-center">Privacy Policy</h1>
@@ -31,321 +23,185 @@ $session->initialize();
             </ol>
         </div>
     </div>
-    <!-- /.row -->
 
-    <!-- Content -->
     <div class="row">
         <div class="col-md-12">
-            <p>This privacy policy has been compiled to better serve those who
-                are concerned with how their 'Personally Identifiable Information'
-                (PII) is being used online. PII, as described in US privacy law and
-                information security, is information that can be used on its own or
-                with other information to identify, contact, or locate a single
-                person, or to identify an individual in context. Please read our
-                privacy policy carefully to get a clear understanding of how we
-                collect, use, protect or otherwise handle your Personally
-                Identifiable Information in accordance with our website.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>What personal information do we collect from the people that
-                visit our blog, website or app?</h4>
-            <p>When ordering or registering on our site, as appropriate, you may
-                be asked to enter your name, email address or other details to help
-                you with your experience.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>When do we collect information?</h4>
-            <p>We collect information from you when you register on our site,
-                fill out a form or enter information on our site, or provide us
-                with feedback on our products or services</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>How do we use your information?</h4>
-            <p>We may use the information we collect from you when you register,
-                make a purchase, sign up for our newsletter, respond to a survey or
-                marketing communication, surf the website, or use certain other
-                site features in the following ways:
+            <p><strong>Effective September 23, 2026</strong></p>
+            <p>Saperstone Studios LLC ("Saperstone Studios," "we," "us," or "our") operates
+                saperstonestudios.com. This policy explains what information the website collects,
+                why we use it, when it may be shared, and the choices available to you.</p>
 
-
+            <h3>Information we collect</h3>
+            <p>Depending on how you use the site, we may collect:</p>
             <ul>
-                <li>To allow us to better service you in responding to your
-                    customer service requests.
-                </li>
-                <li>To quickly process your transactions.</li>
-                <li>To follow up with them after correspondence (live chat, email
-                    or phone inquiries)
-                </li>
+                <li><strong>Contact and account information,</strong> such as your name, email address,
+                    telephone number, mailing address, username, and password hash.</li>
+                <li><strong>Photography-service information,</strong> including contracts, signatures,
+                    initials, session details, invoices or payment links, album access, image selections,
+                    favorites, comments, and photographs associated with your services.</li>
+                <li><strong>Communications,</strong> including information you submit through contact,
+                    registration, password-reset, and other forms.</li>
+                <li><strong>Gallery notification information,</strong> such as an email address you provide
+                    to be notified when images become available in an album. We use the address only to send
+                    the requested notification and delete it after the notification is sent.</li>
+                <li><strong>Technical information,</strong> such as server logs, IP address, browser and
+                    device information, requested pages, and timestamps used to operate, secure, and
+                    troubleshoot the site.</li>
+                <li><strong>Optional analytics and social information</strong> collected by the providers
+                    described below, but only after you enable the applicable cookie category.</li>
             </ul>
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>How do we protect your information?</h4>
-            <p>
-                We do not use vulnerability scanning and/or scanning to PCI
-                standards.<br/> We only provide articles and information. We never
-                ask for credit card numbers.<br/> We use regular Malware Scanning.
-            </p>
-            <p>Your personal information is contained behind secured networks
-                and is only accessible by a limited number of persons who have
-                special access rights to such systems, and are required to keep the
-                information confidential. In addition, all sensitive/credit
-                information you supply is encrypted via Secure Socket Layer (SSL)
-                technology.</p>
-            <p>We implement a variety of security measures when a user places an
-                order enters, submits, or accesses their information to maintain
-                the safety of your personal information.</p>
-            <p>All transactions are processed through a gateway provider and are
-                not stored or processed on our servers.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Do we use 'cookies'?</h4>
-            <p>Yes. Cookies are small files that a site or its service provider
-                transfers to your computer's hard drive through your Web browser
-                (if you allow) that enables the site's or service provider's
-                systems to recognize your browser and capture and remember certain information.
-                Cookies are also used to help us understand your preferences based on previous or current site
-                activity, which enables us to provide you with improved services.
-                We also use cookies to help us compile aggregate data about site
-                traffic and site interaction so that we can offer better site
-                experiences and tools in the future.</p>
-            <p>We use cookies to:
+            <p>We do not collect full payment-card numbers through this website. If you pay through a
+                third-party payment service, that provider processes the payment under its own terms and
+                privacy policy.</p>
+
+            <h3>How we use information</h3>
             <ul>
-                <li>Understand and save user's preferences for future visits.</li>
+                <li>Provide photography services, accounts, contracts, galleries, downloads, and support.</li>
+                <li>Respond to inquiries and send service-related communications.</li>
+                <li>Operate, maintain, secure, diagnose, and improve the website.</li>
+                <li>Measure site traffic and marketing performance when Analytics cookies are accepted.</li>
+                <li>Provide blog sharing and social features when Social Media cookies are accepted.</li>
+                <li>Meet legal, accounting, contractual, and fraud-prevention obligations.</li>
             </ul>
-            <p>You can review or edit your current cookie options <span id='edit-cookies'>here</span></p>
-            <p>You can choose to have your computer warn you each time a cookie
-                is being sent, or you can choose to turn off all cookies. You do
-                this through your browser settings. Since browser is a little
-                different, look at your browser's Help Menu to learn the correct
-                way to modify your cookies.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>If users disable cookies in their browser:</h4>
-            <p>If you turn cookies off, some features will be disabled. Some of
-                the features that make your site experience more efficient and may
-                not function properly. </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Third-party disclosure</h4>
-            <p>We do not sell, trade, or otherwise transfer to outside parties
-                your Personally Identifiable Information.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Third-party links</h4>
-            <p>Occasionally, at our discretion, we may include or offer
-                third-party products or services on our website. These third-party
-                sites have separate and independent privacy policies. We therefore
-                have no responsibility or liability for the content and activities
-                of these linked sites. Nonetheless, we seek to protect the
-                integrity of our site and welcome any feedback about these sites.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Google</h4>
-            Google's advertising requirements can be summed up by Google's
-            Advertising Principles. They are put in place to provide a positive
-            experience for users. <a target='_blank'
-                                     href='https://support.google.com/adwordspolicy/answer/1316548?hl=en'>https://support.google.com/adwordspolicy/answer/1316548?hl=en</a>
-            </p>
-            <p>We have not enabled Google AdSense on our site but we may do so
-                in the future.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>California Online Privacy Protection Act</h4>
-            <p>
-                CalOPPA is the first state law in the nation to require commercial
-                websites and online services to post a privacy policy. The law's
-                reach stretches well beyond California to require any person or
-                company in the United States (and conceivably the world) that
-                operates websites collecting Personally Identifiable Information
-                from California consumers to post a conspicuous privacy policy on
-                its website stating exactly the information being collected and
-                those individuals or companies with whom it is being shared. - See
-                more at: <a target='_blank'
-                            href='http://consumercal.org/california-online-privacy-protection-act-caloppa/#sthash.0FdRbT51.dpuf'>http://consumercal.org/california-online-privacy-protection-act-caloppa/#sthash.0FdRbT51.dpuf</a>
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>According to CalOPPA, we agree to the following:</h4>
-            <p>
-                Users can visit our site anonymously.<br/> Once this privacy
-                policy is created, we will add a link to it on our home page or as
-                a minimum, on the first significant page after entering our
-                website.<br/> Our Privacy Policy link includes the word 'Privacy'
-                and can easily be found on the page specified above.<br/>
-            </p>
-            <p>You will be notified of any Privacy Policy changes:
 
+            <h3>Cookies and similar technologies</h3>
+            <p>The site uses necessary cookies for core functions and offers optional cookie categories.
+                Optional Analytics and Social Media integrations do not load until you select those
+                categories. You can reopen the preference center and change your choices
+                <a id="edit-cookies" href="#cookie-settings">here</a>. Withdrawing consent prevents those
+                integrations from loading on subsequent page views and removes known first-party cookies
+                where practical.</p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Cookie or service</th>
+                        <th>Purpose</th>
+                        <th>Category</th>
+                        <th>Typical duration</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><code>session</code></td>
+                        <td>Authentication, CSRF protection, and temporary album access</td>
+                        <td>Necessary</td>
+                        <td>Browser session; one hour for administrator impersonation</td>
+                    </tr>
+                    <tr>
+                        <td><code>CookiePreferences</code></td>
+                        <td>Stores your cookie-category choices</td>
+                        <td>Necessary</td>
+                        <td>One year</td>
+                    </tr>
+                    <tr>
+                        <td><code>announcement-{id}</code></td>
+                        <td>Remembers that you dismissed a site announcement</td>
+                        <td>Necessary user-interface state</td>
+                        <td>Browser session</td>
+                    </tr>
+                    <tr>
+                        <td><code>remember_me</code></td>
+                        <td>Restores a login when you explicitly choose "Remember me"</td>
+                        <td>Preferences</td>
+                        <td>30 days</td>
+                    </tr>
+                    <tr>
+                        <td><code>searched</code></td>
+                        <td>Remembers albums unlocked with a valid album code</td>
+                        <td>Preferences</td>
+                        <td>30 days</td>
+                    </tr>
+                    <tr>
+                        <td>Google Analytics and Meta Pixel</td>
+                        <td>Traffic measurement and marketing-performance analytics</td>
+                        <td>Analytics</td>
+                        <td>Controlled by Google and Meta and by our provider settings</td>
+                    </tr>
+                    <tr>
+                        <td>Facebook SDK and AddToAny</td>
+                        <td>Blog likes, sharing controls, and links to social services</td>
+                        <td>Social Media</td>
+                        <td>Controlled by the applicable provider</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>If you block all cookies in your browser, login, contracts, saved album access, and other
+                site features may not work correctly. Core public content should remain available.</p>
 
+            <h3>Third-party services</h3>
+            <p>We do not sell personal information. We disclose information only as needed to provide the
+                site and our services, comply with law, protect rights and security, or complete a business
+                transaction. Providers may process technical information under their own privacy policies:</p>
             <ul>
-                <li>On our Privacy Policy Page</li>
+                <li><strong>Google Analytics</strong> receives site-interaction and device information when
+                    Analytics is enabled. See <a target="_blank" rel="noopener noreferrer"
+                    href="https://policies.google.com/privacy">Google's Privacy Policy</a>.</li>
+                <li><strong>Meta Pixel</strong> receives page-view and device information when Analytics is
+                    enabled. The Facebook SDK loads only when Social Media is enabled. See
+                    <a target="_blank" rel="noopener noreferrer"
+                    href="https://www.facebook.com/privacy/policy/">Meta's Privacy Policy</a>.</li>
+                <li><strong>AddToAny</strong> provides sharing controls when Social Media is enabled. See
+                    <a target="_blank" rel="noopener noreferrer"
+                    href="https://www.addtoany.com/privacy">AddToAny's Privacy Policy</a>.</li>
+                <li><strong>Google Maps</strong> is embedded on the contact page. Loading that page may send
+                    Google your IP address, browser information, and interaction with the map.</li>
+                <li>Hosting, email, payment, and other operational providers process information only as
+                    needed to supply their services to us.</li>
             </ul>
-            </p>
-            <p>Can change your personal information:
+            <p>Links to third-party websites take you away from our site. Their privacy practices are not
+                controlled by Saperstone Studios.</p>
 
+            <h3>Retention</h3>
+            <p>We retain account, contract, transaction, communication, and photography-service records for
+                as long as reasonably necessary to provide services, maintain business and legal records,
+                resolve disputes, and enforce agreements. Security and server logs are retained according to
+                operational needs. Optional-provider data is retained according to our settings and the
+                provider's policy. In September 2026, we stopped our legacy first-party visitor-statistics
+                collection and deleted its historical table because it was no longer needed.</p>
 
+            <h3>Your choices</h3>
             <ul>
-                <li>By emailing us</li>
-                <li>By logging in to your account</li>
+                <li>Use the cookie preference center linked above to grant or withdraw optional Analytics,
+                    Social Media, and Preferences choices.</li>
+                <li>Use your browser controls to delete or block cookies.</li>
+                <li>Log in to update available account information, or contact us to request access,
+                    correction, or deletion where applicable. We may retain information when required for
+                    legal, security, contractual, or recordkeeping reasons.</li>
+                <li>Opt out of nonessential email by following the instructions in the message or contacting us.</li>
             </ul>
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>How does our site handle Do Not Track signals?</h4>
-            <p>We honor Do Not Track signals and Do Not Track, plant cookies, or
-                use advertising when a Do Not Track (DNT) browser mechanism is in
-                place.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Does our site allow third-party behavioral tracking?</h4>
-            <p>It's also important to note that we do not allow third-party
-                behavioral tracking</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>COPPA (Children Online Privacy Protection Act)</h4>
-            <p>When it comes to the collection of personal information from
-                children under the age of 13 years old, the Children's Online
-                Privacy Protection Act (COPPA) puts parents in control. The Federal
-                Trade Commission, United States' consumer protection agency,
-                enforces the COPPA Rule, which spells out what operators of
-                websites and online services must do to protect children's privacy
-                and safety online.</p>
-            <p>We do not specifically market to children under the age of 13
-                years old.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Fair Information Practices</h4>
-            <p>The Fair Information Practices Principles form the backbone of
-                privacy law in the United States and the concepts they include have
-                played a significant role in the development of data protection
-                laws around the globe. Understanding the Fair Information Practice
-                Principles and how they should be implemented is critical to comply
-                with the various privacy laws that protect personal information.</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>In order to be in line with Fair Information Practices we will
-                take the following responsive action, should a data breach occur:</h4>
-            <p>We will notify you via email
+            <p>Browsers do not implement a single, consistently interpreted Do Not Track standard. The site
+                therefore uses the cookie preference center rather than treating a browser DNT signal as a
+                cookie choice.</p>
 
+            <h3>Security and children</h3>
+            <p>We use reasonable administrative and technical safeguards appropriate to the information we
+                maintain, including HTTPS and access controls. No internet transmission or storage system can
+                be guaranteed completely secure.</p>
+            <p>The website is not directed to children under 13. Some gallery features allow a visitor
+                to provide an email address to request a one-time notification when images become available.
+                We use that address only for the requested notification and delete it after the message is sent.
+                We do not knowingly collect other personal information directly from children under 13 through
+                account registration or marketing. Our photography services may include photographs of children
+                supplied or authorized by a parent, guardian, school, organization, or client.</p>
 
-            <ul>
-                <li>Within 7 business days</li>
-            </ul>
-            </p>
-            <p>We also agree to the Individual Redress Principle which requires
-                that individuals have the right to legally pursue enforceable
-                rights against data collectors and processors who fail to adhere to
-                the law. This principle requires not only that individuals have
-                enforceable rights against data users, but also that individuals
-                have recourse to courts or government agencies to investigate
-                and/or prosecute non-compliance by data processors.</p>
+            <h3>Policy changes</h3>
+            <p>We may update this policy as our practices or legal obligations change. The effective date at
+                the top of this page identifies the current version.</p>
+
+            <h3>Contact us</h3>
+            <p>Questions or privacy requests may be sent to:</p>
+            <p>Saperstone Studios LLC<br>
+                5701 S Quartz St<br>
+                Gilbert, AZ 85298<br>
+                United States<br>
+                <a href="mailto:contact@saperstonestudios.com">contact@saperstonestudios.com</a><br>
+                <a href="tel:5712660004">(571) 266-0004</a></p>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>CAN SPAM Act</h4>
-            <p>The CAN-SPAM Act is a law that sets the rules for commercial
-                email, establishes requirements for commercial messages, gives
-                recipients the right to have emails stopped from being sent to
-                them, and spells out tough penalties for violations.</p>
-            <p>We collect your email address in order to:
-
-
-            <ul>
-                <li>Send information, respond to inquiries, and/or other requests
-                    or questions
-                </li>
-                <li>Process orders and to send information and updates pertaining
-                    to orders.
-                </li>
-                <li>Send you additional information related to your product and/or
-                    service
-                </li>
-                <li>Market to our mailing list or continue to send emails to our
-                    clients after the original transaction has occurred.
-                </li>
-            </ul>
-            </p>
-            <p>To be in accordance with CANSPAM, we agree to the following:
-
-
-            <ul>
-                <li>Not use false or misleading subjects or email addresses.</li>
-                <li>Identify the message as an advertisement in some reasonable
-                    way.
-                </li>
-                <li>Include the physical address of our business or site
-                    headquarters.
-                </li>
-                <li>Monitor third-party email marketing services for compliance, if
-                    one is used.
-                </li>
-                <li>Honor opt-out/unsubscribe requests quickly.</li>
-                <li>Allow users to unsubscribe by using the link at the bottom of
-                    each email.
-                </li>
-            </ul>
-            </p>
-            <p>
-                If at any time you would like to unsubscribe from receiving future
-                emails, you can email us at <a target='_blank'
-                                               href='mailto:contact@saperstonestudios.com'>contact@saperstonestudios.com</a>
-                and we will promptly remove you from ALL correspondence.
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h4>Contacting Us</h4>
-            <p>If there are any questions regarding this privacy policy, you may
-                contact us using the information below.</p>
-            <p>
-                Saperstone Studios<br/> 5701 S Quartz St<br/> Gilbert,
-                Arizona 85298<br/> United States<br/> <a target='_blank'
-                                                         href='mailto:contact@saperstonestudios.com'>contact@saperstonestudios.com</a><br/>
-                <a target="_blank" href="tel:5712660004">(571) 266-0004</a><br/>
-            </p>
-            <br/> <br/> <br/>
-            <p>Last Edited on 2017-02-08</p>
-        </div>
-    </div>
-    <!-- /.row -->
 
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/footer.php"; ?>
-
 </div>
-<!-- /.container -->
-
 </body>
 </html>
