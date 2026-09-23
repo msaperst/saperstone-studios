@@ -120,7 +120,7 @@ function editAlbum(id) {
                     $.get("/api/get-album.php", {
                         id: id
                     }, function (currentAlbum) {
-                        chooseThumbnailScope(id, currentAlbum.imageCount, currentAlbum.needsThumbnails, $button, dialogItself);
+                        chooseThumbnailScope(id, currentAlbum.imageCount, currentAlbum.needsThumbnails, currentAlbum.hasAnyThumbnails, $button, dialogItself);
                     }, "json").fail(function (xhr) {
                         var message = xhr.responseText || 'Unable to refresh album details';
                         $('#resize-progress .progress-bar')

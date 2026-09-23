@@ -167,7 +167,7 @@ function addUser(id) {
 
 }
 
-function chooseThumbnailScope(id, imageCount, needsThumbnails, button, dialog) {
+function chooseThumbnailScope(id, imageCount, needsThumbnails, hasAnyThumbnails, button, dialog) {
     var buttons = [{
         icon: 'glyphicon glyphicon-refresh',
         label: ' Recreate All',
@@ -199,6 +199,11 @@ function chooseThumbnailScope(id, imageCount, needsThumbnails, button, dialog) {
                 }
             }]
         });
+        return;
+    }
+
+    if (needsThumbnails && !hasAnyThumbnails) {
+        chooseThumbnailMarkup(id, button, dialog, "missing");
         return;
     }
 
