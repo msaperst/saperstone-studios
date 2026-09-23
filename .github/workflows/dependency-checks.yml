@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Setup PHP with PECL extension 🔧
         uses: shivammathur/setup-php@v2
@@ -38,14 +38,14 @@ jobs:
 
       - name: Upload Lint Sarif 📊
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: reports/dependency-check-report.sarif
           category: php
 
       - name: Publish Result 📊
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: OWASP Dependency Check Results
           path: reports

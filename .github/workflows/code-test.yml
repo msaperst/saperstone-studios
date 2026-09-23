@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Setup PHP with PECL extension 🔧
         uses: shivammathur/setup-php@v2
@@ -39,14 +39,14 @@ jobs:
 
       - name: Upload HTML test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ut-test-html
           path: reports/ut-results.html
 
       - name: Upload Coverage 📊
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ut-coverage
           path: reports
@@ -57,7 +57,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Setup PHP with PECL extension 🔧
         uses: shivammathur/setup-php@v2
@@ -98,14 +98,14 @@ jobs:
 
       - name: Upload HTML test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: it-test-html
           path: reports/it-results.html
 
       - name: Upload Coverage 📊
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: it-coverage
           path: reports
@@ -116,10 +116,10 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Setup Node.js 🔧
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
 
@@ -136,7 +136,7 @@ jobs:
 
       - name: Upload Coverage 📊
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: js-coverage
           path: |
@@ -150,22 +150,22 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Get UT Coverage
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ut-coverage
           path: ut
 
       - name: Get IT Coverage
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: it-coverage
           path: it/
 
       - name: Get JS Coverage
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: js-coverage
           path: js/
@@ -174,6 +174,6 @@ jobs:
         run: mkdir reports; mv ut/* reports/; mv it/* reports/; mv js/* reports/
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
