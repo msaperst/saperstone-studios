@@ -1,11 +1,23 @@
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
 const {createAlbumContext} = require('./helpers/album-test-utils');
-const {registerSharedAlbumManagementTests} = require('./helpers/shared-album-tests');
+const {
+    registerCreateAlbumTests,
+    registerSharedAlbumManagementTests
+} = require('./helpers/shared-album-tests');
 
 const scriptPath = 'public/js/albums-admin.js';
 
+registerCreateAlbumTests('albums-admin.js', scriptPath);
 registerSharedAlbumManagementTests('albums-admin.js', scriptPath);
+
+test('albums-admin.js opens the shared create album dialog', () => {
+    const {environment} = createAlbumContext(scriptPath);
+
+    environment.element('#add-album-btn').trigger('click');
+
+    assert.equal(environment.dialogs.at(-1).title, 'Add A New Album');
+});
 
 test('albums-admin.js configures admin columns and thumbnail filtering', () => {
     const {environment} = createAlbumContext(scriptPath);
