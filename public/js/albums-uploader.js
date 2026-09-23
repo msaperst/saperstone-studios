@@ -34,70 +34,7 @@ $(document).ready(function () {
     })
 
     $('#add-album-btn').click(function () {
-        BootstrapDialog.show({
-            draggable: true,
-            title: 'Add A New Album',
-            message: function () {
-                var inputs = '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control"/>' + '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control"/>' + '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>';
-                return inputs;
-            },
-            buttons: [{
-                icon: 'glyphicon glyphicon-folder-close',
-                label: ' Create Album',
-                cssClass: 'btn-success',
-                action: function (dialogItself) {
-                    var $button = this;
-                    var modal = $button.closest('.modal-content');
-                    $button.spin();
-                    dialogItself.enableButtons(false);
-                    dialogItself.setClosable(false);
-                    // send our update
-                    $.post("/api/create-album.php", {
-                        name: $('#new-album-name').val(),
-                        description: $('#new-album-description').val(),
-                        date: $('#new-album-date').val()
-                    }).done(function (data) {
-                        if ($.isNumeric(data) && data !== '0') {
-                            var table = $('#albums').DataTable();
-                            table.row.add({
-                                "id": data,
-                                "name": $('#new-album-name').val(),
-                                "description": $('#new-album-description').val(),
-                                "date": $('#new-album-date').val(),
-                                "images": "0",
-                                "thumbsCreated": "0",
-                                "lastAccessed": "0000-00-00 00:00:00",
-                                "location": "",
-                                "code": ""
-                            }).draw(false);
-                            dialogItself.close();
-                            editAlbum(data);
-                        } else if (data === '0') {
-                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                        } else {
-                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
-                        }
-                    }).fail(function (xhr, status, error) {
-                        if (xhr.responseText !== "") {
-                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                        } else if (error === "Unauthorized") {
-                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-                        } else {
-                            modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                        }
-                    }).always(function () {
-                        $button.stopSpin();
-                        dialogItself.enableButtons(true);
-                        dialogItself.setClosable(true);
-                    });
-                }
-            }, {
-                label: 'Close',
-                action: function (dialogItself) {
-                    dialogItself.close();
-                }
-            }],
-        });
+        openCreateAlbumDialog();
     });
 
     $('#add-album-div').keypress(function (e) {
