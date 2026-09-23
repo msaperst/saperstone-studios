@@ -134,6 +134,7 @@ class GetAlbumTest extends TestCase {
         $this->assertEquals('', $albumInfo['code']);
         $this->assertEquals(0, $albumInfo['imageCount']);
         $this->assertFalse($albumInfo['needsThumbnails']);
+        $this->assertFalse($albumInfo['hasAnyThumbnails']);
     }
 
     public function testThumbnailStateReflectsCurrentAlbumImages() {
@@ -152,6 +153,7 @@ class GetAlbumTest extends TestCase {
         $albumInfo = json_decode($response->getBody(), true);
         $this->assertEquals(2, $albumInfo['imageCount']);
         $this->assertTrue($albumInfo['needsThumbnails']);
+        $this->assertFalse($albumInfo['hasAnyThumbnails']);
 
         $this->sql->executeStatement("UPDATE albums SET thumbsCreated = TRUE WHERE id = 998");
         $response = $this->http->request('GET', 'api/get-album.php', [
@@ -164,6 +166,7 @@ class GetAlbumTest extends TestCase {
         $albumInfo = json_decode($response->getBody(), true);
         $this->assertEquals(2, $albumInfo['imageCount']);
         $this->assertFalse($albumInfo['needsThumbnails']);
+        $this->assertTrue($albumInfo['hasAnyThumbnails']);
     }
 
     public function testUploaderCanGetOwnAlbum() {
