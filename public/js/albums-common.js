@@ -202,7 +202,7 @@ function makeThumbs(id, button, dialog, markup, mode) {
         mode: mode
     }).done(function () {
         var myVar = setInterval(function () {
-            $.get("/tmp/status.txt", function (data) {
+            $.get("/api/get-thumbnail-status.php", function (data) {
                 $('#resize-progress .progress-bar').html(data);
                 if (data.indexOf("Done") === 0) {
                     clearInterval(myVar);
