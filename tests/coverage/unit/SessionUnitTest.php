@@ -102,42 +102,56 @@ class SessionUnitTest extends TestCase {
         $this->assertEquals("www.example.com", $result);
     }
 
-    public function testBaseUrlNotSecure() {
-        $_SERVER['SERVER_NAME'] = "www.examples.com";
-        $_SERVER['SERVER_PORT'] = "90";
+    public function testBaseUrlPreservesBrowserFacingLocalPort() {
+        $_SERVER['SERVER_NAME'] = "localhost";
+        $_SERVER['HTTP_HOST'] = "localhost:90";
+        $_SERVER['SERVER_PORT'] = "80";
         $result = $this->session->getBaseUrl();
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-        $this->assertEquals("http://www.examples.com", $result);
+        unset($_SERVER['SERVER_NAME'], $_SERVER['HTTP_HOST'], $_SERVER['SERVER_PORT']);
+        $this->assertEquals("http://localhost:90", $result);
     }
 
     public function testBaseUrlSecure() {
-        $_SERVER['SERVER_NAME'] = "www.examples.com";
-        $_SERVER['SERVER_PORT'] = "9443";
+        $_SERVER['SERVER_NAME'] = "saperstonestudios.com";
+        $_SERVER['HTTP_HOST'] = "saperstonestudios.com:443";
+        $_SERVER['SERVER_PORT'] = "443";
+        $_SERVER['HTTPS'] = "on";
         $result = $this->session->getBaseUrl();
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-        $this->assertEquals("https://www.examples.com", $result);
+        unset($_SERVER['SERVER_NAME'], $_SERVER['HTTP_HOST'], $_SERVER['SERVER_PORT'], $_SERVER['HTTPS']);
+        $this->assertEquals("https://saperstonestudios.com", $result);
     }
 
-    public function testBaseUrlAlternatePort() {
-        $_SERVER['SERVER_NAME'] = "www.examples.com";
+    public function testBaseUrlUsesForwardedHttps() {
+        $_SERVER['SERVER_NAME'] = "php";
         $_SERVER['SERVER_PORT'] = "80";
+        $_SERVER['HTTP_X_FORWARDED_HOST'] = "saperstonestudios.com";
+        $_SERVER['HTTP_X_FORWARDED_PROTO'] = "https";
         $result = $this->session->getBaseUrl();
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-        $this->assertEquals("http://www.examples.com:80", $result);
+        unset(
+            $_SERVER['SERVER_NAME'],
+            $_SERVER['SERVER_PORT'],
+            $_SERVER['HTTP_X_FORWARDED_HOST'],
+            $_SERVER['HTTP_X_FORWARDED_PROTO']
+        );
+        $this->assertEquals("https://saperstonestudios.com", $result);
     }
 
-    public function testCurrentPage() {
+    public function testBaseUrlAlternatePortWithoutHostHeader() {
         $_SERVER['SERVER_NAME'] = "www.examples.com";
-        $_SERVER['SERVER_PORT'] = "9443";
+        $_SERVER['SERVER_PORT'] = "8080";
+        $result = $this->session->getBaseUrl();
+        unset($_SERVER['SERVER_NAME'], $_SERVER['SERVER_PORT']);
+        $this->assertEquals("http://www.examples.com:8080", $result);
+    }
+
+    public function testCurrentPageUsesBrowserFacingHostAndPort() {
+        $_SERVER['SERVER_NAME'] = "localhost";
+        $_SERVER['HTTP_HOST'] = "localhost:90";
+        $_SERVER['SERVER_PORT'] = "80";
         $_SERVER['REQUEST_URI'] = "/here";
         $result = $this->session->getCurrentPage();
-        unset($_SERVER['SERVER_NAME']);
-        unset($_SERVER['SERVER_PORT']);
-        unset($_SERVER['REQUEST_URI']);
-        $this->assertEquals("https://www.examples.com/here", $result);
+        unset($_SERVER['SERVER_NAME'], $_SERVER['HTTP_HOST'], $_SERVER['SERVER_PORT'], $_SERVER['REQUEST_URI']);
+        $this->assertEquals("http://localhost:90/here", $result);
     }
 
     public function testUseAnalyticsNoCookie() {

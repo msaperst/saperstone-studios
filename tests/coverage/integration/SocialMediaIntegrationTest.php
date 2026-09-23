@@ -33,7 +33,7 @@ class SocialMediaIntegrationTest extends TestCase {
     public function testEmptyBlogFeed() {
         try {
             $_SERVER['SERVER_NAME'] = "www.examples.com";
-            $_SERVER['SERVER_PORT'] = "90";
+            $_SERVER['SERVER_PORT'] = "80";
             $socialMedia = new SocialMedia();
             $socialMedia->generateRSS();
             unset($_SERVER['SERVER_NAME']);
@@ -59,7 +59,7 @@ class SocialMediaIntegrationTest extends TestCase {
     public function testGenerateRssOneActivePost() {
         try {
             $_SERVER['SERVER_NAME'] = "www.examples.com";
-            $_SERVER['SERVER_PORT'] = "90";
+            $_SERVER['SERVER_PORT'] = "80";
             $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('998', 'Sample Blog', '2031-01-01', '', 0, 1)");
             $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`) VALUES ('999', 'Sample Blog', '2031-01-01', '', 0)");
             $socialMedia = new SocialMedia();
@@ -93,7 +93,7 @@ class SocialMediaIntegrationTest extends TestCase {
     public function testGenerateRssOrderedPosts() {
         try {
             $_SERVER['SERVER_NAME'] = "www.examples.com";
-            $_SERVER['SERVER_PORT'] = "90";
+            $_SERVER['SERVER_PORT'] = "80";
             $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('996', 'Sample Blog', '2030-02-01', '', 0, 0)");
             $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('997', 'Sample Blog', '2031-01-01', '', 0, 1)");
             $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('998', 'Sample Blog', '2030-01-01', '', 0, 1)");

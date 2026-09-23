@@ -33,11 +33,28 @@ $to = "Webmaster <msaperst@gmail.com>";
 $from = "Error <error@saperstonestudios.com>";
 $subject = "$error Error";
 
+function formatErrorEmailLink(string $value): string {
+    $escaped = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    if (filter_var($value, FILTER_VALIDATE_URL) === false) {
+        return $escaped;
+    }
+
+    $scheme = strtolower((string)parse_url($value, PHP_URL_SCHEME));
+    if (!in_array($scheme, ['http', 'https'], true)) {
+        return $escaped;
+    }
+
+    return "<a href='$escaped' target='_blank'>$escaped</a>";
+}
+
+$pageHtml = formatErrorEmailLink($page);
+$referrerHtml = formatErrorEmailLink($referrer);
+
 $email = new Email($to, $from, $subject);
 $html = "<html><body>";
 $html .= "This is an automatically generated message from Saperstone Studios<br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a $error on page <a href='$page' target='_blank'>$page</a><br/>";
-$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page <a href='$referrer' target='_blank'>$referrer</a>.<br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Someone got a $error on page $pageHtml<br/>";
+$html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;They came from page $referrerHtml.<br/>";
 $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You might want to look into this or take action<br/>";
 $html .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User information is collected before<br/><br/>";
 
