@@ -581,6 +581,8 @@ Album.prototype.loadImages = function () {
             var threshold = window.innerHeight * 1.5;
             if (rect.top < threshold && rect.bottom > -threshold * 0.25) {
                 card.attr('data-loading', '1');
+                var media = card.find('.album-card-media');
+                media.css('background-image', 'url("' + card.attr('data-location') + '")');
                 img.one('load', function () {
                     markAlbumCardLoaded(card);
                 });
@@ -634,7 +636,7 @@ Album.prototype.loadImages = function () {
             var img = $('<img>');
             img.addClass('album-card-image');
             img.attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACw=');
-            img.attr('data-src', v.location);
+            img.attr('data-src', '/img/image.png');
             img.one('load', function () {
                 markAlbumCardLoaded(card);
             });
