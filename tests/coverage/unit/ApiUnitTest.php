@@ -11,12 +11,6 @@ use SqlException;
 // Suppress warnings/notices from autoloader
 @require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
-class TestableApi extends Api {
-    public static function requestMethodMatchesForTest(string $method): bool {
-        return parent::requestMethodMatches($method);
-    }
-}
-
 class ApiUnitTest extends TestCase {
     private Api $api;
     private ?string $requestMethod = null;
@@ -46,8 +40,7 @@ class ApiUnitTest extends TestCase {
         $_SERVER['REQUEST_METHOD'] = 'POST';
         http_response_code(204);
 
-        Api::requireMethod('POST');
-
+        $this->assertTrue(Api::requireMethod('POST'));
         $this->assertSame(204, http_response_code());
     }
 
@@ -55,15 +48,16 @@ class ApiUnitTest extends TestCase {
         $_SERVER['REQUEST_METHOD'] = 'post';
         http_response_code(202);
 
-        Api::requireMethod('PoSt');
-
+        $this->assertTrue(Api::requireMethod('PoSt'));
         $this->assertSame(202, http_response_code());
     }
 
-    public function testRequestMethodDoesNotMatchDifferentMethod(): void {
+    public function testRequireMethodRejectsDifferentMethod(): void {
         $_SERVER['REQUEST_METHOD'] = 'GET';
+        http_response_code(200);
 
-        $this->assertFalse(TestableApi::requestMethodMatchesForTest('POST'));
+        $this->assertFalse(Api::requireMethod('POST'));
+        $this->assertSame(405, http_response_code());
     }
 
     // ------------------------
