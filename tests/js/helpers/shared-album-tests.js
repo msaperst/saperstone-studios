@@ -336,7 +336,7 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         parentDialog.enableButtons(false);
         parentDialog.setClosable(false);
 
-        context.chooseThumbnailScope(10, 0, false, button, parentDialog);
+        context.chooseThumbnailScope(10, 0, false, false, button, parentDialog);
 
         const config = environment.dialogs.at(-1);
         assert.equal(config.title, 'Create Thumbnails');
@@ -351,14 +351,27 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         assert.equal(scopeDialog.closed, true);
     });
 
-    test(`${label}: incomplete albums offer missing-only and recreate-all thumbnail choices`, () => {
+    test(`${label}: albums with no existing thumbnails skip the redundant scope choice`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         const calls = [];
         context.chooseThumbnailMarkup = (...args) => calls.push(args);
         const button = environment.createButton('__thumb_button__');
         const parentDialog = environment.createDialog();
 
-        context.chooseThumbnailScope(11, 3, true, button, parentDialog);
+        context.chooseThumbnailScope(11, 3, true, false, button, parentDialog);
+
+        assert.equal(environment.dialogs.length, 0);
+        assert.deepEqual(calls[0], [11, button, parentDialog, 'missing']);
+    });
+
+    test(`${label}: partially thumbed albums offer missing-only and recreate-all thumbnail choices`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        const calls = [];
+        context.chooseThumbnailMarkup = (...args) => calls.push(args);
+        const button = environment.createButton('__thumb_button__');
+        const parentDialog = environment.createDialog();
+
+        context.chooseThumbnailScope(12, 3, true, true, button, parentDialog);
 
         const config = environment.dialogs.at(-1);
         assert.match(config.message, /Some thumbnails are missing/);
@@ -370,7 +383,7 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         const scopeDialog = environment.createDialog();
         config.buttons[0].action(scopeDialog);
         assert.equal(scopeDialog.closed, true);
-        assert.deepEqual(calls[0], [11, button, parentDialog, 'missing']);
+        assert.deepEqual(calls[0], [12, button, parentDialog, 'missing']);
     });
 
     test(`${label}: complete albums offer recreate-all without missing-only`, () => {
@@ -378,7 +391,7 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         const button = environment.createButton('__thumb_button__');
         const parentDialog = environment.createDialog();
 
-        context.chooseThumbnailScope(12, 3, false, button, parentDialog);
+        context.chooseThumbnailScope(13, 3, false, true, button, parentDialog);
 
         const config = environment.dialogs.at(-1);
         assert.match(config.message, /All thumbnails already exist/);
@@ -388,6 +401,51 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         );
     });
 
+    test(`${label}: make thumbnails forwards whether any thumbnails already exist`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queueGet('/api/get-album.php', {
+            type: 'success',
+            data: {
+                name: 'Album',
+                description: '',
+                date: '2026-09-23',
+                code: '',
+                imageCount: 3,
+                needsThumbnails: true,
+                hasAnyThumbnails: false
+            }
+        });
+        context.editAlbum(15);
+
+        const config = environment.dialogs.at(-1);
+        const makeThumbnails = config.buttons.find((buttonConfig) =>
+            buttonConfig.label && buttonConfig.label.trim() === 'Make Thumbnails'
+        );
+        const scopeCalls = [];
+        context.chooseThumbnailScope = (...args) => scopeCalls.push(args);
+
+        environment.queueGet('/api/get-album.php', {
+            type: 'success',
+            data: {
+                imageCount: 3,
+                needsThumbnails: true,
+                hasAnyThumbnails: false
+            }
+        });
+
+        const button = environment.createButton('__make_thumbnails_button__');
+        const parentDialog = environment.createDialog();
+        makeThumbnails.action.call(button, parentDialog);
+
+        assert.equal(scopeCalls.length, 1);
+        assert.equal(scopeCalls[0][0], 15);
+        assert.equal(scopeCalls[0][1], 3);
+        assert.equal(scopeCalls[0][2], true);
+        assert.equal(scopeCalls[0][3], false);
+        assert.equal(scopeCalls[0][4], button);
+        assert.equal(scopeCalls[0][5], parentDialog);
+    });
+
     test(`${label}: thumbnail markup choices pass the selected treatment and mode`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         const calls = [];
@@ -395,7 +453,7 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         const button = environment.createButton('__thumb_button__');
         const parentDialog = environment.createDialog();
 
-        context.chooseThumbnailMarkup(13, button, parentDialog, 'all');
+        context.chooseThumbnailMarkup(14, button, parentDialog, 'all');
 
         const config = environment.dialogs.at(-1);
         assert.deepEqual(
@@ -410,9 +468,9 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         }
 
         assert.deepEqual(calls, [
-            [13, button, parentDialog, 'proof', 'all'],
-            [13, button, parentDialog, 'watermark', 'all'],
-            [13, button, parentDialog, 'none', 'all']
+            [14, button, parentDialog, 'proof', 'all'],
+            [14, button, parentDialog, 'watermark', 'all'],
+            [14, button, parentDialog, 'none', 'all']
         ]);
     });
 

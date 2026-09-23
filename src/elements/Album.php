@@ -105,6 +105,38 @@ class Album {
         return (int)$this->images > 0 && !$this->hasThumbnails();
     }
 
+    public function hasAnyThumbnails(): bool {
+        if ((int)$this->images === 0) {
+            return false;
+        }
+        if ($this->hasThumbnails()) {
+            return true;
+        }
+
+        $fullDirectory = dirname(__DIR__, 2)
+            . DIRECTORY_SEPARATOR . 'public'
+            . DIRECTORY_SEPARATOR . 'albums'
+            . DIRECTORY_SEPARATOR . $this->location
+            . DIRECTORY_SEPARATOR . 'full';
+
+        if (!is_dir($fullDirectory)) {
+            return false;
+        }
+
+        $sql = new Sql();
+        $images = $sql->getRows("SELECT location FROM album_images WHERE album = ?", [$this->id]);
+        $sql->disconnect();
+
+        foreach ($images as $image) {
+            $filename = basename((string)($image['location'] ?? ''));
+            if ($filename !== '' && is_file($fullDirectory . DIRECTORY_SEPARATOR . $filename)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Only return basic information
      * name, description, date, code

@@ -144,12 +144,12 @@ $user->forceLogIn();
     <?php
     if ($user->isAdmin ()) {
         ?>
-    <script src="/js/albums-admin.js"></script>
+    <script src="/js/albums-admin.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-admin.js'); ?>"></script>
     <script src="/js/album-admin.js"></script>
     <?php
     } elseif ($user->getRole () == "uploader") {
         ?>
-    <script src="/js/albums-uploader.js"></script>
+    <script src="/js/albums-uploader.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-uploader.js'); ?>"></script>
     <?php
     } else {
         ?>
