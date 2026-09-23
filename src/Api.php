@@ -9,6 +9,22 @@ class Api {
         $this->user = User::fromSystem();
     }
 
+    protected static function requestMethodMatches(string $method): bool {
+        return strtoupper($_SERVER['REQUEST_METHOD'] ?? '') === strtoupper($method);
+    }
+
+    public static function requireMethod(string $method): bool {
+        $method = strtoupper($method);
+
+        if (!self::requestMethodMatches($method)) {
+            header('Allow: ' . $method);
+            http_response_code(405);
+            return false;
+        }
+
+        return true;
+    }
+
     private function retrievePost($variable, $variableName, $type) {
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
             switch ($type) {

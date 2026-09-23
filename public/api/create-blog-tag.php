@@ -1,5 +1,8 @@
 <?php
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+if (!Api::requireMethod('POST')) {
+    exit();
+}
 $api = new Api ();
 
 $api->forceAdmin();
