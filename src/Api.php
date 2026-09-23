@@ -9,6 +9,17 @@ class Api {
         $this->user = User::fromSystem();
     }
 
+    public static function requireMethod(string $method): void {
+        $method = strtoupper($method);
+        $requestMethod = strtoupper($_SERVER['REQUEST_METHOD'] ?? '');
+
+        if ($requestMethod !== $method) {
+            header('Allow: ' . $method);
+            http_response_code(405);
+            exit();
+        }
+    }
+
     private function retrievePost($variable, $variableName, $type) {
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
             switch ($type) {
