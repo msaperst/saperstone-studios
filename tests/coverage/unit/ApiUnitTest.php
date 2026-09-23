@@ -56,7 +56,8 @@ class ApiUnitTest extends TestCase {
         $_SERVER['REQUEST_METHOD'] = 'GET';
         http_response_code(200);
 
-        $this->assertFalse(Api::requireMethod('POST'));
+        // PHPUnit may have already written CLI output, so suppress header()'s CLI-only warning.
+        $this->assertFalse(@Api::requireMethod('POST'));
         $this->assertSame(405, http_response_code());
     }
 
