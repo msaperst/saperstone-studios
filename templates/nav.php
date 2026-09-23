@@ -107,7 +107,6 @@ $navSql->disconnect();
                 <ul class="dropdown-menu">
                     <li><a href="/user/users.php">Manage Users</a></li>
                     <li><a href="/user/index.php">Manage Albums</a></li>
-                    <li><a href="/user/products.php">Manage Products</a></li>
                     <li><a href="/user/contracts.php">Manage Contracts</a></li>
                     <li><a href="/user/profile.php">Manage Profile</a></li>
                     <li><a id='logout-button' href="#"><em

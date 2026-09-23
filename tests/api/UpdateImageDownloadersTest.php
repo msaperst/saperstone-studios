@@ -47,9 +47,6 @@ class UpdateImageDownloadersTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `products`;")['count'];
-        $count++;
-        $this->sql->executeStatement("ALTER TABLE `products` AUTO_INCREMENT = $count;");
         $this->sql->disconnect();
     }
 
