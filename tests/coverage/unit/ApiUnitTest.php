@@ -11,6 +11,12 @@ use SqlException;
 // Suppress warnings/notices from autoloader
 @require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
+class TestableApi extends Api {
+    public static function requestMethodMatchesForTest(string $method): bool {
+        return parent::requestMethodMatches($method);
+    }
+}
+
 class ApiUnitTest extends TestCase {
     private Api $api;
     private ?string $requestMethod = null;
@@ -52,6 +58,12 @@ class ApiUnitTest extends TestCase {
         Api::requireMethod('PoSt');
 
         $this->assertSame(202, http_response_code());
+    }
+
+    public function testRequestMethodDoesNotMatchDifferentMethod(): void {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+
+        $this->assertFalse(TestableApi::requestMethodMatchesForTest('POST'));
     }
 
     // ------------------------
