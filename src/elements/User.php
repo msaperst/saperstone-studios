@@ -95,7 +95,11 @@ class User {
                 $rememberedUser->isLoggedIn = true;
                 $user = $rememberedUser;
             } elseif (isset($_COOKIE['hash'])) {
-                $user = self::authenticatedUserFromHash($_COOKIE['hash'], true);
+                try {
+                    $user = self::authenticatedUserFromHash($_COOKIE['hash'], true);
+                } catch (BadUserException $e) {
+                    RememberMe::clearLegacyCookies();
+                }
             }
         }
         return $user;
