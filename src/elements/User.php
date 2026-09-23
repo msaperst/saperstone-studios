@@ -95,7 +95,16 @@ class User {
                 $rememberedUser->isLoggedIn = true;
                 $user = $rememberedUser;
             } elseif (isset($_COOKIE['hash'])) {
-                $user = self::authenticatedUserFromHash($_COOKIE['hash'], true);
+                $legacyHash = $_COOKIE['hash'];
+                if (!is_string($legacyHash) || !preg_match('/^[a-f0-9]{32}$/D', $legacyHash)) {
+                    RememberMe::clearLegacyCookies();
+                } else {
+                    try {
+                        $user = self::authenticatedUserFromHash($legacyHash, true);
+                    } catch (BadUserException $e) {
+                        RememberMe::clearLegacyCookies();
+                    }
+                }
             }
         }
         return $user;

@@ -51,6 +51,25 @@ class GetUsersTest extends TestCase {
     /**
      * @throws GuzzleException
      */
+    public function testInvalidLegacyHashCookieReturnsUnauthorized(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => 'not-a-valid-auth-token'
+        ], getenv('DB_HOST'));
+
+        try {
+            $this->http->request('GET', 'api/get-users.php', [
+                'cookies' => $cookieJar
+            ]);
+            $this->fail('Invalid legacy authentication should not authorize get-users');
+        } catch (ClientException $e) {
+            $this->assertEquals(401, $e->getResponse()->getStatusCode());
+            $this->assertEquals("", (string)$e->getResponse()->getBody());
+        }
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function testLoggedInAsDownloader() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '5510b5e6fffd897c234cafe499f76146'

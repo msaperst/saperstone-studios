@@ -96,6 +96,24 @@ class RememberMeIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `remember_tokens` WHERE `selector` = ?", [$selector]));
     }
 
+    public function testInvalidLegacyCookieIsClearedAndIgnored(): void {
+        $_COOKIE['hash'] = 'not-a-valid-auth-token';
+
+        $user = User::fromSystem();
+
+        $this->assertFalse($user->isLoggedIn());
+        $this->assertArrayNotHasKey('hash', $_COOKIE);
+    }
+
+    public function testUnknownLegacyCookieIsClearedAndIgnored(): void {
+        $_COOKIE['hash'] = '1234567890abcdef1234567890abcdef';
+
+        $user = User::fromSystem();
+
+        $this->assertFalse($user->isLoggedIn());
+        $this->assertArrayNotHasKey('hash', $_COOKIE);
+    }
+
     public function testLegacyCookieIsMigratedOnce(): void {
         $_COOKIE['hash'] = 'c90788c0e409eac6a95f6c6360d8dbf7';
 
