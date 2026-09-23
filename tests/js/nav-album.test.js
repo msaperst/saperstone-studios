@@ -101,6 +101,9 @@ function createContext(addChecked) {
     const modalBody = {
         append() {
             return this;
+        },
+        remove() {
+            return this;
         }
     };
     const modal = {
