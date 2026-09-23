@@ -5,7 +5,7 @@ $(document).ready(function () {
         album_table = $('#albums').DataTable({
             "ajax": "/api/get-albums.php",
             "order": [[1, "asc"]],
-            "columnDefs": [{
+            "columnDefs": albumManagementColumns({
                 "orderable": false,
                 "searchable": false,
                 "data": function (row) {
@@ -16,32 +16,8 @@ $(document).ready(function () {
                     return buttons;
                 },
                 "targets": 0
-            }, {
-                "data": function (row) {
-                    return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
-                },
-                "className": "album-name",
-                "targets": 1
-            }, {
-                "data": "description",
-                "className": "album-description",
-                "targets": 2
-            }, {
-                "data": "date",
-                "className": "album-date",
-                "targets": 3
-            }, {
-                "data": "images",
-                "className": "album-images",
-                "targets": 4
-            }, {
-                "data": thumbnailStatus,
-                "className": "album-thumbnails",
-                "targets": 5
-            }],
-            "fnCreatedRow": function (nRow, aData) {
-                $(nRow).attr('album-id', aData.id);
-            }
+            }),
+            "fnCreatedRow": setAlbumRowId
         });
         $('#thumbnail-status-filter-container').prependTo('#albums_filter').show();
     }
