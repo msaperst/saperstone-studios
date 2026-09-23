@@ -196,46 +196,7 @@ function editAlbum(id) {
                 }
             }],
             onshown: function (dialogItself) {
-                $('#upload-container').uploadFile({
-                    url: "/api/upload-album-images.php",
-                    uploadStr: "<span class='bootstrap-dialog-button-icon glyphicon glyphicon-upload'></span> Upload Images",
-                    multiple: true,
-                    dragDrop: true,
-                    uploadButtonLocation: $('.bootstrap-dialog-footer-buttons'),
-                    uploadContainer: $('#upload-container'),
-                    uploadButtonClass: "btn btn-default btn-info",
-                    statusBarWidth: "48%",
-                    dragdropWidth: "100%",
-                    fileName: "myfile",
-                    sequential: true,
-                    sequentialCount: 5,
-                    acceptFiles: "image/*,.nef,.cr2",
-                    uploadQueueOrder: "bottom",
-                    formData: {
-                        "album": id
-                    },
-                    onSubmit: function () {
-                        $('.ajax-file-upload-container').show();
-                        dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-upload').addClass('glyphicon-asterisk icon-spin');
-                        disableDialogButtons(dialogItself);
-                    },
-                    onSuccess: function (files, data, xhr, pd) {
-                        $('#thumbnail-warning').show();
-                        setTimeout(function () {
-                            pd.statusbar.remove();
-                        }, 5000);
-                    },
-                    afterUploadAll: function () {
-                        setTimeout(function () {
-                            $('.ajax-file-upload-container').hide();
-                        }, 5000);
-                        if ($('#albums').length) {
-                            album_table.ajax.reload(null, false);
-                        }
-                        dialogItself.$modalFooter.find('span.glyphicon').removeClass('glyphicon-asterisk icon-spin').addClass('glyphicon-upload');
-                        enableDialogButtons(dialogItself);
-                    },
-                });
+                configureAlbumImageUpload(id, dialogItself);
             },
             onhide: function () {
                 if ($('#albums').length) {
