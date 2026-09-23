@@ -11,6 +11,14 @@ const scriptPath = 'public/js/albums-uploader.js';
 registerAddAlbumTests('albums-uploader.js', scriptPath);
 registerSharedAlbumManagementTests('albums-uploader.js', scriptPath);
 
+test('albums-uploader.js opens the shared create album dialog', () => {
+    const {environment} = createAlbumContext(scriptPath);
+
+    environment.element('#add-album-btn').trigger('click');
+
+    assert.equal(environment.dialogs.at(-1).title, 'Add A New Album');
+});
+
 test('albums-uploader.js configures uploader columns and only edits owned albums', () => {
     const {environment} = createAlbumContext(scriptPath, {myId: 5});
     const config = environment.dataTable.config;
