@@ -218,6 +218,7 @@ class AlbumIntegrationTest extends TestCase {
         $album = Album::withId('899');
         $this->assertTrue($album->hasThumbnails());
         $this->assertFalse($album->needsThumbnails());
+        $this->assertTrue($album->hasAnyThumbnails());
     }
 
     /**
@@ -228,6 +229,22 @@ class AlbumIntegrationTest extends TestCase {
         $album = Album::withId('899');
         $this->assertFalse($album->hasThumbnails());
         $this->assertTrue($album->needsThumbnails());
+        $this->assertFalse($album->hasAnyThumbnails());
+    }
+
+    public function testHasAnyThumbnailsWhenOriginalBackupExists() {
+        $this->sql->executeStatement("UPDATE albums SET images = 1, thumbsCreated = FALSE WHERE id = 899");
+        $this->sql->executeStatement(
+            "UPDATE album_images SET location = '/albums/sample/sample.jpg' WHERE album = 899"
+        );
+        $fullDir = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/full';
+        mkdir($fullDir, 0777, true);
+        touch($fullDir . DIRECTORY_SEPARATOR . 'sample.jpg');
+
+        $album = Album::withId('899');
+
+        $this->assertTrue($album->needsThumbnails());
+        $this->assertTrue($album->hasAnyThumbnails());
     }
 
     /**
@@ -237,6 +254,7 @@ class AlbumIntegrationTest extends TestCase {
         $this->sql->executeStatement("UPDATE albums SET images = 0, thumbsCreated = FALSE WHERE id = 899");
         $album = Album::withId('899');
         $this->assertFalse($album->needsThumbnails());
+        $this->assertFalse($album->hasAnyThumbnails());
     }
 
     /**
