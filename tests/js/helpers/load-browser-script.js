@@ -11,7 +11,7 @@ function loadBrowserScript(relativePath, globals = {}) {
     });
 
     vm.runInContext(fs.readFileSync(absolutePath, 'utf8'), context, {
-        filename: relativePath
+        filename: absolutePath
     });
 
     return context;
