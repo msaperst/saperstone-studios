@@ -605,6 +605,9 @@ Album.prototype.loadImages = function () {
         start: Album.loaded,
         howMany: Album.totalImages
     }, function (data) {
+        if (data.images.length > 0) {
+            $('#album-empty-state').remove();
+        }
         if (typeof data.favoriteCount !== "undefined") {
             updateFavoriteCount(data.favoriteCount);
         }
