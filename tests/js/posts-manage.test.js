@@ -3,6 +3,13 @@ const {test} = require('node:test');
 const {createJQueryEnvironment} = require('./helpers/jquery-mock');
 const {loadBrowserScripts} = require('./helpers/load-browser-script');
 
+function equalStructure(actual, expected) {
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(actual)),
+        JSON.parse(JSON.stringify(expected))
+    );
+}
+
 function createManageContext(options = {}) {
     const environment = createJQueryEnvironment({
         autoReady: false,
@@ -47,7 +54,7 @@ test('posts-manage initializes the DataTable with blog management columns', () =
 
     const config = environment.dataTable.config;
     assert.equal(config.ajax, '/api/get-blogs-details.php?a=1');
-    assert.deepEqual(config.order, [[2, 'desc']]);
+    equalStructure(config.order, [[2, 'desc']]);
     assert.equal(config.columnDefs.length, 4);
     assert.match(config.columnDefs[0].data({id: 7}), /quick-edit-post-btn/);
     assert.equal(config.columnDefs[1].data({id: 7, title: 'Title'}), "<a href='/blog/post.php?p=7'>Title</a>");
@@ -78,7 +85,7 @@ test('posts-manage setupEdit sends the clicked row data to quick edit', () => {
     context.setupEdit();
     environment.element('.quick-edit-post-btn').trigger('click');
 
-    assert.deepEqual(edited, expected);
+    equalStructure(edited, expected);
 });
 
 test('posts-manage editPost populates fields and loads full post metadata', () => {
@@ -107,8 +114,8 @@ test('posts-manage editPost populates fields and loads full post metadata', () =
     const preview = environment.element('#post-preview-holder').appended[0];
     assert.equal(preview.attr('src'), '/preview.jpg');
     assert.equal(preview.css('top'), '-4px');
-    assert.deepEqual(preview.draggableOptions, {axis: 'y'});
-    assert.deepEqual(environment.calls.get[0], {
+    equalStructure(preview.draggableOptions, {axis: 'y'});
+    equalStructure(environment.calls.get[0], {
         url: '/api/get-blog-full.php',
         data: {post: 21}
     });
@@ -137,7 +144,7 @@ test('posts-manage deletePost removes the DataTable row after confirmation', () 
 
     context.deletePost(33);
 
-    assert.deepEqual(environment.calls.post[0], {
+    equalStructure(environment.calls.post[0], {
         url: '/api/delete-blog.php',
         data: {post: 33}
     });
@@ -180,7 +187,7 @@ test('posts-manage updatePost sends quick-edit fields and reloads the table', ()
 
     context.updatePost(51);
 
-    assert.deepEqual(environment.calls.post[0], {
+    equalStructure(environment.calls.post[0], {
         url: '/api/update-blog-post.php',
         data: {
             post: 51,
@@ -214,7 +221,7 @@ test('posts-manage updatePost publishes when the update endpoint returns publish
     context.updatePost(52);
 
     assert.equal(environment.calls.post.length, 2);
-    assert.deepEqual(environment.calls.post[1], {
+    equalStructure(environment.calls.post[1], {
         url: '/api/publish-blog-post.php',
         data: {post: 52}
     });

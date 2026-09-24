@@ -561,6 +561,11 @@ function createJQueryEnvironment(options = {}) {
         setTimeout: setTimeoutMock,
         setInterval: setIntervalMock,
         clearInterval: clearIntervalMock,
+        runReady() {
+            for (const callback of readyCallbacks.splice(0)) {
+                callback();
+            }
+        },
         runTimeouts() {
             for (const timeout of timeouts.splice(0)) {
                 timeout.callback();

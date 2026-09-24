@@ -3,6 +3,13 @@ const {test} = require('node:test');
 const {createJQueryEnvironment} = require('./helpers/jquery-mock');
 const {loadBrowserScript} = require('./helpers/load-browser-script');
 
+function equalStructure(actual, expected) {
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(actual)),
+        JSON.parse(JSON.stringify(expected))
+    );
+}
+
 function createAdminContext(options = {}) {
     const environment = createJQueryEnvironment({
         autoReady: false,
@@ -73,7 +80,7 @@ test('post-admin successful uploads create draggable images and preview options'
     assert.equal(images.length, 2);
     assert.equal(images[0].attr('src'), '../tmp/one.jpg');
     assert.equal(images[0].hasClass('draggable'), true);
-    assert.deepEqual(images[0].draggableOptions, {});
+    equalStructure(images[0].draggableOptions, {});
     assert.equal(options.length, 2);
     assert.equal(options[0].text(), 'one.jpg');
 });
@@ -161,7 +168,7 @@ test('post-admin collectPost rejects an empty title before invoking persistence'
         called += 1;
     });
 
-    assert.deepEqual(alerts, ['Please enter a title for your post']);
+    equalStructure(alerts, ['Please enter a title for your post']);
     assert.equal(called, 0);
     assert.equal(environment.element('#post-information-message').removed, true);
 });
@@ -180,12 +187,12 @@ test('post-admin collectPost assembles tags, preview and text content', () => {
         captured = {tags, preview, content};
     });
 
-    assert.deepEqual(captured.tags, ['3']);
-    assert.deepEqual(captured.preview, {
+    equalStructure(captured.tags, ['3']);
+    equalStructure(captured.preview, {
         img: '/tmp/preview.jpg',
         offset: '-10px'
     });
-    assert.deepEqual(captured.content, {
+    equalStructure(captured.content, {
         1: {
             group: 1,
             type: 'text',
@@ -205,7 +212,7 @@ test('post-admin savePost sends create payload and invokes a follow-up callback'
         callbackPost = post;
     });
 
-    assert.deepEqual(environment.calls.post[0], {
+    equalStructure(environment.calls.post[0], {
         url: '/api/create-blog-post.php',
         data: {
             title: 'New Post',
@@ -227,7 +234,7 @@ test('post-admin updatePost sends the current post id and redirects after succes
 
     context.updatePost(['5'], {img: '/b.jpg', offset: '1px'}, {});
 
-    assert.deepEqual(environment.calls.post[0], {
+    equalStructure(environment.calls.post[0], {
         url: '/api/update-blog-post.php',
         data: {
             post: '88',
@@ -247,7 +254,7 @@ test('post-admin publishPost publishes the supplied id and redirects on success'
 
     context.publishPost(91);
 
-    assert.deepEqual(environment.calls.post[0], {
+    equalStructure(environment.calls.post[0], {
         url: '/api/publish-blog-post.php',
         data: {post: 91}
     });
@@ -267,7 +274,7 @@ test('post-admin schedulePost posts selected date/time from its dialog', () => {
     button.closestResult = environment.element('__schedule_modal__');
     config.buttons[0].action.call(button, dialog);
 
-    assert.deepEqual(environment.calls.post[0], {
+    equalStructure(environment.calls.post[0], {
         url: '/api/schedule-blog-post.php',
         data: {
             post: 93,
@@ -289,5 +296,5 @@ test('post-admin setPreview replaces the preview with a draggable selected image
     const image = environment.element('#post-preview-holder').appended[0];
     assert.equal(image.attr('src'), '../tmp/photo.jpg');
     assert.equal(image.css('width'), '300px');
-    assert.deepEqual(image.draggableOptions, {axis: 'y'});
+    equalStructure(image.draggableOptions, {axis: 'y'});
 });

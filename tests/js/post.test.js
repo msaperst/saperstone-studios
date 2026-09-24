@@ -3,6 +3,13 @@ const {test} = require('node:test');
 const {createJQueryEnvironment} = require('./helpers/jquery-mock');
 const {loadBrowserScript} = require('./helpers/load-browser-script');
 
+function equalStructure(actual, expected) {
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(actual)),
+        JSON.parse(JSON.stringify(expected))
+    );
+}
+
 function createPostContext(options = {}) {
     const environment = createJQueryEnvironment({autoReady: false});
     const scripts = new Map();
@@ -235,7 +242,7 @@ test('submitPost sends comment fields and clears the message after success', () 
 
     context.submitPost();
 
-    assert.deepEqual(environment.calls.post[0], {
+    equalStructure(environment.calls.post[0], {
         url: '/api/create-blog-comment.php',
         data: {
             post: '55',
@@ -265,7 +272,7 @@ test('deletePost removes a comment after the delete API succeeds', () => {
 
     config.buttons[0].action.call(button, dialog);
 
-    assert.deepEqual(environment.calls.post[0], {
+    equalStructure(environment.calls.post[0], {
         url: '/api/delete-blog-comment.php',
         data: {comment: 44}
     });

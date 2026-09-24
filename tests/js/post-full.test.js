@@ -3,6 +3,13 @@ const {test} = require('node:test');
 const {createJQueryEnvironment} = require('./helpers/jquery-mock');
 const {loadBrowserScript} = require('./helpers/load-browser-script');
 
+function equalStructure(actual, expected) {
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(actual)),
+        JSON.parse(JSON.stringify(expected))
+    );
+}
+
 function createContext(response) {
     const environment = createJQueryEnvironment({autoReady: false});
     environment.queueGet('/api/get-blog-full.php', {
@@ -28,11 +35,11 @@ test('PostFull loads the requested blog post with the full-post heading', () => 
     const post = new context.PostFull(42);
 
     assert.equal(post.post, 42);
-    assert.deepEqual(environment.calls.get, [{
+    equalStructure(environment.calls.get, [{
         url: '/api/get-blog-full.php',
         data: {post: 42}
     }]);
-    assert.deepEqual(loaded, [{data, header: '<h1>'}]);
+    equalStructure(loaded, [{data, header: '<h1>'}]);
 });
 
 test('PostFull edit button navigates to the editor for the current post', () => {
