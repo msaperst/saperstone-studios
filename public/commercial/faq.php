@@ -52,7 +52,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How do I schedule a session?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>Scheduling your session is as easy as a quick phone
                 call or e mail to Saperstone Studios. I'll answer
                 any questions and gather more info on what type
@@ -64,7 +64,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How should I dress for my
                 photoshoot?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <ul>
                 <li>For a professional look, be sure to wear clothes
                     that won't distract from your facial features,
@@ -82,7 +82,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> What does retouch include?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>Retouch is done on your final selects and includes skin
                 smoothing/blemish removal, removing flyaway hairs and
                 eye enhancement. Additional requests are accepted but
@@ -94,7 +94,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How long until I can expect the
                 final images?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>For individual headshot sessions, expect an e mail with your
                 web gallery within 24 hours of your session. For large
                 companies, turn around time is 72 hours but can be rushed
@@ -106,7 +106,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How can I use my images once high
                 resolution files are received?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>After you've made your final image selections, you'll
                 receive access to high-resolution digital files and
                 limited general licensing for the images. This means
@@ -120,7 +120,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Our team is growing. What happens
                 when we add new staff?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>Have your employees reach out to schedule their session.
                 We'll ensure the new hires photos match the look of
                 your previous session. On location discounts are provided
@@ -130,7 +130,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Where is your studio located?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>Saperstone Studios is located in Chandler, AZ, near Riggs
                 and Gilbert. We're also available
                 for travel within the Phoenix metro area.</p>
