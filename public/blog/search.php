@@ -61,8 +61,8 @@ $sql->disconnect();
     <!-- /.container -->
 
     <!-- Gallery JavaScript -->
-    <script src="/js/post.js"></script>
     <script src="/js/blog-common.js"></script>
+    <script src="/js/post.js"></script>
     <script src="/js/posts-search.js"></script>
 
     <!-- Script to Activate the Gallery -->
