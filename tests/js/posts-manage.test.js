@@ -79,7 +79,7 @@ test('posts-manage setupEdit sends the clicked row data to quick edit', () => {
         }
     };
     let edited;
-    context.editPost = (post) => {
+    context.editManagedPost = (post) => {
         edited = post;
     };
 
@@ -99,7 +99,7 @@ test('posts-manage editPost populates fields and loads full post metadata', () =
         }
     });
 
-    context.editPost({
+    context.editManagedPost({
         id: 21,
         title: 'Edit Me',
         date: '2026-09-24',
@@ -143,7 +143,7 @@ test('posts-manage deletePost removes the DataTable row after confirmation', () 
     };
     environment.queuePost('/api/delete-blog.php', {type: 'success', data: ''});
 
-    context.deletePost(33);
+    context.deleteManagedPost(33);
 
     equalStructure(environment.calls.post[0], {
         url: '/api/delete-blog.php',
@@ -158,7 +158,7 @@ test('posts-manage deletePost removes the DataTable row after confirmation', () 
 test('posts-manage deletePost leaves controls enabled when deletion is cancelled', () => {
     const {context, environment} = createManageContext({confirmDelete: false});
 
-    context.deletePost(34);
+    context.deleteManagedPost(34);
 
     assert.equal(environment.calls.post.length, 0);
     assert.equal(environment.element('#post-update-button').prop('disabled'), false);
@@ -186,7 +186,7 @@ test('posts-manage updatePost sends quick-edit fields and reloads the table', ()
     };
     environment.queuePost('/api/update-blog-post.php', {type: 'success', data: ''});
 
-    context.updatePost(51);
+    context.updateManagedPost(51);
 
     equalStructure(environment.calls.post[0], {
         url: '/api/update-blog-post.php',
@@ -219,7 +219,7 @@ test('posts-manage updatePost publishes when the update endpoint returns publish
     environment.queuePost('/api/update-blog-post.php', {type: 'success', data: 'published'});
     environment.queuePost('/api/publish-blog-post.php', {type: 'success', data: ''});
 
-    context.updatePost(52);
+    context.updateManagedPost(52);
 
     assert.equal(environment.calls.post.length, 2);
     equalStructure(environment.calls.post[1], {
@@ -257,7 +257,7 @@ test('posts-manage editPost adds returned tags to the quick editor', () => {
         }
     });
 
-    context.editPost({
+    context.editManagedPost({
         id: 22,
         title: 'Tags',
         date: '2026-09-24',
@@ -288,7 +288,7 @@ test('posts-manage deletePost displays API errors without removing the row', () 
         data: 'Delete refused'
     });
 
-    context.deletePost(61);
+    context.deleteManagedPost(61);
 
     assert.equal(removed, false);
     assert.match(environment.element('#post .modal-body').appended.join(''), /Delete refused/);
@@ -310,7 +310,7 @@ test('posts-manage updatePost displays server validation without reloading', () 
         data: 'Validation failed'
     });
 
-    context.updatePost(62);
+    context.updateManagedPost(62);
 
     assert.equal(reloads, 0);
     assert.match(environment.element('#post .modal-body').appended.join(''), /Validation failed/);
