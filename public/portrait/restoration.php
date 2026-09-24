@@ -41,7 +41,7 @@ $session->initialize();
         <!-- /.row -->
 
         <!-- Portraits Retouch -->
-        <div class="row" style="margin-top: 30px;">
+        <div class="row u-mt-30">
             <div class="col-lg-12">
                 <p>
                     Have an old photograph that needs a little TLC and restoration?
@@ -55,7 +55,7 @@ $session->initialize();
                 </p>
             </div>
         </div>
-        <div class="row" style="margin-top: 30px;">
+        <div class="row u-mt-30">
             <!-- Content Column -->
             <div class="col-md-offset-2 col-md-8">
                 <div class='text-center'>
