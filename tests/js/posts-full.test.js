@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
-const {loadBrowserScript} = require('./helpers/load-browser-script');
+const {loadBrowserScripts} = require('./helpers/load-browser-script');
 
 function plain(value) {
     return JSON.parse(JSON.stringify(value));
@@ -42,7 +42,7 @@ function createFullPostsContext(options = {}) {
         requests.push({url, data, success});
     };
 
-    const context = loadBrowserScript('public/js/posts-full.js', {
+    const context = loadBrowserScripts(['public/js/posts-common.js', 'public/js/posts-full.js'], {
         $,
         window: windowObject,
         loadPost(data, header) {
