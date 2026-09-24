@@ -99,7 +99,7 @@ if (!$user->isAdmin() && !$blog->isActive()) {
                     <textarea rows="5    " cols="100" class="form-control"
                               id="post-comment-message" placeholder="Message" required=""
                               data-validation-required-message="Please enter your message"
-                              maxlength="999" style="resize: none" aria-invalid="false"></textarea>
+                              maxlength="999" class="u-no-resize" aria-invalid="false"></textarea>
                 <div class="error" id="post-comment-message-message"></div>
             </div>
         </div>
@@ -114,7 +114,7 @@ if (!$user->isAdmin() && !$blog->isActive()) {
             </div>
             <div class="col-md-6 text-right">
                 <button post-id="<?php echo $blog->getId(); ?>" id="post-comment-submit"
-                        class="btn btn-success disabled" style="margin-top: 20px;"
+                        class="btn btn-success disabled u-mt-20"
                         disabled>Submit Comment
                 </button>
             </div>
