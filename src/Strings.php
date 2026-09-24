@@ -26,6 +26,13 @@ class Strings {
     }
 
     /**
+     * Escape a value for use inside a quoted HTML attribute.
+     */
+    static function escapeHtmlAttribute($text): string {
+        return htmlspecialchars((string)$text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    /**
      * @param $strings
      * @return string
      */
