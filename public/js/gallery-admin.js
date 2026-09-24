@@ -83,7 +83,7 @@ function editImage() {
             filenameInput.attr('type', 'text');
             filenameInput.addClass('form-control');
             filenameInput.attr('placeholder', 'Filename including path');
-            filenameInput.val(img.attr('style').split("'")[1]);
+            filenameInput.val(img.attr('data-background-image'));
             var filenameMatchDiv = $('<div>');
             filenameMatchDiv.addClass('col-sm-1');
             var filenameMatch = $('<input>');
@@ -118,7 +118,8 @@ function editImage() {
                     } else {
                         //update our image
                         img.attr('alt', $('#gallery-title').val());
-                        img.attr('style', "background-image: url('" + $('#gallery-filename').val() + "');");
+                        img.attr('data-background-image', $('#gallery-filename').val());
+                        img.css('background-image', "url('" + $('#gallery-filename').val() + "')");
                         img.next().children().html($('#gallery-caption').val());
                         //close our dialog
                         dialogInItself.close();
@@ -275,7 +276,7 @@ function editGallery(id) {
             size: BootstrapDialog.SIZE_WIDE,
             title: 'Edit Gallery <b>' + data.title + '</b>',
             message: function () {
-                return '<input placeholder="Gallery Title" id="new-gallery-title" type="text" class="form-control" value="' + data.title + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Checking files...</div>' + '</div>' + '<div id="new-gallery-error" class="error"></div>' + '<div id="new-gallery-message" class="success"></div>';
+                return '<input placeholder="Gallery Title" id="new-gallery-title" type="text" class="form-control" value="' + data.title + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" class="upload-progress-full">Checking files...</div>' + '</div>' + '<div id="new-gallery-error" class="error"></div>' + '<div id="new-gallery-message" class="success"></div>';
             },
             buttons: [{
                 icon: 'glyphicon glyphicon-save',

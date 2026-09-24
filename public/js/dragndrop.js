@@ -68,18 +68,21 @@ function addImageArea(images) {
         maxHeight = Math.max(maxHeight,
             (images[ndx].height * 1 + images[ndx].top * 1));
     }
-    var imageBuilder = $("<div id='" + imageAreaID
-        + "' class='image-builder' style='height:" + maxHeight
-        + "px;'></div>");
+    var imageBuilder = $("<div id='" + imageAreaID + "' class='image-builder'></div>");
+    imageBuilder.css('height', maxHeight + 'px');
     var curTop = 0; // for keeping track of when we need breaks
     for (ndx = 0; ndx < images.length; ndx++) {
         // setup our image element
         var ele = $("<img id='image-" + imageId++
-            + "' class='draggable' src='" + images[ndx].location
-            + "' style='position:absolute;z-index:90;width:"
-            + images[ndx].width + "px;height:" + images[ndx].height
-            + "px;left:" + images[ndx].left + "px;top:" + images[ndx].top
-            + "px' />");
+            + "' class='draggable' src='" + images[ndx].location + "' />");
+        ele.css({
+            'position': 'absolute',
+            'z-index': 90,
+            'width': images[ndx].width + 'px',
+            'height': images[ndx].height + 'px',
+            'left': images[ndx].left + 'px',
+            'top': images[ndx].top + 'px'
+        });
         // add our images to our image area
         imageBuilder.append(ele);
         // add our images to our imageOrder
@@ -91,8 +94,7 @@ function addImageArea(images) {
     }
     imageOrder[imageAreaID] = imageArray;
     imageEle.append(imageBuilder);
-    imageEle
-        .append("<div id='temp' style='background:lightblue;width:1px;height:1px;'></div>");
+    imageEle.append("<div id='temp' class='image-builder-temp'></div>");
     $(elementBuilder).append(imageEle);
     imageBuilder.dblclick(function () {
         if (!$(this).children().length) {

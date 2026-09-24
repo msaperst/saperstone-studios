@@ -1080,6 +1080,60 @@ label > input, label > u > input, label > textarea {
     margin-bottom: 0;
 }
 
+/***** Remaining CSP-safe replacements *****/
+.u-pr-5 { padding-right: 5px; }
+.u-brand-purple { color: #980f7f; }
+
+.consent-advanced-options {
+    display: none;
+    margin-top: 10px;
+}
+
+.image-builder-temp {
+    background: lightblue;
+    width: 1px;
+    height: 1px;
+}
+
+.upload-progress-full {
+    width: 100%;
+}
+
+.upload-dragdrop-top {
+    vertical-align: top;
+}
+
+.ajax-upload-form {
+    display: block;
+    position: absolute;
+    left: 150px;
+}
+
+.album-favorite-count-present {
+    padding-left: 10px;
+}
+
+.album-notification-message {
+    resize: none;
+    height: 100px;
+}
+
+.favorites-empty {
+    padding: 40px 0;
+}
+
+.favorites-empty-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.download-email-input {
+    width: 430px;
+    display: inline;
+    margin-right: 20px;
+}
+
 /***** CSP-safe replacements for legacy inline styles *****/
 .csp-hidden {
     display: none;

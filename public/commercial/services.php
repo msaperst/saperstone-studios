@@ -72,7 +72,7 @@ $user = User::fromSystem();
                         'Say cheese!' is sooo outdated and will never be uttered at Saperstone
                          Studios. We have a relaxed session and strive to achieve natural
                          smiles -- you really can tell the difference!</p>
-                <p><span style="color:#980f7f;">DUE TO COVID-19</span> I'll be bringing the
+                <p><span class="u-brand-purple">DUE TO COVID-19</span> I'll be bringing the
                         studio outside. You'll receive that same classic 'studio look' with
                         the safety of being outdoors and maintaining 6ft+ social distancing at
                         all times. Because of this change, time of day and rain do become a factor

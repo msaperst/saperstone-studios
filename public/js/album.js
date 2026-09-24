@@ -109,7 +109,7 @@ function updateViewerMeta(image) {
     $('#album-viewer-overlay').attr('album-id', image.attr('album-id'));
     $('#album-viewer-overlay').attr('image-id', image.attr('image-id'));
     var imageLocation = image.attr('data-location') || image.attr('data-src');
-    $('#album-viewer-image').attr('style', 'background-image: url("' + imageLocation + '")');
+    $('#album-viewer-image').css('background-image', 'url("' + imageLocation + '")');
     $('#album-viewer-image').attr('src', '/img/image.png');
     if (window.showImageTitle) {
         $('#album-viewer-title').text(image.attr('data-title') || image.attr('title') || '');
@@ -157,13 +157,9 @@ function updateFavoriteCount(count) {
         total = 0;
     }
     if (total > 0) {
-        $('#favorite-count').html(total).css({
-            'padding-left': '10px'
-        });
+        $('#favorite-count').html(total).addClass('album-favorite-count-present');
     } else {
-        $('#favorite-count').html("").css({
-            'padding-left': ''
-        });
+        $('#favorite-count').html("").removeClass('album-favorite-count-present');
     }
 }
 
@@ -1013,7 +1009,7 @@ function downloadImages(album, what) {
                 }, "json").done(function (data) {
                     data = jQuery.parseJSON(data);
                     if (data.hasOwnProperty('message')) {
-                        modal.find('.bootstrap-dialog-body').append('<div id="download-email-address-alert" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.message + '<br/><br/><input style="width:430px; display:inline; margin-right:20px;" placeholder="Email" type="email" class="form-control" id="download-email-address"/><button onClick="submitDownloadEmail(\'' + data.file.replace(/'/g, "\\'") + '\')" class="btn btn-info">Submit</button></div>');
+                        modal.find('.bootstrap-dialog-body').append('<div id="download-email-address-alert" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + data.message + '<br/><br/><input placeholder="Email" type="email" class="form-control download-email-input" id="download-email-address"/><button onClick="submitDownloadEmail(\'' + data.file.replace(/'/g, "\\'") + '\')" class="btn btn-info">Submit</button></div>');
                         $button.remove();
                     } else if (data.hasOwnProperty('file')) {
                         window.location = data.file;
