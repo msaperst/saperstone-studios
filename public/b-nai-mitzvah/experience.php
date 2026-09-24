@@ -57,7 +57,7 @@ $user = User::fromSystem();
             </div>
         </div>
 
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-lg-12">
                 <p>I'm often asked - For the love of ducks, how do you get a teeneger
                     to smile?! We. Have. Fun. I take some time to get to know your

@@ -36,7 +36,7 @@ if (isset ($_GET ['id'])) {
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> (the "Photographer") and
-        <u>&nbsp;<input id='contract-name' class='form-control' style='width: initial; display: initial;'
+        <u>&nbsp;<input id='contract-name' class='form-control inline-form-control'
                         type='text' aria-label='Client Name' placeholder='Client Name'
                         value='<?php echo $contract ['name']; ?>'/>&nbsp;</u>
         (the "Client").<br/> <strong>Whereas</strong>, Client wishes to
@@ -55,8 +55,7 @@ if (isset ($_GET ['id'])) {
         <li><strong>Compensation.</strong> In consideration of the Services,
             Client agrees to pay Photographer the following amounts as follows:
             <p>
-                <label for='contract-amount'><select id='contract-session' class='form-control'
-                                                     style='width: initial; display: initial;' type='text'
+                <label for='contract-amount'><select id='contract-session' class='form-control inline-form-control' type='text'
                                                      placeholder='Wedding Package'
                                                      value='<?php echo $contract ['session']; ?>'>
                         <option cost=''></option>
@@ -103,7 +102,7 @@ $100 print credit'
                         </option>
                         <option cost=''>Custom</option>
                     </select></label>:
-                $<input id='contract-amount' class='form-control' style='width: initial; display: initial;'
+                $<input id='contract-amount' class='form-control inline-form-control'
                         type='number' step='0.01' min='0' placeholder='Amount'
                         value='<?php echo $contract ['amount']; ?>'/><br/>
                 <input id='contract-invoice' class='form-control' type='text' aria-label='Invoice Link'
@@ -111,11 +110,11 @@ $100 print credit'
             </p>
             <p>
                 Non-refundable deposit of
-                $<input id='contract-deposit' class='form-control' style='width: initial; display: initial;'
+                $<input id='contract-deposit' class='form-control inline-form-control'
                         aria-label='Deposit' type='number' step='0.01' min='0' placeholder='Deposit'
                         value='<?php echo $contract ['deposit']; ?>'/>
                 and contract to reserve the date
-                <input id='contract-date' class='form-control' style='width: initial; display: initial;'
+                <input id='contract-date' class='form-control inline-form-control'
                        aria-label='Date' type='date' placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
                 <br/>
                 Checks should be made payable to <em>Saperstone Studios</em> and
@@ -299,12 +298,12 @@ $100 print credit'
         </div>
         <div class='col-md-9'>
             Wedding Photography |
-            <input id='contract-session-dup' class='form-control' style='width: initial; display: initial;' type='text'
+            <input id='contract-session-dup' class='form-control inline-form-control' type='text'
                    placeholder='Wedding Package' value='<?php echo $contract ['session']; ?>' disabled/>
             | photojournalistic style documentation
         </div>
     </div>
-    <label style='width: 100%;'><textarea id='contract-details' class='form-control' type='text'
+    <label class="u-width-100"><textarea id='contract-details' class='form-control' type='text'
                                           placeholder='Wedding Package Details'><?php echo $contract ['details']; ?></textarea></label>
     <h3>Standard Terms and Conditions</h3>
     <p>

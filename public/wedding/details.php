@@ -45,7 +45,7 @@ $user = User::fromSystem();
         </div>
         <!-- /.row -->
 
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-lg-12">
                 <p>You said Yes! Congrats on stepping into this next chapter of your
                     lives as a force to be reckoned with. Nothing can take you guys
@@ -73,7 +73,7 @@ $user = User::fromSystem();
             </div>
         </div>
 
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="The Wedding Experience"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">

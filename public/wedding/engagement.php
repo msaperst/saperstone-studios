@@ -66,7 +66,7 @@ $user = User::fromSystem();
             </div>
         </div>
 
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-lg-12">
                 <h2>Congrats on your engagement!</h2>
                 <p>

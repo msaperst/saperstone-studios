@@ -41,7 +41,7 @@ $user = User::fromSystem();
     <!-- Services Section -->
     <div class="row">
         <div class="col-lg-12">
-            <div style="margin-bottom:30px;">
+            <div class="u-mb-30">
                 <p>If you've heard the news, my family has moved to Phoenix Arizona! We've traded in the humid heat
                     for dry and invested heavily in sunscreen. But don't count me out to photograph your beautiful
                     family in Northern Virginia! I'll still be frequenting Fairfax, Burke, Springfield, McLean,
@@ -121,7 +121,7 @@ $user = User::fromSystem();
             <h2 class="page-header">Welcome to Saperstone Studios</h2>
         </div>
         <div class="col-md-12">
-            <!--            <img style='max-width: 100%;' alt="Where Saperstone Studios Works"-->
+            <!--            <img class='img-responsive' alt="Where Saperstone Studios Works"-->
             <!--                 src='img/locationbox.png' align='right'/>-->
             <p>Allow me to introduce myself! I've worked in the photography industry for over 10 years, coordinating
                 photo shoots and performing high level color management and retouch for program books and billboards

@@ -65,7 +65,7 @@ $user = User::fromSystem();
                         alt="Wedding Process">
                 </div>
             </div>
-            <div class="col-lg-12" style="padding-top: 20px;">
+            <div class="col-lg-12 u-pt-20">
                 <p>I would love the opportunity to work with you! I pride myself on
                     the customer service I provide to every single client. From your
                     first inquiry to product delivery, I will walk with you through the

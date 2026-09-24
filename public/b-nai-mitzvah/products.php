@@ -66,7 +66,7 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templa
                 files do come on a USB for mitzvahs with a personal print release.</p>
             <p>While there is absolutely no obligation to purchase artwork,
                 I often pose the question:</p>
-            <p style="font-size: 24px; font-family: serif;"><em>"How would you like to
+            <p class="u-serif-24"><em>"How would you like to
                     view and pass down these memories, 10, 20, 30 years from now?"</em></p>
             <p>All available products can be seen at your initial consultation and/or
                 image review session. You can also get a sampling of what I offer

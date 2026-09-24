@@ -42,7 +42,7 @@ $sql->disconnect ();
         <!-- Intro Content -->
         <div class="row">
             <div class="col-md-12">
-                <div id="tag-cloud" style="height: 400px;"></div>
+                <div id="tag-cloud" class="u-height-400"></div>
             </div>
         </div>
         <!-- /.row -->

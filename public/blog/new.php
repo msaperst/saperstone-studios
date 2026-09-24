@@ -47,8 +47,7 @@ $sql->disconnect();
     
     <!-- Post Control Bar -->
     <div data-spy="affix"
-        style="margin-top: 35px; margin-left: 5px; max-width: 300px; z-index: 100;"
-        class="text-center">
+        class="blog-controls-left text-center">
         <div id='post-button-holder'>
             <br />
             <button id="add-text-button" type="button" class="btn btn-info">
@@ -61,8 +60,7 @@ $sql->disconnect();
             <button id="preview-post" type="button" class="btn btn-warning">
                 <em class="fa fa-search"></em> Preview Post
             </button>
-            <button id="edit-post" type="button" class="btn btn-warning"
-                style="display: none;">
+            <button id="edit-post" type="button" class="btn btn-warning csp-hidden">
                 <em class="fa fa-pencil-square-o"></em> Edit Post
             </button>
             <?php
@@ -107,18 +105,16 @@ $sql->disconnect();
             ?>
         </div>
 
-        <div id='post-image-holder' style='z-index: 100; height: 300px;'></div>
+        <div id='post-image-holder' class='blog-edit-area'></div>
         <!-- overflow-y:auto;  -->
     </div>
 
     <!-- Preview Control Bar -->
     <div data-spy="affix"
-        style="right: 0px; margin-top: 35px; margin-right: 5px; max-width: 300px; z-index: 100;"
-        class="text-center">
-        <div id='post-preview-holder' class='text-center'
-            style='width: 300px; height: 176px; background-color: red; overflow: hidden;'>
-            <select id='post-preview-image'
-                style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'>
+        class="blog-controls-right text-center">
+        <div id='post-preview-holder' class='text-center blog-preview-holder'>
+            <label class="sr-only" for="post-preview-image">Preview image</label>
+            <select id='post-preview-image' class='blog-preview-select'>
                 <option></option>
                 <?php
                 if (isset ( $blog )) {
@@ -132,7 +128,7 @@ $sql->disconnect();
             </select>
             <?php
             if (isset ( $blog )) {
-                echo "<img src='{$blog->getPreview()}' style='width:300px; top:{$blog->getOffset()}px;'>";
+                echo "<img src='{$blog->getPreview()}' class='blog-preview-image' data-top='{$blog->getOffset()}'>";
             }
             ?>
         </div>
@@ -186,10 +182,9 @@ $sql->disconnect();
         </div>
         <div class="row">
             <div id="post-tags" class="col-md-4 text-left">
-                <select id='post-tags-select' class='form-control input-sm'
-                    style='width: auto;'>
+                <select id='post-tags-select' class='form-control input-sm u-width-auto'>
                     <option></option>
-                    <option value='0' style='color: red;'>New Category</option>
+                    <option value='0' class='text-danger'>New Category</option>
                 <?php
                 foreach ( $categories as $category ) {
                     echo "<option value='" . $category ['id'] . "'>" . $category ['tag'] . "</option>";
@@ -199,8 +194,7 @@ $sql->disconnect();
             </div>
             <div class="col-md-4 text-center">
                 <strong id="post-date"> <input id='post-date-input'
-                    class='form-control input-sm' type='date'
-                    style='width: auto; display: initial;' value='<?php echo $date; ?>' />
+                    class='form-control input-sm inline-form-control' type='date' value='<?php echo $date; ?>' />
                 </strong>
             </div>
             <div id="post-likes" class="col-md-4 text-right"></div>

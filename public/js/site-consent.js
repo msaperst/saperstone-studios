@@ -86,7 +86,6 @@
 
             var modalBody = '';
             var modalButtons = '';
-            var modalBodyStyle = '';
             var moreLink = '';
 
             // Generate more link
@@ -125,23 +124,26 @@
                     }
                 });
 
-                modalBody = '<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>' + '<div id="' + settings.id + '-advanced-types" style="display:none; margin-top: 10px;"><h5 id="' + settings.id + '-advanced-title">' + settings.advancedTitle + '</h5><ul class="list-unstyled">' + advancedCookiesToSelectList + '</ul></div>';
+                modalBody = '<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>' + '<div id="' + settings.id + '-advanced-types" class="consent-advanced-options"><h5 id="' + settings.id + '-advanced-title">' + settings.advancedTitle + '</h5><ul class="list-unstyled">' + advancedCookiesToSelectList + '</ul></div>';
             } else {
                 modalButtons = '<button id="' + settings.id + '-accept-btn" type="button" class="btn btn-primary">' + settings.acceptButtonLabel + '</button>';
 
                 modalBody = '<div id="' + settings.id + '-message">' + settings.message + moreLink + '</div>';
             }
 
-            if (settings.messageScrollBar == true) {
-                modalBodyStyle = 'style="overflow-y: scroll; max-height: ' + settings.messageMaxHeightPercent + '%"';
-            }
-
-            var modal = '<div class="modal fade ' + settings.class + '" id="' + settings.id + '" tabindex="-1" role="dialog" aria-labelledby="' + settings.id + '-title" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="' + settings.id + '-title">' + settings.title + '</h5></div><div id="' + settings.id + '-body" class="modal-body" ' + modalBodyStyle + '>' + modalBody + '</div><div class="modal-footer">' + modalButtons + '</div></div></div></div>';
+            var modal = '<div class="modal fade ' + settings.class + '" id="' + settings.id + '" tabindex="-1" role="dialog" aria-labelledby="' + settings.id + '-title" aria-hidden="true"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="' + settings.id + '-title">' + settings.title + '</h5></div><div id="' + settings.id + '-body" class="modal-body">' + modalBody + '</div><div class="modal-footer">' + modalButtons + '</div></div></div></div>';
 
             // Show Modal
             var showDelay = event === 'reinit' ? 0 : settings.delay;
             setTimeout(function () {
                 $($element).append(modal);
+
+                if (settings.messageScrollBar == true) {
+                    $('#' + settings.id + '-body').css({
+                        'overflow-y': 'scroll',
+                        'max-height': settings.messageMaxHeightPercent + '%'
+                    });
+                }
 
                 $('#' + settings.id).modal({keyboard: false, backdrop: settings.backdrop});
 

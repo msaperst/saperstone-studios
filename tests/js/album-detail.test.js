@@ -122,7 +122,7 @@ test('album.js updates the favorite count returned with album metadata', () => {
     new context.Album('7', 4, 2);
 
     assert.equal(environment.element('#favorite-count').html(), 3);
-    assert.equal(environment.element('#favorite-count').css('padding-left'), '10px');
+    assert.equal(environment.element('#favorite-count').hasClass('album-favorite-count-present'), true);
 });
 
 test('album.js stops the loading state when the metadata request fails', () => {

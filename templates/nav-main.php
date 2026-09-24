@@ -50,7 +50,7 @@ $navUser = User::fromSystem();
                 <li><a href="/blog/new.php">Write New Post</a></li>
                 <li><a href="/blog/manage.php">Manage Posts</a></li>
                 <?php } ?>
-                <li style="padding-left: 15px;"><input id="nav-search-input"/>
+                <li class="u-pl-15"><input id="nav-search-input"/>
                     <em id="nav-search-icon" class="fa fa-search"></em></li>
             </ul></li>
         <li class="dropdown"><a href="#"
