@@ -138,7 +138,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--title", required=True)
     parser.add_argument("--junit", required=True)
-    coverage_group = parser.add_mutually_exclusive_group(required=True)
+    coverage_group = parser.add_mutually_exclusive_group()
     coverage_group.add_argument("--clover")
     coverage_group.add_argument("--lcov")
     args = parser.parse_args()
@@ -161,35 +161,37 @@ def main():
         print(f"| Errors | **{results['errors']}** |")
     print(f"| Skipped | **{results['skipped']}** |")
 
-    coverage_path = Path(args.clover or args.lcov)
-    if coverage_path.exists():
-        if args.clover:
-            coverage = parse_clover(coverage_path)
-            print(
-                f"| Coverage | **{format_percent(coverage['line'])}** "
-                f"({coverage['covered_lines']}/{coverage['lines']} statements) |"
-            )
-            if coverage["functions"]:
+    coverage_report = args.clover or args.lcov
+    if coverage_report:
+        coverage_path = Path(coverage_report)
+        if coverage_path.exists():
+            if args.clover:
+                coverage = parse_clover(coverage_path)
                 print(
-                    f"| Method coverage | **{format_percent(coverage['function'])}** "
+                    f"| Coverage | **{format_percent(coverage['line'])}** "
+                    f"({coverage['covered_lines']}/{coverage['lines']} statements) |"
+                )
+                if coverage["functions"]:
+                    print(
+                        f"| Method coverage | **{format_percent(coverage['function'])}** "
+                        f"({coverage['covered_functions']}/{coverage['functions']}) |"
+                    )
+            else:
+                coverage = parse_lcov(coverage_path)
+                print(
+                    f"| Line coverage | **{format_percent(coverage['line'])}** "
+                    f"({coverage['covered_lines']}/{coverage['lines']}) |"
+                )
+                print(
+                    f"| Branch coverage | **{format_percent(coverage['branch'])}** "
+                    f"({coverage['covered_branches']}/{coverage['branches']}) |"
+                )
+                print(
+                    f"| Function coverage | **{format_percent(coverage['function'])}** "
                     f"({coverage['covered_functions']}/{coverage['functions']}) |"
                 )
         else:
-            coverage = parse_lcov(coverage_path)
-            print(
-                f"| Line coverage | **{format_percent(coverage['line'])}** "
-                f"({coverage['covered_lines']}/{coverage['lines']}) |"
-            )
-            print(
-                f"| Branch coverage | **{format_percent(coverage['branch'])}** "
-                f"({coverage['covered_branches']}/{coverage['branches']}) |"
-            )
-            print(
-                f"| Function coverage | **{format_percent(coverage['function'])}** "
-                f"({coverage['covered_functions']}/{coverage['functions']}) |"
-            )
-    else:
-        print(f"| Coverage | ⚠️ Report not found: `{coverage_path}` |")
+            print(f"| Coverage | ⚠️ Report not found: `{coverage_path}` |")
 
     if results["failed_names"]:
         print("\n<details>")
