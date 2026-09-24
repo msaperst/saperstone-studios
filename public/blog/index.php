@@ -52,11 +52,9 @@ $sql->disconnect ();
     <!-- Script to Activate the Gallery -->
     <script>
         var postsFull = new PostsFull( <?php echo count($posts); ?> );
-        
-        var loaded = 0;
         $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() && loaded < <?php echo count($posts); ?> ) {
-                loaded = postsFull.loadPosts();
+            if( $('footer').isOnScreen() ) {
+                postsFull.loadPosts();
             }
         });
     </script>
