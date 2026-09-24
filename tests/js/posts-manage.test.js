@@ -30,6 +30,7 @@ function createManageContext(options = {}) {
     const windowObject = {location: {href: ''}};
 
     const context = loadBrowserScripts([
+        'public/js/blog-common.js',
         'public/js/post-admin.js',
         'public/js/posts-manage.js'
     ], {
