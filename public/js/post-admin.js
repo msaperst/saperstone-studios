@@ -158,13 +158,12 @@ function newTag(ele) {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
                 }).fail(function (xhr, status, error) {
-                    if (xhr.responseText !== "") {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if (error === "Unauthorized") {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-                    } else {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your new blog category.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                    }
+                    appendBlogRequestError(
+                        modal.find('.bootstrap-dialog-body'),
+                        xhr,
+                        error,
+                        "Some unexpected error occurred while creating your new blog category.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+                    );
                 }).always(function () {
                     $button.stopSpin();
                     dialogItself.enableButtons(true);
@@ -367,14 +366,10 @@ function editPost() {
 
 function collectPost(callback1, callback2) {
     $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Saving your post.</div>");
-    $('.btn').each(function () {
-        $(this).prop("disabled", true);
-    });
+    setBlogControlsDisabled('.btn', true);
     if ($('#post-title-input').val() === "") {
         BootstrapDialog.alert("Please enter a title for your post");
-        $('.btn').each(function () {
-            $(this).prop("disabled", false);
-        });
+        setBlogControlsDisabled('.btn', false);
         $('#post-information-message').remove();
         return;
     }
@@ -387,9 +382,7 @@ function collectPost(callback1, callback2) {
     preview.offset = $('#post-preview-holder img').css('top');
     if (!$('#post-preview-holder img').length) {
         BootstrapDialog.alert("Please select a preview image for your post");
-        $('.btn').each(function () {
-            $(this).prop("disabled", false);
-        });
+        setBlogControlsDisabled('.btn', false);
         $('#post-information-message').remove();
         return;
     }
@@ -424,9 +417,7 @@ function collectPost(callback1, callback2) {
             if (result) {
                 callback1(tags, preview, content, callback2);
             } else {
-                $('.btn').each(function () {
-                    $(this).prop("disabled", false);
-                });
+                setBlogControlsDisabled('.btn', false);
                 $('#post-information-message').remove();
             }
         });
@@ -461,18 +452,15 @@ function savePost(tags, preview, content, callback) {
             $('#post-information-message').remove();
         }
     }).fail(function (xhr, status, error) {
-        if (xhr.responseText !== "") {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if (error === "Unauthorized") {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-        } else {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        }
+        appendBlogRequestError(
+            $('#post-title-input').closest('div'),
+            xhr,
+            error,
+            "Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+        );
         $('#post-information-message').remove();
     }).always(function () {
-        $('.btn').each(function () {
-            $(this).prop("disabled", false);
-        });
+        setBlogControlsDisabled('.btn', false);
     });
 }
 
@@ -500,25 +488,20 @@ function updatePost(tags, preview, content, callback) {
             $('#post-information-message').remove();
         }
     }).fail(function (xhr, status, error) {
-        if (xhr.responseText !== "") {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if (error === "Unauthorized") {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-        } else {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        }
+        appendBlogRequestError(
+            $('#post-title-input').closest('div'),
+            xhr,
+            error,
+            "Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+        );
         $('#post-information-message').remove();
     }).always(function () {
-        $('.btn').each(function () {
-            $(this).prop("disabled", false);
-        });
+        setBlogControlsDisabled('.btn', false);
     });
 }
 
 function schedulePost(post) {
-    $('.btn').each(function () {
-        $(this).prop("disabled", true);
-    });
+    setBlogControlsDisabled('.btn', true);
     BootstrapDialog.show({
         draggable: true,
         title: 'Select A Time',
@@ -552,17 +535,14 @@ function schedulePost(post) {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
                     }
                 }).fail(function (xhr, status, error) {
-                    if (xhr.responseText !== "") {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if (error === "Unauthorized") {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-                    } else {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while scheduling your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                    }
+                    appendBlogRequestError(
+                        modal.find('.bootstrap-dialog-body'),
+                        xhr,
+                        error,
+                        "Some unexpected error occurred while scheduling your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+                    );
                 }).always(function () {
-                    $('.btn').each(function () {
-                        $(this).prop("disabled", false);
-                    });
+                    setBlogControlsDisabled('.btn', false);
                     $button.stopSpin();
                     dialogItself.enableButtons(true);
                     dialogItself.setClosable(true);
@@ -580,9 +560,7 @@ function schedulePost(post) {
 function publishPost(post) {
     $('#post-information-message').remove();
     $('#post-title-input').closest('div').append("<div id='post-information-message' class='alert alert-info'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Publishing your post.</div>");
-    $('.btn').each(function () {
-        $(this).prop("disabled", true);
-    });
+    setBlogControlsDisabled('.btn', true);
     $.post("/api/publish-blog-post.php", {
         post: post
     }).done(function (data) {
@@ -594,17 +572,14 @@ function publishPost(post) {
             $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }
     }).fail(function (xhr, status, error) {
-        if (xhr.responseText !== "") {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if (error === "Unauthorized") {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-        } else {
-            $('#post-title-input').closest('div').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while publishing your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        }
+        appendBlogRequestError(
+            $('#post-title-input').closest('div'),
+            xhr,
+            error,
+            "Some unexpected error occurred while publishing your blog post.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+        );
     }).always(function () {
-        $('.btn').each(function () {
-            $(this).prop("disabled", false);
-        });
+        setBlogControlsDisabled('.btn', false);
     });
 }
 
