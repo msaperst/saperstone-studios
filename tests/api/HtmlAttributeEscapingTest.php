@@ -43,6 +43,8 @@ class HtmlAttributeEscapingTest extends TestCase {
 
     public function tearDown(): void {
         $this->sql->executeStatement("DELETE FROM users WHERE id = 997");
+        $count = (int)$this->sql->getRow("SELECT MAX(id) AS count FROM users")['count'] + 1;
+        $this->sql->executeStatement("ALTER TABLE users AUTO_INCREMENT = $count");
         $this->sql->disconnect();
     }
 
