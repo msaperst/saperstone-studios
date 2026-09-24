@@ -81,7 +81,7 @@ $user = User::fromSystem();
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>Full Name:</label> <input type="text" class="form-control"
-                                                         id="name" required value="<?php echo $user->getName(); ?>"
+                                                         id="name" required value="<?php echo Strings::escapeHtmlAttribute($user->getName()); ?>"
                                                          data-validation-required-message="Please enter your name.">
                         <p class="help-block"></p>
                     </div>
@@ -97,7 +97,7 @@ $user = User::fromSystem();
                     <div class="controls">
                         <label>Email Address:</label> <input type="email"
                                                              class="form-control" id="email" required
-                                                             value="<?php echo $user->getEmail(); ?>"
+                                                             value="<?php echo Strings::escapeHtmlAttribute($user->getEmail()); ?>"
                                                              data-validation-required-message="Please enter your email address.">
                     </div>
                 </div>
