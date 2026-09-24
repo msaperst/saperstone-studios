@@ -355,13 +355,12 @@ function deletePost(post) {
                     post.currentTarget.remove();
                     setCommentHeader(-1);
                 }).fail(function (xhr, status, error) {
-                    if (xhr.responseText !== "") {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                    } else if (error === "Unauthorized") {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-                    } else {
-                        modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while deleting your image.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                    }
+                    appendBlogRequestError(
+                        modal.find('.bootstrap-dialog-body'),
+                        xhr,
+                        error,
+                        "Some unexpected error occurred while deleting your image.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+                    );
                 }).always(function () {
                     $button.stopSpin();
                     dialogInItself.enableButtons(true);
@@ -428,13 +427,12 @@ function submitPost() {
             $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
         }
     }).fail(function (xhr, status, error) {
-        if (xhr.responseText !== "") {
-            $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if (error === "Unauthorized") {
-            $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-        } else {
-            $('#post-comment-message-message').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while adding your comment.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        }
+        appendBlogRequestError(
+            $('#post-comment-message-message'),
+            xhr,
+            error,
+            "Some unexpected error occurred while adding your comment.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+        );
     }).always(function () {
         checkPost();
     });
