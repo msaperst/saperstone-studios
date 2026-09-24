@@ -30,13 +30,12 @@ jobs:
       - name: API Tests
         run: COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
 
-      - name: Test Report
-        uses: dorny/test-reporter@v2
-        if: ${{ !cancelled() }}       # run this step even if previous step failed
-        with:
-          name: API Tests            # Name of the check run which will be created
-          path: reports/api-junit.xml    # Path to test results
-          reporter: java-junit        # Format of test results
+      - name: API Test Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/test-summary.py \
+            --title "API Tests" \
+            --junit reports/api-junit.xml | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Upload HTML test report
         if: always()
