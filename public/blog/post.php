@@ -79,7 +79,7 @@ if (!$user->isAdmin() && !$blog->isActive()) {
         </div>
         <div class="col-md-5">
             <input type="text" class="form-control" id="post-comment-name"
-                   placeholder="Name" value="<?php echo $user->getName(); ?>"/>
+                   placeholder="Name" value="<?php echo htmlspecialchars($user->getName(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"/>
             <div class="error" id="post-comment-name-message"></div>
         </div>
         <div class="col-md-1">
@@ -89,7 +89,7 @@ if (!$user->isAdmin() && !$blog->isActive()) {
             <input type="text" class="form-control" id="post-comment-email"
                    placeholder="Email"
                    data-validation-required-message="Please enter a valid email address"
-                   value="<?php echo $user->getEmail(); ?>"/>
+                   value="<?php echo htmlspecialchars($user->getEmail(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>"/>
             <div class="error" id="post-comment-email-message"></div>
         </div>
     </div>
