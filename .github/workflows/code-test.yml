@@ -177,3 +177,18 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: SonarCloud PR diagnostics
+        if: github.event_name == 'pull_request'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          response=""
+          for attempt in {1..10}; do
+            if response="$(curl --fail --silent --show-error -u "${SONAR_TOKEN}:" "https://sonarcloud.io/api/issues/search?componentKeys=msaperst_saperstone-studios&pullRequest=${{ github.event.pull_request.number }}&resolved=false&ps=100")"; then
+              break
+            fi
+            sleep 2
+          done
+          test -n "$response"
+          echo "$response" | jq -r '.issues[] | [.type, .severity, .rule, .component, (.line // 0), .message] | @tsv'
