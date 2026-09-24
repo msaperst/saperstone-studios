@@ -160,7 +160,7 @@ $sql->disconnect();
                             }
                             echo "<div class='item$active_class'>";
                             echo "    <div class='contain' gallery-id='{$gallery->getId()}' image-id='" . $image ['id'] . "' sequence='" . $image ['sequence'] . "'";
-                            echo "        alt='" . $image ['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                            echo "        alt='" . htmlspecialchars($image['title'], ENT_QUOTES, 'UTF-8') . "' data-background-image=\"" . htmlspecialchars($image['location'], ENT_QUOTES, 'UTF-8') . "\"></div>";
                             echo "    <div class='carousel-caption'>";
                             echo "        <h2>" . $image ['caption'] . "</h2>";
                             echo "    </div>";
