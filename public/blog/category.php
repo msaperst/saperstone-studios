@@ -67,11 +67,11 @@ $sql->disconnect();
 <!-- Script to Activate the Gallery -->
 <script>
     var postsFull = new PostsFull( <?php echo $postCount; ?>, <?php echo "[" . implode(",", $categories) . "]"; ?> );
-        $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() ) {
-                postsFull.loadPosts();
-            }
-        });
+    $(window,document).on("scroll resize", function(){
+        if( $('footer').isOnScreen() ) {
+            postsFull.loadPosts();
+        }
+    });
 </script>
 
 </body>
