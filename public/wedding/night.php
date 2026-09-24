@@ -57,7 +57,7 @@ $sql->disconnect();
         </div>
         <!-- /.row -->
 
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-lg-12">
                 <!-- Carousel -->
                 <div id="night-carousel"
@@ -102,10 +102,10 @@ $sql->disconnect();
                     </a>
                     <?php if ($user->isAdmin ()) { ?>
                     <span
-                        style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
+                        class="image-edit-control">
                         <button class="ajax-file-upload"
                             onclick="location.href='/commercial/galleries.php?w=12'"
-                            style="position: relative; overflow: hidden; cursor: pointer;">
+                            class="editable-image-control">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>
