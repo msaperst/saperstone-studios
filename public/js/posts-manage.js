@@ -1,5 +1,14 @@
 var post_table;
 var resultsSelected = false;
+var postManageControls = [
+    '#post-update-button',
+    '#post-delete-button',
+    '#post-update-close-button'
+];
+
+function setPostManageControlsDisabled(disabled) {
+    setBlogControlsDisabled(postManageControls, disabled);
+}
 
 $(document).ready(function () {
     if ($('#posts').length) {
@@ -117,9 +126,7 @@ function editPost(post) {
 }
 
 function deletePost(post) {
-    $('#post-update-button').prop('disabled', true);
-    $('#post-delete-button').prop('disabled', true);
-    $('#post-update-close-button').prop('disabled', true);
+    setPostManageControlsDisabled(true);
     BootstrapDialog.confirm("Are you sure you want to delete this post?", function (result) {
         if (result) {
             $.post("/api/delete-blog.php", {
@@ -132,30 +139,23 @@ function deletePost(post) {
                     post_table.row($('tr[post-id=' + post + ']')).remove().draw();
                 }
             }).fail(function (xhr, status, error) {
-                if (xhr.responseText !== "") {
-                    $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                } else if (error === "Unauthorized") {
-                    $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-                } else {
-                    $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                }
+                appendBlogRequestError(
+                    $('#post .modal-body'),
+                    xhr,
+                    error,
+                    "Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+                );
             }).always(function () {
-                $('#post-update-button').prop('disabled', false);
-                $('#post-delete-button').prop('disabled', false);
-                $('#post-update-close-button').prop('disabled', false);
+                setPostManageControlsDisabled(false);
             });
         } else {
-            $('#post-update-button').prop('disabled', false);
-            $('#post-delete-button').prop('disabled', false);
-            $('#post-update-close-button').prop('disabled', false);
+            setPostManageControlsDisabled(false);
         }
     });
 }
 
 function updatePost(post) {
-    $('#post-update-button').prop('disabled', true);
-    $('#post-delete-button').prop('disabled', true);
-    $('#post-update-close-button').prop('disabled', true);
+    setPostManageControlsDisabled(true);
     // get our updated content
     var tags = [];
     $('#post-tags span').each(function () {
@@ -174,9 +174,7 @@ function updatePost(post) {
         active: $('#post-active-input').is(':checked') ? 1 : 0,
     }).done(function (data) {
         if (data === "published") {
-            $('#post-update-button').prop('disabled', true);
-            $('#post-delete-button').prop('disabled', true);
-            $('#post-update-close-button').prop('disabled', true);
+            setPostManageControlsDisabled(true);
             $.post("/api/publish-blog-post.php", {
                 post: post
             }).done(function (data) {
@@ -187,17 +185,14 @@ function updatePost(post) {
                     post_table.ajax.reload(null, false);
                 }
             }).fail(function (xhr, status, error) {
-                if (xhr.responseText !== "") {
-                    $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-                } else if (error === "Unauthorized") {
-                    $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-                } else {
-                    $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-                }
+                appendBlogRequestError(
+                    $('#post .modal-body'),
+                    xhr,
+                    error,
+                    "Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+                );
             }).always(function () {
-                $('#post-update-button').prop('disabled', false);
-                $('#post-delete-button').prop('disabled', false);
-                $('#post-update-close-button').prop('disabled', false);
+                setPostManageControlsDisabled(false);
             });
         } else if (data !== "") {
             $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
@@ -206,16 +201,13 @@ function updatePost(post) {
             post_table.ajax.reload(null, false);
         }
     }).fail(function (xhr, status, error) {
-        if (xhr.responseText !== "") {
-            $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + xhr.responseText + "</div>");
-        } else if (error === "Unauthorized") {
-            $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Your session has timed out, and you have been logged out. Please login again, and repeat your action.</div>");
-        } else {
-            $('#post .modal-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
-        }
+        appendBlogRequestError(
+            $('#post .modal-body'),
+            xhr,
+            error,
+            "Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting."
+        );
     }).always(function () {
-        $('#post-update-button').prop('disabled', false);
-        $('#post-delete-button').prop('disabled', false);
-        $('#post-update-close-button').prop('disabled', false);
+        setPostManageControlsDisabled(false);
     });
 }
