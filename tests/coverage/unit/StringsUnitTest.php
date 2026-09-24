@@ -91,6 +91,17 @@ class StringsUnitTest extends TestCase {
         $this->assertEquals("Hello<br/>World", $result);
     }
 
+    public function testHtmlAttributeEscapesQuotesAndMarkup() {
+        $this->assertEquals(
+            'Max&quot; &amp; &lt;script&gt; &#039;test&#039;',
+            Strings::escapeHtmlAttribute('Max" & <script> \'test\'')
+        );
+    }
+
+    public function testHtmlAttributeHandlesNull() {
+        $this->assertEquals('', Strings::escapeHtmlAttribute(null));
+    }
+
     public function testCommaSingle() {
         $result = Strings::commaSeparate(array(
             "hello"
