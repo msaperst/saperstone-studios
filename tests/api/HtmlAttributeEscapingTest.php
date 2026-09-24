@@ -27,8 +27,8 @@ class HtmlAttributeEscapingTest extends TestCase {
                 997,
                 'escape_test',
                 md5('unused'),
-                'Max\" autofocus onfocus=\"alert(140)',
-                'Saperstone\" onclick=\"alert(141)',
+                "Max\" autofocus onfocus=\"alert(140)",
+                "Saperstone\" onclick=\"alert(141)",
                 'escape-test@example.org',
                 'admin',
                 '14014014014014014014014014014014',
@@ -48,7 +48,7 @@ class HtmlAttributeEscapingTest extends TestCase {
 
     public function testZapStyleQueryValuesAreNotReflectedIntoHtmlAttributes(): void {
         $marker = 'ZAP140_QUERY_MARKER';
-        $payload = rawurlencode('\" data-zap140=\"' . $marker);
+        $payload = rawurlencode("\" data-zap140=\"" . $marker);
 
         $paths = [
             'contact.php?user=' . $payload . '&pass=' . $payload,
@@ -74,8 +74,8 @@ class HtmlAttributeEscapingTest extends TestCase {
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertStringContainsString(
-            'value="Max&amp;quot; autofocus onfocus=&amp;quot;alert(140) Saperstone&amp;quot; onclick=&amp;quot;alert(141)"',
-            htmlspecialchars($body, ENT_NOQUOTES, 'UTF-8')
+            'value="Max&quot; autofocus onfocus=&quot;alert(140) Saperstone&quot; onclick=&quot;alert(141)"',
+            $body
         );
         $this->assertStringNotContainsString('onfocus="alert(140)"', $body);
         $this->assertStringNotContainsString('onclick="alert(141)"', $body);
@@ -89,12 +89,12 @@ class HtmlAttributeEscapingTest extends TestCase {
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertStringContainsString(
-            'value="Max&amp;quot; autofocus onfocus=&amp;quot;alert(140)"',
-            htmlspecialchars($body, ENT_NOQUOTES, 'UTF-8')
+            'value="Max&quot; autofocus onfocus=&quot;alert(140)"',
+            $body
         );
         $this->assertStringContainsString(
-            'value="Saperstone&amp;quot; onclick=&amp;quot;alert(141)"',
-            htmlspecialchars($body, ENT_NOQUOTES, 'UTF-8')
+            'value="Saperstone&quot; onclick=&quot;alert(141)"',
+            $body
         );
         $this->assertStringNotContainsString('onfocus="alert(140)"', $body);
         $this->assertStringNotContainsString('onclick="alert(141)"', $body);
