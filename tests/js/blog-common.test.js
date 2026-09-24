@@ -75,3 +75,17 @@ test('setBlogControlsDisabled supports one selector or several selectors', () =>
     assert.equal(environment.element('#save').prop('disabled'), false);
     assert.equal(environment.element('#delete').prop('disabled'), false);
 });
+
+test('blog common viewport helper reports visible and off-screen elements', () => {
+    const {context, environment} = createContext();
+    const element = environment.element('__viewport__');
+
+    element.rect = {top: 100, bottom: 200};
+    assert.equal(element.isOnScreen(), true);
+
+    element.rect = {top: 900, bottom: 1000};
+    assert.equal(element.isOnScreen(), false);
+
+    element.rect = {top: -200, bottom: -1};
+    assert.equal(element.isOnScreen(), false);
+});
