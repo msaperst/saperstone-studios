@@ -30,7 +30,7 @@ COPY .docker/php/default-ssl.conf /etc/apache2/sites-enabled/default-ssl.conf
 COPY .docker/php/security-headers.conf /etc/apache2/conf-available/zz-saperstone-security.conf
 COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY .docker/php/security.ini /usr/local/etc/php/conf.d/security.ini
-RUN a2enmod headers rewrite expires speling ssl && a2enconf zz-saperstone-security
+RUN a2enmod headers rewrite expires ssl && a2enconf zz-saperstone-security
 RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif
 
 # copy over files

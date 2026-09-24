@@ -49,6 +49,30 @@ class SecurityHeadersTest extends TestCase {
     /**
      * @throws GuzzleException
      */
+    public function testInvalidPathsDoNotExposeFilenameCandidates(): void {
+        $valid = $this->http->request('GET', 'Privacy-Policy.php');
+
+        $this->assertSame(200, $valid->getStatusCode());
+
+        $invalidPaths = [
+            'Privacy-Policy.ph',
+            'privacy-policy.php',
+            'Privacy-Policy.PHP',
+        ];
+
+        foreach ($invalidPaths as $path) {
+            $response = $this->http->request('GET', $path);
+            $body = (string) $response->getBody();
+
+            $this->assertSame(404, $response->getStatusCode(), $path);
+            $this->assertStringNotContainsString('Multiple Choices', $body, $path);
+            $this->assertStringNotContainsString('Available documents', $body, $path);
+        }
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function testPhpVersionIsNotExposed(): void {
         $requests = [
             ['GET', 'index.php', []],
