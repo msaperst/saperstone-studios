@@ -291,3 +291,114 @@ test('setCommentHeader preserves singular/plural grammar', () => {
     context.setCommentHeader(-1);
     assert.equal(environment.element('#post-comments h2').html(), '0 Comments');
 });
+
+test('addSocialMedias builds Facebook and Twitter controls for a post', () => {
+    const {context} = createPostContext();
+
+    const controls = context.addSocialMedias({
+        id: 5,
+        twitter: 'tweet-123'
+    });
+
+    assert.equal(controls.hasClass('col-md-4'), true);
+    assert.equal(controls.hasClass('text-right'), true);
+    assert.equal(controls.appended.length, 2);
+    assert.equal(controls.appended[0].hasClass('fbook'), true);
+    assert.equal(controls.appended[1].hasClass('tweet'), true);
+});
+
+test('addShares appends sharing controls and initializes AddToAny after load', () => {
+    let initializations = 0;
+    const {context, environment, scripts} = createPostContext({
+        a2a: {
+            init_all() {
+                initializations += 1;
+            }
+        }
+    });
+
+    context.addShares({
+        id: 9,
+        title: 'Share Me'
+    });
+
+    assert.equal(environment.element('#post-content').appended.length, 1);
+    const script = scripts.get('addtoany-js');
+    assert.ok(script);
+    script.onload();
+    assert.equal(initializations, 1);
+});
+
+test('loadPost renders protected image content with its calculated height', () => {
+    const {context, environment} = createPostContext({socialAllowed: false});
+    environment.element('#post-comments h2').html('0 Comments');
+
+    context.loadPost({
+        id: 13,
+        title: 'Image Post',
+        date: 'Today',
+        tags: [],
+        content: [[{
+            location: '/img/blog.jpg',
+            height: '100',
+            width: '200',
+            left: '5',
+            top: '20'
+        }]],
+        comments: []
+    }, '<h1>');
+
+    const holder = environment.element('#post-content').appended[0];
+    const contentRow = holder.appended[1];
+    const protect = contentRow.appended[0];
+    const images = contentRow.appended[1];
+
+    assert.equal(protect.hasClass('post-protects'), true);
+    assert.equal(protect.css('height'), '120px');
+    assert.equal(protect.appended[0].attr('src'), '/img/image.png');
+    assert.equal(images.hasClass('post-images'), true);
+    assert.equal(images.css('height'), '120px');
+    assert.equal(images.appended[0].attr('src'), '/img/blog.jpg');
+});
+
+test('submitPost surfaces an API validation response and rechecks the form', () => {
+    const {context, environment} = createPostContext();
+    environment.element('#post-comment-message').val('Valid comment');
+    environment.element('#post-comment-name').val('Reader');
+    environment.element('#post-comment-email').val('reader@example.org');
+    environment.element('#post-comment-submit').attr('post-id', '22');
+    environment.queuePost('/api/create-blog-comment.php', {
+        type: 'success',
+        data: 'Validation failed'
+    });
+
+    context.submitPost();
+
+    const messages = environment.element('#post-comment-message-message').appended.join('');
+    assert.match(messages, /Validation failed/);
+    assert.equal(environment.element('#post-comment-submit').prop('disabled'), false);
+});
+
+test('deletePost surfaces request failures and restores dialog controls', () => {
+    const {context, environment} = createPostContext();
+    environment.queuePost('/api/delete-blog-comment.php', {
+        type: 'failure',
+        xhr: {responseText: 'Cannot delete'},
+        error: 'Server Error'
+    });
+
+    context.deletePost({data: 45, currentTarget: environment.element('__comment_failure__')});
+    const config = environment.dialogs[0];
+    const dialog = environment.createDialog();
+    const button = environment.createButton('__delete_failure_button__');
+    const modal = environment.element('__delete_failure_modal__');
+    button.closestResult = modal;
+
+    config.buttons[0].action.call(button, dialog);
+
+    assert.match(modal.find('.bootstrap-dialog-body').appended.join(''), /Cannot delete/);
+    assert.equal(button.spinCount, 1);
+    assert.equal(button.stopSpinCount, 1);
+    assert.equal(dialog.buttonsEnabled, true);
+    assert.equal(dialog.closable, true);
+});

@@ -298,3 +298,155 @@ test('post-admin setPreview replaces the preview with a draggable selected image
     assert.equal(image.css('width'), '300px');
     equalStructure(image.draggableOptions, {axis: 'y'});
 });
+
+test('post-admin document ready wires editor actions to their functions', () => {
+    const {context, environment} = createAdminContext();
+    const calls = [];
+    context.sortOptions = () => calls.push('sort');
+    context.addTag = () => calls.push('tag');
+    context.addTextArea = () => calls.push('text');
+    context.addImageArea = () => calls.push('image');
+    context.editPost = () => calls.push('edit');
+    context.previewPost = () => calls.push('preview');
+    context.collectPost = (first, second) => calls.push([first && first.name, second && second.name]);
+    context.setPreview = () => calls.push('setPreview');
+
+    environment.runReady();
+    environment.element('#post-tags-select').trigger('change');
+    environment.element('#add-text-button').trigger('click');
+    environment.element('#add-image-button').trigger('click');
+    environment.element('#edit-post').trigger('click');
+    environment.element('#preview-post').trigger('click');
+    environment.element('#save-post').trigger('click');
+    environment.element('#schedule-post').trigger('click');
+    environment.element('#publish-saved-post').trigger('click');
+    environment.element('#post-preview-image').trigger('change');
+
+    assert.equal(calls[0], 'sort');
+    assert.ok(calls.includes('tag'));
+    assert.ok(calls.includes('text'));
+    assert.ok(calls.includes('image'));
+    assert.ok(calls.includes('edit'));
+    assert.ok(calls.includes('preview'));
+    assert.ok(calls.includes('setPreview'));
+    assert.ok(calls.some((value) => Array.isArray(value) && value[0] === 'savePost'));
+    assert.ok(calls.some((value) => Array.isArray(value) && value[1] === 'schedulePost'));
+    assert.ok(calls.some((value) => Array.isArray(value) && value[1] === 'publishPost'));
+});
+
+test('post-admin newTag creates and selects a new category', () => {
+    const {context, environment} = createAdminContext();
+    const select = environment.element('#post-tags-select');
+    select.parentResult = environment.element('__tag_parent_new__');
+    environment.element('#new-category-name').val('New Category');
+    environment.element('option:selected').text('New Category');
+    environment.queuePost('/api/create-blog-tag.php', {type: 'success', data: '12'});
+
+    context.newTag(select);
+    const config = environment.dialogs[0];
+    const dialog = environment.createDialog();
+    const button = environment.createButton('__new_tag_button__');
+    button.closestResult = environment.element('__new_tag_modal__');
+    config.buttons[0].action.call(button, dialog);
+
+    equalStructure(environment.calls.post[0], {
+        url: '/api/create-blog-tag.php',
+        data: {tag: 'New Category'}
+    });
+    assert.equal(select.val(), '12');
+    assert.equal(dialog.closed, true);
+    assert.equal(select.parentResult.appended.length, 1);
+});
+
+test('post-admin collectPost asks for confirmation when no tags are selected', () => {
+    const {confirmations, context, environment} = createAdminContext({
+        lengths: {'#post-tags span': 0}
+    });
+    environment.element('#post-title-input').val('No Tags');
+    environment.element('#post-preview-holder img').attr('src', '/tmp/preview.jpg');
+    environment.element('#post-content>li').addClass('blog-editable-text');
+    environment.element('#post-content>li').summernoteCode = '<p>Body</p>';
+    let saved = 0;
+
+    context.collectPost(() => {
+        saved += 1;
+    });
+
+    assert.equal(confirmations.length, 1);
+    confirmations[0].callback(true);
+    assert.equal(saved, 1);
+});
+
+test('post-admin collectPost serializes positioned image groups', () => {
+    const {context, environment} = createAdminContext();
+    environment.element('#post-title-input').val('Images');
+    environment.element('#post-tags span').attr('tag-id', '1');
+    environment.element('#post-preview-holder img').attr('src', '/tmp/preview.jpg');
+    const content = environment.element('#post-content>li');
+    content.addClass('blog-editable-images');
+    const image = environment.element('img');
+    image.attr('src', '/tmp/image.jpg');
+    image.css({
+        top: '10px',
+        left: '20px',
+        width: '300px',
+        height: '200px'
+    });
+
+    let captured;
+    context.collectPost((tags, preview, value) => {
+        captured = value;
+    });
+
+    equalStructure(captured, {
+        1: {
+            group: 1,
+            type: 'images',
+            imgs: [{
+                location: '/tmp/image.jpg',
+                top: '10px',
+                left: '20px',
+                width: '300px',
+                height: '200px'
+            }]
+        }
+    });
+});
+
+test('post-admin savePost redirects directly when no follow-up action is supplied', () => {
+    const {context, environment, windowObject} = createAdminContext();
+    environment.element('#post-title-input').val('New Post');
+    environment.element('#post-date-input').val('2026-09-24');
+    environment.queuePost('/api/create-blog-post.php', {type: 'success', data: '101'});
+
+    context.savePost([], {}, {});
+
+    assert.equal(windowObject.location.href, '/blog/post.php?p=101');
+});
+
+test('post-admin savePost displays request errors and restores buttons', () => {
+    const {context, environment} = createAdminContext();
+    environment.queuePost('/api/create-blog-post.php', {
+        type: 'failure',
+        xhr: {responseText: 'Create failed'},
+        error: 'Server Error'
+    });
+
+    context.savePost([], {}, {});
+
+    assert.match(environment.element('#post-title-input').closest().appended.join(''), /Create failed/);
+    assert.equal(environment.element('.btn').prop('disabled'), false);
+});
+
+test('post-admin updatePost invokes follow-up processing with the existing post id', () => {
+    const {context, environment} = createAdminContext();
+    environment.element('#post').attr('post-id', '202');
+    environment.queuePost('/api/update-blog-post.php', {type: 'success', data: 'published'});
+    let processed;
+
+    context.updatePost([], {}, {}, (post) => {
+        processed = post;
+    });
+
+    assert.equal(processed, '202');
+});

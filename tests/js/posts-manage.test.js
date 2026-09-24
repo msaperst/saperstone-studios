@@ -227,3 +227,91 @@ test('posts-manage updatePost publishes when the update endpoint returns publish
     });
     assert.equal(reloads, 1);
 });
+
+test('posts-manage draw/search refreshes edit handlers and tooltips', () => {
+    const {context, environment} = createManageContext({lengths: {'#posts': 1}});
+    context.sortOptions = () => {};
+    let setups = 0;
+    context.setupEdit = () => {
+        setups += 1;
+    };
+
+    environment.runReady();
+    environment.element('#posts').trigger('draw.dt search.dt');
+
+    assert.equal(setups, 1);
+});
+
+test('posts-manage editPost adds returned tags to the quick editor', () => {
+    const {context, environment} = createManageContext();
+    let added = 0;
+    context.addTag = () => {
+        added += 1;
+    };
+    environment.queueGet('/api/get-blog-full.php', {
+        type: 'success',
+        data: {
+            content: [],
+            tags: [{id: 2}, {id: 4}]
+        }
+    });
+
+    context.editPost({
+        id: 22,
+        title: 'Tags',
+        date: '2026-09-24',
+        active: '0',
+        preview: '/preview.jpg',
+        offset: '0'
+    });
+
+    assert.equal(added, 2);
+    assert.equal(environment.element('#post-tags-select').val(), '4');
+});
+
+test('posts-manage deletePost displays API errors without removing the row', () => {
+    const {context, environment} = createManageContext();
+    let removed = false;
+    context.post_table = {
+        row() {
+            return {
+                remove() {
+                    removed = true;
+                    return {draw() {}};
+                }
+            };
+        }
+    };
+    environment.queuePost('/api/delete-blog.php', {
+        type: 'success',
+        data: 'Delete refused'
+    });
+
+    context.deletePost(61);
+
+    assert.equal(removed, false);
+    assert.match(environment.element('#post .modal-body').appended.join(''), /Delete refused/);
+    assert.equal(environment.element('#post-delete-button').prop('disabled'), false);
+});
+
+test('posts-manage updatePost displays server validation without reloading', () => {
+    const {context, environment} = createManageContext();
+    let reloads = 0;
+    context.post_table = {
+        ajax: {
+            reload() {
+                reloads += 1;
+            }
+        }
+    };
+    environment.queuePost('/api/update-blog-post.php', {
+        type: 'success',
+        data: 'Validation failed'
+    });
+
+    context.updatePost(62);
+
+    assert.equal(reloads, 0);
+    assert.match(environment.element('#post .modal-body').appended.join(''), /Validation failed/);
+    assert.equal(environment.element('#post-update-button').prop('disabled'), false);
+});
