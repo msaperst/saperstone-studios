@@ -65,7 +65,7 @@ $user = User::fromSystem();
                         alt="Studio Headshots">
                 </div>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Stand out from the crowd with an updated professional studio headshot.
                         Perfect for LinkedIn, Business cards or your website. These sessions
                         allow flexibility to choose which background fits your style.
@@ -97,7 +97,7 @@ $user = User::fromSystem();
                         alt="On Location Headshots">
                 </div>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Bring the session outdoors to allow for more backdrops and posing.
                         Don't have a ton of time or desire to travel? I can come to you.
                         Most of these sessions are photographed in <a
@@ -123,7 +123,7 @@ $user = User::fromSystem();
                         alt="Company Headshots">
                 </div>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Have a business of 3 or 3000? No problem. Get a consistent look
                         throughout all your employees images - even the make up shots.
                         We bring the studio to you and can handle nearly any amount of
@@ -151,7 +151,7 @@ $user = User::fromSystem();
                         alt="Professional Branding">
                 </div>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Go beyond the average headshot and tell the story of your brand
                         through photography.</p>
                 <p>We'll collaborate to tailor this session to your specific business
@@ -180,7 +180,7 @@ $user = User::fromSystem();
                         alt="Events">
                 </div>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Capturing your company's events is important for any marketing
                         strategy. Whether it's an annual company meeting, a trade
                         exhibition or a holiday party, we show the important details
@@ -206,7 +206,7 @@ $user = User::fromSystem();
                         alt="Photo Booth">
                 </div>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Perfect for any event, photo booths are a fantastic way to add
                         instant fun to any occasion. Here are the basics, please
                         <a href='/contact.php'>contact us</a> for more details!</p>
