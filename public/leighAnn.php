@@ -51,7 +51,7 @@ $sql->disconnect();
     <div class="row">
         <div class="col-md-12">
             <img id='meet-leigh-ann' src='img/leigh-ann.jpg' alt="Leigh Ann" align='right'
-                 style='margin: 0px 0px 20px 20px;'/>
+                 class='review-image-right'/>
             <p>Hey! My name is Leigh Ann and I'm the Wham Bam Boss Lady at Saperstone Studios! We've recently
                 moved to the East Valley of Arizona and I need friends! When you reach out, be sure to tell me:
                 <ul>
@@ -98,7 +98,7 @@ $sql->disconnect();
     <!-- /.row -->
 
     <!-- Main Content -->
-    <div class="row" style="margin-bottom: 30px;">
+    <div class="row u-mb-30">
         <!-- Content Column -->
         <div class="col-md-12">
             <!-- Carousel -->
@@ -144,10 +144,10 @@ $sql->disconnect();
                 </a>
                 <?php if ($user->isAdmin()) { ?>
                     <span
-                            style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
+                            class="image-edit-control">
                         <button class="ajax-file-upload"
                                 onclick="location.href='/portrait/galleries.php?w=0'"
-                                style="position: relative; overflow: hidden; cursor: pointer;">
+                                class="editable-image-control">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>
