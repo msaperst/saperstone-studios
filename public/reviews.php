@@ -160,7 +160,7 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templa
                                                              alt="Yelp">
                 <div class="overlay">
                     <br/> <br/> <br/> <a class="info" target="_blank"
-                                         href="https://www.yelp.com/biz/saperstone-studios-chandler">See
+                                         href="https://www.yelp.com/biz/saperstone-studios-fairfax">See
                         More</a>
                 </div>
             </div>
