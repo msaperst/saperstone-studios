@@ -193,12 +193,15 @@ $navSql->disconnect();
                     have one, <a id="forgot-password-prev-code"
                                  href="#">click here</a>
                 </div>
+                <label class="sr-only" for="forgot-password-code">Reset Code</label>
                 <input class="form-control csp-hidden" id="forgot-password-code" type="text"
-                       name="code" placeholder="Reset Code"/> <input
-                        class="form-control csp-hidden" id="forgot-password-new-password"
-                        type="password" name="pass" placeholder="Password"/> <input class="form-control csp-hidden"
-                                                        id="forgot-password-new-password-confirm" type="password"
-                                                        name="pass-conf" placeholder="Re-type Password"/>
+                       name="code" placeholder="Reset Code"/>
+                <label class="sr-only" for="forgot-password-new-password">Password</label>
+                <input class="form-control csp-hidden" id="forgot-password-new-password"
+                       type="password" name="pass" placeholder="Password"/>
+                <label class="sr-only" for="forgot-password-new-password-confirm">Re-type Password</label>
+                <input class="form-control csp-hidden" id="forgot-password-new-password-confirm" type="password"
+                       name="pass-conf" placeholder="Re-type Password"/>
                 <span>
                     <div class="checkbox">
                         <label id="forgot-password-remember-span" class="csp-hidden"><input

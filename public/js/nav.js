@@ -25,8 +25,8 @@ $(function () {
     my_id = $('#my-user-id').val();
 
     var navbar = $('.navbar-inverse');
-    var borderTopWidth = parseInt(navbar.attr('data-border-top-width'));
-    if (!isNaN(borderTopWidth)) {
+    var borderTopWidth = Number.parseInt(navbar.attr('data-border-top-width'), 10);
+    if (!Number.isNaN(borderTopWidth)) {
         navbar.css('border-top-width', borderTopWidth + 'px');
     }
 

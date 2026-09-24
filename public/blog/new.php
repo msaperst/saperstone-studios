@@ -113,6 +113,7 @@ $sql->disconnect();
     <div data-spy="affix"
         class="blog-controls-right text-center">
         <div id='post-preview-holder' class='text-center blog-preview-holder'>
+            <label class="sr-only" for="post-preview-image">Preview image</label>
             <select id='post-preview-image' class='blog-preview-select'>
                 <option></option>
                 <?php

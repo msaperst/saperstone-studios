@@ -62,7 +62,7 @@ input[type=number] {
 .no-before {
     padding-left: 12px;
     position: relative;
-    top: -1px;
+    top: -5px;
 }
 
 .no-before:before {
@@ -1258,8 +1258,4 @@ label > input, label > u > input, label > textarea {
 .breadcrumb li button em,
 .breadcrumb li .btn em {
     font-size: 18px;
-}
-
-.no-before {
-    top: -5px;
 }

@@ -84,6 +84,7 @@ $sql->disconnect();
                                 class='form-control' type='date' /> <input
                                 id='post-active-input' type='checkbox' /> Active <br /> <br />
                             <div id="post-tags">
+                                <label class="sr-only" for="post-tags-select">Blog post category</label>
                                 <select id='post-tags-select' class='form-control input-sm u-width-auto'>
                                     <option></option>
                                     <option value='0' class='text-danger'>New Category</option>
@@ -97,6 +98,7 @@ $sql->disconnect();
                         </div>
                         <div class="col-lg-5">
                             <div id='post-preview-holder' class='text-center blog-preview-holder'>
+                                <label class="sr-only" for="post-preview-image">Preview image</label>
                                 <select id='post-preview-image' class='blog-preview-select'><option></option></select>
                             </div>
                         </div>

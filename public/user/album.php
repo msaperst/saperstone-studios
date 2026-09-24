@@ -444,6 +444,7 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
                     <p>
                         <em class="fa fa-exclamation-triangle"></em> What message do you want to send to the users?
                     </p>
+                    <label class="sr-only" for="notifications-message">Notification message</label>
                     <textarea id="notifications-message" class="form-control album-notification-message" maxlength="999">Images have been posted to album <?php echo $album->getName(); ?>. You can access your images by<?php
                         if ($album->hasCode()) {
                             echo " navigating to https://saperstonestudios.com/#album={$album->getCode()}";
