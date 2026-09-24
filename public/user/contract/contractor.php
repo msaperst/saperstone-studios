@@ -102,14 +102,14 @@ if (isset ($_GET ['id'])) {
             foreach ($contract ['lineItems'] as $lineItem) {
                 ?>
                 <span class='contract-line-item'>
-                    <input class='form-control contract-item' style='width: initial; display: initial;'
+                    <input class='form-control contract-item inline-form-control'
                            aria-label='Item' type='text' placeholder='Item'
                            value='<?php echo $lineItem['item']; ?>'/>:
-                    $<input class='form-control contract-amount' style='width: initial; display: initial;'
+                    $<input class='form-control contract-amount inline-form-control'
                             type='number' step='0.01' min='0' placeholder='Amount' aria-label='Amount'
                             value='<?php echo $lineItem['amount']; ?>'/>
                     /
-                    <input class='form-control contract-unit' style='width: initial; display: initial;'
+                    <input class='form-control contract-unit inline-form-control'
                            aria-label='Unit' type='text' placeholder='Unit'
                            value='<?php echo $lineItem['unit']; ?>'/>
                     <button type="button" class="btn btn-xs btn-danger remove-contract-line-item-btn"
@@ -128,10 +128,10 @@ if (isset ($_GET ['id'])) {
             <br/></li>
         <li><label for='contract-date'>Session Details</label> The above session will take place at the below location
             on
-            <input id='contract-date' class='form-control' style='width: initial; display: initial;' type='date'
+            <input id='contract-date' class='form-control inline-form-control' type='date'
                    placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
             <br/>
-            <label style='width: 100%'><textarea id='contract-location' class='form-control' type='text'
+            <label class="u-width-100"><textarea id='contract-location' class='form-control' type='text'
                                                  placeholder='Session Address'><?php echo $contract ['location']; ?></textarea></label>
         </li>
     </ol>
