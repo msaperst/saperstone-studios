@@ -48,7 +48,7 @@ class HtmlAttributeEscapingTest extends TestCase {
         );
 
         $requests = [
-            ['contact.php', []],
+            ['contact.php', ['cookies' => $this->adminCookies]],
             ['user/profile.php', ['cookies' => $this->adminCookies]],
         ];
 
@@ -73,7 +73,10 @@ class HtmlAttributeEscapingTest extends TestCase {
         $payload = '" autofocus onfocus="alert(1)';
 
         $requests = [
-            ['contact.php', ['query' => ['user' => $payload, 'pass' => $payload]]],
+            ['contact.php', [
+                'cookies' => $this->adminCookies,
+                'query' => ['user' => $payload, 'pass' => $payload],
+            ]],
             ['user/profile.php', [
                 'cookies' => $this->adminCookies,
                 'query' => ['user' => $payload, 'pass' => $payload],
