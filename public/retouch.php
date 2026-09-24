@@ -76,7 +76,7 @@ $user = User::fromSystem();
                      class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>B'Nai Mitzvah Retouch</span> <img
                             class="img-responsive"
-                            src="img/b-nai-retouch.jpg<?php echo $rand; ?>" width="100%"
+                            src="/img/main/b-nai-retouch.jpg<?php echo $rand; ?>" width="100%"
                             alt="Mitzvah Retouch">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="b-nai-mitzvah/retouch.php">See
@@ -89,7 +89,7 @@ $user = User::fromSystem();
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Portrait Retouch</span> <img
                         class="img-responsive"
-                        src="img/portrait-retouch.jpg<?php echo $rand; ?>" width="100%"
+                        src="/img/main/portrait-retouch.jpg<?php echo $rand; ?>" width="100%"
                         alt="Portrait Retouch">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="portrait/retouch.php">See
@@ -102,7 +102,7 @@ $user = User::fromSystem();
                      class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Wedding Retouch</span> <img
                             class="img-responsive"
-                            src="img/wedding-retouch.jpg<?php echo $rand; ?>" width="100%"
+                            src="/img/main/wedding-retouch.jpg<?php echo $rand; ?>" width="100%"
                             alt="Wedding Retouch">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="wedding/retouch.php">See
@@ -115,7 +115,7 @@ $user = User::fromSystem();
                      class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <span class='preview-title'>Commercial Retouch</span> <img
                             class="img-responsive"
-                            src="img/commercial-retouch.jpg<?php echo $rand; ?>" width="100%"
+                            src="/img/main/commercial-retouch.jpg<?php echo $rand; ?>" width="100%"
                             alt="Commercial Retouch">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="commercial/retouch.php">See
