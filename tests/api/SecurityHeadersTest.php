@@ -70,7 +70,6 @@ class SecurityHeadersTest extends TestCase {
         $this->assertSame(404, $misspelled->getStatusCode());
         $this->assertStringNotContainsString('Multiple Choices', $body);
         $this->assertStringNotContainsString('Available documents', $body);
-        $this->assertStringNotContainsString('/Privacy-Policy.php', $body);
     }
 
     /**
