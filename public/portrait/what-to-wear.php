@@ -68,7 +68,7 @@ $session->initialize();
         </div>
         <!-- /.row -->
 
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-lg-12">
                 <!-- Carousel -->
                 <div id="whatToWearCarousel"
@@ -86,19 +86,19 @@ $session->initialize();
                     <div class="carousel-inner">
                         <div class="item active">
                             <div class="contain"
-                                style="background-image: url('what-to-wear/000.jpg');"></div>
+                                data-background-image="what-to-wear/000.jpg"></div>
                         </div>
                         <div class="item">
                             <div class="contain"
-                                style="background-image: url('what-to-wear/001.jpg');"></div>
+                                data-background-image="what-to-wear/001.jpg"></div>
                         </div>
                         <div class="item">
                             <div class="contain"
-                                style="background-image: url('what-to-wear/002.jpg');"></div>
+                                data-background-image="what-to-wear/002.jpg"></div>
                         </div>
                         <div class="item">
                             <div class="contain"
-                                style="background-image: url('what-to-wear/003.jpg');"></div>
+                                data-background-image="what-to-wear/003.jpg"></div>
                         </div>
                     </div>
 

@@ -46,7 +46,7 @@ $user = User::fromSystem();
         <!-- /.row -->
 
         <!-- Wedding Retouch -->
-        <div class="row" style="margin-top: 30px;">
+        <div class="row u-mt-30">
             <div class="col-lg-12">
                 <p>Below are some examples of when a little retouch TLC goes a long
                     way when it comes to making your images perfect. Most of the time,
@@ -59,7 +59,7 @@ $user = User::fromSystem();
                     the image to see the before/after transformation.</p>
             </div>
         </div>
-        <div class="row" style="margin-top: 30px;">
+        <div class="row u-mt-30">
             <!-- Content Column -->
             <div class="col-md-offset-2 col-md-8">
                 <div class='text-center'>

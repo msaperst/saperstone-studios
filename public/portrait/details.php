@@ -46,7 +46,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
     </div>
     <!-- /.row -->
 
-    <div class="row" style='padding-top: 30px'>
+    <div class="row u-pt-30">
         <div class="col-lg-12">
             <p>
                 No matter what stage of life you find yourself in, family photography
@@ -75,7 +75,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         </div>
     </div>
 
-    <div class="row" style='padding-top: 30px'>
+    <div class="row u-pt-30">
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div section="Session Information"
                  class="hovereffect img-portfolio<?php if ($user->isAdmin()) {

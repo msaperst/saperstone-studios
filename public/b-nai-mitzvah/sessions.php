@@ -96,7 +96,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Bimah">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Can't photograph the services during your mitzvah event? That's OK!
                 During a Bimah session I bring the studio to your synagogue. Professional
                 lighting and the time to casually capture these have to have moments make
@@ -133,7 +133,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Pre-Mitzvah">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Create a time capsule of who your child is here and now with a pre-mitzvah
                 session. We'll pick a location that fits their style and incorporate their
                 hobbies, loves and ambitions into a photo shoot to showcase who they are.
@@ -164,7 +164,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Services">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Are you able to photograph during services? That's great! I take
                 care to make sure I respect your synagogues photography rules
                 while capturing your mitzvah rockin' it. This would be a part

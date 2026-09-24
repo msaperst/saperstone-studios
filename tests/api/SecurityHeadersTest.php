@@ -49,6 +49,32 @@ class SecurityHeadersTest extends TestCase {
     /**
      * @throws GuzzleException
      */
+    public function testSpellingCorrectionOnlyNormalizesFilenameCase(): void {
+        $valid = $this->http->request('GET', 'Privacy-Policy.php');
+        $this->assertSame(200, $valid->getStatusCode());
+
+        foreach (['privacy-policy.php', 'Privacy-Policy.PHP'] as $path) {
+            $response = $this->http->request('GET', $path, ['allow_redirects' => false]);
+
+            $this->assertSame(301, $response->getStatusCode(), $path);
+            $this->assertStringEndsWith('/Privacy-Policy.php', $response->getHeaderLine('Location'), $path);
+            $this->assertStringNotContainsString('Multiple Choices', (string) $response->getBody(), $path);
+
+            $followed = $this->http->request('GET', $path);
+            $this->assertSame(200, $followed->getStatusCode(), $path);
+        }
+
+        $misspelled = $this->http->request('GET', 'Privacy-Policy.ph');
+        $body = (string) $misspelled->getBody();
+
+        $this->assertSame(404, $misspelled->getStatusCode());
+        $this->assertStringNotContainsString('Multiple Choices', $body);
+        $this->assertStringNotContainsString('Available documents', $body);
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function testPhpVersionIsNotExposed(): void {
         $requests = [
             ['GET', 'index.php', []],
@@ -85,6 +111,9 @@ class SecurityHeadersTest extends TestCase {
             $this->assertStringContainsString("frame-ancestors 'none'", $headers[0], $path);
             $this->assertStringContainsString("form-action 'self'", $headers[0], $path);
             $this->assertStringContainsString('frame-src https://www.google.com', $headers[0], $path);
+            $this->assertSame(1, preg_match('/(?:^|;\\s*)style-src\\s+([^;]+)/', $headers[0], $styleSource), $path);
+            $this->assertStringNotContainsString("'unsafe-inline'", $styleSource[1], $path);
+            $this->assertStringContainsString("style-src-attr 'unsafe-inline'", $headers[0], $path);
             $this->assertMatchesRegularExpression(
                 '/img-src[^;]*https:\\/\\/cdn\\.datatables\\.net/',
                 $headers[0],

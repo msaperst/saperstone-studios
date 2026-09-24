@@ -53,7 +53,7 @@ $user = User::fromSystem();
             <div class="col-lg-12">
                 <h2 class="page-header">Studio Sessions</h2>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Whether you schedule a studio session here at Saperstone
                         Studios or if I bring everything to you, here are some
                         of the looks that can be achieved. Have another color/look
@@ -174,7 +174,7 @@ $user = User::fromSystem();
             <div class="col-lg-12">
                 <h2 class="page-header">Environmental</h2>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Use the backdrop of your own office/surroundings to tell
                         the story of your profession/company.</p>
             </div>
@@ -201,7 +201,7 @@ $user = User::fromSystem();
             <div class="col-lg-12">
                 <h2 class="page-header">Outdoors</h2>
             </div>
-            <div class="col-xs-12" style="padding-top: 20px;">
+            <div class="col-xs-12 u-pt-20">
                 <p>Take the session outside for an easy, natural and relaxed look.</p>
             </div>
 

@@ -45,7 +45,7 @@ $user = User::fromSystem();
         </div>
         <!-- /.row -->
 
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <div section="Services"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
