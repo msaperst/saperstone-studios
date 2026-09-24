@@ -20,6 +20,24 @@ class BasicPagesLoadTest extends TestBase {
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
+    public function testRetouchPageUsesPersistentImages() {
+        $this->driver->get($this->baseUrl . 'retouch.php');
+        $this->assertEquals('Retouch', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+
+        $expectedImages = [
+            '/img/main/b-nai-retouch.jpg',
+            '/img/main/portrait-retouch.jpg',
+            '/img/main/wedding-retouch.jpg',
+            '/img/main/commercial-retouch.jpg'
+        ];
+        $images = $this->driver->findElements(WebDriverBy::cssSelector('.img-portfolio img'));
+        $this->assertCount(count($expectedImages), $images);
+
+        foreach ($images as $index => $image) {
+            $this->assertStringEndsWith($expectedImages[$index], $image->getAttribute('src'));
+        }
+    }
+
     public function testAboutPage() {
         $this->driver->get($this->baseUrl . 'about.php');
         $this->assertEquals('About Saperstone Studios', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
