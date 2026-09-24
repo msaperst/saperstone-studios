@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
-const {loadBrowserScript} = require('./helpers/load-browser-script');
+const {loadBrowserScripts} = require('./helpers/load-browser-script');
 
 function plain(value) {
     return JSON.parse(JSON.stringify(value));
@@ -32,10 +32,21 @@ function createPostsContext(options = {}) {
     $.fn = elementPrototype;
     $.each = (collection, callback) => collection.forEach((value, index) => callback(index, value));
     $.get = (url, data, success) => {
-        requests.push({url, data, success});
+        const request = {
+            url,
+            data,
+            success,
+            failure: null,
+            fail(callback) {
+                request.failure = callback;
+                return request;
+            }
+        };
+        requests.push(request);
+        return request;
     };
 
-    const context = loadBrowserScript('public/js/posts.js', {
+    const context = loadBrowserScripts(['public/js/posts-common.js', 'public/js/posts.js'], {
         $,
         window: windowObject,
         loadPostPreview(index, post) {
