@@ -67,11 +67,10 @@ $sql->disconnect();
     <!-- Script to Activate the Gallery -->
     <script>
         var posts = new Posts( 3, <?php echo count($posts); ?>, "<?php echo addslashes($search); ?>" );
-        
-        var loaded = 0;
+
         $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() && loaded < <?php echo count($posts); ?> ) {
-                loaded = posts.loadImages();
+            if( $('footer').isOnScreen() ) {
+                posts.loadImages();
             }
         });
     </script>
