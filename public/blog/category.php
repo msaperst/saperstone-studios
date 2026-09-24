@@ -16,7 +16,16 @@ $tags = array_column($sql->getRows("SELECT tag FROM `tags` WHERE `id` IN ($place
 if (empty ($tags)) {
     $errors->throw404();
 }
-$postCount = $sql->getRowCount("SELECT * FROM `blog_tags` WHERE `tag` IN ($placeholders)", $categories);
+$countQuery = "SELECT COUNT(DISTINCT details.id) AS count FROM blog_tags AS a1";
+$countWhere = " JOIN blog_details AS details ON a1.blog = details.id WHERE details.active = 1 AND ";
+for ($i = 1; $i <= sizeof($categories); $i++) {
+    if ($i != 1) {
+        $countQuery .= " JOIN blog_tags AS a$i USING (blog)";
+    }
+    $countWhere .= "a$i.tag = ? AND ";
+}
+$countWhere = substr($countWhere, 0, -4);
+$postCount = (int)$sql->getRow($countQuery . $countWhere, $categories)['count'];
 $sql->disconnect();
 ?>
 

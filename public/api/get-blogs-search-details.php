@@ -18,8 +18,8 @@ if (isset ($_GET ['searchTerm'])) {
     exit ();
 }
 
-foreach ($sql->getRows("SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE (`title` LIKE ? OR `safe_title` LIKE ?) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE ?) AS x GROUP BY `blog` ORDER BY `blog` DESC LIMIT ?, ?", ["%$search%", "%$search%", "%$search%", $start, $howMany]) as $r) {
-    $response [] = $sql->getRow("SELECT * FROM `blog_details` WHERE `id` = ?", [$r['blog']]);
+foreach ($sql->getRows("SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE (`title` LIKE ? OR `safe_title` LIKE ?) AND `active` = 1 UNION ALL SELECT texts.blog FROM `blog_texts` AS texts JOIN `blog_details` AS details ON texts.blog = details.id WHERE texts.`text` LIKE ? AND details.`active` = 1) AS x GROUP BY `blog` ORDER BY `blog` DESC LIMIT ?, ?", ["%$search%", "%$search%", "%$search%", $start, $howMany]) as $r) {
+    $response [] = $sql->getRow("SELECT * FROM `blog_details` WHERE `id` = ? AND `active` = 1", [$r['blog']]);
 }
 $sql->disconnect();
 echo json_encode($response);

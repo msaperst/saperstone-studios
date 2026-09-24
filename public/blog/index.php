@@ -3,7 +3,7 @@ require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . 'src
 $session = new Session();
 $session->initialize();
 $sql = new Sql ();
-$posts = $sql->getRows("SELECT * FROM `blog_details`;");
+$postCount = $sql->getRowCount("SELECT * FROM `blog_details` WHERE `active` = 1;");
 $sql->disconnect ();
 ?>
 
@@ -51,7 +51,7 @@ $sql->disconnect ();
 
     <!-- Script to Activate the Gallery -->
     <script>
-        var postsFull = new PostsFull( <?php echo count($posts); ?> );
+        var postsFull = new PostsFull( <?php echo $postCount; ?> );
         $(window,document).on("scroll resize", function(){
             if( $('footer').isOnScreen() ) {
                 postsFull.loadPosts();
