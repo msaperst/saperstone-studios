@@ -87,10 +87,6 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templa
         }
         $counter = 0;
         foreach ($reviews as $review) {
-            $style = " align='right' style='margin: 0px 0px 20px 20px;'";
-            if ($counter % 2) {
-                $style = " align='left' style='margin: 0px 20px 20px 0px;'";
-            }
             ?>
             <div class="review-holder">
                 <div class="col-xs-6">
@@ -111,7 +107,7 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templa
                              alt="<?php echo $review['image2']; ?>">
                     </div>
                 </div>
-                <div class="col-xs-12" style="padding-top: 20px;">
+                <div class="col-xs-12 u-pt-20">
                     <blockquote>
                         <p>
                             <?php echo $review['quote']; ?>
