@@ -143,7 +143,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h2 class="page-header">Need More Information?</h2>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Looking for more info on events or company headshots?
                 <a href='/contact.php'>Please reach out</a> as more
                 details are needed to provide a full custom quote!</p>
