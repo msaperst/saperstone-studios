@@ -1079,3 +1079,176 @@ label > input, label > u > input, label > textarea {
 .contract-form-row label {
     margin-bottom: 0;
 }
+
+/***** CSP-safe replacements for legacy inline styles *****/
+.csp-hidden {
+    display: none;
+}
+
+.u-pt-20 { padding-top: 20px; }
+.u-pt-30 { padding-top: 30px; }
+.u-mt-20 { margin-top: 20px; }
+.u-mt-30 { margin-top: 30px; }
+.u-mb-30 { margin-bottom: 30px; }
+.u-pl-15 { padding-left: 15px; }
+.u-pl-35 { padding-left: 35px; }
+.u-pr-5 { padding-right: 5px; }
+.u-width-100 { width: 100%; }
+.u-width-auto { width: auto; }
+.u-width-55 { width: 55px; }
+.u-max-width-100 { max-width: 100%; }
+.u-height-400 { height: 400px; }
+.u-border-0 { border: 0; }
+.u-no-resize { resize: none; }
+.u-float-right { float: right; }
+.u-text-red { color: red; }
+.u-brand-purple { color: #980f7f; }
+.u-serif-24 { font-size: 24px; font-family: serif; }
+
+.table-full-width {
+    width: 100%;
+    border-spacing: 0;
+}
+
+.inline-form-control {
+    width: initial;
+    display: initial;
+}
+
+#displayed-alerts {
+    position: fixed;
+    width: 100%;
+    top: -20px;
+    z-index: 10000;
+    font-size: large;
+    font-weight: bold;
+    text-align: center;
+}
+
+.image-edit-control {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 5px;
+}
+
+.editable-image-control {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.review-image-right {
+    margin: 0 0 20px 20px;
+}
+
+.review-image-left {
+    margin: 0 20px 20px 0;
+}
+
+#confused {
+    width: 150px;
+    float: left;
+    margin: 0 20px 20px 0;
+}
+
+.blog-controls-left {
+    margin-top: 35px;
+    margin-left: 5px;
+    max-width: 300px;
+    z-index: 100;
+}
+
+.blog-controls-right {
+    right: 0;
+    margin-top: 35px;
+    margin-right: 5px;
+    max-width: 300px;
+    z-index: 100;
+}
+
+.blog-edit-area {
+    z-index: 100;
+    height: 300px;
+}
+
+.blog-preview-holder {
+    width: 300px;
+    height: 176px;
+    background-color: red;
+    overflow: hidden;
+}
+
+.blog-preview-select {
+    top: 50%;
+    position: absolute;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    z-index: 99;
+    left: 20px;
+}
+
+.blog-preview-image {
+    width: 300px;
+}
+
+.album-favorite-count-present {
+    padding-left: 10px;
+}
+
+.album-notification-message {
+    resize: none;
+    height: 100px;
+}
+
+.favorites-empty {
+    padding: 40px 0;
+}
+
+.favorites-empty-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.upload-progress-full {
+    width: 100%;
+}
+
+.download-email-input {
+    width: 430px;
+    display: inline;
+    margin-right: 20px;
+}
+
+.consent-advanced-options {
+    display: none;
+    margin-top: 10px;
+}
+
+/* Album breadcrumb layout previously defined in an inline <style> block. */
+.breadcrumb {
+    padding: 15px 20px;
+    font-size: 16px;
+    display: block;
+}
+
+.breadcrumb.breadcrumb-fixed {
+    border-radius: 0 0 4px 4px;
+}
+
+.breadcrumb li button,
+.breadcrumb li .btn {
+    padding: 5px 8px;
+    font-size: 16px;
+    line-height: 1.3333333;
+}
+
+.breadcrumb li button em,
+.breadcrumb li .btn em {
+    font-size: 18px;
+}
+
+.no-before {
+    top: -5px;
+}
