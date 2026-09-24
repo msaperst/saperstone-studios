@@ -128,6 +128,7 @@ if (!$user->isAdmin() && !$blog->isActive()) {
 <!-- /.container -->
 
 <!-- Gallery JavaScript -->
+<script src="/js/blog-common.js"></script>
 <script src="/js/post.js"></script>
 <script src="/js/post-full.js"></script>
 

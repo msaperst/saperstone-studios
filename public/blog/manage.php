@@ -121,6 +121,7 @@ $sql->disconnect();
 
 
 
+        <script src="/js/blog-common.js"></script>
         <script src="/js/post-admin.js"></script>
         <script src="/js/posts-manage.js"></script>
         <script

@@ -215,6 +215,7 @@ $sql->disconnect();
     <!-- /.container -->
 
 
+    <script src="/js/blog-common.js"></script>
     <script src="/js/post-admin.js"></script>
     <script src="/js/dragndrop.js"></script>
     <script src="/js/jquery.uploadfile.js"></script>

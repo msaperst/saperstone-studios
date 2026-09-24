@@ -1,11 +1,7 @@
-$.fn.isOnScreen = function () {
-    var element = this.get(0);
-    var bounds = element.getBoundingClientRect();
-    return bounds.top < window.innerHeight && bounds.bottom > 0;
-};
-
 function PostsFull(totalPosts, tag) {
     this.loaded = 0;
+    this.loading = false;
+    this.complete = totalPosts === 0;
     this.totalPosts = totalPosts;
     this.tag = tag;
 
@@ -13,19 +9,37 @@ function PostsFull(totalPosts, tag) {
 }
 
 PostsFull.prototype.loadPosts = function () {
-    var PostsFull = this;
+    var postsFull = this;
+
+    if (postsFull.loading || postsFull.complete || postsFull.loaded >= postsFull.totalPosts) {
+        if (postsFull.loaded >= postsFull.totalPosts) {
+            postsFull.complete = true;
+        }
+        return postsFull.loaded;
+    }
+
+    postsFull.loading = true;
     $.get("/api/get-blogs-full.php", {
-        start: PostsFull.loaded,
-        tag: PostsFull.tag
+        start: postsFull.loaded,
+        tag: postsFull.tag
     }, function (data) {
         // from post.js
         loadPost(data, "<h2>");
 
-        // when we done, see if we need to load more
-        if ($('footer').isOnScreen() && PostsFull.loaded < PostsFull.totalPosts) {
-            PostsFull.loadPosts();
+        postsFull.loaded++;
+        postsFull.loading = false;
+
+        if (postsFull.loaded >= postsFull.totalPosts) {
+            postsFull.complete = true;
+            return;
         }
-    }, "json");
-    PostsFull.loaded++;
-    return PostsFull.loaded;
+
+        if ($('footer').isOnScreen()) {
+            postsFull.loadPosts();
+        }
+    }, "json").fail(function () {
+        postsFull.loading = false;
+    });
+
+    return postsFull.loaded;
 };

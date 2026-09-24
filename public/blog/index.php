@@ -45,17 +45,16 @@ $sql->disconnect ();
     <!-- /.container -->
 
     <!-- Gallery JavaScript -->
+    <script src="/js/blog-common.js"></script>
     <script src="/js/post.js"></script>
     <script src="/js/posts-full.js"></script>
 
     <!-- Script to Activate the Gallery -->
     <script>
         var postsFull = new PostsFull( <?php echo count($posts); ?> );
-        
-        var loaded = 0;
         $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() && loaded < <?php echo count($posts); ?> ) {
-                loaded = postsFull.loadPosts();
+            if( $('footer').isOnScreen() ) {
+                postsFull.loadPosts();
             }
         });
     </script>

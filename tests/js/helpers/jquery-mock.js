@@ -17,7 +17,15 @@ class MockElement {
         this.spinCount = 0;
         this.stopSpinCount = 0;
         this.closestResult = null;
+        this.parentResult = null;
         this.uploadOptions = null;
+        this.widthValue = 300;
+        this.heightValue = 100;
+        this.offsetValue = {top: 0, left: 0};
+        this.afterValues = [];
+        this.draggableOptions = null;
+        this.summernoteCode = '';
+        this.modalCalls = [];
         this.rect = {top: 0, bottom: 100, width: 300, height: 100};
         this.nativeElement = {
             complete: false,
@@ -45,6 +53,12 @@ class MockElement {
     }
 
     attr(name, value) {
+        if (typeof name === 'object') {
+            for (const [key, item] of Object.entries(name)) {
+                this.attributes.set(key, String(item));
+            }
+            return this;
+        }
         if (value === undefined) {
             return this.attributes.get(name);
         }
@@ -134,6 +148,55 @@ class MockElement {
         return this;
     }
 
+    width(value) {
+        if (value === undefined) {
+            return this.widthValue;
+        }
+        this.widthValue = value;
+        return this;
+    }
+
+    height(value) {
+        if (value === undefined) {
+            return this.heightValue;
+        }
+        this.heightValue = value;
+        return this;
+    }
+
+    offset() {
+        return this.offsetValue;
+    }
+
+    after(value) {
+        this.afterValues.push(value);
+        return this;
+    }
+
+    empty() {
+        this.appended = [];
+        this.htmlValue = '';
+        this.textValue = '';
+        return this;
+    }
+
+    draggable(options) {
+        this.draggableOptions = options || {};
+        return this;
+    }
+
+    summernote(action) {
+        if (action === 'code') {
+            return this.summernoteCode;
+        }
+        return this;
+    }
+
+    modal(action) {
+        this.modalCalls.push(action);
+        return this;
+    }
+
     show() {
         this.visible = true;
         return this;
@@ -169,12 +232,30 @@ class MockElement {
         return this;
     }
 
-    click(handler) {
-        if (handler) {
-            this.handlers.set('click', handler);
+    click(dataOrHandler, handler) {
+        if (typeof handler === 'function') {
+            this.handlers.set('click', (eventData = {}) => handler({
+                ...eventData,
+                data: dataOrHandler,
+                currentTarget: eventData.currentTarget || this
+            }));
+            return this;
+        }
+        if (typeof dataOrHandler === 'function') {
+            this.handlers.set('click', dataOrHandler);
             return this;
         }
         return this.trigger('click');
+    }
+
+    dblclick(handler) {
+        this.handlers.set('dblclick', handler);
+        return this;
+    }
+
+    keyup(handler) {
+        this.handlers.set('keyup', handler);
+        return this;
     }
 
     keypress(handler) {
@@ -188,7 +269,11 @@ class MockElement {
     }
 
     ready(handler) {
-        handler();
+        if (this.environment.autoReady) {
+            handler();
+        } else {
+            this.environment.readyCallbacks.push(handler);
+        }
         return this;
     }
 
@@ -202,6 +287,10 @@ class MockElement {
 
     closest() {
         return this.closestResult || this;
+    }
+
+    parent() {
+        return this.parentResult || this;
     }
 
     find(selector) {
@@ -232,7 +321,10 @@ class MockElement {
         return this;
     }
 
-    is() {
+    is(query) {
+        if (query === ':checked') {
+            return Boolean(this.properties.get('checked'));
+        }
         return false;
     }
 }
@@ -279,6 +371,7 @@ function createJQueryEnvironment(options = {}) {
     const dialogs = [];
     const timeouts = [];
     const intervals = [];
+    const readyCallbacks = [];
     const documentObject = {};
 
     function lengthFor(selector) {
@@ -382,6 +475,11 @@ function createJQueryEnvironment(options = {}) {
         return value !== null && value !== '' && !Number.isNaN(Number(value));
     };
 
+    $.isArray = Array.isArray;
+    $.isFunction = function (value) {
+        return typeof value === 'function';
+    };
+
     $.each = function (collection, callback) {
         if (Array.isArray(collection)) {
             collection.forEach((value, index) => callback(index, value));
@@ -439,6 +537,8 @@ function createJQueryEnvironment(options = {}) {
         $,
         BootstrapDialog,
         document: documentObject,
+        autoReady: options.autoReady !== false,
+        readyCallbacks,
         element,
         elements,
         calls,
@@ -461,6 +561,11 @@ function createJQueryEnvironment(options = {}) {
         setTimeout: setTimeoutMock,
         setInterval: setIntervalMock,
         clearInterval: clearIntervalMock,
+        runReady() {
+            for (const callback of readyCallbacks.splice(0)) {
+                callback();
+            }
+        },
         runTimeouts() {
             for (const timeout of timeouts.splice(0)) {
                 timeout.callback();
