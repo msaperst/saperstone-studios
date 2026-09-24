@@ -74,7 +74,6 @@ test('Posts requests the first preview page and advances its offset', () => {
 
     assert.equal(posts.columns, 3);
     assert.equal(posts.totalImages, 8);
-    assert.equal(posts.loaded, 3);
     assert.equal(requests.length, 1);
     assert.equal(requests[0].url, '/api/get-blogs-details.php');
     assert.deepEqual(plain(requests[0].data), {start: 0, howMany: 3});
@@ -83,9 +82,10 @@ test('Posts requests the first preview page and advances its offset', () => {
 test('Posts renders each preview returned by the API', () => {
     const {context, previews, resolve} = createPostsContext({footerRect: {top: 900, bottom: 1000}});
 
-    new context.Posts(3, 8);
+    const posts = new context.Posts(3, 8);
     resolve(0, [{id: 1}, {id: 2}, {id: 3}]);
 
+    assert.equal(posts.loaded, 3);
     assert.deepEqual(plain(previews), [
         {index: 0, post: {id: 1}},
         {index: 1, post: {id: 2}},
@@ -99,7 +99,6 @@ test('Posts automatically requests another page while the footer is visible', ()
     const posts = new context.Posts(3, 7);
     resolve(0, [{id: 1}, {id: 2}, {id: 3}]);
 
-    assert.equal(posts.loaded, 6);
     assert.equal(requests.length, 2);
     assert.deepEqual(plain(requests[1].data), {start: 3, howMany: 3});
 });
@@ -112,4 +111,40 @@ test('Posts stops automatic pagination when its loaded offset reaches the total'
 
     assert.equal(posts.loaded, 3);
     assert.equal(requests.length, 1);
+});
+
+test('Posts does not issue overlapping preview requests while loading', () => {
+    const {context, requests} = createPostsContext({
+        footerRect: {top: 900, bottom: 1000}
+    });
+    const posts = new context.Posts(3, 6);
+
+    posts.loadImages();
+    posts.loadImages();
+
+    assert.equal(requests.length, 1);
+});
+
+test('Posts advances by the actual number of previews returned and stops on a short page', () => {
+    const {context, requests, resolve} = createPostsContext({
+        footerRect: {top: 900, bottom: 1000}
+    });
+    const posts = new context.Posts(3, 6);
+
+    resolve(0, [{id: 1}, {id: 2}]);
+    posts.loadImages();
+
+    assert.equal(posts.loaded, 2);
+    assert.equal(posts.complete, true);
+    assert.equal(requests.length, 1);
+});
+
+test('Posts with no results avoids an unnecessary preview request', () => {
+    const {context, requests} = createPostsContext();
+
+    const posts = new context.Posts(3, 0);
+
+    assert.equal(posts.loaded, 0);
+    assert.equal(posts.complete, true);
+    assert.equal(requests.length, 0);
 });
