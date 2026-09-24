@@ -177,31 +177,3 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: SonarCloud PR diagnostics
-        if: github.event_name == 'pull_request'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          # The scanner uploads asynchronously; give SonarCloud time to publish this PR analysis.
-          sleep 10
-
-          echo "=== OPEN PR ISSUES ==="
-          curl --fail --silent --show-error -u "${SONAR_TOKEN}:" \
-            --get "https://sonarcloud.io/api/issues/search" \
-            --data-urlencode "componentKeys=msaperst_saperstone-studios" \
-            --data-urlencode "pullRequest=${PR_NUMBER}" \
-            --data-urlencode "resolved=false" \
-            --data-urlencode "ps=500" \
-            | jq -r '.issues[] | [.type, .severity, .rule, .component, (.line // 0), .message] | @tsv'
-
-          echo "=== NEW-CODE METRICS BY FILE ==="
-          curl --fail --silent --show-error -u "${SONAR_TOKEN}:" \
-            --get "https://sonarcloud.io/api/measures/component_tree" \
-            --data-urlencode "component=msaperst_saperstone-studios" \
-            --data-urlencode "pullRequest=${PR_NUMBER}" \
-            --data-urlencode "metricKeys=new_coverage,new_lines_to_cover,new_uncovered_lines,new_duplicated_lines_density,new_duplicated_lines,new_lines" \
-            --data-urlencode "qualifiers=FIL" \
-            --data-urlencode "ps=500" \
-            | jq -r '.components[] | (.measures | map({key:.metric,value:(.period.value // .periods[0].value // .value)}) | from_entries) as $m | select((($m.new_lines // "0") | tonumber) > 0 or (($m.new_lines_to_cover // "0") | tonumber) > 0 or (($m.new_duplicated_lines // "0") | tonumber) > 0) | [.path, ($m.new_lines // "0"), ($m.new_lines_to_cover // "0"), ($m.new_uncovered_lines // "0"), ($m.new_coverage // "100"), ($m.new_duplicated_lines // "0"), ($m.new_duplicated_lines_density // "0")] | @tsv'
