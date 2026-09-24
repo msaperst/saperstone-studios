@@ -95,6 +95,32 @@ class GetBlogsSearchDetailsTest extends TestCase {
         $this->assertEquals(1, $blogsDetails[0]['active']);
     }
 
+
+    public function testSearchResultsAreOrderedByDateThenId(): void {
+        $this->sql->executeStatement(
+            "INSERT INTO blog_details (id, title, date, preview, offset, active)
+             VALUES
+             (994, 'Ordering Marker', '2097-01-01', '', 0, 1),
+             (995, 'Ordering Marker', '2098-01-01', '', 0, 1),
+             (996, 'Ordering Marker', '2098-01-01', '', 0, 1)"
+        );
+
+        try {
+            $response = $this->http->request('GET', 'api/get-blogs-search-details.php', [
+                'query' => [
+                    'searchTerm' => 'Ordering Marker',
+                    'start' => 0,
+                    'howMany' => 3
+                ]
+            ]);
+            $blogs = json_decode((string)$response->getBody(), true);
+
+            $this->assertSame([996, 995, 994], array_column($blogs, 'id'));
+        } finally {
+            $this->sql->executeStatement("DELETE FROM blog_details WHERE id IN (994, 995, 996)");
+        }
+    }
+
     public function testGetBlogText() {
         $response = $this->http->request('GET', 'api/get-blogs-search-details.php', [
             'query' => [

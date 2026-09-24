@@ -112,6 +112,28 @@ class GetBlogsDetailsTest extends TestCase {
 //        $this->assertEquals(0, sizeof($blogsDetails['data']));
 //    }
 
+
+    public function testBlogsAreOrderedByDateThenId(): void {
+        $this->sql->executeStatement(
+            "INSERT INTO blog_details (id, title, date, preview, offset, active)
+             VALUES
+             (994, 'Order Test Old', '2097-01-01', '', 0, 1),
+             (995, 'Order Test New A', '2098-01-01', '', 0, 1),
+             (996, 'Order Test New B', '2098-01-01', '', 0, 1)"
+        );
+
+        try {
+            $response = $this->http->request('GET', 'api/get-blogs-details.php', [
+                'query' => ['start' => 0, 'howMany' => 3]
+            ]);
+            $blogs = json_decode((string)$response->getBody(), true)['data'];
+
+            $this->assertSame([996, 995, 994], array_column($blogs, 'id'));
+        } finally {
+            $this->sql->executeStatement("DELETE FROM blog_details WHERE id IN (994, 995, 996)");
+        }
+    }
+
     public function testAllBlogsDetailsAdmin() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'

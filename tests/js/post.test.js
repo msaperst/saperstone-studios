@@ -307,7 +307,7 @@ test('addSocialMedias builds Facebook and Twitter controls for a post', () => {
     assert.equal(controls.appended[1].hasClass('tweet'), true);
 });
 
-test('addShares appends sharing controls and initializes AddToAny after load', () => {
+test('addShares appends supported sharing controls with CSP-safe layout hooks', () => {
     let initializations = 0;
     const {context, environment, scripts} = createPostContext({
         a2a: {
@@ -323,6 +323,18 @@ test('addShares appends sharing controls and initializes AddToAny after load', (
     });
 
     assert.equal(environment.element('#post-content').appended.length, 1);
+    const row = environment.element('#post-content').appended[0];
+    const shares = row.appended[0];
+
+    assert.equal(shares.hasClass('blog-share-buttons'), true);
+    assert.equal(shares.appended.length, 8);
+
+    const classes = shares.appended.map((button) => Array.from(button.classes).join(' '));
+    assert.equal(classes.some((value) => value.includes('a2a_button_google_plus')), false);
+    assert.equal(classes.some((value) => value.includes('col-md-1')), false);
+    assert.equal(classes.some((value) => value.includes('a2a_button_facebook')), true);
+    assert.equal(classes.some((value) => value.includes('a2a_button_linkedin')), true);
+
     const script = scripts.get('addtoany-js');
     assert.ok(script);
     script.onload();
