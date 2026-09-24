@@ -82,7 +82,7 @@ $user = User::fromSystem();
                             }
                             echo "<div class='item$active_class'>";
                             echo "    <div class='contain'";
-                            echo "        style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                            echo "        data-background-image=\"" . htmlspecialchars($image['location'], ENT_QUOTES, 'UTF-8') . "\"></div>";
                             echo "    <div class='carousel-caption'>";
                             echo "        <h2>" . $image ['caption'] . "</h2>";
                             echo "    </div>";
