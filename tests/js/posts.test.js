@@ -46,7 +46,7 @@ function createPostsContext(options = {}) {
         return request;
     };
 
-    const context = loadBrowserScripts(['public/js/posts-common.js', 'public/js/posts.js'], {
+    const context = loadBrowserScripts(['public/js/blog-common.js', 'public/js/posts.js'], {
         $,
         window: windowObject,
         loadPostPreview(index, post) {
