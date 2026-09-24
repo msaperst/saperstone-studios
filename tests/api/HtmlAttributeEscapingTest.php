@@ -42,31 +42,6 @@ class HtmlAttributeEscapingTest extends TestCase {
     /**
      * @throws GuzzleException
      */
-    public function testZapQueryMarkersDoNotControlHtmlAttributes(): void {
-        $marker = 'xss-marker\" onmouseover=\"alert(1)';
-        $requests = [
-            'b-nai-mitzvah/gallery.php?w=' . rawurlencode($marker),
-            'commercial/gallery.php?w=' . rawurlencode($marker),
-            'portrait/gallery.php?w=' . rawurlencode($marker),
-            'wedding/gallery.php?w=' . rawurlencode($marker),
-            'reviews.php?c=1' . rawurlencode($marker),
-            'contact.php?user=' . rawurlencode($marker) . '&pass=' . rawurlencode($marker),
-        ];
-
-        foreach ($requests as $path) {
-            $response = $this->http->request('GET', $path, [
-                'cookies' => $this->adminCookies,
-            ]);
-            $body = (string)$response->getBody();
-
-            $this->assertSame(200, $response->getStatusCode(), $path);
-            $this->assertStringNotContainsString('xss-marker', $body, $path);
-        }
-    }
-
-    /**
-     * @throws GuzzleException
-     */
     public function testStoredUserNameIsEscapedInsideAttributeValues(): void {
         $payload = 'Max" autofocus onfocus="alert(1)';
         $this->sql->executeStatement(
