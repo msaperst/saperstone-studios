@@ -125,7 +125,8 @@
             if ($.fn.ajaxForm) {
 
                 if (s.dragDrop) {
-                    var dragDrop = $('<div class="' + s.dragDropContainerClass + ' upload-dragdrop-top"></div>').width(s.dragdropWidth);
+                    var dragDrop = $('<div>').addClass(s.dragDropContainerClass)
+                        .addClass('upload-dragdrop-top').width(s.dragdropWidth);
                     $(s.uploadContainer).append(dragDrop);
                     $(dragDrop).append($(s.dragDropStr));
                     setDragDropHandlers(obj, s, dragDrop);
@@ -396,7 +397,8 @@
             ts.fileData = fd;
             var pd = new createProgressDiv(obj, s);
             pd.filename.html(fileListStr);
-            var form = $("<form class='" + obj.formGroup + " ajax-upload-form' method='" + s.method + "' action='" + s.url + "' enctype='" + s.enctype + "'></form>");
+            var form = $('<form>').addClass(obj.formGroup).addClass('ajax-upload-form')
+                    .attr('method', s.method).attr('action', s.url).attr('enctype', s.enctype);
             form.appendTo('body');
             ajaxFormSubmit(form, ts, pd, fileArray, obj);
 
@@ -452,7 +454,8 @@
                     fileNameStr += " (" + getSizeStr(files[i].size) + ")";
 
                 pd.filename.html(fileNameStr);
-                var form = $("<form class='" + obj.formGroup + " ajax-upload-form' method='" + s.method + "' action='" + s.url + "' enctype='" + s.enctype + "'></form>");
+                var form = $('<form>').addClass(obj.formGroup).addClass('ajax-upload-form')
+                    .attr('method', s.method).attr('action', s.url).attr('enctype', s.enctype);
                 form.appendTo('body');
                 var fileArray = [];
                 fileArray.push(files[i].name);

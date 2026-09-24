@@ -39,8 +39,8 @@ test('album.js selectImage opens the protected viewer and updates the URL hash',
     assert.equal(album.pendingImageId, null);
     assert.equal(card.hasClass('is-active'), true);
     assert.equal(
-        environment.element('#album-viewer-image').attr('style'),
-        'background-image: url("/albums/sample/thumbs/10.jpg")'
+        environment.element('#album-viewer-image').css('background-image'),
+        'url("/albums/sample/thumbs/10.jpg")'
     );
     assert.equal(environment.element('#album-viewer-image').attr('src'), '/img/image.png');
     assert.equal(environment.element('#album-viewer-caption').text(), 'Caption');
