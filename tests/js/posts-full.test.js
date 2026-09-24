@@ -42,7 +42,7 @@ function createFullPostsContext(options = {}) {
         requests.push({url, data, success});
     };
 
-    const context = loadBrowserScripts(['public/js/posts-common.js', 'public/js/posts-full.js'], {
+    const context = loadBrowserScripts(['public/js/blog-common.js', 'public/js/posts-full.js'], {
         $,
         window: windowObject,
         loadPost(data, header) {
