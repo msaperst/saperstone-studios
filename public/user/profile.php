@@ -44,7 +44,7 @@ $user->forceLogIn();
                     </div>
                     <div class="col-md-10">
                         <input type="text" class="form-control" id="profile-username"
-                            placeholder="Username" value="<?php echo $user->getUsername(); ?>"
+                            placeholder="Username" value="<?php echo Strings::escapeHtmlAttribute($user->getUsername()); ?>"
                             required disabled />
                     </div>
                 </div>
@@ -98,7 +98,7 @@ $user->forceLogIn();
                     <div class="col-md-10 ">
                         <input type="text" class="form-control" id="profile-firstname"
                             placeholder="First Name" required
-                            value="<?php echo $user->getFirstName(); ?>" /> <span
+                            value="<?php echo Strings::escapeHtmlAttribute($user->getFirstName()); ?>" /> <span
                             class="glyphicon glyphicon-ok form-control-feedback"></span>
                         <div class="error" id="update-profile-firstname-message"></div>
                     </div>
@@ -112,7 +112,7 @@ $user->forceLogIn();
                     <div class="col-md-10">
                         <input type="text" class="form-control" id="profile-lastname"
                             placeholder="Last Name" required
-                            value="<?php echo $user->getLastName(); ?>" /> <span
+                            value="<?php echo Strings::escapeHtmlAttribute($user->getLastName()); ?>" /> <span
                             class="glyphicon glyphicon-ok form-control-feedback"></span>
                         <div class="error" id="update-profile-lastname-message"></div>
                     </div>
@@ -126,7 +126,7 @@ $user->forceLogIn();
                     <div class="col-md-10">
                         <input type="email" class="form-control" id="profile-email"
                             placeholder="Email" required
-                            value="<?php echo $user->getEmail(); ?>" /> <span
+                            value="<?php echo Strings::escapeHtmlAttribute($user->getEmail()); ?>" /> <span
                             class="glyphicon glyphicon-ok form-control-feedback"></span>
                         <div class="error" id="update-profile-email-message"></div>
                     </div>

@@ -370,7 +370,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     <form>
                         <label class="sr-only" for="notify-email">Email</label> <input
                                 id="notify-email" type="email" placeholder="Email"
-                                class="form-control" value="<?php echo $user->getEmail(); ?>"
+                                class="form-control" value="<?php echo Strings::escapeHtmlAttribute($user->getEmail()); ?>"
                                 required/>
                     </form>
                     <button id="notify-submit" type="submit" class="btn btn-primary">
@@ -436,13 +436,13 @@ if ($album->canUserGetData()) {
                     <div class="col-md-6">
                         <label class="sr-only" for="submit-name">Name</label> <input
                                 id="submit-name" type="text" placeholder="Name"
-                                class="form-control" value="<?php echo $user->getName(); ?>"
+                                class="form-control" value="<?php echo Strings::escapeHtmlAttribute($user->getName()); ?>"
                                 required/>
                     </div>
                     <div class="col-md-6">
                         <label class="sr-only" for="submit-email">Email</label> <input
                                 id="submit-email" type="email" placeholder="Email"
-                                class="form-control" value="<?php echo $user->getEmail(); ?>"
+                                class="form-control" value="<?php echo Strings::escapeHtmlAttribute($user->getEmail()); ?>"
                                 required/>
                     </div>
                 </div>
