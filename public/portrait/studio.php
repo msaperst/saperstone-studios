@@ -66,7 +66,7 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templa
     <!-- /.row -->
 
     <!-- Studio Slideshow -->
-    <div class="row" style="margin-top: 30px;">
+    <div class="row u-mt-30">
         <!-- Content Column -->
         <div class="col-md-12">
             <!-- Carousel -->
@@ -112,10 +112,10 @@ require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templa
                 </a>
                 <?php if ($user->isAdmin()) { ?>
                     <span
-                            style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
+                            class="image-edit-control">
                         <button class="ajax-file-upload"
                                 onclick="location.href='/portrait/galleries.php?w=16'"
-                                style="position: relative; overflow: hidden; cursor: pointer;">
+                                class="editable-image-control">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>
