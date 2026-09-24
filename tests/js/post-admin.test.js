@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
 const {createJQueryEnvironment} = require('./helpers/jquery-mock');
-const {loadBrowserScript} = require('./helpers/load-browser-script');
+const {loadBrowserScripts} = require('./helpers/load-browser-script');
 
 function equalStructure(actual, expected) {
     assert.deepEqual(
@@ -27,7 +27,7 @@ function createAdminContext(options = {}) {
     const windowObject = {location: {href: ''}};
     environment.element(String(windowObject)).heightValue = options.windowHeight ?? 900;
 
-    const context = loadBrowserScript('public/js/post-admin.js', {
+    const context = loadBrowserScripts(['public/js/blog-common.js', 'public/js/post-admin.js'], {
         $: environment.$,
         document: environment.document,
         window: windowObject,
