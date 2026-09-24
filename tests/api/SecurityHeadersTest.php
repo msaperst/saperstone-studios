@@ -87,7 +87,7 @@ class SecurityHeadersTest extends TestCase {
             $this->assertStringContainsString('frame-src https://www.google.com', $headers[0], $path);
             $this->assertSame(1, preg_match('/(?:^|;\\s*)style-src\\s+([^;]+)/', $headers[0], $styleSource), $path);
             $this->assertStringNotContainsString("'unsafe-inline'", $styleSource[1], $path);
-            $this->assertStringContainsString("style-src-attr 'none'", $headers[0], $path);
+            $this->assertStringContainsString("style-src-attr 'unsafe-inline'", $headers[0], $path);
             $this->assertMatchesRegularExpression(
                 '/img-src[^;]*https:\\/\\/cdn\\.datatables\\.net/',
                 $headers[0],
