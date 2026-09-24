@@ -53,22 +53,22 @@ $(document).ready(function () {
     });
 
     $('#post-delete-button').click(function () {
-        deletePost($('#post').attr('post-id'));
+        deleteManagedPost($('#post').attr('post-id'));
     });
 
     $('#post-update-button').click(function () {
-        updatePost($('#post').attr('post-id'));
+        updateManagedPost($('#post').attr('post-id'));
     });
 });
 
 function setupEdit() {
     $('.quick-edit-post-btn').off().click(function () {
         var post = post_table.row($(this).closest('tr')).data();
-        editPost(post);
+        editManagedPost(post);
     });
 }
 
-function editPost(post) {
+function editManagedPost(post) {
     // remove any old values
     $('#post-preview-holder img').remove();
     $('#post-preview-image option').each(function () {
@@ -125,7 +125,7 @@ function editPost(post) {
     }, "json");
 }
 
-function deletePost(post) {
+function deleteManagedPost(post) {
     setPostManageControlsDisabled(true);
     BootstrapDialog.confirm("Are you sure you want to delete this post?", function (result) {
         if (result) {
@@ -154,7 +154,7 @@ function deletePost(post) {
     });
 }
 
-function updatePost(post) {
+function updateManagedPost(post) {
     setPostManageControlsDisabled(true);
     // get our updated content
     var tags = [];
