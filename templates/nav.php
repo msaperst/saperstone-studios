@@ -10,8 +10,7 @@ $csrfToken = $navSession->getCsrfToken();
 $query = "SELECT * FROM `announcements` WHERE NOW() BETWEEN `start` AND `end`;";
 if ($navSql->getRowCount($query)) {
 ?>
-<div id='displayed-alerts'
-     style='position: fixed; width: 100%; top: -20px; z-index: 10000; font-size:large; font-weight:bold; text-align:center'>
+<div id='displayed-alerts'>
     <?php
     }
     foreach ($navSql->getRows($query) as $row) {
@@ -40,7 +39,7 @@ $navSql->disconnect();
 ?>
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation"
-     style="border-top-width:<?php echo $height_offset; ?>px">
+     data-border-top-width="<?php echo $height_offset; ?>">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -194,17 +193,15 @@ $navSql->disconnect();
                     have one, <a id="forgot-password-prev-code"
                                  href="#">click here</a>
                 </div>
-                <input class="form-control" id="forgot-password-code" type="text"
-                       name="code" placeholder="Reset Code" style="display: none;"/> <input
-                        class="form-control" id="forgot-password-new-password"
-                        type="password" name="pass" placeholder="Password"
-                        style="display: none;"/> <input class="form-control"
+                <input class="form-control csp-hidden" id="forgot-password-code" type="text"
+                       name="code" placeholder="Reset Code"/> <input
+                        class="form-control csp-hidden" id="forgot-password-new-password"
+                        type="password" name="pass" placeholder="Password"/> <input class="form-control csp-hidden"
                                                         id="forgot-password-new-password-confirm" type="password"
-                                                        name="pass-conf" placeholder="Re-type Password"
-                                                        style="display: none;"/>
+                                                        name="pass-conf" placeholder="Re-type Password"/>
                 <span>
                     <div class="checkbox">
-                        <label id="forgot-password-remember-span" style="display: none;"><input
+                        <label id="forgot-password-remember-span" class="csp-hidden"><input
                                     id="forgot-password-remember" type="checkbox"> Remember me</label>
                     </div>
                 </span>
@@ -214,7 +211,7 @@ $navSql->disconnect();
                         class="btn btn-primary">Send Code
                 </button>
                 <button id="forgot-password-reset-password" type="submit"
-                        class="btn btn-primary" style="display: none;">Reset Password
+                        class="btn btn-primary csp-hidden">Reset Password
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
