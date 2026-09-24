@@ -1259,3 +1259,48 @@ label > input, label > u > input, label > textarea {
 .breadcrumb li .btn em {
     font-size: 18px;
 }
+
+
+/* AddToAny normally injects these presentation rules at runtime. Keep the
+ * blog share strip usable when CSP blocks third-party inline <style> blocks. */
+.blog-share-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.blog-share-buttons.a2a_default_style a {
+    float: none;
+    width: 48px;
+    padding: 0;
+}
+
+.blog-share-buttons .a2a_svg {
+    display: block;
+    width: 48px !important;
+    height: 48px !important;
+    line-height: 48px !important;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.blog-share-buttons .a2a_svg svg {
+    display: block;
+    width: 32px !important;
+    height: 32px !important;
+    margin: 8px !important;
+}
+
+.blog-share-buttons .a2a_label {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0 !important;
+}

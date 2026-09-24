@@ -212,43 +212,39 @@ function addShares(data) {
     row.addClass('row');
 
     var shares = $('<div>');
-    shares.addClass("col-md-12 a2a_kit a2a_kit_size_48 a2a_default_style");
+    shares.addClass("col-md-12 a2a_kit a2a_kit_size_48 a2a_default_style blog-share-buttons");
 
     var addAny_a = $('<a>');
-    addAny_a.addClass('a2a_dd col-md-1');
+    addAny_a.addClass('a2a_dd');
     addAny_a.attr('href', 'https://www.addtoany.com/share?linkurl=' + link + '&amp;linkname=' + title);
     shares.append(addAny_a);
 
     var addEmail_a = $('<a>');
-    addEmail_a.addClass('a2a_button_email col-md-1');
+    addEmail_a.addClass('a2a_button_email');
     shares.append(addEmail_a);
 
     var addFacebook_a = $('<a>');
-    addFacebook_a.addClass('a2a_button_facebook col-md-1');
+    addFacebook_a.addClass('a2a_button_facebook');
     shares.append(addFacebook_a);
 
     var addTwitter_a = $('<a>');
-    addTwitter_a.addClass('a2a_button_twitter col-md-1');
+    addTwitter_a.addClass('a2a_button_twitter');
     shares.append(addTwitter_a);
 
-    var addGooglePlus_a = $('<a>');
-    addGooglePlus_a.addClass('a2a_button_google_plus col-md-1');
-    shares.append(addGooglePlus_a);
-
     var addPinterest_a = $('<a>');
-    addPinterest_a.addClass('a2a_button_pinterest col-md-1');
+    addPinterest_a.addClass('a2a_button_pinterest');
     shares.append(addPinterest_a);
 
     var addLinkedIn_a = $('<a>');
-    addLinkedIn_a.addClass('a2a_button_linkedin col-md-1');
+    addLinkedIn_a.addClass('a2a_button_linkedin');
     shares.append(addLinkedIn_a);
 
     var addReddit_a = $('<a>');
-    addReddit_a.addClass('a2a_button_reddit col-md-1');
+    addReddit_a.addClass('a2a_button_reddit');
     shares.append(addReddit_a);
 
     var addTumblr_a = $('<a>');
-    addTumblr_a.addClass('a2a_button_tumblr col-md-1');
+    addTumblr_a.addClass('a2a_button_tumblr');
     shares.append(addTumblr_a);
 
     row.append(shares);
