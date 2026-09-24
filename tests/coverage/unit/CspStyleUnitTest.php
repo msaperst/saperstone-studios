@@ -40,4 +40,30 @@ class CspStyleUnitTest extends TestCase {
 
         $this->assertSame([], $violations, implode(PHP_EOL, $violations));
     }
+
+    public function testMigratedMarkupDoesNotContainDuplicateClassAttributes(): void {
+        $root = dirname(__DIR__, 3);
+        $files = [
+            'public/b-nai-mitzvah/index.php',
+            'public/b-nai-mitzvah/photobooth.php',
+            'public/blog/new.php',
+            'public/blog/post.php',
+            'public/commercial/index.php',
+            'public/contact.php',
+            'public/leighAnn.php',
+            'public/portrait/index.php',
+            'public/portrait/studio.php',
+            'public/wedding/index.php',
+            'public/wedding/night.php',
+            'public/wedding/photobooth.php',
+        ];
+        $pattern = "/<[A-Za-z][^<>]*\\bclass\\s*=\\s*(?:\"[^\"]*\"|'[^']*')[^<>]*\\bclass\\s*=/s";
+
+        foreach ($files as $file) {
+            $source = file_get_contents($root . DIRECTORY_SEPARATOR . $file);
+            preg_match_all($pattern, $source, $matches);
+            $this->assertSame([], $matches[0], $file . ': duplicate class attributes');
+        }
+    }
+
 }

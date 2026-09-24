@@ -86,7 +86,7 @@ $sql->disconnect();
                             <div id="post-tags">
                                 <select id='post-tags-select' class='form-control input-sm u-width-auto'>
                                     <option></option>
-                                    <option value='0' class='u-text-red'>New Category</option>
+                                    <option value='0' class='text-danger'>New Category</option>
                                     <?php
                                     foreach ( $categories as $category ) {
                                         echo "<option value='" . $category ['id'] . "'>" . $category ['tag'] . "</option>";

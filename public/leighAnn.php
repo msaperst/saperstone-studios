@@ -145,9 +145,8 @@ $sql->disconnect();
                 <?php if ($user->isAdmin()) { ?>
                     <span
                             class="image-edit-control">
-                        <button class="ajax-file-upload"
-                                onclick="location.href='/portrait/galleries.php?w=0'"
-                                class="editable-image-control">
+                        <button class="ajax-file-upload editable-image-control"
+                                onclick="location.href='/portrait/galleries.php?w=0'">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>

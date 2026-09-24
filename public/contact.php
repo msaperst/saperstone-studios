@@ -104,10 +104,10 @@ $user = User::fromSystem();
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>Message:</label>
-                        <textarea rows="10" cols="100" class="form-control" id="message"
+                        <textarea rows="10" cols="100" class="form-control u-no-resize" id="message"
                                   required
                                   data-validation-required-message="Please enter your message"
-                                  maxlength="999" class="u-no-resize"></textarea>
+                                  maxlength="999" ></textarea>
                     </div>
                 </div>
                 <div id="success"></div>

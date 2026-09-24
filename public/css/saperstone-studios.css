@@ -1092,17 +1092,12 @@ label > input, label > u > input, label > textarea {
 .u-mb-30 { margin-bottom: 30px; }
 .u-pl-15 { padding-left: 15px; }
 .u-pl-35 { padding-left: 35px; }
-.u-pr-5 { padding-right: 5px; }
 .u-width-100 { width: 100%; }
 .u-width-auto { width: auto; }
 .u-width-55 { width: 55px; }
-.u-max-width-100 { max-width: 100%; }
 .u-height-400 { height: 400px; }
 .u-border-0 { border: 0; }
 .u-no-resize { resize: none; }
-.u-float-right { float: right; }
-.u-text-red { color: red; }
-.u-brand-purple { color: #980f7f; }
 .u-serif-24 { font-size: 24px; font-family: serif; }
 
 .table-full-width {
@@ -1140,10 +1135,6 @@ label > input, label > u > input, label > textarea {
 
 .review-image-right {
     margin: 0 0 20px 20px;
-}
-
-.review-image-left {
-    margin: 0 20px 20px 0;
 }
 
 #confused {
@@ -1190,40 +1181,6 @@ label > input, label > u > input, label > textarea {
 
 .blog-preview-image {
     width: 300px;
-}
-
-.album-favorite-count-present {
-    padding-left: 10px;
-}
-
-.album-notification-message {
-    resize: none;
-    height: 100px;
-}
-
-.favorites-empty {
-    padding: 40px 0;
-}
-
-.favorites-empty-icon {
-    font-size: 40px;
-    margin-bottom: 15px;
-    display: block;
-}
-
-.upload-progress-full {
-    width: 100%;
-}
-
-.download-email-input {
-    width: 430px;
-    display: inline;
-    margin-right: 20px;
-}
-
-.consent-advanced-options {
-    display: none;
-    margin-top: 10px;
 }
 
 /* Album breadcrumb layout previously defined in an inline <style> block. */

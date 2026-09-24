@@ -47,8 +47,7 @@ $sql->disconnect();
     
     <!-- Post Control Bar -->
     <div data-spy="affix"
-        class="blog-controls-left"
-        class="text-center">
+        class="blog-controls-left text-center">
         <div id='post-button-holder'>
             <br />
             <button id="add-text-button" type="button" class="btn btn-info">
@@ -61,8 +60,7 @@ $sql->disconnect();
             <button id="preview-post" type="button" class="btn btn-warning">
                 <em class="fa fa-search"></em> Preview Post
             </button>
-            <button id="edit-post" type="button" class="btn btn-warning"
-                class="csp-hidden">
+            <button id="edit-post" type="button" class="btn btn-warning csp-hidden">
                 <em class="fa fa-pencil-square-o"></em> Edit Post
             </button>
             <?php
@@ -113,8 +111,7 @@ $sql->disconnect();
 
     <!-- Preview Control Bar -->
     <div data-spy="affix"
-        class="blog-controls-right"
-        class="text-center">
+        class="blog-controls-right text-center">
         <div id='post-preview-holder' class='text-center blog-preview-holder'>
             <select id='post-preview-image' class='blog-preview-select'>
                 <option></option>
@@ -184,10 +181,9 @@ $sql->disconnect();
         </div>
         <div class="row">
             <div id="post-tags" class="col-md-4 text-left">
-                <select id='post-tags-select' class='form-control input-sm'
-                    class='u-width-auto'>
+                <select id='post-tags-select' class='form-control input-sm u-width-auto'>
                     <option></option>
-                    <option value='0' class='u-text-red'>New Category</option>
+                    <option value='0' class='text-danger'>New Category</option>
                 <?php
                 foreach ( $categories as $category ) {
                     echo "<option value='" . $category ['id'] . "'>" . $category ['tag'] . "</option>";

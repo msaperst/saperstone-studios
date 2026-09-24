@@ -96,10 +96,10 @@ if (!$user->isAdmin() && !$blog->isActive()) {
     <div class="row">
         <div class="col-md-12">
             <div class="controls">
-                    <textarea rows="5    " cols="100" class="form-control"
+                    <textarea rows="5    " cols="100" class="form-control u-no-resize"
                               id="post-comment-message" placeholder="Message" required=""
                               data-validation-required-message="Please enter your message"
-                              maxlength="999" class="u-no-resize" aria-invalid="false"></textarea>
+                              maxlength="999"  aria-invalid="false"></textarea>
                 <div class="error" id="post-comment-message-message"></div>
             </div>
         </div>
