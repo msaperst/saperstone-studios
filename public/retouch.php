@@ -46,7 +46,7 @@ $user = User::fromSystem();
         <!-- /.row -->
 
         <!-- Portraits Retouch -->
-        <div class="row" style="margin-top: 30px;">
+        <div class="row u-mt-30">
             <div class="col-lg-12">
                 <p>How many times have you loved your smile in one photograph but
                     your sister thought she looked better in a different one? I can
@@ -70,7 +70,7 @@ $user = User::fromSystem();
         </div>
 
         <!-- Products Section -->
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <div section='Mitzvah Retouch'
                      class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
