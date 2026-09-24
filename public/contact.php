@@ -40,7 +40,7 @@ $user = User::fromSystem();
         <div class="col-md-8">
             <!-- Embedded Google Map -->
             <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d795385.7040435313!2d-77.45577126502923!3d38.84398800429194!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x4c75c5462bac5863!2sSaperstone+Studios!5e0!3m2!1sen!2suk!4v1560954738867!5m2!1sen!2suk"
-                    width="100%" height="450px" frameborder="0" style="border:0" allowfullscreen></iframe>
+                    width="100%" height="450px" frameborder="0" class="u-border-0" allowfullscreen></iframe>
         </div>
         <!-- Contact Details Column -->
         <div class="col-md-4">
@@ -59,7 +59,7 @@ $user = User::fromSystem();
             <p>
                 <em class="fa fa-clock-o"></em> <abbr title="Hours">H</abbr>:
                 Studio and session time by appointment only<br/> <em
-                        style='padding-left: 35px;'>Please no walk ins.</em>
+                        class='u-pl-35'>Please no walk ins.</em>
             </p>
             <ul class="list-unstyled list-inline list-social-icons">
                 <?php $iconSize = "fa-2x";
@@ -75,9 +75,9 @@ $user = User::fromSystem();
         <div class="col-md-8">
             <h3>Send us a Message</h3>
             <form name="sentMessage" id="contactForm" novalidate>
-                <input type="text" id="loadtime" tabindex="-1" autocomplete="off" style="display:none"
+                <input type="text" id="loadtime" tabindex="-1" autocomplete="off" class="csp-hidden"
                        value="<?php echo time(); ?>">
-                <input type="text" id="company" tabindex="-1" autocomplete="off" style="display:none">
+                <input type="text" id="company" tabindex="-1" autocomplete="off" class="csp-hidden">
                 <div class="control-group form-group">
                     <div class="controls">
                         <label>Full Name:</label> <input type="text" class="form-control"
@@ -107,7 +107,7 @@ $user = User::fromSystem();
                         <textarea rows="10" cols="100" class="form-control" id="message"
                                   required
                                   data-validation-required-message="Please enter your message"
-                                  maxlength="999" style="resize: none"></textarea>
+                                  maxlength="999" class="u-no-resize"></textarea>
                     </div>
                 </div>
                 <div id="success"></div>
