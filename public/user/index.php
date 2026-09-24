@@ -77,7 +77,7 @@ $user->forceLogIn();
                 <?php
                 if ($user->isAdmin() || $user->getRole() == "uploader") {
                     ?>
-                    <span id="thumbnail-status-filter-container" class="form-inline" style="display: none; margin-right: 15px;">
+                    <span id="thumbnail-status-filter-container" class="form-inline csp-hidden">
                         <label for="thumbnail-status-filter">Thumbnail Status:</label>
                         <select id="thumbnail-status-filter" class="form-control input-sm">
                             <option value="">All</option>
@@ -89,14 +89,13 @@ $user->forceLogIn();
                     <?php
                 }
                 ?>
-                <table id="albums" class="display"
-                    style="width: 100%; border-spacing: 0px;">
+                <table id="albums" class="display table-full-width">
                     <thead>
                         <tr>
                             <?php
                             if ($user->isAdmin () || $user->getRole () == "uploader") {
                                 ?>
-                            <th style="width: 55px;">
+                            <th class="u-width-55">
                                 <button id="add-album-btn" type="button"
                                     class="btn btn-xs btn-success" data-toggle="tooltip"
                                     data-placement="right" title="Add New Album">
