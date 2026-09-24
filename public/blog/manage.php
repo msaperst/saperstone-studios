@@ -46,8 +46,7 @@ $sql->disconnect();
         <!-- Post Section -->
         <div class="row">
             <div class="col-lg-12">
-                <table id="posts" class="display"
-                    style="width: 100%; border-spacing: 0px;">
+                <table id="posts" class="display table-full-width">
                     <thead>
                         <tr>
                             <th></th>
@@ -85,10 +84,9 @@ $sql->disconnect();
                                 class='form-control' type='date' /> <input
                                 id='post-active-input' type='checkbox' /> Active <br /> <br />
                             <div id="post-tags">
-                                <select id='post-tags-select' class='form-control input-sm'
-                                    style='width: auto;'>
+                                <select id='post-tags-select' class='form-control input-sm u-width-auto'>
                                     <option></option>
-                                    <option value='0' style='color: red;'>New Category</option>
+                                    <option value='0' class='u-text-red'>New Category</option>
                                     <?php
                                     foreach ( $categories as $category ) {
                                         echo "<option value='" . $category ['id'] . "'>" . $category ['tag'] . "</option>";
@@ -98,10 +96,8 @@ $sql->disconnect();
                             </div>
                         </div>
                         <div class="col-lg-5">
-                            <div id='post-preview-holder' class='text-center'
-                                style='width: 300px; height: 176px; background-color: red; overflow: hidden;'>
-                                <select id='post-preview-image'
-                                    style='top: 50%; position: absolute; opacity: 0.65; filter: alpha(opacity = 65); z-index: 99; left: 20px;'><option></option></select>
+                            <div id='post-preview-holder' class='text-center blog-preview-holder'>
+                                <select id='post-preview-image' class='blog-preview-select'><option></option></select>
                             </div>
                         </div>
                     </div>
