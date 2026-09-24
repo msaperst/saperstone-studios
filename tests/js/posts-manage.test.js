@@ -266,7 +266,7 @@ test('posts-manage editPost adds returned tags to the quick editor', () => {
     });
 
     assert.equal(added, 2);
-    assert.equal(environment.element('#post-tags-select').val(), '4');
+    assert.equal(environment.element('#post-tags-select').val(), 4);
 });
 
 test('posts-manage deletePost displays API errors without removing the row', () => {
