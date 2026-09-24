@@ -47,7 +47,7 @@ $sql->disconnect();
         <!-- /.row -->
 
         <!-- Main Content -->
-        <div class="row" style="margin-bottom: 30px;">
+        <div class="row u-mb-30">
             <!-- Content Column -->
             <div class="col-md-9">
                 <!-- Carousel -->
@@ -93,10 +93,10 @@ $sql->disconnect();
                     </a>
                     <?php if ($user->isAdmin ()) { ?>
                     <span
-                        style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
+                        class="image-edit-control">
                         <button class="ajax-file-upload"
                             onclick="location.href='galleries.php?w=8'"
-                            style="position: relative; overflow: hidden; cursor: pointer;">
+                            class="editable-image-control">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>
@@ -107,7 +107,7 @@ $sql->disconnect();
             <div class="col-md-3">
                 <img class="sidebar-img"
                     alt="Turn Your Moment Into A Memory with Saperstone Studios"
-                    src="/img/moment-to-memory.png" style="float: right;" />
+                    src="/img/moment-to-memory.png" class="u-float-right" />
                 <ul class="list-inline social-buttons text-center social-padding">
                     <?php $iconSize = "fa-2x"; require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/social-list.php"; ?>
                 </ul>
