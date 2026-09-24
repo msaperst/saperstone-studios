@@ -24,6 +24,12 @@ $(function () {
     my_role = $('#my-user-role').val();
     my_id = $('#my-user-id').val();
 
+    var navbar = $('.navbar-inverse');
+    var borderTopWidth = parseInt(navbar.attr('data-border-top-width'));
+    if (!isNaN(borderTopWidth)) {
+        navbar.css('border-top-width', borderTopWidth + 'px');
+    }
+
     $(document).on('cookiePreferencesChanged', function (event, preferences) {
         var analyticsEnabled = preferences.includes('analytics');
         var socialEnabled = preferences.includes('social');
