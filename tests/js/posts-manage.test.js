@@ -316,3 +316,16 @@ test('posts-manage updatePost displays server validation without reloading', () 
     assert.match(environment.element('#post .modal-body').appended.join(''), /Validation failed/);
     assert.equal(environment.element('#post-update-button').prop('disabled'), false);
 });
+
+test('posts-manage keeps quick-manage functions separate from post-admin globals', () => {
+    const {context} = createManageContext();
+
+    assert.equal(typeof context.editPost, 'function');
+    assert.equal(typeof context.updatePost, 'function');
+    assert.equal(typeof context.editManagedPost, 'function');
+    assert.equal(typeof context.updateManagedPost, 'function');
+    assert.equal(typeof context.deleteManagedPost, 'function');
+
+    assert.notEqual(context.editPost, context.editManagedPost);
+    assert.notEqual(context.updatePost, context.updateManagedPost);
+});
