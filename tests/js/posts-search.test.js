@@ -56,7 +56,7 @@ function createSearchContext(options = {}) {
         return request;
     };
 
-    const context = loadBrowserScripts(['public/js/posts-common.js', 'public/js/posts-search.js'], {
+    const context = loadBrowserScripts(['public/js/blog-common.js', 'public/js/posts-search.js'], {
         $,
         window: windowObject,
         loadPostPreview(index, post) {
