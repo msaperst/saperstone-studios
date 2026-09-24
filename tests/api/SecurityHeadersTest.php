@@ -49,27 +49,20 @@ class SecurityHeadersTest extends TestCase {
     /**
      * @throws GuzzleException
      */
-    public function testSpellingCorrectionOnlyNormalizesFilenameCase(): void {
+    public function testInvalidFilenameVariantsReturn404WithoutSuggestions(): void {
         $valid = $this->http->request('GET', 'Privacy-Policy.php');
         $this->assertSame(200, $valid->getStatusCode());
 
-        foreach (['privacy-policy.php', 'Privacy-Policy.PHP'] as $path) {
+        foreach (['privacy-policy.php', 'Privacy-Policy.PHP', 'Privacy-Policy.ph'] as $path) {
             $response = $this->http->request('GET', $path, ['allow_redirects' => false]);
+            $body = (string) $response->getBody();
 
-            $this->assertSame(301, $response->getStatusCode(), $path);
-            $this->assertStringEndsWith('/Privacy-Policy.php', $response->getHeaderLine('Location'), $path);
-            $this->assertStringNotContainsString('Multiple Choices', (string) $response->getBody(), $path);
-
-            $followed = $this->http->request('GET', $path);
-            $this->assertSame(200, $followed->getStatusCode(), $path);
+            $this->assertSame(404, $response->getStatusCode(), $path);
+            $this->assertFalse($response->hasHeader('Location'), $path);
+            $this->assertStringNotContainsString('Multiple Choices', $body, $path);
+            $this->assertStringNotContainsString('Available documents', $body, $path);
+            $this->assertStringNotContainsString('common basename', $body, $path);
         }
-
-        $misspelled = $this->http->request('GET', 'Privacy-Policy.ph');
-        $body = (string) $misspelled->getBody();
-
-        $this->assertSame(404, $misspelled->getStatusCode());
-        $this->assertStringNotContainsString('Multiple Choices', $body);
-        $this->assertStringNotContainsString('Available documents', $body);
     }
 
     /**
