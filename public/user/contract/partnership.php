@@ -23,7 +23,7 @@ if (isset ($_GET ['id'])) {
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> (the "Photographer") and
-        <u>&nbsp;<input id='contract-name' class='form-control' style='width: initial; display: initial;'
+        <u>&nbsp;<input id='contract-name' class='form-control inline-form-control'
                         aria-label='Client Name' type='text' placeholder='Client Name'
                         value='<?php echo $contract ['name']; ?>'/>&nbsp;</u>
         (the "Client").<br/> <strong>Whereas</strong>, Client wishes to partner with

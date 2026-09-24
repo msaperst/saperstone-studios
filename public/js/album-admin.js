@@ -605,8 +605,8 @@ function viewAllFavorites() {
 
         // If no user favorites exist in this album, show an empty state
         if (grid.children().length === 0) {
-            grid = $('<div class="text-center text-muted" style="padding: 40px 0;">')
-                .append($('<em class="fa fa-heart-o" style="font-size: 40px; margin-bottom: 15px; display: block;"></em>'))
+            grid = $('<div class="text-center text-muted favorites-empty">')
+                .append($('<em class="fa fa-heart-o favorites-empty-icon"></em>'))
                 .append($('<p>').text('No users have added favorites to this album yet.'));
         }
 

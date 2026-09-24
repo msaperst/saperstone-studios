@@ -37,34 +37,7 @@ $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE 
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
     <link href="/css/hover-effect.css" rel="stylesheet">
     <link href="/css/uploadfile.css" rel="stylesheet">
-    <style>
-        .breadcrumb {
-            padding: 15px 20px;
-            font-size: 16px;
-            display: block; /* Restores standard block layout so pull-right works */
-        }
-
-        .breadcrumb.breadcrumb-fixed {
-            border-radius: 0 0 4px 4px;
-        }
-
-        .breadcrumb li button,
-        .breadcrumb li .btn {
-            padding: 5px 8px;
-            font-size: 16px;
-            line-height: 1.3333333;
-        }
-
-        .breadcrumb li button em,
-        .breadcrumb li .btn em {
-            font-size: 18px;
-        }
-
-        .no-before {
-            top: -5px;
-        }
-    </style>
-</head>
+    </head>
 
 <body>
 
@@ -110,17 +83,11 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                             <em class="fa fa-heart error">
                                 <strong
                                         id="favorite-count"
-                                        class="error"
-                                        <?php
-                                        if ($result ['total'] > 0) {
-                                        ?>
-                                        style="padding-left: 10px;"
+                                        class="error<?php echo $result['total'] > 0 ? ' album-favorite-count-present' : ''; ?>"
                                 >
-                                    <?php echo $result['total'];
-                                    } else {
-                                        ?>
-                                        >
-                                        <?php
+                                    <?php
+                                    if ($result['total'] > 0) {
+                                        echo $result['total'];
                                     }
                                     ?>
                                 </strong>
@@ -131,11 +98,10 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                         <button
                                 id="submit-favorites-btn"
                                 type="button"
-                                class="btn btn-xs btn-success"
+                                class="btn btn-xs btn-success csp-hidden"
                                 data-toggle="tooltip"
                                 data-placement="bottom"
                                 title="Submit album favorites as selection"
-                                style="display: none"
                         >
                             <em class="fa fa-paper-plane"></em>
                         </button>
@@ -145,19 +111,18 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                 type="button"
                                 data-toggle="tooltip"
                                 data-placement="bottom"
-                                style="display: none"
                                 <?php
                                 if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
                                     ?>
                                     id="disabled-downloadable-favorites-btn"
-                                    class="btn btn-xs"
+                                    class="btn btn-xs csp-hidden"
                                     title="Login or create an account to download images"
                                     disabled
                                     <?php
                                 } else {
                                     ?>
                                     id="downloadable-favorites-btn"
-                                    class="btn btn-xs btn-action btn-success"
+                                    class="btn btn-xs btn-action btn-success csp-hidden"
                                     title="Download all favorite images in this album"
                                     <?php
                                 }
@@ -244,11 +209,7 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
     <?php
     if ($album->canUserGetData()) {
         ?>
-        <div id="thumbnail-warning" class="alert alert-warning text-center"<?php
-        if (!$album->needsThumbnails()) {
-            echo ' style="display: none;"';
-        }
-        ?>>
+        <div id="thumbnail-warning" class="alert alert-warning text-center<?php echo !$album->needsThumbnails() ? ' csp-hidden' : ''; ?>">
             <strong>Thumbnails are missing for this album.</strong>
             Use Edit Album &rarr; Make Thumbnails to generate them.
         </div>
@@ -483,8 +444,8 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
                     <p>
                         <em class="fa fa-exclamation-triangle"></em> What message do you want to send to the users?
                     </p>
-                    <textarea id="notifications-message" class="form-control" maxlength="999"
-                              style="resize: none; height:100px">Images have been posted to album <?php echo $album->getName(); ?>. You can access your images by<?php
+                    <label class="sr-only" for="notifications-message">Notification message</label>
+                    <textarea id="notifications-message" class="form-control album-notification-message" maxlength="999">Images have been posted to album <?php echo $album->getName(); ?>. You can access your images by<?php
                         if ($album->hasCode()) {
                             echo " navigating to https://saperstonestudios.com/#album={$album->getCode()}";
                         } else {

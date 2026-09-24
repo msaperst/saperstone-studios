@@ -14,7 +14,7 @@ $(document).ready(function () {
         } else if ($(this).hasClass("square")) {
             scale = 1;
         }
-        $(this).append('<span class="editme" style="position:absolute; bottom:0; right:0; padding:5px;" scale="' + scale + '"></span>');
+        $(this).append('<span class="editme image-edit-control" scale="' + scale + '"></span>');
     });
     $('.editme').each(function () {
         var img = $(this).parent().find('img');

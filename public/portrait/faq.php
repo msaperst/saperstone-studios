@@ -67,7 +67,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> What to Wear?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>
                 Need a little help coordinating a winning outfit combo for the
                 group? Be sure to check out <a href="what-to-wear.php">what to wear</a>
@@ -77,7 +77,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Turnaround time</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>
                 Please allow 2-3 weeks after your portrait session for images to be
                 completed. During this time I carefully <a href='retouch.php'>make
@@ -88,7 +88,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> What's Next?</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>
                 When I'm close to completing your images I will reach out and
                 schedule a time for you to visit my <a href="studio.php">home
@@ -115,7 +115,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Come Prepared!</h4>
         </div>
-        <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+        <div class="col-xs-12 collapse-content u-pt-20">
             <p>As a visual person myself, I wouldn't be able to make decisions
                 in regard to prints on my walls without seeing it myself first. If
                 you have a particular wall you want to hang photos on in your home,

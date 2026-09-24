@@ -51,7 +51,7 @@ $sql->disconnect();
         <!-- /.row -->
 
         <!-- Main Content -->
-        <div class="row" style="margin-bottom: 30px;">
+        <div class="row u-mb-30">
             <!-- Content Column -->
             <div class="col-md-12">
                 <!-- Carousel -->
@@ -80,7 +80,7 @@ $sql->disconnect();
                             }
                             echo "<div class='item$active_class'>";
                             echo "    <div class='contain'";
-                            echo "        style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                            echo "        data-background-image=\"" . htmlspecialchars($image['location'], ENT_QUOTES, 'UTF-8') . "\"></div>";
                             echo "    <div class='carousel-caption'>";
                             echo "        <h2>" . $image ['caption'] . "</h2>";
                             echo "    </div>";
@@ -97,10 +97,9 @@ $sql->disconnect();
                     </a>
                     <?php if ($user->isAdmin ()) { ?>
                     <span
-                        style="position: absolute; bottom: 0px; right: 0px; padding: 5px;">
-                        <button class="ajax-file-upload"
-                            onclick="location.href='galleries.php?w=52'"
-                            style="position: relative; overflow: hidden; cursor: pointer;">
+                        class="image-edit-control">
+                        <button class="ajax-file-upload editable-image-control"
+                            onclick="location.href='galleries.php?w=52'">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>

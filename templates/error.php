@@ -42,7 +42,6 @@ $session = new Session();
         <div class="row">
             <div class="col-lg-12">
                 <img id='confused' src='/img/confused.png'
-                    style='width: 150px; float: left; margin: 0px 20px 20px 0px;'
                     alt='Where am I?' />
                 <p class='lead'>Whoops, something went wrong!</p>
                 <p class='lead'><?php echo $message; ?></p>

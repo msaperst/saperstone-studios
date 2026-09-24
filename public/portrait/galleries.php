@@ -71,8 +71,7 @@ $sql->disconnect();
                             <i class="fa fa-pencil-square-o"></i>
                         </button>
                     </li>
-                    <li class="no-before pull-right"
-                        style="padding-right: 5px; display: none;">
+                    <li class="no-before pull-right u-pr-5 csp-hidden">
                         <button type="button"
                                 id="save-gallery-btn" class="btn btn-xs btn-success"
                                 data-toggle="tooltip" data-placement="left"
@@ -80,7 +79,7 @@ $sql->disconnect();
                             <i class="fa fa-floppy-o"></i>
                         </button>
                     </li>
-                    <li class="no-before pull-right" style="padding-right: 5px;">
+                    <li class="no-before pull-right u-pr-5">
                         <button
                                 type="button" id="sort-gallery-btn" class="btn btn-xs btn-info"
                                 data-toggle="tooltip" data-placement="left"
@@ -160,7 +159,7 @@ $sql->disconnect();
                             }
                             echo "<div class='item$active_class'>";
                             echo "    <div class='contain' gallery-id='{$gallery->getId()}' image-id='" . $image ['id'] . "' sequence='" . $image ['sequence'] . "'";
-                            echo "        alt='" . $image ['title'] . "' style=\"background-image: url('" . $image ['location'] . "');\"></div>";
+                            echo "        alt='" . htmlspecialchars($image['title'], ENT_QUOTES, 'UTF-8') . "' data-background-image=\"" . htmlspecialchars($image['location'], ENT_QUOTES, 'UTF-8') . "\"></div>";
                             echo "    <div class='carousel-caption'>";
                             echo "        <h2>" . $image ['caption'] . "</h2>";
                             echo "    </div>";

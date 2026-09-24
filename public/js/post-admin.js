@@ -3,6 +3,11 @@ var imageId = 0;
 $(document).ready(function () {
     sortOptions();
 
+    var previewImage = $('#post-preview-holder img[data-top]');
+    if (previewImage.length) {
+        previewImage.css('top', previewImage.attr('data-top') + 'px');
+    }
+
     $('#post-tags-select').change(function () {
         addTag($(this));
     });

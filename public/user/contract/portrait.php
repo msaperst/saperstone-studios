@@ -28,8 +28,8 @@ if (isset ($_GET ['id'])) {
     <p>
         <strong>This Contract</strong> is made by and between <u>&nbsp;Saperstone
             Studios&nbsp;</u> (the "Photographer") and
-        <u>&nbsp;<input id='contract-name' class='form-control' aria-label='Client Name'
-                        style='width: initial; display: initial;' type='text' placeholder='Client Name'
+        <u>&nbsp;<input id='contract-name' class='form-control inline-form-control' aria-label='Client Name'
+                        type='text' placeholder='Client Name'
                         value='<?php echo $contract ['name']; ?>'/>&nbsp;</u>
         (the "Client").<br/> <strong>Whereas</strong>, Client wishes to
         engage Photographer to provide certain photography services and
@@ -46,20 +46,20 @@ if (isset ($_GET ['id'])) {
         </li>
         <li><strong>Session Details.</strong> The above session with take
             place at the below location on
-            <input id='contract-date' class='form-control' style='width: initial; display: initial;' aria-label='Date'
+            <input id='contract-date' class='form-control inline-form-control' aria-label='Date'
                    type='date' placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
             at
             <br/>
-            <label style='width: 100%;'><textarea id='contract-location' class='form-control' type='text'
+            <label class="u-width-100"><textarea id='contract-location' class='form-control' type='text'
                                                   placeholder='Session Address'><?php echo $contract ['location']; ?></textarea></label>
         </li>
         <li><strong>Compensation.</strong> In consideration of the Services,
             Client agrees to pay Photographer the following amounts as follows:
             <p>
-                <input id='contract-session' class='form-control' style='width: initial; display: initial;' type='text'
+                <input id='contract-session' class='form-control inline-form-control' type='text'
                        aria-label='Session' placeholder='Session' value='<?php echo $contract ['session']; ?>'/>
                 :
-                $<input id='contract-amount' class='form-control' style='width: initial; display: initial;'
+                $<input id='contract-amount' class='form-control inline-form-control'
                         aria-label='Amount' type='number' step='0.01' min='0' placeholder='Amount'
                         value='<?php echo $contract ['amount']; ?>'/>
                 <br/>
@@ -178,7 +178,7 @@ if (isset ($_GET ['id'])) {
                    value='<?php echo $contract ['session']; ?>' disabled/>
         </div>
     </div>
-    <label style='width: 100%;'><textarea id='contract-details' class='form-control' type='text'
+    <label class="u-width-100"><textarea id='contract-details' class='form-control' type='text'
                                           placeholder='Session Details'><?php echo $contract ['details']; ?></textarea></label>
     <h3>Standard Terms and Conditions</h3>
     <p>

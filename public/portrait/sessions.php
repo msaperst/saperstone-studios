@@ -80,7 +80,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Maternity">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Be sure to document your pregnancy with a Phoenix maternity session.
                 Every pregnancy is unique so the exact timing of your session will
                 vary. Generally the best time is between 30 and 34 weeks. We want
@@ -120,7 +120,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Newborn">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Saperstone Studios has over 10 years of experience being a Chandler,
                 AZ newborn photographer and I'd love to share that expertise with
                 you! Newborns are best photographed during the first 10 days of life
@@ -167,7 +167,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="6 Month">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Out of all the family photography sessions I provide, this milestone
                 is one of my favorites! These sessions take place at 6-8 months, when
                 your baby is able to sit up unassisted. At this stage your baby will
@@ -209,7 +209,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="1 Year">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>So much fun! What better way to celebrate your little one’s first
                 birthday than letting them go to town on a sugary surprise? Your
                 baby will likely be crawling if not walking by this stage! Cake
@@ -232,7 +232,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
         <div class="col-lg-12">
             <h2 class="page-header">Milestone Photography Session Packages</h2>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Want to capture it all? I offer two different milestone packages so you
                 can capture your baby's photos throughout the whole first year when
                 they grow and change the most.</p>
@@ -256,7 +256,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Bump to Baby">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <ul>
                 <li>Includes both a <a href="galleries.php?w=2">Maternity photography
                         session</a> as well as a <a href="gallery.php?w=3">Newborn photography session</a></li>
@@ -283,7 +283,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Watch Me Grow">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <ul>
                 <li>Includes 3 sessions total:
                     <ol>
@@ -317,7 +317,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Family">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>When's the last time you updated your family portrait? Often the
                 answer I get goes something like this... 'My kids hate dressing up
                 and never smile for me so I just don't bother'. This makes me so
@@ -369,7 +369,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                      alt="Senior">
             </div>
         </div>
-        <div class="col-xs-12" style="padding-top: 20px;">
+        <div class="col-xs-12 u-pt-20">
             <p>Congratulations on this new chapter in your life! Break out of
                 the typical senior portrait box and create a custom session that
                 fits you and your personality.</p>

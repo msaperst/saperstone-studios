@@ -57,7 +57,7 @@ $user = User::fromSystem();
             </div>
         </div>
 
-        <div class="row" style='padding-top: 30px'>
+        <div class="row u-pt-30">
             <div class="col-lg-12">
                 <p>I'm a self proclaimed photo ninja. And when it comes down to it,
                     haven't you always wanted to have a ninja at your wedding? ;) I

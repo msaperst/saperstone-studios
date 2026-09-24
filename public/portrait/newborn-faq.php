@@ -63,7 +63,7 @@ $user = User::fromSystem();
             <div class="col-lg-12">
                 <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> When should I book my session?</h4>
             </div>
-            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+            <div class="col-xs-12 collapse-content u-pt-20">
                 <p>Newborn sessions are done within the first 2 weeks of life to get
                     those precious sleepy baby photos so it’s best to contact me as
                     soon as possible. Based on your due date, we’ll pencil in a
@@ -74,14 +74,14 @@ $user = User::fromSystem();
                 <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How long can I expect the
                     newborn session to be?</h4>
             </div>
-            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+            <div class="col-xs-12 collapse-content u-pt-20">
                 <p>Every baby is different and to allow time for feeding/changing,
                     each session is about 3-4 hours.</p>
             </div>
             <div class="col-lg-12">
                 <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Where will the session be?</h4>
             </div>
-            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+            <div class="col-xs-12 collapse-content u-pt-20">
                 <p>There are two options:
                 <ul>
                     <li><strong>Your Home</strong>: I can include all of those personal
@@ -96,7 +96,7 @@ $user = User::fromSystem();
                 </p>
             </div>
         </div>
-        <div class="row" style="padding-top: 20px;">
+        <div class="row u-pt-20">
             <div class="col-xs-6">
                 <div class="<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
                     <img src="img/newborn-faq-3.jpg<?php echo $rand; ?>" width="100%"
@@ -112,7 +112,7 @@ $user = User::fromSystem();
             <div class="col-lg-12">
                 <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How can we prepare the baby?</h4>
             </div>
-            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+            <div class="col-xs-12 collapse-content u-pt-20">
                 <p>All of the following are guidelines, at the end of the day your
                     newborn runs the show and if they don’t want to follow everything
                     to the tee, then don’t stress! We will have a wonderful session
@@ -132,7 +132,7 @@ $user = User::fromSystem();
             <div class="col-lg-12">
                 <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> How should we dress the baby?</h4>
             </div>
-            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+            <div class="col-xs-12 collapse-content u-pt-20">
                 <p>Don't worry about picking out clothes, unless there is something
                     of sentimental or religious value. About an hour before your
                     session place a loose diaper on them to avoid indentations on their
@@ -143,7 +143,7 @@ $user = User::fromSystem();
             <div class="col-lg-12">
                 <h4 class="page-header collapse-header"><i class="fa fa-plus-square"></i> Will we (the parents) be in the photos?</h4>
             </div>
-            <div class="col-xs-12 collapse-content" style="padding-top: 20px;">
+            <div class="col-xs-12 collapse-content u-pt-20">
                 <p>If you'd like to be! If you don't want to have your photo taken,
                     I would recommend at least holding/touching the baby or having
                     him/her grasp onto your fingers in some shots. This not only
