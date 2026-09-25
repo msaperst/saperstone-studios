@@ -52,7 +52,7 @@ class BlogVisibilityTest extends TestCase {
         $body = (string)$response->getBody();
 
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame(1, preg_match('/new PostsFull\\(\\s*(\\d+)\\s*\\)/', $body, $match));
+        $this->assertSame(1, preg_match('/id="blog-page-config"[^>]*data-total="(\\d+)"/', $body, $match));
         $this->assertSame($expected, (int)$match[1]);
     }
 
@@ -79,7 +79,7 @@ class BlogVisibilityTest extends TestCase {
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             1,
-            preg_match('/new PostsFull\\(\\s*(\\d+)\\s*,\\s*\\[29,30\\]/', $body, $match)
+            preg_match('/id="blog-page-config"[^>]*data-total="(\\d+)"[^>]*data-tags="\\[29,30\\]"/', $body, $match)
         );
         $this->assertSame($expected, (int)$match[1]);
     }
@@ -116,7 +116,7 @@ class BlogVisibilityTest extends TestCase {
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             1,
-            preg_match('/new Posts\\(\\s*3\\s*,\\s*(\\d+)\\s*,/', $body, $match)
+            preg_match('/id="blog-page-config"[^>]*data-total="(\\d+)"/', $body, $match)
         );
         $this->assertSame(0, (int)$match[1]);
     }
