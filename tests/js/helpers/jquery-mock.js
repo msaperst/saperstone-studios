@@ -27,6 +27,10 @@ class MockElement {
         this.summernoteCode = '';
         this.modalCalls = [];
         this.rect = {top: 0, bottom: 100, width: 300, height: 100};
+        this.beforeValues = [];
+        this.wrapValues = [];
+        this.replacedWith = null;
+        this.resizableOptions = null;
         this.nativeElement = {
             complete: false,
             naturalWidth: 0,
@@ -293,11 +297,48 @@ class MockElement {
         return this.parentResult || this;
     }
 
+    next() {
+        return this.environment.element(`${this.selector} __next__`);
+    }
+
+    before(value) {
+        this.beforeValues = this.beforeValues || [];
+        this.beforeValues.push(value);
+        return this;
+    }
+
+    wrap(value) {
+        this.wrapValues = this.wrapValues || [];
+        this.wrapValues.push(value);
+        return this;
+    }
+
+    replaceWith(value) {
+        this.replacedWith = value;
+        return this;
+    }
+
+    resizable(options) {
+        this.resizableOptions = options || {};
+        return this;
+    }
+
+    slideToggle(duration, callback) {
+        this.visible = !this.visible;
+        if (callback) callback();
+        return this;
+    }
+
     find(selector) {
         return this.environment.element(`${this.selector} ${selector}`);
     }
 
     prependTo() {
+        return this;
+    }
+
+    appendTo(target) {
+        this.appendedTo = target;
         return this;
     }
 
@@ -324,6 +365,9 @@ class MockElement {
     is(query) {
         if (query === ':checked') {
             return Boolean(this.properties.get('checked'));
+        }
+        if (query === ':visible') {
+            return this.visible;
         }
         return false;
     }
