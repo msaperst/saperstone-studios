@@ -132,6 +132,9 @@ function getResponsiveThumbnailLocation(card) {
     if (requiredWidth <= 800 && card.attr('data-thumbnail-800')) {
         return card.attr('data-thumbnail-800');
     }
+    if (requiredWidth <= 1200 && card.attr('data-thumbnail-1200')) {
+        return card.attr('data-thumbnail-1200');
+    }
     return card.attr('data-thumbnail-1600') || card.attr('data-location');
 }
 
@@ -140,7 +143,7 @@ function refreshAlbumThumbnailImages() {
 
     $('#album-grid .album-card').each(function () {
         var card = $(this);
-        ['data-location', 'data-thumbnail-400', 'data-thumbnail-800', 'data-thumbnail-1600'].forEach(function (attribute) {
+        ['data-location', 'data-thumbnail-400', 'data-thumbnail-800', 'data-thumbnail-1200', 'data-thumbnail-1600'].forEach(function (attribute) {
             var location = card.attr(attribute);
             if (location) {
                 card.attr(attribute, location.split('?')[0] + '?v=' + version);
@@ -640,6 +643,7 @@ Album.prototype.loadImages = function () {
             card.attr('data-location', v.location);
             card.attr('data-thumbnail-400', v.thumbnail400 || v.location);
             card.attr('data-thumbnail-800', v.thumbnail800 || v.location);
+            card.attr('data-thumbnail-1200', v.thumbnail1200 || v.location);
             card.attr('data-thumbnail-1600', v.thumbnail1600 || v.location);
             card.attr('data-height', v.height || 1);
             card.attr('data-width', v.width || 1);
@@ -724,6 +728,7 @@ Album.prototype.loadImages = function () {
                 location: v.location,
                 thumbnail400: v.thumbnail400 || v.location,
                 thumbnail800: v.thumbnail800 || v.location,
+                thumbnail1200: v.thumbnail1200 || v.location,
                 thumbnail1600: v.thumbnail1600 || v.location,
                 title: v.title,
                 caption: v.caption || '',
