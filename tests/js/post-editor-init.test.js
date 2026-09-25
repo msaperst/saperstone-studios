@@ -45,3 +45,28 @@ test('post editor restores tags and mixed content groups', () => {
     assert.equal(images[0][0], 'one.jpg');
     assert.equal(images[0][1], 'two.jpg');
 });
+
+
+test('post editor exits when page configuration is absent', () => {
+    const environment = createJQueryEnvironment({autoReady: false, lengths: {'#post-editor-config': 0}});
+    let calls = 0;
+    loadBrowserScript('public/js/post-editor-init.js', {
+        $: environment.$, document: environment.document,
+        addTag() { calls += 1; }, addTextArea() { calls += 1; }, addImageArea() { calls += 1; }
+    });
+    environment.runReady();
+    assert.equal(calls, 0);
+});
+
+test('post editor ignores unknown content group types', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    environment.element('#post-editor-config').attr({'data-tags':'[]','data-groups':'[{"type":"unknown"}]'});
+    let calls = 0;
+    loadBrowserScript('public/js/post-editor-init.js', {
+        $: environment.$, document: environment.document,
+        addTag() {}, addTextArea() { calls += 1; }, addImageArea() { calls += 1; }
+    });
+    environment.runReady();
+    assert.equal(calls, 0);
+    assert.equal(environment.element('#post-preview-holder img').draggableOptions.axis, 'y');
+});
