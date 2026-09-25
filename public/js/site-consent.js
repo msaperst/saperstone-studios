@@ -63,7 +63,7 @@
                 {
                     name: 'social',
                     title: 'Social Media',
-                    description: 'Required to load embedded social media buttons and sharing tools.',
+                    description: 'Required to load embedded social media buttons.',
                 },
             ],
             OnAccept: function (cookies) {
