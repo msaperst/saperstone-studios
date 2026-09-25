@@ -66,15 +66,13 @@ $sql->disconnect();
                     <li class="no-before pull-right">
                         <button
                                 type="button" id="edit-gallery-btn"
-                                class="btn btn-xs btn-warning" data-toggle="tooltip"
-                                data-placement="left" title="Edit Album Details">
+                                class="btn btn-xs btn-warning" title="Edit Album Details">
                             <i class="fa fa-pencil-square-o"></i>
                         </button>
                     </li>
                     <li class="no-before pull-right u-pr-5 csp-hidden">
                         <button type="button"
                                 id="save-gallery-btn" class="btn btn-xs btn-success"
-                                data-toggle="tooltip" data-placement="left"
                                 title="Save Image Order">
                             <i class="fa fa-floppy-o"></i>
                         </button>
@@ -82,7 +80,6 @@ $sql->disconnect();
                     <li class="no-before pull-right u-pr-5">
                         <button
                                 type="button" id="sort-gallery-btn" class="btn btn-xs btn-info"
-                                data-toggle="tooltip" data-placement="left"
                                 title="Rearrange Album Images">
                             <i class="fa fa-random"></i>
                         </button>
