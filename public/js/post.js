@@ -158,8 +158,8 @@ function loadPost(data, header) {
     }
     if (socialTrackingAllowed()) {
         loadSM();
-        addShares(data);
     }
+    addShares(data);
 }
 
 function addSocialMedias(data) {
@@ -204,62 +204,84 @@ function addSocialMedias(data) {
     return details_likes;
 }
 
-function addShares(data) {
+function getShareUrl(data) {
     var link = getLink(data);
-    var title = data.title;
+    if (window.location && window.location.origin) {
+        return window.location.origin + link;
+    }
+    return link;
+}
 
+function addShares(data) {
     var row = $('<div>');
     row.addClass('row');
 
     var shares = $('<div>');
-    shares.addClass("col-md-12 a2a_kit a2a_kit_size_48 a2a_default_style blog-share-buttons");
+    shares.addClass('col-md-12 blog-share-actions');
 
-    var addAny_a = $('<a>');
-    addAny_a.addClass('a2a_dd');
-    addAny_a.attr('href', 'https://www.addtoany.com/share?linkurl=' + link + '&amp;linkname=' + title);
-    shares.append(addAny_a);
+    if (typeof navigator.share === 'function') {
+        var shareButton = $('<button>');
+        shareButton.addClass('btn btn-default blog-share-button blog-share-native');
+        shareButton.attr('type', 'button');
 
-    var addEmail_a = $('<a>');
-    addEmail_a.addClass('a2a_button_email');
-    shares.append(addEmail_a);
+        var shareIcon = $('<em>');
+        shareIcon.addClass('fa fa-share-alt');
+        shareButton.append(shareIcon);
+        shareButton.append(' Share');
+        shareButton.click(function () {
+            sharePost(data);
+        });
+        shares.append(shareButton);
+    }
 
-    var addFacebook_a = $('<a>');
-    addFacebook_a.addClass('a2a_button_facebook');
-    shares.append(addFacebook_a);
+    var copyButton = $('<button>');
+    copyButton.addClass('btn btn-default blog-share-button blog-share-copy');
+    copyButton.attr('type', 'button');
 
-    var addTwitter_a = $('<a>');
-    addTwitter_a.addClass('a2a_button_twitter');
-    shares.append(addTwitter_a);
-
-    var addPinterest_a = $('<a>');
-    addPinterest_a.addClass('a2a_button_pinterest');
-    shares.append(addPinterest_a);
-
-    var addLinkedIn_a = $('<a>');
-    addLinkedIn_a.addClass('a2a_button_linkedin');
-    shares.append(addLinkedIn_a);
-
-    var addReddit_a = $('<a>');
-    addReddit_a.addClass('a2a_button_reddit');
-    shares.append(addReddit_a);
-
-    var addTumblr_a = $('<a>');
-    addTumblr_a.addClass('a2a_button_tumblr');
-    shares.append(addTumblr_a);
+    var copyIcon = $('<em>');
+    copyIcon.addClass('fa fa-link');
+    copyButton.append(copyIcon);
+    copyButton.append(' Copy Link');
+    copyButton.click(function () {
+        copyShareLink(data, copyButton);
+    });
+    shares.append(copyButton);
 
     row.append(shares);
     $('#post-content').append(row);
+}
 
-    var a2a_config = a2a_config || {};
-    a2a_config.linkname = title;
-    a2a_config.linkurl = link;
-    a2a_config.num_services = 10;
+function sharePost(data) {
+    if (typeof navigator.share !== 'function') {
+        return copyShareLink(data);
+    }
 
-    loadExternalScript('addtoany-js', 'https://static.addtoany.com/menu/page.js', function () {
-        if (window.a2a) {
-            window.a2a.init_all();
+    return navigator.share({
+        title: data.title,
+        url: getShareUrl(data)
+    }).catch(function (error) {
+        if (!error || error.name !== 'AbortError') {
+            return copyShareLink(data);
         }
     });
+}
+
+function copyShareLink(data, button) {
+    var url = getShareUrl(data);
+
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        return navigator.clipboard.writeText(url).then(function () {
+            if (button) {
+                button.html('<em class="fa fa-check"></em> Copied');
+            }
+            return url;
+        });
+    }
+
+    if (window.prompt) {
+        window.prompt('Copy this link:', url);
+    }
+    return Promise.resolve(url);
 }
 
 function addComment(comment) {
