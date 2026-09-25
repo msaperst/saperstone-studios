@@ -1,7 +1,13 @@
 $(document).ready(function () {
-    $('.carousel').carousel({
-        interval: 4000,
-        duration: 2000
+    $('.carousel').each(function () {
+        var carousel = $(this);
+        if (!carousel.find('.item').length) {
+            return;
+        }
+        carousel.carousel({
+            interval: 4000,
+            duration: 2000
+        });
     });
 
     $('[data-toggle="tooltip"]').tooltip();
