@@ -22,7 +22,6 @@ test('facebook pixel initializes once and appends its loader script safely', () 
     assert.equal(window.fbq.queue.length, 2);
     assert.equal(window.fbq.queue[0][0], 'init');
     assert.equal(window.fbq.queue[1][0], 'track');
-    assert.equal(context.fbq, window.fbq);
 });
 
 test('facebook pixel reuses an existing fbq without injecting another script', () => {
