@@ -33,6 +33,16 @@ test('page init rejects non-local data-href navigation targets', () => {
     assert.equal(location.href, '/safe');
 });
 
+test('page init does not globally initialize page-specific tooltips', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const tooltip = environment.element('[data-toggle="tooltip"]');
+    let calls = 0;
+    tooltip.tooltip = function () { calls += 1; return this; };
+    loadBrowserScript('public/js/page-init.js', {$: environment.$, document: environment.document, window: {location: {}}});
+    environment.runReady();
+    assert.equal(calls, 0);
+});
+
 test('page init wires data-hash controls and carousel defaults', () => {
     const environment = createJQueryEnvironment({autoReady: false});
     const hash = environment.element('[data-hash]').attr('data-hash', '3');
