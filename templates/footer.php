@@ -75,13 +75,7 @@ $navUser = User::fromSystem();
 <script src="<?php echo Strings::assetUrl('/js/nav.js'); ?>"></script>
 <script src="<?php echo Strings::assetUrl('/js/carousel.js'); ?>"></script>
 
-<!-- Script to Activate the Carousel -->
-<script>
-    $('.carousel').carousel({
-        interval: 4000, //changes the display speed
-        duration: 2000, //changes the slide speed
-    });
-</script>
+<script src="<?php echo Strings::assetUrl('/js/page-init.js'); ?>"></script>
 
 <!-- Google Analytics -->
 <?php
@@ -89,17 +83,7 @@ if (Session::useAnalytics()) {
     ?>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-L6F5KNQDY1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-
-        gtag('config', 'G-L6F5KNQDY1');
-    </script>
+    <script src="<?php echo Strings::assetUrl('/js/analytics.js'); ?>"></script>
     <?php
 }
 ?>
