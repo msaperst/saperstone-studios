@@ -35,8 +35,8 @@ if [[ ! -d "$location" ]]; then
     fail "Album doesn't exist"
 fi
 
-mkdir -p "$full_dir" "$location/thumbs/400" "$location/thumbs/800"
-chmod 777 "$full_dir" "$location/thumbs" "$location/thumbs/400" "$location/thumbs/800"
+mkdir -p "$full_dir" "$location/thumbs/400" "$location/thumbs/800" "$location/thumbs/1200"
+chmod 777 "$full_dir" "$location/thumbs" "$location/thumbs/400" "$location/thumbs/800" "$location/thumbs/1200"
 
 if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE albums SET thumbsCreated=FALSE WHERE id='$id';" > /dev/null 2>&1; then
     fail "Unable to update thumbnail status"
@@ -63,8 +63,11 @@ create_derivative() {
     local size=$3
 
     # Read from the full-resolution source every time. Never resize a derivative.
-    convert "$source" -auto-orient -resize "${size}x${size}>" -strip -interlace Plane -quality 88 \
-        -units PixelsPerInch -density 72 "$destination" || return 1
+    # Normalize for browser display, resize from the original, apply restrained
+    # post-resize sharpening, remove camera metadata/profiles, and write a
+    # progressive JPEG. DPI metadata is intentionally omitted for web images.
+    convert "$source" -auto-orient -colorspace sRGB -resize "${size}x${size}>" \
+        -unsharp 0x0.5+0.5+0.008 -strip -interlace Plane -quality 88 "$destination" || return 1
     apply_markup "$destination" "$size"
 }
 
@@ -76,6 +79,7 @@ while IFS= read -r image_location; do
     full_file="$full_dir/$filename"
     small_file="$location/thumbs/400/$filename"
     medium_file="$location/thumbs/800/$filename"
+    large_file="$location/thumbs/1200/$filename"
     process_file=false
 
     # Preserve the original before replacing the legacy public derivative.
@@ -87,7 +91,7 @@ while IFS= read -r image_location; do
         fail "Full-resolution source missing for $filename"
     fi
 
-    if [[ "$mode" == "all" || ! -f "$public_file" || ! -f "$small_file" || ! -f "$medium_file" ]]; then
+    if [[ "$mode" == "all" || ! -f "$public_file" || ! -f "$small_file" || ! -f "$medium_file" || ! -f "$large_file" ]]; then
         process_file=true
     fi
 
@@ -96,6 +100,7 @@ while IFS= read -r image_location; do
 
         create_derivative "$full_file" "$small_file" 400 || fail "Unable to create 400px thumbnail for $filename"
         create_derivative "$full_file" "$medium_file" 800 || fail "Unable to create 800px thumbnail for $filename"
+        create_derivative "$full_file" "$large_file" 1200 || fail "Unable to create 1200px thumbnail for $filename"
         create_derivative "$full_file" "$public_file" 1600 || fail "Unable to create 1600px thumbnail for $filename"
 
         file_size=$(identify -format "%wx%h" "$public_file") || fail "Unable to inspect $filename"
@@ -107,7 +112,7 @@ while IFS= read -r image_location; do
         ((processed+=1))
     fi
 
-    if [[ ! -f "$public_file" || ! -f "$full_file" || ! -f "$small_file" || ! -f "$medium_file" ]]; then
+    if [[ ! -f "$public_file" || ! -f "$full_file" || ! -f "$small_file" || ! -f "$medium_file" || ! -f "$large_file" ]]; then
         fail "Thumbnail generation incomplete for $filename"
     fi
 done < <(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "SELECT location FROM album_images WHERE album = $id;")
