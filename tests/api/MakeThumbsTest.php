@@ -268,11 +268,17 @@ class MakeThumbsTest extends TestCase {
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        sleep(5);
+        $this->waitForThumbnailStatus(998, 1);
 
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
-        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
-        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
+        $this->assertResponsiveDerivatives('flower1.jpeg');
+        $this->assertResponsiveDerivatives('flower2.jpeg');
+
+        $root = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg';
+        $this->assertNotEquals(
+            hash_file('sha256', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg'),
+            hash_file('sha256', $root)
+        );
     }
 
     /**
