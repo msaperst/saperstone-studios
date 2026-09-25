@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var config = $('#tag-cloud-config');
+    const config = $('#tag-cloud-config');
     if (!config.length) {
         return;
     }
