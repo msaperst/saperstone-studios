@@ -132,10 +132,8 @@ if (!$user->isAdmin() && !$blog->isActive()) {
 <script src="<?php echo Strings::assetUrl('/js/post.js'); ?>"></script>
 <script src="<?php echo Strings::assetUrl('/js/post-full.js'); ?>"></script>
 
-<!-- Script to Activate the Gallery -->
-<script>
-    new PostFull( <?php echo $blog->getId(); ?> );
-</script>
+<div id="blog-page-config" class="hidden" data-loader="post-full" data-post="<?php echo $blog->getId(); ?>"></div>
+<script src="<?php echo Strings::assetUrl('/js/blog-init.js'); ?>"></script>
 
 </body>
 
