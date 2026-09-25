@@ -70,15 +70,8 @@ $session->initialize();
     <!-- /.container -->
 
     <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
-    <script>
-    var images = [];
-    images[0] = { thumb:'/retouch/portrait/restoration/10.jpg', orig:'/retouch/portrait/restoration/10-BEFORE.jpg', edit:'/retouch/portrait/restoration/10-AFTER.jpg', width:'400', height:'500', text:'' };
-    images[1] = { thumb:'/retouch/portrait/restoration/11_DSC_2405.jpg', orig:'/retouch/portrait/restoration/11_DSC_2405-BEFORE.jpg', edit:'/retouch/portrait/restoration/11_DSC_2405-AFTER.jpg', width:'680', height:'862', text:'' };
-    images[2] = { thumb:'/retouch/portrait/restoration/7.jpg', orig:'/retouch/portrait/restoration/7-BEFORE.jpg', edit:'/retouch/portrait/restoration/7-AFTER.jpg', width:'573', height:'716', text:'' };
-    images[3] = { thumb:'/retouch/portrait/restoration/CeliaGettinger.jpg', orig:'/retouch/portrait/restoration/CeliaGettinger-BEFORE.jpg', edit:'/retouch/portrait/restoration/CeliaGettinger-AFTER.jpg', width:'1000', height:'1394', text:'' };
-    images[4] = { thumb:'/retouch/portrait/restoration/Yayas_rt.jpg', orig:'/retouch/portrait/restoration/Yayas_rt-BEFORE.jpg', edit:'/retouch/portrait/restoration/Yayas_rt-AFTER.jpg', width:'2000', height:'1538', text:'' };
-    var retouch = new Retouch( $('#holder'), images, true );
-    </script>
+    <div id="retouch-config" class="hidden" data-instructions="true" data-images="[{&quot;thumb&quot;:&quot;/retouch/portrait/restoration/10.jpg&quot;,&quot;orig&quot;:&quot;/retouch/portrait/restoration/10-BEFORE.jpg&quot;,&quot;edit&quot;:&quot;/retouch/portrait/restoration/10-AFTER.jpg&quot;,&quot;width&quot;:&quot;400&quot;,&quot;height&quot;:&quot;500&quot;,&quot;text&quot;:&quot;&quot;},{&quot;thumb&quot;:&quot;/retouch/portrait/restoration/11_DSC_2405.jpg&quot;,&quot;orig&quot;:&quot;/retouch/portrait/restoration/11_DSC_2405-BEFORE.jpg&quot;,&quot;edit&quot;:&quot;/retouch/portrait/restoration/11_DSC_2405-AFTER.jpg&quot;,&quot;width&quot;:&quot;680&quot;,&quot;height&quot;:&quot;862&quot;,&quot;text&quot;:&quot;&quot;},{&quot;thumb&quot;:&quot;/retouch/portrait/restoration/7.jpg&quot;,&quot;orig&quot;:&quot;/retouch/portrait/restoration/7-BEFORE.jpg&quot;,&quot;edit&quot;:&quot;/retouch/portrait/restoration/7-AFTER.jpg&quot;,&quot;width&quot;:&quot;573&quot;,&quot;height&quot;:&quot;716&quot;,&quot;text&quot;:&quot;&quot;},{&quot;thumb&quot;:&quot;/retouch/portrait/restoration/CeliaGettinger.jpg&quot;,&quot;orig&quot;:&quot;/retouch/portrait/restoration/CeliaGettinger-BEFORE.jpg&quot;,&quot;edit&quot;:&quot;/retouch/portrait/restoration/CeliaGettinger-AFTER.jpg&quot;,&quot;width&quot;:&quot;1000&quot;,&quot;height&quot;:&quot;1394&quot;,&quot;text&quot;:&quot;&quot;},{&quot;thumb&quot;:&quot;/retouch/portrait/restoration/Yayas_rt.jpg&quot;,&quot;orig&quot;:&quot;/retouch/portrait/restoration/Yayas_rt-BEFORE.jpg&quot;,&quot;edit&quot;:&quot;/retouch/portrait/restoration/Yayas_rt-AFTER.jpg&quot;,&quot;width&quot;:&quot;2000&quot;,&quot;height&quot;:&quot;1538&quot;,&quot;text&quot;:&quot;&quot;}]"></div>
+    <script src="<?php echo Strings::assetUrl('/js/retouch-init.js'); ?>"></script>
 
 </body>
 
