@@ -33,13 +33,14 @@ test('setSelect sizes tall images to the max height and resets slider', () => {
     retouch.ele.parentResult.widthValue = 1000;
     retouch.slider = environment.element('__slider__').val('50');
     retouch.selector = environment.element('__selector__');
+    retouch.images = [{text: 'Before and after'}];
     const heighter = environment.element('__heighter__');
     const original = environment.element('__original_img__');
     const edit = environment.element('__edit_img__');
     retouch.ele.find = (selector) => ({'#heighter': heighter, '#original img': original, '#edit img': edit, '#edit': environment.element('__edit__')}[selector] || environment.element(selector));
     const img = environment.element('__selected__').attr({
         imgWidth: '400', imgHeight: '800', imgOrig: '/orig.jpg',
-        imgEdit: '/edit.jpg', text: 'Before and after'
+        imgEdit: '/edit.jpg', hash: '0'
     });
 
     retouch.setSelect(img);
