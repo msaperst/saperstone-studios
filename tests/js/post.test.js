@@ -393,6 +393,129 @@ test('copyShareLink falls back to a browser prompt when Clipboard API is unavail
     });
 });
 
+test('native share button invokes the Web Share API', async () => {
+    let shared;
+    const {context, environment} = createPostContext({
+        navigator: {
+            share(data) {
+                shared = data;
+                return Promise.resolve();
+            },
+            clipboard: {
+                writeText() {
+                    return Promise.resolve();
+                }
+            }
+        }
+    });
+
+    context.addShares({id: 21, title: 'Button Share'});
+
+    const row = environment.element('#post-content').appended[0];
+    const shares = row.appended[0];
+    shares.appended[0].trigger('click');
+
+    await Promise.resolve();
+    equalStructure(shared, {
+        title: 'Button Share',
+        url: 'https://saperstonestudios.com/blog/post.php?p=21'
+    });
+});
+
+test('copy link button writes the URL and changes to copied feedback', async () => {
+    let copied;
+    const {context, environment} = createPostContext({
+        navigator: {
+            clipboard: {
+                writeText(value) {
+                    copied = value;
+                    return Promise.resolve();
+                }
+            }
+        }
+    });
+
+    context.addShares({id: 22, title: 'Copy Button'});
+
+    const row = environment.element('#post-content').appended[0];
+    const copyButton = row.appended[0].appended[0];
+    copyButton.trigger('click');
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    assert.equal(copied, 'https://saperstonestudios.com/blog/post.php?p=22');
+    assert.equal(copyButton.html(), '<em class="fa fa-check"></em> Copied');
+});
+
+test('sharePost falls back to copying when Web Share is unavailable', async () => {
+    let copied;
+    const {context} = createPostContext({
+        navigator: {
+            clipboard: {
+                writeText(value) {
+                    copied = value;
+                    return Promise.resolve();
+                }
+            }
+        }
+    });
+
+    await context.sharePost({id: 23, title: 'No Native Share'});
+
+    assert.equal(copied, 'https://saperstonestudios.com/blog/post.php?p=23');
+});
+
+test('sharePost falls back to copying when native sharing fails', async () => {
+    let copied;
+    const {context} = createPostContext({
+        navigator: {
+            share() {
+                return Promise.reject(new Error('share failed'));
+            },
+            clipboard: {
+                writeText(value) {
+                    copied = value;
+                    return Promise.resolve();
+                }
+            }
+        }
+    });
+
+    await context.sharePost({id: 24, title: 'Failed Native Share'});
+
+    assert.equal(copied, 'https://saperstonestudios.com/blog/post.php?p=24');
+});
+
+test('sharePost does not copy when the user cancels native sharing', async () => {
+    let copied = false;
+    const {context} = createPostContext({
+        navigator: {
+            share() {
+                return Promise.reject({name: 'AbortError'});
+            },
+            clipboard: {
+                writeText() {
+                    copied = true;
+                    return Promise.resolve();
+                }
+            }
+        }
+    });
+
+    await context.sharePost({id: 25, title: 'Cancelled Share'});
+
+    assert.equal(copied, false);
+});
+
+test('getShareUrl returns a relative blog link when no origin is available', () => {
+    const {context, windowObject} = createPostContext();
+    windowObject.location = {};
+
+    assert.equal(context.getShareUrl({id: 26}), '/blog/post.php?p=26');
+});
+
+
 test('loadPost renders native sharing even when social tracking consent is absent', () => {
     const {context, environment} = createPostContext({
         socialAllowed: false,
