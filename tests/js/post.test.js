@@ -42,7 +42,10 @@ function createPostContext(options = {}) {
 
     const windowObject = {
         FB: options.FB,
-        a2a: options.a2a
+        location: {
+            origin: options.origin || 'https://saperstonestudios.com'
+        },
+        prompt: options.prompt
     };
     const windowElement = environment.element(String(windowObject));
     windowElement.widthValue = options.windowWidth ?? 1024;
@@ -51,6 +54,7 @@ function createPostContext(options = {}) {
         $: environment.$,
         document: documentObject,
         window: windowObject,
+        navigator: options.navigator || {},
         BootstrapDialog: environment.BootstrapDialog
     };
     if (Object.prototype.hasOwnProperty.call(options, 'socialAllowed')) {
@@ -307,38 +311,112 @@ test('addSocialMedias builds Facebook and Twitter controls for a post', () => {
     assert.equal(controls.appended[1].hasClass('tweet'), true);
 });
 
-test('addShares appends supported sharing controls with CSP-safe layout hooks', () => {
-    let initializations = 0;
-    const {context, environment, scripts} = createPostContext({
-        a2a: {
-            init_all() {
-                initializations += 1;
+test('addShares renders native share and copy-link controls without third-party markup', () => {
+    const {context, environment} = createPostContext({
+        navigator: {
+            share() {
+                return Promise.resolve();
+            },
+            clipboard: {
+                writeText() {
+                    return Promise.resolve();
+                }
             }
         }
     });
 
-    context.addShares({
-        id: 9,
-        title: 'Share Me'
-    });
+    context.addShares({id: 9, title: 'Share Me'});
 
-    assert.equal(environment.element('#post-content').appended.length, 1);
     const row = environment.element('#post-content').appended[0];
     const shares = row.appended[0];
 
-    assert.equal(shares.hasClass('blog-share-buttons'), true);
-    assert.equal(shares.appended.length, 8);
+    assert.equal(shares.hasClass('blog-share-actions'), true);
+    assert.equal(shares.appended.length, 2);
+    assert.equal(shares.appended[0].hasClass('blog-share-native'), true);
+    assert.equal(shares.appended[1].hasClass('blog-share-copy'), true);
 
     const classes = shares.appended.map((button) => Array.from(button.classes).join(' '));
-    assert.equal(classes.some((value) => value.includes('a2a_button_google_plus')), false);
-    assert.equal(classes.some((value) => value.includes('col-md-1')), false);
-    assert.equal(classes.some((value) => value.includes('a2a_button_facebook')), true);
-    assert.equal(classes.some((value) => value.includes('a2a_button_linkedin')), true);
+    assert.equal(classes.some((value) => value.includes('a2a_')), false);
+});
 
-    const script = scripts.get('addtoany-js');
-    assert.ok(script);
-    script.onload();
-    assert.equal(initializations, 1);
+test('sharePost uses the browser Web Share API with an absolute blog URL', async () => {
+    let shared;
+    const {context} = createPostContext({
+        navigator: {
+            share(data) {
+                shared = data;
+                return Promise.resolve();
+            }
+        }
+    });
+
+    await context.sharePost({id: 42, title: 'Native Share'});
+
+    equalStructure(shared, {
+        title: 'Native Share',
+        url: 'https://saperstonestudios.com/blog/post.php?p=42'
+    });
+});
+
+test('copyShareLink writes the absolute blog URL to the clipboard', async () => {
+    let copied;
+    const {context} = createPostContext({
+        navigator: {
+            clipboard: {
+                writeText(value) {
+                    copied = value;
+                    return Promise.resolve();
+                }
+            }
+        }
+    });
+
+    await context.copyShareLink({id: 11, title: 'Copy Me'});
+
+    assert.equal(copied, 'https://saperstonestudios.com/blog/post.php?p=11');
+});
+
+test('copyShareLink falls back to a browser prompt when Clipboard API is unavailable', async () => {
+    let prompted;
+    const {context} = createPostContext({
+        prompt(message, value) {
+            prompted = {message, value};
+        }
+    });
+
+    await context.copyShareLink({id: 12, title: 'Fallback'});
+
+    equalStructure(prompted, {
+        message: 'Copy this link:',
+        value: 'https://saperstonestudios.com/blog/post.php?p=12'
+    });
+});
+
+test('loadPost renders native sharing even when social tracking consent is absent', () => {
+    const {context, environment} = createPostContext({
+        socialAllowed: false,
+        navigator: {
+            clipboard: {
+                writeText() {
+                    return Promise.resolve();
+                }
+            }
+        }
+    });
+    environment.element('#post-comments h2').html('0 Comments');
+
+    context.loadPost({
+        id: 14,
+        title: 'Consent Independent Share',
+        date: 'Today',
+        tags: [],
+        content: [[{text: '<p>Hello</p>'}]],
+        comments: []
+    }, '<h1>');
+
+    const appended = environment.element('#post-content').appended;
+    assert.equal(appended.length, 2);
+    assert.equal(appended[1].appended[0].hasClass('blog-share-actions'), true);
 });
 
 test('loadPost renders protected image content with its calculated height', () => {

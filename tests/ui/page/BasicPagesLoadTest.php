@@ -75,8 +75,10 @@ class BasicPagesLoadTest extends TestBase {
         $this->assertEquals('Privacy Policy', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $page = $this->driver->findElement(WebDriverBy::tagName('body'))->getText();
         $this->assertStringContainsString('Google Analytics and Meta Pixel', $page);
-        $this->assertStringContainsString('Facebook SDK and AddToAny', $page);
-        $this->assertStringContainsString('Effective September 23, 2026', $page);
+        $this->assertStringContainsString('Facebook SDK', $page);
+        $this->assertStringNotContainsString('AddToAny', $page);
+        $this->assertStringContainsString('native sharing', $page);
+        $this->assertStringContainsString('Effective September 24, 2026', $page);
         $this->assertStringContainsString('delete it after the notification is sent', $page);
         $this->assertStringNotContainsString('We do not allow third-party behavioral tracking', $page);
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
@@ -87,6 +89,8 @@ class BasicPagesLoadTest extends TestBase {
         $this->assertEquals('Terms of Use', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $page = $this->driver->findElement(WebDriverBy::tagName('body'))->getText();
         $this->assertStringContainsString('use of the website alone does not grant consent', $page);
+        $this->assertStringContainsString('sharing a blog link', $page);
+        $this->assertStringContainsString('Last updated September 24, 2026', $page);
         $this->assertStringContainsString('ARIZONA STATE LAW', $page);
         $this->assertStringContainsString('MARICOPA COUNTY, ARIZONA', $page);
         $this->assertStringContainsString('SAPERSTONE STUDIOS is registered in MARICOPA, AZ.', $page);

@@ -119,6 +119,7 @@ class SecurityHeadersTest extends TestCase {
                 $headers[0],
                 $path
             );
+            $this->assertStringNotContainsString('static.addtoany.com', $headers[0], $path);
         }
     }
 }
