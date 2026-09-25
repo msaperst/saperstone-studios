@@ -17,6 +17,40 @@ class Strings {
     }
 
     /**
+     * Add a deterministic modification-time version to a first-party asset URL.
+     *
+     * External URLs are returned unchanged. Missing local files are also returned
+     * unchanged so a missing asset does not generate a PHP warning.
+     */
+    static function assetUrl(string $url, ?string $documentRoot = null): string {
+        if (preg_match('#^(?:https?:)?//#i', $url) || Strings::startsWith($url, 'data:')) {
+            return $url;
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false || !isset($parts['path'])) {
+            return $url;
+        }
+
+        $root = $documentRoot ?? ($_SERVER['DOCUMENT_ROOT'] ?? '');
+        if ($root === '') {
+            return $url;
+        }
+
+        $file = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+            . ltrim($parts['path'], '/\\');
+        if (!is_file($file)) {
+            return $url;
+        }
+
+        $separator = isset($parts['query']) ? '&' : '?';
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+        $withoutFragment = $fragment === '' ? $url : substr($url, 0, -strlen($fragment));
+
+        return $withoutFragment . $separator . 'v=' . filemtime($file) . $fragment;
+    }
+
+    /**
      * @param $text
      * @return string
      */
