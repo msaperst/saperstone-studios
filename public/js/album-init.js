@@ -1,24 +1,24 @@
 $(document).ready(function () {
-    var config = $('#album-page-config');
+    const config = $('#album-page-config');
     if (!config.length) {
         return;
     }
 
     window.albumCanDownload = config.attr('data-can-download') === 'true';
     window.showImageTitle = config.attr('data-show-title') === 'true';
-    window.album = new Album(config.attr('data-album-id'), 4, parseInt(config.attr('data-total'), 10) || 0);
+    window.album = new Album(config.attr('data-album-id'), 4, Number.parseInt(config.attr('data-total'), 10) || 0);
 
-    var $window = $(window);
-    var $breadcrumb = $('.breadcrumb');
-    var $logo1 = $('#nav-logo-link-1');
-    var $logo2 = $('#nav-logo-link-2');
-    var initialBreadcrumbTop = $breadcrumb.offset().top;
+    const $window = $(window);
+    const $breadcrumb = $('.breadcrumb');
+    const $logo1 = $('#nav-logo-link-1');
+    const $logo2 = $('#nav-logo-link-2');
+    const initialBreadcrumbTop = $breadcrumb.offset().top;
 
     $window.on('scroll resize', function () {
         window.album.loadImages();
 
-        var navbarBottom = $('.navbar-fixed-top').outerHeight();
-        var effectiveFixedTop = Math.max(80, navbarBottom);
+        const navbarBottom = $('.navbar-fixed-top').outerHeight();
+        const effectiveFixedTop = Math.max(80, navbarBottom);
 
         if ($window.scrollTop() > (initialBreadcrumbTop - effectiveFixedTop)) {
             $breadcrumb.addClass('breadcrumb-fixed').css('top', effectiveFixedTop + 'px');
