@@ -323,6 +323,64 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 999")['thumbsCreated']);
     }
 
+    private function assertResponsiveDerivatives(string $filename): void {
+        $base = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/';
+        $full = $base . 'full/' . $filename;
+        $small = $base . 'thumbs/400/' . $filename;
+        $medium = $base . 'thumbs/800/' . $filename;
+        $large = $base . $filename;
+
+        $this->assertFileExists($full);
+        $this->assertFileExists($small);
+        $this->assertFileExists($medium);
+        $this->assertFileExists($large);
+        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', $full);
+
+        $smallSize = getimagesize($small);
+        $mediumSize = getimagesize($medium);
+        $largeSize = getimagesize($large);
+        $this->assertLessThanOrEqual(400, max($smallSize[0], $smallSize[1]));
+        $this->assertLessThanOrEqual(800, max($mediumSize[0], $mediumSize[1]));
+        $this->assertLessThanOrEqual(1600, max($largeSize[0], $largeSize[1]));
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testFirstThumbnailGenerationPreservesRootOriginalAndCreatesResponsiveDerivatives() {
+        $base = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/';
+        $this->assertFileExists($base . 'flower1.jpeg');
+        $this->assertFileDoesNotExist($base . 'full/flower1.jpeg');
+        $this->assertFileDoesNotExist($base . 'thumbs/400/flower1.jpeg');
+        $this->assertFileDoesNotExist($base . 'thumbs/800/flower1.jpeg');
+
+        $originalHash = hash_file('sha256', $base . 'flower1.jpeg');
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/make-thumbs.php', [
+            'form_params' => [
+                'id' => 998,
+                'markup' => 'none'
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->waitForThumbnailStatus(998, 1);
+
+        $this->assertResponsiveDerivatives('flower1.jpeg');
+        $this->assertResponsiveDerivatives('flower2.jpeg');
+        $this->assertEquals($originalHash, hash_file('sha256', $base . 'full/flower1.jpeg'));
+        $this->assertNotEquals($originalHash, hash_file('sha256', $base . 'flower1.jpeg'));
+
+        $images = $this->sql->getRows("SELECT * FROM album_images WHERE album = 998 ORDER BY sequence");
+        $largeSize = getimagesize($base . 'flower1.jpeg');
+        $this->assertEquals($largeSize[0], (int)$images[0]['width']);
+        $this->assertEquals($largeSize[1], (int)$images[0]['height']);
+    }
+
     /**
      * @throws GuzzleException
      */
