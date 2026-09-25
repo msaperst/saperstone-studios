@@ -8,13 +8,14 @@ test('carousel applies deferred background images and 3:2 sizing', () => {
     const background = environment.element('[data-background-image]');
     background.attr('data-background-image', '/img/photo.jpg');
     background.nativeElement.style = {};
-    background.each = function (callback) { callback.call(background.nativeElement); return this; };
+    background.each = function (callback) { callback.call(background); return this; };
     const carousel = environment.element('.carousel-three-by-two');
     carousel.widthValue = 600;
 
     loadBrowserScript('public/js/carousel.js', {$: environment.$, document: environment.document});
     environment.runReady();
 
+    assert.equal(background.styles.backgroundImage, undefined);
     assert.equal(background.nativeElement.style.backgroundImage, 'url("/img/photo.jpg")');
     assert.equal(carousel.heightValue, 400);
 });
