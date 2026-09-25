@@ -15,7 +15,8 @@ The legacy `hash`, `usr`, and `CookieShow` cookies are deleted when encountered
 and are no longer used. Album-code authorization is stored in the current
 session and, when preference cookies are accepted, in the `searched` cookie.
 
-With explicit consent, Google Analytics, Meta Pixel, and AddToAny may create
-their own cookies. Their names and lifetimes are controlled by those providers.
-Known analytics and social cookies are removed when the corresponding consent
-is withdrawn.
+With explicit consent, Google Analytics and Meta Pixel may create their own
+cookies. Their names and lifetimes are controlled by those providers. Known
+analytics cookies are removed when consent is withdrawn. Native blog sharing uses
+the browser or device sharing interface or clipboard and does not load a
+third-party sharing provider.

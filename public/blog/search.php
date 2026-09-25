@@ -11,7 +11,22 @@ if (! isset ( $_GET ['s'] ) || $_GET ['s'] == '' ) {
 } else {
     $search = $_GET['s'];
 }
-$posts = $sql->getRows("SELECT * FROM (SELECT id AS blog FROM `blog_details` WHERE (`title` LIKE ? OR `safe_title` LIKE ?) AND `active` UNION ALL SELECT blog FROM `blog_texts` WHERE `text` LIKE ?) AS x GROUP BY `blog`", ["%$search%", "%$search%", "%$search%"]);
+$posts = $sql->getRows(
+    "SELECT details.id AS blog
+     FROM blog_details AS details
+     WHERE details.active = 1
+       AND (
+           details.title LIKE ?
+           OR details.safe_title LIKE ?
+           OR EXISTS (
+               SELECT 1
+               FROM blog_texts AS texts
+               WHERE texts.blog = details.id
+                 AND texts.text LIKE ?
+           )
+       )",
+    ["%$search%", "%$search%", "%$search%"]
+);
 $sql->disconnect();
 ?>
 

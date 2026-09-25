@@ -43,7 +43,7 @@ $sql = new Sql();
 //    $whereClause .= ")";
 //    $response = $sql->getRows("SELECT DISTINCT * FROM `blog_details` $whereClause ORDER BY `date` DESC LIMIT $start,$howMany;");
 //} else {
-$response = $sql->getRows("SELECT * FROM `blog_details` $whereClause ORDER BY `date` DESC LIMIT ?, ?", [$start, $howMany]);
+$response = $sql->getRows("SELECT * FROM `blog_details` $whereClause ORDER BY `date` DESC, `id` DESC LIMIT ?, ?", [$start, $howMany]);
 //}
 
 echo "{\"data\":" . json_encode($response) . "}";

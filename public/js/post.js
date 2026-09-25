@@ -77,7 +77,7 @@ function loadPost(data, header) {
     var details_row = $('<div>');
     details_row.addClass('row');
     var details_tags = $('<div>');
-    details_tags.addClass('col-md-4 text-left');
+    details_tags.addClass('col-xs-6 col-md-6 text-left');
     $.each(data.tags, function (k, v) {
         var tag_link = $('<a>');
         tag_link.attr('href', '/blog/category.php?t=' + v.id);
@@ -89,13 +89,9 @@ function loadPost(data, header) {
     });
     details_row.append(details_tags);
     var details_date = $('<div>');
-    details_date.addClass('col-md-4 text-center');
+    details_date.addClass('col-xs-6 col-md-6 text-right');
     details_date.append("<strong>" + data.date + "</strong>");
     details_row.append(details_date);
-
-    if (socialTrackingAllowed()) {
-        details_row.append(addSocialMedias(data));
-    }
     holder.append(details_row);
 
     // setup our post content
@@ -146,6 +142,8 @@ function loadPost(data, header) {
         row.append(content);
         holder.append(row);
     });
+
+    holder.append(addShares(data));
     $('#post-content').append(holder);
 
     // load our comments
@@ -156,114 +154,81 @@ function loadPost(data, header) {
         var comments_header = (data.comments.length !== 1) ? data.comments.length + " Comments" : data.comments.length + " Comment";
         $('#post-comments h2').html(comments_header);
     }
-    if (socialTrackingAllowed()) {
-        loadSM();
-        addShares(data);
-    }
 }
 
-function addSocialMedias(data) {
+
+
+function getShareUrl(data) {
     var link = getLink(data);
-
-    var details_likes = $('<div>');
-    details_likes.addClass('col-md-4 text-right');
-
-    // our facebook likes button
-    var facebook = $('<div>');
-    facebook.addClass('fbook');
-    var facebook_div = $('<div>');
-    facebook_div.addClass('fb-like col-xs-6 text-left');
-    facebook_div.attr({
-        "data-href": link,
-        "data-send": "false",
-        "data-layout": "button_count",
-        "data-show-faces": "false"
-    });
-    facebook.append(facebook_div);
-    details_likes.append(facebook);
-
-    // our twitter likes button
-    var twitter = $('<div>');
-    twitter.addClass('tweet col-xs-6 text-right');
-    var twitter_a = $('<a>');
-    twitter_a.addClass('btn btn-xs btn-info');
-    twitter_a.attr({
-        "href": "https://twitter.com/intent/like?tweet_id=" + data.twitter
-    });
-    var twitter_em = $('<em>');
-    twitter_em.addClass('fa fa-twitter');
-    var twitter_eml = $('<em>');
-    twitter_eml.addClass('fa fa-heart error');
-    twitter_a.append(twitter_em);
-    twitter_a.append(" Like ");
-    twitter_a.append(twitter_eml);
-
-    twitter.append(twitter_a);
-    details_likes.append(twitter);
-
-    return details_likes;
+    if (window.location && window.location.origin) {
+        return window.location.origin + link;
+    }
+    return link;
 }
 
 function addShares(data) {
-    var link = getLink(data);
-    var title = data.title;
-
-    var row = $('<div>');
-    row.addClass('row');
-
     var shares = $('<div>');
-    shares.addClass("col-md-12 a2a_kit a2a_kit_size_48 a2a_default_style");
+    shares.addClass('blog-share-footer text-right');
 
-    var addAny_a = $('<a>');
-    addAny_a.addClass('a2a_dd col-md-1');
-    addAny_a.attr('href', 'https://www.addtoany.com/share?linkurl=' + link + '&amp;linkname=' + title);
-    shares.append(addAny_a);
+    var button = $('<button>');
+    button.addClass('btn btn-default btn-xs blog-share-button');
+    button.attr('type', 'button');
 
-    var addEmail_a = $('<a>');
-    addEmail_a.addClass('a2a_button_email col-md-1');
-    shares.append(addEmail_a);
+    var icon = $('<em>');
 
-    var addFacebook_a = $('<a>');
-    addFacebook_a.addClass('a2a_button_facebook col-md-1');
-    shares.append(addFacebook_a);
+    if (typeof navigator.share === 'function') {
+        button.addClass('blog-share-native');
+        icon.addClass('fa fa-share-alt');
+        button.append(icon);
+        button.append(' Share');
+        button.click(function () {
+            sharePost(data);
+        });
+    } else {
+        button.addClass('blog-share-copy');
+        icon.addClass('fa fa-link');
+        button.append(icon);
+        button.append(' Copy Link');
+        button.click(function () {
+            copyShareLink(data, button);
+        });
+    }
 
-    var addTwitter_a = $('<a>');
-    addTwitter_a.addClass('a2a_button_twitter col-md-1');
-    shares.append(addTwitter_a);
+    shares.append(button);
+    return shares;
+}
 
-    var addGooglePlus_a = $('<a>');
-    addGooglePlus_a.addClass('a2a_button_google_plus col-md-1');
-    shares.append(addGooglePlus_a);
+function sharePost(data) {
+    if (typeof navigator.share !== 'function') {
+        return copyShareLink(data);
+    }
 
-    var addPinterest_a = $('<a>');
-    addPinterest_a.addClass('a2a_button_pinterest col-md-1');
-    shares.append(addPinterest_a);
-
-    var addLinkedIn_a = $('<a>');
-    addLinkedIn_a.addClass('a2a_button_linkedin col-md-1');
-    shares.append(addLinkedIn_a);
-
-    var addReddit_a = $('<a>');
-    addReddit_a.addClass('a2a_button_reddit col-md-1');
-    shares.append(addReddit_a);
-
-    var addTumblr_a = $('<a>');
-    addTumblr_a.addClass('a2a_button_tumblr col-md-1');
-    shares.append(addTumblr_a);
-
-    row.append(shares);
-    $('#post-content').append(row);
-
-    var a2a_config = a2a_config || {};
-    a2a_config.linkname = title;
-    a2a_config.linkurl = link;
-    a2a_config.num_services = 10;
-
-    loadExternalScript('addtoany-js', 'https://static.addtoany.com/menu/page.js', function () {
-        if (window.a2a) {
-            window.a2a.init_all();
+    return navigator.share({
+        title: data.title,
+        url: getShareUrl(data)
+    }).catch(function (error) {
+        if (!error || error.name !== 'AbortError') {
+            return copyShareLink(data);
         }
     });
+}
+
+function copyShareLink(data, button) {
+    var url = getShareUrl(data);
+
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        return navigator.clipboard.writeText(url).then(function () {
+            if (button) {
+                button.html('<em class="fa fa-check"></em> Copied');
+            }
+            return url;
+        });
+    }
+
+    if (window.prompt) {
+        window.prompt('Copy this link:', url);
+    }
+    return Promise.resolve(url);
 }
 
 function addComment(comment) {
@@ -297,38 +262,7 @@ function addComment(comment) {
     setCommentHeader(1);
 }
 
-function loadSM() {
-    loadExternalScript('facebook-jssdk', 'https://connect.facebook.net/en_US/all.js#xfbml=1', function () {
-        if (window.FB) {
-            window.FB.XFBML.parse();
-        }
-    });
-}
 
-function socialTrackingAllowed() {
-    return typeof hasCookiePreference === 'function' && hasCookiePreference('social');
-}
-
-function loadExternalScript(id, source, onload) {
-    var existing = document.getElementById(id);
-    if (existing) {
-        if (existing.dataset.loaded === 'true') {
-            onload();
-        } else {
-            existing.addEventListener('load', onload, {once: true});
-        }
-        return;
-    }
-    var script = document.createElement('script');
-    script.id = id;
-    script.async = true;
-    script.src = source;
-    script.onload = function () {
-        script.dataset.loaded = 'true';
-        onload();
-    };
-    document.head.appendChild(script);
-}
 
 function deletePost(post) {
     BootstrapDialog.show({

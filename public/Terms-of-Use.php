@@ -83,6 +83,10 @@ $session->initialize();
             </p>
             <p>Where content is specifically made available for redistribution,
                 it may only be redistributed based on specified terms.</p>
+            <p>Blog pages may provide controls for sharing a blog link through your browser or device or
+                for copying that link. Sharing a blog link does not grant any license or permission to
+                download, reproduce, redistribute, or share photographs or other protected content beyond
+                rights expressly granted elsewhere on this website.</p>
         </div>
     </div>
     <div class="row">
@@ -364,7 +368,7 @@ $session->initialize();
     </div>
     <div class="row">
         <div class="col-md-12">
-            <p><strong>Last updated September 23, 2026</strong></p>
+            <p><strong>Last updated September 24, 2026</strong></p>
         </div>
     </div>
     <!-- /.row -->

@@ -1259,3 +1259,28 @@ label > input, label > u > input, label > textarea {
 .breadcrumb li .btn em {
     font-size: 18px;
 }
+
+
+/* Native blog sharing */
+.blog-share-footer {
+    border-top: 1px solid #eee;
+    margin-top: 12px;
+    margin-bottom: 25px;
+    padding: 10px 0;
+    text-align: right;
+}
+
+.blog-share-button {
+    white-space: nowrap;
+}
+
+.blog-share-button .fa {
+    margin-right: 4px;
+}
+
+@media (max-width: 767px) {
+    .blog-share-footer {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+}
