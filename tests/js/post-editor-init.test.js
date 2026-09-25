@@ -40,5 +40,8 @@ test('post editor restores tags and mixed content groups', () => {
     environment.runReady();
     assert.deepEqual(tags, [2, 4]);
     assert.deepEqual(texts, ['hello']);
-    assert.deepEqual(images, [['one.jpg','two.jpg']]);
+    assert.equal(images.length, 1);
+    assert.equal(images[0].length, 2);
+    assert.equal(images[0][0], 'one.jpg');
+    assert.equal(images[0][1], 'two.jpg');
 });
