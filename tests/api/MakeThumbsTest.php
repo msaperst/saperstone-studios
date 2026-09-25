@@ -357,6 +357,7 @@ class MakeThumbsTest extends TestCase {
         $this->assertFileDoesNotExist($base . 'full/flower1.jpeg');
         $this->assertFileDoesNotExist($base . 'thumbs/400/flower1.jpeg');
         $this->assertFileDoesNotExist($base . 'thumbs/800/flower1.jpeg');
+        $this->assertFileDoesNotExist($base . 'thumbs/1200/flower1.jpeg');
 
         $originalHash = hash_file('sha256', $base . 'flower1.jpeg');
 
