@@ -68,8 +68,16 @@ test('edit user active checkbox handles numeric and string API values', () => {
         });
         const dialogConfig = environment.dialogs[0];
         const message = dialogConfig.message();
-        const activeInput = Array.from(environment.elements.values()).find(element => element.attr('id') === 'user-active');
-        assert.ok(message);
+        const findById = (element, id) => {
+            if (!element || typeof element !== 'object') return undefined;
+            if (typeof element.attr === 'function' && element.attr('id') === id) return element;
+            for (const child of element.appended || []) {
+                const match = findById(child, id);
+                if (match) return match;
+            }
+            return undefined;
+        };
+        const activeInput = findById(message, 'user-active');
         assert.ok(activeInput);
         assert.equal(activeInput.prop('checked'), expected);
     }
