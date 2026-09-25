@@ -36,7 +36,7 @@ $(document).ready(function () {
                 "targets": 2
             }, {
                 "data": function (row) {
-                    return (String(row.active) === "1") ? "true" : "false";
+                    return (Number(row.active) === 1) ? "true" : "false";
                 },
                 "className": "post-active",
                 "targets": 3
@@ -63,7 +63,10 @@ $(document).ready(function () {
 
 function setupEdit() {
     $('.edit-post-btn').off().click(function () {
-        window.location.href = '/blog/new.php?p=' + $(this).attr('data-post-id');
+        var postId = Number($(this).attr('data-post-id'));
+        if (Number.isInteger(postId) && postId > 0) {
+            window.location.href = '/blog/new.php?p=' + postId;
+        }
     });
 
     $('.quick-edit-post-btn').off().click(function () {
@@ -89,7 +92,7 @@ function editManagedPost(post) {
     $('#post .modal-title').html("Quick Edit of <strong> " + post.title + "</strong>");
     $('#post-title-input').val(post.title);
     $('#post-date-input').val(post.date);
-    (post.active === "1") ? $('#post-active-input').prop('checked', true) : $('#post-active-input').prop('checked', false);
+    $('#post-active-input').prop('checked', Number(post.active) === 1);
     // setup our preview image
     var img = $('<img>');
     img.attr('src', post.preview);
