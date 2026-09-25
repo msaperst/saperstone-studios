@@ -42,9 +42,9 @@ $(document).ready(function () {
                     message: '<h1>Uploading Image...</h1>'
                 });
             },
-            onError: function (files, status, message, pd) {
+            onError: function (files, status, message, pd, xhr) {
                 $.unblockUI();
-                var response = pd && pd.xhr && pd.xhr.responseText ? pd.xhr.responseText : message;
+                var response = xhr && xhr.responseText ? xhr.responseText : message;
                 BootstrapDialog.show({
                     draggable: true,
                     title: 'Whoops, Something Went Wrong',
