@@ -12,7 +12,7 @@ $session->initialize();
     <?php
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
     ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -69,7 +69,7 @@ $session->initialize();
     </div>
     <!-- /.container -->
 
-    <script src='/js/retouch.js'></script>
+    <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
     <script>
     var images = [];
     images[0] = { thumb:'/retouch/portrait/restoration/10.jpg', orig:'/retouch/portrait/restoration/10-BEFORE.jpg', edit:'/retouch/portrait/restoration/10-AFTER.jpg', width:'400', height:'500', text:'' };
