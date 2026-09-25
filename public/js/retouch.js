@@ -1,5 +1,23 @@
 var maxHeight = 550;
 
+function sanitizeImageUrl(url) {
+    if (typeof url !== 'string') {
+        return '';
+    }
+
+    var trimmed = url.trim();
+    if (!trimmed) {
+        return '';
+    }
+
+    if (/^(https?:)?\/\//i.test(trimmed) || /^\/(?!\/)/.test(trimmed) || /^[A-Za-z0-9._~!var maxHeight = 550;
+'()*+,;=:@%/?#-]+$/.test(trimmed)) {
+        return trimmed;
+    }
+
+    return '';
+}
+
 function Retouch(ele, images, instruct) {
     var Retouch = this;
 
@@ -93,9 +111,14 @@ Retouch.prototype.createSlider = function () {
 }
 
 Retouch.prototype.setSelect = function (img) {
+    var selectedIndex = Number.parseInt(img.attr('hash'), 10);
+    var image = this.images[selectedIndex];
+    if (!image) {
+        return;
+    }
 
-    var imgWidth = img.attr('imgWidth');
-    var imgHeight = img.attr('imgHeight');
+    var imgWidth = image.width;
+    var imgHeight = image.height;
     var heightP = imgHeight / imgWidth * 100;
 
     this.ele.find('#heighter').css({
@@ -104,26 +127,23 @@ Retouch.prototype.setSelect = function (img) {
 
     var width = this.ele.parent().width();
     var height = width * imgHeight / imgWidth;
-    // if our height is too big to fit on the page
     if (height > maxHeight) {
         width = maxHeight * imgWidth / imgHeight;
     }
     this.ele.width(width);
     this.slider.width(width);
 
-    var orig = img.attr('imgOrig');
-    var edit = img.attr('imgEdit');
     this.ele.find('#original img').attr({
-        'src': orig
+        'src': sanitizeImageUrl(image.orig)
     }).width(width);
     this.ele.find('#edit img').attr({
-        'src': edit
+        'src': sanitizeImageUrl(image.edit)
     }).width(width);
     this.slider.val(0);
-    var selectedIndex = Number.parseInt(img.attr('hash'), 10);
+
     var comment = this.ele.parent().find('.comment');
     comment.empty();
-    comment.append(document.createTextNode(this.images[selectedIndex].text || ''));
+    comment.append(document.createTextNode(image.text || ''));
 
     this.selector.find('img.thumb').css({
         'border': '2px transparent solid'
@@ -163,11 +183,7 @@ Retouch.prototype.addSelector = function () {
         cellImg.addClass('thumb');
         cellImg.attr({
             'hash': i,
-            'imgOrig': image.orig,
-            'imgEdit': image.edit,
-            'imgWidth': image.width,
-            'imgHeight': image.height,
-            'src': image.thumb
+            'src': sanitizeImageUrl(image.thumb)
         });
         cellImg.attr('alt', 'Retouched image ' + (i + 1));
         cellImg.click(function () {
