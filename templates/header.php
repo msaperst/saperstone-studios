@@ -75,8 +75,8 @@ if (strpos($_SERVER['REQUEST_URI'], 'blog/post.php') !== false) {
         crossorigin="anonymous">
 
 <!-- Custom CSS -->
-<link href="/css/modern-business.css?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/css/modern-business.css'); ?>" rel="stylesheet">
-<link href="/css/saperstone-studios.css?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/css/saperstone-studios.css'); ?>" rel="stylesheet">
+<link href="<?php echo Strings::assetUrl('/css/modern-business.css'); ?>" rel="stylesheet">
+<link href="<?php echo Strings::assetUrl('/css/saperstone-studios.css'); ?>" rel="stylesheet">
 
 <!-- Custom Fonts -->
 <link
