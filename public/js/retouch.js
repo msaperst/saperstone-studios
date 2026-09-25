@@ -120,7 +120,7 @@ Retouch.prototype.setSelect = function (img) {
         'src': edit
     }).width(width);
     this.slider.val(0);
-    this.ele.parent().find('.comment').html(img.attr('text'));
+    this.ele.parent().find('.comment').text(img.attr('text'));
 
     this.selector.find('img.thumb').css({
         'border': '2px transparent solid'
