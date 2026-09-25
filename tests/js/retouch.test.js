@@ -6,8 +6,11 @@ const {loadBrowserScript} = require('./helpers/load-browser-script');
 function createRetouchContext(hash = '') {
     const environment = createJQueryEnvironment();
     const windowObject = {location: {hash}};
+    const documentObject = {
+        createTextNode(value) { return {nodeType: 3, textContent: value}; }
+    };
     const context = loadBrowserScript('public/js/retouch.js', {
-        $: environment.$, window: windowObject, setInterval: environment.setInterval
+        $: environment.$, window: windowObject, document: documentObject, setInterval: environment.setInterval
     });
     return {context, environment, windowObject};
 }
