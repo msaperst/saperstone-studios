@@ -47,8 +47,8 @@ $session->initialize();
                 <li><strong>Technical information,</strong> such as server logs, IP address, browser and
                     device information, requested pages, and timestamps used to operate, secure, and
                     troubleshoot the site.</li>
-                <li><strong>Optional analytics and social information</strong> collected by the providers
-                    described below, but only after you enable the applicable cookie category.</li>
+                <li><strong>Optional analytics information</strong> collected by the providers described
+                    below, but only after you enable the Analytics cookie category.</li>
             </ul>
             <p>We do not collect full payment-card numbers through this website. If you pay through a
                 third-party payment service, that provider processes the payment under its own terms and
@@ -62,14 +62,13 @@ $session->initialize();
                 <li>Measure site traffic and marketing performance when Analytics cookies are accepted.</li>
                 <li>Provide native sharing of blog links through your browser or device without loading a
                     third-party sharing service.</li>
-                <li>Provide optional embedded social features when Social Media cookies are accepted.</li>
                 <li>Meet legal, accounting, contractual, and fraud-prevention obligations.</li>
             </ul>
 
             <h3>Cookies and similar technologies</h3>
             <p>The site uses necessary cookies for core functions and offers optional cookie categories.
-                Optional Analytics and Social Media integrations do not load until you select those
-                categories. You can reopen the preference center and change your choices
+                Optional Analytics integrations do not load until you select that category. You can reopen
+                the preference center and change your choices
                 <a id="edit-cookies" href="#cookie-settings">here</a>. Withdrawing consent prevents those
                 integrations from loading on subsequent page views and removes known first-party cookies
                 where practical.</p>
@@ -120,12 +119,6 @@ $session->initialize();
                         <td>Analytics</td>
                         <td>Controlled by Google and Meta and by our provider settings</td>
                     </tr>
-                    <tr>
-                        <td>Facebook SDK</td>
-                        <td>Embedded Facebook blog like controls</td>
-                        <td>Social Media</td>
-                        <td>Controlled by Meta</td>
-                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -141,8 +134,7 @@ $session->initialize();
                     Analytics is enabled. See <a target="_blank" rel="noopener noreferrer"
                     href="https://policies.google.com/privacy">Google's Privacy Policy</a>.</li>
                 <li><strong>Meta Pixel</strong> receives page-view and device information when Analytics is
-                    enabled. The Facebook SDK loads only when Social Media is enabled. See
-                    <a target="_blank" rel="noopener noreferrer"
+                    enabled. See <a target="_blank" rel="noopener noreferrer"
                     href="https://www.facebook.com/privacy/policy/">Meta's Privacy Policy</a>.</li>
                 <li><strong>Google Maps</strong> is embedded on the contact page. Loading that page may send
                     Google your IP address, browser information, and interaction with the map.</li>
@@ -166,8 +158,8 @@ $session->initialize();
 
             <h3>Your choices</h3>
             <ul>
-                <li>Use the cookie preference center linked above to grant or withdraw optional Analytics,
-                    Social Media, and Preferences choices.</li>
+                <li>Use the cookie preference center linked above to grant or withdraw optional Analytics
+                    and Preferences choices.</li>
                 <li>Use your browser controls to delete or block cookies.</li>
                 <li>Log in to update available account information, or contact us to request access,
                     correction, or deletion where applicable. We may retain information when required for

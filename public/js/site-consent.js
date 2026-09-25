@@ -25,8 +25,8 @@
             class: '',
             title: 'Cookies & Privacy Policy',
             backdrop: 'static',
-            message: "This site uses cookies in order to provide you with the best experience possible, provide social media " +
-                "features, analyze our traffic, and personalize album and photo data.<br/>\n<br/>\n" +
+            message: "This site uses cookies in order to provide you with the best experience possible, analyze our traffic, " +
+                "and personalize album and photo data.<br/>\n<br/>\n" +
                 "Please click 'Accept' to accept this use of your data. Alternatively, you may click 'Customize' to accept (or " +
                 "reject) specific categories of data processing.<br/>\n<br/>\n" +
                 "For more information on how we process your personal data - or to update your preferences at any time - please " +
@@ -59,11 +59,6 @@
                     name: 'analytics',
                     title: 'Analytics',
                     description: 'Required to collect site visits, browser types, etc.',
-                },
-                {
-                    name: 'social',
-                    title: 'Social Media',
-                    description: 'Required to load embedded social media buttons.',
                 },
             ],
             OnAccept: function (cookies) {

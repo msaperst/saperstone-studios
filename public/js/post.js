@@ -75,9 +75,9 @@ function loadPost(data, header) {
 
     // setup our post details
     var details_row = $('<div>');
-    details_row.addClass('row');
+    details_row.addClass('row blog-post-details');
     var details_tags = $('<div>');
-    details_tags.addClass('col-md-4 text-left');
+    details_tags.addClass('col-xs-4 col-md-4 text-left');
     $.each(data.tags, function (k, v) {
         var tag_link = $('<a>');
         tag_link.attr('href', '/blog/category.php?t=' + v.id);
@@ -89,13 +89,11 @@ function loadPost(data, header) {
     });
     details_row.append(details_tags);
     var details_date = $('<div>');
-    details_date.addClass('col-md-4 text-center');
+    details_date.addClass('col-xs-4 col-md-4 text-center');
     details_date.append("<strong>" + data.date + "</strong>");
     details_row.append(details_date);
 
-    if (socialTrackingAllowed()) {
-        details_row.append(addSocialMedias(data));
-    }
+    details_row.append(addShares(data));
     holder.append(details_row);
 
     // setup our post content
@@ -156,53 +154,9 @@ function loadPost(data, header) {
         var comments_header = (data.comments.length !== 1) ? data.comments.length + " Comments" : data.comments.length + " Comment";
         $('#post-comments h2').html(comments_header);
     }
-    if (socialTrackingAllowed()) {
-        loadSM();
-    }
-    addShares(data);
 }
 
-function addSocialMedias(data) {
-    var link = getLink(data);
 
-    var details_likes = $('<div>');
-    details_likes.addClass('col-md-4 text-right');
-
-    // our facebook likes button
-    var facebook = $('<div>');
-    facebook.addClass('fbook');
-    var facebook_div = $('<div>');
-    facebook_div.addClass('fb-like col-xs-6 text-left');
-    facebook_div.attr({
-        "data-href": link,
-        "data-send": "false",
-        "data-layout": "button_count",
-        "data-show-faces": "false"
-    });
-    facebook.append(facebook_div);
-    details_likes.append(facebook);
-
-    // our twitter likes button
-    var twitter = $('<div>');
-    twitter.addClass('tweet col-xs-6 text-right');
-    var twitter_a = $('<a>');
-    twitter_a.addClass('btn btn-xs btn-info');
-    twitter_a.attr({
-        "href": "https://twitter.com/intent/like?tweet_id=" + data.twitter
-    });
-    var twitter_em = $('<em>');
-    twitter_em.addClass('fa fa-twitter');
-    var twitter_eml = $('<em>');
-    twitter_eml.addClass('fa fa-heart error');
-    twitter_a.append(twitter_em);
-    twitter_a.append(" Like ");
-    twitter_a.append(twitter_eml);
-
-    twitter.append(twitter_a);
-    details_likes.append(twitter);
-
-    return details_likes;
-}
 
 function getShareUrl(data) {
     var link = getLink(data);
@@ -213,42 +167,35 @@ function getShareUrl(data) {
 }
 
 function addShares(data) {
-    var row = $('<div>');
-    row.addClass('row');
-
     var shares = $('<div>');
-    shares.addClass('col-md-12 blog-share-actions');
+    shares.addClass('col-xs-4 col-md-4 text-right blog-share-actions');
+
+    var button = $('<button>');
+    button.addClass('btn btn-default btn-xs blog-share-button');
+    button.attr('type', 'button');
+
+    var icon = $('<em>');
 
     if (typeof navigator.share === 'function') {
-        var shareButton = $('<button>');
-        shareButton.addClass('btn btn-default blog-share-button blog-share-native');
-        shareButton.attr('type', 'button');
-
-        var shareIcon = $('<em>');
-        shareIcon.addClass('fa fa-share-alt');
-        shareButton.append(shareIcon);
-        shareButton.append(' Share');
-        shareButton.click(function () {
+        button.addClass('blog-share-native');
+        icon.addClass('fa fa-share-alt');
+        button.append(icon);
+        button.append(' Share');
+        button.click(function () {
             sharePost(data);
         });
-        shares.append(shareButton);
+    } else {
+        button.addClass('blog-share-copy');
+        icon.addClass('fa fa-link');
+        button.append(icon);
+        button.append(' Copy Link');
+        button.click(function () {
+            copyShareLink(data, button);
+        });
     }
 
-    var copyButton = $('<button>');
-    copyButton.addClass('btn btn-default blog-share-button blog-share-copy');
-    copyButton.attr('type', 'button');
-
-    var copyIcon = $('<em>');
-    copyIcon.addClass('fa fa-link');
-    copyButton.append(copyIcon);
-    copyButton.append(' Copy Link');
-    copyButton.click(function () {
-        copyShareLink(data, copyButton);
-    });
-    shares.append(copyButton);
-
-    row.append(shares);
-    $('#post-content').append(row);
+    shares.append(button);
+    return shares;
 }
 
 function sharePost(data) {
@@ -315,38 +262,7 @@ function addComment(comment) {
     setCommentHeader(1);
 }
 
-function loadSM() {
-    loadExternalScript('facebook-jssdk', 'https://connect.facebook.net/en_US/all.js#xfbml=1', function () {
-        if (window.FB) {
-            window.FB.XFBML.parse();
-        }
-    });
-}
 
-function socialTrackingAllowed() {
-    return typeof hasCookiePreference === 'function' && hasCookiePreference('social');
-}
-
-function loadExternalScript(id, source, onload) {
-    var existing = document.getElementById(id);
-    if (existing) {
-        if (existing.dataset.loaded === 'true') {
-            onload();
-        } else {
-            existing.addEventListener('load', onload, {once: true});
-        }
-        return;
-    }
-    var script = document.createElement('script');
-    script.id = id;
-    script.async = true;
-    script.src = source;
-    script.onload = function () {
-        script.dataset.loaded = 'true';
-        onload();
-    };
-    document.head.appendChild(script);
-}
 
 function deletePost(post) {
     BootstrapDialog.show({

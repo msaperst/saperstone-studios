@@ -1262,17 +1262,23 @@ label > input, label > u > input, label > textarea {
 
 
 /* Native blog sharing */
-.blog-share-actions {
+.blog-post-details {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+}
+
+.blog-post-details > div {
+    float: none;
+}
+
+.blog-share-actions {
+    text-align: right;
 }
 
 .blog-share-button {
-    min-width: 110px;
+    white-space: nowrap;
 }
 
 .blog-share-button .fa {
-    margin-right: 5px;
+    margin-right: 4px;
 }
