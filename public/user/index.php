@@ -17,7 +17,7 @@ $user->forceLogIn();
     rel="stylesheet"
     integrity="sha384-YcTv91pbdpZ4It88TK5bVHIGTuPqoSi0CpPF9UA9eRicGHEJ3lpQZajpytN4rLkp"
     crossorigin="anonymous">
-<link href="/css/uploadfile.css" rel="stylesheet">
+<link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -138,21 +138,21 @@ $user->forceLogIn();
         src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"
         integrity="sha384-89aj/hOsfOyfD0Ll+7f2dobA15hDyiNb8m1dJ+rJuqgrGR+PVqNU8pybx4pbF3Cc"
         crossorigin="anonymous"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
-    <script src="/js/albums-common.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-common.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
     <?php
     if ($user->isAdmin ()) {
         ?>
-    <script src="/js/albums-admin.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-admin.js'); ?>"></script>
-    <script src="/js/album-admin.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/album-admin.js'); ?>"></script>
     <?php
     } elseif ($user->getRole () == "uploader") {
         ?>
-    <script src="/js/albums-uploader.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-uploader.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums-uploader.js'); ?>"></script>
     <?php
     } else {
         ?>
-    <script src="/js/albums.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums.js'); ?>"></script>
     <?php
     }
     ?>
