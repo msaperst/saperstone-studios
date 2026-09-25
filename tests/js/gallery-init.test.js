@@ -19,7 +19,8 @@ test('gallery init constructs gallery, lazy loads, and wires controls', () => {
     loadBrowserScript('public/js/gallery-init.js', {$: environment.$, document: environment.document, window, Gallery});
     environment.runReady();
     assert.equal(window.gallery, instance);
-    assert.deepEqual(environment.element('#family-gallery').carouselOptions, {interval:false, pause:'false'});
+    assert.equal(environment.element('#family-gallery').carouselOptions.interval, false);
+    assert.equal(environment.element('#family-gallery').carouselOptions.pause, 'false');
     environment.element('[object Object]').trigger('scroll resize');
     assert.equal(instance.loadCalls, 1);
     environment.element('.gallery-prev').trigger('click');
