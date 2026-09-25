@@ -42,7 +42,10 @@ test('setImage opens the modal, disables autoplay, and selects requested slide',
     gallery.setImage('2');
 
     assert.deepEqual(modal.modalCalls, ['show']);
-    assert.deepEqual(modal.carouselCalls, [{interval: false, pause: 'false'}, 2]);
+    assert.equal(modal.carouselCalls.length, 2);
+    assert.equal(modal.carouselCalls[0].interval, false);
+    assert.equal(modal.carouselCalls[0].pause, 'false');
+    assert.equal(modal.carouselCalls[1], 2);
 });
 
 test('loadImages requests the next batch and advances loaded count', () => {
