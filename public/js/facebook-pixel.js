@@ -15,5 +15,5 @@
     s.appendChild(t);
 }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-fbq('init', '269624791467010');
-fbq('track', 'PageView');
+window.fbq('init', '269624791467010');
+window.fbq('track', 'PageView');
