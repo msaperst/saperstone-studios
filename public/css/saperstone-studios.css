@@ -1262,16 +1262,11 @@ label > input, label > u > input, label > textarea {
 
 
 /* Native blog sharing */
-.blog-post-details {
-    display: flex;
-    align-items: center;
-}
-
-.blog-post-details > div {
-    float: none;
-}
-
-.blog-share-actions {
+.blog-share-footer {
+    border-top: 1px solid #eee;
+    margin-top: 12px;
+    margin-bottom: 25px;
+    padding: 10px 0;
     text-align: right;
 }
 
@@ -1281,4 +1276,11 @@ label > input, label > u > input, label > textarea {
 
 .blog-share-button .fa {
     margin-right: 4px;
+}
+
+@media (max-width: 767px) {
+    .blog-share-footer {
+        margin-bottom: 20px;
+        text-align: left;
+    }
 }
