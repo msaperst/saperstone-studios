@@ -34,8 +34,10 @@ class MockElement {
         this.nativeElement = {
             complete: false,
             naturalWidth: 0,
+            src: '',
             getBoundingClientRect: () => this.rect
         };
+        this[0] = this.nativeElement;
     }
 
     get(index) {
