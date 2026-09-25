@@ -140,54 +140,7 @@ test('loadPostPreview collapses previews into the center column on mobile', () =
     assert.equal(environment.element('#post-1').appended.length, 1);
 });
 
-test('socialTrackingAllowed follows the social consent preference', () => {
-    assert.equal(createPostContext().context.socialTrackingAllowed(), false);
-    assert.equal(createPostContext({socialAllowed: false}).context.socialTrackingAllowed(), false);
-    assert.equal(createPostContext({socialAllowed: true}).context.socialTrackingAllowed(), true);
-});
 
-test('loadExternalScript creates a script once and calls its callback after load', () => {
-    const {context, scripts} = createPostContext();
-    let calls = 0;
-
-    context.loadExternalScript('external-script', 'https://example.org/a.js', () => {
-        calls += 1;
-    });
-
-    const script = scripts.get('external-script');
-    assert.ok(script);
-    assert.equal(script.async, true);
-    assert.equal(script.src, 'https://example.org/a.js');
-    assert.equal(calls, 0);
-
-    script.onload();
-    assert.equal(script.dataset.loaded, 'true');
-    assert.equal(calls, 1);
-
-    context.loadExternalScript('external-script', 'https://example.org/a.js', () => {
-        calls += 1;
-    });
-    assert.equal(calls, 2);
-    assert.equal(scripts.size, 1);
-});
-
-test('loadSM initializes Facebook only after the SDK is loaded', () => {
-    let parses = 0;
-    const {context, scripts} = createPostContext({
-        FB: {
-            XFBML: {
-                parse() {
-                    parses += 1;
-                }
-            }
-        }
-    });
-
-    context.loadSM();
-    scripts.get('facebook-jssdk').onload();
-
-    assert.equal(parses, 1);
-});
 
 test('addComment appends a comment row and updates the comment count', () => {
     const {context, environment} = createPostContext();
@@ -205,8 +158,16 @@ test('addComment appends a comment row and updates the comment count', () => {
     assert.equal(environment.element('#post-comments h2').html(), '2 Comments');
 });
 
-test('loadPost renders a full post without social widgets when consent is absent', () => {
-    const {context, environment, scripts} = createPostContext({socialAllowed: false});
+test('loadPost integrates sharing into the post metadata row', () => {
+    const {context, environment, scripts} = createPostContext({
+        navigator: {
+            clipboard: {
+                writeText() {
+                    return Promise.resolve();
+                }
+            }
+        }
+    });
     environment.element('#post-comments h2').html('0 Comments');
 
     context.loadPost({
@@ -227,8 +188,21 @@ test('loadPost renders a full post without social widgets when consent is absent
 
     assert.equal(environment.element('h1').html(), 'Rendered Post');
     assert.equal(environment.element('#breadcrumb-title').html(), 'Rendered Post');
-    assert.equal(environment.element('#post-content').appended.length, 2);
-    assert.equal(environment.element('#post-content').appended[1].appended[0].hasClass('blog-share-actions'), true);
+
+    const appended = environment.element('#post-content').appended;
+    assert.equal(appended.length, 1);
+
+    const details = appended[0].appended[0];
+    assert.equal(details.appended.length, 3);
+    assert.equal(details.appended[0].hasClass('col-xs-4'), true);
+    assert.equal(details.appended[1].hasClass('col-xs-4'), true);
+
+    const shares = details.appended[2];
+    assert.equal(shares.hasClass('blog-share-actions'), true);
+    assert.equal(shares.hasClass('col-xs-4'), true);
+    assert.equal(shares.appended.length, 1);
+    assert.equal(shares.appended[0].hasClass('blog-share-copy'), true);
+
     assert.equal(environment.element('#post-comments h2').html(), '1 Comment');
     assert.equal(scripts.size, 0);
 });
@@ -297,23 +271,10 @@ test('setCommentHeader preserves singular/plural grammar', () => {
     assert.equal(environment.element('#post-comments h2').html(), '0 Comments');
 });
 
-test('addSocialMedias builds Facebook and Twitter controls for a post', () => {
-    const {context} = createPostContext();
 
-    const controls = context.addSocialMedias({
-        id: 5,
-        twitter: 'tweet-123'
-    });
 
-    assert.equal(controls.hasClass('col-md-4'), true);
-    assert.equal(controls.hasClass('text-right'), true);
-    assert.equal(controls.appended.length, 2);
-    assert.equal(controls.appended[0].hasClass('fbook'), true);
-    assert.equal(controls.appended[1].hasClass('tweet'), true);
-});
-
-test('addShares renders native share and copy-link controls without third-party markup', () => {
-    const {context, environment} = createPostContext({
+test('addShares renders one native share action when the Web Share API is available', () => {
+    const {context} = createPostContext({
         navigator: {
             share() {
                 return Promise.resolve();
@@ -326,18 +287,15 @@ test('addShares renders native share and copy-link controls without third-party 
         }
     });
 
-    context.addShares({id: 9, title: 'Share Me'});
-
-    const row = environment.element('#post-content').appended[0];
-    const shares = row.appended[0];
+    const shares = context.addShares({id: 9, title: 'Share Me'});
 
     assert.equal(shares.hasClass('blog-share-actions'), true);
-    assert.equal(shares.appended.length, 2);
+    assert.equal(shares.hasClass('col-xs-4'), true);
+    assert.equal(shares.hasClass('col-md-4'), true);
+    assert.equal(shares.hasClass('text-right'), true);
+    assert.equal(shares.appended.length, 1);
     assert.equal(shares.appended[0].hasClass('blog-share-native'), true);
-    assert.equal(shares.appended[1].hasClass('blog-share-copy'), true);
-
-    const classes = shares.appended.map((button) => Array.from(button.classes).join(' '));
-    assert.equal(classes.some((value) => value.includes('a2a_')), false);
+    assert.equal(shares.appended[0].hasClass('blog-share-copy'), false);
 });
 
 test('sharePost uses the browser Web Share API with an absolute blog URL', async () => {
@@ -395,7 +353,7 @@ test('copyShareLink falls back to a browser prompt when Clipboard API is unavail
 
 test('native share button invokes the Web Share API', async () => {
     let shared;
-    const {context, environment} = createPostContext({
+    const {context} = createPostContext({
         navigator: {
             share(data) {
                 shared = data;
@@ -409,10 +367,7 @@ test('native share button invokes the Web Share API', async () => {
         }
     });
 
-    context.addShares({id: 21, title: 'Button Share'});
-
-    const row = environment.element('#post-content').appended[0];
-    const shares = row.appended[0];
+    const shares = context.addShares({id: 21, title: 'Button Share'});
     shares.appended[0].trigger('click');
 
     await Promise.resolve();
@@ -422,9 +377,9 @@ test('native share button invokes the Web Share API', async () => {
     });
 });
 
-test('copy link button writes the URL and changes to copied feedback', async () => {
+test('copy link fallback writes the URL and changes to copied feedback', async () => {
     let copied;
-    const {context, environment} = createPostContext({
+    const {context} = createPostContext({
         navigator: {
             clipboard: {
                 writeText(value) {
@@ -435,10 +390,11 @@ test('copy link button writes the URL and changes to copied feedback', async () 
         }
     });
 
-    context.addShares({id: 22, title: 'Copy Button'});
+    const shares = context.addShares({id: 22, title: 'Copy Button'});
+    assert.equal(shares.appended.length, 1);
+    assert.equal(shares.appended[0].hasClass('blog-share-copy'), true);
 
-    const row = environment.element('#post-content').appended[0];
-    const copyButton = row.appended[0].appended[0];
+    const copyButton = shares.appended[0];
     copyButton.trigger('click');
 
     await Promise.resolve();
@@ -516,14 +472,11 @@ test('getShareUrl returns a relative blog link when no origin is available', () 
 });
 
 
-test('loadPost renders native sharing even when social tracking consent is absent', () => {
+test('loadPost exposes native sharing directly in the metadata row', () => {
     const {context, environment} = createPostContext({
-        socialAllowed: false,
         navigator: {
-            clipboard: {
-                writeText() {
-                    return Promise.resolve();
-                }
+            share() {
+                return Promise.resolve();
             }
         }
     });
@@ -531,16 +484,20 @@ test('loadPost renders native sharing even when social tracking consent is absen
 
     context.loadPost({
         id: 14,
-        title: 'Consent Independent Share',
+        title: 'Native Share Post',
         date: 'Today',
         tags: [],
         content: [[{text: '<p>Hello</p>'}]],
         comments: []
     }, '<h1>');
 
-    const appended = environment.element('#post-content').appended;
-    assert.equal(appended.length, 2);
-    assert.equal(appended[1].appended[0].hasClass('blog-share-actions'), true);
+    const holder = environment.element('#post-content').appended[0];
+    const details = holder.appended[0];
+    const shares = details.appended[2];
+
+    assert.equal(shares.hasClass('blog-share-actions'), true);
+    assert.equal(shares.appended.length, 1);
+    assert.equal(shares.appended[0].hasClass('blog-share-native'), true);
 });
 
 test('loadPost renders protected image content with its calculated height', () => {

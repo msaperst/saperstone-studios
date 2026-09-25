@@ -23,11 +23,23 @@ test('blog sharing no longer depends on AddToAny', () => {
     }
 });
 
-test('cookie consent describes only embedded social media as optional social functionality', () => {
-    const consent = read('public/js/site-consent.js');
+test('blog sharing no longer loads the legacy Facebook or Twitter widgets', () => {
+    const post = read('public/js/post.js');
 
-    assert.doesNotMatch(consent, /sharing tools/i);
-    assert.match(consent, /embedded social media buttons/i);
+    assert.doesNotMatch(post, /facebook-jssdk|connect\.facebook\.net|fb-like/i);
+    assert.doesNotMatch(post, /twitter\.com\/intent\/like/i);
+    assert.doesNotMatch(post, /addSocialMedias|loadSM|socialTrackingAllowed/);
+});
+
+test('cookie consent and privacy docs do not advertise an unused social cookie category', () => {
+    const consent = read('public/js/site-consent.js');
+    const privacy = read('public/Privacy-Policy.php');
+    const cookies = read('docs/cookies.md');
+
+    assert.doesNotMatch(consent, /name:\s*['"]social['"]/i);
+    assert.doesNotMatch(consent, /embedded social media buttons/i);
+    assert.doesNotMatch(privacy, /Facebook SDK|Social Media cookies/i);
+    assert.doesNotMatch(cookies, /Facebook SDK|social cookies/i);
 });
 
 test('terms distinguish link sharing from redistribution rights', () => {
