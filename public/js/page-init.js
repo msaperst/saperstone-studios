@@ -18,7 +18,7 @@ $(document).ready(function () {
 
     $('[data-href]').click(function () {
         var target = $(this).attr('data-href');
-        if (typeof target === 'string' && /^\/[A-Za-z0-9_./?&=%#-]*$/.test(target)) {
+        if (typeof target === 'string' && /^(?:\/|\.\/|\.\.\/)?[A-Za-z0-9_./?&=%#-]+$/.test(target)) {
             window.location.href = target;
         }
     });
