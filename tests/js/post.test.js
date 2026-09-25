@@ -227,7 +227,8 @@ test('loadPost renders a full post without social widgets when consent is absent
 
     assert.equal(environment.element('h1').html(), 'Rendered Post');
     assert.equal(environment.element('#breadcrumb-title').html(), 'Rendered Post');
-    assert.equal(environment.element('#post-content').appended.length, 1);
+    assert.equal(environment.element('#post-content').appended.length, 2);
+    assert.equal(environment.element('#post-content').appended[1].appended[0].hasClass('blog-share-actions'), true);
     assert.equal(environment.element('#post-comments h2').html(), '1 Comment');
     assert.equal(scripts.size, 0);
 });
