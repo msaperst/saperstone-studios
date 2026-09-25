@@ -14,11 +14,11 @@ $user = User::fromSystem();
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
     if ($user->isAdmin ()) {
         ?>
-    <link href="/css/uploadfile.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     <?php
     }
     ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -73,7 +73,7 @@ $user = User::fromSystem();
     </div>
     <!-- /.container -->
 
-    <script src='/js/retouch.js'></script>
+    <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
     <script>
         var images = [];
         images[0] = { thumb:'/retouch/wedding/DSC_5338.jpg', orig:'/retouch/wedding/DSC_5338before.jpg', edit:'/retouch/wedding/DSC_5338after.jpg', width:'1140', height:'829', text:'The groomsmen at the bar is such a great shot!  I wanted to align everyone evenly under the purple lights but there was a column to my left that prevented that.  My symmetry OCD kicked in and I added the additional lights on the right in post production.' };

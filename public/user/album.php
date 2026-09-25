@@ -35,8 +35,8 @@ $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE 
 <head>
 
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
-    <link href="/css/uploadfile.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     </head>
 
 <body>
@@ -473,20 +473,20 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
     window.albumCanDownload = <?php echo ($user->isLoggedIn() || $isAlbumDownloadable) ? 'true' : 'false'; ?>;
     window.showImageTitle = <?php echo $user->isAdmin() ? 'true' : 'false'; ?>;
 </script>
-<script src="/js/album.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/album.js'); ?>"></script>
-<script src="/js/albums-common.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-common.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/album.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
 <?php
 if ($user->isAdmin()) {
     ?>
-    <script src="/js/album-admin.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/album-admin.js'); ?>"></script>
-    <script src="/js/albums-admin.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-admin.js'); ?>"></script>
-    <script src="/js/jquery.uploadfile.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.uploadfile.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/album-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <?php
 }
 if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
     ?>
-    <script src="/js/albums-uploader.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-uploader.js'); ?>"></script>
-    <script src="/js/jquery.uploadfile.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.uploadfile.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums-uploader.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <?php
 }
 ?>

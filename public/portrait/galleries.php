@@ -21,12 +21,12 @@ $user = User::fromSystem();
 <head>
 
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
     <?php
     if ($user->isAdmin()) {
         ?>
-        <link href="/css/uploadfile.css" rel="stylesheet">
+        <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
         <?php
     }
     ?>
@@ -199,13 +199,13 @@ $sql->disconnect();
 <!-- End of Modal -->
 
 <!-- Gallery JavaScript -->
-<script src="/js/gallery.js"></script>
+<script src="<?php echo Strings::assetUrl('/js/gallery.js'); ?>"></script>
 
 <?php
 if ($user->isAdmin()) {
     ?>
-    <script src="/js/gallery-admin.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/gallery-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <?php
 }
 ?>

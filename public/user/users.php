@@ -85,7 +85,7 @@ $user->forceAdmin();
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"
         integrity="sha384-A1l7AkamUsoFMYzhowbdCHQanwuyYkuwH5lCZr7HrtF++vpLSuMWRoQwFaC3d3dg"
         crossorigin="anonymous"></script>
-    <script src="/js/user.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/user.js'); ?>"></script>
 
 </body>
 

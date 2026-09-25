@@ -36,8 +36,8 @@ $sql->disconnect();
     rel="stylesheet"
     integrity="sha384-lI5fxDuBpGLyfE2ACnKBNZ+0kRZ4CtzN8ROZUlI69twizLoKGeVXxhKxOehes/3t"
     crossorigin="anonymous">
-<link href="/css/uploadfile.css" rel="stylesheet">
-<link href="/css/hover-effect.css" rel="stylesheet">
+<link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
+<link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -215,10 +215,10 @@ $sql->disconnect();
     <!-- /.container -->
 
 
-    <script src="/js/blog-common.js"></script>
-    <script src="/js/post-admin.js"></script>
-    <script src="/js/dragndrop.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/blog-common.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/post-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/dragndrop.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.min.js"
         integrity="sha384-1IIwthROMSfhA19NIVJd+SEXxojzNAy1tS30WL5WYNQR0vbroZa5qd8vvOBYwW7o"
