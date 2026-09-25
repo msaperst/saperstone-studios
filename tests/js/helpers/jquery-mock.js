@@ -34,8 +34,10 @@ class MockElement {
         this.nativeElement = {
             complete: false,
             naturalWidth: 0,
+            src: '',
             getBoundingClientRect: () => this.rect
         };
+        this[0] = this.nativeElement;
     }
 
     get(index) {
@@ -198,6 +200,13 @@ class MockElement {
 
     modal(action) {
         this.modalCalls.push(action);
+        return this;
+    }
+
+    carousel(options) {
+        this.carouselCalls = this.carouselCalls || [];
+        this.carouselCalls.push(options);
+        this.carouselOptions = options;
         return this;
     }
 

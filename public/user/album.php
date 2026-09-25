@@ -469,10 +469,6 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
 ?>
 
 <!-- Gallery JavaScript -->
-<script>
-    window.albumCanDownload = <?php echo ($user->isLoggedIn() || $isAlbumDownloadable) ? 'true' : 'false'; ?>;
-    window.showImageTitle = <?php echo $user->isAdmin() ? 'true' : 'false'; ?>;
-</script>
 <script src="<?php echo Strings::assetUrl('/js/album.js'); ?>"></script>
 <script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
 <?php
@@ -491,47 +487,12 @@ if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
 }
 ?>
 
-<!-- Script to Activate the Gallery -->
-<script>
-    $('[data-toggle="tooltip"]').tooltip();
-    var album = new Album("<?php echo $album->getId(); ?>", 4, <?php echo count($images); ?> );
-
-    // Cache selectors for performance
-    var $window = $(window);
-    var $breadcrumb = $('.breadcrumb');
-    var $logo1 = $('#nav-logo-link-1');
-    var $logo2 = $('#nav-logo-link-2');
-
-    // 1. Calculate the initial distance from the top of the page to the breadcrumbs
-    var initialBreadcrumbTop = $breadcrumb.offset().top;
-
-    $window.on("scroll resize", function () {
-        // Run your existing gallery lazy loader
-        album.loadImages();
-
-        // 2. Dynamically measure the exact bottom position of your fixed header bar
-        var navbarBottom = $('.navbar-fixed-top').outerHeight();
-
-        // 3. Determine the target gap (50px below the viewport top)
-        var desiredTopPosition = 80;
-
-        // If the navbar height pushes past 50px (e.g., due to alerts),
-        // pin it exactly to the bottom edge of the navbar so it doesn't clip underneath.
-        var effectiveFixedTop = Math.max(desiredTopPosition, navbarBottom);
-
-        // 4. Evaluate whether the page has scrolled enough to lock the element
-        if ($window.scrollTop() > (initialBreadcrumbTop - effectiveFixedTop)) {
-            $breadcrumb.addClass('breadcrumb-fixed').css('top', effectiveFixedTop + 'px');
-            $('.breadcrumb-fixed').css('width', $('.page-header').width() + 'px');
-            $logo1.hide();
-            $logo2.hide();
-        } else {
-            $breadcrumb.removeClass('breadcrumb-fixed').css('top', '');
-            $logo1.show();
-            $logo2.show();
-        }
-    });
-</script>
+<div id="album-page-config" class="hidden"
+     data-album-id="<?php echo $album->getId(); ?>"
+     data-total="<?php echo count($images); ?>"
+     data-can-download="<?php echo ($user->isLoggedIn() || $isAlbumDownloadable) ? 'true' : 'false'; ?>"
+     data-show-title="<?php echo $user->isAdmin() ? 'true' : 'false'; ?>"></div>
+<script src="<?php echo Strings::assetUrl('/js/album-init.js'); ?>"></script>
 
 </body>
 

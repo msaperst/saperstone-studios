@@ -51,3 +51,34 @@ test('addAlbum fetches album metadata and appends a removable selection', () => 
     });
     assert.equal(environment.element('#user-albums').appended.length, 1);
 });
+
+
+test('edit user active checkbox handles numeric and string API values', () => {
+    for (const [active, expected] of [[1, true], ['1', true], [0, false], ['0', false]]) {
+        const {context, environment} = createContext();
+        context.editUser({
+            id: 17,
+            usr: 'sample',
+            firstName: 'Sample',
+            lastName: 'User',
+            email: 'sample@example.org',
+            role: 'downloader',
+            resetKey: '',
+            active
+        });
+        const dialogConfig = environment.dialogs[0];
+        const message = dialogConfig.message();
+        const findById = (element, id) => {
+            if (!element || typeof element !== 'object') return undefined;
+            if (typeof element.attr === 'function' && element.attr('id') === id) return element;
+            for (const child of element.appended || []) {
+                const match = findById(child, id);
+                if (match) return match;
+            }
+            return undefined;
+        };
+        const activeInput = findById(message, 'user-active');
+        assert.ok(activeInput);
+        assert.equal(activeInput.prop('checked'), expected);
+    }
+});

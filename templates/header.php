@@ -86,95 +86,13 @@ if (strpos($_SERVER['REQUEST_URI'], 'blog/post.php') !== false) {
         crossorigin="anonymous">
 
 <!-- Ties to Google Business Profile -->
-<script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Saperstone Studios",
-        "image": "https://saperstonestudios.com/img/2014websitelogo250px.png",
-        "@id": "https://saperstonestudios.com",
-        "url": "https://saperstonestudios.com",
-        "telephone": "+1-571-266-0004",
-        "priceRange": "$$",
-        "description": "Saperstone Studios provides professional mitzvah, wedding, portrait, and corporate photography services across the Phoenix metro area.",
-        "areaServed": [
-            {
-                "@type": "City",
-                "name": "Chandler"
-            },
-            {
-                "@type": "City",
-                "name": "Gilbert"
-            },
-            {
-                "@type": "City",
-                "name": "Mesa"
-            },
-            {
-                "@type": "City",
-                "name": "Tempe"
-            },
-            {
-                "@type": "City",
-                "name": "Phoenix"
-            }
-        ],
-        "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Chandler",
-            "addressRegion": "AZ",
-            "addressCountry": "US"
-        },
-        "openingHoursSpecification": [
-            {
-                "@type": "OpeningHoursSpecification",
-                "dayOfWeek": [
-                    "Monday",
-                    "Tuesday",
-                    "Wednesday",
-                    "Thursday",
-                    "Friday",
-                    "Saturday",
-                    "Sunday"
-                ],
-                "opens": "09:00",
-                "closes": "18:00"
-            }
-        ],
-        "sameAs": [
-            "https://www.facebook.com/SaperstoneStudios",
-            "https://instagram.com/saperstonestudios",
-            "https://twitter.com/LaSaperstone"
-        ]
-    }
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Saperstone Studios","image":"https://saperstonestudios.com/img/2014websitelogo250px.png","@id":"https://saperstonestudios.com","url":"https://saperstonestudios.com","telephone":"+1-571-266-0004","priceRange":"$$","description":"Saperstone Studios provides professional mitzvah, wedding, portrait, and corporate photography services across the Phoenix metro area.","areaServed":[{"@type":"City","name":"Chandler"},{"@type":"City","name":"Gilbert"},{"@type":"City","name":"Mesa"},{"@type":"City","name":"Tempe"},{"@type":"City","name":"Phoenix"}],"address":{"@type":"PostalAddress","addressLocality":"Chandler","addressRegion":"AZ","addressCountry":"US"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"09:00","closes":"18:00"}],"sameAs":["https://www.facebook.com/SaperstoneStudios","https://instagram.com/saperstonestudios","https://twitter.com/LaSaperstone"]}</script>
 
 <!-- Facebook Pixel Code -->
 <?php
 if (Session::useAnalytics()) {
     ?>
-    <script>
-        !function (f, b, e, v, n, t, s) {
-            if (f.fbq) return;
-            n = f.fbq = function () {
-                n.callMethod ?
-                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-            };
-            if (!f._fbq) f._fbq = n;
-            n.push = n;
-            n.loaded = !0;
-            n.version = '2.0';
-            n.queue = [];
-            t = b.createElement(e);
-            t.async = !0;
-            t.src = v;
-            s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '269624791467010');
-        fbq('track', 'PageView');
-    </script>
+    <script src="<?php echo Strings::assetUrl('/js/facebook-pixel.js'); ?>"></script>
     <noscript><img height="1" width="1" class="csp-hidden"
                    src="https://www.facebook.com/tr?id=269624791467010&ev=PageView&noscript=1"
         /></noscript>

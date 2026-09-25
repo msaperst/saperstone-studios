@@ -117,7 +117,7 @@ $sql->disconnect();
                     <span
                         class="image-edit-control">
                         <button class="ajax-file-upload editable-image-control"
-                            onclick="location.href='/commercial/galleries.php?w=37'">
+                            data-href="/commercial/galleries.php?w=37">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>

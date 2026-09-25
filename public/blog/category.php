@@ -73,15 +73,8 @@ $sql->disconnect();
 <script src="<?php echo Strings::assetUrl('/js/post.js'); ?>"></script>
 <script src="<?php echo Strings::assetUrl('/js/posts-full.js'); ?>"></script>
 
-<!-- Script to Activate the Gallery -->
-<script>
-    var postsFull = new PostsFull( <?php echo $postCount; ?>, <?php echo "[" . implode(",", $categories) . "]"; ?> );
-    $(window,document).on("scroll resize", function(){
-        if( $('footer').isOnScreen() ) {
-            postsFull.loadPosts();
-        }
-    });
-</script>
+<div id="blog-page-config" class="hidden" data-loader="posts-full" data-total="<?php echo $postCount; ?>" data-tags="<?php echo Strings::escapeHtmlAttribute(json_encode($categories)); ?>"></div>
+<script src="<?php echo Strings::assetUrl('/js/blog-init.js'); ?>"></script>
 
 </body>
 

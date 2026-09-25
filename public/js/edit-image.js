@@ -42,6 +42,19 @@ $(document).ready(function () {
                     message: '<h1>Uploading Image...</h1>'
                 });
             },
+            onError: function (files, status, message, pd, xhr) {
+                $.unblockUI();
+                const response = xhr?.responseText || message;
+                BootstrapDialog.show({
+                    draggable: true,
+                    title: 'Whoops, Something Went Wrong',
+                    message: response || 'The image could not be uploaded.',
+                    buttons: [{
+                        label: 'Close',
+                        action: function (dialog) { dialog.close(); }
+                    }]
+                });
+            },
             onSuccess: function (files, data) {
                 if (data !== "") {
                     $.unblockUI();

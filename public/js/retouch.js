@@ -1,5 +1,31 @@
 var maxHeight = 550;
 
+function sanitizeImageUrl(url) {
+    if (typeof url !== 'string') {
+        return '';
+    }
+
+    var trimmed = url.trim();
+    if (!trimmed) {
+        return '';
+    }
+
+    try {
+        var parsed = new URL(trimmed, window.location.origin);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+            return '';
+        }
+
+        if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed) || trimmed.indexOf('//') === 0) {
+            return parsed.href;
+        }
+
+        return parsed.pathname + parsed.search + parsed.hash;
+    } catch (e) {
+        return '';
+    }
+}
+
 function Retouch(ele, images, instruct) {
     var Retouch = this;
 
@@ -93,9 +119,14 @@ Retouch.prototype.createSlider = function () {
 }
 
 Retouch.prototype.setSelect = function (img) {
+    var selectedIndex = Number.parseInt(img.attr('hash'), 10);
+    var image = this.images[selectedIndex];
+    if (!image) {
+        return;
+    }
 
-    var imgWidth = img.attr('imgWidth');
-    var imgHeight = img.attr('imgHeight');
+    var imgWidth = image.width;
+    var imgHeight = image.height;
     var heightP = imgHeight / imgWidth * 100;
 
     this.ele.find('#heighter').css({
@@ -104,23 +135,23 @@ Retouch.prototype.setSelect = function (img) {
 
     var width = this.ele.parent().width();
     var height = width * imgHeight / imgWidth;
-    // if our height is too big to fit on the page
     if (height > maxHeight) {
         width = maxHeight * imgWidth / imgHeight;
     }
     this.ele.width(width);
     this.slider.width(width);
 
-    var orig = img.attr('imgOrig');
-    var edit = img.attr('imgEdit');
-    this.ele.find('#original img').attr({
-        'src': orig
-    }).width(width);
-    this.ele.find('#edit img').attr({
-        'src': edit
-    }).width(width);
+    var originalImage = this.ele.find('#original img');
+    originalImage[0].src = sanitizeImageUrl(image.orig);
+    originalImage.width(width);
+    var editedImage = this.ele.find('#edit img');
+    editedImage[0].src = sanitizeImageUrl(image.edit);
+    editedImage.width(width);
     this.slider.val(0);
-    this.ele.parent().find('.comment').html(img.attr('text'));
+
+    var comment = this.ele.parent().find('.comment');
+    comment.empty();
+    comment.append(document.createTextNode(image.text || ''));
 
     this.selector.find('img.thumb').css({
         'border': '2px transparent solid'
@@ -158,16 +189,10 @@ Retouch.prototype.addSelector = function () {
 
         var cellImg = $('<img>');
         cellImg.addClass('thumb');
-        cellImg.attr({
-            'hash': i,
-            'imgOrig': image.orig,
-            'imgEdit': image.edit,
-            'imgWidth': image.width,
-            'imgHeight': image.height,
-            'text': image.text,
-            'src': image.thumb,
-            'alt': image.edit
-        }).click(function () {
+        cellImg.attr('hash', i);
+        cellImg[0].src = sanitizeImageUrl(image.thumb);
+        cellImg.attr('alt', 'Retouched image ' + (i + 1));
+        cellImg.click(function () {
             window.location.hash = $(this).attr('hash');
             Retouch.setSelect($(this));
         });

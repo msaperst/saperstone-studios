@@ -74,13 +74,8 @@ $user = User::fromSystem();
     <!-- /.container -->
 
     <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
-    <script>
-        var images = [];
-        images[0] = { thumb:'/retouch/b-nai-mitzvah/Ainsley.jpg', orig:'/retouch/b-nai-mitzvah/AinsleyBefore.jpg', edit:'/retouch/b-nai-mitzvah/AinsleyAfter.jpg', width:'1140', height:'761', text:'' };
-        images[1] = { thumb:'/retouch/b-nai-mitzvah/Ari.jpg', orig:'/retouch/b-nai-mitzvah/AriBefore.jpg', edit:'/retouch/b-nai-mitzvah/AriAfter.jpg', width:'1140', height:'761', text:'' };
-        images[2] = { thumb:'/retouch/b-nai-mitzvah/Emily.jpg', orig:'/retouch/b-nai-mitzvah/EmilyBefore.jpg', edit:'/retouch/b-nai-mitzvah/EmilyAfter.jpg', width:'1140', height:'761', text:'' };
-        var retouch = new Retouch( $('#holder'), images, true );
-    </script>
+    <div id="retouch-config" class="hidden" data-instructions="true" data-images="<?php echo Strings::escapeHtmlAttribute('[{"thumb":"/retouch/b-nai-mitzvah/Ainsley.jpg","orig":"/retouch/b-nai-mitzvah/AinsleyBefore.jpg","edit":"/retouch/b-nai-mitzvah/AinsleyAfter.jpg","width":"1140","height":"761","text":""},{"thumb":"/retouch/b-nai-mitzvah/Ari.jpg","orig":"/retouch/b-nai-mitzvah/AriBefore.jpg","edit":"/retouch/b-nai-mitzvah/AriAfter.jpg","width":"1140","height":"761","text":""},{"thumb":"/retouch/b-nai-mitzvah/Emily.jpg","orig":"/retouch/b-nai-mitzvah/EmilyBefore.jpg","edit":"/retouch/b-nai-mitzvah/EmilyAfter.jpg","width":"1140","height":"761","text":""}]'); ?>"></div>
+    <script src="<?php echo Strings::assetUrl('/js/retouch-init.js'); ?>"></script>
 
 </body>
 

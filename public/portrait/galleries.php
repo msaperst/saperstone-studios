@@ -66,15 +66,13 @@ $sql->disconnect();
                     <li class="no-before pull-right">
                         <button
                                 type="button" id="edit-gallery-btn"
-                                class="btn btn-xs btn-warning" data-toggle="tooltip"
-                                data-placement="left" title="Edit Album Details">
+                                class="btn btn-xs btn-warning" title="Edit Album Details">
                             <i class="fa fa-pencil-square-o"></i>
                         </button>
                     </li>
                     <li class="no-before pull-right u-pr-5 csp-hidden">
                         <button type="button"
                                 id="save-gallery-btn" class="btn btn-xs btn-success"
-                                data-toggle="tooltip" data-placement="left"
                                 title="Save Image Order">
                             <i class="fa fa-floppy-o"></i>
                         </button>
@@ -82,7 +80,6 @@ $sql->disconnect();
                     <li class="no-before pull-right u-pr-5">
                         <button
                                 type="button" id="sort-gallery-btn" class="btn btn-xs btn-info"
-                                data-toggle="tooltip" data-placement="left"
                                 title="Rearrange Album Images">
                             <i class="fa fa-random"></i>
                         </button>
@@ -144,7 +141,7 @@ $sql->disconnect();
                             if ($num == 0) {
                                 $class = " class='active'";
                             }
-                            echo "<li onclick='window.location.hash=$num'$class></li>";
+                            echo "<li data-hash='$num'$class></li>";
                         }
                         ?>
                     </ol>
@@ -169,8 +166,8 @@ $sql->disconnect();
                     </div>
 
                     <!-- Controls -->
-                    <a class="left carousel-control" onclick="gallery.prev()"> <span class="icon-prev"></span> </a>
-                    <a class="right carousel-control" onclick="gallery.next()"> <span class="icon-next"></span> </a>
+                    <a class="left carousel-control gallery-prev"> <span class="icon-prev"></span> </a>
+                    <a class="right carousel-control gallery-next"> <span class="icon-next"></span> </a>
                 </div>
             </div>
             <div class="modal-footer">
@@ -210,25 +207,11 @@ if ($user->isAdmin()) {
 }
 ?>
 
-<!-- Script to Activate the Gallery -->
-<script>
-    var loaded = 0;
-    var total = <?php echo count($images); ?>;
-    var gallery = new Gallery( <?php echo $gallery->getId(); ?>, "<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>", total);
-
-    $(window, document).on("scroll resize", function () {
-        if ($('footer').isOnScreen() && loaded < total) {
-            loaded = gallery.loadImages();
-        }
-    });
-
-    $(document).ready(function () {
-        $('#<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>').carousel({
-            interval: false,
-            pause: "false",
-        });
-    });
-</script>
+<div id="gallery-config" class="hidden"
+     data-gallery-id="<?php echo $gallery->getId(); ?>"
+     data-modal-id="<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>"
+     data-total="<?php echo count($images); ?>"></div>
+<script src="<?php echo Strings::assetUrl('/js/gallery-init.js'); ?>"></script>
 
 </body>
 

@@ -55,16 +55,8 @@ $sql->disconnect();
     <script src="<?php echo Strings::assetUrl('/js/post.js'); ?>"></script>
     <script src="<?php echo Strings::assetUrl('/js/posts.js'); ?>"></script>
 
-    <!-- Script to Activate the Gallery -->
-    <script>
-        var posts = new Posts( 3, <?php echo count($posts); ?> );
-
-        $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() ) {
-                posts.loadImages();
-            }
-        });
-    </script>
+    <div id="blog-page-config" class="hidden" data-loader="posts" data-columns="3" data-total="<?php echo count($posts); ?>"></div>
+    <script src="<?php echo Strings::assetUrl('/js/blog-init.js'); ?>"></script>
 
 </body>
 
