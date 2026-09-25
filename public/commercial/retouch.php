@@ -74,14 +74,8 @@ $user = User::fromSystem();
     <!-- /.container -->
 
     <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
-    <script>
-        var images = [];
-        images[0] = { thumb:'/retouch/commercial/Evolent_20190307_0023.jpg', orig:'/retouch/commercial/Evolent_20190307_0023-before.jpg', edit:'/retouch/commercial/Evolent_20190307_0023-after.jpg', width:'1140', height:'761', text:'' };
-        images[1] = { thumb:'/retouch/commercial/FairfaxClinic_20190719_0001.jpg', orig:'/retouch/commercial/FairfaxClinic_20190719_0001-before.jpg', edit:'/retouch/commercial/FairfaxClinic_20190719_0001-after.jpg', width:'1140', height:'759', text:'' };
-        images[2] = { thumb:'/retouch/commercial/JayCTyrolerMDOffice_20180815_0005.jpg', orig:'/retouch/commercial/JayCTyrolerMDOffice_20180815_0005-before.jpg', edit:'/retouch/commercial/JayCTyrolerMDOffice_20180815_0005-after.jpg', width:'1140', height:'761', text:'' };
-        images[3] = { thumb:'/retouch/commercial/KatieBittner-Cassett_20190401_0014.jpg', orig:'/retouch/commercial/KatieBittner-Cassett_20190401_0014-before.jpg', edit:'/retouch/commercial/KatieBittner-Cassett_20190401_0014-after.jpg', width:'1140', height:'1708', text:'' };
-        var retouch = new Retouch( $('#holder'), images, true );
-    </script>
+    <div id="retouch-config" class="hidden" data-instructions="true" data-images="[{&quot;thumb&quot;:&quot;/retouch/commercial/Evolent_20190307_0023.jpg&quot;,&quot;orig&quot;:&quot;/retouch/commercial/Evolent_20190307_0023-before.jpg&quot;,&quot;edit&quot;:&quot;/retouch/commercial/Evolent_20190307_0023-after.jpg&quot;,&quot;width&quot;:&quot;1140&quot;,&quot;height&quot;:&quot;761&quot;,&quot;text&quot;:&quot;&quot;},{&quot;thumb&quot;:&quot;/retouch/commercial/FairfaxClinic_20190719_0001.jpg&quot;,&quot;orig&quot;:&quot;/retouch/commercial/FairfaxClinic_20190719_0001-before.jpg&quot;,&quot;edit&quot;:&quot;/retouch/commercial/FairfaxClinic_20190719_0001-after.jpg&quot;,&quot;width&quot;:&quot;1140&quot;,&quot;height&quot;:&quot;759&quot;,&quot;text&quot;:&quot;&quot;},{&quot;thumb&quot;:&quot;/retouch/commercial/JayCTyrolerMDOffice_20180815_0005.jpg&quot;,&quot;orig&quot;:&quot;/retouch/commercial/JayCTyrolerMDOffice_20180815_0005-before.jpg&quot;,&quot;edit&quot;:&quot;/retouch/commercial/JayCTyrolerMDOffice_20180815_0005-after.jpg&quot;,&quot;width&quot;:&quot;1140&quot;,&quot;height&quot;:&quot;761&quot;,&quot;text&quot;:&quot;&quot;},{&quot;thumb&quot;:&quot;/retouch/commercial/KatieBittner-Cassett_20190401_0014.jpg&quot;,&quot;orig&quot;:&quot;/retouch/commercial/KatieBittner-Cassett_20190401_0014-before.jpg&quot;,&quot;edit&quot;:&quot;/retouch/commercial/KatieBittner-Cassett_20190401_0014-after.jpg&quot;,&quot;width&quot;:&quot;1140&quot;,&quot;height&quot;:&quot;1708&quot;,&quot;text&quot;:&quot;&quot;}]"></div>
+    <script src="<?php echo Strings::assetUrl('/js/retouch-init.js'); ?>"></script>
 
 </body>
 
