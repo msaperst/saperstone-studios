@@ -328,20 +328,24 @@ class MakeThumbsTest extends TestCase {
         $full = $base . 'full/' . $filename;
         $small = $base . 'thumbs/400/' . $filename;
         $medium = $base . 'thumbs/800/' . $filename;
-        $large = $base . $filename;
+        $large = $base . 'thumbs/1200/' . $filename;
+        $viewer = $base . $filename;
 
         $this->assertFileExists($full);
         $this->assertFileExists($small);
         $this->assertFileExists($medium);
         $this->assertFileExists($large);
+        $this->assertFileExists($viewer);
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', $full);
 
         $smallSize = getimagesize($small);
         $mediumSize = getimagesize($medium);
         $largeSize = getimagesize($large);
+        $viewerSize = getimagesize($viewer);
         $this->assertLessThanOrEqual(400, max($smallSize[0], $smallSize[1]));
         $this->assertLessThanOrEqual(800, max($mediumSize[0], $mediumSize[1]));
-        $this->assertLessThanOrEqual(1600, max($largeSize[0], $largeSize[1]));
+        $this->assertLessThanOrEqual(1200, max($largeSize[0], $largeSize[1]));
+        $this->assertLessThanOrEqual(1600, max($viewerSize[0], $viewerSize[1]));
     }
 
     /**
