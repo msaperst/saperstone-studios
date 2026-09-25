@@ -11,6 +11,7 @@ function sampleImages() {
         location: '/albums/sample/10.jpg',
         thumbnail400: '/albums/sample/thumbs/400/10.jpg',
         thumbnail800: '/albums/sample/thumbs/800/10.jpg',
+        thumbnail1200: '/albums/sample/thumbs/1200/10.jpg',
         thumbnail1600: '/albums/sample/10.jpg',
         title: 'First',
         caption: 'First caption',
@@ -23,6 +24,7 @@ function sampleImages() {
         location: '/albums/sample/11.jpg',
         thumbnail400: '/albums/sample/thumbs/400/11.jpg',
         thumbnail800: '/albums/sample/thumbs/800/11.jpg',
+        thumbnail1200: '/albums/sample/thumbs/1200/11.jpg',
         thumbnail1600: '/albums/sample/11.jpg',
         title: 'Second',
         caption: '',
@@ -76,6 +78,7 @@ test('album.js preserves server image order and metadata in its local cache', ()
         location: '/albums/sample/10.jpg',
         thumbnail400: '/albums/sample/thumbs/400/10.jpg',
         thumbnail800: '/albums/sample/thumbs/800/10.jpg',
+        thumbnail1200: '/albums/sample/thumbs/1200/10.jpg',
         thumbnail1600: '/albums/sample/10.jpg',
         title: 'First',
         caption: 'First caption',
@@ -86,6 +89,7 @@ test('album.js preserves server image order and metadata in its local cache', ()
         location: '/albums/sample/11.jpg',
         thumbnail400: '/albums/sample/thumbs/400/11.jpg',
         thumbnail800: '/albums/sample/thumbs/800/11.jpg',
+        thumbnail1200: '/albums/sample/thumbs/1200/11.jpg',
         thumbnail1600: '/albums/sample/11.jpg',
         title: 'Second',
         caption: '',
@@ -117,6 +121,7 @@ test('album.js appends one card per returned image with favorite and download st
     assert.equal(cards[0].attr('data-location'), '/albums/sample/10.jpg');
     assert.equal(cards[0].attr('data-thumbnail-400'), '/albums/sample/thumbs/400/10.jpg');
     assert.equal(cards[0].attr('data-thumbnail-800'), '/albums/sample/thumbs/800/10.jpg');
+    assert.equal(cards[0].attr('data-thumbnail-1200'), '/albums/sample/thumbs/1200/10.jpg');
     assert.equal(cards[0].attr('data-thumbnail-1600'), '/albums/sample/10.jpg');
 
     assert.equal(cards[1].attr('data-image-id'), '11');
@@ -385,6 +390,7 @@ test('album.js chooses responsive protected derivatives for grid cards', () => {
     card.attr('data-location', '/albums/sample/10.jpg');
     card.attr('data-thumbnail-400', '/albums/sample/thumbs/400/10.jpg');
     card.attr('data-thumbnail-800', '/albums/sample/thumbs/800/10.jpg');
+    card.attr('data-thumbnail-1200', '/albums/sample/thumbs/1200/10.jpg');
     card.attr('data-thumbnail-1600', '/albums/sample/10.jpg');
 
     window.devicePixelRatio = 2;
@@ -394,6 +400,9 @@ test('album.js chooses responsive protected derivatives for grid cards', () => {
     assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/thumbs/800/10.jpg');
 
     card.rect.width = 500;
+    assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/thumbs/1200/10.jpg');
+
+    card.rect.width = 700;
     assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/10.jpg');
 });
 
