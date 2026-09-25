@@ -12,7 +12,7 @@ $session->initialize();
     <?php
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
     ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -68,7 +68,7 @@ $session->initialize();
     </div>
     <!-- /.container -->
 
-    <script src='/js/retouch.js'></script>
+    <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
     <script>
         var images = [];
         images[0] = { thumb:'/retouch/portrait/retouch/Avon_20141127_0092.jpg', orig:'/retouch/portrait/retouch/Avon_20141127_0092_o.jpg', edit:'/retouch/portrait/retouch/Avon_20141127_0092_e.jpg', width:'1140', height:'759', text:'When your adorable 2 year old isn\'t trusted with your 1 week old quite yet.' };
