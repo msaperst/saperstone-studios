@@ -143,9 +143,9 @@ class StringsUnitTest extends TestCase {
                     continue;
                 }
                 $content = file_get_contents($file->getPathname());
-                preg_match_all('/\\b(?:src|href)=(["\\'])(.*?)\\1/s', $content, $matches);
-                foreach ($matches[2] as $value) {
-                    if (preg_match('#^(?!https?:|//|data:)[^<>]+\\.(?:js|css)(?:[?#][^<>]*)?$#i', $value)) {
+                preg_match_all('/\\b(?:src|href)=(?:"([^"]*)"|\\'([^\\']*)\\')/s', $content, $matches, PREG_SET_ORDER);
+                foreach ($matches as $match) {
+                    $value = $match[1] !== '' ? $match[1] : $match[2];
                         $unversioned[] = str_replace(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR, '', $file->getPathname())
                             . ': ' . $value;
                     }
