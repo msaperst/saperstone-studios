@@ -120,7 +120,8 @@ Retouch.prototype.setSelect = function (img) {
         'src': edit
     }).width(width);
     this.slider.val(0);
-    this.ele.parent().find('.comment').text(img.attr('text'));
+    var selectedIndex = Number.parseInt(img.attr('hash'), 10);
+    this.ele.parent().find('.comment').text(this.images[selectedIndex].text || '');
 
     this.selector.find('img.thumb').css({
         'border': '2px transparent solid'
@@ -164,7 +165,6 @@ Retouch.prototype.addSelector = function () {
             'imgEdit': image.edit,
             'imgWidth': image.width,
             'imgHeight': image.height,
-            'text': image.text,
             'src': image.thumb,
             'alt': image.edit
         }).click(function () {
