@@ -18,7 +18,24 @@ if (isset ($_GET ['searchTerm'])) {
     exit ();
 }
 
-foreach ($sql->getRows("SELECT DISTINCT x.blog FROM (SELECT id AS blog FROM `blog_details` WHERE (`title` LIKE ? OR `safe_title` LIKE ?) AND `active` = 1 UNION ALL SELECT texts.blog FROM `blog_texts` AS texts JOIN `blog_details` AS details ON texts.blog = details.id WHERE texts.`text` LIKE ? AND details.`active` = 1) AS x JOIN `blog_details` AS sort_details ON x.blog = sort_details.id ORDER BY sort_details.`date` DESC, sort_details.`id` DESC LIMIT ?, ?", ["%$search%", "%$search%", "%$search%", $start, $howMany]) as $r) {
+foreach ($sql->getRows(
+    "SELECT details.id AS blog
+     FROM blog_details AS details
+     WHERE details.active = 1
+       AND (
+           details.title LIKE ?
+           OR details.safe_title LIKE ?
+           OR EXISTS (
+               SELECT 1
+               FROM blog_texts AS texts
+               WHERE texts.blog = details.id
+                 AND texts.text LIKE ?
+           )
+       )
+     ORDER BY details.date DESC, details.id DESC
+     LIMIT ?, ?",
+    ["%$search%", "%$search%", "%$search%", $start, $howMany]
+) as $r) {
     $response [] = $sql->getRow("SELECT * FROM `blog_details` WHERE `id` = ? AND `active` = 1", [$r['blog']]);
 }
 $sql->disconnect();
