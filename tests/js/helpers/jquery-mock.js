@@ -337,6 +337,11 @@ class MockElement {
         return this;
     }
 
+    appendTo(target) {
+        this.appendedTo = target;
+        return this;
+    }
+
     tooltip() {
         return this;
     }
