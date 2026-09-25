@@ -10,8 +10,7 @@ function sanitizeImageUrl(url) {
         return '';
     }
 
-    if (/^(https?:)?\/\//i.test(trimmed) || /^\/(?!\/)/.test(trimmed) || /^[A-Za-z0-9._~!var maxHeight = 550;
-'()*+,;=:@%/?#-]+$/.test(trimmed)) {
+    if (/^(https?:)?\/\//i.test(trimmed) || /^\/(?!\/)/.test(trimmed) || /^[A-Za-z0-9._~!$&'()*+,;=:@%/?#-]+$/.test(trimmed)) {
         return trimmed;
     }
 
