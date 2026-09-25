@@ -62,6 +62,7 @@ test('posts-manage initializes the DataTable with blog management columns', () =
     assert.equal(config.columnDefs[3].data({active: '1'}), 'true');
     assert.equal(config.columnDefs[3].data({active: 1}), 'true');
     assert.equal(config.columnDefs[3].data({active: 0}), 'false');
+    assert.equal(config.columnDefs[3].data({active: '0'}), 'false');
 
     const row = environment.element('__post_row__');
     config.fnCreatedRow(row, {id: 7});
@@ -96,6 +97,14 @@ test('posts-manage full edit button navigates without an inline handler', () => 
     context.setupEdit();
     environment.element('.edit-post-btn').attr('data-post-id', '27').trigger('click');
     assert.equal(windowObject.location.href, '/blog/new.php?p=27');
+});
+
+test('posts-manage full edit button rejects non-numeric post ids', () => {
+    const {context, environment, windowObject} = createManageContext();
+    windowObject.location.href = '/blog/manage.php';
+    context.setupEdit();
+    environment.element('.edit-post-btn').attr('data-post-id', 'javascript:alert(1)').trigger('click');
+    assert.equal(windowObject.location.href, '/blog/manage.php');
 });
 
 test('posts-manage editPost populates fields and loads full post metadata', () => {
