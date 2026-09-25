@@ -7,11 +7,15 @@ output="${PARENT_DIR}/status/thumbnail-status.txt"
 mkdir -p "$( dirname "${output}" )"
 touch "${output}"
 
-if [[ "$#" -ne 3 ]]; then
-    echo "Error: Appropriate album information not provided" > "$output"
+fail() {
+    echo "Error: $1" > "$output"
     sleep 1
-    rm "$output"
+    rm -f "$output"
     exit 1
+}
+
+if [[ "$#" -ne 3 ]]; then
+    fail "Appropriate album information not provided"
 fi
 
 id=$1
@@ -19,102 +23,102 @@ markup=$2
 mode=$3
 album=$(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "SELECT location FROM albums WHERE id = $id LIMIT 1;")
 location="${PARENT_DIR}/public/albums/$album"
+full_dir="$location/full"
 
 if [[ "$mode" != "missing" && "$mode" != "all" ]]; then
-    echo "Error: Thumbnail mode not properly provided" > "$output"
-    sleep 1
-    rm "$output"
-    exit 1
+    fail "Thumbnail mode not properly provided"
 fi
-
+if [[ "$markup" != "proof" && "$markup" != "watermark" && "$markup" != "none" ]]; then
+    fail "Markup not properly provided"
+fi
 if [[ ! -d "$location" ]]; then
-    echo "Error: Album doesn't exist" > "$output"
-    sleep 1
-    rm "$output"
-    exit 1
+    fail "Album doesn't exist"
 fi
 
-if [[ ! -d "$location/full" ]]; then
-    mkdir "$location/full"
-    chmod 777 "$location/full"
-fi
+mkdir -p "$full_dir" "$location/thumbs/400" "$location/thumbs/800" "$location/thumbs/1200"
+chmod 777 "$full_dir" "$location/thumbs" "$location/thumbs/400" "$location/thumbs/800" "$location/thumbs/1200"
 
 if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE albums SET thumbsCreated=FALSE WHERE id='$id';" > /dev/null 2>&1; then
-    echo "Error: Unable to update thumbnail status" > "$output"
-    sleep 1
-    rm "$output"
-    exit 1
+    fail "Unable to update thumbnail status"
 fi
+
+apply_markup() {
+    local file=$1
+    local size=$2
+
+    if [[ "$markup" == "proof" ]]; then
+        composite -dissolve 30 -tile "${PARENT_DIR}/public/img/proof.png" "$file" "$file"
+    elif [[ "$markup" == "watermark" ]]; then
+        local watermark_width=$((size / 5))
+        local watermark_height=$((size * 3 / 20))
+        local offset=$((size * 3 / 100))
+        composite -dissolve 85 -gravity southwest -geometry "${watermark_width}x${watermark_height}+${offset}+0" \
+            "${PARENT_DIR}/public/img/watermark.png" "$file" "$file"
+    fi
+}
+
+create_derivative() {
+    local source=$1
+    local destination=$2
+    local size=$3
+
+    # Read from the full-resolution source every time. Never resize a derivative.
+    # Normalize for browser display, resize from the original, apply restrained
+    # post-resize sharpening, remove camera metadata/profiles, and write a
+    # progressive JPEG. DPI metadata is intentionally omitted for web images.
+    convert "$source" -auto-orient -colorspace sRGB -resize "${size}x${size}>" \
+        -unsharp 0x0.5+0.5+0.008 -strip -interlace Plane -quality 88 "$destination" || return 1
+    apply_markup "$destination" "$size"
+}
 
 processed=0
 
 while IFS= read -r image_location; do
     filename=${image_location##*/}
-    file="$location/$filename"
-    full_file="$location/full/$filename"
+    public_file="$location/$filename"
+    full_file="$full_dir/$filename"
+    small_file="$location/thumbs/400/$filename"
+    medium_file="$location/thumbs/800/$filename"
+    large_file="$location/thumbs/1200/$filename"
     process_file=false
 
-    if [[ "$mode" == "all" ]]; then
-        if [[ -f "$full_file" ]]; then
-            cp "$full_file" "$file"
-            process_file=true
-        elif [[ -f "$file" ]]; then
-            cp "$file" "$full_file"
-            process_file=true
-        fi
-    elif [[ ! -f "$file" && -f "$full_file" ]]; then
-        cp "$full_file" "$file"
-        process_file=true
-    elif [[ -f "$file" && ! -f "$full_file" ]]; then
-        cp "$file" "$full_file"
+    # Preserve the original before replacing the legacy public derivative.
+    if [[ ! -f "$full_file" && -f "$public_file" ]]; then
+        cp "$public_file" "$full_file" || fail "Unable to preserve original $filename"
+    fi
+
+    if [[ ! -f "$full_file" ]]; then
+        fail "Full-resolution source missing for $filename"
+    fi
+
+    if [[ "$mode" == "all" || ! -f "$public_file" || ! -f "$small_file" || ! -f "$medium_file" || ! -f "$large_file" ]]; then
         process_file=true
     fi
 
     if [[ "$process_file" == true ]]; then
-        echo "Creating thumbnail $filename..." > "$output"
-        file_info=$(identify "$file")
-        file_size=$(echo "$file_info" | cut -d ' ' -f 3)
-        width=$(echo "$file_size" | cut -d 'x' -f 1)
-        height=$(echo "$file_size" | cut -d 'x' -f 2)
+        echo "Creating responsive thumbnails $filename..." > "$output"
 
-        if (( width > 1000 || height > 1000 )); then
-            mogrify -resize 1000x1000\> "$file"
-            convert -units PixelsPerInch -density 72 "$file" "$file"
-        fi
+        create_derivative "$full_file" "$small_file" 400 || fail "Unable to create 400px thumbnail for $filename"
+        create_derivative "$full_file" "$medium_file" 800 || fail "Unable to create 800px thumbnail for $filename"
+        create_derivative "$full_file" "$large_file" 1200 || fail "Unable to create 1200px thumbnail for $filename"
+        create_derivative "$full_file" "$public_file" 1600 || fail "Unable to create 1600px thumbnail for $filename"
 
-        file_info=$(identify "$file")
-        file_size=$(echo "$file_info" | cut -d ' ' -f 3)
-        width=$(echo "$file_size" | cut -d 'x' -f 1)
-        height=$(echo "$file_size" | cut -d 'x' -f 2)
-        mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE album_images SET width='$width', height='$height' WHERE album='$id' AND location='$image_location';"
-
-        if [[ "$markup" == "proof" ]]; then
-            composite -dissolve 30 -tile ../img/proof.png "$file" "$file"
-        elif [[ "$markup" == "watermark" ]]; then
-            composite -dissolve 85 -gravity southwest -geometry 200x150+30+0 ../img/watermark.png "$file" "$file"
-        elif [[ "$markup" != "none" ]]; then
-            echo "Error: Markup not properly provided" > "$output"
-            sleep 1
-            rm "$output"
-            exit 1
-        fi
+        file_size=$(identify -format "%wx%h" "$public_file") || fail "Unable to inspect $filename"
+        width=${file_size%x*}
+        height=${file_size#*x}
+        mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
+            -e "UPDATE album_images SET width='$width', height='$height' WHERE album='$id' AND location='$image_location';"
 
         ((processed+=1))
     fi
 
-    if [[ ! -f "$file" || ! -f "$full_file" ]]; then
-        echo "Error: Thumbnail generation incomplete" > "$output"
-        sleep 1
-        rm "$output"
-        exit 1
+    if [[ ! -f "$public_file" || ! -f "$full_file" || ! -f "$small_file" || ! -f "$medium_file" || ! -f "$large_file" ]]; then
+        fail "Thumbnail generation incomplete for $filename"
     fi
 done < <(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "SELECT location FROM album_images WHERE album = $id;")
 
 if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE albums SET thumbsCreated=TRUE WHERE id='$id';" > /dev/null 2>&1; then
-    echo "Error: Unable to update thumbnail status" > "$output"
-    sleep 1
-    rm "$output"
-    exit 1
+    fail "Unable to update thumbnail status"
 fi
 
 touch "$location"
@@ -126,4 +130,4 @@ else
 fi
 
 sleep 1
-rm "$output"
+rm -f "$output"

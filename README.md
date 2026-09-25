@@ -38,3 +38,4 @@ TLS certificate renewal and the known Certbot troubleshooting procedures are doc
 - [Deployment](docs/deployment.md) - production image build and continuous-delivery flow.
 - [Production Pull Deployment](docs/production-pull-deployment.md) - production polling, deployment timer, security, and recovery.
 - [TLS Certificate Maintenance](docs/certificates.md) - recurring certificate renewal and troubleshooting.
+- [Album Thumbnail Generation](docs/album-thumbnails.md) - responsive derivatives, image protection, regeneration, and one-time backfill.
