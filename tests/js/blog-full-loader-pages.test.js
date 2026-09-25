@@ -10,6 +10,8 @@ for (const page of ['public/blog/index.php', 'public/blog/category.php']) {
         const source = fs.readFileSync(path.join(projectRoot, page), 'utf8');
 
         assert.doesNotMatch(source, /var\s+loaded\s*=\s*0/);
-        assert.match(source, /postsFull\.loadPosts\(\)/);
+        assert.match(source, /data-loader="posts-full"/);
+        assert.match(source, /\/js\/blog-init\.js/);
+        assert.doesNotMatch(source, /new\s+PostsFull\s*\(/);
     });
 }
