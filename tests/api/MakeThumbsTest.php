@@ -401,23 +401,14 @@ class MakeThumbsTest extends TestCase {
             'cookies' => $cookieJar
         ]);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("", (string)$response->getBody());
-        sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
-        //ensure original files are in 'full' directory
-        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
-        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
-        //checkout new files
-        $images = $this->sql->getRows("SELECT * FROM `album_images` WHERE `album_images`.`album` = 998");
-        $this->assertEquals(1000, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['0']);
-        $this->assertEquals(750, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg')['1']);
-        $this->assertEquals(1000, $images[0]['width']);
-        $this->assertEquals(750, $images[0]['height']);
-        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
-        $this->assertEquals(1000, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['0']);
-        $this->assertEquals(750, getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg')['1']);
-        $this->assertEquals(1000, $images[1]['width']);
-        $this->assertEquals(750, $images[1]['height']);
-        CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
+        $this->waitForThumbnailStatus(998, 1);
+        $this->assertResponsiveDerivatives('flower1.jpeg');
+        $this->assertResponsiveDerivatives('flower2.jpeg');
+
+        $images = $this->sql->getRows("SELECT * FROM album_images WHERE album = 998 ORDER BY sequence");
+        $viewerSize = getimagesize(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
+        $this->assertEquals($viewerSize[0], (int)$images[0]['width']);
+        $this->assertEquals($viewerSize[1], (int)$images[0]['height']);
     }
 
     /**
