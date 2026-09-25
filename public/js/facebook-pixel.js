@@ -11,8 +11,8 @@
     t = b.createElement(e);
     t.async = true;
     t.src = v;
-    s = b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t, s);
+    s = b.head || b.documentElement;
+    s.appendChild(t);
 }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
 fbq('init', '269624791467010');
