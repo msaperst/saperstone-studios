@@ -142,18 +142,29 @@ class StringsUnitTest extends TestCase {
                 if (!$file->isFile() || $file->getExtension() !== 'php') {
                     continue;
                 }
+
                 $content = file_get_contents($file->getPathname());
-                preg_match_all('/\\b(?:src|href)=(?:"([^"]*)"|\\'([^\\']*)\\')/s', $content, $matches, PREG_SET_ORDER);
-                foreach ($matches as $match) {
-                    $value = $match[1] !== '' ? $match[1] : $match[2];
-                        $unversioned[] = str_replace(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR, '', $file->getPathname())
-                            . ': ' . $value;
+                preg_match_all('/\\b(?:src|href)="([^"]*)"/s', $content, $doubleQuoted);
+                preg_match_all("/\\b(?:src|href)='([^']*)'/s", $content, $singleQuoted);
+                $values = array_merge($doubleQuoted[1], $singleQuoted[1]);
+
+                foreach ($values as $value) {
+                    if (preg_match('#^(?!https?:|//|data:)[^<>]+\\.(?:js|css)(?:[?#][^<>]*)?$#i', $value)) {
+                        $unversioned[] = str_replace(
+                            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR,
+                            '',
+                            $file->getPathname()
+                        ) . ': ' . $value;
                     }
                 }
             }
         }
 
-        $this->assertSame(array(), $unversioned, "Unversioned first-party assets:\n" . implode("\n", $unversioned));
+        $this->assertSame(
+            array(),
+            $unversioned,
+            "Unversioned first-party assets:\n" . implode("\n", $unversioned)
+        );
     }
 
     public function testHTMLEmpty() {
