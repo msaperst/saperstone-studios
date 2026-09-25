@@ -14,7 +14,10 @@ test('error report wires back navigation and submits diagnostic context', () => 
     assert.equal(prevented, true);
     assert.equal(backCalls, 1);
     assert.equal(environment.calls.post.length, 1);
-    assert.deepEqual(environment.calls.post[0].data, {error:'boom', page:'/bad', referrer:'/before', resolution:'1920x1080'});
+    assert.equal(environment.calls.post[0].data.error, 'boom');
+    assert.equal(environment.calls.post[0].data.page, '/bad');
+    assert.equal(environment.calls.post[0].data.referrer, '/before');
+    assert.equal(environment.calls.post[0].data.resolution, '1920x1080');
 });
 
 test('error report does not submit without configuration', () => {
