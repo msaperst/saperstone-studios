@@ -1,20 +1,20 @@
 $(document).ready(function () {
-    var config = $('#blog-page-config');
+    const config = $('#blog-page-config');
     if (!config.length) {
         return;
     }
 
-    var type = config.attr('data-loader');
-    var total = parseInt(config.attr('data-total'), 10) || 0;
-    var loader;
+    const type = config.attr('data-loader');
+    const total = Number.parseInt(config.attr('data-total'), 10) || 0;
+    let loader;
 
     if (type === 'posts') {
-        loader = new Posts(parseInt(config.attr('data-columns'), 10) || 3, total, config.attr('data-search') || undefined);
+        loader = new Posts(Number.parseInt(config.attr('data-columns'), 10) || 3, total, config.attr('data-search') || undefined);
     } else if (type === 'posts-full') {
-        var tag = config.attr('data-tags');
+        const tag = config.attr('data-tags');
         loader = new PostsFull(total, tag ? JSON.parse(tag) : undefined);
     } else if (type === 'post-full') {
-        new PostFull(parseInt(config.attr('data-post'), 10));
+        window.post = new PostFull(Number.parseInt(config.attr('data-post'), 10));
         return;
     } else {
         return;
