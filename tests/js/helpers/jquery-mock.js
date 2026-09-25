@@ -201,6 +201,13 @@ class MockElement {
         return this;
     }
 
+    carousel(options) {
+        this.carouselCalls = this.carouselCalls || [];
+        this.carouselCalls.push(options);
+        this.carouselOptions = options;
+        return this;
+    }
+
     show() {
         this.visible = true;
         return this;
