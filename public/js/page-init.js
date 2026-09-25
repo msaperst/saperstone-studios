@@ -10,7 +10,6 @@ $(document).ready(function () {
         });
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
 
     $('[data-hash]').click(function () {
         window.location.hash = $(this).attr('data-hash');
