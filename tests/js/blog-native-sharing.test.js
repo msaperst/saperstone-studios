@@ -57,3 +57,13 @@ test('privacy policy describes native browser sharing without a sharing provider
     assert.match(privacy, /browser or device/i);
     assert.match(privacy, /Effective September 24, 2026/);
 });
+
+
+test('blog sharing footer is compact and visually separated from post content', () => {
+    const css = read('public/css/saperstone-studios.css');
+
+    assert.match(css, /\.blog-share-footer\s*\{/);
+    assert.match(css, /border-top:\s*1px solid/);
+    assert.match(css, /text-align:\s*right/);
+    assert.match(css, /\.blog-share-button\s*\{/);
+});
