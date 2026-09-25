@@ -10,11 +10,20 @@ function sanitizeImageUrl(url) {
         return '';
     }
 
-    if (/^https?:\/\//i.test(trimmed) || /^\/\//.test(trimmed) || /^\/(?!\/)/.test(trimmed) || /^(?:\.\.?\/)?[A-Za-z0-9._~!$&'()*+,;=@%/?#-]+$/.test(trimmed)) {
-        return trimmed;
-    }
+    try {
+        var parsed = new URL(trimmed, window.location.origin);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+            return '';
+        }
 
-    return '';
+        if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(trimmed) || trimmed.indexOf('//') === 0) {
+            return parsed.href;
+        }
+
+        return parsed.pathname + parsed.search + parsed.hash;
+    } catch (e) {
+        return '';
+    }
 }
 
 function Retouch(ele, images, instruct) {
