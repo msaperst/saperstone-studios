@@ -144,7 +144,7 @@ $sql->disconnect();
                             if ($num == 0) {
                                 $class = " class='active'";
                             }
-                            echo "<li onclick='window.location.hash=$num'$class></li>";
+                            echo "<li data-hash='$num'$class></li>";
                         }
                         ?>
                     </ol>
@@ -169,8 +169,8 @@ $sql->disconnect();
                     </div>
 
                     <!-- Controls -->
-                    <a class="left carousel-control" onclick="gallery.prev()"> <span class="icon-prev"></span> </a>
-                    <a class="right carousel-control" onclick="gallery.next()"> <span class="icon-next"></span> </a>
+                    <a class="left carousel-control gallery-prev"> <span class="icon-prev"></span> </a>
+                    <a class="right carousel-control gallery-next"> <span class="icon-next"></span> </a>
                 </div>
             </div>
             <div class="modal-footer">
@@ -210,25 +210,11 @@ if ($user->isAdmin()) {
 }
 ?>
 
-<!-- Script to Activate the Gallery -->
-<script>
-    var loaded = 0;
-    var total = <?php echo count($images); ?>;
-    var gallery = new Gallery( <?php echo $gallery->getId(); ?>, "<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>", total);
-
-    $(window, document).on("scroll resize", function () {
-        if ($('footer').isOnScreen() && loaded < total) {
-            loaded = gallery.loadImages();
-        }
-    });
-
-    $(document).ready(function () {
-        $('#<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>').carousel({
-            interval: false,
-            pause: "false",
-        });
-    });
-</script>
+<div id="gallery-config" class="hidden"
+     data-gallery-id="<?php echo $gallery->getId(); ?>"
+     data-modal-id="<?php echo str_replace("'", "-", str_replace(" ", "-", $gallery->getTitle())); ?>"
+     data-total="<?php echo count($images); ?>"></div>
+<script src="<?php echo Strings::assetUrl('/js/gallery-init.js'); ?>"></script>
 
 </body>
 
