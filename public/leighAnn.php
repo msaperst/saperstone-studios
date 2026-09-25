@@ -13,7 +13,7 @@ $user = User::fromSystem();
     require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/header.php";
     if ($user->isAdmin()) {
         ?>
-        <link href="/css/uploadfile.css" rel="stylesheet">
+        <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
         <?php
     }
     ?>
