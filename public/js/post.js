@@ -77,7 +77,7 @@ function loadPost(data, header) {
     var details_row = $('<div>');
     details_row.addClass('row');
     var details_tags = $('<div>');
-    details_tags.addClass('col-xs-4 col-md-4 text-left');
+    details_tags.addClass('col-xs-6 col-md-6 text-left');
     $.each(data.tags, function (k, v) {
         var tag_link = $('<a>');
         tag_link.attr('href', '/blog/category.php?t=' + v.id);
@@ -89,7 +89,7 @@ function loadPost(data, header) {
     });
     details_row.append(details_tags);
     var details_date = $('<div>');
-    details_date.addClass('col-xs-4 col-md-4 text-center');
+    details_date.addClass('col-xs-6 col-md-6 text-right');
     details_date.append("<strong>" + data.date + "</strong>");
     details_row.append(details_date);
     holder.append(details_row);
