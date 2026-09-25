@@ -13,6 +13,16 @@ test('page init wires data-href navigation without inline handlers', () => {
     assert.equal(location.href, '/portrait/galleries.php?w=1');
 });
 
+test('page init supports validated relative gallery navigation', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const link = environment.element('[data-href]').attr('data-href', 'galleries.php?w=1');
+    const location = {href: ''};
+    loadBrowserScript('public/js/page-init.js', {$: environment.$, document: environment.document, window: {location}});
+    environment.runReady();
+    link.trigger('click');
+    assert.equal(location.href, 'galleries.php?w=1');
+});
+
 test('page init rejects non-local data-href navigation targets', () => {
     const environment = createJQueryEnvironment({autoReady: false});
     const link = environment.element('[data-href]').attr('data-href', 'javascript:alert(1)');
