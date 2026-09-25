@@ -4,7 +4,7 @@ $(document).ready(function () {
         window.history.back();
     });
 
-    var config = $('#error-report-config');
+    const config = $('#error-report-config');
     if (!config.length) {
         return;
     }
