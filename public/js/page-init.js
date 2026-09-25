@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $('.carousel').each(function () {
-        var carousel = $(this);
+        const carousel = $(this);
         if (!carousel.find('.item').length) {
             return;
         }
@@ -16,7 +16,7 @@ $(document).ready(function () {
     });
 
     $('[data-href]').click(function () {
-        var target = $(this).attr('data-href');
+        const target = $(this).attr('data-href');
         if (typeof target === 'string' && /^(?:\/|\.\/|\.\.\/)?[A-Za-z0-9_./?&=%#-]+$/.test(target)) {
             window.location.href = target;
         }
