@@ -132,12 +132,12 @@ Retouch.prototype.setSelect = function (img) {
     this.ele.width(width);
     this.slider.width(width);
 
-    this.ele.find('#original img').attr({
-        'src': sanitizeImageUrl(image.orig)
-    }).width(width);
-    this.ele.find('#edit img').attr({
-        'src': sanitizeImageUrl(image.edit)
-    }).width(width);
+    var originalImage = this.ele.find('#original img');
+    originalImage[0].src = sanitizeImageUrl(image.orig);
+    originalImage.width(width);
+    var editedImage = this.ele.find('#edit img');
+    editedImage[0].src = sanitizeImageUrl(image.edit);
+    editedImage.width(width);
     this.slider.val(0);
 
     var comment = this.ele.parent().find('.comment');
@@ -180,10 +180,8 @@ Retouch.prototype.addSelector = function () {
 
         var cellImg = $('<img>');
         cellImg.addClass('thumb');
-        cellImg.attr({
-            'hash': i,
-            'src': sanitizeImageUrl(image.thumb)
-        });
+        cellImg.attr('hash', i);
+        cellImg[0].src = sanitizeImageUrl(image.thumb);
         cellImg.attr('alt', 'Retouched image ' + (i + 1));
         cellImg.click(function () {
             window.location.hash = $(this).attr('hash');
