@@ -158,7 +158,7 @@ test('addComment appends a comment row and updates the comment count', () => {
     assert.equal(environment.element('#post-comments h2').html(), '2 Comments');
 });
 
-test('loadPost integrates sharing into the post metadata row', () => {
+test('loadPost keeps metadata clean and appends sharing after post content', () => {
     const {context, environment, scripts} = createPostContext({
         navigator: {
             clipboard: {
@@ -192,16 +192,17 @@ test('loadPost integrates sharing into the post metadata row', () => {
     const appended = environment.element('#post-content').appended;
     assert.equal(appended.length, 1);
 
-    const details = appended[0].appended[0];
-    assert.equal(details.appended.length, 3);
+    const holder = appended[0];
+    const details = holder.appended[0];
+    assert.equal(details.appended.length, 2);
     assert.equal(details.appended[0].hasClass('col-xs-4'), true);
     assert.equal(details.appended[1].hasClass('col-xs-4'), true);
 
-    const shares = details.appended[2];
-    assert.equal(shares.hasClass('blog-share-actions'), true);
-    assert.equal(shares.hasClass('col-xs-4'), true);
-    assert.equal(shares.appended.length, 1);
-    assert.equal(shares.appended[0].hasClass('blog-share-copy'), true);
+    const footer = holder.appended[holder.appended.length - 1];
+    assert.equal(footer.hasClass('blog-share-footer'), true);
+    assert.equal(footer.hasClass('text-right'), true);
+    assert.equal(footer.appended.length, 1);
+    assert.equal(footer.appended[0].hasClass('blog-share-copy'), true);
 
     assert.equal(environment.element('#post-comments h2').html(), '1 Comment');
     assert.equal(scripts.size, 0);
@@ -289,9 +290,7 @@ test('addShares renders one native share action when the Web Share API is availa
 
     const shares = context.addShares({id: 9, title: 'Share Me'});
 
-    assert.equal(shares.hasClass('blog-share-actions'), true);
-    assert.equal(shares.hasClass('col-xs-4'), true);
-    assert.equal(shares.hasClass('col-md-4'), true);
+    assert.equal(shares.hasClass('blog-share-footer'), true);
     assert.equal(shares.hasClass('text-right'), true);
     assert.equal(shares.appended.length, 1);
     assert.equal(shares.appended[0].hasClass('blog-share-native'), true);
@@ -472,7 +471,7 @@ test('getShareUrl returns a relative blog link when no origin is available', () 
 });
 
 
-test('loadPost exposes native sharing directly in the metadata row', () => {
+test('loadPost exposes native sharing in the post footer', () => {
     const {context, environment} = createPostContext({
         navigator: {
             share() {
