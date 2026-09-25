@@ -56,22 +56,19 @@ $sql->disconnect ();
         src="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud-1.0.4.min.js"
         integrity="sha384-kY7q7DuOP+WW41bViWAPpY319DRoRI2Oc/nIahugatbE1qgicrItO4gBzIp7kUBy"
         crossorigin="anonymous"></script>
-    <script type="text/javascript">
-        /*!
-         * Create an array of word objects, each representing a word in the cloud
-         */
-        var tag_array = [
-             <?php
-            foreach ( $tags as $tag ) {
-                echo "{text: \"" . $tag ['tag'] . "\", weight: " . $tag ['count'] . ", link: '/blog/category.php?t=" . $tag ['id'] . "'},\n";
-            }
-            ?>
-        ];
-        $(function() {
-          // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
-          $("#tag-cloud").jQCloud(tag_array);
-        });
-    </script>
+    <?php
+    $tagCloud = array();
+    foreach ($tags as $tag) {
+        $tagCloud[] = array(
+            'text' => $tag['tag'],
+            'weight' => (int)$tag['count'],
+            'link' => '/blog/category.php?t=' . $tag['id']
+        );
+    }
+    ?>
+    <div id="tag-cloud-config" class="hidden"
+         data-tags="<?php echo Strings::escapeHtmlAttribute(json_encode($tagCloud)); ?>"></div>
+    <script src="<?php echo Strings::assetUrl('/js/tag-cloud-init.js'); ?>"></script>
 
 </body>
 
