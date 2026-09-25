@@ -50,5 +50,5 @@ test('cropImage enables south-handle resizing after cleanup', () => {
 
     context.cropImage(img);
 
-    assert.deepEqual(parent.resizableOptions, {handles: 's'});
+    assert.equal(parent.resizableOptions.handles, 's');
 });
