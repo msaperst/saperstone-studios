@@ -61,6 +61,101 @@ class StringsUnitTest extends TestCase {
         $this->assertEquals(1, preg_match('/^[a-zA-Z0-9]+$/', $result));
     }
 
+    public function testAssetUrlAddsStableModificationTimeVersion() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
+        $file = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js';
+        file_put_contents($file, 'test');
+        touch($file, 1700000000);
+
+        $this->assertEquals('/js/app.js?v=1700000000', Strings::assetUrl('/js/app.js', $root));
+        $this->assertEquals('/js/app.js?v=1700000000', Strings::assetUrl('/js/app.js', $root));
+
+        unlink($file);
+        rmdir($root . DIRECTORY_SEPARATOR . 'js');
+        rmdir($root);
+    }
+
+    public function testAssetUrlChangesWhenModificationTimeChanges() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'css', 0777, true);
+        $file = $root . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'site.css';
+        file_put_contents($file, 'test');
+        touch($file, 1700000000);
+        $first = Strings::assetUrl('/css/site.css', $root);
+        touch($file, 1700000100);
+        clearstatcache(true, $file);
+
+        $this->assertEquals('/css/site.css?v=1700000000', $first);
+        $this->assertEquals('/css/site.css?v=1700000100', Strings::assetUrl('/css/site.css', $root));
+
+        unlink($file);
+        rmdir($root . DIRECTORY_SEPARATOR . 'css');
+        rmdir($root);
+    }
+
+    public function testAssetUrlPreservesExistingQueryStringAndFragment() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
+        $file = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js';
+        file_put_contents($file, 'test');
+        touch($file, 1700000000);
+
+        $this->assertEquals(
+            '/js/app.js?mode=admin&v=1700000000#settings',
+            Strings::assetUrl('/js/app.js?mode=admin#settings', $root)
+        );
+
+        unlink($file);
+        rmdir($root . DIRECTORY_SEPARATOR . 'js');
+        rmdir($root);
+    }
+
+    public function testAssetUrlReturnsMissingFileUnchanged() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root);
+        $this->assertEquals('/js/missing.js', Strings::assetUrl('/js/missing.js', $root));
+        rmdir($root);
+    }
+
+    public function testAssetUrlDoesNotVersionExternalAssets() {
+        $this->assertEquals(
+            'https://cdn.example.com/app.js',
+            Strings::assetUrl('https://cdn.example.com/app.js', '/unused')
+        );
+        $this->assertEquals(
+            '//cdn.example.com/app.css',
+            Strings::assetUrl('//cdn.example.com/app.css', '/unused')
+        );
+    }
+
+    public function testFirstPartyJavascriptAndCssIncludesUseAssetUrl() {
+        $roots = array(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public',
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'templates'
+        );
+        $unversioned = array();
+
+        foreach ($roots as $root) {
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root));
+            foreach ($iterator as $file) {
+                if (!$file->isFile() || $file->getExtension() !== 'php') {
+                    continue;
+                }
+                $content = file_get_contents($file->getPathname());
+                preg_match_all('/\\b(?:src|href)=(["\\'])(.*?)\\1/s', $content, $matches);
+                foreach ($matches[2] as $value) {
+                    if (preg_match('#^(?!https?:|//|data:)[^<>]+\\.(?:js|css)(?:[?#][^<>]*)?$#i', $value)) {
+                        $unversioned[] = str_replace(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR, '', $file->getPathname())
+                            . ': ' . $value;
+                    }
+                }
+            }
+        }
+
+        $this->assertSame(array(), $unversioned, "Unversioned first-party assets:\n" . implode("\n", $unversioned));
+    }
+
     public function testHTMLEmpty() {
         $result = Strings::textToHTML("");
         $this->assertEquals("", $result);
