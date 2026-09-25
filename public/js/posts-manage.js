@@ -36,7 +36,7 @@ $(document).ready(function () {
                 "targets": 2
             }, {
                 "data": function (row) {
-                    return (row.active === "1") ? "true" : "false";
+                    return (String(row.active) === "1") ? "true" : "false";
                 },
                 "className": "post-active",
                 "targets": 3
@@ -62,6 +62,10 @@ $(document).ready(function () {
 });
 
 function setupEdit() {
+    $('.edit-post-btn').off().click(function () {
+        window.location.href = '/blog/new.php?p=' + $(this).attr('data-post-id');
+    });
+
     $('.quick-edit-post-btn').off().click(function () {
         var post = post_table.row($(this).closest('tr')).data();
         editManagedPost(post);
