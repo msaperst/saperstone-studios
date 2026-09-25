@@ -14,11 +14,11 @@ $user = User::fromSystem();
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
     if ($user->isAdmin ()) {
         ?>
-    <link href="/css/uploadfile.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     <?php
     }
     ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -73,7 +73,7 @@ $user = User::fromSystem();
     </div>
     <!-- /.container -->
 
-    <script src='/js/retouch.js'></script>
+    <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
     <script>
         var images = [];
         images[0] = { thumb:'/retouch/commercial/Evolent_20190307_0023.jpg', orig:'/retouch/commercial/Evolent_20190307_0023-before.jpg', edit:'/retouch/commercial/Evolent_20190307_0023-after.jpg', width:'1140', height:'761', text:'' };
