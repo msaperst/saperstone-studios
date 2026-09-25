@@ -551,7 +551,7 @@ class AlbumIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums` WHERE `albums`.`id` = 899;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
         $this->assertEquals(0, $this->sql->getRowCount("SELECT * FROM `albums_for_users` WHERE `albums_for_users`.`album` = 899;"));
-        $albumDirectory = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample';
+        $albumDirectory = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample';
         $this->assertDirectoryDoesNotExist($albumDirectory);
     }
 
