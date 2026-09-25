@@ -41,7 +41,7 @@ class AnalyticsConsentTest extends TestCase {
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('googletagmanager.com/gtag/js', $body);
-        $this->assertStringContainsString('connect.facebook.net/en_US/fbevents.js', $body);
+        $this->assertStringContainsString('/js/facebook-pixel.js?v=', $body);
     }
 
     private function assertAnalyticsNotLoaded(array $options): void {
@@ -50,7 +50,7 @@ class AnalyticsConsentTest extends TestCase {
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringNotContainsString('googletagmanager.com/gtag/js', $body);
-        $this->assertStringNotContainsString('connect.facebook.net/en_US/fbevents.js', $body);
+        $this->assertStringNotContainsString('/js/facebook-pixel.js?v=', $body);
         $this->assertStringNotContainsString('facebook.com/tr?id=', $body);
     }
 
