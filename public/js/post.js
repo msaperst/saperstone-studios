@@ -75,7 +75,7 @@ function loadPost(data, header) {
 
     // setup our post details
     var details_row = $('<div>');
-    details_row.addClass('row blog-post-details');
+    details_row.addClass('row');
     var details_tags = $('<div>');
     details_tags.addClass('col-xs-4 col-md-4 text-left');
     $.each(data.tags, function (k, v) {
@@ -92,8 +92,6 @@ function loadPost(data, header) {
     details_date.addClass('col-xs-4 col-md-4 text-center');
     details_date.append("<strong>" + data.date + "</strong>");
     details_row.append(details_date);
-
-    details_row.append(addShares(data));
     holder.append(details_row);
 
     // setup our post content
@@ -144,6 +142,8 @@ function loadPost(data, header) {
         row.append(content);
         holder.append(row);
     });
+
+    holder.append(addShares(data));
     $('#post-content').append(holder);
 
     // load our comments
@@ -168,7 +168,7 @@ function getShareUrl(data) {
 
 function addShares(data) {
     var shares = $('<div>');
-    shares.addClass('col-xs-4 col-md-4 text-right blog-share-actions');
+    shares.addClass('blog-share-footer text-right');
 
     var button = $('<button>');
     button.addClass('btn btn-default btn-xs blog-share-button');
