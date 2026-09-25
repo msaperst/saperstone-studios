@@ -195,8 +195,10 @@ test('loadPost keeps metadata clean and appends sharing after post content', () 
     const holder = appended[0];
     const details = holder.appended[0];
     assert.equal(details.appended.length, 2);
-    assert.equal(details.appended[0].hasClass('col-xs-4'), true);
-    assert.equal(details.appended[1].hasClass('col-xs-4'), true);
+    assert.equal(details.appended[0].hasClass('col-xs-6'), true);
+    assert.equal(details.appended[0].hasClass('text-left'), true);
+    assert.equal(details.appended[1].hasClass('col-xs-6'), true);
+    assert.equal(details.appended[1].hasClass('text-right'), true);
 
     const footer = holder.appended[holder.appended.length - 1];
     assert.equal(footer.hasClass('blog-share-footer'), true);
@@ -492,9 +494,10 @@ test('loadPost exposes native sharing in the post footer', () => {
 
     const holder = environment.element('#post-content').appended[0];
     const details = holder.appended[0];
-    const shares = details.appended[2];
+    assert.equal(details.appended.length, 2);
 
-    assert.equal(shares.hasClass('blog-share-actions'), true);
+    const shares = holder.appended[holder.appended.length - 1];
+    assert.equal(shares.hasClass('blog-share-footer'), true);
     assert.equal(shares.appended.length, 1);
     assert.equal(shares.appended[0].hasClass('blog-share-native'), true);
 });
