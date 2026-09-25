@@ -182,10 +182,10 @@ class StringsUnitTest extends TestCase {
                 }
 
                 $content = file_get_contents($file->getPathname());
-                if (preg_match('/<script(?![^>]*\\bsrc=)(?![^>]*type=["\\']application\\/ld\\+json["\\'])[^>]*>/i', $content)) {
+                if (preg_match("/<script(?![^>]*\\bsrc=)(?![^>]*type=[\"']application\\/ld\\+json[\"'])[^>]*>/i", $content)) {
                     $violations[] = $file->getPathname() . ': inline script';
                 }
-                if (preg_match('/\\son[a-z]+\\s*=/i', $content)) {
+                if (preg_match('/\\son[a-z]+\\s*=/i', $content) || preg_match('/javascript\\s*:/i', $content)) {
                     $violations[] = $file->getPathname() . ': inline event handler';
                 }
             }
