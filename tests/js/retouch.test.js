@@ -5,7 +5,7 @@ const {loadBrowserScript} = require('./helpers/load-browser-script');
 
 function createRetouchContext(hash = '') {
     const environment = createJQueryEnvironment();
-    const windowObject = {location: {hash}};
+    const windowObject = {location: {hash, origin: 'https://saperstonestudios.com'}};
     const documentObject = {
         createTextNode(value) { return {nodeType: 3, textContent: value}; }
     };
@@ -70,6 +70,7 @@ test('sanitizeImageUrl accepts image paths and rejects executable schemes', () =
     const {context} = createRetouchContext();
     assert.equal(context.sanitizeImageUrl('/images/example.jpg'), '/images/example.jpg');
     assert.equal(context.sanitizeImageUrl('https://cdn.example.com/example.jpg'), 'https://cdn.example.com/example.jpg');
+    assert.equal(context.sanitizeImageUrl('images/example.jpg'), '/images/example.jpg');
     assert.equal(context.sanitizeImageUrl('javascript:alert(1)'), '');
     assert.equal(context.sanitizeImageUrl('data:text/html,<script>alert(1)</script>'), '');
     assert.equal(context.sanitizeImageUrl(null), '');
