@@ -10,7 +10,9 @@ function sanitizeImageUrl(url) {
         return '';
     }
 
-    if (/^(https?:)?\/\//i.test(trimmed) || /^\/(?!\/)/.test(trimmed) || /^[A-Za-z0-9._~!$&'()*+,;=:@%/?#-]+$/.test(trimmed)) {
+    if (/^https?:\/\//i.test(trimmed) || /^\/\//.test(trimmed) || /^\/(?!\/)/.test(trimmed) || /^(?:\.\.?\/)?[A-Za-z0-9._~!    if (/^(https?:)?\/\//i.test(trimmed) || /^\/(?!\/)/.test(trimmed) || /^[A-Za-z0-9._~!$&'()*+,;=:@%/?#-]+$/.test(trimmed)) {
+        return trimmed;
+    }'()*+,;=@%/?#-]+$/.test(trimmed)) {
         return trimmed;
     }
 
