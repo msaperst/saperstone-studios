@@ -16,6 +16,8 @@ $(document).ready(function () {
     } else if (type === 'post-full') {
         new PostFull(parseInt(config.attr('data-post'), 10));
         return;
+    } else {
+        return;
     }
 
     $(window, document).on('scroll resize', function () {
