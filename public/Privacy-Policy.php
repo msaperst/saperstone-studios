@@ -26,7 +26,7 @@ $session->initialize();
 
     <div class="row">
         <div class="col-md-12">
-            <p><strong>Effective September 23, 2026</strong></p>
+            <p><strong>Effective September 24, 2026</strong></p>
             <p>Saperstone Studios LLC ("Saperstone Studios," "we," "us," or "our") operates
                 saperstonestudios.com. This policy explains what information the website collects,
                 why we use it, when it may be shared, and the choices available to you.</p>
@@ -60,7 +60,9 @@ $session->initialize();
                 <li>Respond to inquiries and send service-related communications.</li>
                 <li>Operate, maintain, secure, diagnose, and improve the website.</li>
                 <li>Measure site traffic and marketing performance when Analytics cookies are accepted.</li>
-                <li>Provide blog sharing and social features when Social Media cookies are accepted.</li>
+                <li>Provide native sharing of blog links through your browser or device without loading a
+                    third-party sharing service.</li>
+                <li>Provide optional embedded social features when Social Media cookies are accepted.</li>
                 <li>Meet legal, accounting, contractual, and fraud-prevention obligations.</li>
             </ul>
 
@@ -119,10 +121,10 @@ $session->initialize();
                         <td>Controlled by Google and Meta and by our provider settings</td>
                     </tr>
                     <tr>
-                        <td>Facebook SDK and AddToAny</td>
-                        <td>Blog likes, sharing controls, and links to social services</td>
+                        <td>Facebook SDK</td>
+                        <td>Embedded Facebook blog like controls</td>
                         <td>Social Media</td>
-                        <td>Controlled by the applicable provider</td>
+                        <td>Controlled by Meta</td>
                     </tr>
                     </tbody>
                 </table>
@@ -142,14 +144,15 @@ $session->initialize();
                     enabled. The Facebook SDK loads only when Social Media is enabled. See
                     <a target="_blank" rel="noopener noreferrer"
                     href="https://www.facebook.com/privacy/policy/">Meta's Privacy Policy</a>.</li>
-                <li><strong>AddToAny</strong> provides sharing controls when Social Media is enabled. See
-                    <a target="_blank" rel="noopener noreferrer"
-                    href="https://www.addtoany.com/privacy">AddToAny's Privacy Policy</a>.</li>
                 <li><strong>Google Maps</strong> is embedded on the contact page. Loading that page may send
                     Google your IP address, browser information, and interaction with the map.</li>
                 <li>Hosting, email, payment, and other operational providers process information only as
                     needed to supply their services to us.</li>
             </ul>
+            <p>Blog native sharing supplies the post title and URL to your browser or device. These controls do
+                not load a third-party sharing provider, and Saperstone Studios does not receive the destination
+                or recipient you choose. If you select a third-party app or service from your device's share
+                sheet, that provider handles the information you choose to send under its own privacy terms.</p>
             <p>Links to third-party websites take you away from our site. Their privacy practices are not
                 controlled by Saperstone Studios.</p>
 
