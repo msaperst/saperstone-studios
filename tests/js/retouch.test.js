@@ -10,7 +10,7 @@ function createRetouchContext(hash = '') {
         createTextNode(value) { return {nodeType: 3, textContent: value}; }
     };
     const context = loadBrowserScript('public/js/retouch.js', {
-        $: environment.$, window: windowObject, document: documentObject, setInterval: environment.setInterval
+        $: environment.$, window: windowObject, document: documentObject, URL, setInterval: environment.setInterval
     });
     return {context, environment, windowObject};
 }
@@ -48,8 +48,8 @@ test('setSelect sizes tall images to the max height and resets slider', () => {
     assert.equal(retouch.ele.widthValue, 275);
     assert.equal(retouch.slider.widthValue, 275);
     assert.equal(retouch.slider.val(), 0);
-    assert.equal(original.attr('src'), '/orig.jpg');
-    assert.equal(edit.attr('src'), '/edit.jpg');
+    assert.equal(original[0].src, '/orig.jpg');
+    assert.equal(edit[0].src, '/edit.jpg');
 });
 
 test('selector creates one thumbnail per image with comparison metadata', () => {
