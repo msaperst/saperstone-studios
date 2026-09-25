@@ -8,7 +8,10 @@ const {
 function sampleImages() {
     return [{
         sequence: '10',
-        location: '/albums/sample/thumbs/10.jpg',
+        location: '/albums/sample/10.jpg',
+        thumbnail400: '/albums/sample/thumbs/400/10.jpg',
+        thumbnail800: '/albums/sample/thumbs/800/10.jpg',
+        thumbnail1600: '/albums/sample/10.jpg',
         title: 'First',
         caption: 'First caption',
         height: '800',
@@ -17,7 +20,10 @@ function sampleImages() {
         downloadable: '1'
     }, {
         sequence: '11',
-        location: '/albums/sample/thumbs/11.jpg',
+        location: '/albums/sample/11.jpg',
+        thumbnail400: '/albums/sample/thumbs/400/11.jpg',
+        thumbnail800: '/albums/sample/thumbs/800/11.jpg',
+        thumbnail1600: '/albums/sample/11.jpg',
         title: 'Second',
         caption: '',
         height: '1200',
@@ -67,14 +73,20 @@ test('album.js preserves server image order and metadata in its local cache', ()
 
     assert.deepEqual(plain(album.images), [{
         sequence: '10',
-        location: '/albums/sample/thumbs/10.jpg',
+        location: '/albums/sample/10.jpg',
+        thumbnail400: '/albums/sample/thumbs/400/10.jpg',
+        thumbnail800: '/albums/sample/thumbs/800/10.jpg',
+        thumbnail1600: '/albums/sample/10.jpg',
         title: 'First',
         caption: 'First caption',
         favorite: true,
         downloadable: true
     }, {
         sequence: '11',
-        location: '/albums/sample/thumbs/11.jpg',
+        location: '/albums/sample/11.jpg',
+        thumbnail400: '/albums/sample/thumbs/400/11.jpg',
+        thumbnail800: '/albums/sample/thumbs/800/11.jpg',
+        thumbnail1600: '/albums/sample/11.jpg',
         title: 'Second',
         caption: '',
         favorite: false,
@@ -102,7 +114,10 @@ test('album.js appends one card per returned image with favorite and download st
     assert.equal(cards[0].attr('data-downloadable'), '1');
     assert.equal(cards[0].attr('data-height'), '800');
     assert.equal(cards[0].attr('data-width'), '1200');
-    assert.equal(cards[0].attr('data-location'), '/albums/sample/thumbs/10.jpg');
+    assert.equal(cards[0].attr('data-location'), '/albums/sample/10.jpg');
+    assert.equal(cards[0].attr('data-thumbnail-400'), '/albums/sample/thumbs/400/10.jpg');
+    assert.equal(cards[0].attr('data-thumbnail-800'), '/albums/sample/thumbs/800/10.jpg');
+    assert.equal(cards[0].attr('data-thumbnail-1600'), '/albums/sample/10.jpg');
 
     assert.equal(cards[1].attr('data-image-id'), '11');
     assert.equal(cards[1].attr('data-favorite'), '0');
@@ -360,4 +375,42 @@ test('album.js shows the first uploaded image without requiring an empty-gallery
     assert.deepEqual(plain(album.images.map((image) => image.sequence)), ['1']);
     assert.equal(environment.element('#album-grid').appended.length, 1);
     assert.equal(emptyState.removed, true);
+});
+
+
+test('album.js chooses responsive protected derivatives for grid cards', () => {
+    const {context, environment, window} = createAlbumDetailContext();
+    const card = environment.element('__responsive_card__');
+    card.rect = {top: 0, bottom: 200, width: 180, height: 200};
+    card.attr('data-location', '/albums/sample/10.jpg');
+    card.attr('data-thumbnail-400', '/albums/sample/thumbs/400/10.jpg');
+    card.attr('data-thumbnail-800', '/albums/sample/thumbs/800/10.jpg');
+    card.attr('data-thumbnail-1600', '/albums/sample/10.jpg');
+
+    window.devicePixelRatio = 2;
+    assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/thumbs/400/10.jpg');
+
+    card.rect.width = 300;
+    assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/thumbs/800/10.jpg');
+
+    card.rect.width = 500;
+    assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/10.jpg');
+});
+
+test('album.js viewer uses the 1600px protected derivative', () => {
+    const {context, environment} = createAlbumDetailContext();
+    const card = environment.element('__viewer_card__');
+    card.attr('album-id', '7');
+    card.attr('image-id', '10');
+    card.attr('data-location', '/albums/sample/thumbs/400/10.jpg');
+    card.attr('data-thumbnail-1600', '/albums/sample/10.jpg');
+    card.attr('data-downloadable', '0');
+
+    context.updateViewerMeta(card);
+
+    assert.equal(
+        environment.element('#album-viewer-image').css('background-image'),
+        'url("/albums/sample/10.jpg")'
+    );
+    assert.equal(environment.element('#album-viewer-image').attr('src'), '/img/image.png');
 });
