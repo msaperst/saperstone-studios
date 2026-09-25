@@ -1,12 +1,12 @@
 $(document).ready(function () {
-    var config = $('#gallery-config');
+    const config = $('#gallery-config');
     if (!config.length) {
         return;
     }
 
-    var total = parseInt(config.attr('data-total'), 10) || 0;
+    const total = Number.parseInt(config.attr('data-total'), 10) || 0;
     window.gallery = new Gallery(
-        parseInt(config.attr('data-gallery-id'), 10),
+        Number.parseInt(config.attr('data-gallery-id'), 10),
         config.attr('data-modal-id'),
         total
     );
