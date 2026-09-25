@@ -36,7 +36,7 @@ $sql->disconnect();
 <head>
 
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -76,9 +76,9 @@ $sql->disconnect();
     <!-- /.container -->
 
     <!-- Gallery JavaScript -->
-    <script src="/js/blog-common.js"></script>
-    <script src="/js/post.js"></script>
-    <script src="/js/posts-search.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/blog-common.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/post.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/posts-search.js'); ?>"></script>
 
     <!-- Script to Activate the Gallery -->
     <script>
