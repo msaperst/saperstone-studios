@@ -167,6 +167,33 @@ class StringsUnitTest extends TestCase {
         );
     }
 
+    public function testApplicationMarkupDoesNotUseInlineExecutableJavaScript() {
+        $roots = array(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public',
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'templates'
+        );
+        $violations = array();
+
+        foreach ($roots as $root) {
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root));
+            foreach ($iterator as $file) {
+                if (!$file->isFile() || $file->getExtension() !== 'php') {
+                    continue;
+                }
+
+                $content = file_get_contents($file->getPathname());
+                if (preg_match('/<script(?![^>]*\\bsrc=)(?![^>]*type=["\\']application\\/ld\\+json["\\'])[^>]*>/i', $content)) {
+                    $violations[] = $file->getPathname() . ': inline script';
+                }
+                if (preg_match('/\\son[a-z]+\\s*=/i', $content)) {
+                    $violations[] = $file->getPathname() . ': inline event handler';
+                }
+            }
+        }
+
+        $this->assertSame(array(), $violations, "Inline JavaScript violations:\n" . implode("\n", $violations));
+    }
+
     public function testHTMLEmpty() {
         $result = Strings::textToHTML("");
         $this->assertEquals("", $result);
