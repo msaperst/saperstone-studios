@@ -227,46 +227,34 @@ $sql->disconnect();
         src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"
         integrity="sha384-mwD0+87SDVjJjyfTMQHNVV+IyWDM38MhzdCFZ+SRefmD75v+M5K0R3naFNLnZf1L"
         crossorigin="anonymous"></script>
-    <script>
-        $(document).ready(function() {
-            <?php
-            if (isset ( $blog )) {
-                foreach ( $blog->getTags() as $tag ) {
-                    ?>
-            $('#post-tags-select').val(<?php echo $tag['id']; ?>);
-            addTag($('#post-tags-select'));
-            <?php
+    <?php
+    $editorTags = array();
+    $editorGroups = array();
+    if (isset($blog)) {
+        foreach ($blog->getTags() as $tag) {
+            $editorTags[] = $tag['id'];
+        }
+        $groups = array();
+        foreach ($content as $block) {
+            $groups[$block->getGroup()][] = $block;
+        }
+        foreach ($groups as $group) {
+            if ($group[0] instanceof BlogText) {
+                $editorGroups[] = array('type' => 'text', 'text' => $group[0]->getText());
+            } elseif ($group[0] instanceof BlogImage) {
+                $images = array();
+                foreach ($group as $image) {
+                    $images[] = $image->getRaw();
                 }
-                $groups = array();
-                foreach ( $content as $block ) {
-                    $groups[$block->getGroup()][] = $block;
-                }
-                for( $i = 0; $i < sizeof($groups); $i++) {
-                    if ($groups[$i][0] instanceof BlogText) {
-                        ?>
-            addTextArea("<?php echo $groups[$i][0]->getText(); ?>");
-            <?php
-                    } elseif ($groups[$i][0] instanceof BlogImage) {
-                        ?>
-            addImageArea([<?php
-                        foreach( $groups[$i] as $image ) {
-                            echo json_encode( $image->getRaw() ) . ",";
-                        }
-                        ?>]);
-            <?php
-                    }
-                }
-            } else {
-                ?>
-            addImageArea();
-            <?php
+                $editorGroups[] = array('type' => 'images', 'images' => $images);
             }
-            ?>
-            $('#post-preview-holder img').draggable({
-                axis : "y",
-            });
-        });
-    </script>
+        }
+    }
+    ?>
+    <div id="post-editor-config" class="hidden"
+         data-tags="<?php echo Strings::escapeHtmlAttribute(json_encode($editorTags)); ?>"
+         data-groups="<?php echo Strings::escapeHtmlAttribute(json_encode($editorGroups)); ?>"></div>
+    <script src="<?php echo Strings::assetUrl('/js/post-editor-init.js'); ?>"></script>
 
 </body>
 
