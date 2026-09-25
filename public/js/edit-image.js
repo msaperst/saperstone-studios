@@ -44,7 +44,7 @@ $(document).ready(function () {
             },
             onError: function (files, status, message, pd, xhr) {
                 $.unblockUI();
-                var response = xhr && xhr.responseText ? xhr.responseText : message;
+                const response = xhr?.responseText || message;
                 BootstrapDialog.show({
                     draggable: true,
                     title: 'Whoops, Something Went Wrong',
