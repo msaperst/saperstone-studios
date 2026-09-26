@@ -238,16 +238,19 @@ class ContactMeTest extends TestCase {
         CustomAsserts::assertEmailCount(0);
     }
 
-    public function testEncodedLoadTimeIsAccepted(): void {
+    public function testEncodedLoadTimeTooFastIsDropped(): void {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
-                'loadtime' => base_convert((string)(time() - 10), 10, 36),
-                'name' => 'Max'
+                'loadtime' => base_convert((string)(time() + 10), 10, 36),
+                'name' => 'Max',
+                'phone' => '571-245-3351',
+                'email' => 'msaperst+sstest@gmail.com',
+                'message' => 'Hi There! I am a test email'
             ]
         ]);
 
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals("Phone number is required", (string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
 
