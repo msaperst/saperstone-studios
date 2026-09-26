@@ -47,7 +47,8 @@ class Strings {
         $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
         $withoutFragment = $fragment === '' ? $url : substr($url, 0, -strlen($fragment));
 
-        $version = substr(hash_file('sha256', $file), 0, 12);\n        return $withoutFragment . $separator . 'v=' . $version . $fragment;
+        $version = substr(hash_file('sha256', $file), 0, 12);
+        return $withoutFragment . $separator . 'v=' . $version . $fragment;
     }
 
     /**
