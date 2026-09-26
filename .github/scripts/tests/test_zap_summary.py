@@ -1,5 +1,9 @@
 import importlib.util
+import json
+import os
+import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 
@@ -29,6 +33,16 @@ class ReportableAlertsTest(unittest.TestCase):
         }
 
         self.assertEqual([alert], ZAP_SUMMARY.reportable_alerts([alert]))
+
+
+class ZapGateTest(unittest.TestCase):
+    def run_summary(self, alerts):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report_path = Path(temp_dir) / "report.json"
+            summary_path = Path(temp_dir) / "summary.md"
+            report_path.write_text(json.dumps({"site": [{"alerts": alerts}]}), encoding="utf-8")
+            with patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(summary_path)}):
+                return ZAP_SUMMARY.main_with_args_for_test(report_path, "Full") if hasattr(ZAP_SUMMARY, "main_with_args_for_test") else None
 
 
 if __name__ == "__main__":
