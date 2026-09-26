@@ -17,7 +17,7 @@ class Strings {
     }
 
     /**
-     * Add a deterministic modification-time version to a first-party asset URL.
+     * Add a deterministic content version to a first-party asset URL.
      *
      * External URLs are returned unchanged. Missing local files are also returned
      * unchanged so a missing asset does not generate a PHP warning.
@@ -47,7 +47,7 @@ class Strings {
         $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
         $withoutFragment = $fragment === '' ? $url : substr($url, 0, -strlen($fragment));
 
-        return $withoutFragment . $separator . 'v=' . filemtime($file) . $fragment;
+        $version = substr(hash_file('sha256', $file), 0, 12);\n        return $withoutFragment . $separator . 'v=' . $version . $fragment;
     }
 
     /**
