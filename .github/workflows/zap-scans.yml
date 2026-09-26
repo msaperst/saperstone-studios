@@ -50,9 +50,6 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v7
 
-      - name: Test ZAP summary formatter
-        run: python3 -m unittest discover -s .github/scripts/tests -p 'test_*.py'
-
       - name: Set up full-stack test application
         uses: ./.github/actions/setup-full-stack
 

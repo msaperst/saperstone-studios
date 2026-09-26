@@ -16,7 +16,8 @@ $api = new Api ();
 // time to submit check
 try {
     $time = $api->retrievePostString('loadtime', 'Load Time');
-    if (time() - $_POST['loadtime'] < 3) {
+    $loadTime = ctype_digit($time) ? (int)$time : intval($time, 36);
+    if (time() - $loadTime < 3) {
         exit();
     }
 } catch (Exception $e) {
