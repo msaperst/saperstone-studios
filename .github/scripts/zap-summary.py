@@ -86,6 +86,16 @@ def main() -> int:
             "\nDetailed HTML, JSON, and Markdown reports are available in the ZAP workflow artifact.\n"
         )
 
+    actionable_findings = [
+        alert for alert in alerts if str(alert.get("riskcode", "0")) in {"1", "2", "3"}
+    ]
+    if actionable_findings:
+        print(
+            f"ZAP found {len(actionable_findings)} alert type(s) above Informational severity.",
+            file=sys.stderr,
+        )
+        return 1
+
     return 0
 
 
