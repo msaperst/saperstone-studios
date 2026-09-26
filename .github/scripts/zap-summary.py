@@ -26,6 +26,11 @@ def reportable_alerts(alerts: list[dict]) -> list[dict]:
     ]
 
 
+def has_actionable_findings(alerts: list[dict]) -> bool:
+    """Return whether any reportable alert is above Informational severity."""
+    return any(str(alert.get("riskcode", "0")) in {"1", "2", "3"} for alert in alerts)
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print("Usage: zap-summary.py <report-json> <scan-name>", file=sys.stderr)
@@ -86,12 +91,12 @@ def main() -> int:
             "\nDetailed HTML, JSON, and Markdown reports are available in the ZAP workflow artifact.\n"
         )
 
-    actionable_findings = [
-        alert for alert in alerts if str(alert.get("riskcode", "0")) in {"1", "2", "3"}
-    ]
-    if actionable_findings:
+    if has_actionable_findings(alerts):
+        actionable_count = sum(
+            str(alert.get("riskcode", "0")) in {"1", "2", "3"} for alert in alerts
+        )
         print(
-            f"ZAP found {len(actionable_findings)} alert type(s) above Informational severity.",
+            f"ZAP found {actionable_count} alert type(s) above Informational severity.",
             file=sys.stderr,
         )
         return 1
