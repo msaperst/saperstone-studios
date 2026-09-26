@@ -254,6 +254,25 @@ class ContactMeTest extends TestCase {
         CustomAsserts::assertEmailCount(0);
     }
 
+    public function testEncodedLoadTimeOldEnoughSendsEmail(): void {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'loadtime' => base_convert((string)(time() - 10), 10, 36),
+                'name' => 'Max',
+                'phone' => '571-245-3351',
+                'email' => 'msaperst+sstest@gmail.com',
+                'message' => 'Hi There! I am a test email'
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(
+            "Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.",
+            (string)$response->getBody()
+        );
+        CustomAsserts::assertEmailCount(2);
+    }
+
     public function testInvalidPhoneIsDropped(): void {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
