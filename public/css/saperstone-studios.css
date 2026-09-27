@@ -1684,3 +1684,56 @@ label > input, label > u > input, label > textarea {
 .blog-post-preview-content > .blog-editor-card-heading {
     display: none;
 }
+
+
+/* Make the left editor column read as one continuous published post in preview. */
+.blog-post-preview-details,
+.blog-post-preview-content {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    margin-bottom: 0;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.blog-post-preview-details {
+    padding-bottom: 18px;
+}
+
+.blog-post-preview-content {
+    padding-top: 0;
+}
+
+.blog-post-preview-details #post-title-preview {
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0 0 24px;
+    text-align: center;
+}
+
+.blog-post-preview-details .blog-editor-card-heading {
+    min-height: 34px;
+    position: relative;
+}
+
+.blog-post-preview-details .blog-preview-back-button {
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+.blog-post-preview-details .blog-editor-meta {
+    border-top: 1px solid #eee;
+    padding-top: 18px;
+}
+
+.blog-post-preview-content #post-content {
+    margin-top: 0;
+}
+
+.blog-post-preview-content #post-content > li:first-child {
+    margin-top: 0;
+}
