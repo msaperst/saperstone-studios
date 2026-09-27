@@ -16,7 +16,7 @@ class BasicPagesLoadTest extends TestBase {
 
     public function testMainPage() {
         $this->driver->get($this->baseUrl);
-        $this->assertEquals('Photography Services', $this->driver->findElement(WebDriverBy::tagName('h2'))->getText());
+        $this->assertEquals('Welcome to Saperstone Studios', $this->driver->findElement(WebDriverBy::tagName('h2'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 

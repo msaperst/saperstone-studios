@@ -56,7 +56,7 @@ class WeddingPagesLoadTest extends TestBase {
     public function testProductsPage() {
         $this->driver->get($this->baseUrl . 'wedding/products.php');
         $this->assertEquals('Products & Investment', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
-        $this->assertEquals(7, sizeof($this->driver->findElements(WebDriverBy::className('col-xs-12'))));
+        $this->assertEquals(8, sizeof($this->driver->findElements(WebDriverBy::className('col-xs-12'))));
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 
@@ -427,7 +427,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'wedding/gallery.php?w=38');
         $this->assertEquals('Product Gallery', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals('Home WeddingServicesProductsGallery', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
-        $this->assertEquals(7, sizeof($this->driver->findElements(WebDriverBy::className('col-xs-12'))));
+        $this->assertEquals(8, sizeof($this->driver->findElements(WebDriverBy::className('col-xs-12'))));
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
     }
 

@@ -138,9 +138,9 @@ Full UA: %s\r\n",
 
     public function testMainMenu() {
         $this->driver->get($this->baseUrl);
-        $this->assertEquals('Portraits
+        $this->assertEquals('B\'Nai Mitzvahs
+Portraits
 Weddings
-B\'Nai Mitzvahs
 Commercial
 Blog
 Information

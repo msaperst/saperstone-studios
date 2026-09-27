@@ -170,7 +170,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl);
         $this->adminLogin();
         $this->driver->get($this->baseUrl . 'blog/new.php');
-        $this->assertEquals('Write A New Blog Post', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+        $this->assertEquals('Create Post', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals('Home Blog New Post', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
         $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('update-post'))));
         $this->assertTrue($this->driver->findElement(WebDriverBy::id('save-post'))->isDisplayed());
@@ -223,7 +223,7 @@ Full UA: %s\r\n",
             $this->driver->get($this->baseUrl);
             $this->adminLogin();
             $this->driver->get($this->baseUrl . 'blog/new.php?p=999');
-            $this->assertEquals('Edit Your Blog Post', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+            $this->assertEquals('Edit Post', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
             $this->assertEquals('Home Blog Edit Post', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
             $this->assertTrue($this->driver->findElement(WebDriverBy::id('update-post'))->isDisplayed());
             $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('save-post'))));
@@ -259,7 +259,7 @@ Full UA: %s\r\n",
             $this->driver->get($this->baseUrl);
             $this->adminLogin();
             $this->driver->get($this->baseUrl . 'blog/new.php?p=999');
-            $this->assertEquals('Edit Your Blog Post', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+            $this->assertEquals('Edit Post', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
             $this->assertEquals('Home Blog Edit Post', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
             $this->assertTrue($this->driver->findElement(WebDriverBy::id('update-post'))->isDisplayed());
             $this->assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('save-post'))));
