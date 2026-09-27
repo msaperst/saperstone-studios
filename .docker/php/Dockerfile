@@ -4,10 +4,10 @@ FROM node:22-bookworm-slim AS assets
 # readable in the repository/local development environment.
 WORKDIR /build
 COPY public /build/public
-RUN find /build/public/js -maxdepth 1 -type f -name '*.js' ! -name '*.min.js' -print0 | \
-    while IFS= read -r -d '' file; do npx --yes terser@5.44.0 "$file" --compress --mangle --comments false -o "${file%.js}.min.js"; done && \
-    find /build/public/css -maxdepth 1 -type f -name '*.css' ! -name '*.min.css' -print0 | \
-    while IFS= read -r -d '' file; do npx --yes clean-css-cli@5.6.3 -o "${file%.css}.min.css" "$file"; done
+RUN find /build/public/js -maxdepth 1 -type f -name '*.js' ! -name '*.min.js' \
+    -exec sh -c 'for file do npx --yes terser@5.44.0 "$file" --compress --mangle --comments false -o "${file%.js}.min.js" || exit 1; done' sh {} + && \
+    find /build/public/css -maxdepth 1 -type f -name '*.css' ! -name '*.min.css' \
+    -exec sh -c 'for file do npx --yes clean-css-cli@5.6.3 -o "${file%.css}.min.css" "$file" || exit 1; done' sh {} +
 
 FROM composer:2 AS composer
 
