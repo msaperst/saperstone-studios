@@ -179,8 +179,6 @@
                 // Uncheck all checkboxes except for the disabled ones
                 $('input[name="bsgdpr[]"]:not(:disabled)').attr('data-auto', 'off').prop('checked', false);
 
-                $('label[name="bsgdpr[]"]').tooltip({offset: '0, 10'});
-
                 // Show advanced checkboxes
                 $('#' + settings.id + '-advanced-types').slideDown('fast', function () {
                     $('#' + settings.id + '-advanced-btn').prop('disabled', true);
