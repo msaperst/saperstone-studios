@@ -139,6 +139,29 @@ test('posts-manage editPost populates fields and loads full post metadata', () =
         data: {post: 21}
     });
     assert.equal(environment.element('#post').attr('post-location'), '/blog/images');
+    assert.equal(environment.element('#post-preview-image').val(), 'preview.jpg');
+    const previewOptions = environment.element('#post-preview-image').appended;
+    assert.equal(previewOptions.some((option) => option.text() === 'preview.jpg'), true);
+});
+
+test('posts-manage quick edit preserves a preview image not used in post content', () => {
+    const {context, environment} = createManageContext();
+    environment.queueGet('/api/get-blog-full.php', {
+        type: 'success',
+        data: {content: [], tags: []}
+    });
+
+    context.editManagedPost({
+        id: 23,
+        title: 'Separate Preview',
+        date: '2026-09-24',
+        active: '0',
+        preview: '/blog/images/featured-only.jpg',
+        offset: '0'
+    });
+
+    assert.equal(environment.element('#post-preview-image').val(), 'featured-only.jpg');
+    assert.equal(environment.element('#post').attr('post-location'), '/blog/images');
 });
 
 test('posts-manage deletePost removes the DataTable row after confirmation', () => {
