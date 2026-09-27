@@ -87,7 +87,7 @@ class CommercialPagesLoadTest extends TestBase {
         $this->driver->get($this->baseUrl . 'commercial/galleries.php?w=');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/commercial/galleries.php?w=\r
 \t\tThey came from page Unknown\r
@@ -250,7 +250,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'commercial/gallery.php?w=54');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/commercial/gallery.php?w=54\r
 \t\tThey came from page Unknown\r
@@ -296,7 +296,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'commercial/reviews.php?c=');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/commercial/reviews.php?c=\r
 \t\tThey came from page Unknown\r
@@ -318,7 +318,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'commercial/reviews.php?c=abc');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/commercial/reviews.php?c=abc\r
 \t\tThey came from page Unknown\r

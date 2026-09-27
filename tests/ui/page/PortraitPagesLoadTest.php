@@ -100,7 +100,7 @@ class PortraitPagesLoadTest extends TestBase {
         $this->driver->get($this->baseUrl . 'portrait/galleries.php?w=');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/portrait/galleries.php?w=\r
 \t\tThey came from page Unknown\r
@@ -362,7 +362,7 @@ This box also allows for display versatility. Place your favorite image on top t
         $this->driver->get($this->baseUrl . 'portrait/gallery.php?w=2');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/portrait/gallery.php?w=2\r
 \t\tThey came from page Unknown\r
@@ -424,7 +424,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'portrait/reviews.php?c=');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/portrait/reviews.php?c=\r
 \t\tThey came from page Unknown\r
@@ -446,7 +446,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'portrait/reviews.php?c=abc');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/portrait/reviews.php?c=abc\r
 \t\tThey came from page Unknown\r

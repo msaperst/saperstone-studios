@@ -18,7 +18,7 @@ class UserContractsLoadTest extends TestBase {
     public function testCommercialContract() {
         $this->driver->get($this->baseUrl . 'user/contract/commercial.php');
         $this->assertTrue($this->driver->findElement(WebDriverBy::xpath('//*[text()="401"]'))->isDisplayed());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/contract/commercial.php\r
 \t\tThey came from page Unknown\r
@@ -47,7 +47,7 @@ Full UA: %s\r\n",
     public function testContractorContract() {
         $this->driver->get($this->baseUrl . 'user/contract/contractor.php');
         $this->assertTrue($this->driver->findElement(WebDriverBy::xpath('//*[text()="401"]'))->isDisplayed());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/contract/contractor.php\r
 \t\tThey came from page Unknown\r
@@ -76,7 +76,7 @@ Full UA: %s\r\n",
     public function testEventContract() {
         $this->driver->get($this->baseUrl . 'user/contract/event.php');
         $this->assertTrue($this->driver->findElement(WebDriverBy::xpath('//*[text()="401"]'))->isDisplayed());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/contract/event.php\r
 \t\tThey came from page Unknown\r
@@ -105,7 +105,7 @@ Full UA: %s\r\n",
     public function testPartnershipContract() {
         $this->driver->get($this->baseUrl . 'user/contract/partnership.php');
         $this->assertTrue($this->driver->findElement(WebDriverBy::xpath('//*[text()="401"]'))->isDisplayed());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/contract/partnership.php\r
 \t\tThey came from page Unknown\r
@@ -134,7 +134,7 @@ Full UA: %s\r\n",
     public function testPortraitContract() {
         $this->driver->get($this->baseUrl . 'user/contract/portrait.php');
         $this->assertTrue($this->driver->findElement(WebDriverBy::xpath('//*[text()="401"]'))->isDisplayed());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/contract/portrait.php\r
 \t\tThey came from page Unknown\r
@@ -163,7 +163,7 @@ Full UA: %s\r\n",
     public function testWeddingContract() {
         $this->driver->get($this->baseUrl . 'user/contract/wedding.php');
         $this->assertTrue($this->driver->findElement(WebDriverBy::xpath('//*[text()="401"]'))->isDisplayed());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/contract/wedding.php\r
 \t\tThey came from page Unknown\r

@@ -120,6 +120,13 @@ class CustomAsserts {
     }
 
     /**
+     * Error pages send their reports to the webmaster via Mailpit in CI.
+     */
+    public static function assertErrorEmailMatches(string $subject, string $text, string $html): void {
+        self::assertEmailMatches('msaperst@gmail.com', 'error@saperstonestudios.com', $subject, $text, $html);
+    }
+
+    /**
      * Finds a specific email and asserts its content, including SMTP credentials and attachments.
      */
     public static function assertEmailMatches(

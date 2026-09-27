@@ -25,7 +25,7 @@ class TemplatesLoadTest extends TestBase {
         $this->assertEquals('Home 404', $this->driver->findElement(WebDriverBy::className('breadcrumb'))->getText());
         $this->assertEquals('Looks like you got turned around. The server has not found anything matching the Request-URI.', $this->driver->findElements(WebDriverBy::className('lead'))[1]->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/badPage123\r
 \t\tThey came from page Unknown\r

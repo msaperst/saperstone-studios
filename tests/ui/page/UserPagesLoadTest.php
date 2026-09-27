@@ -19,7 +19,7 @@ class UserPagesLoadTest extends TestBase {
         $this->driver->get($this->baseUrl . 'user/contracts.php');
         $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/contracts.php\r
 \t\tThey came from page Unknown\r
@@ -49,7 +49,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'user/index.php');
         $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/index.php\r
 \t\tThey came from page Unknown\r
@@ -93,7 +93,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'user/profile.php');
         $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/profile.php\r
 \t\tThey came from page Unknown\r
@@ -127,7 +127,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'user/users.php');
         $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/users.php\r
 \t\tThey came from page Unknown\r

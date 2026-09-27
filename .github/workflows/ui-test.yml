@@ -22,11 +22,6 @@ jobs:
       - name: Set up full-stack test application
         uses: ./.github/actions/setup-full-stack
 
-      - name: Set up Gmail Credentials and Token
-        run: |
-          echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
-          echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
-
       - name: System Setup
         run: |
           composer clean
@@ -76,16 +71,11 @@ jobs:
       - name: Set up full-stack test application
         uses: ./.github/actions/setup-full-stack
 
-      - name: Set up Gmail Credentials and Token
-        run: |
-          echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
-          echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
-
       - name: System Setup
         run: |
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
-          sudo apt install chromium-chromedriver
+          sudo apt install chromium-chromedriver imagemagick
           chromedriver --port=4444 &
 
       - name: Behat Tests

@@ -68,7 +68,7 @@ class AlbumPageLoadTest extends TestBase {
         $this->driver->get($this->baseUrl . 'user/album.php?');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/user/album.php?\r
 \t\tThey came from page Unknown\r
@@ -90,7 +90,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'user/album.php?album=');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/user/album.php?album=\r
 \t\tThey came from page Unknown\r
@@ -112,7 +112,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'user/album.php?album=998');
         $this->assertEquals('404 Not Found', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('404 Error',
+        CustomAsserts::assertErrorEmailMatches('404 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 404 on page %s://%s/user/album.php?album=998\r
 \t\tThey came from page Unknown\r
@@ -160,7 +160,7 @@ Full UA: %s\r\n",
         $this->driver->get($this->baseUrl . 'user/album.php?album=99999');
         $this->assertEquals('401 Unauthorized', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $this->assertEquals($this->copyright, $this->driver->findElement(WebDriverBy::className('copyright'))->getText());
-        CustomAsserts::assertEmailMatches('401 Error',
+        CustomAsserts::assertErrorEmailMatches('401 Error',
             "This is an automatically generated message from Saperstone Studios\r
 \t\tSomeone got a 401 on page %s://%s/user/album.php?album=99999\r
 \t\tThey came from page Unknown\r
