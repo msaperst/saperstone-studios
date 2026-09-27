@@ -8,7 +8,8 @@ function createContext() {
     environment.element('body').mousemove = function (handler) { this.handlers.set('mousemove', handler); return this; };
     const context = loadBrowserScript('public/js/dragndrop.js', {
         $: environment.$, document: environment.document,
-        confirm: () => true
+        confirm: () => true,
+        imageId: 0
     });
     return {context, environment};
 }
@@ -137,6 +138,54 @@ test('double-clicking a populated image section handle returns its images to the
     assert.equal(image.appendTarget, '#holder');
     assert.equal(holder.removed, true);
 });
+test('text section removal can be cancelled when it contains content', () => {
+    const environment = createJQueryEnvironment();
+    environment.element('body').mousemove = function (handler) { this.handlers.set('mousemove', handler); return this; };
+    const context = loadBrowserScript('public/js/dragndrop.js', {
+        $: environment.$, document: environment.document, imageId: 0,
+        confirm: () => false
+    });
+
+    context.addTextArea('<p>Keep me</p>');
+    const holder = environment.element('#post-content').appended[0];
+    const content = holder.appended[1];
+    content.summernoteCode = '<p>Keep me</p>';
+
+    holder.find('.blog-section-drag-handle').handlers.get('dblclick')();
+
+    assert.equal(holder.removed, false);
+});
+
+test('text section removal deletes empty content without confirmation', () => {
+    const {context, environment} = createContext();
+
+    context.addTextArea('');
+    const holder = environment.element('#post-content').appended[0];
+    holder.appended[1].summernoteCode = '';
+
+    holder.find('.blog-section-drag-handle').handlers.get('dblclick')();
+
+    assert.equal(holder.removed, true);
+});
+
+test('image section removal can be cancelled without moving images', () => {
+    const environment = createJQueryEnvironment();
+    environment.element('body').mousemove = function (handler) { this.handlers.set('mousemove', handler); return this; };
+    const context = loadBrowserScript('public/js/dragndrop.js', {
+        $: environment.$, document: environment.document, imageId: 0,
+        confirm: () => false
+    });
+
+    context.addImageArea([{location:'one.jpg', top:0, left:0, width:100, height:100}]);
+    const holder = environment.element('#post-content').appended[0];
+    const image = holder.appended[1].appended[0];
+
+    holder.appended[0].handlers.get('dblclick')();
+
+    assert.equal(holder.removed, false);
+    assert.equal(image.appendTarget, undefined);
+});
+
 test('section drag handle exposes accessible reorder instructions', () => {
     const {context} = createContext();
 
