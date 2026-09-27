@@ -113,7 +113,7 @@ if (isset ($_GET ['id'])) {
                            aria-label='Unit' type='text' placeholder='Unit'
                            value='<?php echo $lineItem['unit']; ?>'/>
                     <button type="button" class="btn btn-xs btn-danger remove-contract-line-item-btn"
-                            data-toggle="tooltip" data-placement="right" title="Remove Line Item">
+                            title="Remove Line Item">
                         <em class="fa fa-minus"></em>
                     </button>
                 </span>
@@ -121,8 +121,8 @@ if (isset ($_GET ['id'])) {
             }
             ?>
             <button id="add-contract-line-item-btn" type="button"
-                    class="btn btn-xs btn-success" data-toggle="tooltip"
-                    data-placement="right" title="Add New Line Item">
+                    class="btn btn-xs btn-success"
+                    title="Add New Line Item">
                 <em class="fa fa-plus"></em>
             </button>
             <br/></li>
