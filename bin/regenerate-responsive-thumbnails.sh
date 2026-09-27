@@ -33,8 +33,11 @@ fi
 album_has_unsupported_images() {
     local id=$1
     local unsupported
-    unsupported=$(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
-        -e "SELECT location FROM album_images WHERE album = $id AND LOWER(SUBSTRING_INDEX(location, '.', -1)) NOT IN ('jpg', 'jpeg', 'png') ORDER BY location LIMIT 1;")
+    if ! unsupported=$(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
+        -e "SELECT location FROM album_images WHERE album = $id AND LOWER(SUBSTRING_INDEX(location, '.', -1)) NOT IN ('jpg', 'jpeg', 'png') ORDER BY location LIMIT 1;"); then
+        echo "Unable to check image types for album $id." >&2
+        return 2
+    fi
 
     if [[ -n "$unsupported" ]]; then
         echo "$unsupported"
@@ -74,9 +77,15 @@ unsupported=0
 while IFS= read -r id; do
     [[ -n "$id" ]] || continue
 
-    if unsupported_image=$(album_has_unsupported_images "$id"); then
+    unsupported_image=$(album_has_unsupported_images "$id")
+    type_check_status=$?
+    if (( type_check_status == 0 )); then
         echo "Skipping album $id: unsupported image type found (${unsupported_image##*/})."
         ((unsupported+=1))
+        continue
+    elif (( type_check_status != 1 )); then
+        echo "Album $id failed safety check; refusing to migrate it." >&2
+        ((failed+=1))
         continue
     fi
 
