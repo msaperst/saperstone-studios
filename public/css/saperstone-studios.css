@@ -1242,7 +1242,15 @@ label > input, label > u > input, label > textarea {
 .blog-editor-shell {
     background: #f5f7f9;
     min-height: 100vh;
-    padding: 35px 0 60px;
+    padding: 0 0 60px;
+}
+
+.blog-editor-shell > .container:first-child {
+    background: #fff;
+    max-width: none;
+    padding-left: calc((100% - 1170px) / 2);
+    padding-right: calc((100% - 1170px) / 2);
+    width: 100%;
 }
 
 .blog-editor-container {
@@ -1477,10 +1485,6 @@ label > input, label > u > input, label > textarea {
 }
 
 @media (max-width: 767px) {
-    .blog-editor-shell {
-        padding-top: 70px;
-    }
-
     .blog-editor-container {
         width: calc(100% - 24px);
     }
@@ -1558,5 +1562,13 @@ label > input, label > u > input, label > textarea {
     .blog-share-footer {
         margin-bottom: 20px;
         text-align: left;
+    }
+}
+
+
+@media (max-width: 1199px) {
+    .blog-editor-shell > .container:first-child {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }
