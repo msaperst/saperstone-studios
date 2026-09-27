@@ -121,7 +121,7 @@ class ContactFeatureContext implements Context {
      * @throws ExceptionAlias
      */
     public function iSeeAContactEmailSentToTheUser() {
-        CustomAsserts::assertEmailEquals('Thank you for contacting Saperstone Studios', 'Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.', '<html><body>Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.</body></html>');
+        CustomAsserts::assertEmailMatches('msaperst+sstest@gmail.com', 'noreply@saperstonestudios.com', 'Thank you for contacting Saperstone Studios', 'Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.', '<html><body>Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.</body></html>');
     }
 
     /**
@@ -131,7 +131,7 @@ class ContactFeatureContext implements Context {
      */
     public function iSeeAContactEmailSendToTheAdminWith(TableNode $table) {
         $data = $table->getRow(1);
-        CustomAsserts::assertEmailMatches('Saperstone Studios Contact Form: Max', "This is an automatically generated message from Saperstone Studios
+        CustomAsserts::assertEmailMatches('contact@saperstonestudios.com', $data[2], 'Saperstone Studios Contact Form: Max', "This is an automatically generated message from Saperstone Studios
 Name: {$data[0]}
 Phone: {$data[1]}
 Email: {$data[2]}

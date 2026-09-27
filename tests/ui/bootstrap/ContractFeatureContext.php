@@ -167,10 +167,10 @@ class ContractFeatureContext implements Context {
         $sql = new Sql();
         $contractDetails = $sql->getRow("SELECT * FROM contracts WHERE contracts.id = $contractId");
         $sql->disconnect();
-        CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract',
+        CustomAsserts::assertEmailMatches($contractDetails['email'], 'contracts@saperstonestudios.com', 'Saperstone Studios Commercial Contract',
             "Thank you for signing your contract. You can pay your invoice online at nope!.\r\n\r\n",
             '<html><body><p>Thank you for signing your contract. You can pay your invoice online <a href=\'nope!\' target=\'_blank\'>here</a>.</p></body></html>',
-            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            null, dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
     }
 
     /**
@@ -182,9 +182,9 @@ class ContractFeatureContext implements Context {
         $sql = new Sql();
         $contractDetails = $sql->getRow("SELECT * FROM contracts WHERE contracts.id = $contractId");
         $sql->disconnect();
-        CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract Signed',
+        CustomAsserts::assertEmailMatches((string)getenv('EMAIL_CONTRACTS'), 'contracts@saperstonestudios.com', 'Saperstone Studios Commercial Contract Signed',
             "This is an automatically generated message from Saperstone Studios\r\n\r\nMax has signed their contract, this is a copy of it for your records. \r\n\r\n",
             '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Max has signed their contract, this is a copy of it for your records. </p></body></html>',
-            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            null, dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
     }
 }

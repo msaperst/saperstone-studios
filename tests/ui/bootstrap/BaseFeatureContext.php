@@ -124,7 +124,8 @@ class BaseFeatureContext implements Context {
     public function cleanup(AfterScenarioScope $scope): void {
         $scenarioName = $scope->getFeature()->getTitle() . ' : ' . $scope->getScenario()->getTitle() . ' : ' . $scope->getScenario()->getLine();
         $screenshot = $this->driver->takeScreenshot();
-        $this->driver->takeScreenshot(BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . str_replace(':', '-', $scenarioName) . '.png');
+        $safeScenarioName = preg_replace('/[^A-Za-z0-9._-]+/', '-', $scenarioName);
+        $this->driver->takeScreenshot(BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $safeScenarioName . '.png');
         $this->driver->quit();
         // log our screenshot
         $output = fopen(BaseFeatureContext::reportFile, 'a');
