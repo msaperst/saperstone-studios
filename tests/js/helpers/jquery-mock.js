@@ -539,7 +539,7 @@ function createJQueryEnvironment(options = {}) {
         }
         if (typeof selector === 'string' && selector.startsWith('<')) {
             const created = new MockElement(environment, `__created_${elements.size}__`);
-            const tagMatch = selector.match(/^<\\s*([a-z0-9-]+)/i);
+            const tagMatch = selector.match(/^<\s*([a-z0-9-]+)/i);
             created.tagName = tagMatch ? tagMatch[1].toLowerCase() : null;
             return created;
         }
