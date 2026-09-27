@@ -937,6 +937,22 @@ a.plain {
     margin-top: 20px;
 }
 
+.blog-section-drag-handle {
+    background: #f7f8fa;
+    border: 1px solid #d8dde3;
+    border-bottom: 0;
+    border-radius: 4px 4px 0 0;
+    color: #66717d;
+    cursor: move;
+    font-size: 12px;
+    padding: 6px 10px;
+    user-select: none;
+}
+
+.blog-section-drag-handle .fa {
+    margin-right: 4px;
+}
+
 /* For our selector */
 .images {
     display: block;
