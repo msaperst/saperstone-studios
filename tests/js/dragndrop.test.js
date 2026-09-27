@@ -130,6 +130,7 @@ test('double-clicking a populated image section handle returns its images to the
     const handle = holder.appended[0];
     const imageBuilder = holder.appended[1];
     const image = imageBuilder.appended[0];
+    imageBuilder.attr('id', 'imageArea-0');
     image.parentResult = imageBuilder;
     context.resizeImages = () => {};
 
