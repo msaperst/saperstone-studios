@@ -66,28 +66,32 @@ class StringsUnitTest extends TestCase {
         mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
         $file = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js';
         file_put_contents($file, 'test');
-        touch($file, 1700000000);
+        $version = substr(hash_file('sha256', $file), 0, 12);
 
-        $this->assertEquals('/js/app.js?v=1700000000', Strings::assetUrl('/js/app.js', $root));
-        $this->assertEquals('/js/app.js?v=1700000000', Strings::assetUrl('/js/app.js', $root));
+        $this->assertEquals('/js/app.js?v=' . $version, Strings::assetUrl('/js/app.js', $root));
+        $this->assertEquals('/js/app.js?v=' . $version, Strings::assetUrl('/js/app.js', $root));
 
         unlink($file);
         rmdir($root . DIRECTORY_SEPARATOR . 'js');
         rmdir($root);
     }
 
-    public function testAssetUrlChangesWhenModificationTimeChanges() {
+    public function testAssetUrlChangesWhenFileContentChanges() {
         $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
         mkdir($root . DIRECTORY_SEPARATOR . 'css', 0777, true);
         $file = $root . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'site.css';
-        file_put_contents($file, 'test');
-        touch($file, 1700000000);
+        file_put_contents($file, 'first');
         $first = Strings::assetUrl('/css/site.css', $root);
-        touch($file, 1700000100);
-        clearstatcache(true, $file);
+        file_put_contents($file, 'second');
 
-        $this->assertEquals('/css/site.css?v=1700000000', $first);
-        $this->assertEquals('/css/site.css?v=1700000100', Strings::assetUrl('/css/site.css', $root));
+        $this->assertEquals(
+            '/css/site.css?v=' . substr(hash('sha256', 'first'), 0, 12),
+            $first
+        );
+        $this->assertEquals(
+            '/css/site.css?v=' . substr(hash('sha256', 'second'), 0, 12),
+            Strings::assetUrl('/css/site.css', $root)
+        );
 
         unlink($file);
         rmdir($root . DIRECTORY_SEPARATOR . 'css');
@@ -99,10 +103,10 @@ class StringsUnitTest extends TestCase {
         mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
         $file = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js';
         file_put_contents($file, 'test');
-        touch($file, 1700000000);
+        $version = substr(hash_file('sha256', $file), 0, 12);
 
         $this->assertEquals(
-            '/js/app.js?mode=admin&v=1700000000#settings',
+            '/js/app.js?mode=admin&v=' . $version . '#settings',
             Strings::assetUrl('/js/app.js?mode=admin#settings', $root)
         );
 

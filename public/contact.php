@@ -76,7 +76,7 @@ $user = User::fromSystem();
             <h3>Send us a Message</h3>
             <form name="sentMessage" id="contactForm" novalidate>
                 <input type="text" id="loadtime" tabindex="-1" autocomplete="off" class="csp-hidden"
-                       value="<?php echo time(); ?>">
+                       value="<?php echo base_convert((string)time(), 10, 36); ?>">
                 <input type="text" id="company" tabindex="-1" autocomplete="off" class="csp-hidden">
                 <div class="control-group form-group">
                     <div class="controls">
