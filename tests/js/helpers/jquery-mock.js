@@ -329,7 +329,7 @@ class MockElement {
     children(selector) {
         const children = this.appended.filter((child) => child && typeof child === 'object');
         const matching = selector === 'img'
-            ? children.filter((child) => child.selector === '<img>' || child.selector === 'img')
+            ? children.filter((child) => child.tagName === 'img')
             : children;
         return {
             each(callback) {
@@ -538,7 +538,10 @@ function createJQueryEnvironment(options = {}) {
             return selector;
         }
         if (typeof selector === 'string' && selector.startsWith('<')) {
-            return new MockElement(environment, `__created_${elements.size}__`);
+            const created = new MockElement(environment, `__created_${elements.size}__`);
+            const tagMatch = selector.match(/^<\\s*([a-z0-9-]+)/i);
+            created.tagName = tagMatch ? tagMatch[1].toLowerCase() : null;
+            return created;
         }
         return element(String(selector));
     }
