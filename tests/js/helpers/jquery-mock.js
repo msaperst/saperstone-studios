@@ -220,6 +220,11 @@ class MockElement {
         return this;
     }
 
+    toggle(state) {
+        this.visible = state === undefined ? !this.visible : Boolean(state);
+        return this;
+    }
+
     remove() {
         this.removed = true;
         return this;
