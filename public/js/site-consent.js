@@ -115,7 +115,7 @@
 
                         var fieldID = settings.id + '-option-' + field.name;
 
-                        advancedCookiesToSelectList += '<li><input type="checkbox" id="' + fieldID + '" name="bsgdpr[]" value="' + field.name + '" data-auto="on" ' + cookieDisabledText + '> <label name="bsgdpr[]" data-toggle="tooltip" data-placement="right" for="' + fieldID + '"' + cookieDescription + '>' + field.title + '</label></li>';
+                        advancedCookiesToSelectList += '<li><input type="checkbox" id="' + fieldID + '" name="bsgdpr[]" value="' + field.name + '" data-auto="on" ' + cookieDisabledText + '> <label name="bsgdpr[]" for="' + fieldID + '"' + cookieDescription + '>' + field.title + '</label></li>';
                     }
                 });
 
@@ -178,8 +178,6 @@
                 .on('click.bsgdprcookies', '#' + settings.id + '-advanced-btn', function () {
                 // Uncheck all checkboxes except for the disabled ones
                 $('input[name="bsgdpr[]"]:not(:disabled)').attr('data-auto', 'off').prop('checked', false);
-
-                $('label[name="bsgdpr[]"]').tooltip({offset: '0, 10'});
 
                 // Show advanced checkboxes
                 $('#' + settings.id + '-advanced-types').slideDown('fast', function () {

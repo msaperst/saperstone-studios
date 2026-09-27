@@ -19,8 +19,6 @@ $(document).ready(function () {
     $("#edit-gallery-btn").click(function () {
         editGallery(getQueryVariable('w'));
     });
-
-    $('[data-toggle="tooltip"]').tooltip();
 });
 
 function editImage() {

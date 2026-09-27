@@ -53,8 +53,8 @@ $user->forceAdmin();
                         <tr>
                             <th>
                                 <button id="add-contract-btn" type="button"
-                                    class="btn btn-xs btn-success" data-toggle="tooltip"
-                                    data-placement="right" title="Write New Contract">
+                                    class="btn btn-xs btn-success"
+                                    title="Write New Contract">
                                     <em class="fa fa-plus"></em>
                                 </button>
                             </th>

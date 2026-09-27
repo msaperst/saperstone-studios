@@ -12,11 +12,11 @@ $(document).ready(function () {
             "data": function (row) {
                 var buttons;
                 if (row.signature === "" || row.signature === null) {
-                    buttons = '<button type="button" class="btn btn-xs btn-warning edit-contract-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-contract-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-file-text-o"></i></button>';
+                    buttons = '<button type="button" class="btn btn-xs btn-warning edit-contract-btn" title="Edit ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-info view-contract-btn" title="View ' + row.name + ' ' + row.session + ' Details"><i class="fa fa-file-text-o"></i></button>';
                 } else {
-                    buttons = '<button type="button" class="btn btn-xs btn-info dl-contract-btn" data-toggle="tooltip" data-placement="right" title="Download ' + row.name + ' ' + row.session + ' Contract"><i class="fa fa-file-pdf-o"></i></button>';
+                    buttons = '<button type="button" class="btn btn-xs btn-info dl-contract-btn" title="Download ' + row.name + ' ' + row.session + ' Contract"><i class="fa fa-file-pdf-o"></i></button>';
                     if (row.link !== "") {
-                        buttons += ' <button type="button" class="btn btn-xs btn-success view-contract-btn" data-toggle="tooltip" data-placement="right" title="View Embedded ' + row.name + ' ' + row.session + ' Contract"><i class="fa fa-file-pdf-o"></i></button>';
+                        buttons += ' <button type="button" class="btn btn-xs btn-success view-contract-btn" title="View Embedded ' + row.name + ' ' + row.session + ' Contract"><i class="fa fa-file-pdf-o"></i></button>';
                     }
                 }
                 return buttons;
@@ -69,7 +69,6 @@ $(document).ready(function () {
     });
     $('#contracts').on('draw.dt search.dt', function () {
         setupEdit();
-        $('[data-toggle="tooltip"]').tooltip();
     });
 
     $('#add-contract-btn').click(function () {
@@ -101,7 +100,6 @@ function setupEdit() {
 }
 
 function setupAddLineItem() {
-    $('[data-toggle="tooltip"]').tooltip();
     $('#add-contract-line-item-btn').off().click(function () {
         var itemInput = $('<input>');
         itemInput.addClass('form-control contract-item');
@@ -145,8 +143,7 @@ function setupAddLineItem() {
         removeButton.addClass('btn btn-xs btn-danger remove-contract-line-item-btn');
         removeButton.attr({
             'type': 'button',
-            'data-toggle': 'tooltip',
-            'data-placement': 'right',
+            
             'title': 'Remove Line Item'
         });
         var icon = $('<em>');

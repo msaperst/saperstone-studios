@@ -21,7 +21,12 @@ test('user table is configured with expected API and display columns', () => {
     assert.deepEqual(JSON.parse(JSON.stringify(config.order)), [[2, 'asc']]);
     assert.equal(config.columnDefs[2].data, 'usr');
     assert.equal(config.columnDefs[3].data({firstName: 'Max', lastName: 'User'}), 'Max User');
-    assert.match(config.columnDefs[0].data({usr: 'sample'}), /edit-user-btn/);
+    const actions = config.columnDefs[0].data({usr: 'sample'});
+    assert.match(actions, /edit-user-btn/);
+    assert.match(actions, /title="Edit sample Details"/);
+    assert.match(actions, /title="View sample Activities"/);
+    assert.match(actions, /title="View Site As sample"/);
+    assert.doesNotMatch(actions, /data-toggle|data-placement/);
 });
 
 test('created user rows retain user id for actions', () => {
