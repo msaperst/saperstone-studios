@@ -87,7 +87,7 @@ test('addTextArea creates a draggable text section and initializes Summernote', 
     assert.equal(holder.appended.length, 2);
     const handle = holder.appended[0];
     assert.equal(handle.hasClass('blog-section-drag-handle'), true);
-    assert.match(handle.attr('title'), /Drag text section/);
+    assert.match(handle.attr('title'), /Drag text section.*double-click to remove/);
     const content = holder.appended[1];
     assert.equal(content.hasClass('blog-text-content'), true);
     assert.equal(content.html(), '<p>Hello</p>');
@@ -115,7 +115,7 @@ test('addImageArea gives populated image sections a reorder handle', () => {
     assert.equal(holder.hasClass('blog-editable-images'), true);
     assert.equal(holder.hasClass('blog-empty-image-section'), false);
     assert.equal(holder.appended[0].hasClass('blog-section-drag-handle'), true);
-    assert.match(holder.appended[0].attr('title'), /Drag image section/);
+    assert.match(holder.appended[0].attr('title'), /Drag image section.*double-click to remove/);
     assert.equal(environment.element('#post-content').sortableOptions.items,
         '> .blog-editable-text, > .blog-editable-images');
 });
