@@ -27,6 +27,10 @@ test('albums-admin.js configures admin columns and thumbnail filtering', () => {
     assert.equal(JSON.stringify(config.order), JSON.stringify([[1, 'asc']]));
     assert.equal(config.columnDefs.length, 8);
     assert.equal(config.columnDefs[5].className, 'album-thumbnails');
+    const actions = config.columnDefs[0].data({name: 'Wedding'});
+    assert.match(actions, /title="Edit Wedding Album Details"/);
+    assert.match(actions, /title="View Wedding Activities"/);
+    assert.doesNotMatch(actions, /data-toggle|data-placement/);
 
     environment.element('#thumbnail-status-filter').val('Missing').trigger('change');
     assert.deepEqual(environment.calls.columnSearch[0], {
