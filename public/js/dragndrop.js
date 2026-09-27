@@ -42,16 +42,17 @@ function addTextArea(text) {
     $(elementBuilder).append(textHolder);
     textContent.summernote();
 
-    // set our removal functionality
-    textHolder.dblclick(function () {
-        text = $(this).find('textarea').val() || $(this).find('.blog-text-content').html() || "";
-        if (text !== "") {
+    // Double-click the drag handle to remove the section without conflicting
+    // with normal text editing inside Summernote.
+    textHolder.find('.blog-section-drag-handle').dblclick(function () {
+        var currentText = textContent.summernote('code');
+        if (currentText !== "") {
             var r = confirm("This input area has text in it, are you sure you want to delete it?");
             if (r === false) {
                 return;
             }
         }
-        $(this).remove();
+        textHolder.remove();
     });
     makeSortable();
 }
@@ -114,7 +115,13 @@ function addImageArea(images) {
     imageOrder[imageAreaID] = imageArray;
     if (images.length === 0) {
         imageEle.addClass('blog-empty-image-section');
-        imageEle.append(createSectionDragHandle('Drag empty image section to reorder'));
+        var imageHandle = createSectionDragHandle('Drag empty image section to reorder');
+        imageHandle.dblclick(function () {
+            if (confirm("Do you want to delete this image area?")) {
+                imageEle.remove();
+            }
+        });
+        imageEle.append(imageHandle);
     }
     imageEle.append(imageBuilder);
     imageEle.append("<div id='temp' class='image-builder-temp'></div>");
