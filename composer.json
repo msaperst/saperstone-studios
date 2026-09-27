@@ -41,7 +41,7 @@
     "integration-post-test": "docker rm -f $(docker stop $(docker ps -a -q --filter ancestor=integration_sql --format=\"{{.ID}}\")) || true; docker rm -f integration_mailpit || true",
     "coverage-test": "export $(grep -v '^#' .env | xargs); XDEBUG_MODE=coverage vendor/bin/phpunit --configuration phpunit-ct.xml",
     "api-test": "export $(grep -v '^#' .env | xargs); vendor/bin/phpunit --configuration phpunit-api.xml",
-    "ui-page-test": "export $(grep -v '^#' .env | xargs); export HEADLESS=true; vendor/bin/phpunit --configuration phpunit-ui.xml",
+    "http-page-test": "export $(grep -v '^#' .env | xargs); vendor/bin/phpunit --configuration phpunit-http-page.xml",\n    "ui-page-test": "export $(grep -v '^#' .env | xargs); export HEADLESS=true; vendor/bin/phpunit --configuration phpunit-ui.xml",
     "ui-behat-test": "export $(grep -v '^#' .env | xargs); export HEADLESS=true; vendor/bin/behat"
   }
 }
