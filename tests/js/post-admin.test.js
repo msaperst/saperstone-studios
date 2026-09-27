@@ -409,10 +409,10 @@ test('post-admin collectPost serializes positioned image groups', () => {
             type: 'images',
             imgs: [{
                 location: '/tmp/image.jpg',
-                top: '6px',
-                left: '38px',
-                width: 570,
-                height: 380
+                top: '5px',
+                left: '9px',
+                width: 135,
+                height: 90
             }]
         }
     });
