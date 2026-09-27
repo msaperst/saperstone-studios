@@ -227,6 +227,7 @@ $sql->disconnect();
         foreach ($content as $block) {
             $groups[$block->getGroup()][] = $block;
         }
+        ksort($groups, SORT_NUMERIC);
         foreach ($groups as $group) {
             if ($group[0] instanceof BlogText) {
                 $editorGroups[] = array('type' => 'text', 'text' => $group[0]->getText());
