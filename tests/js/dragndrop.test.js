@@ -183,7 +183,8 @@ test('image section removal can be cancelled without moving images', () => {
     holder.appended[0].handlers.get('dblclick')();
 
     assert.equal(holder.removed, false);
-    assert.equal(image.appendTarget, undefined);
+    assert.equal(image.appendedTo, undefined);
+    assert.equal(image.parentResult, holder.appended[1]);
 });
 
 test('section drag handle exposes accessible reorder instructions', () => {
