@@ -590,9 +590,7 @@ function setPreview() {
     $('#post-preview-holder .blog-preview-empty').toggle(!$('#post-preview-image').val());
     var img = $('<img>');
     img.attr('src', $('#post').attr('post-location') + '/' + $('#post-preview-image').val());
-    img.css({
-        width: '100%'
-    });
+    img.addClass('blog-preview-image');
     $('#post-preview-holder').append(img);
     img.draggable({
         axis: "y",
