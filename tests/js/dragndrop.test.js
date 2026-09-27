@@ -61,3 +61,56 @@ test('removeImage returns an image to the image holder and clears layout styles'
     assert.equal(img.styles.position, 'relative');
     assert.equal(img.styles.left, '');
 });
+
+
+test('makeSortable limits section reordering to text and empty image sections', () => {
+    const {context, environment} = createContext();
+
+    context.makeSortable();
+
+    const options = environment.element('#post-content').sortableOptions;
+    assert.equal(options.items, '> .blog-editable-text, > .blog-empty-image-section');
+    assert.equal(options.handle, '.blog-section-drag-handle');
+    options.start();
+    assert.equal(context.isDragged, true);
+    options.stop();
+    assert.equal(context.isDragged, false);
+});
+
+test('addTextArea creates a draggable text section and initializes Summernote', () => {
+    const {context, environment} = createContext();
+
+    context.addTextArea('<p>Hello</p>');
+
+    const holder = environment.element('#post-content').appended[0];
+    assert.equal(holder.hasClass('blog-editable-text'), true);
+    assert.equal(holder.appended.length, 2);
+    const handle = holder.appended[0];
+    assert.equal(handle.hasClass('blog-section-drag-handle'), true);
+    assert.match(handle.attr('title'), /Drag text section/);
+    const content = holder.appended[1];
+    assert.equal(content.hasClass('blog-text-content'), true);
+    assert.equal(content.html(), '<p>Hello</p>');
+});
+
+test('addImageArea makes only empty image sections reorderable', () => {
+    const {context, environment} = createContext();
+
+    context.addImageArea([]);
+
+    const holder = environment.element('#post-content').appended[0];
+    assert.equal(holder.hasClass('blog-editable-images'), true);
+    assert.equal(holder.hasClass('blog-empty-image-section'), true);
+    assert.equal(holder.appended[0].hasClass('blog-section-drag-handle'), true);
+    assert.equal(environment.element('#post-content').sortableOptions.handle, '.blog-section-drag-handle');
+});
+
+test('section drag handle exposes accessible reorder instructions', () => {
+    const {context} = createContext();
+
+    const handle = context.createSectionDragHandle('Drag this section');
+
+    assert.equal(handle.attr('title'), 'Drag this section');
+    assert.equal(handle.attr('aria-label'), 'Drag this section');
+    assert.match(handle.html(), /fa-arrows-v/);
+});
