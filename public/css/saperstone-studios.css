@@ -1437,6 +1437,8 @@ label > input, label > u > input, label > textarea {
     height: 190px;
     min-height: 190px;
     overflow: hidden;
+    position: relative;
+    z-index: 1;
 }
 
 .blog-preview-holder.blog-preview-mode .blog-preview-image {
