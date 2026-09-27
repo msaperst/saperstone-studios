@@ -10,7 +10,7 @@ usage() {
     echo "Backfills the responsive 400/800/1200/1600 thumbnail workflow."
     echo "All generated derivatives use NO proof/watermark markup."
     echo "Without album-id, every album in the database is checked."
-    echo "Albums that already have the complete responsive structure are skipped."
+    echo "Albums that already have the complete responsive structure are skipped."\n    echo "Albums containing non-JPEG image records are skipped without modification."
     exit 1
 }
 
@@ -29,7 +29,7 @@ if [[ -z "$albums" ]]; then
     exit 0
 fi
 
-album_needs_migration() {
+album_has_unsupported_images() {\n    local id=$1\n    local unsupported\n    unsupported=$(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \\\n        -e "SELECT location FROM album_images WHERE album = $id AND LOWER(location) NOT REGEXP \'\\\\.(jpe?g)$\' ORDER BY location LIMIT 1;")\n\n    if [[ -n "$unsupported" ]]; then\n        echo "$unsupported"\n        return 0\n    fi\n\n    return 1\n}\n\nalbum_needs_migration() {
     local id=$1
     local album_location
     album_location=$(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
@@ -58,7 +58,7 @@ skipped=0
 while IFS= read -r id; do
     [[ -n "$id" ]] || continue
 
-    if ! album_needs_migration "$id"; then
+    if unsupported_image=$(album_has_unsupported_images "$id"); then\n        echo "Skipping album $id: unsupported image type found (${unsupported_image##*/})."\n        ((unsupported+=1))\n        continue\n    fi\n\n    if ! album_needs_migration "$id"; then
         echo "Skipping album $id: responsive thumbnails already complete."
         ((skipped+=1))
         continue
@@ -73,7 +73,7 @@ while IFS= read -r id; do
     fi
 done <<< "$albums"
 
-echo "Responsive thumbnail backfill complete: $processed processed, $skipped skipped, $failed failed."
+echo "Responsive thumbnail backfill complete: $processed processed, $skipped skipped, $unsupported unsupported, $failed failed."
 
 if (( failed > 0 )); then
     exit 1
