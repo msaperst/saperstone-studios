@@ -46,19 +46,19 @@ $sql->disconnect();
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
     
     <main class="blog-editor-shell">
-        <div class="container blog-editor-container">
-            <div class="blog-editor-heading">
-                <div>
-                    <p class="blog-editor-eyebrow">Blog editor</p>
-                    <h1><?php echo isset($blog) ? 'Edit Post' : 'Create Post'; ?></h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header text-center"><?php echo isset($blog) ? 'Edit Post' : 'Create Post'; ?></h1>
+                    <ol class="breadcrumb blog-editor-breadcrumb">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/blog/">Blog</a></li>
+                        <li class="active"><?php echo isset($blog) ? 'Edit Post' : 'New Post'; ?></li>
+                    </ol>
                 </div>
             </div>
-            <ol class="breadcrumb blog-editor-breadcrumb">
-                <li><a href="/">Home</a></li>
-                <li><a href="/blog/">Blog</a></li>
-                <li class="active"><?php echo isset($blog) ? 'Edit Post' : 'New Post'; ?></li>
-            </ol>
-
+        </div>
+        <div class="container blog-editor-container">
             <div class="blog-editor-layout">
                 <section class="blog-editor-main">
                     <div class="blog-editor-card blog-editor-details">
