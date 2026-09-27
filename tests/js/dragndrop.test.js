@@ -63,13 +63,13 @@ test('removeImage returns an image to the image holder and clears layout styles'
 });
 
 
-test('makeSortable limits section reordering to text and empty image sections', () => {
+test('makeSortable allows text and image sections to be reordered by their handles', () => {
     const {context, environment} = createContext();
 
     context.makeSortable();
 
     const options = environment.element('#post-content').sortableOptions;
-    assert.equal(options.items, '> .blog-editable-text, > .blog-empty-image-section');
+    assert.equal(options.items, '> .blog-editable-text, > .blog-editable-images');
     assert.equal(options.handle, '.blog-section-drag-handle');
     options.start();
     assert.equal(context.isDragged, true);
@@ -93,7 +93,7 @@ test('addTextArea creates a draggable text section and initializes Summernote', 
     assert.equal(content.html(), '<p>Hello</p>');
 });
 
-test('addImageArea makes only empty image sections reorderable', () => {
+test('addImageArea gives empty image sections a reorder handle', () => {
     const {context, environment} = createContext();
 
     context.addImageArea([]);
@@ -105,6 +105,20 @@ test('addImageArea makes only empty image sections reorderable', () => {
     assert.equal(environment.element('#post-content').sortableOptions.handle, '.blog-section-drag-handle');
 });
 
+
+test('addImageArea gives populated image sections a reorder handle', () => {
+    const {context, environment} = createContext();
+
+    context.addImageArea([{location:'one.jpg', top:0, left:0, width:100, height:100}]);
+
+    const holder = environment.element('#post-content').appended[0];
+    assert.equal(holder.hasClass('blog-editable-images'), true);
+    assert.equal(holder.hasClass('blog-empty-image-section'), false);
+    assert.equal(holder.appended[0].hasClass('blog-section-drag-handle'), true);
+    assert.match(holder.appended[0].attr('title'), /Drag image section/);
+    assert.equal(environment.element('#post-content').sortableOptions.items,
+        '> .blog-editable-text, > .blog-editable-images');
+});
 test('section drag handle exposes accessible reorder instructions', () => {
     const {context} = createContext();
 
