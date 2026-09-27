@@ -147,6 +147,7 @@ class CustomAsserts {
         $data = json_decode((string)$response->getBody(), true);
 
         $found = false;
+        $seen = [];
 
         foreach (($data['messages'] ?? []) as $msg) {
             $messageId = $msg['ID'];
@@ -155,12 +156,14 @@ class CustomAsserts {
 
             $toAddresses = array_column($detail['To'] ?? [], 'Address');
             $fromAddress = $detail['From']['Address'] ?? '';
+            $seen[] = sprintf('%s -> %s: %s', $fromAddress, implode(', ', $toAddresses), $detail['Subject'] ?? '');
 
             if (in_array($expectedTo, $toAddresses) && $fromAddress === $expectedFrom && $detail['Subject'] === $expectedSubject) {
                 $found = true;
 
                 // Assert contents
-                Assert::assertStringMatchesFormat($expectedText, $detail['Text'], "Text body did not match.");
+                $normalizeLines = static fn(string $value): string => str_replace(["\r\n", "\r"], "\n", $value);
+                Assert::assertStringMatchesFormat($normalizeLines($expectedText), $normalizeLines($detail['Text']), "Text body did not match.");
                 Assert::assertStringMatchesFormat($expectedHtml, $detail['HTML'], "HTML body did not match.");
 
                 // Assert SMTP Authentication username
@@ -201,7 +204,7 @@ class CustomAsserts {
             }
         }
 
-        Assert::assertTrue($found, "Failed asserting that the specified email was sent.");
+        Assert::assertTrue($found, "Expected $expectedFrom -> $expectedTo: $expectedSubject. Mailpit contained: " . implode('; ', $seen));
     }
 
     /**
