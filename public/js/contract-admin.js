@@ -143,8 +143,7 @@ function setupAddLineItem() {
         removeButton.addClass('btn btn-xs btn-danger remove-contract-line-item-btn');
         removeButton.attr({
             'type': 'button',
-            'data-toggle': 'tooltip',
-            'data-placement': 'right',
+            
             'title': 'Remove Line Item'
         });
         var icon = $('<em>');
