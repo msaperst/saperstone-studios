@@ -17,6 +17,53 @@ class Strings {
     }
 
     /**
+     * Add a deterministic content version to a first-party asset URL.
+     *
+     * External URLs are returned unchanged. Missing local files are also returned
+     * unchanged so a missing asset does not generate a PHP warning.
+     */
+    static function assetUrl(string $url, ?string $documentRoot = null): string {
+        if (preg_match('#^(?:https?:)?//#i', $url) || Strings::startsWith($url, 'data:')) {
+            return $url;
+        }
+
+        $parts = parse_url($url);
+        if ($parts === false || !isset($parts['path'])) {
+            return $url;
+        }
+
+        $root = $documentRoot ?? ($_SERVER['DOCUMENT_ROOT'] ?? '');
+        if ($root === '') {
+            return $url;
+        }
+
+        $path = $parts['path'];
+        $file = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
+        if (!is_file($file)) {
+            return $url;
+        }
+
+        // Production images contain generated .min.js/.min.css siblings. Prefer
+        // them when present; local bind-mounted source trees naturally fall back
+        // to the readable source files.
+        if (preg_match('/\\.(js|css)$/i', $path) && !preg_match('/\\.min\\.(js|css)$/i', $path)) {
+            $minifiedPath = preg_replace('/\\.(js|css)$/i', '.min.$1', $path);
+            $minifiedFile = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                . ltrim($minifiedPath, '/\\');
+            if (is_file($minifiedFile)) {
+                $path = $minifiedPath;
+                $file = $minifiedFile;
+            }
+        }
+
+        $separator = isset($parts['query']) ? '&' : '?';
+        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+        $query = isset($parts['query']) ? '?' . $parts['query'] : '';
+        $version = substr(hash_file('sha256', $file), 0, 12);
+        return $path . $query . $separator . 'v=' . $version . $fragment;
+    }
+
+    /**
      * @param $text
      * @return string
      */

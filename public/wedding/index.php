@@ -13,14 +13,14 @@ $sql->disconnect();
 <head>
 
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
     
     <?php
     $rand = "";
     if ($user->isAdmin ()) {
         $rand = "?" . Strings::randomString ();
         ?>
-    <link href="/css/uploadfile.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     <?php
     }
     ?>
@@ -95,7 +95,7 @@ $sql->disconnect();
                     <span
                         class="image-edit-control">
                         <button class="ajax-file-upload editable-image-control"
-                            onclick="location.href='galleries.php?w=8'">
+                            data-href="galleries.php?w=8">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>
@@ -196,8 +196,8 @@ $sql->disconnect();
     <?php
     if ($user->isAdmin ()) {
         ?>
-    <script src="/js/edit-image.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/edit-image.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <?php
     }
     ?>

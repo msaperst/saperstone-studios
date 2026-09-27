@@ -121,9 +121,9 @@ $sql->disconnect();
 
 
 
-        <script src="/js/blog-common.js"></script>
-        <script src="/js/post-admin.js"></script>
-        <script src="/js/posts-manage.js"></script>
+        <script src="<?php echo Strings::assetUrl('/js/blog-common.js'); ?>"></script>
+        <script src="<?php echo Strings::assetUrl('/js/post-admin.js'); ?>"></script>
+        <script src="<?php echo Strings::assetUrl('/js/posts-manage.js'); ?>"></script>
         <script
             src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"
             integrity="sha384-89aj/hOsfOyfD0Ll+7f2dobA15hDyiNb8m1dJ+rJuqgrGR+PVqNU8pybx4pbF3Cc"

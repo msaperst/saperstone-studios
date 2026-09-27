@@ -41,7 +41,7 @@ function createAdminContext(options = {}) {
     return {alerts, confirmations, context, environment, windowObject};
 }
 
-test('post-admin uploadForPost configures image uploads and editor height', () => {
+test('post-admin uploadForPost configures image uploads for the media library', () => {
     const {context, environment} = createAdminContext({
         lengths: {'#post-image-holder': 1}
     });
@@ -54,7 +54,7 @@ test('post-admin uploadForPost configures image uploads and editor height', () =
     assert.equal(environment.uploadOptions.multiple, true);
     assert.equal(environment.uploadOptions.sequential, true);
     assert.equal(environment.uploadOptions.acceptFiles, 'image/*');
-    assert.equal(holder.heightValue, 730);
+    assert.equal(environment.uploadOptions.uploadContainer.selector, '#post-image-holder');
 });
 
 test('post-admin successful uploads create draggable images and preview options', () => {
@@ -138,7 +138,7 @@ test('post-admin previewPost and editPost toggle editor/preview state', () => {
     const {context, environment} = createAdminContext();
     environment.element('#post-title-input').val('Preview Title');
     environment.element('#post-date-input').val('2026-09-24');
-    environment.element('.blog-editable-text').summernoteCode = '<p>Body</p>';
+    environment.element('.blog-editable-text .blog-text-content').summernoteCode = '<p>Body</p>';
 
     context.previewPost();
 
@@ -148,6 +148,7 @@ test('post-admin previewPost and editPost toggle editor/preview state', () => {
     assert.equal(environment.element('#post-preview-holder').hasClass('post'), true);
     assert.equal(environment.element('#post-title-input').visible, false);
     assert.equal(environment.element('.note-editor').visible, false);
+    assert.equal(environment.element('.blog-editable-text .blog-section-drag-handle').visible, true);
 
     context.editPost();
 
@@ -180,7 +181,7 @@ test('post-admin collectPost assembles tags, preview and text content', () => {
     environment.element('#post-preview-holder img').attr('src', '/tmp/preview.jpg');
     environment.element('#post-preview-holder img').css('top', '-10px');
     environment.element('#post-content>li').addClass('blog-editable-text');
-    environment.element('#post-content>li').summernoteCode = '<p>Text</p>';
+    environment.element('#post-content>li .blog-text-content').summernoteCode = '<p>Text</p>';
 
     let captured;
     context.collectPost((tags, preview, content) => {
@@ -295,7 +296,7 @@ test('post-admin setPreview replaces the preview with a draggable selected image
 
     const image = environment.element('#post-preview-holder').appended[0];
     assert.equal(image.attr('src'), '../tmp/photo.jpg');
-    assert.equal(image.css('width'), '300px');
+    assert.equal(image.classes.has('blog-preview-image'), true);
     equalStructure(image.draggableOptions, {axis: 'y'});
 });
 
@@ -365,7 +366,7 @@ test('post-admin collectPost asks for confirmation when no tags are selected', (
     environment.element('#post-title-input').val('No Tags');
     environment.element('#post-preview-holder img').attr('src', '/tmp/preview.jpg');
     environment.element('#post-content>li').addClass('blog-editable-text');
-    environment.element('#post-content>li').summernoteCode = '<p>Body</p>';
+    environment.element('#post-content>li .blog-text-content').summernoteCode = '<p>Body</p>';
     let saved = 0;
 
     context.collectPost(() => {
@@ -392,6 +393,11 @@ test('post-admin collectPost serializes positioned image groups', () => {
         width: '300px',
         height: '200px'
     });
+    image.widthValue = 300;
+    image.heightValue = 200;
+    image.parentResult = environment.element('__image_builder__');
+    image.parentResult.widthValue = 600;
+    environment.element(String(environment.window)).widthValue = 1300;
 
     let captured;
     context.collectPost((tags, preview, value) => {
@@ -404,10 +410,10 @@ test('post-admin collectPost serializes positioned image groups', () => {
             type: 'images',
             imgs: [{
                 location: '/tmp/image.jpg',
-                top: '10px',
-                left: '20px',
-                width: '300px',
-                height: '200px'
+                top: '5px',
+                left: '9px',
+                width: 135,
+                height: 90
             }]
         }
     });

@@ -46,7 +46,7 @@ $session = new Session();
                 <p class='lead'>Whoops, something went wrong!</p>
                 <p class='lead'><?php echo $message; ?></p>
                 <p class='lead'>
-                    Try going <a href='javascript:window.history.back()'>back one page</a>
+                    Try going <a href='#' id='error-back-link'>back one page</a>
                     or going back to our <a href='http://$host'>homepage</a>
                 </p>
                 <p class='lead'>
@@ -63,20 +63,11 @@ $session = new Session();
     </div>
     <!-- /.container -->
 
-    <script type='text/javascript'>
-        jQuery(document).ready(function($) {
-                //send our message
-                $.post(
-                        '/api/send-error.php',
-                        {
-                            error: '<?php echo $title; ?>',
-                            page: '<?php echo $session->getCurrentPage(); ?>',
-                            referrer: '<?php echo $referer ?>',
-                            resolution: screen.width+'x'+screen.height
-                        }
-                );
-        });
-    </script>
+    <div id="error-report-config" class="hidden"
+         data-error="<?php echo Strings::escapeHtmlAttribute($title); ?>"
+         data-page="<?php echo Strings::escapeHtmlAttribute($session->getCurrentPage()); ?>"
+         data-referrer="<?php echo Strings::escapeHtmlAttribute($referer); ?>"></div>
+    <script src="<?php echo Strings::assetUrl('/js/error-report.js'); ?>"></script>
 
 </body>
 </html>

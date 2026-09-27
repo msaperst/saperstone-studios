@@ -93,10 +93,10 @@ try {
 <!-- /.container -->
 
 <!--[if lt IE 9]>
-<script type="text/javascript" src="/js/jSignature/flashcanvas.js"></script>
+<script type="text/javascript" src="<?php echo Strings::assetUrl('/js/jSignature/flashcanvas.js'); ?>"></script>
 <![endif]-->
-<script src="/js/jSignature/jSignature.min.js"></script>
-<script src="/js/contract.js"></script>
+<script src="<?php echo Strings::assetUrl('/js/jSignature/jSignature.min.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/contract.js'); ?>"></script>
 
 </body>
 

@@ -57,9 +57,16 @@ test('posts-manage initializes the DataTable with blog management columns', () =
     assert.equal(config.ajax, '/api/get-blogs-details.php?a=1');
     equalStructure(config.order, [[2, 'desc']]);
     assert.equal(config.columnDefs.length, 4);
-    assert.match(config.columnDefs[0].data({id: 7}), /quick-edit-post-btn/);
+    const actionButtons = config.columnDefs[0].data({id: 7});
+    assert.match(actionButtons, /quick-edit-post-btn/);
+    assert.match(actionButtons, /title="Edit Post Details"/);
+    assert.match(actionButtons, /title="Edit Full Post"/);
+    assert.doesNotMatch(actionButtons, /data-toggle|data-placement/);
     assert.equal(config.columnDefs[1].data({id: 7, title: 'Title'}), "<a href='/blog/post.php?p=7'>Title</a>");
     assert.equal(config.columnDefs[3].data({active: '1'}), 'true');
+    assert.equal(config.columnDefs[3].data({active: 1}), 'true');
+    assert.equal(config.columnDefs[3].data({active: 0}), 'false');
+    assert.equal(config.columnDefs[3].data({active: '0'}), 'false');
 
     const row = environment.element('__post_row__');
     config.fnCreatedRow(row, {id: 7});
@@ -87,6 +94,21 @@ test('posts-manage setupEdit sends the clicked row data to quick edit', () => {
     environment.element('.quick-edit-post-btn').trigger('click');
 
     equalStructure(edited, expected);
+});
+
+test('posts-manage full edit button navigates without an inline handler', () => {
+    const {context, environment, windowObject} = createManageContext();
+    context.setupEdit();
+    environment.element('.edit-post-btn').attr('data-post-id', '27').trigger('click');
+    assert.equal(windowObject.location.href, '/blog/new.php?p=27');
+});
+
+test('posts-manage full edit button rejects non-numeric post ids', () => {
+    const {context, environment, windowObject} = createManageContext();
+    windowObject.location.href = '/blog/manage.php';
+    context.setupEdit();
+    environment.element('.edit-post-btn').attr('data-post-id', 'javascript:alert(1)').trigger('click');
+    assert.equal(windowObject.location.href, '/blog/manage.php');
 });
 
 test('posts-manage editPost populates fields and loads full post metadata', () => {
@@ -120,6 +142,29 @@ test('posts-manage editPost populates fields and loads full post metadata', () =
         url: '/api/get-blog-full.php',
         data: {post: 21}
     });
+    assert.equal(environment.element('#post').attr('post-location'), '/blog/images');
+    assert.equal(environment.element('#post-preview-image').val(), 'preview.jpg');
+    const previewOptions = environment.element('#post-preview-image').appended;
+    assert.equal(previewOptions.some((option) => option.text() === 'preview.jpg'), true);
+});
+
+test('posts-manage quick edit preserves a preview image not used in post content', () => {
+    const {context, environment} = createManageContext();
+    environment.queueGet('/api/get-blog-full.php', {
+        type: 'success',
+        data: {content: [], tags: []}
+    });
+
+    context.editManagedPost({
+        id: 23,
+        title: 'Separate Preview',
+        date: '2026-09-24',
+        active: '0',
+        preview: '/blog/images/featured-only.jpg',
+        offset: '0'
+    });
+
+    assert.equal(environment.element('#post-preview-image').val(), 'featured-only.jpg');
     assert.equal(environment.element('#post').attr('post-location'), '/blog/images');
 });
 

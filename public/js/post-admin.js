@@ -68,7 +68,7 @@ function uploadForPost() {
         multiple: true,
         dragDrop: true,
         uploadButtonLocation: $('#post-button-holder'),
-        uploadContainer: $('#post-button-holder'),
+        uploadContainer: $('#post-image-holder'),
         uploadButtonClass: "btn btn-default btn-info",
         statusBarWidth: "auto",
         dragdropWidth: "100%",
@@ -115,7 +115,6 @@ function uploadForPost() {
         },
     });
 
-    $('#post-image-holder').height($(window).height() - $('#post-image-holder').offset().top - 70);
 }
 
 function newTag(ele) {
@@ -227,11 +226,11 @@ function sortOptions() {
 function previewPost() {
     // fix our buttons
     $('#preview-post').hide();
-    $('#edit-post').show();
+    $('#edit-post').show().addClass('blog-preview-back-button');
 
     // setup preview for our preview image
     $('#post-preview-image').hide();
-    $('#post-preview-holder').addClass('post hovereffect');
+    $('#post-preview-holder').addClass('post hovereffect blog-preview-mode');
     var titleSpan = $('<span>');
     titleSpan.addClass('preview-title');
     titleSpan.html($('#post-title-input').val());
@@ -249,6 +248,8 @@ function previewPost() {
     $('#post-preview-holder').append(overlay);
 
     // setup our blog header information for preview
+    $('.blog-editor-details').addClass('blog-post-preview-details');
+    $('.blog-editor-content-card').addClass('blog-post-preview-content');
     $('#post-title-input').hide();
     var titleHeader = $('<h2>');
     titleHeader.html($('#post-title-input').val());
@@ -268,46 +269,6 @@ function previewPost() {
     dateSpan.attr('id', 'post-date-preview');
     $('#post-date-input').after(dateSpan);
 
-    var facebookDiv = $('<div>');
-    facebookDiv.addClass('sm-preview col-md-4 text-center');
-    var facebookButton = $('<button>');
-    facebookButton.addClass('btn btn-xs btn-info');
-    facebookButton.css({
-        'background-color': '#4267b2',
-        'border': '#4267b2'
-    });
-    var facebookIcon = $('<em>');
-    facebookIcon.addClass('fa fa-thumbs-up');
-    facebookButton.append(facebookIcon).append(" Like <i>0</i>");
-    facebookDiv.append(facebookButton);
-    $('#post-likes').append(facebookDiv);
-
-    var twitterDiv = $('<div>');
-    twitterDiv.addClass('sm-preview col-md-4 text-center');
-    var twitterButton = $('<button>');
-    twitterButton.addClass('btn btn-xs btn-info');
-    var twitterIcon1 = $('<em>');
-    twitterIcon1.addClass('fa fa-twitter');
-    var twitterIcon2 = $('<em>');
-    twitterIcon2.addClass('fa fa-heart error');
-    twitterButton.append(twitterIcon1).append(" Like ").append(twitterIcon2);
-    twitterDiv.append(twitterButton);
-    $('#post-likes').append(twitterDiv);
-
-    var gplusDiv = $('<div>');
-    gplusDiv.addClass('sm-preview col-md-4 text-center');
-    var gplusButton = $('<button>');
-    gplusButton.addClass('btn btn-xs');
-    gplusButton.css({
-        'background-color': 'transparent',
-        'border': '1px grey solid'
-    });
-    var gplusIcon = $('<em>');
-    gplusIcon.addClass('fa fa-google-plus error');
-    gplusButton.append(gplusIcon).append("  <i>0</i>");
-    gplusDiv.append(gplusButton);
-    $('#post-likes').append(gplusDiv);
-
     $('#post-tags-select').hide();
     var tagsSpan = $('<span>');
     tagsSpan.attr('id', 'post-tags-preview');
@@ -322,7 +283,9 @@ function previewPost() {
 
     // setup our texts for previews
     $('.blog-editable-text').each(function () {
-        $(this).show().html($(this).summernote('code'));
+        var textContent = $(this).find('.blog-text-content');
+        textContent.html(textContent.summernote('code')).show();
+        $(this).find('.blog-section-drag-handle').show();
     });
     $('.note-editor').each(function () {
         $(this).hide();
@@ -332,11 +295,11 @@ function previewPost() {
 function editPost() {
     // fix our buttons
     $('#preview-post').show();
-    $('#edit-post').hide();
+    $('#edit-post').hide().removeClass('blog-preview-back-button');
 
     // remove preview for our preview image
     $('#post-preview-image').show();
-    $('#post-preview-holder').removeClass('post hovereffect');
+    $('#post-preview-holder').removeClass('post hovereffect blog-preview-mode');
     $('#post-preview-holder .preview-title').remove();
     $('#post-preview-holder .overlay').remove();
 
@@ -347,7 +310,8 @@ function editPost() {
     $('#post-date-input').show();
     $('#post-date-preview').remove();
 
-    $('.sm-preview').remove();
+    $('.blog-editor-details').removeClass('blog-post-preview-details');
+    $('.blog-editor-content-card').removeClass('blog-post-preview-content');
 
     $('#post-tags-select').show();
     $('#post-tags-preview').remove();
@@ -357,7 +321,8 @@ function editPost() {
 
     // fix our texts for editing
     $('.blog-editable-text').each(function () {
-        $(this).hide();
+        $(this).find('.blog-text-content').hide();
+        $(this).find('.blog-section-drag-handle').show();
     });
     $('.note-editor').each(function () {
         $(this).show();
@@ -393,17 +358,20 @@ function collectPost(callback1, callback2) {
         elements.group = ++group;
         if ($(this).hasClass('blog-editable-text')) {
             elements.type = "text";
-            elements.text = $(this).summernote('code');
+            elements.text = $(this).find('.blog-text-content').summernote('code');
         } else if ($(this).hasClass('blog-editable-images')) {
             elements.type = "images";
             elements.imgs = [];
             $('img', this).each(function () {
                 var img = {};
                 img.location = $(this).attr('src');
-                img.top = $(this).css('top');
-                img.left = $(this).css('left');
-                img.width = $(this).css('width');
-                img.height = $(this).css('height');
+                var builderWidth = $(this).parent().width();
+                var publishedWidth = getPublishedPostContentWidth();
+                var scale = builderWidth && publishedWidth ? publishedWidth / builderWidth : 1;
+                img.width = Math.round($(this).width() * scale);
+                img.height = Math.round($(this).height() * scale);
+                img.left = Math.round(parseFloat($(this).css('left')) * scale) + 'px';
+                img.top = Math.round(parseFloat($(this).css('top')) * scale) + 'px';
                 elements.imgs.push(img);
             });
         } else {
@@ -585,13 +553,26 @@ function publishPost(post) {
 
 function setPreview() {
     $('#post-preview-holder img').remove();
+    $('#post-preview-holder .blog-preview-empty').toggle(!$('#post-preview-image').val());
     var img = $('<img>');
     img.attr('src', $('#post').attr('post-location') + '/' + $('#post-preview-image').val());
-    img.css({
-        width: '300px'
-    });
+    img.addClass('blog-preview-image');
     $('#post-preview-holder').append(img);
     img.draggable({
         axis: "y",
     });
+}
+
+function getPublishedPostContentWidth() {
+    var viewportWidth = $(window).width();
+    if (viewportWidth >= 1200) {
+        return 1140;
+    }
+    if (viewportWidth >= 992) {
+        return 940;
+    }
+    if (viewportWidth >= 768) {
+        return 720;
+    }
+    return Math.max(viewportWidth - 30, 1);
 }

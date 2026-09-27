@@ -1,0 +1,57 @@
+const assert = require('node:assert/strict');
+const {test} = require('node:test');
+const {createJQueryEnvironment} = require('./helpers/jquery-mock');
+const {loadBrowserScript} = require('./helpers/load-browser-script');
+
+test('page init wires data-href navigation without inline handlers', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const link = environment.element('[data-href]').attr('data-href', '/portrait/galleries.php?w=1');
+    const location = {href: ''};
+    loadBrowserScript('public/js/page-init.js', {$: environment.$, document: environment.document, window: {location}});
+    environment.runReady();
+    link.trigger('click');
+    assert.equal(location.href, '/portrait/galleries.php?w=1');
+});
+
+test('page init supports validated relative gallery navigation', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const link = environment.element('[data-href]').attr('data-href', 'galleries.php?w=1');
+    const location = {href: ''};
+    loadBrowserScript('public/js/page-init.js', {$: environment.$, document: environment.document, window: {location}});
+    environment.runReady();
+    link.trigger('click');
+    assert.equal(location.href, 'galleries.php?w=1');
+});
+
+test('page init rejects non-local data-href navigation targets', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const link = environment.element('[data-href]').attr('data-href', 'javascript:alert(1)');
+    const location = {href: '/safe'};
+    loadBrowserScript('public/js/page-init.js', {$: environment.$, document: environment.document, window: {location}});
+    environment.runReady();
+    link.trigger('click');
+    assert.equal(location.href, '/safe');
+});
+
+test('page init does not globally initialize page-specific tooltips', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const tooltip = environment.element('[data-toggle="tooltip"]');
+    let calls = 0;
+    tooltip.tooltip = function () { calls += 1; return this; };
+    loadBrowserScript('public/js/page-init.js', {$: environment.$, document: environment.document, window: {location: {}}});
+    environment.runReady();
+    assert.equal(calls, 0);
+});
+
+test('page init wires data-hash controls and carousel defaults', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const hash = environment.element('[data-hash]').attr('data-hash', '3');
+    const location = {hash: ''};
+    const carousel = environment.element('.carousel');
+    carousel.carousel = function (options) { this.carouselOptions = options; return this; };
+    loadBrowserScript('public/js/page-init.js', {$: environment.$, document: environment.document, window: {location}});
+    environment.runReady();
+    hash.trigger('click');
+    assert.equal(location.hash, '3');
+    assert.equal(carousel.carouselOptions.interval, 4000);
+});

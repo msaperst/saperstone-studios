@@ -61,6 +61,195 @@ class StringsUnitTest extends TestCase {
         $this->assertEquals(1, preg_match('/^[a-zA-Z0-9]+$/', $result));
     }
 
+    public function testAssetUrlAddsStableModificationTimeVersion() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
+        $file = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js';
+        file_put_contents($file, 'test');
+        $version = substr(hash_file('sha256', $file), 0, 12);
+
+        $this->assertEquals('/js/app.js?v=' . $version, Strings::assetUrl('/js/app.js', $root));
+        $this->assertEquals('/js/app.js?v=' . $version, Strings::assetUrl('/js/app.js', $root));
+
+        unlink($file);
+        rmdir($root . DIRECTORY_SEPARATOR . 'js');
+        rmdir($root);
+    }
+
+    public function testAssetUrlPrefersGeneratedMinifiedAsset() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
+        file_put_contents($root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js', 'readable source');
+        $minified = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.min.js';
+        file_put_contents($minified, 'minified');
+
+        $this->assertEquals(
+            '/js/app.min.js?v=' . substr(hash_file('sha256', $minified), 0, 12),
+            Strings::assetUrl('/js/app.js', $root)
+        );
+
+        unlink($minified);
+        unlink($root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js');
+        rmdir($root . DIRECTORY_SEPARATOR . 'js');
+        rmdir($root);
+    }
+
+    public function testAssetUrlFallsBackToReadableAssetWithoutMinifiedSibling() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'css', 0777, true);
+        $source = $root . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'site.css';
+        file_put_contents($source, 'body { color: black; }');
+
+        $this->assertEquals(
+            '/css/site.css?v=' . substr(hash_file('sha256', $source), 0, 12),
+            Strings::assetUrl('/css/site.css', $root)
+        );
+
+        unlink($source);
+        rmdir($root . DIRECTORY_SEPARATOR . 'css');
+        rmdir($root);
+    }
+
+    public function testAssetUrlPreservesQueryAndFragmentWhenUsingMinifiedAsset() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
+        file_put_contents($root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js', 'source');
+        $minified = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.min.js';
+        file_put_contents($minified, 'min');
+
+        $this->assertEquals(
+            '/js/app.min.js?mode=admin&v=' . substr(hash_file('sha256', $minified), 0, 12) . '#settings',
+            Strings::assetUrl('/js/app.js?mode=admin#settings', $root)
+        );
+
+        unlink($minified);
+        unlink($root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js');
+        rmdir($root . DIRECTORY_SEPARATOR . 'js');
+        rmdir($root);
+    }
+
+    public function testAssetUrlChangesWhenFileContentChanges() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'css', 0777, true);
+        $file = $root . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'site.css';
+        file_put_contents($file, 'first');
+        $first = Strings::assetUrl('/css/site.css', $root);
+        file_put_contents($file, 'second');
+
+        $this->assertEquals(
+            '/css/site.css?v=' . substr(hash('sha256', 'first'), 0, 12),
+            $first
+        );
+        $this->assertEquals(
+            '/css/site.css?v=' . substr(hash('sha256', 'second'), 0, 12),
+            Strings::assetUrl('/css/site.css', $root)
+        );
+
+        unlink($file);
+        rmdir($root . DIRECTORY_SEPARATOR . 'css');
+        rmdir($root);
+    }
+
+    public function testAssetUrlPreservesExistingQueryStringAndFragment() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
+        $file = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js';
+        file_put_contents($file, 'test');
+        $version = substr(hash_file('sha256', $file), 0, 12);
+
+        $this->assertEquals(
+            '/js/app.js?mode=admin&v=' . $version . '#settings',
+            Strings::assetUrl('/js/app.js?mode=admin#settings', $root)
+        );
+
+        unlink($file);
+        rmdir($root . DIRECTORY_SEPARATOR . 'js');
+        rmdir($root);
+    }
+
+    public function testAssetUrlReturnsMissingFileUnchanged() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root);
+        $this->assertEquals('/js/missing.js', Strings::assetUrl('/js/missing.js', $root));
+        rmdir($root);
+    }
+
+    public function testAssetUrlDoesNotVersionExternalAssets() {
+        $this->assertEquals(
+            'https://cdn.example.com/app.js',
+            Strings::assetUrl('https://cdn.example.com/app.js', '/unused')
+        );
+        $this->assertEquals(
+            '//cdn.example.com/app.css',
+            Strings::assetUrl('//cdn.example.com/app.css', '/unused')
+        );
+    }
+
+    public function testFirstPartyJavascriptAndCssIncludesUseAssetUrl() {
+        $roots = array(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public',
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'templates'
+        );
+        $unversioned = array();
+
+        foreach ($roots as $root) {
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root));
+            foreach ($iterator as $file) {
+                if (!$file->isFile() || $file->getExtension() !== 'php') {
+                    continue;
+                }
+
+                $content = file_get_contents($file->getPathname());
+                preg_match_all('/\\b(?:src|href)="([^"]*)"/s', $content, $doubleQuoted);
+                preg_match_all("/\\b(?:src|href)='([^']*)'/s", $content, $singleQuoted);
+                $values = array_merge($doubleQuoted[1], $singleQuoted[1]);
+
+                foreach ($values as $value) {
+                    if (preg_match('#^(?!https?:|//|data:)[^<>]+\\.(?:js|css)(?:[?#][^<>]*)?$#i', $value)) {
+                        $unversioned[] = str_replace(
+                            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR,
+                            '',
+                            $file->getPathname()
+                        ) . ': ' . $value;
+                    }
+                }
+            }
+        }
+
+        $this->assertSame(
+            array(),
+            $unversioned,
+            "Unversioned first-party assets:\n" . implode("\n", $unversioned)
+        );
+    }
+
+    public function testApplicationMarkupDoesNotUseInlineExecutableJavaScript() {
+        $roots = array(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public',
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'templates'
+        );
+        $violations = array();
+
+        foreach ($roots as $root) {
+            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root));
+            foreach ($iterator as $file) {
+                if (!$file->isFile() || $file->getExtension() !== 'php') {
+                    continue;
+                }
+
+                $content = file_get_contents($file->getPathname());
+                if (preg_match("/<script(?![^>]*\\bsrc=)(?![^>]*type=[\"']application\\/ld\\+json[\"'])[^>]*>/i", $content)) {
+                    $violations[] = $file->getPathname() . ': inline script';
+                }
+                if (preg_match('/\\son[a-z]+\\s*=/i', $content) || preg_match('/javascript\\s*:/i', $content)) {
+                    $violations[] = $file->getPathname() . ': inline event handler';
+                }
+            }
+        }
+
+        $this->assertSame(array(), $violations, "Inline JavaScript violations:\n" . implode("\n", $violations));
+    }
+
     public function testHTMLEmpty() {
         $result = Strings::textToHTML("");
         $this->assertEquals("", $result);

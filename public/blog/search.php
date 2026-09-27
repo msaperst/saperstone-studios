@@ -36,7 +36,7 @@ $sql->disconnect();
 <head>
 
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -76,20 +76,12 @@ $sql->disconnect();
     <!-- /.container -->
 
     <!-- Gallery JavaScript -->
-    <script src="/js/blog-common.js"></script>
-    <script src="/js/post.js"></script>
-    <script src="/js/posts-search.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/blog-common.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/post.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/posts-search.js'); ?>"></script>
 
-    <!-- Script to Activate the Gallery -->
-    <script>
-        var posts = new Posts( 3, <?php echo count($posts); ?>, "<?php echo addslashes($search); ?>" );
-
-        $(window,document).on("scroll resize", function(){
-            if( $('footer').isOnScreen() ) {
-                posts.loadImages();
-            }
-        });
-    </script>
+    <div id="blog-page-config" class="hidden" data-loader="posts" data-columns="3" data-total="<?php echo count($posts); ?>" data-search="<?php echo Strings::escapeHtmlAttribute($search); ?>"></div>
+    <script src="<?php echo Strings::assetUrl('/js/blog-init.js'); ?>"></script>
 
 </body>
 

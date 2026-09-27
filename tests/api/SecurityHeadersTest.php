@@ -111,6 +111,10 @@ class SecurityHeadersTest extends TestCase {
             $this->assertStringContainsString("frame-ancestors 'none'", $headers[0], $path);
             $this->assertStringContainsString("form-action 'self'", $headers[0], $path);
             $this->assertStringContainsString('frame-src https://www.google.com', $headers[0], $path);
+            $this->assertSame(1, preg_match('/(?:^|;\\s*)script-src\\s+([^;]+)/', $headers[0], $scriptSource), $path);
+            $this->assertStringNotContainsString("'unsafe-inline'", $scriptSource[1], $path);
+            $this->assertStringContainsString("'sha256-miHgs2pjr6nY+bGu94OXPowZ0BOmmNxIomxzrQUnJDA='", $scriptSource[1], $path);
+            $this->assertStringContainsString("script-src-attr 'none'", $headers[0], $path);
             $this->assertSame(1, preg_match('/(?:^|;\\s*)style-src\\s+([^;]+)/', $headers[0], $styleSource), $path);
             $this->assertStringNotContainsString("'unsafe-inline'", $styleSource[1], $path);
             $this->assertStringContainsString("style-src-attr 'unsafe-inline'", $headers[0], $path);

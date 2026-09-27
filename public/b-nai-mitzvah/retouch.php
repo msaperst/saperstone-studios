@@ -14,11 +14,11 @@ $user = User::fromSystem();
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
     if ($user->isAdmin ()) {
         ?>
-    <link href="/css/uploadfile.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     <?php
     }
     ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -73,14 +73,9 @@ $user = User::fromSystem();
     </div>
     <!-- /.container -->
 
-    <script src='/js/retouch.js'></script>
-    <script>
-        var images = [];
-        images[0] = { thumb:'/retouch/b-nai-mitzvah/Ainsley.jpg', orig:'/retouch/b-nai-mitzvah/AinsleyBefore.jpg', edit:'/retouch/b-nai-mitzvah/AinsleyAfter.jpg', width:'1140', height:'761', text:'' };
-        images[1] = { thumb:'/retouch/b-nai-mitzvah/Ari.jpg', orig:'/retouch/b-nai-mitzvah/AriBefore.jpg', edit:'/retouch/b-nai-mitzvah/AriAfter.jpg', width:'1140', height:'761', text:'' };
-        images[2] = { thumb:'/retouch/b-nai-mitzvah/Emily.jpg', orig:'/retouch/b-nai-mitzvah/EmilyBefore.jpg', edit:'/retouch/b-nai-mitzvah/EmilyAfter.jpg', width:'1140', height:'761', text:'' };
-        var retouch = new Retouch( $('#holder'), images, true );
-    </script>
+    <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
+    <div id="retouch-config" class="hidden" data-instructions="true" data-images="<?php echo Strings::escapeHtmlAttribute('[{"thumb":"/retouch/b-nai-mitzvah/Ainsley.jpg","orig":"/retouch/b-nai-mitzvah/AinsleyBefore.jpg","edit":"/retouch/b-nai-mitzvah/AinsleyAfter.jpg","width":"1140","height":"761","text":""},{"thumb":"/retouch/b-nai-mitzvah/Ari.jpg","orig":"/retouch/b-nai-mitzvah/AriBefore.jpg","edit":"/retouch/b-nai-mitzvah/AriAfter.jpg","width":"1140","height":"761","text":""},{"thumb":"/retouch/b-nai-mitzvah/Emily.jpg","orig":"/retouch/b-nai-mitzvah/EmilyBefore.jpg","edit":"/retouch/b-nai-mitzvah/EmilyAfter.jpg","width":"1140","height":"761","text":""}]'); ?>"></div>
+    <script src="<?php echo Strings::assetUrl('/js/retouch-init.js'); ?>"></script>
 
 </body>
 

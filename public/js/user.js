@@ -9,7 +9,7 @@ $(document).ready(function () {
             "orderable": false,
             "searchable": false,
             "data": function (row) {
-                return '<button type="button" class="btn btn-xs btn-warning edit-user-btn" data-toggle="tooltip" data-placement="right" title="Edit ' + row.usr + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-user-log-btn" data-toggle="tooltip" data-placement="right" title="View ' + row.usr + ' Activities"><i class="fa fa-bars"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" data-toggle="tooltip" data-placement="right" title="View Site As ' + row.usr + '"><i class="fa fa-user-secret"></i></button>';
+                return '<button type="button" class="btn btn-xs btn-warning edit-user-btn" title="Edit ' + row.usr + ' Details"><i class="fa fa-pencil-square-o"></i></button> <button type="button" class="btn btn-xs btn-success view-user-log-btn" title="View ' + row.usr + ' Activities"><i class="fa fa-bars"></i></button> <button type="button" class="btn btn-xs btn-info view-as-user-btn" title="View Site As ' + row.usr + '"><i class="fa fa-user-secret"></i></button>';
             },
             "targets": 0
         }, {
@@ -51,7 +51,6 @@ $(document).ready(function () {
     });
     $('#users').on('draw.dt search.dt', function () {
         setupEdit();
-        $('[data-toggle="tooltip"]').tooltip();
     });
 
     $('#add-user-btn').click(function () {
@@ -209,8 +208,8 @@ function editUser(data) {
             activeInput.attr('id', 'user-active');
             activeInput.attr('type', 'checkbox');
             activeInput.prop('checked', true);
-            if (data !== null && data.hasOwnProperty('active') && data.active !== "1") {
-                activeInput.prop('checked', false);
+            if (data !== null && data.hasOwnProperty('active')) {
+                activeInput.prop('checked', Number(data.active) === 1);
             }
             inputs.append(activeDiv.append(activeInputDiv.append(activeInputDivDiv.append(activeLabel.append(activeInput).append(" Active User")))));
 

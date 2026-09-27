@@ -35,8 +35,8 @@ $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE 
 <head>
 
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
-    <link href="/css/uploadfile.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     </head>
 
 <body>
@@ -76,8 +76,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                 id="favorite-btn"
                                 type="button"
                                 class="btn btn-xs btn-success"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
+                               
+                               
                                 title="View favorites from this album"
                         >
                             <em class="fa fa-heart error">
@@ -99,8 +99,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                 id="submit-favorites-btn"
                                 type="button"
                                 class="btn btn-xs btn-success csp-hidden"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
+                               
+                               
                                 title="Submit album favorites as selection"
                         >
                             <em class="fa fa-paper-plane"></em>
@@ -109,8 +109,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     <li class="no-before pull-right">
                         <button
                                 type="button"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
+                               
+                               
                                 <?php
                                 if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
                                     ?>
@@ -134,8 +134,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     <li class="no-before pull-right">
                         <button
                                 type="button"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
+                               
+                               
                                 <?php
                                 if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
                                     ?>
@@ -164,8 +164,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                     id="access-btn"
                                     type="button"
                                     class="btn btn-xs btn-info"
-                                    data-toggle="tooltip"
-                                    data-placement="bottom"
+                                   
+                                   
                                     title="Set access for this album"
                             >
                                 <em class="fa fa-picture-o"></em>
@@ -180,8 +180,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                     id="view-all-favorites-btn"
                                     type="button"
                                     class="btn btn-xs btn-warning"
-                                    data-toggle="tooltip"
-                                    data-placement="bottom"
+                                   
+                                   
                                     title="View all user favorites">
                                 <em class="fa fa-heart"></em>
                             </button>
@@ -191,8 +191,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                     id="edit-album-btn"
                                     type="button"
                                     class="btn btn-xs btn-warning"
-                                    data-toggle="tooltip"
-                                    data-placement="bottom"
+                                   
+                                   
                                     title="Edit album details">
                                 <em class="fa fa-pencil-square-o"></em>
                             </button>
@@ -469,69 +469,30 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
 ?>
 
 <!-- Gallery JavaScript -->
-<script>
-    window.albumCanDownload = <?php echo ($user->isLoggedIn() || $isAlbumDownloadable) ? 'true' : 'false'; ?>;
-    window.showImageTitle = <?php echo $user->isAdmin() ? 'true' : 'false'; ?>;
-</script>
-<script src="/js/album.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/album.js'); ?>"></script>
-<script src="/js/albums-common.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-common.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/album.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
 <?php
 if ($user->isAdmin()) {
     ?>
-    <script src="/js/album-admin.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/album-admin.js'); ?>"></script>
-    <script src="/js/albums-admin.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-admin.js'); ?>"></script>
-    <script src="/js/jquery.uploadfile.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.uploadfile.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/album-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <?php
 }
 if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
     ?>
-    <script src="/js/albums-uploader.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/albums-uploader.js'); ?>"></script>
-    <script src="/js/jquery.uploadfile.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.uploadfile.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums-uploader.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <?php
 }
 ?>
 
-<!-- Script to Activate the Gallery -->
-<script>
-    $('[data-toggle="tooltip"]').tooltip();
-    var album = new Album("<?php echo $album->getId(); ?>", 4, <?php echo count($images); ?> );
-
-    // Cache selectors for performance
-    var $window = $(window);
-    var $breadcrumb = $('.breadcrumb');
-    var $logo1 = $('#nav-logo-link-1');
-    var $logo2 = $('#nav-logo-link-2');
-
-    // 1. Calculate the initial distance from the top of the page to the breadcrumbs
-    var initialBreadcrumbTop = $breadcrumb.offset().top;
-
-    $window.on("scroll resize", function () {
-        // Run your existing gallery lazy loader
-        album.loadImages();
-
-        // 2. Dynamically measure the exact bottom position of your fixed header bar
-        var navbarBottom = $('.navbar-fixed-top').outerHeight();
-
-        // 3. Determine the target gap (50px below the viewport top)
-        var desiredTopPosition = 80;
-
-        // If the navbar height pushes past 50px (e.g., due to alerts),
-        // pin it exactly to the bottom edge of the navbar so it doesn't clip underneath.
-        var effectiveFixedTop = Math.max(desiredTopPosition, navbarBottom);
-
-        // 4. Evaluate whether the page has scrolled enough to lock the element
-        if ($window.scrollTop() > (initialBreadcrumbTop - effectiveFixedTop)) {
-            $breadcrumb.addClass('breadcrumb-fixed').css('top', effectiveFixedTop + 'px');
-            $('.breadcrumb-fixed').css('width', $('.page-header').width() + 'px');
-            $logo1.hide();
-            $logo2.hide();
-        } else {
-            $breadcrumb.removeClass('breadcrumb-fixed').css('top', '');
-            $logo1.show();
-            $logo2.show();
-        }
-    });
-</script>
+<div id="album-page-config" class="hidden"
+     data-album-id="<?php echo $album->getId(); ?>"
+     data-total="<?php echo count($images); ?>"
+     data-can-download="<?php echo ($user->isLoggedIn() || $isAlbumDownloadable) ? 'true' : 'false'; ?>"
+     data-show-title="<?php echo $user->isAdmin() ? 'true' : 'false'; ?>"></div>
+<script src="<?php echo Strings::assetUrl('/js/album-init.js'); ?>"></script>
 
 </body>
 

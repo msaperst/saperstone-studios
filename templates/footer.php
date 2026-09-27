@@ -45,7 +45,7 @@ $navUser = User::fromSystem();
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"
         integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
         crossorigin="anonymous"></script>
-<script src="/js/jquery.form.min.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/jquery.form.min.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/jquery.form.min.js'); ?>"></script>
 <script
         src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
         integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM="
@@ -68,20 +68,14 @@ $navUser = User::fromSystem();
 
 
 <!-- GDPR Cookie Handling -->
-<script src="/js/cookies.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/cookies.js'); ?>"></script>
-<script src="/js/site-consent.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/site-consent.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/cookies.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/site-consent.js'); ?>"></script>
 
 <!-- Custom Core JavaScript -->
-<script src="/js/nav.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/nav.js'); ?>"></script>
-<script src="/js/carousel.js?v=<?php echo @filemtime($_SERVER['DOCUMENT_ROOT'] . '/js/carousel.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/nav.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/carousel.js'); ?>"></script>
 
-<!-- Script to Activate the Carousel -->
-<script>
-    $('.carousel').carousel({
-        interval: 4000, //changes the display speed
-        duration: 2000, //changes the slide speed
-    });
-</script>
+<script src="<?php echo Strings::assetUrl('/js/page-init.js'); ?>"></script>
 
 <!-- Google Analytics -->
 <?php
@@ -89,17 +83,7 @@ if (Session::useAnalytics()) {
     ?>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-L6F5KNQDY1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-
-        gtag('config', 'G-L6F5KNQDY1');
-    </script>
+    <script src="<?php echo Strings::assetUrl('/js/analytics.js'); ?>"></script>
     <?php
 }
 ?>

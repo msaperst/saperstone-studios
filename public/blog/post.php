@@ -48,7 +48,7 @@ if (!$user->isAdmin() && !$blog->isActive()) {
                     <li class="no-before pull-right">
                         <button
                                 type="button" id="edit-post-btn" class="btn btn-xs btn-warning"
-                                data-toggle="tooltip" data-placement="left"
+                               
                                 title="Edit Blog Post">
                             <i class="fa fa-pencil-square-o"></i>
                         </button>
@@ -128,14 +128,12 @@ if (!$user->isAdmin() && !$blog->isActive()) {
 <!-- /.container -->
 
 <!-- Gallery JavaScript -->
-<script src="/js/blog-common.js"></script>
-<script src="/js/post.js"></script>
-<script src="/js/post-full.js"></script>
+<script src="<?php echo Strings::assetUrl('/js/blog-common.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/post.js'); ?>"></script>
+<script src="<?php echo Strings::assetUrl('/js/post-full.js'); ?>"></script>
 
-<!-- Script to Activate the Gallery -->
-<script>
-    new PostFull( <?php echo $blog->getId(); ?> );
-</script>
+<div id="blog-page-config" class="hidden" data-loader="post-full" data-post="<?php echo $blog->getId(); ?>"></div>
+<script src="<?php echo Strings::assetUrl('/js/blog-init.js'); ?>"></script>
 
 </body>
 

@@ -149,7 +149,7 @@ if ($user->isLoggedIn ()) {
     </div>
     <!-- /.container -->
 
-    <script src="/js/profile.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/profile.js'); ?>"></script>
 
 </body>
 

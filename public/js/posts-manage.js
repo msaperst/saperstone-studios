@@ -19,8 +19,8 @@ $(document).ready(function () {
                 "orderable": false,
                 "searchable": false,
                 "data": function (row) {
-                    var buttons = '<button type="button" class="btn btn-xs btn-info quick-edit-post-btn" data-toggle="tooltip" data-placement="right" title="Edit Post Details"><i class="fa fa-pencil-square-o"></i></button>';
-                    buttons += ' <button type="button" class="btn btn-xs btn-warning edit-post-btn" data-toggle="tooltip" data-placement="right" title="Edit Full Post" onclick="window.location.href=\'/blog/new.php?p=' + row.id + '\'">' + '<i class="fa fa-pencil-square-o"></i></button>';
+                    var buttons = '<button type="button" class="btn btn-xs btn-info quick-edit-post-btn" title="Edit Post Details"><i class="fa fa-pencil-square-o"></i></button>';
+                    buttons += ' <button type="button" class="btn btn-xs btn-warning edit-post-btn" data-post-id="' + row.id + '" title="Edit Full Post">' + '<i class="fa fa-pencil-square-o"></i></button>';
                     return buttons;
                 },
                 "targets": 0
@@ -36,7 +36,7 @@ $(document).ready(function () {
                 "targets": 2
             }, {
                 "data": function (row) {
-                    return (row.active === "1") ? "true" : "false";
+                    return (Number(row.active) === 1) ? "true" : "false";
                 },
                 "className": "post-active",
                 "targets": 3
@@ -49,7 +49,6 @@ $(document).ready(function () {
 
     $('#posts').on('draw.dt search.dt', function () {
         setupEdit();
-        $('[data-toggle="tooltip"]').tooltip();
     });
 
     $('#post-delete-button').click(function () {
@@ -62,6 +61,13 @@ $(document).ready(function () {
 });
 
 function setupEdit() {
+    $('.edit-post-btn').off().click(function () {
+        var postId = Number($(this).attr('data-post-id'));
+        if (Number.isInteger(postId) && postId > 0) {
+            window.location.href = '/blog/new.php?p=' + postId;
+        }
+    });
+
     $('.quick-edit-post-btn').off().click(function () {
         var post = post_table.row($(this).closest('tr')).data();
         editManagedPost(post);
@@ -85,7 +91,7 @@ function editManagedPost(post) {
     $('#post .modal-title').html("Quick Edit of <strong> " + post.title + "</strong>");
     $('#post-title-input').val(post.title);
     $('#post-date-input').val(post.date);
-    (post.active === "1") ? $('#post-active-input').prop('checked', true) : $('#post-active-input').prop('checked', false);
+    $('#post-active-input').prop('checked', Number(post.active) === 1);
     // setup our preview image
     var img = $('<img>');
     img.attr('src', post.preview);
@@ -114,6 +120,18 @@ function editManagedPost(post) {
                     }
                 }
             }
+        }
+        var previewBits = post.preview.split('/');
+        var previewName = previewBits.pop();
+        if (!location) {
+            location = previewBits.join('/');
+        }
+        var previewSelect = $('#post-preview-image');
+        if (previewName) {
+            var previewOption = $('<option>');
+            previewOption.text(previewName);
+            previewSelect.append(previewOption);
+            previewSelect.val(previewName);
         }
         $('#post').attr('post-location', location);
         for (var k in data.tags) {

@@ -16,11 +16,11 @@ $user = User::fromSystem();
     if ($user->isAdmin ()) {
         $rand = "?" . Strings::randomString ();
         ?>
-    <link href="/css/uploadfile.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     <?php
     }
     ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -123,8 +123,8 @@ $user = User::fromSystem();
     <?php
     if ($user->isAdmin ()) {
         ?>
-    <script src="/js/edit-image.js"></script>
-    <script src="/js/jquery.uploadfile.js"></script>
+    <script src="<?php echo Strings::assetUrl('/js/edit-image.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <?php
     }
     ?>

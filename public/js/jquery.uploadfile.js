@@ -862,7 +862,7 @@
                         updateFileCounter(s, obj);
 
                     } else {
-                        s.onError.call(this, fileArray, status, errMsg, pd);
+                        s.onError.call(this, fileArray, status, errMsg, pd, xhr);
                         if (s.showStatusAfterError) {
                             pd.progressDiv.hide();
                             pd.statusbar.append("<span class='" + s.errorClass + "'>ERROR: " + errMsg + "</span>");

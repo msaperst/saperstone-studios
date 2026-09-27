@@ -27,11 +27,18 @@ class MockElement {
         this.summernoteCode = '';
         this.modalCalls = [];
         this.rect = {top: 0, bottom: 100, width: 300, height: 100};
+        this.beforeValues = [];
+        this.wrapValues = [];
+        this.replacedWith = null;
+        this.appendTarget = null;
+        this.resizableOptions = null;
         this.nativeElement = {
             complete: false,
             naturalWidth: 0,
+            src: '',
             getBoundingClientRect: () => this.rect
         };
+        this[0] = this.nativeElement;
     }
 
     get(index) {
@@ -100,6 +107,10 @@ class MockElement {
 
     append(value) {
         this.appended.push(value);
+        if (value instanceof MockElement) {
+            value.appendTarget = this.selector;
+            value.parentResult = this;
+        }
         return this;
     }
 
@@ -185,6 +196,16 @@ class MockElement {
         return this;
     }
 
+    sortable(options) {
+        this.sortableOptions = options || {};
+        return this;
+    }
+
+    droppable(options) {
+        this.droppableOptions = options || {};
+        return this;
+    }
+
     summernote(action) {
         if (action === 'code') {
             return this.summernoteCode;
@@ -197,6 +218,13 @@ class MockElement {
         return this;
     }
 
+    carousel(options) {
+        this.carouselCalls = this.carouselCalls || [];
+        this.carouselCalls.push(options);
+        this.carouselOptions = options;
+        return this;
+    }
+
     show() {
         this.visible = true;
         return this;
@@ -204,6 +232,11 @@ class MockElement {
 
     hide() {
         this.visible = false;
+        return this;
+    }
+
+    toggle(state) {
+        this.visible = state === undefined ? !this.visible : Boolean(state);
         return this;
     }
 
@@ -293,11 +326,61 @@ class MockElement {
         return this.parentResult || this;
     }
 
+    children(selector) {
+        const children = this.appended.filter((child) => child && typeof child === 'object');
+        const matching = selector === 'img'
+            ? children.filter((child) => child.tagName === 'img')
+            : children;
+        return {
+            each(callback) {
+                matching.forEach((child, index) => callback.call(child, index, child));
+                return this;
+            }
+        };
+    }
+
+    next() {
+        return this.environment.element(`${this.selector} __next__`);
+    }
+
+    before(value) {
+        this.beforeValues = this.beforeValues || [];
+        this.beforeValues.push(value);
+        return this;
+    }
+
+    wrap(value) {
+        this.wrapValues = this.wrapValues || [];
+        this.wrapValues.push(value);
+        return this;
+    }
+
+    replaceWith(value) {
+        this.replacedWith = value;
+        return this;
+    }
+
+    resizable(options) {
+        this.resizableOptions = options || {};
+        return this;
+    }
+
+    slideToggle(duration, callback) {
+        this.visible = !this.visible;
+        if (callback) callback();
+        return this;
+    }
+
     find(selector) {
         return this.environment.element(`${this.selector} ${selector}`);
     }
 
     prependTo() {
+        return this;
+    }
+
+    appendTo(target) {
+        this.appendedTo = target;
         return this;
     }
 
@@ -324,6 +407,9 @@ class MockElement {
     is(query) {
         if (query === ':checked') {
             return Boolean(this.properties.get('checked'));
+        }
+        if (query === ':visible') {
+            return this.visible;
         }
         return false;
     }
@@ -452,7 +538,10 @@ function createJQueryEnvironment(options = {}) {
             return selector;
         }
         if (typeof selector === 'string' && selector.startsWith('<')) {
-            return new MockElement(environment, `__created_${elements.size}__`);
+            const created = new MockElement(environment, `__created_${elements.size}__`);
+            const tagMatch = selector.match(/^<\s*([a-z0-9-]+)/i);
+            created.tagName = tagMatch ? tagMatch[1].toLowerCase() : null;
+            return created;
         }
         return element(String(selector));
     }

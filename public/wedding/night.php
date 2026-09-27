@@ -16,11 +16,11 @@ $sql->disconnect();
         require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
         if ($user->isAdmin ()) {
     ?>
-    <link href="/css/uploadfile.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     <?php
         }
     ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -104,7 +104,7 @@ $sql->disconnect();
                     <span
                         class="image-edit-control">
                         <button class="ajax-file-upload editable-image-control"
-                            onclick="location.href='/commercial/galleries.php?w=12'">
+                            data-href="/commercial/galleries.php?w=12">
                             <i class="fa fa-pencil-square-o"></i> Edit These Images
                         </button>
                     </span>

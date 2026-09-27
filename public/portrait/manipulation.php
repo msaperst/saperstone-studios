@@ -12,7 +12,7 @@ $session->initialize();
     <?php
     require_once dirname ( $_SERVER ['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php";
     ?>
-    <link href="/css/hover-effect.css" rel="stylesheet">
+    <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
 
 </head>
 
@@ -68,15 +68,9 @@ $session->initialize();
     </div>
     <!-- /.container -->
 
-    <script src='/js/retouch.js'></script>
-    <script>
-        var images = [];
-        images[0] = { thumb:'/retouch/portrait/manipulation/0001.jpg', orig:'/retouch/portrait/manipulation/0001_o.jpg', edit:'/retouch/portrait/manipulation/0001_e.jpg', width:'750', height:'589', text:'' };
-        images[1] = { thumb:'/retouch/portrait/manipulation/0002.jpg', orig:'/retouch/portrait/manipulation/0002_o.jpg', edit:'/retouch/portrait/manipulation/0002_e.jpg', width:'750', height:'589', text:'' };
-        images[2] = { thumb:'/retouch/portrait/manipulation/0009.jpg', orig:'/retouch/portrait/manipulation/0009_o.jpg', edit:'/retouch/portrait/manipulation/0009_e.jpg', width:'499', height:'750', text:'' };
-        images[3] = { thumb:'/retouch/portrait/manipulation/0011.jpg', orig:'/retouch/portrait/manipulation/0011_o.jpg', edit:'/retouch/portrait/manipulation/0011_e.jpg', width:'750', height:'499', text:'' };
-        var retouch = new Retouch( $('#holder'), images, true );
-    </script>
+    <script src='<?php echo Strings::assetUrl('/js/retouch.js'); ?>'></script>
+    <div id="retouch-config" class="hidden" data-instructions="true" data-images="<?php echo Strings::escapeHtmlAttribute('[{"thumb":"/retouch/portrait/manipulation/0001.jpg","orig":"/retouch/portrait/manipulation/0001_o.jpg","edit":"/retouch/portrait/manipulation/0001_e.jpg","width":"750","height":"589","text":""},{"thumb":"/retouch/portrait/manipulation/0002.jpg","orig":"/retouch/portrait/manipulation/0002_o.jpg","edit":"/retouch/portrait/manipulation/0002_e.jpg","width":"750","height":"589","text":""},{"thumb":"/retouch/portrait/manipulation/0009.jpg","orig":"/retouch/portrait/manipulation/0009_o.jpg","edit":"/retouch/portrait/manipulation/0009_e.jpg","width":"499","height":"750","text":""},{"thumb":"/retouch/portrait/manipulation/0011.jpg","orig":"/retouch/portrait/manipulation/0011_o.jpg","edit":"/retouch/portrait/manipulation/0011_e.jpg","width":"750","height":"499","text":""}]'); ?>"></div>
+    <script src="<?php echo Strings::assetUrl('/js/retouch-init.js'); ?>"></script>
 
 </body>
 
