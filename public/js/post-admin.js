@@ -68,7 +68,7 @@ function uploadForPost() {
         multiple: true,
         dragDrop: true,
         uploadButtonLocation: $('#post-button-holder'),
-        uploadContainer: $('#post-button-holder'),
+        uploadContainer: $('#post-image-holder'),
         uploadButtonClass: "btn btn-default btn-info",
         statusBarWidth: "auto",
         dragdropWidth: "100%",
@@ -115,7 +115,6 @@ function uploadForPost() {
         },
     });
 
-    $('#post-image-holder').height($(window).height() - $('#post-image-holder').offset().top - 70);
 }
 
 function newTag(ele) {
@@ -585,10 +584,11 @@ function publishPost(post) {
 
 function setPreview() {
     $('#post-preview-holder img').remove();
+    $('#post-preview-holder .blog-preview-empty').toggle(!$('#post-preview-image').val());
     var img = $('<img>');
     img.attr('src', $('#post').attr('post-location') + '/' + $('#post-preview-image').val());
     img.css({
-        width: '300px'
+        width: '100%'
     });
     $('#post-preview-holder').append(img);
     img.draggable({
