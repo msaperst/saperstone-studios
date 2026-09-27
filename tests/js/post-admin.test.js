@@ -295,7 +295,7 @@ test('post-admin setPreview replaces the preview with a draggable selected image
 
     const image = environment.element('#post-preview-holder').appended[0];
     assert.equal(image.attr('src'), '../tmp/photo.jpg');
-    assert.equal(image.css('width'), '100%');
+    assert.equal(image.classes.has('blog-preview-image'), true);
     equalStructure(image.draggableOptions, {axis: 'y'});
 });
 
