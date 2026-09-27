@@ -1383,6 +1383,14 @@ label > input, label > u > input, label > textarea {
     padding: 20px;
 }
 
+.blog-editor-sidebar-card:has(.blog-preview-holder) {
+    padding-bottom: 20px;
+}
+
+.blog-editor-sidebar-card .blog-preview-holder:last-child {
+    margin-bottom: 0;
+}
+
 .blog-preview-holder {
     background: #eef1f3;
     border: 1px dashed #cbd2d7;
