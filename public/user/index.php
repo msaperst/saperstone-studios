@@ -97,8 +97,8 @@ $user->forceLogIn();
                                 ?>
                             <th class="u-width-55">
                                 <button id="add-album-btn" type="button"
-                                    class="btn btn-xs btn-success" data-toggle="tooltip"
-                                    data-placement="right" title="Add New Album">
+                                    class="btn btn-xs btn-success"
+                                    title="Add New Album">
                                     <em class="fa fa-plus"></em>
                                 </button>
                             </th>
