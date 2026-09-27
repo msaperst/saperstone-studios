@@ -285,7 +285,7 @@ function previewPost() {
     $('.blog-editable-text').each(function () {
         var textContent = $(this).find('.blog-text-content');
         textContent.html(textContent.summernote('code')).show();
-        $(this).find('.blog-section-drag-handle').hide();
+        $(this).find('.blog-section-drag-handle').show();
     });
     $('.note-editor').each(function () {
         $(this).hide();
