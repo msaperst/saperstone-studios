@@ -1445,6 +1445,25 @@ label > input, label > u > input, label > textarea {
     max-width: none;
 }
 
+/* Legacy .hovereffect sets height: 100%, which makes the preview depend on its
+ * containing block instead of the editor's fixed crop. Keep preview geometry
+ * self-contained when the legacy hover treatment is enabled. */
+.blog-preview-holder.blog-preview-mode.hovereffect {
+    float: none;
+    height: 190px;
+    min-height: 190px;
+    max-height: 190px;
+}
+
+.blog-preview-holder.blog-preview-mode .overlay {
+    height: 190px;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
 .blog-editor-upload-actions .ajax-upload-dragdrop {
     border: 1px dashed #cbd2d7 !important;
     border-radius: 6px;
