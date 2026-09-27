@@ -75,6 +75,7 @@ jobs:
         run: |
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
+          sudo apt-get update -qq
           sudo apt install chromium-chromedriver imagemagick
           chromedriver --port=4444 &
 
