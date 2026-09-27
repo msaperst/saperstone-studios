@@ -48,7 +48,7 @@ if (!$user->isAdmin() && !$blog->isActive()) {
                     <li class="no-before pull-right">
                         <button
                                 type="button" id="edit-post-btn" class="btn btn-xs btn-warning"
-                                data-toggle="tooltip" data-placement="left"
+                               
                                 title="Edit Blog Post">
                             <i class="fa fa-pencil-square-o"></i>
                         </button>
