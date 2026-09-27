@@ -34,73 +34,7 @@ album_has_unsupported_images() {
     local id=$1
     local unsupported
     unsupported=$(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
-        -e "SELECT location FROM album_images WHERE album = $id AND LOWER(location) NOT REGEXP '\\.(jpe?g|png) ORDER BY location LIMIT 1;")
-
-    if [[ -n "$unsupported" ]]; then
-        echo "$unsupported"
-        return 0
-    fi
-
-    return 1
-}
-
-album_needs_migration() {
-    local id=$1
-    local album_location
-    album_location=$(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
-        -e "SELECT location FROM albums WHERE id = $id LIMIT 1;")
-    local album_dir="${PARENT_DIR}/public/albums/$album_location"
-
-    [[ -d "$album_dir" ]] || return 0
-
-    while IFS= read -r image_location; do
-        local filename=${image_location##*/}
-        [[ -f "$album_dir/$filename" ]] || return 0
-        [[ -f "$album_dir/full/$filename" ]] || return 0
-        [[ -f "$album_dir/thumbs/400/$filename" ]] || return 0
-        [[ -f "$album_dir/thumbs/800/$filename" ]] || return 0
-        [[ -f "$album_dir/thumbs/1200/$filename" ]] || return 0
-    done < <(mysql -N -B -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" \
-        -e "SELECT location FROM album_images WHERE album = $id;")
-
-    return 1
-}
-
-failed=0
-processed=0
-skipped=0
-unsupported=0
-
-while IFS= read -r id; do
-    [[ -n "$id" ]] || continue
-
-    if unsupported_image=$(album_has_unsupported_images "$id"); then
-        echo "Skipping album $id: unsupported image type found (${unsupported_image##*/})."
-        ((unsupported+=1))
-        continue
-    fi
-
-    if ! album_needs_migration "$id"; then
-        echo "Skipping album $id: responsive thumbnails already complete."
-        ((skipped+=1))
-        continue
-    fi
-
-    echo "Generating responsive thumbnails for album $id (no markup)..."
-    if "$DIR/make-thumbs.sh" "$id" none missing; then
-        ((processed+=1))
-    else
-        echo "Album $id failed." >&2
-        ((failed+=1))
-    fi
-done <<< "$albums"
-
-echo "Responsive thumbnail backfill complete: $processed processed, $skipped skipped, $unsupported unsupported, $failed failed."
-
-if (( failed > 0 )); then
-    exit 1
-fi
- ORDER BY location LIMIT 1;")
+        -e "SELECT location FROM album_images WHERE album = $id AND LOWER(SUBSTRING_INDEX(location, '.', -1)) NOT IN ('jpg', 'jpeg', 'png') ORDER BY location LIMIT 1;")
 
     if [[ -n "$unsupported" ]]; then
         echo "$unsupported"
