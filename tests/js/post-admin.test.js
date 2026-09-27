@@ -41,7 +41,7 @@ function createAdminContext(options = {}) {
     return {alerts, confirmations, context, environment, windowObject};
 }
 
-test('post-admin uploadForPost configures image uploads and editor height', () => {
+test('post-admin uploadForPost configures image uploads for the media library', () => {
     const {context, environment} = createAdminContext({
         lengths: {'#post-image-holder': 1}
     });
@@ -54,7 +54,7 @@ test('post-admin uploadForPost configures image uploads and editor height', () =
     assert.equal(environment.uploadOptions.multiple, true);
     assert.equal(environment.uploadOptions.sequential, true);
     assert.equal(environment.uploadOptions.acceptFiles, 'image/*');
-    assert.equal(holder.heightValue, 730);
+    assert.equal(environment.uploadOptions.uploadContainer.selector, '#post-image-holder');
 });
 
 test('post-admin successful uploads create draggable images and preview options', () => {
@@ -295,7 +295,7 @@ test('post-admin setPreview replaces the preview with a draggable selected image
 
     const image = environment.element('#post-preview-holder').appended[0];
     assert.equal(image.attr('src'), '../tmp/photo.jpg');
-    assert.equal(image.css('width'), '300px');
+    assert.equal(image.css('width'), '100%');
     equalStructure(image.draggableOptions, {axis: 'y'});
 });
 
@@ -392,6 +392,11 @@ test('post-admin collectPost serializes positioned image groups', () => {
         width: '300px',
         height: '200px'
     });
+    image.widthValue = 300;
+    image.heightValue = 200;
+    image.parentResult = environment.element('__image_builder__');
+    image.parentResult.widthValue = 600;
+    environment.element(String(environment.window)).widthValue = 1300;
 
     let captured;
     context.collectPost((tags, preview, value) => {
@@ -404,10 +409,10 @@ test('post-admin collectPost serializes positioned image groups', () => {
             type: 'images',
             imgs: [{
                 location: '/tmp/image.jpg',
-                top: '10px',
-                left: '20px',
-                width: '300px',
-                height: '200px'
+                top: '6px',
+                left: '38px',
+                width: 570,
+                height: 380
             }]
         }
     });
