@@ -3,11 +3,12 @@ services:
     image: axllent/mailpit
     container_name: saperstonestudios_mailpit
     ports:
-      - "1025:1025" # SMTP port
-      - "8025:8025" # Web UI / REST API port
+      - "1025:1025"
+      - "8025:8025"
     environment:
-      - MP_SMTP_AUTH_ACCEPT_ANY=true
-      - MP_SMTP_AUTH_ALLOW_INSECURE=true
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+
   mysql:
     build:
       context: .
@@ -17,9 +18,7 @@ services:
     volumes:
       - mysql:/var/lib/mysql
     ports:
-      - ${DB_PORT}:3306
-    expose:
-      - ${DB_PORT}
+      - "${DB_PORT}:3306"
     environment:
       TZ: "America/New_York"
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
@@ -27,40 +26,37 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
-  php-myadmin:
+
+  phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: saperstonestudios_phpmyadmin
     restart: always
     depends_on:
       - mysql
     ports:
-      - ${ADMIN_PORT}:80
-    expose:
-      - ${ADMIN_PORT}
+      - "${ADMIN_PORT}:80"
     environment:
       PMA_HOST: mysql
       MYSQL_ROOT_PASSWORD: ${DB_ROOT}
-    links:
-      - mysql
+
   php:
     build:
       context: .
       dockerfile: .docker/php/Dockerfile
-      args:
-        MPDF_VERSION: 8.0.4
     container_name: saperstonestudios_php
     restart: always
     depends_on:
       - mysql
+      - mailpit
     ports:
-      - ${HTTP_PORT}:80
-      - ${HTTPS_PORT}:443
-    expose:
-      - ${HTTP_PORT}
-      - ${HTTPS_PORT}
-    links:
-      - mysql
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
     volumes:
+      # Application source is bind-mounted for immediate local PHP/JS/CSS edits.
+      - ./public:/var/www/public
+      - ./src:/var/www/src
+      - ./templates:/var/www/templates
+      - ./bin:/var/www/bin
       - ./content:/var/www/content
       - ./logs:/var/www/logs
       - ./tmp:/var/www/public/tmp
@@ -83,5 +79,6 @@ services:
       EMAIL_PASS_X: ${EMAIL_PASS_X}
       CLEAN_UP_AFTER: "60"
       SEND_EMAIL_AFTER: "20"
+
 volumes:
   mysql:
