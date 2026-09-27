@@ -148,6 +148,7 @@ test('post-admin previewPost and editPost toggle editor/preview state', () => {
     assert.equal(environment.element('#post-preview-holder').hasClass('post'), true);
     assert.equal(environment.element('#post-title-input').visible, false);
     assert.equal(environment.element('.note-editor').visible, false);
+    assert.equal(environment.element('.blog-editable-text .blog-section-drag-handle').visible, true);
 
     context.editPost();
 
