@@ -57,7 +57,11 @@ test('posts-manage initializes the DataTable with blog management columns', () =
     assert.equal(config.ajax, '/api/get-blogs-details.php?a=1');
     equalStructure(config.order, [[2, 'desc']]);
     assert.equal(config.columnDefs.length, 4);
-    assert.match(config.columnDefs[0].data({id: 7}), /quick-edit-post-btn/);
+    const actionButtons = config.columnDefs[0].data({id: 7});
+    assert.match(actionButtons, /quick-edit-post-btn/);
+    assert.match(actionButtons, /title="Edit Post Details"/);
+    assert.match(actionButtons, /title="Edit Full Post"/);
+    assert.doesNotMatch(actionButtons, /data-toggle|data-placement/);
     assert.equal(config.columnDefs[1].data({id: 7, title: 'Title'}), "<a href='/blog/post.php?p=7'>Title</a>");
     assert.equal(config.columnDefs[3].data({active: '1'}), 'true');
     assert.equal(config.columnDefs[3].data({active: 1}), 'true');
