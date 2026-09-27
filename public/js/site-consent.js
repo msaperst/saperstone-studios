@@ -115,7 +115,7 @@
 
                         var fieldID = settings.id + '-option-' + field.name;
 
-                        advancedCookiesToSelectList += '<li><input type="checkbox" id="' + fieldID + '" name="bsgdpr[]" value="' + field.name + '" data-auto="on" ' + cookieDisabledText + '> <label name="bsgdpr[]" data-toggle="tooltip" data-placement="right" for="' + fieldID + '"' + cookieDescription + '>' + field.title + '</label></li>';
+                        advancedCookiesToSelectList += '<li><input type="checkbox" id="' + fieldID + '" name="bsgdpr[]" value="' + field.name + '" data-auto="on" ' + cookieDisabledText + '> <label name="bsgdpr[]" for="' + fieldID + '"' + cookieDescription + '>' + field.title + '</label></li>';
                     }
                 });
 
