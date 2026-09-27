@@ -191,6 +191,11 @@ class MockElement {
         return this;
     }
 
+    sortable(options) {
+        this.sortableOptions = options || {};
+        return this;
+    }
+
     summernote(action) {
         if (action === 'code') {
             return this.summernoteCode;
