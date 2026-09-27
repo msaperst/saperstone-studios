@@ -226,7 +226,7 @@ function sortOptions() {
 function previewPost() {
     // fix our buttons
     $('#preview-post').hide();
-    $('#edit-post').show();
+    $('#edit-post').show().addClass('blog-preview-back-button');
 
     // setup preview for our preview image
     $('#post-preview-image').hide();
@@ -293,7 +293,7 @@ function previewPost() {
 function editPost() {
     // fix our buttons
     $('#preview-post').show();
-    $('#edit-post').hide();
+    $('#edit-post').hide().removeClass('blog-preview-back-button');
 
     // remove preview for our preview image
     $('#post-preview-image').show();
