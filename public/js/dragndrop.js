@@ -34,7 +34,7 @@ function addTextArea(text) {
     var textHolder = $('<li>');
     textHolder.attr('id', "textArea-" + textAreas++);
     textHolder.addClass('blog-editable-text');
-    textHolder.append(createSectionDragHandle('Drag text section to reorder'));
+    textHolder.append(createSectionDragHandle('Drag text section to reorder; double-click to remove'));
     var textContent = $('<div>');
     textContent.addClass('blog-text-content');
     textContent.html(text);
@@ -113,7 +113,7 @@ function addImageArea(images) {
         imageArray.push(ele);
     }
     imageOrder[imageAreaID] = imageArray;
-    var imageHandle = createSectionDragHandle('Drag image section to reorder');
+    var imageHandle = createSectionDragHandle('Drag image section to reorder; double-click to remove');
     if (images.length === 0) {
         imageEle.addClass('blog-empty-image-section');
     }
