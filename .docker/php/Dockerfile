@@ -50,6 +50,16 @@ COPY --from=assets /build/public /var/www/public
 COPY src /var/www/src
 COPY templates /var/www/templates
 
+# Fail the image build if generated assets or the PHP production URL selection
+# disappear. Local Compose hides these image assets with its source bind mount.
+RUN php -r 'require "/var/www/src/Strings.php"; \
+    foreach (["/js/album.js" => "/js/album.min.js", "/css/saperstone-studios.css" => "/css/saperstone-studios.min.css"] as $source => $minified) { \
+        if (!is_file("/var/www/public" . $source) || !is_file("/var/www/public" . $minified) || \
+            !str_starts_with(Strings::assetUrl($source, "/var/www/public"), $minified . "?v=")) { \
+            fwrite(STDERR, "Missing production asset or incorrect URL: " . $minified . PHP_EOL); exit(1); \
+        } \
+    }'
+
 # install plugins
 RUN cd /var/www && \
     composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
