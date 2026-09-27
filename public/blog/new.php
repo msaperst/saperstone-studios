@@ -108,7 +108,7 @@ $sql->disconnect();
                             <div>
                                 <span class="blog-editor-step">Post content</span>
                                 <h2>Build your story</h2>
-                                <p>Add text and image sections, then drag them into the order you want.</p>
+                                <p>Drag text sections and empty image sections by their handles to reorder them. Double-click a section handle to remove it.</p>
                             </div>
                             <div class="blog-editor-add-actions">
                                 <button id="add-text-button" type="button" class="btn btn-default">
@@ -227,6 +227,7 @@ $sql->disconnect();
         foreach ($content as $block) {
             $groups[$block->getGroup()][] = $block;
         }
+        ksort($groups, SORT_NUMERIC);
         foreach ($groups as $group) {
             if ($group[0] instanceof BlogText) {
                 $editorGroups[] = array('type' => 'text', 'text' => $group[0]->getText());

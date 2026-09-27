@@ -283,7 +283,9 @@ function previewPost() {
 
     // setup our texts for previews
     $('.blog-editable-text').each(function () {
-        $(this).show().html($(this).summernote('code'));
+        var textContent = $(this).find('.blog-text-content');
+        textContent.html(textContent.summernote('code')).show();
+        $(this).find('.blog-section-drag-handle').show();
     });
     $('.note-editor').each(function () {
         $(this).hide();
@@ -319,7 +321,8 @@ function editPost() {
 
     // fix our texts for editing
     $('.blog-editable-text').each(function () {
-        $(this).hide();
+        $(this).find('.blog-text-content').hide();
+        $(this).find('.blog-section-drag-handle').show();
     });
     $('.note-editor').each(function () {
         $(this).show();
@@ -355,7 +358,7 @@ function collectPost(callback1, callback2) {
         elements.group = ++group;
         if ($(this).hasClass('blog-editable-text')) {
             elements.type = "text";
-            elements.text = $(this).summernote('code');
+            elements.text = $(this).find('.blog-text-content').summernote('code');
         } else if ($(this).hasClass('blog-editable-images')) {
             elements.type = "images";
             elements.imgs = [];

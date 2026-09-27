@@ -933,8 +933,28 @@ a.plain {
     width: 95px;
 }
 
-.blog-editable-text, .blog-editable-images, .note-editor {
+.blog-editable-text, .blog-editable-images {
     margin-top: 20px;
+}
+
+.blog-editable-text > .note-editor {
+    margin-top: 0;
+}
+
+.blog-section-drag-handle {
+    background: #f7f8fa;
+    border: 1px solid #d8dde3;
+    border-bottom: 0;
+    border-radius: 4px 4px 0 0;
+    color: #66717d;
+    cursor: move;
+    font-size: 12px;
+    padding: 6px 10px;
+    user-select: none;
+}
+
+.blog-section-drag-handle .fa {
+    margin-right: 4px;
 }
 
 /* For our selector */
@@ -1357,8 +1377,11 @@ label > input, label > u > input, label > textarea {
 
 .blog-editor-add-actions {
     display: flex;
+    flex: 0 0 auto;
     flex-wrap: wrap;
     gap: 8px;
+    justify-content: flex-end;
+    margin-left: auto;
 }
 
 .blog-editor-content-card #post-content {

@@ -122,6 +122,18 @@ function editManagedPost(post) {
                 }
             }
         }
+        var previewBits = post.preview.split('/');
+        var previewName = previewBits.pop();
+        if (!location) {
+            location = previewBits.join('/');
+        }
+        var previewSelect = $('#post-preview-image');
+        if (previewName) {
+            var previewOption = $('<option>');
+            previewOption.text(previewName);
+            previewSelect.append(previewOption);
+            previewSelect.val(previewName);
+        }
         $('#post').attr('post-location', location);
         for (var k in data.tags) {
             if (data.tags.hasOwnProperty(k)) {

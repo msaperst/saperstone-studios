@@ -30,6 +30,7 @@ class MockElement {
         this.beforeValues = [];
         this.wrapValues = [];
         this.replacedWith = null;
+        this.appendTarget = null;
         this.resizableOptions = null;
         this.nativeElement = {
             complete: false,
@@ -106,6 +107,10 @@ class MockElement {
 
     append(value) {
         this.appended.push(value);
+        if (value instanceof MockElement) {
+            value.appendTarget = this.selector;
+            value.parentResult = this;
+        }
         return this;
     }
 
@@ -188,6 +193,16 @@ class MockElement {
 
     draggable(options) {
         this.draggableOptions = options || {};
+        return this;
+    }
+
+    sortable(options) {
+        this.sortableOptions = options || {};
+        return this;
+    }
+
+    droppable(options) {
+        this.droppableOptions = options || {};
         return this;
     }
 
@@ -309,6 +324,19 @@ class MockElement {
 
     parent() {
         return this.parentResult || this;
+    }
+
+    children(selector) {
+        const children = this.appended.filter((child) => child && typeof child === 'object');
+        const matching = selector === 'img'
+            ? children.filter((child) => child.tagName === 'img')
+            : children;
+        return {
+            each(callback) {
+                matching.forEach((child, index) => callback.call(child, index, child));
+                return this;
+            }
+        };
     }
 
     next() {
@@ -510,7 +538,10 @@ function createJQueryEnvironment(options = {}) {
             return selector;
         }
         if (typeof selector === 'string' && selector.startsWith('<')) {
-            return new MockElement(environment, `__created_${elements.size}__`);
+            const created = new MockElement(environment, `__created_${elements.size}__`);
+            const tagMatch = selector.match(/^<\s*([a-z0-9-]+)/i);
+            created.tagName = tagMatch ? tagMatch[1].toLowerCase() : null;
+            return created;
         }
         return element(String(selector));
     }

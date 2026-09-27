@@ -34,20 +34,25 @@ function addTextArea(text) {
     var textHolder = $('<li>');
     textHolder.attr('id', "textArea-" + textAreas++);
     textHolder.addClass('blog-editable-text');
-    textHolder.html(text);
+    textHolder.append(createSectionDragHandle('Drag text section to reorder; double-click to remove'));
+    var textContent = $('<div>');
+    textContent.addClass('blog-text-content');
+    textContent.html(text);
+    textHolder.append(textContent);
     $(elementBuilder).append(textHolder);
-    textHolder.summernote();
+    textContent.summernote();
 
-    // set our removal functionality
-    textHolder.dblclick(function () {
-        text = $(this).parent().find('textarea').val();
-        if (text !== "") {
+    // Double-click the drag handle to remove the section without conflicting
+    // with normal text editing inside Summernote.
+    textHolder.find('.blog-section-drag-handle').dblclick(function () {
+        var currentText = textContent.summernote('code');
+        if (currentText !== "") {
             var r = confirm("This input area has text in it, are you sure you want to delete it?");
             if (r === false) {
                 return;
             }
         }
-        $(this).parent().remove();
+        textHolder.remove();
     });
     makeSortable();
 }
@@ -108,6 +113,21 @@ function addImageArea(images) {
         imageArray.push(ele);
     }
     imageOrder[imageAreaID] = imageArray;
+    var imageHandle = createSectionDragHandle('Drag image section to reorder; double-click to remove');
+    if (images.length === 0) {
+        imageEle.addClass('blog-empty-image-section');
+    }
+    imageHandle.dblclick(function () {
+        if (!confirm("Do you want to delete this image area?")) {
+            return;
+        }
+        imageBuilder.children('img').each(function () {
+            removeImage($(this));
+        });
+        delete imageOrder[imageAreaID];
+        imageEle.remove();
+    });
+    imageEle.append(imageHandle);
     imageEle.append(imageBuilder);
     imageEle.append("<div id='temp' class='image-builder-temp'></div>");
     $(elementBuilder).append(imageEle);
@@ -158,15 +178,24 @@ function addImageArea(images) {
     makeSortable();
 }
 
+function createSectionDragHandle(label) {
+    var handle = $('<div>');
+    handle.addClass('blog-section-drag-handle');
+    handle.attr('title', label);
+    handle.attr('aria-label', label);
+    handle.html("<em class='fa fa-arrows-v'></em> " + label);
+    return handle;
+}
+
 function makeSortable() {
-    var moveTo;
     $(elementBuilder).sortable({
-        handle: '.panel-heading',
-        start: function (event, ui) {
-            moveTo = ui.item.prev();
+        items: '> .blog-editable-text, > .blog-editable-images',
+        handle: '.blog-section-drag-handle',
+        start: function () {
+            isDragged = true;
         },
-        update: function (event, ui) {
-            moveTo.insertBefore(ui.item);
+        stop: function () {
+            isDragged = false;
         }
     });
 }

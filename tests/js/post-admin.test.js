@@ -138,7 +138,7 @@ test('post-admin previewPost and editPost toggle editor/preview state', () => {
     const {context, environment} = createAdminContext();
     environment.element('#post-title-input').val('Preview Title');
     environment.element('#post-date-input').val('2026-09-24');
-    environment.element('.blog-editable-text').summernoteCode = '<p>Body</p>';
+    environment.element('.blog-editable-text .blog-text-content').summernoteCode = '<p>Body</p>';
 
     context.previewPost();
 
@@ -148,6 +148,7 @@ test('post-admin previewPost and editPost toggle editor/preview state', () => {
     assert.equal(environment.element('#post-preview-holder').hasClass('post'), true);
     assert.equal(environment.element('#post-title-input').visible, false);
     assert.equal(environment.element('.note-editor').visible, false);
+    assert.equal(environment.element('.blog-editable-text .blog-section-drag-handle').visible, true);
 
     context.editPost();
 
@@ -180,7 +181,7 @@ test('post-admin collectPost assembles tags, preview and text content', () => {
     environment.element('#post-preview-holder img').attr('src', '/tmp/preview.jpg');
     environment.element('#post-preview-holder img').css('top', '-10px');
     environment.element('#post-content>li').addClass('blog-editable-text');
-    environment.element('#post-content>li').summernoteCode = '<p>Text</p>';
+    environment.element('#post-content>li .blog-text-content').summernoteCode = '<p>Text</p>';
 
     let captured;
     context.collectPost((tags, preview, content) => {
@@ -365,7 +366,7 @@ test('post-admin collectPost asks for confirmation when no tags are selected', (
     environment.element('#post-title-input').val('No Tags');
     environment.element('#post-preview-holder img').attr('src', '/tmp/preview.jpg');
     environment.element('#post-content>li').addClass('blog-editable-text');
-    environment.element('#post-content>li').summernoteCode = '<p>Body</p>';
+    environment.element('#post-content>li .blog-text-content').summernoteCode = '<p>Body</p>';
     let saved = 0;
 
     context.collectPost(() => {
