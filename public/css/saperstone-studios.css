@@ -1424,9 +1424,12 @@ label > input, label > u > input, label > textarea {
 }
 
 .blog-preview-image {
+    height: auto;
+    left: 0;
     min-height: 100%;
     min-width: 100%;
-    position: relative;
+    position: absolute;
+    top: 0;
     width: 100%;
 }
 
