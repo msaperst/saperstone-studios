@@ -49,7 +49,7 @@ class SocialMediaIntegrationTest extends TestCase {
 
 ", file_get_contents(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
         } finally {
-            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog.rss');
         }
     }
 
@@ -83,7 +83,7 @@ class SocialMediaIntegrationTest extends TestCase {
 
 ", file_get_contents(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
         } finally {
-            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog.rss');
         }
     }
 
@@ -131,7 +131,7 @@ class SocialMediaIntegrationTest extends TestCase {
 
 ", file_get_contents(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss'));
         } finally {
-            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss');
+            unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog.rss');
         }
     }
 }

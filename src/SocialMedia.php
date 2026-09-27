@@ -10,7 +10,7 @@ class SocialMedia {
     }
 
     function generateRSS(): void {
-        $output = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog.rss';
+        $output = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog.rss';
         $url = $this->session->getBaseURL();
         $feed = fopen($output, 'w') or die ("Unable to open file!");
 

@@ -37,18 +37,30 @@ class Strings {
             return $url;
         }
 
-        $file = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
-            . ltrim($parts['path'], '/\\');
+        $path = $parts['path'];
+        $file = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
         if (!is_file($file)) {
             return $url;
         }
 
+        // Production images contain generated .min.js/.min.css siblings. Prefer
+        // them when present; local bind-mounted source trees naturally fall back
+        // to the readable source files.
+        if (preg_match('/\\.(js|css)$/i', $path) && !preg_match('/\\.min\\.(js|css)$/i', $path)) {
+            $minifiedPath = preg_replace('/\\.(js|css)$/i', '.min.$1', $path);
+            $minifiedFile = rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+                . ltrim($minifiedPath, '/\\');
+            if (is_file($minifiedFile)) {
+                $path = $minifiedPath;
+                $file = $minifiedFile;
+            }
+        }
+
         $separator = isset($parts['query']) ? '&' : '?';
         $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
-        $withoutFragment = $fragment === '' ? $url : substr($url, 0, -strlen($fragment));
-
+        $query = isset($parts['query']) ? '?' . $parts['query'] : '';
         $version = substr(hash_file('sha256', $file), 0, 12);
-        return $withoutFragment . $separator . 'v=' . $version . $fragment;
+        return $path . $query . $separator . 'v=' . $version . $fragment;
     }
 
     /**

@@ -1,3 +1,14 @@
+FROM node:22-bookworm-slim AS assets
+
+# Build minified copies of first-party assets for production. Source files stay
+# readable in the repository/local development environment.
+WORKDIR /build
+COPY public /build/public
+RUN find /build/public/js -maxdepth 1 -type f -name '*.js' ! -name '*.min.js' \
+    -exec sh -c 'for file do npx --yes terser@5.44.0 "$file" --compress --mangle --comments false -o "${file%.js}.min.js" || exit 1; done' sh {} + && \
+    find /build/public/css -maxdepth 1 -type f -name '*.css' ! -name '*.min.css' \
+    -exec sh -c 'for file do npx --yes clean-css-cli@5.6.3 -o "${file%.css}.min.css" "$file" || exit 1; done' sh {} +
+
 FROM composer:2 AS composer
 
 FROM php:8.4-apache-bookworm
@@ -35,12 +46,19 @@ RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif
 
 # copy over files
 COPY bin /var/www/bin
-COPY public /var/www/public
+COPY --from=assets /build/public /var/www/public
 COPY src /var/www/src
 COPY templates /var/www/templates
 
-# compress our css and js
-# TODO
+# Fail the image build if generated assets or the PHP production URL selection
+# disappear. Local Compose hides these image assets with its source bind mount.
+RUN php -r 'require "/var/www/src/Strings.php"; \
+    foreach (["/js/album.js" => "/js/album.min.js", "/css/saperstone-studios.css" => "/css/saperstone-studios.min.css"] as $source => $minified) { \
+        if (!is_file("/var/www/public" . $source) || !is_file("/var/www/public" . $minified) || \
+            !str_starts_with(Strings::assetUrl($source, "/var/www/public"), $minified . "?v=")) { \
+            fwrite(STDERR, "Missing production asset or incorrect URL: " . $minified . PHP_EOL); exit(1); \
+        } \
+    }'
 
 # install plugins
 RUN cd /var/www && \

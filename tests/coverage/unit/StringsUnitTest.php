@@ -76,6 +76,58 @@ class StringsUnitTest extends TestCase {
         rmdir($root);
     }
 
+    public function testAssetUrlPrefersGeneratedMinifiedAsset() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
+        file_put_contents($root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js', 'readable source');
+        $minified = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.min.js';
+        file_put_contents($minified, 'minified');
+
+        $this->assertEquals(
+            '/js/app.min.js?v=' . substr(hash_file('sha256', $minified), 0, 12),
+            Strings::assetUrl('/js/app.js', $root)
+        );
+
+        unlink($minified);
+        unlink($root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js');
+        rmdir($root . DIRECTORY_SEPARATOR . 'js');
+        rmdir($root);
+    }
+
+    public function testAssetUrlFallsBackToReadableAssetWithoutMinifiedSibling() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'css', 0777, true);
+        $source = $root . DIRECTORY_SEPARATOR . 'css' . DIRECTORY_SEPARATOR . 'site.css';
+        file_put_contents($source, 'body { color: black; }');
+
+        $this->assertEquals(
+            '/css/site.css?v=' . substr(hash_file('sha256', $source), 0, 12),
+            Strings::assetUrl('/css/site.css', $root)
+        );
+
+        unlink($source);
+        rmdir($root . DIRECTORY_SEPARATOR . 'css');
+        rmdir($root);
+    }
+
+    public function testAssetUrlPreservesQueryAndFragmentWhenUsingMinifiedAsset() {
+        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
+        mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
+        file_put_contents($root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js', 'source');
+        $minified = $root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.min.js';
+        file_put_contents($minified, 'min');
+
+        $this->assertEquals(
+            '/js/app.min.js?mode=admin&v=' . substr(hash_file('sha256', $minified), 0, 12) . '#settings',
+            Strings::assetUrl('/js/app.js?mode=admin#settings', $root)
+        );
+
+        unlink($minified);
+        unlink($root . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . 'app.js');
+        rmdir($root . DIRECTORY_SEPARATOR . 'js');
+        rmdir($root);
+    }
+
     public function testAssetUrlChangesWhenFileContentChanges() {
         $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
         mkdir($root . DIRECTORY_SEPARATOR . 'css', 0777, true);
