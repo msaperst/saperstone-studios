@@ -1614,3 +1614,73 @@ label > input, label > u > input, label > textarea {
         padding-right: 15px;
     }
 }
+
+
+/* Published-post presentation while previewing in the editor. */
+.blog-post-preview-details {
+    box-shadow: none;
+    padding-bottom: 8px;
+}
+
+.blog-post-preview-details .blog-editor-card-heading {
+    border-bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.blog-post-preview-details .blog-editor-card-heading > div {
+    display: none;
+}
+
+.blog-post-preview-details #post > label,
+.blog-post-preview-details .blog-editor-field > label {
+    display: none;
+}
+
+.blog-post-preview-details #post {
+    margin-bottom: 18px;
+}
+
+.blog-post-preview-details #post-title-preview {
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+    text-align: left;
+}
+
+.blog-post-preview-details .blog-editor-meta {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.blog-post-preview-details #post-tags {
+    flex: 1 1 auto;
+}
+
+.blog-post-preview-details #post-tags-preview a {
+    color: #00a99d;
+    margin-right: 4px;
+}
+
+.blog-post-preview-details .blog-editor-field:has(#post-date) {
+    flex: 0 0 auto;
+    text-align: right;
+}
+
+.blog-post-preview-details #post-date-preview {
+    font-weight: 700;
+}
+
+.blog-post-preview-details #post-likes {
+    display: none;
+}
+
+.blog-post-preview-content {
+    box-shadow: none;
+    padding-top: 0;
+}
+
+.blog-post-preview-content > .blog-editor-card-heading {
+    display: none;
+}
