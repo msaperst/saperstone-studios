@@ -1433,6 +1433,16 @@ label > input, label > u > input, label > textarea {
     width: 100%;
 }
 
+.blog-preview-holder.blog-preview-mode {
+    height: 190px;
+    min-height: 190px;
+    overflow: hidden;
+}
+
+.blog-preview-holder.blog-preview-mode .blog-preview-image {
+    max-width: none;
+}
+
 .blog-editor-upload-actions .ajax-upload-dragdrop {
     border: 1px dashed #cbd2d7 !important;
     border-radius: 6px;
