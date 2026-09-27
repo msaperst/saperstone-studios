@@ -399,10 +399,13 @@ function collectPost(callback1, callback2) {
             $('img', this).each(function () {
                 var img = {};
                 img.location = $(this).attr('src');
-                img.top = $(this).css('top');
-                img.left = $(this).css('left');
-                img.width = $(this).css('width');
-                img.height = $(this).css('height');
+                var builderWidth = $(this).parent().width();
+                var publishedWidth = $('#post-content').closest('.blog-editor-container').width();
+                var scale = builderWidth && publishedWidth ? publishedWidth / builderWidth : 1;
+                img.width = Math.round($(this).width() * scale);
+                img.height = Math.round($(this).height() * scale);
+                img.left = Math.round(parseFloat($(this).css('left')) * scale) + 'px';
+                img.top = Math.round(parseFloat($(this).css('top')) * scale) + 'px';
                 elements.imgs.push(img);
             });
         } else {
