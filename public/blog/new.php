@@ -52,12 +52,12 @@ $sql->disconnect();
                     <p class="blog-editor-eyebrow">Blog editor</p>
                     <h1><?php echo isset($blog) ? 'Edit Post' : 'Create Post'; ?></h1>
                 </div>
-                <ol class="breadcrumb blog-editor-breadcrumb">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/blog/">Blog</a></li>
-                    <li class="active"><?php echo isset($blog) ? 'Edit Post' : 'New Post'; ?></li>
-                </ol>
             </div>
+            <ol class="breadcrumb blog-editor-breadcrumb">
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li class="active"><?php echo isset($blog) ? 'Edit Post' : 'New Post'; ?></li>
+            </ol>
 
             <div class="blog-editor-layout">
                 <section class="blog-editor-main">
