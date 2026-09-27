@@ -1276,9 +1276,7 @@ label > input, label > u > input, label > textarea {
 }
 
 .blog-editor-breadcrumb {
-    background: transparent;
-    margin: 0;
-    padding: 0;
+    margin-bottom: 24px;
 }
 
 .blog-editor-layout {
