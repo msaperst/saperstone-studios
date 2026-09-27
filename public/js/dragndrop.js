@@ -113,16 +113,16 @@ function addImageArea(images) {
         imageArray.push(ele);
     }
     imageOrder[imageAreaID] = imageArray;
+    var imageHandle = createSectionDragHandle('Drag image section to reorder');
     if (images.length === 0) {
         imageEle.addClass('blog-empty-image-section');
-        var imageHandle = createSectionDragHandle('Drag empty image section to reorder');
         imageHandle.dblclick(function () {
             if (confirm("Do you want to delete this image area?")) {
                 imageEle.remove();
             }
         });
-        imageEle.append(imageHandle);
     }
+    imageEle.append(imageHandle);
     imageEle.append(imageBuilder);
     imageEle.append("<div id='temp' class='image-builder-temp'></div>");
     $(elementBuilder).append(imageEle);
@@ -184,7 +184,7 @@ function createSectionDragHandle(label) {
 
 function makeSortable() {
     $(elementBuilder).sortable({
-        items: '> .blog-editable-text, > .blog-empty-image-section',
+        items: '> .blog-editable-text, > .blog-editable-images',
         handle: '.blog-section-drag-handle',
         start: function () {
             isDragged = true;
