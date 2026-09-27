@@ -61,6 +61,21 @@ function addImageArea(images) {
     }
     images.sort(compareLeft);
     images.sort(compareTop);
+    var savedWidth = 0;
+    for (var imageIndex = 0; imageIndex < images.length; imageIndex++) {
+        savedWidth = Math.max(savedWidth,
+            (parseFloat(images[imageIndex].left) || 0) + (parseFloat(images[imageIndex].width) || 0));
+    }
+    var editorWidth = $(elementBuilder).width();
+    var loadScale = savedWidth && editorWidth && savedWidth > editorWidth ? editorWidth / savedWidth : 1;
+    if (loadScale !== 1) {
+        for (imageIndex = 0; imageIndex < images.length; imageIndex++) {
+            images[imageIndex].left = Math.round((parseFloat(images[imageIndex].left) || 0) * loadScale);
+            images[imageIndex].top = Math.round((parseFloat(images[imageIndex].top) || 0) * loadScale);
+            images[imageIndex].width = Math.round((parseFloat(images[imageIndex].width) || 0) * loadScale);
+            images[imageIndex].height = Math.round((parseFloat(images[imageIndex].height) || 0) * loadScale);
+        }
+    }
     var imageEle = $('<li>');
     imageEle.addClass('blog-editable-images');
     var maxHeight = 100;
