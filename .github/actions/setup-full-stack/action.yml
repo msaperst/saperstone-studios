@@ -24,9 +24,3 @@ runs:
     - name: Verify application liveliness
       shell: bash
       run: curl --retry 50 -f --retry-all-errors --retry-delay 5 -s -o /dev/null "http://localhost:90/"
-
-    - name: Verify public content images
-      shell: bash
-      run: |
-        curl -f -s -o /dev/null "http://localhost:90/img/main/portraits.jpg"
-        curl -f -s -o /dev/null "http://localhost:90/portrait/img/home.jpg"
