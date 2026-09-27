@@ -248,6 +248,8 @@ function previewPost() {
     $('#post-preview-holder').append(overlay);
 
     // setup our blog header information for preview
+    $('.blog-editor-details').addClass('blog-post-preview-details');
+    $('.blog-editor-content-card').addClass('blog-post-preview-content');
     $('#post-title-input').hide();
     var titleHeader = $('<h2>');
     titleHeader.html($('#post-title-input').val());
@@ -266,46 +268,6 @@ function previewPost() {
     dateSpan.html(date.toLocaleDateString("en-us", options));
     dateSpan.attr('id', 'post-date-preview');
     $('#post-date-input').after(dateSpan);
-
-    var facebookDiv = $('<div>');
-    facebookDiv.addClass('sm-preview col-md-4 text-center');
-    var facebookButton = $('<button>');
-    facebookButton.addClass('btn btn-xs btn-info');
-    facebookButton.css({
-        'background-color': '#4267b2',
-        'border': '#4267b2'
-    });
-    var facebookIcon = $('<em>');
-    facebookIcon.addClass('fa fa-thumbs-up');
-    facebookButton.append(facebookIcon).append(" Like <i>0</i>");
-    facebookDiv.append(facebookButton);
-    $('#post-likes').append(facebookDiv);
-
-    var twitterDiv = $('<div>');
-    twitterDiv.addClass('sm-preview col-md-4 text-center');
-    var twitterButton = $('<button>');
-    twitterButton.addClass('btn btn-xs btn-info');
-    var twitterIcon1 = $('<em>');
-    twitterIcon1.addClass('fa fa-twitter');
-    var twitterIcon2 = $('<em>');
-    twitterIcon2.addClass('fa fa-heart error');
-    twitterButton.append(twitterIcon1).append(" Like ").append(twitterIcon2);
-    twitterDiv.append(twitterButton);
-    $('#post-likes').append(twitterDiv);
-
-    var gplusDiv = $('<div>');
-    gplusDiv.addClass('sm-preview col-md-4 text-center');
-    var gplusButton = $('<button>');
-    gplusButton.addClass('btn btn-xs');
-    gplusButton.css({
-        'background-color': 'transparent',
-        'border': '1px grey solid'
-    });
-    var gplusIcon = $('<em>');
-    gplusIcon.addClass('fa fa-google-plus error');
-    gplusButton.append(gplusIcon).append("  <i>0</i>");
-    gplusDiv.append(gplusButton);
-    $('#post-likes').append(gplusDiv);
 
     $('#post-tags-select').hide();
     var tagsSpan = $('<span>');
@@ -346,7 +308,8 @@ function editPost() {
     $('#post-date-input').show();
     $('#post-date-preview').remove();
 
-    $('.sm-preview').remove();
+    $('.blog-editor-details').removeClass('blog-post-preview-details');
+    $('.blog-editor-content-card').removeClass('blog-post-preview-content');
 
     $('#post-tags-select').show();
     $('#post-tags-preview').remove();
