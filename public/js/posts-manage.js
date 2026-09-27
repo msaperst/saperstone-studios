@@ -19,8 +19,8 @@ $(document).ready(function () {
                 "orderable": false,
                 "searchable": false,
                 "data": function (row) {
-                    var buttons = '<button type="button" class="btn btn-xs btn-info quick-edit-post-btn" data-toggle="tooltip" data-placement="right" title="Edit Post Details"><i class="fa fa-pencil-square-o"></i></button>';
-                    buttons += ' <button type="button" class="btn btn-xs btn-warning edit-post-btn" data-post-id="' + row.id + '" data-toggle="tooltip" data-placement="right" title="Edit Full Post">' + '<i class="fa fa-pencil-square-o"></i></button>';
+                    var buttons = '<button type="button" class="btn btn-xs btn-info quick-edit-post-btn" title="Edit Post Details"><i class="fa fa-pencil-square-o"></i></button>';
+                    buttons += ' <button type="button" class="btn btn-xs btn-warning edit-post-btn" data-post-id="' + row.id + '" title="Edit Full Post">' + '<i class="fa fa-pencil-square-o"></i></button>';
                     return buttons;
                 },
                 "targets": 0
@@ -49,7 +49,6 @@ $(document).ready(function () {
 
     $('#posts').on('draw.dt search.dt', function () {
         setupEdit();
-        $('[data-toggle="tooltip"]').tooltip();
     });
 
     $('#post-delete-button').click(function () {
