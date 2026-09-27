@@ -34,20 +34,24 @@ function addTextArea(text) {
     var textHolder = $('<li>');
     textHolder.attr('id', "textArea-" + textAreas++);
     textHolder.addClass('blog-editable-text');
-    textHolder.html(text);
+    textHolder.append(createSectionDragHandle('Drag text section to reorder'));
+    var textContent = $('<div>');
+    textContent.addClass('blog-text-content');
+    textContent.html(text);
+    textHolder.append(textContent);
     $(elementBuilder).append(textHolder);
-    textHolder.summernote();
+    textContent.summernote();
 
     // set our removal functionality
     textHolder.dblclick(function () {
-        text = $(this).parent().find('textarea').val();
+        text = $(this).find('textarea').val() || $(this).find('.blog-text-content').html() || "";
         if (text !== "") {
             var r = confirm("This input area has text in it, are you sure you want to delete it?");
             if (r === false) {
                 return;
             }
         }
-        $(this).parent().remove();
+        $(this).remove();
     });
     makeSortable();
 }
@@ -108,6 +112,10 @@ function addImageArea(images) {
         imageArray.push(ele);
     }
     imageOrder[imageAreaID] = imageArray;
+    if (images.length === 0) {
+        imageEle.addClass('blog-empty-image-section');
+        imageEle.append(createSectionDragHandle('Drag empty image section to reorder'));
+    }
     imageEle.append(imageBuilder);
     imageEle.append("<div id='temp' class='image-builder-temp'></div>");
     $(elementBuilder).append(imageEle);
@@ -158,15 +166,24 @@ function addImageArea(images) {
     makeSortable();
 }
 
+function createSectionDragHandle(label) {
+    var handle = $('<div>');
+    handle.addClass('blog-section-drag-handle');
+    handle.attr('title', label);
+    handle.attr('aria-label', label);
+    handle.html("<em class='fa fa-arrows-v'></em> " + label);
+    return handle;
+}
+
 function makeSortable() {
-    var moveTo;
     $(elementBuilder).sortable({
-        handle: '.panel-heading',
-        start: function (event, ui) {
-            moveTo = ui.item.prev();
+        items: '> .blog-editable-text, > .blog-empty-image-section',
+        handle: '.blog-section-drag-handle',
+        start: function () {
+            isDragged = true;
         },
-        update: function (event, ui) {
-            moveTo.insertBefore(ui.item);
+        stop: function () {
+            isDragged = false;
         }
     });
 }
