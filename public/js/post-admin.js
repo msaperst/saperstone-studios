@@ -400,7 +400,10 @@ function collectPost(callback1, callback2) {
                 var img = {};
                 img.location = $(this).attr('src');
                 var builderWidth = $(this).parent().width();
-                var publishedWidth = $('#post-content').closest('.blog-editor-container').width();
+                var publishedWidth = $('.page-content.container').width();
+                if (!publishedWidth) {
+                    publishedWidth = 1170;
+                }
                 var scale = builderWidth && publishedWidth ? publishedWidth / builderWidth : 1;
                 img.width = Math.round($(this).width() * scale);
                 img.height = Math.round($(this).height() * scale);
