@@ -119,6 +119,24 @@ test('addImageArea gives populated image sections a reorder handle', () => {
     assert.equal(environment.element('#post-content').sortableOptions.items,
         '> .blog-editable-text, > .blog-editable-images');
 });
+
+test('double-clicking a populated image section handle returns its images to the media library', () => {
+    const {context, environment} = createContext();
+
+    context.addImageArea([{location:'one.jpg', top:0, left:0, width:100, height:100}]);
+
+    const holder = environment.element('#post-content').appended[0];
+    const handle = holder.appended[0];
+    const imageBuilder = holder.appended[1];
+    const image = imageBuilder.appended[0];
+    image.parentResult = imageBuilder;
+    context.resizeImages = () => {};
+
+    handle.handlers.get('dblclick')();
+
+    assert.equal(image.appendTarget, '#holder');
+    assert.equal(holder.removed, true);
+});
 test('section drag handle exposes accessible reorder instructions', () => {
     const {context} = createContext();
 
