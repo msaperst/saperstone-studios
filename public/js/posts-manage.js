@@ -128,18 +128,12 @@ function editManagedPost(post) {
             location = previewBits.join('/');
         }
         var previewSelect = $('#post-preview-image');
-        var previewFound = false;
-        previewSelect.find('option').each(function () {
-            if ($(this).val() === previewName || $(this).text() === previewName) {
-                previewFound = true;
-            }
-        });
-        if (!previewFound && previewName) {
+        if (previewName) {
             var previewOption = $('<option>');
             previewOption.text(previewName);
             previewSelect.append(previewOption);
+            previewSelect.val(previewName);
         }
-        previewSelect.val(previewName);
         $('#post').attr('post-location', location);
         for (var k in data.tags) {
             if (data.tags.hasOwnProperty(k)) {
