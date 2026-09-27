@@ -75,7 +75,7 @@ class BasicPagesLoadTest extends TestBase {
         $this->assertEquals('Privacy Policy', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
         $page = $this->driver->findElement(WebDriverBy::tagName('body'))->getText();
         $this->assertStringContainsString('Google Analytics and Meta Pixel', $page);
-        $this->assertStringContainsString('Facebook SDK', $page);
+        $this->assertStringContainsString('Meta Pixel', $page);
         $this->assertStringNotContainsString('AddToAny', $page);
         $this->assertStringContainsString('native sharing', $page);
         $this->assertStringContainsString('Effective September 24, 2026', $page);
