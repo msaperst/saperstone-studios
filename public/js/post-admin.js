@@ -230,7 +230,7 @@ function previewPost() {
 
     // setup preview for our preview image
     $('#post-preview-image').hide();
-    $('#post-preview-holder').addClass('post hovereffect');
+    $('#post-preview-holder').addClass('post hovereffect blog-preview-mode');
     var titleSpan = $('<span>');
     titleSpan.addClass('preview-title');
     titleSpan.html($('#post-title-input').val());
@@ -335,7 +335,7 @@ function editPost() {
 
     // remove preview for our preview image
     $('#post-preview-image').show();
-    $('#post-preview-holder').removeClass('post hovereffect');
+    $('#post-preview-holder').removeClass('post hovereffect blog-preview-mode');
     $('#post-preview-holder .preview-title').remove();
     $('#post-preview-holder .overlay').remove();
 
