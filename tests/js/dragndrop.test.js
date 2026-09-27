@@ -135,7 +135,7 @@ test('double-clicking a populated image section handle returns its images to the
 
     handle.handlers.get('dblclick')();
 
-    assert.equal(image.appendTarget, '#holder');
+    assert.equal(image.appendedTo, '#holder');
     assert.equal(holder.removed, true);
 });
 test('text section removal can be cancelled when it contains content', () => {
