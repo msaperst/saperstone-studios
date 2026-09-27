@@ -400,10 +400,7 @@ function collectPost(callback1, callback2) {
                 var img = {};
                 img.location = $(this).attr('src');
                 var builderWidth = $(this).parent().width();
-                var publishedWidth = $('.page-content.container').width();
-                if (!publishedWidth) {
-                    publishedWidth = 1170;
-                }
+                var publishedWidth = getPublishedPostContentWidth();
                 var scale = builderWidth && publishedWidth ? publishedWidth / builderWidth : 1;
                 img.width = Math.round($(this).width() * scale);
                 img.height = Math.round($(this).height() * scale);
@@ -600,4 +597,18 @@ function setPreview() {
     img.draggable({
         axis: "y",
     });
+}
+
+function getPublishedPostContentWidth() {
+    var viewportWidth = $(window).width();
+    if (viewportWidth >= 1200) {
+        return 1140;
+    }
+    if (viewportWidth >= 992) {
+        return 940;
+    }
+    if (viewportWidth >= 768) {
+        return 720;
+    }
+    return Math.max(viewportWidth - 30, 1);
 }
