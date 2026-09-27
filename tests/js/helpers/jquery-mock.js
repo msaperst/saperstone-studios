@@ -321,6 +321,19 @@ class MockElement {
         return this.parentResult || this;
     }
 
+    children(selector) {
+        const children = this.appended.filter((child) => child && typeof child === 'object');
+        const matching = selector === 'img'
+            ? children.filter((child) => child.selector === '<img>' || child.selector === 'img')
+            : children;
+        return {
+            each(callback) {
+                matching.forEach((child, index) => callback.call(child, index, child));
+                return this;
+            }
+        };
+    }
+
     next() {
         return this.environment.element(`${this.selector} __next__`);
     }
