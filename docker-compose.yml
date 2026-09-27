@@ -62,15 +62,16 @@ services:
       - ./tmp:/var/www/public/tmp
       # The public source bind mount hides image-build symlinks, so overlay the
       # local content directories at the public paths Apache serves.
-      - ./content/commercial:/var/www/public/commercial/img:ro
-      - ./content/portrait:/var/www/public/portrait/img:ro
-      - ./content/wedding:/var/www/public/wedding/img:ro
-      - ./content/b-nai-mitzvah:/var/www/public/b-nai-mitzvah/img:ro
-      - ./content/main:/var/www/public/img/main:ro
-      - ./content/reviews:/var/www/public/img/reviews:ro
-      - ./content/albums:/var/www/public/albums:ro
-      - ./content/blog:/var/www/public/blog/posts:ro
-      - ./content/contracts:/var/www/public/user/contracts:ro
+      # Upload, crop, thumbnail, and blog endpoints write through these paths.
+      - ./content/commercial:/var/www/public/commercial/img
+      - ./content/portrait:/var/www/public/portrait/img
+      - ./content/wedding:/var/www/public/wedding/img
+      - ./content/b-nai-mitzvah:/var/www/public/b-nai-mitzvah/img
+      - ./content/main:/var/www/public/img/main
+      - ./content/reviews:/var/www/public/img/reviews
+      - ./content/albums:/var/www/public/albums
+      - ./content/blog:/var/www/public/blog/posts
+      - ./content/contracts:/var/www/public/user/contracts
       - ./src/errors:/var/www/public/errors:ro
     environment:
       DB_HOST: mysql
