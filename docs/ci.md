@@ -60,9 +60,11 @@ These jobs additionally configure Gmail test credentials because portions of the
 
 Before scanning, the workflow creates an ephemeral admin user in the CI database specifically for ZAP. The checked-in Automation Framework plans under `.zap/` authenticate that user through `/api/login.php`, retain the PHP cookie session, and run the spider and scanner as the authenticated user. The account exists only in the disposable CI database.
 
-Each ZAP job writes a severity summary and its Medium/High alert types directly to the GitHub Actions job summary. Detailed HTML, JSON, and Markdown reports remain available as separate workflow artifacts.
+Each ZAP job writes a severity summary to the GitHub Actions job summary. Detailed HTML, JSON, and Markdown reports remain available as separate workflow artifacts.
 
-Findings currently do not fail the workflow while authenticated coverage is validated and application-specific findings are classified. Once the initial findings are understood, CI gating will use targeted ZAP rules so actionable Medium-or-higher findings block pull requests without globally suppressing accepted findings.
+ZAP is a security gate. Any reportable **Low, Medium, or High** alert causes the job to fail; Informational alerts do not. This applies to the pull-request baseline scan as well as weekly/manual scans that use the same summary gate.
+
+When ZAP fails, review the alert in the job summary and uploaded reports, reproduce the finding where practical, and fix the underlying issue. Do not suppress or downgrade a finding merely to make CI pass. If a finding is confirmed to be a false positive or an intentionally accepted risk, change its ZAP treatment explicitly in the appropriate checked-in Automation Framework plan under `.zap/`, document the reason in the pull request, and keep the exception as narrow as possible. A clean scan should contain no unsuppressed Low-or-higher findings.
 
 ## Reports and artifacts
 
