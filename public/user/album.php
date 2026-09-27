@@ -76,8 +76,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                 id="favorite-btn"
                                 type="button"
                                 class="btn btn-xs btn-success"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
+                               
+                               
                                 title="View favorites from this album"
                         >
                             <em class="fa fa-heart error">
@@ -99,8 +99,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                 id="submit-favorites-btn"
                                 type="button"
                                 class="btn btn-xs btn-success csp-hidden"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
+                               
+                               
                                 title="Submit album favorites as selection"
                         >
                             <em class="fa fa-paper-plane"></em>
@@ -109,8 +109,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     <li class="no-before pull-right">
                         <button
                                 type="button"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
+                               
+                               
                                 <?php
                                 if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
                                     ?>
@@ -134,8 +134,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     <li class="no-before pull-right">
                         <button
                                 type="button"
-                                data-toggle="tooltip"
-                                data-placement="bottom"
+                               
+                               
                                 <?php
                                 if (!$user->isLoggedIn() && !$isAlbumDownloadable) {
                                     ?>
@@ -164,8 +164,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                     id="access-btn"
                                     type="button"
                                     class="btn btn-xs btn-info"
-                                    data-toggle="tooltip"
-                                    data-placement="bottom"
+                                   
+                                   
                                     title="Set access for this album"
                             >
                                 <em class="fa fa-picture-o"></em>
@@ -180,8 +180,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                     id="view-all-favorites-btn"
                                     type="button"
                                     class="btn btn-xs btn-warning"
-                                    data-toggle="tooltip"
-                                    data-placement="bottom"
+                                   
+                                   
                                     title="View all user favorites">
                                 <em class="fa fa-heart"></em>
                             </button>
@@ -191,8 +191,8 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                                     id="edit-album-btn"
                                     type="button"
                                     class="btn btn-xs btn-warning"
-                                    data-toggle="tooltip"
-                                    data-placement="bottom"
+                                   
+                                   
                                     title="Edit album details">
                                 <em class="fa fa-pencil-square-o"></em>
                             </button>
