@@ -30,6 +30,7 @@ class MockElement {
         this.beforeValues = [];
         this.wrapValues = [];
         this.replacedWith = null;
+        this.appendTarget = null;
         this.resizableOptions = null;
         this.nativeElement = {
             complete: false,
@@ -106,6 +107,10 @@ class MockElement {
 
     append(value) {
         this.appended.push(value);
+        if (value instanceof MockElement) {
+            value.appendTarget = this.selector;
+            value.parentResult = this;
+        }
         return this;
     }
 
