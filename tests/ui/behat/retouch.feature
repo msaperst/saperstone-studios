@@ -23,16 +23,16 @@ Feature: Retouch
     Then I see the "1st" image comment
 
   Scenario: Comparison slider can show equal original and retouched portions
-    Given I select the "1st" retouched thumbnail
-    When I move the slider to 50%
+    When I select the "1st" retouched thumbnail
+    And I move the slider to 50%
     Then I see 50% of the "1st" retouched image
 
   Scenario: Comparison slider can show the full retouched image
-    Given I select the "1st" retouched thumbnail
-    When I move the slider to 100%
+    When I select the "1st" retouched thumbnail
+    And I move the slider to 100%
     Then I see 100% of the "1st" retouched image
 
   Scenario: Selecting another example replaces the displayed image
-    Given I select the "1st" retouched thumbnail
-    When I select the "2nd" retouched thumbnail
+    When I select the "1st" retouched thumbnail
+    And I select the "2nd" retouched thumbnail
     Then I see the "2nd" original image
