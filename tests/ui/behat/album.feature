@@ -146,12 +146,6 @@ Feature: Album
     And I see album 99999 download with my favorites
     And I see an email indicating images "2, 7" from album 99999 downloaded
 
-#  Scenario: Unable to share favorites
-#    Given album 99999 image 2 is a favorite
-#    And I am on the "user/album.php?album=99999" page
-#    When I view my favorites
-#    And I share my favorites
-#    Then I see that sharing isn't available
 
   Scenario: Able to submit favorites
     Given album 99999 image 2 is a favorite
@@ -160,10 +154,10 @@ Feature: Album
     And I submit my favorites
     Then I see the form to submit my favorites
 
-  Scenario: Able to submit favorites as guest
+  Scenario: Guest can submit favorites
+    Given album 99999 has code "album 99999"
     When I logout
-    And album 99999 has code "album 99999"
-    And I have searched for album "album 99999"
+    And I search for album "album 99999"
     And I am on the "user/album.php?album=99999" page
     And I view album image 2
     And I favorite the image
@@ -183,26 +177,22 @@ Feature: Album
     And an email is sent indicating album 99999 favorites submitted
     And I receive an email indicating I have submitted my selects
 
-#  Scenario: Unable to share all images
-#    Given I am on the "user/album.php?album=99999" page
-#    When I share all my images
-#    Then I see that sharing isn't available
 
   Scenario: Able to download all images
     Given I am on the "user/album.php?album=99999" page
-    And I download all my images
+    When I download all my images
     Then I see the download terms of service
 
   Scenario: Unable to download all images
     Given I am on the "user/album.php?album=99999" page
-    And I download all my images
+    When I download all my images
     And I confirm my download
     Then I see an error message indicating no files are available to download
 
   Scenario: Download all images
     Given I have download rights for album 99999 image 2
     And I am on the "user/album.php?album=99999" page
-    And I download all my images
+    When I download all my images
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with images "2"
@@ -213,7 +203,7 @@ Feature: Album
     And I have download rights for album 99999 image 4
     And I have download rights for album 99999 image 7
     And I am on the "user/album.php?album=99999" page
-    And I download all my images
+    When I download all my images
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with images "2, 4, 7"
@@ -234,11 +224,6 @@ Feature: Album
     And I see album 99999 download with images "2"
     And I see an email indicating images "2" from album 99999 downloaded
 
-#  Scenario: Unable to share single image
-#    Given I have share rights for album 99999 image 2
-#    And I am on the "user/album.php?album=99999#1" page
-#    When I share the image
-#    Then I see that sharing isn't available
 
   Scenario: Able to submit single image
     Given I am on the "user/album.php?album=99999#1" page
