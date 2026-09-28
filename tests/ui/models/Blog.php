@@ -46,8 +46,7 @@ class Blog {
     }
 
     public function waitForPostToLoad($postNum) {
-        // using times two due to the extra row for sharing
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($postNum * 2 + 1) . ')')));
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($postNum + 1) . ')')));
     }
 
     public function waitForPreviewToLoad($lineNum) {
