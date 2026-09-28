@@ -73,7 +73,7 @@ Feature: Uploader Albums
     And I create my album
     Then I see the album details modal for the new album
 
-  Scenario: Cant remove album name
+  Scenario: Album name cannot be removed
     When I edit album 99997
     And I provide "" for the album "name"
     And I update my album
@@ -99,7 +99,7 @@ Feature: Uploader Albums
     And I close the album details modal
     Then I see uploaded image "flower.jpeg" displayed in album 99997 with 17 images
 
-  Scenario: Unable to set access
+  Scenario: Uploader cannot manage album access
     When I edit album 99997
     Then I don't see the ability to set access
 
@@ -109,7 +109,7 @@ Feature: Uploader Albums
     And I confirm my deletion of my album
     Then I don't see album 99997 listed
 
-  Scenario: Able to make thumbnails
+  Scenario: Admin can create thumbnails
     Given album 99997 images are generic
     When I edit album 99997
     And I make thumbnails for my album
