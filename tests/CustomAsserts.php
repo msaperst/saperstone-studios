@@ -119,6 +119,26 @@ class CustomAsserts {
         Assert::assertCount($expectedCount, $data['messages'] ?? [], "Expected exactly $expectedCount emails sent.");
     }
 
+    public static function assertEmailSubjectExists(string $expectedSubject): void {
+        $client = self::getMailpitClient();
+        $response = $client->request('GET', 'messages');
+        $data = json_decode((string)$response->getBody(), true);
+        $subjects = array_column($data['messages'] ?? [], 'Subject');
+
+        Assert::assertContains(
+            $expectedSubject,
+            $subjects,
+            'Expected Mailpit to contain an email with subject ' . $expectedSubject
+        );
+    }
+
+    /**
+     * Error pages send their reports to the webmaster via Mailpit in CI.
+     */
+    public static function assertErrorEmailMatches(string $subject, string $text, string $html): void {
+        self::assertEmailMatches('msaperst@gmail.com', 'error@saperstonestudios.com', $subject, $text, $html);
+    }
+
     /**
      * Finds a specific email and asserts its content, including SMTP credentials and attachments.
      */
@@ -140,6 +160,7 @@ class CustomAsserts {
         $data = json_decode((string)$response->getBody(), true);
 
         $found = false;
+        $seen = [];
 
         foreach (($data['messages'] ?? []) as $msg) {
             $messageId = $msg['ID'];
@@ -148,12 +169,14 @@ class CustomAsserts {
 
             $toAddresses = array_column($detail['To'] ?? [], 'Address');
             $fromAddress = $detail['From']['Address'] ?? '';
+            $seen[] = sprintf('%s -> %s: %s', $fromAddress, implode(', ', $toAddresses), $detail['Subject'] ?? '');
 
             if (in_array($expectedTo, $toAddresses) && $fromAddress === $expectedFrom && $detail['Subject'] === $expectedSubject) {
                 $found = true;
 
                 // Assert contents
-                Assert::assertStringMatchesFormat($expectedText, $detail['Text'], "Text body did not match.");
+                $normalizeLines = static fn(string $value): string => str_replace(["\r\n", "\r"], "\n", $value);
+                Assert::assertStringMatchesFormat($normalizeLines($expectedText), $normalizeLines($detail['Text']), "Text body did not match.");
                 Assert::assertStringMatchesFormat($expectedHtml, $detail['HTML'], "HTML body did not match.");
 
                 // Assert SMTP Authentication username
@@ -194,7 +217,7 @@ class CustomAsserts {
             }
         }
 
-        Assert::assertTrue($found, "Failed asserting that the specified email was sent.");
+        Assert::assertTrue($found, "Expected $expectedFrom -> $expectedTo: $expectedSubject. Mailpit contained: " . implode('; ', $seen));
     }
 
     /**

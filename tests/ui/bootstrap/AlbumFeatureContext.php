@@ -1603,7 +1603,7 @@ Comment',
      * @throws ExceptionAlias
      */
     public function iSeeAnAlbumNotificationWasEmailedOutTo($albumId) {
-        CustomAsserts::assertEmailEquals('Album Updated on Saperstone Studios',
+        CustomAsserts::assertEmailMatches($this->user->getEmail(), 'noreply@saperstonestudios.com', 'Album Updated on Saperstone Studios',
             "An album you requested to be updated about has been updated.\r
 \r
 Images have been posted to album Album $albumId. You can access your images by logging in at https://saperstonestudios.com/ and then navigating to https://saperstonestudios.com/user/album.php?album=$albumId.",
@@ -1642,7 +1642,7 @@ Images have been posted to album Album $albumId. You can access your images by l
         $sql->disconnect();
         $images = implode("\r\n", $imgs);
         $imagesLi = implode("</li><li>", $imgs);
-        CustomAsserts::assertEmailMatches('Someone Downloaded Something', "This is an automatically generated message from Saperstone Studios
+        CustomAsserts::assertEmailMatches((string)getenv('EMAIL_ACTIONS'), 'actions@saperstonestudios.com', 'Someone Downloaded Something', "This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the Album $albumId album at %s://%s/user/album.php?album=$albumId
 
@@ -1668,7 +1668,7 @@ Full UA: %s", "<html><body><p>This is an automatically generated message from Sa
         $sql->disconnect();
         $images = implode("\r\n", $imgs);
         $imagesLi = implode("</li><li>", $imgs);
-        CustomAsserts::assertEmailMatches('Selects Have Been Made',
+        CustomAsserts::assertEmailMatches((string)getenv('EMAIL_SELECTS'), 'selects@saperstonestudios.com', 'Selects Have Been Made',
             "This is an automatically generated message from Saperstone Studios\r
 \r
 {$this->user->getName()} has made a selection from the Album $albumId album at %s://%s/user/album.php?album=$albumId. Their email address is {$this->user->getEmail()}\r
@@ -1689,7 +1689,7 @@ $images\r
         $sql = new Sql();
         $image = $sql->getRow("SELECT * FROM album_images WHERE album = $albumId AND sequence = " . ($image - 1))['title'];
         $sql->disconnect();
-        CustomAsserts::assertEmailMatches('Selects Have Been Made',
+        CustomAsserts::assertEmailMatches((string)getenv('EMAIL_SELECTS'), 'selects@saperstonestudios.com', 'Selects Have Been Made',
             "This is an automatically generated message from Saperstone Studios\r
 \r
 {$this->user->getName()} has made a selection from the Album $albumId album at %s://%s/user/album.php?album=$albumId. Their email address is {$this->user->getEmail()}\r
@@ -1705,7 +1705,7 @@ $image\r
      * @throws ExceptionAlias
      */
     public function iReceiveAnEmailIndicatingIHaveSubmittedMySelects() {
-        CustomAsserts::assertEmailEquals('Thank You for Making Selects',
+        CustomAsserts::assertEmailMatches($this->user->getEmail(), 'selects@saperstonestudios.com', 'Thank You for Making Selects',
             'Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.',
             '<html><body>Thank you for making your selects. We\'ll start working on your images, and reach back out to you shortly with access to your final images.</body></html>');
     }

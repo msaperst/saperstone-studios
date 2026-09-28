@@ -6,7 +6,7 @@ on:
 
 jobs:
   page_tests:
-    name: Page Testing
+    name: HTTP Page Testing
     runs-on: ubuntu-latest
 
     steps:
@@ -22,41 +22,34 @@ jobs:
       - name: Set up full-stack test application
         uses: ./.github/actions/setup-full-stack
 
-      - name: Set up Gmail Credentials and Token
-        run: |
-          echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
-          echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
-
       - name: System Setup
         run: |
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
-          sudo apt install chromium-chromedriver
-          chromedriver --port=4444 &
 
-      - name: Page Tests
-        run: COMPOSER_PROCESS_TIMEOUT=1200 composer ui-page-test
+      - name: HTTP Page Tests
+        run: composer http-page-test
 
       - name: Test Report
         uses: dorny/test-reporter@v2
         if: ${{ !cancelled() }}
         with:
-          name: UI Page Tests
-          path: reports/ui-junit.xml
+          name: HTTP Page Tests
+          path: reports/http-page-junit.xml
           reporter: java-junit
 
       - name: Upload HTML test report
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ui-test-html
-          path: reports/ui-results.html
+          name: http-page-test-html
+          path: reports/http-page-results.html
 
       - name: Upload Custom Report 📊
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ui
+          name: http-page
           path: reports
 
   behat_tests:
@@ -76,16 +69,12 @@ jobs:
       - name: Set up full-stack test application
         uses: ./.github/actions/setup-full-stack
 
-      - name: Set up Gmail Credentials and Token
-        run: |
-          echo '${{ secrets.GMAIL_TEST_CREDENTIALS }}' > credentials.json
-          echo '${{ secrets.GMAIL_TEST_TOKEN }}' > token.json
-
       - name: System Setup
         run: |
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
-          sudo apt install chromium-chromedriver
+          sudo apt-get update -qq
+          sudo apt install chromium-chromedriver imagemagick
           chromedriver --port=4444 &
 
       - name: Behat Tests
