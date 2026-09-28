@@ -133,7 +133,8 @@ class AlbumFeatureContext implements Context {
      * @param $albumId
      * @throws Exception
      */
-    public function albumExists($albumId) {\n        $this->resetAlbumFixture((int) $albumId);
+    public function albumExists($albumId) {
+        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1);");
@@ -145,7 +146,8 @@ class AlbumFeatureContext implements Context {
      * @param $albumId
      * @throws Exception
      */
-    public function iHaveCreatedAlbum($albumId) {\n        $this->resetAlbumFixture((int) $albumId);
+    public function iHaveCreatedAlbum($albumId) {
+        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
@@ -159,7 +161,8 @@ class AlbumFeatureContext implements Context {
      * @param $albumCode
      * @throws Exception
      */
-    public function albumExistsWithCode($albumId, $albumCode) {\n        $this->resetAlbumFixture((int) $albumId);
+    public function albumExistsWithCode($albumId, $albumCode) {
+        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1, '$albumCode');");
@@ -184,7 +187,8 @@ class AlbumFeatureContext implements Context {
      * @param $images
      * @throws Exception
      */
-    public function albumExistsWithImages($albumId, $images) {\n        $this->resetAlbumFixture((int) $albumId);
+    public function albumExistsWithImages($albumId, $images) {
+        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
@@ -208,7 +212,8 @@ class AlbumFeatureContext implements Context {
      * @param $albumId
      * @throws Exception
      */
-    public function iHaveCreatedAlbumWithImages($albumId, $images) {\n        $this->resetAlbumFixture((int) $albumId);
+    public function iHaveCreatedAlbumWithImages($albumId, $images) {
+        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
