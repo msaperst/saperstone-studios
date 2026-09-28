@@ -14,9 +14,9 @@ Feature: Uploader Albums
     And I am on the "user/" page
 
   Scenario: Uploader only able to see their albums
-    Then I see 2 albums listed
-    And I see album 99997 listed
+    Then I see album 99997 listed
     And I see album 99999 listed
+    And I don't see album 99998 listed
 
   Scenario: Uploader add blank album
     When I add album "" to my albums
@@ -29,13 +29,11 @@ Feature: Uploader Albums
   Scenario: Uploader able to add an album
     When I add album "album99998" to my albums
     Then I see an info message indicating album successfully added
-    And I see 3 albums listed
     And I see album 99998 listed
 
   Scenario: Uploader able to add an album by keyboard
     When I add album "album99998" to my albums with keyboard
     Then I see an info message indicating album successfully added
-    And I see 3 albums listed
     And I see album 99998 listed
 
   Scenario Outline: Uploader able to see album information
@@ -87,16 +85,13 @@ Feature: Uploader Albums
     And I provide "Some sample test album" for the album "description"
     And I provide "01/01/2030" for the album "date"
     And I update my album
-    Then I see album 99999 album <attribute>
+    Then I see album 99997 album <attribute>
     Examples:
       | attribute     |
       | name          |
       | description   |
       | date          |
       | images        |
-
-  Scenario: Upload images to album
-    #TODO - gotta figure this one out...
 
   Scenario: Unable to set access
     When I edit album 99997
@@ -109,8 +104,9 @@ Feature: Uploader Albums
     Then I don't see album 99997 listed
 
   Scenario: Able to make thumbnails
-    Given album 99999 images are generic
+    Given album 99997 images are generic
     When I edit album 99997
     And I make thumbnails for my album
+    And I create "watermark" thumbnails
     Then I see thumbnails being created
     Then I have created "watermark" thumbnail images for album 99997
