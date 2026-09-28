@@ -13,6 +13,10 @@ class StaticPagesHttpTest extends HttpTestBase {
         $this->assertPage($this->get('about.php'), 'About Saperstone Studios');
     }
 
+    public function testLeighAnnPage(): void {
+        $this->assertPage($this->get('leighAnn.php'), 'Meet Leigh Ann');
+    }
+
     public function testContactPage(): void {
         $response = $this->get('contact.php');
         $this->assertPage($response, 'Contact');
