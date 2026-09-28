@@ -262,7 +262,7 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Given /^album (\d+) image (\d+) has captain "([^"]*)"$/
+     * @Given /^album (\d+) image (\d+) has caption "([^"]*)"$/
      * @param $album
      * @param $image
      * @param $caption
@@ -512,7 +512,7 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @When /^I close the album image modal$/
+     * @When /^I close the image viewer$/
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
@@ -987,7 +987,7 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see the info icon on album image (\d+)$/
+     * @Then /^I see the image controls on album image (\d+)$/
      * @param $imgNum
      */
     public function iSeeTheInfoIconOnImage($imgNum) {
@@ -995,7 +995,7 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see album image (\d+) in the preview modal$/
+     * @Then /^I see album image (\d+) in the image viewer$/
      * @param $imgNum
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -1928,7 +1928,7 @@ $image\r
     }
 
     /**
-     * @When /^I close the album view$/
+     * @When /^I close the image viewer$/
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
@@ -1938,7 +1938,7 @@ $image\r
     }
 
     /**
-     * @Then /^I don't see the album preview modal$/
+     * @Then /^I don't see the image viewer$/
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
