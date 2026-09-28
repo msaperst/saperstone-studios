@@ -68,7 +68,7 @@ abstract class HttpTestBase extends TestCase {
         return $nodes->item(0)->attributes?->getNamedItem($attribute)?->nodeValue ?? '';
     }
 
-    protected function count(ResponseInterface $response, string $expression): int {
+    protected function elementCount(ResponseInterface $response, string $expression): int {
         $nodes = $this->xpath($response)->query($expression);
         self::assertNotFalse($nodes);
         return $nodes->length;
