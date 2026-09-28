@@ -83,7 +83,9 @@ class ContractFeatureContext implements Context {
      * @When /^I initial the contract$/
      */
     public function iInitialTheContract() {
-        $initialCanvas = $this->driver->findElement(WebDriverBy::cssSelector('#contract-initial > canvas'));
+        $selector = WebDriverBy::cssSelector('#contract-initial canvas');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        $initialCanvas = $this->driver->findElement($selector);
         $draw = new WebDriverActions($this->driver);
         $draw->clickAndHold($initialCanvas)->moveByOffset(-5, -10)->moveByOffset(20, 20)->moveByOffset(10, -5)->release()->perform();
     }
@@ -92,7 +94,9 @@ class ContractFeatureContext implements Context {
      * @When /^I sign the contract$/
      */
     public function iSignTheContract() {
-        $initialCanvas = $this->driver->findElement(WebDriverBy::cssSelector('#contract-signature > canvas'));
+        $selector = WebDriverBy::cssSelector('#contract-signature canvas');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        $initialCanvas = $this->driver->findElement($selector);
         $draw = new WebDriverActions($this->driver);
         $draw->clickAndHold($initialCanvas)->moveByOffset(-20, -10)->moveByOffset(20, 30)->moveByOffset(30, -15)->release()->perform();
     }
