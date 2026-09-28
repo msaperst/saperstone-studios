@@ -3,6 +3,9 @@
 namespace ui\http;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'HttpTestBase.php';
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
+
+use Sql;
 
 class GalleryPagesHttpTest extends HttpTestBase {
     /**
@@ -127,12 +130,23 @@ class GalleryPagesHttpTest extends HttpTestBase {
     }
 
     public function testGalleryDescriptionAndProtectedImageMarkup(): void {
-        $response = $this->get('portrait/galleries.php?w=91');
+        $sql = new Sql();
+        try {
+            $sql->executeStatement(
+                "INSERT INTO gallery_images (id, gallery, title, sequence, caption, location, width, height, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)",
+                [99991, 91, 'HTTP protected image', 999, 'HTTP caption', '/protected/http-test.jpg', 300, 400]
+            );
 
-        $this->assertPage($response, 'Curved Metal Gallery');
-        self::assertStringContainsString('perfect metal print display', $this->text($response, "//*[@id='gallery-comment']"));
-        self::assertGreaterThanOrEqual(0, $this->elementCount($response, "//*[@data-background-image]"));
-        self::assertSame(0, $this->elementCount($response, "//*[contains(@class, 'carousel-inner')]//img"));
+            $response = $this->get('portrait/galleries.php?w=91');
+
+            $this->assertPage($response, 'Curved Metal Gallery');
+            self::assertStringContainsString('perfect metal print display', $this->text($response, "//*[@id='gallery-comment']"));
+            self::assertSame(1, $this->elementCount($response, "//*[@data-background-image='/protected/http-test.jpg']"));
+            self::assertSame(0, $this->elementCount($response, "//*[contains(@class, 'carousel-inner')]//img"));
+        } finally {
+            $sql->executeStatement('DELETE FROM gallery_images WHERE id = 99991');
+            $sql->disconnect();
+        }
     }
 
     /**
