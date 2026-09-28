@@ -18,7 +18,7 @@ class GetAlbumImagesTest extends TestCase {
         $this->sql = new Sql();
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ('998', 'sample-album', 'sample album for testing', 'sample', 5);");
         $this->sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ('999', 'sample-album', 'sample album for testing', 'sample', 4, '1234');");
-        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (996, '998', '', '1', '', '', '300', '400', '1');");
+        $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (996, '998', '', '1', 'Sample caption', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (997, '999', '', '1', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (998, '999', '', '2', '', '', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (999, '999', '', '3', '', '', '300', '400', '1');");
@@ -118,6 +118,7 @@ class GetAlbumImagesTest extends TestCase {
 
         $this->assertEquals('996', $albumImages[0]['id']);
         $this->assertEquals('', $albumImages[0]['title']);
+        $this->assertEquals('Sample caption', $albumImages[0]['caption']);
         $this->assertEquals(1, $albumImages[0]['sequence']);
         $this->assertEquals('', $albumImages[0]['location']);
         $this->assertEquals(300, $albumImages[0]['width']);
