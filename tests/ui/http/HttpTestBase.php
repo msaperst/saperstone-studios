@@ -18,7 +18,7 @@ abstract class HttpTestBase extends TestCase {
 
     protected function setUp(): void {
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':' . getenv('HTTP_PORT') . '/';
-        $this->copyright = 'Copyright © Saperstone Studios ' . date('Y');
+        $this->copyright = 'Copyright (c) Saperstone Studios ' . date('Y');
         $this->cookies = new CookieJar();
         $this->client = new Client([
             'base_uri' => $this->baseUrl,
