@@ -502,8 +502,11 @@ body.album-viewer-open {
 .album-viewer-frame {
     position: relative;
     flex: 1 1 auto;
-    min-height: calc(100vh - 36px);
-    max-height: calc(100vh - 36px);
+    width: 100%;
+    max-width: 1600px;
+    height: calc(100vh - 36px);
+    max-height: 1600px;
+    margin: 0 auto;
     background: #111;
     border-radius: 0;
     overflow: hidden;
@@ -725,8 +728,8 @@ body.album-viewer-open {
     }
 
     .album-viewer-frame {
-        min-height: 60vh;
-        max-height: none;
+        height: 60vh;
+        max-height: 1600px;
     }
 
     .album-grid {

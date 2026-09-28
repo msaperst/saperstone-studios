@@ -108,7 +108,7 @@ function updateViewerMeta(image) {
     }
     $('#album-viewer-overlay').attr('album-id', image.attr('album-id'));
     $('#album-viewer-overlay').attr('image-id', image.attr('image-id'));
-    var imageLocation = image.attr('data-location') || image.attr('data-src');
+    var imageLocation = image.attr('data-thumbnail-1600') || image.attr('data-location') || image.attr('data-src');
     $('#album-viewer-image').css('background-image', 'url("' + imageLocation + '")');
     $('#album-viewer-image').attr('src', '/img/image.png');
     if (window.showImageTitle) {
@@ -122,19 +122,37 @@ function updateViewerMeta(image) {
     $('#album-viewer-caption').text(image.attr('data-caption') || '');
 }
 
+function getResponsiveThumbnailLocation(card) {
+    var width = card.get(0)?.getBoundingClientRect().width || 400;
+    var requiredWidth = width * (window.devicePixelRatio || 1);
+
+    if (requiredWidth <= 400 && card.attr('data-thumbnail-400')) {
+        return card.attr('data-thumbnail-400');
+    }
+    if (requiredWidth <= 800 && card.attr('data-thumbnail-800')) {
+        return card.attr('data-thumbnail-800');
+    }
+    if (requiredWidth <= 1200 && card.attr('data-thumbnail-1200')) {
+        return card.attr('data-thumbnail-1200');
+    }
+    return card.attr('data-thumbnail-1600') || card.attr('data-location');
+}
+
 function refreshAlbumThumbnailImages() {
     var version = Date.now();
 
     $('#album-grid .album-card').each(function () {
         var card = $(this);
-        var location = card.attr('data-location');
-        if (!location) {
-            return;
+        ['data-location', 'data-thumbnail-400', 'data-thumbnail-800', 'data-thumbnail-1200', 'data-thumbnail-1600'].forEach(function (attribute) {
+            var location = card.attr(attribute);
+            if (location) {
+                card.attr(attribute, location.split('?')[0] + '?v=' + version);
+            }
+        });
+        var location = getResponsiveThumbnailLocation(card);
+        if (location) {
+            card.find('.album-card-media').css('background-image', 'url("' + location + '")');
         }
-
-        location = location.split('?')[0] + '?v=' + version;
-        card.attr('data-location', location);
-        card.find('.album-card-media').css('background-image', 'url("' + location + '")');
     });
 
     if (window.album?.images) {
@@ -578,7 +596,7 @@ Album.prototype.loadImages = function () {
             if (rect.top < threshold && rect.bottom > -threshold * 0.25) {
                 card.attr('data-loading', '1');
                 var media = card.find('.album-card-media');
-                media.css('background-image', 'url("' + card.attr('data-location') + '")');
+                media.css('background-image', 'url("' + getResponsiveThumbnailLocation(card) + '")');
                 img.one('load', function () {
                     markAlbumCardLoaded(card);
                 });
@@ -623,6 +641,10 @@ Album.prototype.loadImages = function () {
             card.attr('data-title', v.title);
             card.attr('data-caption', v.caption || '');
             card.attr('data-location', v.location);
+            card.attr('data-thumbnail-400', v.thumbnail400 || v.location);
+            card.attr('data-thumbnail-800', v.thumbnail800 || v.location);
+            card.attr('data-thumbnail-1200', v.thumbnail1200 || v.location);
+            card.attr('data-thumbnail-1600', v.thumbnail1600 || v.location);
             card.attr('data-height', v.height || 1);
             card.attr('data-width', v.width || 1);
             card.attr('data-index', Album.images.length);
@@ -704,6 +726,10 @@ Album.prototype.loadImages = function () {
             Album.images.push({
                 sequence: v.sequence,
                 location: v.location,
+                thumbnail400: v.thumbnail400 || v.location,
+                thumbnail800: v.thumbnail800 || v.location,
+                thumbnail1200: v.thumbnail1200 || v.location,
+                thumbnail1600: v.thumbnail1600 || v.location,
                 title: v.title,
                 caption: v.caption || '',
                 favorite: isFavorite,
