@@ -185,7 +185,6 @@ class BlogFeatureContext implements Context {
     }
 
     private function verifyBlogPost($start) {
-        $blog = new Blog($this->driver, $this->wait);
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($start + 1) . ')')));
         $pullPost = $start;
         do {
@@ -205,7 +204,6 @@ class BlogFeatureContext implements Context {
     }
 
     private function verifyBlogPreview($start) {
-        $blog = new Blog($this->driver, $this->wait);
         $s = $start * 3;
         $query = "SELECT * FROM blog_details WHERE active = 1";
         $params = [];
