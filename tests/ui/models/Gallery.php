@@ -65,12 +65,19 @@ class Gallery {
      */
     public function justOpenSlideShow($imgNum) {
         $image = $this->hoverOverImage($imgNum);
-        $image->findElement(WebDriverBy::className('album-card-media'))->click();
+        // The card overlay intentionally sits above the protected image media
+        // and is the user-facing click target that opens the viewer.
+        $image->findElement(WebDriverBy::className('album-card-overlay'))->click();
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOf(
                 $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
             )
         );
+        $this->wait->until(function () use ($imgNum) {
+            $active = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
+            return count($active) === 1
+                && $active[0]->getAttribute('data-image-id') === (string) ($imgNum - 1);
+        });
     }
 
     /**
@@ -90,6 +97,10 @@ class Gallery {
      * @throws TimeoutException
      */
     public function getSlideShowImage(): WebDriverElement {
+        $this->wait->until(function () {
+            $images = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
+            return count($images) === 1;
+        });
         $image = $this->driver->findElement(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($image));
         return $image;
