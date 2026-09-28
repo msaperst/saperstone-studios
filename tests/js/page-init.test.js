@@ -55,3 +55,13 @@ test('page init wires data-hash controls and carousel defaults', () => {
     assert.equal(location.hash, '3');
     assert.equal(carousel.carouselOptions.interval, 4000);
 });
+
+
+test('page init preserves explicitly disabled carousel autoplay', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const carousel = environment.element('.carousel').attr('data-interval', 'false');
+    carousel.find('.item').length = 1;
+    loadBrowserScript('public/js/page-init.js', {$: environment.$, document: environment.document, window: {location: {}}});
+    environment.runReady();
+    assert.equal(carousel.carouselOptions.interval, false);
+});
