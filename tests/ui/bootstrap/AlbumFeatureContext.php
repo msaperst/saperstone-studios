@@ -837,7 +837,6 @@ class AlbumFeatureContext implements Context {
         $cards = $this->driver->findElements(WebDriverBy::cssSelector($selector));
         Assert::assertCount(1, $cards, "Uploaded image '$fileName' was not rendered as an album card");
         $card = $cards[0];
-        Assert::assertTrue($card->isDisplayed(), "Uploaded image '$fileName' album card is not visible");
 
         // Album images are intentionally lazy-loaded. Move the newly uploaded
         // card into view and dispatch the same scroll event a user browsing the
@@ -846,6 +845,12 @@ class AlbumFeatureContext implements Context {
             "arguments[0].scrollIntoView({block: 'center'}); window.dispatchEvent(new Event('scroll'));",
             [$card]
         );
+
+        try {
+            $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
+        } catch (TimeoutException $e) {
+            throw new TimeoutException("Uploaded image '$fileName' album card did not become visible after scrolling into view", 0, $e);
+        }
 
         $media = $card->findElement(WebDriverBy::className('album-card-media'));
         try {
