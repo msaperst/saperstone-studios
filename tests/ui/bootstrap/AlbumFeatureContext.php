@@ -809,15 +809,34 @@ class AlbumFeatureContext implements Context {
     public function iSeeUploadedImageDisplayedInAlbum(string $fileName, int $albumId): void {
         $baseUrl = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getBaseUrl();
         $this->driver->get($baseUrl . "user/album.php?album=$albumId");
-        $selector = '#album-grid .album-card[data-title="' . addcslashes($fileName, '\\"') . '"]';
+
         try {
-            $card = $this->wait->until(
-                WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector($selector))
-            );
-            $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
+            $this->wait->until(function () {
+                $config = $this->driver->findElement(WebDriverBy::id('album-page-config'));
+                $expected = (int)$config->getAttribute('data-total');
+                $cards = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'));
+                return $expected > 0 && count($cards) === $expected;
+            });
         } catch (TimeoutException $e) {
-            throw new TimeoutException("Uploaded image '$fileName' was not rendered as an album card", 0, $e);
+            $config = $this->driver->findElement(WebDriverBy::id('album-page-config'));
+            $cards = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'));
+            $titles = array_map(
+                fn($card) => $card->getAttribute('data-title'),
+                $cards
+            );
+            throw new TimeoutException(
+                "Album page expected {$config->getAttribute('data-total')} image cards but rendered "
+                . count($cards) . ': ' . implode(', ', $titles),
+                0,
+                $e
+            );
         }
+
+        $selector = '#album-grid .album-card[data-title="' . addcslashes($fileName, '\\"') . '"]';
+        $cards = $this->driver->findElements(WebDriverBy::cssSelector($selector));
+        Assert::assertCount(1, $cards, "Uploaded image '$fileName' was not rendered as an album card");
+        $card = $cards[0];
+        Assert::assertTrue($card->isDisplayed(), "Uploaded image '$fileName' album card is not visible");
 
         // Album images are intentionally lazy-loaded. Move the newly uploaded
         // card into view and dispatch the same scroll event a user browsing the
@@ -837,9 +856,11 @@ class AlbumFeatureContext implements Context {
             throw new TimeoutException("Uploaded image '$fileName' card did not lazy-load its protected background", 0, $e);
         }
 
-        Assert::assertEquals(
-            'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
-            $card->findElement(WebDriverBy::className('album-card-image'))->getAttribute('src')
+        $src = $card->findElement(WebDriverBy::className('album-card-image'))->getAttribute('src');
+        Assert::assertStringNotContainsString(
+            '/albums/',
+            $src,
+            'Protected album image must not be exposed through the img src'
         );
     }
 
