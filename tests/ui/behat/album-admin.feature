@@ -307,4 +307,4 @@ Feature: Admin Album
   Scenario: Closing image removes hash
     Given I am on the "user/album.php?album=99999#1" page
     When I close the album view
-    Then I am taken to the "user/album.php?album=99999#" page
+    Then I am taken to the "user/album.php?album=99999" page
