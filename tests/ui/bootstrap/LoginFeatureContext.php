@@ -76,7 +76,7 @@ class LoginFeatureContext implements Context {
      * @When /^I reject preference cookies without reloading$/
      */
     public function iRejectPreferenceCookiesWithoutReloading() {
-        $this->driver->findElement(WebDriverBy::id('edit-cookies'))->click();
+        $this->driver->executeScript("jQuery('body').bsgdprcookies('reinit');");
         $preferences = WebDriverBy::id('bs-gdpr-cookies-modal-option-preferences');
         $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($preferences));
         $checkbox = $this->driver->findElement($preferences);
@@ -377,7 +377,7 @@ class LoginFeatureContext implements Context {
     public function iSeeACookieWithMyCredentials() {
         $remember = $this->driver->manage()->getCookieNamed('remember_me');
         Assert::assertNotNull($remember);
-        Assert::assertMatchesRegularExpression('/^[a-f0-9]{32}:[a-f0-9]{64}$/', $remember->getValue());
+        Assert::assertMatchesRegularExpression('/^[a-f0-9]{32}:[a-f0-9]{64}$/', rawurldecode($remember->getValue()));
         foreach ($this->driver->manage()->getCookies() as $cookie) {
             Assert::assertNotEquals('hash', $cookie->getName());
             Assert::assertNotEquals('usr', $cookie->getName());
