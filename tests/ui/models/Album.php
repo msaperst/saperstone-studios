@@ -123,6 +123,22 @@ class Album {
         $this->driver
             ->findElement(WebDriverBy::cssSelector('#add-images-button input[type="file"]'))
             ->sendKeys($filePath);
+
+        // File selection starts an asynchronous upload. The production upload
+        // workflow disables the dialog while the queue is active and only
+        // re-enables it from afterUploadAll, so synchronize on that lifecycle
+        // instead of racing the next browser step against the request.
+        $closeButton = WebDriverBy::xpath(
+            "//div[contains(@class, 'bootstrap-dialog')]//button[normalize-space(.)='Close']"
+        );
+        $this->wait->until(function () use ($closeButton) {
+            $buttons = $this->driver->findElements($closeButton);
+            return !empty($buttons) && !$buttons[count($buttons) - 1]->isEnabled();
+        });
+        $this->wait->until(function () use ($closeButton) {
+            $buttons = $this->driver->findElements($closeButton);
+            return !empty($buttons) && $buttons[count($buttons) - 1]->isEnabled();
+        });
     }
 
     /**
