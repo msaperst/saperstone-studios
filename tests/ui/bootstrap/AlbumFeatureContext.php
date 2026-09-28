@@ -788,6 +788,45 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @When /^I close the album details modal$/
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iCloseTheAlbumDetailsModal(): void {
+        $modal = $this->driver->findElement(WebDriverBy::cssSelector('.bootstrap-dialog'));
+        $closeButtons = $modal->findElements(WebDriverBy::xpath(".//button[normalize-space(.)='Close']"));
+        Assert::assertNotEmpty($closeButtons, 'Expected the album details modal to have a Close button');
+        $closeButtons[count($closeButtons) - 1]->click();
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
+    }
+
+    /**
+     * @Then /^I see uploaded image "([^"]*)" displayed in album (\d+)$/
+     * @param string $fileName
+     * @param int $albumId
+     * @throws TimeoutException
+     */
+    public function iSeeUploadedImageDisplayedInAlbum(string $fileName, int $albumId): void {
+        $this->driver->get(getenv('HOST') . "/user/album.php?album=$albumId");
+        $selector = '#album-grid .album-card[data-title="' . addcslashes($fileName, '\\"') . '"]';
+        $card = $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector($selector))
+        );
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
+
+        $media = $card->findElement(WebDriverBy::className('album-card-media'));
+        $this->wait->until(function () use ($media) {
+            $backgroundImage = $media->getCSSValue('background-image');
+            return $backgroundImage !== '' && $backgroundImage !== 'none';
+        });
+
+        Assert::assertEquals(
+            'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+            $card->findElement(WebDriverBy::className('album-card-image'))->getAttribute('src')
+        );
+    }
+
+    /**
      * @Then /^album (\d+) contains uploaded image "([^"]*)" and has (\d+) images$/
      * @param int $albumId
      * @param string $fileName
