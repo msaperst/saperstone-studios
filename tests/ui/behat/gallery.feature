@@ -37,7 +37,7 @@ Feature: Gallery
     And I wait for 5 seconds
     Then I see gallery image 1 in the gallery viewer
 
-  Scenario: Gallery viewer does not automatically advance on hash
+  Scenario: Gallery viewer opened by URL does not automatically advance
     Given I am on the "portrait/galleries.php?w=999#0" page
     When I wait for 5 seconds
     Then I see gallery image 1 in the gallery viewer
