@@ -101,6 +101,28 @@ class GalleryPagesHttpTest extends HttpTestBase {
     }
 
     /**
+     * @dataProvider invalidServiceReviewProvider
+     */
+    public function testInvalidServiceReviewReturnsNotFound(string $path): void {
+        $response = $this->get($path);
+        self::assertSame(404, $response->getStatusCode());
+        self::assertSame('404 Not Found', $this->text($response, '//h1'));
+        $this->submitErrorReport($response);
+        \CustomAsserts::assertEmailSubjectExists('404 Error');
+    }
+
+    public static function invalidServiceReviewProvider(): array {
+        return [
+            'commercial blank category' => ['commercial/reviews.php?c='],
+            'commercial invalid category' => ['commercial/reviews.php?c=abc'],
+            'portrait blank category' => ['portrait/reviews.php?c='],
+            'portrait invalid category' => ['portrait/reviews.php?c=abc'],
+            'wedding blank category' => ['wedding/reviews.php?c='],
+            'wedding invalid category' => ['wedding/reviews.php?c=abc'],
+        ];
+    }
+
+    /**
      * @dataProvider reviewPageProvider
      */
     public function testReviewPage(string $path, string $heading): void {
