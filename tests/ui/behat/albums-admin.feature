@@ -73,9 +73,8 @@ Feature: Admin Albums
   Scenario: Upload image to album
     When I edit album 99999
     And I upload test image "flower.jpeg"
-    Then album 99999 contains uploaded image "flower.jpeg" and has 17 images
-    When I close the album details modal
-    Then I see uploaded image "flower.jpeg" displayed in album 99999
+    And I close the album details modal
+    Then I see uploaded image "flower.jpeg" displayed in album 99999 with 17 images
 
   Scenario: Able to set access
     When I edit album 99999
