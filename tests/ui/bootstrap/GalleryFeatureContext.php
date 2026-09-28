@@ -177,20 +177,20 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see the info icon on gallery image (\d+)$/
+     * @Then /^I see the gallery view control$/
      * @param $imgNum
      */
-    public function iSeeTheInfoIconOnImage($imgNum) {
+    public function iSeeTheGalleryViewControl() {
         Assert::assertTrue($this->image->findElement(WebDriverBy::className('info'))->isDisplayed());
     }
 
     /**
-     * @Then /^I see gallery image (\d+) in the preview modal$/
+     * @Then /^I see gallery image (\d+) in the gallery viewer$/
      * @param $imgNum
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function iSeeImageInThePreviewModal($imgNum) {
+    public function iSeeImageInTheGalleryViewer($imgNum) {
         $modal = $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel'));
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($modal));
         Assert::assertTrue($modal->isDisplayed());
@@ -233,11 +233,11 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I don't see the gallery preview modal$/
+     * @Then /^I don't see the gallery viewer$/
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function iDonTSeeTheGalleryPreviewModal() {
+    public function iDonTSeeTheGalleryViewer() {
         $modal = $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel'));
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
         Assert::assertFalse($modal->isDisplayed());
