@@ -94,14 +94,14 @@ Feature: Profile Administration
     When I register a user with "msap_rst", "p", "p", "Max", "Saperstone", "msaperst@gmail.com"
     Then I see an error message indicating email already exists
 
-  Scenario: Able to register user
+  Scenario: User can register an account
     Given I am on the registration page
     When I register my user
     Then I see my user name displayed
     And I am taken to the "user/profile.php" page
     And I receive a welcome email
 
-  Scenario: Unable to update username
+  Scenario: Username cannot be changed from the profile
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the profile page
@@ -139,7 +139,7 @@ Feature: Profile Administration
     And I try to update to a password of "123"
     And I try to update to a password confirm of "123"
     Then I see a success icon indicating a good current password
-    Then I see a success icon indicating a good password
+    And I see a success icon indicating a good password
     And I see a success icon indicating a good confirm password
 
   Scenario: Invalid first name update input
@@ -211,14 +211,14 @@ Feature: Profile Administration
     And I update my user
     Then I see an error message indicating wrong password provided
 
-  Scenario: Able to save user
+  Scenario: User can save an unchanged profile
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the profile page
     When I update my user
     Then I see a success message indicating my user was updated
 
-  Scenario: Able to update user
+  Scenario: User can update profile information
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the profile page
@@ -229,14 +229,14 @@ Feature: Profile Administration
     Then I see a success message indicating my user was updated
     And my user information is updated
 
-  Scenario: Able to update user fully
+  Scenario: User can update profile information and password
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the profile page
     When I try to set my password of "12345"
-    When I try to update to a password of "password1"
-    When I try to update to a password confirm of "password1"
-    When I try to update to a first name of "Max"
+    And I try to update to a password of "password1"
+    And I try to update to a password confirm of "password1"
+    And I try to update to a first name of "Max"
     And I try to update to a last name of "Saperstone"
     And I try to update to an email of "msaperst+sstest2@gmail.com"
     And I update my user
