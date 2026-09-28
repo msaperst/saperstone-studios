@@ -1859,7 +1859,7 @@ Images have been posted to album Album $albumId. You can access your images by l
         $sql->disconnect();
         $images = implode("\r\n", $imgs);
         $imagesLi = implode("</li><li>", $imgs);
-        CustomAsserts::assertEmailMatches((string)getenv('EMAIL_ACTIONS'), 'actions@saperstonestudios.com', 'Someone Downloaded Something', "This is an automatically generated message from Saperstone Studios
+        CustomAsserts::assertEmailMatches('actions@saperstonestudios.com', 'actions@saperstonestudios.com', 'Someone Downloaded Something', "This is an automatically generated message from Saperstone Studios
 
 Downloads have been made from the Album $albumId album at %s://%s/user/album.php?album=$albumId
 
