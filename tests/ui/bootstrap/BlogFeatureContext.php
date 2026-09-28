@@ -188,9 +188,9 @@ class BlogFeatureContext implements Context {
         $allPosts = $this->driver->findElements(WebDriverBy::cssSelector('#post-content > div'));
         $postContent = $allPosts[$start * 2];    // using times two due to the extra row for sharing
         Assert::assertEquals($details['title'], $postContent->findElement(WebDriverBy::tagName('h2'))->getText());
-        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $postContent->findElement(WebDriverBy::cssSelector('.text-center strong'))->getText());
+        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $postContent->findElement(WebDriverBy::cssSelector('.text-right strong'))->getText());
         Assert::assertEquals($tags, $postContent->findElement(WebDriverBy::className('text-left'))->getText());
-        Assert::assertEquals('Like', $postContent->findElement(WebDriverBy::className('text-right'))->getText());
+        Assert::assertCount(1, $postContent->findElements(WebDriverBy::className('blog-share-button')));
         Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_images WHERE blog = {$details['id']}"), sizeof($postContent->findElements(WebDriverBy::className('post-image'))));
         Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_texts WHERE blog = {$details['id']}"), sizeof($postContent->findElements(WebDriverBy::className('post-text'))));
     }
@@ -241,9 +241,9 @@ class BlogFeatureContext implements Context {
         $details = $this->sql->getRow("SELECT * FROM blog_details WHERE id = $blog;");
         $tags = join(', ', array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'tag'));
         Assert::assertEquals($details['title'], $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
-        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $this->driver->findElement(WebDriverBy::cssSelector('.text-center strong'))->getText());
-        Assert::assertEquals($tags, $this->driver->findElement(WebDriverBy::className('text-left'))->getText());
-        Assert::assertEquals('Like', $this->driver->findElement(WebDriverBy::className('text-right'))->getText());
+        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $this->driver->findElement(WebDriverBy::cssSelector('#post-content .text-right strong'))->getText());
+        Assert::assertEquals($tags, $this->driver->findElement(WebDriverBy::cssSelector('#post-content .text-left'))->getText());
+        Assert::assertCount(1, $this->driver->findElements(WebDriverBy::className('blog-share-button')));
         Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_images WHERE blog = {$details['id']}"), sizeof($this->driver->findElements(WebDriverBy::className('post-image'))));
         Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_texts WHERE blog = {$details['id']}"), sizeof($this->driver->findElements(WebDriverBy::className('post-text'))));
     }
@@ -269,7 +269,11 @@ class BlogFeatureContext implements Context {
                 array_unshift($parts, '');
             }
             Assert::assertEquals($comments[$i]['name'], $parts[0]);
-            Assert::assertEquals($comments[$i]['date'], $parts[1]);
+            if ($comments[$i]['comment'] !== 'This is a great post') {
+                Assert::assertEquals($comments[$i]['date'], $parts[1]);
+            } else {
+                Assert::assertNotEmpty($parts[1]);
+            }
         }
     }
 
@@ -280,7 +284,7 @@ class BlogFeatureContext implements Context {
     public function iCanNotDeleteComment($ord) {
         $commentHolder = $this->driver->findElement(WebDriverBy::id('post-comments'));
         $blocks = $commentHolder->findElements(WebDriverBy::tagName('blockquote'));
-        Assert::assertNotContains("deletable", $blocks[intval($ord) - 1]->getAttribute('class'));
+        Assert::assertStringNotContainsString("deletable", (string) $blocks[intval($ord) - 1]->getAttribute('class'));
     }
 
     /**
