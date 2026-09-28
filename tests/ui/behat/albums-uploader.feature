@@ -96,9 +96,8 @@ Feature: Uploader Albums
   Scenario: Upload image to album
     When I edit album 99997
     And I upload test image "flower.jpeg"
-    Then album 99997 contains uploaded image "flower.jpeg" and has 17 images
-    When I close the album details modal
-    Then I see uploaded image "flower.jpeg" displayed in album 99997
+    And I close the album details modal
+    Then I see uploaded image "flower.jpeg" displayed in album 99997 with 17 images
 
   Scenario: Unable to set access
     When I edit album 99997
