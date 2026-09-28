@@ -361,3 +361,18 @@ test('album.js shows the first uploaded image without requiring an empty-gallery
     assert.equal(environment.element('#album-grid').appended.length, 1);
     assert.equal(emptyState.removed, true);
 });
+
+
+test('album.js disables favorite actions when there are no favorites', () => {
+    const {context, environment} = createAlbumDetailContext();
+
+    context.setFavoriteActionAvailability(false);
+
+    assert.equal(environment.element('#downloadable-favorites-btn').prop('disabled'), true);
+    assert.equal(environment.element('#submit-favorites-btn').prop('disabled'), true);
+
+    context.setFavoriteActionAvailability(true);
+
+    assert.equal(environment.element('#downloadable-favorites-btn').prop('disabled'), false);
+    assert.equal(environment.element('#submit-favorites-btn').prop('disabled'), false);
+});
