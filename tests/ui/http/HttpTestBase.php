@@ -2,6 +2,8 @@
 
 namespace ui\http;
 
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
+
 use DOMDocument;
 use DOMXPath;
 use CustomAsserts;
