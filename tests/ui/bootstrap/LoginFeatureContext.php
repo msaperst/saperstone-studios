@@ -4,7 +4,6 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Testwork\Environment\Environment;
 use CustomAsserts;
 use Exception;
@@ -54,9 +53,9 @@ class LoginFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I have cookies disabled$/
+     * @Given /^I have rejected preference cookies$/
      */
-    public function iHaveCookiesDisabled() {
+    public function iHaveRejectedPreferenceCookies() {
         $this->driver->manage()->deleteAllCookies();
         $cookie = new Cookie('CookiePreferences', '[]');
         $this->driver->manage()->addCookie($cookie);
@@ -290,15 +289,6 @@ class LoginFeatureContext implements Context {
     public function iDonTSeeMyUserNameDisplayed() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('login-menu-item')));
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::linkText($this->user->getUsername()))));
-    }
-
-    /**
-     * @Then /^I see an info message indicating I successfully logged in$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iSeeAnInfoMessageIndicatingISuccessfullyLoggedIn() {
-        CustomAsserts::infoMessage($this->driver, 'Successfully Logged In. Please wait as you are redirected.');
     }
 
     /**
