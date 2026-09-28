@@ -447,7 +447,7 @@ class RegistrationFeatureContext implements Context {
      * @throws ExceptionAlias
      */
     public function iReceiveAWelcomeEmail() {
-        CustomAsserts::assertEmailEquals('Thank you for Registering with Saperstone Studios',
+        CustomAsserts::assertEmailMatches($this->user->getEmail(), 'noreply@saperstonestudios.com', 'Thank you for Registering with Saperstone Studios',
             'Congratulations for registering an account with Saperstone Studios. You can login and access the site at https://saperstonestudios.com.',
             "<html><body>Congratulations for registering an account with Saperstone Studios. You can login and access the site at <a href='https://saperstonestudios.com'>saperstonestudios.com</a>.</body></html>");
 

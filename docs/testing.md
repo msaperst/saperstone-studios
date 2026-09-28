@@ -95,7 +95,7 @@ This runs the unit and integration suites and merges their Clover coverage outpu
 
 ## Full-stack test environment
 
-API, UI/Page, UI/Behat, and ZAP CI jobs use the same full Docker Compose application. The local composite GitHub Action at `.github/actions/setup-full-stack/action.yml` is the canonical CI setup. It writes the common `.env`, prepares writable test folders, disables the production Let's Encrypt certificate reference, launches the application with Docker Compose, and waits for HTTP port 90 to become available.
+API, HTTP Page, UI/Behat, and ZAP CI jobs use the same full Docker Compose application. The local composite GitHub Action at `.github/actions/setup-full-stack/action.yml` is the canonical CI setup. It writes the common `.env`, prepares writable test folders, disables the production Let's Encrypt certificate reference, launches the application with Docker Compose, and waits for HTTP port 90 to become available.
 
 The shared stack uses fixed local-only CI credentials for MySQL and Mailpit, so standing up the application does not depend on repository secrets. Tests that require external services, such as Gmail-related browser behavior, configure those credentials separately in their workflow.
 
@@ -105,7 +105,7 @@ For manual local testing, create a suitable local `.env`, prepare the required c
 docker compose up --build -d
 ```
 
-The CI application is available over HTTP on port 90. Functional suites then run through their Composer commands; browser suites additionally start ChromeDriver. ZAP scans the same running application directly.
+The CI application is available over HTTP on port 90. Functional suites then run through their Composer commands; only browser-based suites such as Behat additionally start ChromeDriver. ZAP scans the same running application directly.
 
 ## API tests
 
@@ -124,31 +124,23 @@ COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
 
 The API suite writes its JUnit and HTML results beneath `reports/`.
 
-## UI page tests
+## HTTP page tests
 
-The UI page tests use the same full-stack application and require ChromeDriver. On Debian/Ubuntu, ChromeDriver can be installed with:
+The page suite exercises the running full-stack application over HTTP without a browser. It uses Guzzle for requests and DOM/XPath parsing for rendered HTML assertions, so Chrome and ChromeDriver are not required.
 
-```bash
-sudo apt install chromium-chromedriver
-```
-
-Start ChromeDriver:
+Run it with:
 
 ```bash
-chromedriver --port=4444
+composer http-page-test
 ```
 
-Then execute:
+The suite uses `phpunit-http-page.xml`, reads the application host and port from the test environment, and writes JUnit and TestDox HTML results beneath `reports/`.
 
-```bash
-composer ui-page-test
-```
-
-The CI version of this suite runs headlessly and writes its reports beneath `reports/`.
+Use this suite for HTTP status codes, redirects, authorization behavior, and server-rendered content. Browser/JavaScript interactions belong in the Behat suite rather than the HTTP page suite.
 
 ## Behat tests
 
-The Behat browser tests use the same running application and ChromeDriver prerequisites as the UI page tests. Run them with:
+The Behat tests exercise browser and JavaScript behavior and therefore still require ChromeDriver. Run them with:
 
 ```bash
 composer ui-behat-test
@@ -164,7 +156,7 @@ composer ui-behat-test
 | Integration cleanup | `composer integration-post-test` |
 | Combined coverage | `composer coverage-test` |
 | API | `composer api-test` |
-| UI page tests | `composer ui-page-test` |
+| HTTP page tests | `composer http-page-test` |
 | Behat UI tests | `composer ui-behat-test` |
 
 Some browser and email-related tests require additional credentials. The workflows under `.github/workflows/` define those suite-specific additions; `.github/actions/setup-full-stack/action.yml` defines the common full-stack CI application environment.

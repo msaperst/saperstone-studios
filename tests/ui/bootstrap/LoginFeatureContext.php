@@ -421,7 +421,7 @@ class LoginFeatureContext implements Context {
      * @throws ExceptionAlias
      */
     public function iReceiveAnEmailWithMyResetKey() {
-        CustomAsserts::assertEmailMatches('Reset Key For Saperstone Studios Account',
+        CustomAsserts::assertEmailMatches($this->user->getEmail(), 'noreply@saperstonestudios.com', 'Reset Key For Saperstone Studios Account',
             "You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.
 
 \t%s",

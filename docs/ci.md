@@ -16,7 +16,7 @@ Investigate CI failures rather than assuming they are unrelated or flaky. Fix st
 
 Pull requests targeting `develop` run several independent workflows. Keeping the checks separate makes it easier to identify whether a failure is in application behavior, browser behavior, dependencies, or security scanning.
 
-API, UI/Page, UI/Behat, and ZAP jobs all exercise the same full Docker Compose application. They use the local composite action at `.github/actions/setup-full-stack/action.yml` to create the common CI `.env`, prepare test folders, disable the production Let's Encrypt certificate reference, launch the Docker Compose stack, and wait for the application to become available on port 90. Suite-specific dependencies and test commands remain in the individual workflows.
+API, HTTP Page, UI/Behat, and ZAP jobs all exercise the same full Docker Compose application. They use the local composite action at `.github/actions/setup-full-stack/action.yml` to create the common CI `.env`, prepare test folders, disable the production Let's Encrypt certificate reference, launch the Docker Compose stack, and wait for the application to become available on port 90. Suite-specific dependencies and test commands remain in the individual workflows.
 
 The shared stack uses fixed local-only CI credentials for MySQL and Mailpit. These values are not production credentials and do not require GitHub secrets. Tests that communicate with external services still configure their required secrets in their own workflow steps.
 
@@ -40,13 +40,13 @@ JUnit results are published as a GitHub test report and the HTML report is uploa
 
 ### UI tests
 
-`.github/workflows/ui-test.yml` runs two browser-oriented jobs for pull requests to `develop`.
+`.github/workflows/ui-test.yml` runs two functional jobs for pull requests to `develop`.
 
-**Page Testing** uses the shared full-stack CI action, installs and starts ChromeDriver, and runs `composer ui-page-test`. JUnit, HTML, and custom report artifacts are retained by the workflow.
+**HTTP Page Testing** uses the shared full-stack CI action and runs `composer http-page-test`. It validates HTTP responses, redirects, authorization behavior, and server-rendered HTML without Chrome or ChromeDriver. JUnit and HTML report artifacts are retained by the workflow.
 
-**Behat Testing** uses the same application/browser setup and runs `composer ui-behat-test`. The Behat report directory is uploaded as a workflow artifact.
+**Behat Testing** remains browser-based. It installs and starts ChromeDriver and runs `composer ui-behat-test` against the same full-stack application. The Behat report directory is uploaded as a workflow artifact.
 
-These jobs additionally configure Gmail test credentials because portions of the browser-level behavior exercise email-related application flows. The application itself uses Mailpit in the shared CI stack.
+Browser/JavaScript workflows belong in Behat; page behavior that can be verified from HTTP responses and rendered HTML belongs in the HTTP Page suite. This separation keeps page-level coverage fast while reserving browser automation for behavior that actually requires it.
 
 ## Security checks
 
