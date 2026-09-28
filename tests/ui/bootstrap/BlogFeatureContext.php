@@ -36,6 +36,7 @@ class BlogFeatureContext implements Context {
     private $user;
     private $baseUrl;
     private $tag = '';
+    private $searchTerm = '';
     private $blogIds = [];
 
     /** @BeforeScenario
@@ -132,6 +133,14 @@ class BlogFeatureContext implements Context {
     }
 
     /**
+     * @Given /^I am on the blog search page for "([^"]*)"$/
+     */
+    public function iAmOnTheBlogSearchPageFor($searchTerm) {
+        $this->searchTerm = $searchTerm;
+        $this->driver->get($this->baseUrl . 'blog/search.php?s=' . rawurlencode($searchTerm));
+    }
+
+    /**
      * @Given /^I have left the comment "([^"]*)" on blog (\d+)$/
      * @param $comment
      * @param $blogId
@@ -177,10 +186,10 @@ class BlogFeatureContext implements Context {
 
     private function verifyBlogPost($start) {
         $blog = new Blog($this->driver, $this->wait);
-        $blog->waitForPostToLoad($start);
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($start + 1) . ')')));
         $pullPost = $start;
         do {
-            $details = $this->sql->getRow("SELECT * FROM blog_details ORDER BY date DESC LIMIT $pullPost,1;");
+            $details = $this->sql->getRow("SELECT * FROM blog_details WHERE active = 1 ORDER BY date DESC, id DESC LIMIT $pullPost,1;");
             $tags = array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'id');
             $pullPost++;
         } while ($this->tag != '' && !in_array($this->tag, $tags));
@@ -199,7 +208,15 @@ class BlogFeatureContext implements Context {
         $blog = new Blog($this->driver, $this->wait);
         $blog->waitForPreviewToLoad($start);
         $s = $start * 3;
-        $details = $this->sql->getRows("SELECT * FROM blog_details ORDER BY date DESC LIMIT $s,3;");
+        $query = "SELECT * FROM blog_details WHERE active = 1";
+        $params = [];
+        if ($this->searchTerm !== '') {
+            $query .= " AND (title LIKE ? OR safe_title LIKE ? OR EXISTS (SELECT 1 FROM blog_texts WHERE blog_texts.blog = blog_details.id AND blog_texts.text LIKE ?))";
+            $search = '%' . $this->searchTerm . '%';
+            $params = [$search, $search, $search];
+        }
+        $query .= " ORDER BY date DESC, id DESC LIMIT $s,3";
+        $details = $this->sql->getRows($query, $params);
         for ($i = 0; $i < 3; $i++) {
             $allPreviews = $this->driver->findElements(WebDriverBy::cssSelector("#post-$i > div"));
             $preview = $allPreviews[$start];
