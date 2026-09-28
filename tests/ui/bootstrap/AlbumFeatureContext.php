@@ -807,7 +807,8 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSeeUploadedImageDisplayedInAlbum(string $fileName, int $albumId): void {
-        $this->driver->get(getenv('HOST') . "/user/album.php?album=$albumId");
+        $baseUrl = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getBaseUrl();
+        $this->driver->get($baseUrl . "user/album.php?album=$albumId");
         $selector = '#album-grid .album-card[data-title="' . addcslashes($fileName, '\\"') . '"]';
         $card = $this->wait->until(
             WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector($selector))
