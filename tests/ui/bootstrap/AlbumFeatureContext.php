@@ -1928,7 +1928,7 @@ $image\r
     }
 
     /**
-     * @When /^I close the image viewer$/
+     * 
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
