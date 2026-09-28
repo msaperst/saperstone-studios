@@ -45,6 +45,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         $response = $this->get($path);
         self::assertSame(404, $response->getStatusCode());
         self::assertSame('404 Not Found', $this->text($response, '//h1'));
+        $this->assertErrorEmailSent('404 Error');
     }
 
     public static function invalidBlogPageProvider(): array {
@@ -67,6 +68,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         $response = $this->get($path);
         self::assertSame(401, $response->getStatusCode());
         self::assertSame('401 Unauthorized', $this->text($response, '//h1'));
+        $this->assertErrorEmailSent('401 Error');
     }
 
     public static function adminBlogPageProvider(): array {
@@ -98,6 +100,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         $response = $this->get('blog/new.php?p=9999');
         self::assertSame(404, $response->getStatusCode());
         self::assertSame('404 Not Found', $this->text($response, '//h1'));
+        $this->assertErrorEmailSent('404 Error');
     }
 
     public function testAdminEditPostUsesStoredPostMetadata(): void {
