@@ -108,7 +108,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         $this->assertPage($response, 'Edit Post');
         self::assertSame('posts/2031/01/01', $this->attribute($response, "//*[@id='post']", 'post-location'));
         self::assertSame('999', $this->attribute($response, "//*[@id='post']", 'post-id'));
-        self::assertSame('Sample Blog', $this->attribute($response, "//*[@id='post-title-input']", 'value'));
+        self::assertSame('HTTP Fixture 9f3c7b', $this->attribute($response, "//*[@id='post-title-input']", 'value'));
         self::assertSame('2031-01-01', $this->attribute($response, "//*[@id='post-date-input']", 'value'));
     }
 
@@ -140,16 +140,16 @@ class BlogPagesHttpTest extends HttpTestBase {
     public function testSearchReportsMatchingPostCountToJavascriptLoader(): void {
         $this->insertBlog(true);
 
-        $response = $this->get('blog/search.php?s=sample');
+        $response = $this->get('blog/search.php?s=9f3c7b');
         $this->assertPage($response, 'Blog Posts');
         self::assertSame('1', $this->attribute($response, "//*[@id='blog-page-config']", 'data-total'));
-        self::assertSame('sample', $this->attribute($response, "//*[@id='blog-page-config']", 'data-search'));
+        self::assertSame('9f3c7b', $this->attribute($response, "//*[@id='blog-page-config']", 'data-search'));
     }
 
     private function insertBlog(bool $active): void {
         $sql = new Sql();
         try {
-            $sql->executeStatement("INSERT INTO blog_details (id, title, date, preview, offset, active) VALUES (999, 'Sample Blog', '2031-01-01', '', 0, ?)", [$active ? 1 : 0]);
+            $sql->executeStatement("INSERT INTO blog_details (id, title, date, preview, offset, active) VALUES (999, 'HTTP Fixture 9f3c7b', '2031-01-01', 'posts/2031/01/01/preview_image-999.jpg', 0, ?)", [$active ? 1 : 0]);
             $sql->executeStatement("INSERT INTO blog_images (blog, contentGroup, location, width, height, `left`, `top`) VALUES (999, 1, 'posts/2031/01/01/sample.jpg', 300, 400, 0, 0)");
             $sql->executeStatement("INSERT INTO blog_tags (blog, tag) VALUES (999, 29)");
             $sql->executeStatement("INSERT INTO blog_texts (blog, contentGroup, text) VALUES (999, 2, 'Some blog text')");
