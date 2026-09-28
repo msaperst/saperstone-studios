@@ -10,7 +10,7 @@ $(document).ready(function () {
                 "searchable": false,
                 "data": function (row) {
                     var buttons = "";
-                    if (String(row.owner) === String(my_id)) {
+                    if (row.owner === Number(my_id)) {
                         buttons = '<button type="button" class="btn btn-xs btn-warning edit-album-btn">' + '<i class="fa fa-pencil-square-o"></i></button>';
                     }
                     return buttons;
