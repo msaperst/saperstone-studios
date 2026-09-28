@@ -80,16 +80,11 @@ class Gallery {
     }
 
     public function closeSlideShow() {
-        $slideShowId = $this->getSlideShowId();
-        $modal = $this->driver->findElement(WebDriverBy::id($slideShowId));
-        $close = WebDriverBy::cssSelector("#$slideShowId [data-dismiss='modal']");
+        $modal = $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel'));
+        $close = WebDriverBy::cssSelector(".modal-carousel [data-dismiss='modal']");
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($close));
         $this->driver->findElement($close)->click();
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
-    }
-
-    private function getSlideShowId(): string {
-        return str_replace("'", "-", str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8)));
     }
 
     private function getActiveSequence(): int {
