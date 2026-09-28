@@ -101,9 +101,7 @@ class Gallery {
             $images = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
             return count($images) === 1;
         });
-        $image = $this->driver->findElement(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($image));
-        return $image;
+        return $this->driver->findElement(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
     }
 
     /**
