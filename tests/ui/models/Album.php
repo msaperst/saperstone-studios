@@ -343,7 +343,10 @@ class Album {
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('album-viewer-overlay'))
         );
-        return $this->driver->findElement(WebDriverBy::id('album-viewer-image'));
+        $imageId = $this->getActiveImageId();
+        return $this->driver->findElement(
+            WebDriverBy::cssSelector("#album-grid .album-card[data-image-id='$imageId']")
+        );
     }
 
                                         /**
