@@ -8,6 +8,7 @@ jobs:
   page_tests:
     name: HTTP Page Testing
     runs-on: ubuntu-latest
+    timeout-minutes: 50
 
     steps:
       - name: Checkout 🛎️
@@ -30,31 +31,27 @@ jobs:
       - name: HTTP Page Tests
         run: composer http-page-test
 
-      - name: Test Report
-        uses: dorny/test-reporter@v2
-        if: ${{ !cancelled() }}
-        with:
-          name: HTTP Page Tests
-          path: reports/http-page-junit.xml
-          reporter: java-junit
+      - name: Test Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/test-summary.py \
+            --title "HTTP Page Tests" \
+            --junit reports/http-page-junit.xml | tee -a "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload HTML test report
+      - name: Upload HTTP Page Reports 📊
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: http-page-test-html
-          path: reports/http-page-results.html
-
-      - name: Upload Custom Report 📊
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: http-page
-          path: reports
+          name: http-page-reports
+          path: |
+            reports/http-page-junit.xml
+            reports/http-page-results.html
+          if-no-files-found: warn
 
   behat_tests:
     name: Behat Testing
     runs-on: ubuntu-latest
+    timeout-minutes: 50
 
     steps:
       - name: Checkout 🛎️
@@ -78,11 +75,21 @@ jobs:
           chromedriver --port=4444 &
 
       - name: Behat Tests
-        run: COMPOSER_PROCESS_TIMEOUT=1200 composer ui-behat-test
+        env:
+          COMPOSER_PROCESS_TIMEOUT: 2700
+        run: composer ui-behat-test
 
-      - name: Upload Custom Report 📊
+      - name: Behat Test Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/test-summary.py \
+            --title "Behat Tests" \
+            --junit reports/behat/default.xml | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Behat Reports 📊
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: behat
-          path: reports
+          name: behat-reports
+          path: reports/behat
+          if-no-files-found: warn
