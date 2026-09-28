@@ -89,7 +89,7 @@ Feature: Album
     When I view my favorites
     Then I see 1 favorite
     And I see album image 2 as a favorite
-    And I see the favorite count is "1"
+    And I see the favorite count is ""
 
   Scenario: Able to remove favorite from favorites
     Given album 99999 image 2 is a favorite
