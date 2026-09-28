@@ -40,7 +40,7 @@ Feature: Admin Albums
     When I add a new album
     And I provide "My New Album" for the album "name"
     And I create my album
-    Then I see the edit album details modal for album 100000
+    Then I see the edit album details modal for the new album
 
   Scenario: Add new album full
     When I add a new album
@@ -48,7 +48,7 @@ Feature: Admin Albums
     And I provide "Some sample test album" for the album "description"
     And I provide "01/01/2030" for the album "date"
     And I create my album
-    Then I see the edit album details modal for album 100000
+    Then I see the edit album details modal for the new album
 
   Scenario: Edit new album
     When I edit album 99999
