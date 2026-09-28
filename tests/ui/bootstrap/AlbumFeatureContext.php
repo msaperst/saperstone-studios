@@ -28,6 +28,28 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPAR
 
 class AlbumFeatureContext implements Context {
 
+    private function resolveUserId(string $user): string {
+        if (ctype_digit($user)) {
+            return $user;
+        }
+        $sql = new Sql();
+        $rows = $sql->getRows("SELECT id, usr FROM users");
+        $sql->disconnect();
+        foreach ($rows as $row) {
+            if ($row['usr'] === $user) {
+                return (string) $row['id'];
+            }
+        }
+        throw new Exception("Unable to resolve test user '$user'");
+    }
+
+    private function resolveUserIds(string $users): array {
+        if ($users === '') {
+            return [];
+        }
+        return array_map(fn(string $user): string => $this->resolveUserId($user), explode(',', $users));
+    }
+
     /**
      * @var Environment
      */
@@ -271,36 +293,39 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Given /^user (\d+) has access to album (\d+)$/
+     * @Given /^user ([A-Za-z0-9_-]+) has access to album (\d+)$/
      * @param $userId
      * @param $albumId
      * @throws Exception
      */
     public function userHasAccessToAlbum($userId, $albumId) {
+        $user = $this->resolveUserId((string) $user);
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums_for_users` VALUES( $userId, $albumId);");
         $sql->disconnect();
     }
 
     /**
-     * @Given /^user (\d+) has download access to album (\d+)$/
+     * @Given /^user ([A-Za-z0-9_-]+) has download access to album (\d+)$/
      * @param $userId
      * @param $albumId
      * @throws Exception
      */
     public function userHasDownloadAccessToAlbum($userId, $albumId) {
+        $user = $this->resolveUserId((string) $user);
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `download_rights` VALUES( $userId, $albumId, '*');");
         $sql->disconnect();
     }
 
     /**
-     * @Given /^user (\d+) has share access to album (\d+)$/
+     * @Given /^user ([A-Za-z0-9_-]+) has share access to album (\d+)$/
      * @param $userId
      * @param $albumId
      * @throws Exception
      */
     public function userHasShareAccessToAlbum($userId, $albumId) {
+        $user = $this->resolveUserId((string) $user);
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `share_rights` VALUES( $userId, $albumId, '*');");
         $sql->disconnect();
@@ -545,67 +570,73 @@ class AlbumFeatureContext implements Context {
     }
 
                         /**
-     * @When /^I add user (\d+) for album access$/
+     * @When /^I add user ([A-Za-z0-9_-]+) for album access$/
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
     public function iAddUserForAlbumAccess($user) {
+        $user = $this->resolveUserId((string) $user);
         $album = new Album($this->driver, $this->wait);
         $album->giveUserAlbumAccess($user);
     }
 
     /**
-     * @When /^I add user (\d+) for download access$/
+     * @When /^I add user ([A-Za-z0-9_-]+) for download access$/
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
     public function iAddUserForDownloadAccess($user) {
+        $user = $this->resolveUserId((string) $user);
         $album = new Album($this->driver, $this->wait);
         $album->giveUserDownloadAccess($user);
     }
 
     /**
-     * @When /^I add user (\d+) for share access$/
+     * @When /^I add user ([A-Za-z0-9_-]+) for share access$/
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
     public function iAddUserForShareAccess($user) {
+        $user = $this->resolveUserId((string) $user);
         $album = new Album($this->driver, $this->wait);
         $album->giveUserShareAccess($user);
     }
 
     /**
-     * @When /^I remove user (\d+) for album access$/
+     * @When /^I remove user ([A-Za-z0-9_-]+) for album access$/
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
     public function iRemoveUserForAlbumAccess($user) {
+        $user = $this->resolveUserId((string) $user);
         $album = new Album($this->driver, $this->wait);
         $album->removeUserAlbumAccess($user);
     }
 
     /**
-     * @When /^I remove user (\d+) for download access$/
+     * @When /^I remove user ([A-Za-z0-9_-]+) for download access$/
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
     public function iRemoveUserForDownloadAccess($user) {
+        $user = $this->resolveUserId((string) $user);
         $album = new Album($this->driver, $this->wait);
         $album->removeUserDownloadAccess($user);
     }
 
     /**
-     * @When /^I remove user (\d+) for share access$/
+     * @When /^I remove user ([A-Za-z0-9_-]+) for share access$/
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
     public function iRemoveUserForShareAccess($user) {
+        $user = $this->resolveUserId((string) $user);
         $album = new Album($this->driver, $this->wait);
         $album->removeUserShareAccess($user);
     }
@@ -1339,11 +1370,7 @@ Comment',
      */
     public function iSeeUserWithAlbumAccess($users) {
         $album = new Album($this->driver, $this->wait);
-        if ($users == "") {
-            $users = [];
-        } else {
-            $users = explode(",", $users);
-        }
+        $users = $this->resolveUserIds((string) $users);
         $accessors = $album->getAlbumAccessors();
         Assert::assertEquals(sizeof($users), sizeof($accessors));
         for ($i = 0; $i < sizeof($accessors); $i++) {
@@ -1359,11 +1386,7 @@ Comment',
      */
     public function iSeeUsersWithDownloadAccess($users) {
         $album = new Album($this->driver, $this->wait);
-        if ($users == "") {
-            $users = [];
-        } else {
-            $users = explode(",", $users);
-        }
+        $users = $this->resolveUserIds((string) $users);
         $downloaders = $album->getAlbumDownloaders();
         Assert::assertEquals(sizeof($users), sizeof($downloaders));
         for ($i = 0; $i < sizeof($downloaders); $i++) {
@@ -1379,11 +1402,7 @@ Comment',
      */
     public function iSeeUsersWithShareAccess($users) {
         $album = new Album($this->driver, $this->wait);
-        if ($users == "") {
-            $users = [];
-        } else {
-            $users = explode(",", $users);
-        }
+        $users = $this->resolveUserIds((string) $users);
         $sharers = $album->getAlbumSharers();
         Assert::assertEquals(sizeof($users), sizeof($sharers));
         for ($i = 0; $i < sizeof($sharers); $i++) {
@@ -1397,11 +1416,7 @@ Comment',
      * @param $albumId
      */
     public function usersHaveAlbumAccess($users, $albumId) {
-        if ($users == "") {
-            $users = [];
-        } else {
-            $users = explode(",", $users);
-        }
+        $users = $this->resolveUserIds((string) $users);
         $sql = new Sql();
         $accessors = $sql->getRows("SELECT * FROM albums_for_users WHERE album = $albumId");
         $sql->disconnect();
@@ -1417,11 +1432,7 @@ Comment',
      * @param $albumId
      */
     public function usersCanDownloadAlbum($users, $albumId) {
-        if ($users == "") {
-            $users = [];
-        } else {
-            $users = explode(",", $users);
-        }
+        $users = $this->resolveUserIds((string) $users);
         $sql = new Sql();
         $downloaders = $sql->getRows("SELECT * FROM download_rights WHERE album = $albumId");
         $sql->disconnect();
@@ -1437,11 +1448,7 @@ Comment',
      * @param $albumId
      */
     public function usersCanShareAlbum($users, $albumId) {
-        if ($users == "") {
-            $users = [];
-        } else {
-            $users = explode(",", $users);
-        }
+        $users = $this->resolveUserIds((string) $users);
         $sql = new Sql();
         $sharers = $sql->getRows("SELECT * FROM share_rights WHERE album = $albumId");
         $sql->disconnect();
