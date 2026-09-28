@@ -517,8 +517,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iCloseTheModal() {
-        $this->driver->findElement(WebDriverBy::cssSelector('#album button[data-dismiss="modal"]'))->click();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album')))));
+        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
+        $this->driver->findElement(WebDriverBy::id('album-viewer-close'))->click();
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($overlay)));
     }
 
             /**
@@ -1187,7 +1188,14 @@ Comment',
      * @Then /^I see an error message indicating no files are available to download$/
      */
     public function iSeeAnErrorMessageIndicatingNoFilesAreAvailableToDownload() {
-        CustomAsserts::errorMessage($this->driver, 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.');
+        $expected = 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.';
+        $alert = $this->driver->findElement(WebDriverBy::className('alert-danger'));
+        $actual = preg_replace('/^×\\s*/u', '', $alert->getText());
+        $decoded = json_decode($actual, true);
+        if (is_array($decoded) && isset($decoded['error'])) {
+            $actual = $decoded['error'];
+        }
+        Assert::assertEquals($expected, $actual);
     }
 
     /**
