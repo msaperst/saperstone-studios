@@ -66,6 +66,7 @@ class GalleryPagesHttpTest extends HttpTestBase {
         $response = $this->get($path);
         self::assertSame('404 Not Found', $this->text($response, '//h1'));
         self::assertSame($this->copyright, $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' copyright ')]"));
+        $this->assertErrorEmailSent('404 Error');
     }
 
     public static function invalidGalleryPageProvider(): array {
