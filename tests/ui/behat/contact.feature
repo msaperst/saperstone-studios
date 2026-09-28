@@ -36,6 +36,14 @@ Feature: Contact
     And I submit the contact form
     Then I see an error indicating contact message is required
 
+  Scenario: Reject contact message submitted too quickly
+    When I provide "Max" for the contact "name"
+    And I provide "1234567890" for the contact "phone"
+    And I provide "msaperst+sstest@gmail.com" for the contact "email"
+    And I provide "This is a test message, feel free to ignore this" for the contact "message"
+    And I submit the contact form too quickly
+    Then no contact emails are sent
+
   Scenario: Successfully submit message
     When I provide "Max" for the contact "name"
     And I provide "1234567890" for the contact "phone"
