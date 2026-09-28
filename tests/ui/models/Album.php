@@ -141,10 +141,10 @@ class Album {
      */
     public function openSlideShow($imgNum) {
         $card = $this->getImageCard($imgNum);
-        $media = $card->findElement(WebDriverBy::className('album-card-media'));
+        $mediaSelector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . ' .album-card-media');
         $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($media));
-        $media->click();
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($mediaSelector));
+        $this->driver->findElement($mediaSelector)->click();
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOf(
                 $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
