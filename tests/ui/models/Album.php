@@ -205,7 +205,7 @@ class Album {
     public function advanceToNextImage() {
         $current = $this->getActiveImageId();
         $this->driver->findElement(WebDriverBy::id('album-next-btn'))->click();
-        $this->waitForActiveImage($this->getAdjacentImageId($current, 1));
+        $this->waitForActiveImageId($this->getAdjacentImageId($current, 1));
     }
 
     /**
@@ -215,7 +215,7 @@ class Album {
     public function advanceToPreviousImage() {
         $current = $this->getActiveImageId();
         $this->driver->findElement(WebDriverBy::id('album-prev-btn'))->click();
-        $this->waitForActiveImage($this->getAdjacentImageId($current, -1));
+        $this->waitForActiveImageId($this->getAdjacentImageId($current, -1));
     }
 
     /**
@@ -569,7 +569,10 @@ class Album {
     }
 
     private function waitForActiveImage($imgNum): void {
-        $expectedImageId = (int) $imgNum - 1;
+        $this->waitForActiveImageId((int) $imgNum - 1);
+    }
+
+    private function waitForActiveImageId(int $expectedImageId): void {
         $this->wait->until(function () use ($expectedImageId) {
             $overlay = $this->driver->findElements(WebDriverBy::id('album-viewer-overlay'));
             return count($overlay) === 1
