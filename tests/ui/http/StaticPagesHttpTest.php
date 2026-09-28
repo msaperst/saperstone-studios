@@ -80,6 +80,25 @@ class StaticPagesHttpTest extends HttpTestBase {
         self::assertSame('/user/profile.php', parse_url($response->getHeaderLine('Location'), PHP_URL_PATH));
     }
 
+    /**
+     * @dataProvider invalidReviewsProvider
+     */
+    public function testInvalidReviewsPageReturnsNotFound(string $path): void {
+        $response = $this->get($path);
+        self::assertSame(404, $response->getStatusCode());
+        self::assertSame('404 Not Found', $this->text($response, '//h1'));
+        self::assertSame($this->copyright, $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' copyright ')]"));
+        $this->submitErrorReport($response);
+        \CustomAsserts::assertEmailSubjectExists('404 Error');
+    }
+
+    public static function invalidReviewsProvider(): array {
+        return [
+            'blank category' => ['reviews.php?c='],
+            'invalid category' => ['reviews.php?c=abc'],
+        ];
+    }
+
     public function testReviewsPages(): void {
         foreach ([
             'reviews.php' => 'Raves',
