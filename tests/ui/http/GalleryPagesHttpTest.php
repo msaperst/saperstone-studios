@@ -14,6 +14,22 @@ class GalleryPagesHttpTest extends HttpTestBase {
 
     public static function galleryPageProvider(): array {
         return [
+            'mitzvah bimah' => ['b-nai-mitzvah/galleries.php?w=73', 'Bimah Session Gallery'],
+            'mitzvah services' => ['b-nai-mitzvah/galleries.php?w=74', 'Services Gallery'],
+            'mitzvah reception' => ['b-nai-mitzvah/galleries.php?w=75', 'Reception Gallery'],
+            'mitzvah photobooth' => ['b-nai-mitzvah/galleries.php?w=77', 'Photobooth Gallery'],
+            'mitzvah story grids' => ['b-nai-mitzvah/galleries.php?w=79', 'Story Grids Gallery'],
+            'mitzvah heirloom albums' => ['b-nai-mitzvah/gallery.php?w=80', 'Heirloom Albums Gallery'],
+            'mitzvah acrylic' => ['b-nai-mitzvah/galleries.php?w=81', 'Acrylic Prints Gallery'],
+            'mitzvah frames' => ['b-nai-mitzvah/galleries.php?w=82', 'Stand Out Frames Gallery'],
+            'mitzvah canvas' => ['b-nai-mitzvah/gallery.php?w=83', 'Canvas Pro Gallery'],
+            'mitzvah standard albums' => ['b-nai-mitzvah/galleries.php?w=84', 'Standard Albums Gallery'],
+            'mitzvah signature albums' => ['b-nai-mitzvah/galleries.php?w=85', 'Signature Albums Gallery'],
+            'mitzvah memory book' => ['b-nai-mitzvah/galleries.php?w=86', 'Memory Book Gallery'],
+            'mitzvah album block' => ['b-nai-mitzvah/galleries.php?w=87', 'Album Block Gallery'],
+            'mitzvah main gallery' => ['b-nai-mitzvah/gallery.php?w=72', "B'nai Mitzvah Gallery"],
+            'mitzvah product gallery' => ['b-nai-mitzvah/gallery.php?w=78', 'Product Gallery'],
+
             'commercial studio headshots' => ['commercial/galleries.php?w=53', 'Studio Headshots Gallery'],
             'commercial location headshots' => ['commercial/galleries.php?w=54', 'On Location Headshots Gallery'],
             'commercial company headshots' => ['commercial/galleries.php?w=55', 'Company Headshots and Team Photos Gallery'],
@@ -26,6 +42,8 @@ class GalleryPagesHttpTest extends HttpTestBase {
             'commercial holiday party' => ['commercial/galleries.php?w=70', 'Holiday Party Gallery'],
             'commercial picnic' => ['commercial/galleries.php?w=71', 'Corporate Picnic Gallery'],
             'commercial branding' => ['commercial/gallery.php?w=56', 'Professional Branding Gallery'],
+            'commercial chiropractic branding' => ['commercial/galleries.php?w=97', 'Chiropractic Care Gallery'],
+            'commercial life coach branding' => ['commercial/galleries.php?w=98', 'Life Coach Gallery'],
             'commercial events' => ['commercial/gallery.php?w=57', 'Events Gallery'],
 
             'portrait maternity' => ['portrait/galleries.php?w=2', 'Maternity Gallery'],
@@ -44,6 +62,9 @@ class GalleryPagesHttpTest extends HttpTestBase {
             'portrait album block' => ['portrait/galleries.php?w=50', 'Album Block Gallery'],
             'portrait keepsake usb' => ['portrait/galleries.php?w=51', 'Keepsake USB Gallery'],
             'portrait reveal box' => ['portrait/galleries.php?w=62', 'Reveal Box Gallery'],
+            'portrait gift prints' => ['portrait/gallery.php?w=88', 'Gift Prints Gallery'],
+            'portrait curved metal' => ['portrait/galleries.php?w=91', 'Curved Metal Gallery'],
+            'portrait mounted prints' => ['portrait/galleries.php?w=92', 'Mounted Gallery'],
             'portrait main gallery' => ['portrait/gallery.php?w=1', 'Portrait Gallery'],
             'portrait product gallery' => ['portrait/gallery.php?w=28', 'Product Gallery'],
             'portrait newborn' => ['portrait/gallery.php?w=3', 'Newborn Gallery'],
@@ -69,6 +90,10 @@ class GalleryPagesHttpTest extends HttpTestBase {
             'wedding signature albums' => ['wedding/galleries.php?w=46', 'Signature Albums Gallery'],
             'wedding engagement book' => ['wedding/galleries.php?w=47', 'Engagement Book Gallery'],
             'wedding reveal box' => ['wedding/galleries.php?w=63', 'Reveal Box Gallery'],
+            'wedding album block' => ['wedding/galleries.php?w=76', 'Album Block Gallery'],
+            'wedding gift prints' => ['wedding/gallery.php?w=89', 'Gift Prints Gallery'],
+            'wedding curved metal' => ['wedding/galleries.php?w=93', 'Curved Metal Gallery'],
+            'wedding mounted prints' => ['wedding/galleries.php?w=94', 'Mounted Gallery'],
             'wedding main gallery' => ['wedding/gallery.php?w=8', 'Wedding Gallery'],
             'wedding product gallery' => ['wedding/gallery.php?w=38', 'Product Gallery'],
             'wedding heirloom album gallery' => ['wedding/gallery.php?w=40', 'Heirloom Albums Gallery'],
@@ -91,6 +116,8 @@ class GalleryPagesHttpTest extends HttpTestBase {
 
     public static function invalidGalleryPageProvider(): array {
         return [
+            'mitzvah blank galleries id' => ['b-nai-mitzvah/galleries.php?w='],
+            'mitzvah detail id points to collection' => ['b-nai-mitzvah/gallery.php?w=73'],
             'commercial blank galleries id' => ['commercial/galleries.php?w='],
             'commercial detail id points to collection' => ['commercial/gallery.php?w=54'],
             'portrait blank galleries id' => ['portrait/galleries.php?w='],
@@ -113,6 +140,8 @@ class GalleryPagesHttpTest extends HttpTestBase {
 
     public static function invalidServiceReviewProvider(): array {
         return [
+            'mitzvah blank category' => ['b-nai-mitzvah/reviews.php?c='],
+            'mitzvah invalid category' => ['b-nai-mitzvah/reviews.php?c=abc'],
             'commercial blank category' => ['commercial/reviews.php?c='],
             'commercial invalid category' => ['commercial/reviews.php?c=abc'],
             'portrait blank category' => ['portrait/reviews.php?c='],
@@ -131,6 +160,7 @@ class GalleryPagesHttpTest extends HttpTestBase {
 
     public static function reviewPageProvider(): array {
         return [
+            'mitzvah reviews' => ['b-nai-mitzvah/reviews.php?c=4', "B'nai Mitzvah Raves"],
             'commercial reviews' => ['commercial/reviews.php?c=3', 'Commercial Raves'],
             'portrait reviews' => ['portrait/reviews.php?c=1', 'Portrait Raves'],
             'wedding reviews' => ['wedding/reviews.php?c=2', 'Wedding Raves'],
