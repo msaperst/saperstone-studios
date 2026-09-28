@@ -58,7 +58,7 @@ Feature: Gallery
     Then I see gallery image 7 in the preview modal
 
   Scenario: Images with captions display captions
-    Given gallery 999 image 2 has captain "sample caption"
+    Given gallery 999 image 2 has caption "sample caption"
     When I am on the "portrait/galleries.php?w=999#1" page
     Then I see the gallery caption "sample caption" displayed
 
