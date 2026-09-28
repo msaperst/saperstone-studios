@@ -28,7 +28,7 @@ class PublicContractHttpTest extends HttpTestBase {
         self::assertSame(404, $response->getStatusCode());
         self::assertSame('404 Not Found', $this->text($response, '//h1'));
         self::assertSame($this->copyright, $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' copyright ')]"));
-        $this->assertErrorEmailSent('404 Error');
+        \CustomAsserts::assertEmailSubjectExists('404 Error');
     }
 
     public static function invalidContractProvider(): array {
