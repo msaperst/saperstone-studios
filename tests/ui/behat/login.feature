@@ -7,7 +7,7 @@ Feature: System Authentication
   Scenario: Enabled user can log in
     Given an enabled user account exists
     When I log in to the site
-    And I see my user name displayed
+    Then I see my user name displayed
 
   Scenario: Disabled user cannot log in
     Given a disabled user account exists
@@ -132,7 +132,7 @@ Feature: System Authentication
     And I submit "e@12.co" "123456" "password" "password1" reset credentials
     Then I see an error message indicating passwords do not match
 
-  Scenario Outline: Incomplete reset credentials are rejected no resetKey
+  Scenario Outline: Invalid reset key credentials are rejected
     Given an enabled user account exists
     When I have a reset key
     And I submit "<email>" "<code>" "<password>" "<confirm>" reset credentials
