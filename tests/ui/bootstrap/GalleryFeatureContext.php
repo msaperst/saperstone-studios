@@ -191,9 +191,9 @@ class GalleryFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSeeImageInThePreviewModal($imgNum) {
-        $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id($slideShowId))));
-        Assert::assertTrue($this->driver->findElement(WebDriverBy::id($slideShowId))->isDisplayed());
+        $modal = $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel'));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($modal));
+        Assert::assertTrue($modal->isDisplayed());
         $gallery = new Gallery($this->driver, $this->wait);
         $activeImage = $gallery->getSlideShowImage()->findElement(WebDriverBy::className('contain'));
         Assert::assertEquals('Image ' . ($imgNum - 1), $activeImage->getAttribute('alt'), $activeImage->getAttribute('alt'));
@@ -238,8 +238,7 @@ class GalleryFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iDonTSeeTheGalleryPreviewModal() {
-        $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
-        $modal = $this->driver->findElement(WebDriverBy::id($slideShowId));
+        $modal = $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel'));
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
         Assert::assertFalse($modal->isDisplayed());
     }
