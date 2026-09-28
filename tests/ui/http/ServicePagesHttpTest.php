@@ -14,6 +14,15 @@ class ServicePagesHttpTest extends HttpTestBase {
 
     public static function servicePageProvider(): array {
         return [
+            'mitzvah details' => ['b-nai-mitzvah/details.php', "B'nai Mitzvah Details"],
+            'mitzvah experience' => ['b-nai-mitzvah/experience.php', "The B'nai Mitzvah Experience"],
+            'mitzvah index' => ['b-nai-mitzvah/index.php', "B'nai Mitzvahs"],
+            'mitzvah photobooth' => ['b-nai-mitzvah/photobooth.php', 'Photobooth'],
+            'mitzvah process' => ['b-nai-mitzvah/process.php', 'The Process'],
+            'mitzvah products' => ['b-nai-mitzvah/products.php', 'Products & Investment'],
+            'mitzvah retouch' => ['b-nai-mitzvah/retouch.php', 'Retouch'],
+            'mitzvah sessions' => ['b-nai-mitzvah/sessions.php', 'Session Information'],
+
             'commercial about' => ['commercial/about.php', 'About Saperstone Studios'],
             'commercial background' => ['commercial/background.php', 'Background Options'],
             'commercial details' => ['commercial/details.php', 'Details'],
