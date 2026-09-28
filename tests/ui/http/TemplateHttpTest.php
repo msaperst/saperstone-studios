@@ -88,10 +88,13 @@ class TemplateHttpTest extends HttpTestBase {
 
     public function testGuestBlogAndInformationNavigation(): void {
         $response = $this->get();
-        foreach (['/blog/posts.php', '/blog/categories.php', '/about.php', '/leighAnn.php', '/reviews.php', '/contact.php'] as $href) {
-            self::assertSame(1, $this->elementCount($response, "//a[@href='$href']"), "Missing guest navigation link $href");
+        foreach (['/blog/posts.php', '/blog/categories.php'] as $href) {
+            self::assertSame(1, $this->elementCount($response, "//*[@id='bs-example-navbar-collapse-1']//a[normalize-space(.)='Blog']/following-sibling::ul//a[@href='$href']"), "Missing guest blog navigation link $href");
         }
-        self::assertSame(1, $this->elementCount($response, "//a[@href='#album']"));
+        foreach (['/about.php', '/leighAnn.php', '/reviews.php', '/contact.php'] as $href) {
+            self::assertSame(1, $this->elementCount($response, "//*[@id='bs-example-navbar-collapse-1']//a[normalize-space(.)='Information']/following-sibling::ul//a[@href='$href']"), "Missing guest information navigation link $href");
+        }
+        self::assertSame(1, $this->elementCount($response, "//*[@id='bs-example-navbar-collapse-1']//a[normalize-space(.)='Information']/following-sibling::ul//a[@href='#album']"));
         self::assertSame(0, $this->elementCount($response, "//a[@href='/blog/new.php']"));
         self::assertSame(0, $this->elementCount($response, "//a[@href='/blog/manage.php']"));
     }
@@ -99,11 +102,11 @@ class TemplateHttpTest extends HttpTestBase {
     public function testAdminBlogAndInformationNavigation(): void {
         $this->adminLogin();
         $response = $this->get();
-        self::assertSame(1, $this->elementCount($response, "//a[@href='/blog/new.php']"));
-        self::assertSame(1, $this->elementCount($response, "//a[@href='/blog/manage.php']"));
-        self::assertSame(0, $this->elementCount($response, "//a[@href='#album']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='bs-example-navbar-collapse-1']//a[normalize-space(.)='Blog']/following-sibling::ul//a[@href='/blog/new.php']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='bs-example-navbar-collapse-1']//a[normalize-space(.)='Blog']/following-sibling::ul//a[@href='/blog/manage.php']"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='bs-example-navbar-collapse-1']//a[normalize-space(.)='Information']/following-sibling::ul//a[@href='#album']"));
         foreach (['/about.php', '/leighAnn.php', '/reviews.php', '/contact.php'] as $href) {
-            self::assertSame(1, $this->elementCount($response, "//a[@href='$href']"), "Missing admin information link $href");
+            self::assertSame(1, $this->elementCount($response, "//*[@id='bs-example-navbar-collapse-1']//a[normalize-space(.)='Information']/following-sibling::ul//a[@href='$href']"), "Missing admin information navigation link $href");
         }
     }
 
