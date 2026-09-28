@@ -4,6 +4,11 @@ $(document).ready(function () {
         if (!carousel.find('.item').length) {
             return;
         }
+        const configuredInterval = carousel.attr('data-interval');
+        if (configuredInterval === 'false') {
+            carousel.carousel({interval: false});
+            return;
+        }
         carousel.carousel({
             interval: 4000,
             duration: 2000
