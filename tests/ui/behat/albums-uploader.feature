@@ -93,6 +93,11 @@ Feature: Uploader Albums
       | date          |
       | images        |
 
+  Scenario: Upload image to album
+    When I edit album 99997
+    And I upload test image "flower.jpeg"
+    Then album 99997 contains uploaded image "flower.jpeg" and has 17 images
+
   Scenario: Unable to set access
     When I edit album 99997
     Then I don't see the ability to set access
