@@ -90,7 +90,8 @@ class AlbumFeatureContext implements Context {
     public function cleanup() {
         $sql = new Sql();
         foreach ($this->albumIds as $albumId) {
-            $albumLocation = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
+            $album = $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId");
+            $albumLocation = $album === null ? null : dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $album['location'];
             $sql->executeStatement("DELETE FROM `albums` WHERE `albums`.`id` = $albumId;");
             $sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `albums_for_users` WHERE `albums_for_users`.`album` = $albumId;");
@@ -99,7 +100,7 @@ class AlbumFeatureContext implements Context {
             $sql->executeStatement("DELETE FROM `share_rights` WHERE `share_rights`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `notification_emails` WHERE `notification_emails`.`album` = $albumId;");
-            if (is_dir($albumLocation)) {
+            if ($albumLocation !== null && is_dir($albumLocation)) {
                 system("rm -rf " . escapeshellarg($albumLocation));
             }
         }
@@ -299,7 +300,7 @@ class AlbumFeatureContext implements Context {
      * @throws Exception
      */
     public function userHasAccessToAlbum($userId, $albumId) {
-        $user = $this->resolveUserId((string) $user);
+        $userId = $this->resolveUserId((string) $userId);
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums_for_users` VALUES( $userId, $albumId);");
         $sql->disconnect();
@@ -312,7 +313,7 @@ class AlbumFeatureContext implements Context {
      * @throws Exception
      */
     public function userHasDownloadAccessToAlbum($userId, $albumId) {
-        $user = $this->resolveUserId((string) $user);
+        $userId = $this->resolveUserId((string) $userId);
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `download_rights` VALUES( $userId, $albumId, '*');");
         $sql->disconnect();
@@ -325,7 +326,7 @@ class AlbumFeatureContext implements Context {
      * @throws Exception
      */
     public function userHasShareAccessToAlbum($userId, $albumId) {
-        $user = $this->resolveUserId((string) $user);
+        $userId = $this->resolveUserId((string) $userId);
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `share_rights` VALUES( $userId, $albumId, '*');");
         $sql->disconnect();
