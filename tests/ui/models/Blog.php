@@ -45,14 +45,6 @@ class Blog {
         $this->driver->findElement(WebDriverBy::id('post-comment-submit'))->click();
     }
 
-    public function waitForPostToLoad($postNum) {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($postNum + 1) . ')')));
-    }
-
-    public function waitForPreviewToLoad($lineNum) {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector(".col-gallery > div:nth-child(" . ($lineNum + 1) . ")")));
-    }
-
     public function waitForCommentsToLoad() {
         $sql = new Sql();
         $comments = $sql->getRows("SELECT * FROM blog_comments WHERE blog = {$this->getBlogId()} ORDER BY date DESC");
