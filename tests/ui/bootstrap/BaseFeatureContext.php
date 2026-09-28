@@ -73,6 +73,10 @@ class BaseFeatureContext implements Context {
      * @throws Exception
      */
     public function setupUser(): void {
+        // Each scenario must start with an empty mailbox so email assertions
+        // cannot match messages left behind by earlier scenarios.
+        \CustomAsserts::clearAllEmails();
+
         // setup our webdriver instance
         $host = 'http://127.0.0.1:4444';
         $headless = getenv('HEADLESS');
