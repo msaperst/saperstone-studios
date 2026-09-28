@@ -4,6 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
+use Behat\Testwork\Tester\Result\TestResult;
 use Exception;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Cookie;
@@ -22,7 +23,6 @@ require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 class BaseFeatureContext implements Context {
 
     const string reportDir = __DIR__ . '/../../../reports/behat/';
-    const string reportFile = BaseFeatureContext::reportDir . 'index.html';
     /**
      * @var RemoteWebDriver
      */
@@ -58,14 +58,10 @@ class BaseFeatureContext implements Context {
      * @BeforeSuite
      */
     public static function setupTestReport(): void {
-        // setup our logging
-        if (!file_exists(BaseFeatureContext::reportDir)) {
-            mkdir(BaseFeatureContext::reportDir);
+        $screenshotDir = BaseFeatureContext::reportDir . 'screenshots';
+        if (!is_dir($screenshotDir) && !mkdir($screenshotDir, 0777, true) && !is_dir($screenshotDir)) {
+            throw new \RuntimeException("Unable to create Behat screenshot directory: $screenshotDir");
         }
-        $output = fopen(BaseFeatureContext::reportFile, 'w');
-        fwrite($output, str_replace('$PAGE_TITLE', getenv('BROWSER') . ' BDD Tests', file_get_contents('https://gist.githubusercontent.com/msaperst/24d9a7d2e8f3e6ff1df26e5492a1b726/raw/1ede7c7c23ddb97153a464931e6bbf39cc737231/gistfile1.txt')));
-        fwrite($output, '<h1 align="center">' . getenv('BROWSER') . ' BDD Tests</h1>');
-        fclose($output);
     }
 
     /**
@@ -126,15 +122,12 @@ class BaseFeatureContext implements Context {
      * @throws Exception
      */
     public function cleanup(AfterScenarioScope $scope): void {
-        $scenarioName = $scope->getFeature()->getTitle() . ' : ' . $scope->getScenario()->getTitle() . ' : ' . $scope->getScenario()->getLine();
-        $screenshot = $this->driver->takeScreenshot();
-        $safeScenarioName = preg_replace('/[^A-Za-z0-9._-]+/', '-', $scenarioName);
-        $this->driver->takeScreenshot(BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $safeScenarioName . '.png');
+        if ($scope->getTestResult()->getResultCode() !== TestResult::PASSED) {
+            $scenarioName = $scope->getFeature()->getTitle() . ' : ' . $scope->getScenario()->getTitle() . ' : ' . $scope->getScenario()->getLine();
+            $safeScenarioName = preg_replace('/[^A-Za-z0-9._-]+/', '-', $scenarioName);
+            $this->driver->takeScreenshot(BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $safeScenarioName . '.png');
+        }
         $this->driver->quit();
-        // log our screenshot
-        $output = fopen(BaseFeatureContext::reportFile, 'a');
-        fwrite($output, '<p><h2 class="r' . $scope->getTestResult()->getResultCode() . '" style="cursor: pointer;" onclick="toggleImg(this)">' . $scenarioName . '</h2><img alt="screenshot" style="max-width: 100%; display: none;" src="data:image/png;base64,' . base64_encode($screenshot) . '"/></p>');
-        fclose($output);
         // if we created a new user
         if ($this->user->getId() != '' && $this->deleteUser) {
             $_SESSION ['hash'] = "1d7505e7f434a7713e84ba399e937191";
@@ -149,14 +142,4 @@ class BaseFeatureContext implements Context {
         }
     }
 
-    /**
-     * @AfterSuite
-     */
-    public static function cleanupTestReport(): void {
-        // setup our logging
-        $output = fopen(BaseFeatureContext::reportFile, 'a');
-        fwrite($output, '</body>');
-        fwrite($output, '</html>');
-        fclose($output);
-    }
 }
