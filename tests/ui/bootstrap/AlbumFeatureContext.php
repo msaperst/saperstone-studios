@@ -1318,6 +1318,19 @@ Comment',
     }
 
     /**
+     * @Then I see the album details modal for the new album
+     */
+    public function iSeeTheAlbumDetailsModalForTheNewAlbum(): void {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album')));
+        $albumId = $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id');
+        Assert::assertMatchesRegularExpression('/^\\d+$/', $albumId);
+        $this->iSeeTheAlbumDetailsModalForAlbum($albumId);
+        if (!in_array((int) $albumId, $this->albumIds, true)) {
+            $this->albumIds[] = (int) $albumId;
+        }
+    }
+
+    /**
      * @Then I see the edit album details modal for the new album
      */
     public function iSeeTheEditAlbumDetailsModalForTheNewAlbum(): void {
