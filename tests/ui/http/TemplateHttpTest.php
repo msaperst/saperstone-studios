@@ -25,7 +25,7 @@ class TemplateHttpTest extends HttpTestBase {
         self::assertStringContainsString('Home 404', $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' breadcrumb ')]"));
         self::assertStringContainsString('server has not found anything matching the Request-URI', (string) $response->getBody());
         self::assertSame($this->copyright, $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' copyright ')]"));
-        $this->assertErrorEmailSent('404 Error');
+        \CustomAsserts::assertEmailSubjectExists('404 Error');
     }
 
     public function testFooterIdentifiesAnonymousUser(): void {
