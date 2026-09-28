@@ -18,44 +18,44 @@ Feature: Admin Album
     When I scroll to the bottom of the page
     Then I see the "3rd" album images load
 
-  Scenario: Hovering an image zooms in
+  Scenario: Hovering an image reveals image controls
     Given I am on the "user/album.php?album=99999" page
     When I hover over album image 1
-    Then I see the info icon on album image 1
+    Then I see the image controls on album image 1
 
-  Scenario: Clicking an image brings up a preview modal
+  Scenario: Opening an image displays it in the image viewer
     Given I am on the "user/album.php?album=99999" page
     When I view album image 1
-    Then I see album image 1 in the preview modal
+    Then I see album image 1 in the image viewer
 
-  Scenario: Clicking another image brings up a preview modal
+  Scenario: Opening another image displays it in the image viewer
     Given I am on the "user/album.php?album=99999" page
     When I view album image 6
-    Then I see album image 6 in the preview modal
+    Then I see album image 6 in the image viewer
 
-  Scenario: Modal does not automatically scroll to the next image
+  Scenario: Image viewer does not automatically advance
     Given I am on the "user/album.php?album=99999" page
     When I view album image 1
     And I wait for 5 seconds
-    Then I see album image 1 in the preview modal
+    Then I see album image 1 in the image viewer
 
-  Scenario: Modal does not automatically scroll to the next image on hash
+  Scenario: Deep-linked image does not automatically advance
     Given I am on the "user/album.php?album=99999#0" page
     When I wait for 5 seconds
-    Then I see album image 1 in the preview modal
+    Then I see album image 1 in the image viewer
 
   Scenario: Able to manually advance to next image
     Given I am on the "user/album.php?album=99999#0" page
     When I advance to the next album image
-    Then I see album image 2 in the preview modal
+    Then I see album image 2 in the image viewer
 
   Scenario: Able to manually advance to previous image
     Given I am on the "user/album.php?album=99999#0" page
     When I advance to the previous album image
-    Then I see album image 16 in the preview modal
+    Then I see album image 16 in the image viewer
 
   Scenario: Images with captions display captions
-    Given album 99999 image 2 has captain "sample caption"
+    Given album 99999 image 2 has caption "sample caption"
     Given I am on the "user/album.php?album=99999#1" page
     Then I see the album caption "sample caption" displayed
 
@@ -98,7 +98,7 @@ Feature: Admin Album
     Then I see 0 favorites
     And I see the favorite count is ""
 
-  Scenario: Unable to do any actions when no favorites
+  Scenario: Favorite actions are disabled when there are no favorites
     Given I am on the "user/album.php?album=99999" page
     When I view my favorites
     Then the download favorites button is disabled
@@ -158,7 +158,7 @@ Feature: Admin Album
     And I am on the "user/album.php?album=99999" page
     And I view album image 2
     And I favorite the image
-    And I close the album image modal
+    And I close the image viewer
     And I view my favorites
     And I submit my favorites
     Then I see the empty form to submit my favorites
@@ -285,9 +285,9 @@ Feature: Admin Album
     When I view album image 3
     Then I am taken to the "user/album.php?album=99999#2" page
 
-  Scenario: Opening album with hash displays that image
+  Scenario: Opening an album at an image hash displays that image
     When I am on the "user/album.php?album=99999#1" page
-    Then I see album image 2 in the preview modal
+    Then I see album image 2 in the image viewer
 
   Scenario: Going to next image increases hash
     Given I am on the "user/album.php?album=99999#1" page
@@ -299,12 +299,12 @@ Feature: Admin Album
     When I advance to the previous album image
     Then I am taken to the "user/album.php?album=99999#0" page
 
-  Scenario: Closing image closes modal
+  Scenario: Closing the image viewer hides it
     Given I am on the "user/album.php?album=99999#1" page
-    When I close the album view
-    Then I don't see the album preview modal
+    When I close the image viewer
+    Then I don't see the image viewer
 
-  Scenario: Closing image removes hash
+  Scenario: Closing the image viewer removes the image hash
     Given I am on the "user/album.php?album=99999#1" page
-    When I close the album view
+    When I close the image viewer
     Then I am taken to the "user/album.php?album=99999" page
