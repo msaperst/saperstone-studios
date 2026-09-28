@@ -152,7 +152,10 @@ class CustomAsserts {
         ?string $expectedAttachmentPath = null // <-- Add optional attachment path
     ): void {
         if ($expectedAuthUser === null) {
-            $expectedAuthUser = (string)getenv('EMAIL_USER');
+            $credentialKey = str_ends_with($expectedTo, '@saperstonestudios.com')
+                ? 'EMAIL_USER_X'
+                : 'EMAIL_USER';
+            $expectedAuthUser = (string)getenv($credentialKey);
         }
 
         $client = self::getMailpitClient();
