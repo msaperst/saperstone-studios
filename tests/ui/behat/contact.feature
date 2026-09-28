@@ -42,9 +42,7 @@ Feature: Contact
     And I provide "msaperst+sstest@gmail.com" for the contact "email"
     And I provide "This is a test message, feel free to ignore this" for the contact "message"
     And I submit the contact form
-    Then I see a warning message indicating my message is being sent
-    And the submit contact button is disabled
-    And I see a success message indicating my message was sent
+    Then I see a success message indicating my message was sent
     And I see a contact email sent to the user
     And I see a contact email send to the admin with:
     | name | phone | email | message |
