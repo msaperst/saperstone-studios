@@ -367,7 +367,7 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I have searched for album "([^"]*)"$/
+     * @When /^I search for album "([^"]*)"$/
      * @param $albumCode
      */
     public function iHaveSearchedForAlbum($albumCode) {
