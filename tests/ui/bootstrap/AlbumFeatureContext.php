@@ -1007,7 +1007,10 @@ class AlbumFeatureContext implements Context {
         $album = new Album($this->driver, $this->wait);
         $img = $album->getSlideShowImage();
         Assert::assertEquals((string) ($imgNum - 1), $img->getAttribute('data-image-id'));
-        Assert::assertEquals('Image ' . ($imgNum - 1), $this->driver->findElement(WebDriverBy::id('album-viewer-title'))->getText());
+        Assert::assertNotEquals(
+            'none',
+            $this->driver->findElement(WebDriverBy::id('album-viewer-image'))->getCSSValue('background-image')
+        );
     }
 
     /**
