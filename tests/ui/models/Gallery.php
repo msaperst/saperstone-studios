@@ -50,32 +50,33 @@ class Gallery {
 
     public function openSlideShow($imgNum) {
         $this->justOpenSlideShow($imgNum);
-        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id($this->getSlideShowId())));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector('.modal-carousel')));
         $this->waitForActiveImage($imgNum - 1);
     }
 
     public function getSlideShowImage(): RemoteWebElement {
-        $selector = WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .carousel-inner .item.active');
+        $selector = WebDriverBy::cssSelector('.modal-carousel .carousel-inner .item.active');
         $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($selector));
         return $this->driver->findElement($selector);
     }
 
     public function advanceToNextImage() {
         $current = $this->getActiveSequence();
-        $this->driver->findElement(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .gallery-next'))->click();
+        $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel .gallery-next'))->click();
         $this->waitForActiveImage(($current + 1) % $this->getImageCount());
     }
 
     public function advanceToPreviousImage() {
         $current = $this->getActiveSequence();
         $count = $this->getImageCount();
-        $this->driver->findElement(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .gallery-prev'))->click();
+        $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel .gallery-prev'))->click();
         $this->waitForActiveImage(($current - 1 + $count) % $count);
     }
 
     public function advanceToImage($imgNum) {
         $sequence = $imgNum - 1;
-        $this->driver->findElement(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .carousel-indicators > li:nth-child(' . $imgNum . ')'))->click();
+        $indicator = $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel .carousel-indicators > li:nth-child(' . $imgNum . ')'));
+        $this->driver->executeScript("arguments[0].click();", [$indicator]);
         $this->waitForActiveImage($sequence);
     }
 
@@ -97,12 +98,12 @@ class Gallery {
     }
 
     private function getImageCount(): int {
-        return count($this->driver->findElements(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .carousel-inner .item')));
+        return count($this->driver->findElements(WebDriverBy::cssSelector('.modal-carousel .carousel-inner .item')));
     }
 
     private function waitForActiveImage(int $sequence): void {
         $this->wait->until(function () use ($sequence) {
-            $active = $this->driver->findElements(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .carousel-inner .item.active .contain'));
+            $active = $this->driver->findElements(WebDriverBy::cssSelector('.modal-carousel .carousel-inner .item.active .contain'));
             return count($active) === 1 && $active[0]->getAttribute('sequence') === (string) $sequence;
         });
     }
