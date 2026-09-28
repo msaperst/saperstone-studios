@@ -30,6 +30,9 @@ class GalleryPagesHttpTest extends HttpTestBase {
             'mitzvah signature albums' => ['b-nai-mitzvah/galleries.php?w=85', 'Signature Albums Gallery'],
             'mitzvah memory book' => ['b-nai-mitzvah/galleries.php?w=86', 'Memory Book Gallery'],
             'mitzvah album block' => ['b-nai-mitzvah/galleries.php?w=87', 'Album Block Gallery'],
+            'mitzvah gift prints' => ['b-nai-mitzvah/gallery.php?w=90', 'Gift Prints Gallery'],
+            'mitzvah curved metal' => ['b-nai-mitzvah/galleries.php?w=95', 'Curved Metal Gallery'],
+            'mitzvah mounted prints' => ['b-nai-mitzvah/galleries.php?w=96', 'Mounted Gallery'],
             'mitzvah main gallery' => ['b-nai-mitzvah/gallery.php?w=72', "B'nai Mitzvah Gallery"],
             'mitzvah product gallery' => ['b-nai-mitzvah/gallery.php?w=78', 'Product Gallery'],
 
