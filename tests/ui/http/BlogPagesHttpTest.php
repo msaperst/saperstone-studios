@@ -45,6 +45,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         $response = $this->get($path);
         self::assertSame(404, $response->getStatusCode());
         self::assertSame('404 Not Found', $this->text($response, '//h1'));
+        $this->submitErrorReport($response);
         \CustomAsserts::assertEmailSubjectExists('404 Error');
     }
 
@@ -68,6 +69,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         $response = $this->get($path);
         self::assertSame(401, $response->getStatusCode());
         self::assertSame('401 Unauthorized', $this->text($response, '//h1'));
+        $this->submitErrorReport($response);
         \CustomAsserts::assertEmailSubjectExists('401 Error');
     }
 
@@ -100,6 +102,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         $response = $this->get('blog/new.php?p=9999');
         self::assertSame(404, $response->getStatusCode());
         self::assertSame('404 Not Found', $this->text($response, '//h1'));
+        $this->submitErrorReport($response);
         \CustomAsserts::assertEmailSubjectExists('404 Error');
     }
 
