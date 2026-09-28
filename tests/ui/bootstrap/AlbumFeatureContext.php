@@ -372,7 +372,7 @@ class AlbumFeatureContext implements Context {
      */
     public function iHaveSearchedForAlbum($albumCode) {
         $baseUrl = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getBaseUrl();
-        $this->driver->get($baseUrl . '#album' . rawurlencode($albumCode));
+        $this->driver->get($baseUrl . '#album=' . rawurlencode($albumCode));
         $this->wait->until(WebDriverExpectedCondition::urlContains('/user/album.php?album='));
     }
 
@@ -1192,7 +1192,9 @@ Comment',
      */
     public function iSeeAnErrorMessageIndicatingNoFilesAreAvailableToDownload() {
         $expected = 'There are no files available for you to download. Please purchase rights to the images you tried to download, and try again.';
-        $alert = $this->driver->findElement(WebDriverBy::className('alert-danger'));
+        $alertSelector = WebDriverBy::cssSelector('.bootstrap-dialog .alert-danger');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($alertSelector));
+        $alert = $this->driver->findElement($alertSelector);
         $actual = preg_replace('/^×\\s*/u', '', $alert->getText());
         $decoded = json_decode($actual, true);
         if (is_array($decoded) && isset($decoded['error'])) {
