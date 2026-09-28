@@ -82,8 +82,7 @@ class RetouchFeatureContext implements Context {
      * @param $ord
      */
     public function iSeeTheOriginalImage($ord) {
-        $thumbs = $this->driver->findElements(WebDriverBy::className('col-lg-1'));
-        $origImg = $thumbs[intval($ord) - 1]->findElement(WebDriverBy::tagName('img'))->getAttribute('imgorig');
+        $origImg = $this->getConfiguredImages()[intval($ord) - 1]['orig'];
         $img = $this->driver->findElement(WebDriverBy::id('original'));
         Assert::assertTrue($img->isDisplayed());
         Assert::assertStringEndsWith($origImg, $img->findElement(WebDriverBy::tagName('img'))->getAttribute('src'));
@@ -95,13 +94,12 @@ class RetouchFeatureContext implements Context {
      * @param $ord
      */
     public function iSeeOfTheRetouchedImage($width, $ord) {
-        $thumbs = $this->driver->findElements(WebDriverBy::className('col-lg-1'));
-        $editImg = $thumbs[intval($ord) - 1]->findElement(WebDriverBy::tagName('img'))->getAttribute('imgedit');
+        $editImg = $this->getConfiguredImages()[intval($ord) - 1]['edit'];
         $img = $this->driver->findElement(WebDriverBy::id('edit'));
         if ($width > 0) {
             Assert::assertTrue($img->isDisplayed());
         }
-        Assert::assertContains("width: $width%", $img->getAttribute('style'));
+        Assert::assertStringContainsString("width: $width%", $img->getAttribute('style'));
         Assert::assertStringEndsWith($editImg, $img->findElement(WebDriverBy::tagName('img'))->getAttribute('src'));
     }
 
@@ -110,8 +108,14 @@ class RetouchFeatureContext implements Context {
      * @param $ord
      */
     public function iSeeTheImageComment($ord) {
-        $thumbs = $this->driver->findElements(WebDriverBy::className('col-lg-1'));
-        $comment = $thumbs[intval($ord) - 1]->findElement(WebDriverBy::tagName('img'))->getAttribute('text');
+        $comment = $this->getConfiguredImages()[intval($ord) - 1]['text'];
         Assert::assertEquals(str_replace("  ", " ", $comment), $this->driver->findElement(WebDriverBy::className('comment'))->getText());
+    }
+
+    private function getConfiguredImages(): array {
+        $json = $this->driver->findElement(WebDriverBy::id('retouch-config'))->getAttribute('data-images');
+        $images = json_decode($json, true);
+        Assert::assertIsArray($images, 'Retouch image configuration should contain valid JSON.');
+        return $images;
     }
 }
