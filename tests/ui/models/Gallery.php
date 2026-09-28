@@ -6,149 +6,104 @@ use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 
 class Gallery {
-    /**
-     * @var RemoteWebDriver
-     */
-    private $driver;
-    /**
-     * @var WebDriverWait
-     */
-    private $wait;
+    private RemoteWebDriver $driver;
+    private WebDriverWait $wait;
 
     public function __construct($driver, $wait) {
         $this->driver = $driver;
         $this->wait = $wait;
     }
 
-    /**
-     * @param $rows
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
     public function waitForImagesToLoad($rows) {
         $imageCount = (int) $rows * 4;
         $this->wait->until(function () use ($imageCount) {
-            return count($this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'))) >= $imageCount;
+            if (count($this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery'))) >= $imageCount) {
+                return true;
+            }
+
+            $this->driver->executeScript("window.scrollTo(0, document.body.scrollHeight); window.dispatchEvent(new Event('scroll'));");
+            return false;
         });
     }
 
-    /**
-     * @param $imgNum
-     * @return WebDriverElement
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function hoverOverImage($imgNum): WebDriverElement {
-        $this->waitForImagesToLoad((int) ceil($imgNum / 4));
-        $image = $this->driver->findElement(
-            WebDriverBy::cssSelector("#album-grid .album-card[data-image-id='" . ($imgNum - 1) . "']")
-        );
+    public function hoverOverImage($imgNum): RemoteWebElement {
+        $col = ($imgNum - 1) % 4;
+        $row = intdiv($imgNum - 1, 4) + 1;
+        $this->waitForImagesToLoad($row);
+        $image = $this->driver->findElement(WebDriverBy::cssSelector("#col-$col > div.gallery:nth-child($row)"));
         $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$image]);
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($image));
-
-        $actions = new WebDriverActions($this->driver);
-        $actions->moveToElement($image)->perform();
-
+        (new WebDriverActions($this->driver))->moveToElement($image)->perform();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($image->findElement(WebDriverBy::className('info'))));
         return $image;
     }
 
-    /**
-     * @param $imgNum
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
     public function justOpenSlideShow($imgNum) {
-        $image = $this->hoverOverImage($imgNum);
-        // The card overlay intentionally sits above the protected image media
-        // and is the user-facing click target that opens the viewer.
-        $image->findElement(WebDriverBy::className('album-card-overlay'))->click();
-        $this->wait->until(
-            WebDriverExpectedCondition::visibilityOf(
-                $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
-            )
-        );
-        $this->wait->until(function () use ($imgNum) {
-            $active = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
-            return count($active) === 1
-                && $active[0]->getAttribute('data-image-id') === (string) ($imgNum - 1);
-        });
+        $this->hoverOverImage($imgNum)->findElement(WebDriverBy::className('info'))->click();
     }
 
-    /**
-     * @param $imgNum
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
     public function openSlideShow($imgNum) {
-        $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
         $this->justOpenSlideShow($imgNum);
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id($slideShowId))));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id($this->getSlideShowId())));
+        $this->waitForActiveImage($imgNum - 1);
     }
 
-    /**
-     * @return WebDriverElement
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function getSlideShowImage(): WebDriverElement {
-        $this->wait->until(function () {
-            $images = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
-            return count($images) === 1;
-        });
-        return $this->driver->findElement(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
+    public function getSlideShowImage(): RemoteWebElement {
+        $selector = WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .carousel-inner .item.active');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($selector));
+        return $this->driver->findElement($selector);
     }
 
-    /**
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
     public function advanceToNextImage() {
-        $current = $this->getSlideShowImage()->getAttribute('data-image-id');
-        $this->driver->findElement(WebDriverBy::id('album-next-btn'))->click();
-        $this->wait->until(function () use ($current) {
-            $active = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
-            return count($active) === 1 && $active[0]->getAttribute('data-image-id') !== $current;
-        });
+        $current = $this->getActiveSequence();
+        $this->driver->findElement(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .gallery-next'))->click();
+        $this->waitForActiveImage(($current + 1) % $this->getImageCount());
     }
 
-    /**
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
     public function advanceToPreviousImage() {
-        $current = $this->getSlideShowImage()->getAttribute('data-image-id');
-        $this->driver->findElement(WebDriverBy::id('album-prev-btn'))->click();
-        $this->wait->until(function () use ($current) {
-            $active = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card.is-active'));
-            return count($active) === 1 && $active[0]->getAttribute('data-image-id') !== $current;
-        });
+        $current = $this->getActiveSequence();
+        $count = $this->getImageCount();
+        $this->driver->findElement(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .gallery-prev'))->click();
+        $this->waitForActiveImage(($current - 1 + $count) % $count);
     }
 
-    /**
-     * @param $imgNum
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
     public function advanceToImage($imgNum) {
-        $img = $this->getSlideShowImage();
-        $this->driver->findElement(WebDriverBy::cssSelector('.carousel-indicators > li:nth-child(' . $imgNum . ')'))->click();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($img)));
+        $sequence = $imgNum - 1;
+        $this->driver->findElement(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .carousel-indicators > li:nth-child(' . $imgNum . ')'))->click();
+        $this->waitForActiveImage($sequence);
     }
 
-    /**
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
     public function closeSlideShow() {
-        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('album-viewer-close')));
-        $this->driver->findElement(WebDriverBy::id('album-viewer-close'))->click();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($overlay)));
+        $slideShowId = $this->getSlideShowId();
+        $modal = $this->driver->findElement(WebDriverBy::id($slideShowId));
+        $close = WebDriverBy::cssSelector("#$slideShowId [data-dismiss='modal']");
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($close));
+        $this->driver->findElement($close)->click();
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
+    }
+
+    private function getSlideShowId(): string {
+        return str_replace("'", "-", str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8)));
+    }
+
+    private function getActiveSequence(): int {
+        return (int) $this->getSlideShowImage()->findElement(WebDriverBy::className('contain'))->getAttribute('sequence');
+    }
+
+    private function getImageCount(): int {
+        return count($this->driver->findElements(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .carousel-inner .item')));
+    }
+
+    private function waitForActiveImage(int $sequence): void {
+        $this->wait->until(function () use ($sequence) {
+            $active = $this->driver->findElements(WebDriverBy::cssSelector('#' . $this->getSlideShowId() . ' .carousel-inner .item.active .contain'));
+            return count($active) === 1 && $active[0]->getAttribute('sequence') === (string) $sequence;
+        });
     }
 }
