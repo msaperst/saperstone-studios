@@ -810,21 +810,32 @@ class AlbumFeatureContext implements Context {
         $baseUrl = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getBaseUrl();
         $this->driver->get($baseUrl . "user/album.php?album=$albumId");
         $selector = '#album-grid .album-card[data-title="' . addcslashes($fileName, '\\"') . '"]';
-        $card = $this->wait->until(
-            WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector($selector))
-        );
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
+        try {
+            $card = $this->wait->until(
+                WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector($selector))
+            );
+            $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
+        } catch (TimeoutException $e) {
+            throw new TimeoutException("Uploaded image '$fileName' was not rendered as an album card", 0, $e);
+        }
 
-        // Album images are intentionally lazy-loaded. Scroll the newly uploaded
-        // card into view so the normal scroll handler loads its protected
-        // background image just as it would for a user browsing the gallery.
-        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
+        // Album images are intentionally lazy-loaded. Move the newly uploaded
+        // card into view and dispatch the same scroll event a user browsing the
+        // gallery would produce so album.js loads its protected background.
+        $this->driver->executeScript(
+            "arguments[0].scrollIntoView({block: 'center'}); window.dispatchEvent(new Event('scroll'));",
+            [$card]
+        );
 
         $media = $card->findElement(WebDriverBy::className('album-card-media'));
-        $this->wait->until(function () use ($media) {
-            $backgroundImage = $media->getCSSValue('background-image');
-            return $backgroundImage !== '' && $backgroundImage !== 'none';
-        });
+        try {
+            $this->wait->until(function () use ($media) {
+                $backgroundImage = $media->getCSSValue('background-image');
+                return $backgroundImage !== '' && $backgroundImage !== 'none';
+            });
+        } catch (TimeoutException $e) {
+            throw new TimeoutException("Uploaded image '$fileName' card did not lazy-load its protected background", 0, $e);
+        }
 
         Assert::assertEquals(
             'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
