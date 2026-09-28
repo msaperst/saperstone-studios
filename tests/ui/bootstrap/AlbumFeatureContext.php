@@ -1390,7 +1390,7 @@ Comment',
     }
 
     /**
-     * @Then /^I see users "([\d,]*)" with album access$/
+     * @Then /^I see users "([A-Za-z0-9_,-]*)" with album access$/
      * @param $users
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -1406,7 +1406,7 @@ Comment',
     }
 
     /**
-     * @Then /^I see users "([\d,]*)" with download access$/
+     * @Then /^I see users "([A-Za-z0-9_,-]*)" with download access$/
      * @param $users
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -1422,7 +1422,7 @@ Comment',
     }
 
     /**
-     * @Then /^I see users "([\d,]*)" with share access$/
+     * @Then /^I see users "([A-Za-z0-9_,-]*)" with share access$/
      * @param $users
      * @throws NoSuchElementException
      * @throws TimeoutException
