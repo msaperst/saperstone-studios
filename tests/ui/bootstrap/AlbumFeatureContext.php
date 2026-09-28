@@ -801,12 +801,13 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see uploaded image "([^"]*)" displayed in album (\d+)$/
+     * @Then /^I see uploaded image "([^"]*)" displayed in album (\d+) with (\d+) images$/
      * @param string $fileName
      * @param int $albumId
      * @throws TimeoutException
      */
-    public function iSeeUploadedImageDisplayedInAlbum(string $fileName, int $albumId): void {
+    public function iSeeUploadedImageDisplayedInAlbum(string $fileName, int $albumId, int $imageCount): void {
+        $this->assertAlbumContainsUploadedImage($albumId, $fileName, $imageCount);
         $baseUrl = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getBaseUrl();
         $this->driver->get($baseUrl . "user/album.php?album=$albumId");
 
@@ -864,14 +865,7 @@ class AlbumFeatureContext implements Context {
         );
     }
 
-    /**
-     * @Then /^album (\d+) contains uploaded image "([^"]*)" and has (\d+) images$/
-     * @param int $albumId
-     * @param string $fileName
-     * @param int $imageCount
-     * @throws TimeoutException
-     */
-    public function albumContainsUploadedImageAndHasImages(int $albumId, string $fileName, int $imageCount): void {
+    private function assertAlbumContainsUploadedImage(int $albumId, string $fileName, int $imageCount): void {
         $image = $this->wait->until(function () use ($albumId, $fileName, $imageCount) {
             $sql = new Sql();
             $album = $sql->getRow("SELECT images, location FROM albums WHERE id = ?", [$albumId]);
