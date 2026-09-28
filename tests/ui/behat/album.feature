@@ -157,7 +157,7 @@ Feature: Album
   Scenario: Guest can submit favorites
     Given album 99999 has code "album 99999"
     When I logout
-    And I search for album "album 99999"
+    And I open album "album 99999" by its code
     And I am on the "user/album.php?album=99999" page
     And I view album image 2
     And I favorite the image
