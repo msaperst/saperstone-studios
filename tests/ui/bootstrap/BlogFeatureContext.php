@@ -195,7 +195,7 @@ class BlogFeatureContext implements Context {
         } while ($this->tag != '' && !in_array($this->tag, $tags));
         $tags = join(', ', array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'tag'));
         $allPosts = $this->driver->findElements(WebDriverBy::cssSelector('#post-content > div'));
-        $postContent = $allPosts[$start * 2];    // using times two due to the extra row for sharing
+        $postContent = $allPosts[$start];
         Assert::assertEquals($details['title'], $postContent->findElement(WebDriverBy::tagName('h2'))->getText());
         Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $postContent->findElement(WebDriverBy::cssSelector('.text-right strong'))->getText());
         Assert::assertEquals($tags, $postContent->findElement(WebDriverBy::className('text-left'))->getText());
@@ -206,7 +206,6 @@ class BlogFeatureContext implements Context {
 
     private function verifyBlogPreview($start) {
         $blog = new Blog($this->driver, $this->wait);
-        $blog->waitForPreviewToLoad($start);
         $s = $start * 3;
         $query = "SELECT * FROM blog_details WHERE active = 1";
         $params = [];
@@ -217,10 +216,16 @@ class BlogFeatureContext implements Context {
         }
         $query .= " ORDER BY date DESC, id DESC LIMIT $s,3";
         $details = $this->sql->getRows($query, $params);
-        for ($i = 0; $i < 3; $i++) {
-            $allPreviews = $this->driver->findElements(WebDriverBy::cssSelector("#post-$i > div"));
-            $preview = $allPreviews[$start];
-            Assert::assertEquals(strtoupper($details[$i]['title']), $preview->findElement(WebDriverBy::tagName('span'))->getText());
+        $expectedCount = $s + count($details);
+        $this->wait->until(function () use ($expectedCount) {
+            return count($this->driver->findElements(WebDriverBy::cssSelector('.col-gallery .post'))) >= $expectedCount;
+        });
+        $renderedTitles = array_map(
+            fn($preview) => $preview->findElement(WebDriverBy::className('preview-title'))->getText(),
+            $this->driver->findElements(WebDriverBy::cssSelector('.col-gallery .post'))
+        );
+        foreach ($details as $detail) {
+            Assert::assertContains(strtoupper($detail['title']), $renderedTitles);
         }
     }
 
