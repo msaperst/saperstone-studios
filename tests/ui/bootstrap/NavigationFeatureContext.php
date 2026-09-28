@@ -18,7 +18,6 @@ use PHPUnit\Framework\Assert;
 use Sql;
 use ui\models\Album;
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Registration.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Album.php';
 
 class NavigationFeatureContext implements Context {
@@ -263,17 +262,6 @@ class NavigationFeatureContext implements Context {
         $album = new Album($this->driver, $this->wait);
         $album->waitForFinder();
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('find-album-add'))));
-    }
-
-    /**
-     * @Then /^I see that there is an option to save album$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iSeeThatThereIsAnOptionToSaveAlbum() {
-        $album = new Album($this->driver, $this->wait);
-        $album->waitForFinder();
-        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('find-album-add'))->isDisplayed());
     }
 
     /**
