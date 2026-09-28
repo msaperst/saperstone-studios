@@ -119,6 +119,19 @@ class CustomAsserts {
         Assert::assertCount($expectedCount, $data['messages'] ?? [], "Expected exactly $expectedCount emails sent.");
     }
 
+    public static function assertEmailSubjectExists(string $expectedSubject): void {
+        $client = self::getMailpitClient();
+        $response = $client->request('GET', 'messages');
+        $data = json_decode((string)$response->getBody(), true);
+        $subjects = array_column($data['messages'] ?? [], 'Subject');
+
+        Assert::assertContains(
+            $expectedSubject,
+            $subjects,
+            'Expected Mailpit to contain an email with subject ' . $expectedSubject
+        );
+    }
+
     /**
      * Error pages send their reports to the webmaster via Mailpit in CI.
      */
