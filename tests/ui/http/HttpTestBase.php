@@ -20,6 +20,7 @@ abstract class HttpTestBase extends TestCase {
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':' . getenv('HTTP_PORT') . '/';
         $this->copyright = 'Copyright ' . html_entity_decode('&' . 'copy;') . ' Saperstone Studios ' . date('Y');
         $this->cookies = new CookieJar();
+        $this->clearEmails();
         $this->client = new Client([
             'base_uri' => $this->baseUrl,
             'cookies' => $this->cookies,
@@ -27,6 +28,35 @@ abstract class HttpTestBase extends TestCase {
             'allow_redirects' => false,
             'headers' => ['User-Agent' => 'SaperstoneStudios-PageTests/1.0'],
         ]);
+    }
+
+    protected function assertErrorEmailSent(string $subject): void {
+        $client = new Client([
+            'base_uri' => 'http://localhost:8025/api/v1/',
+            'http_errors' => false,
+        ]);
+        $response = $client->get('messages');
+        self::assertSame(200, $response->getStatusCode(), 'Could not query Mailpit');
+        $data = json_decode((string) $response->getBody(), true);
+
+        foreach (($data['messages'] ?? []) as $message) {
+            if (($message['Subject'] ?? '') === $subject) {
+                return;
+            }
+        }
+
+        self::fail("Expected Mailpit to contain an email with subject '$subject'");
+    }
+
+    private function clearEmails(): void {
+        $client = new Client([
+            'base_uri' => 'http://localhost:8025/api/v1/',
+            'http_errors' => false,
+        ]);
+        $response = $client->delete('messages');
+        if (!in_array($response->getStatusCode(), [200, 204], true)) {
+            throw new RuntimeException('Could not clear Mailpit before HTTP page test');
+        }
     }
 
     protected function get(string $path = ''): ResponseInterface {
