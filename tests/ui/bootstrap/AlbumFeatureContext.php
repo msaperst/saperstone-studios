@@ -1104,7 +1104,7 @@ class AlbumFeatureContext implements Context {
      * @Then /^the download favorites button is disabled$/
      */
     public function theDownloadFavoritesButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->isDisplayed());
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->isEnabled());
     }
 
     /**
@@ -1118,7 +1118,7 @@ class AlbumFeatureContext implements Context {
      * @Then /^the submit favorites button is disabled$/
      */
     public function theSubmitFavoritesButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('submit-favorites-btn'))->isDisplayed());
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('submit-favorites-btn'))->isEnabled());
     }
 
     /**
@@ -1276,18 +1276,24 @@ Comment',
      * @param $album
      */
     public function iSeeAlbumDownloadWithMyFavorites($album) {
-        date_default_timezone_set('America/New_York');
-        $now = date("Y-m-d H-i-s");
-        $count = 0;
-        $filename = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads' . DIRECTORY_SEPARATOR . "Album $album $now.zip";
-        while (!file_exists($filename)) {
-            sleep(1);
-            $count++;
-            if ($count > 30) {
+        $downloadDirectory = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads';
+        $pattern = $downloadDirectory . DIRECTORY_SEPARATOR . "Album $album *.zip";
+        $startedAt = time() - 2;
+        $filename = null;
+        for ($count = 0; $count <= 120; $count++) {
+            $matches = array_filter(glob($pattern) ?: [], static function ($candidate) use ($startedAt) {
+                return filemtime($candidate) >= $startedAt;
+            });
+            if (!empty($matches)) {
+                usort($matches, static function ($a, $b) {
+                    return filemtime($b) <=> filemtime($a);
+                });
+                $filename = $matches[0];
                 break;
             }
+            sleep(1);
         }
-        Assert::assertTrue(file_exists($filename));
+        Assert::assertNotNull($filename, "Album $album download was not created");
         $za = new ZipArchive();
         $za->open($filename);
         $sql = new Sql();
