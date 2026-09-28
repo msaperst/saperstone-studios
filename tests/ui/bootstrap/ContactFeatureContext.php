@@ -50,9 +50,11 @@ class ContactFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I submit the contact form$/
+     * @When /^I submit the contact form$/
      */
     public function iSubmitTheContactForm() {
+        $loadTime = base_convert((string) (time() - 4), 10, 36);
+        $this->driver->executeScript("document.getElementById('loadtime').value = arguments[0];", [$loadTime]);
         $this->driver->findElement(WebDriverBy::id('submit-contact-form'))->click();
     }
 
