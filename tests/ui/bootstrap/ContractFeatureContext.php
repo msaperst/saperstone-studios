@@ -102,7 +102,7 @@ class ContractFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I submit the contract$/
+     * @When /^I submit the contract$/
      * @throws Exception
      */
     public function iSubmitTheContract() {
@@ -152,7 +152,7 @@ class ContractFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I the signed contract exists for (\d+)$/
+     * @Then /^the signed contract exists for (\d+)$/
      * @param $contractId
      */
     public function iTheSignedContractExistsFor($contractId) {
