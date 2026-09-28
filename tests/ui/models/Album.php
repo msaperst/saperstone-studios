@@ -148,7 +148,11 @@ class Album {
      */
     public function openSlideShow($imgNum) {
         $this->gallery->justOpenSlideShow($imgNum);
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
+        $this->wait->until(
+            WebDriverExpectedCondition::visibilityOf(
+                $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
+            )
+        );
     }
 
     /**
@@ -232,11 +236,14 @@ class Album {
      * @throws TimeoutException
      */
     public function removeFavorite($image) {
-        $favorite = $this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image - 1) . "']"));
-        sleep(1);
-        $action = new WebDriverActions($this->driver);
-        $action->moveToElement($favorite, intval($favorite->getSize()->getWidth() * 0.5 - 10), intval($favorite->getSize()->getHeight() * -0.5 + 10))->click()->perform();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy:: cssSelector("li[image-id='" . ($image - 1) . "']"))));
+        $selector = "#album-grid .album-card[data-image-id='" . ($image - 1) . "']";
+        $card = $this->driver->findElement(WebDriverBy::cssSelector($selector));
+        $button = $card->findElement(WebDriverBy::cssSelector(".album-card-action[data-action='favorite']"));
+        $button->click();
+        $this->wait->until(function () use ($selector) {
+            $cards = $this->driver->findElements(WebDriverBy::cssSelector($selector));
+            return empty($cards) || !$cards[0]->isDisplayed() || $cards[0]->getAttribute('data-favorite') === '0';
+        });
     }
 
     /**
@@ -363,7 +370,7 @@ class Album {
         $user = User::withId($user);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#albumDiv #user-search')));
         $this->driver->findElement(WebDriverBy::cssSelector('#albumDiv #user-search'))->clear()->sendKeys($user->getUsername());
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
         $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
         foreach ($results as $result) {
             if ($result->getAttribute('user-id') == $user->getId()) {
@@ -382,7 +389,7 @@ class Album {
         $user = User::withId($user);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#downloadDiv #user-search')));
         $this->driver->findElement(WebDriverBy::cssSelector('#downloadDiv #user-search'))->clear()->sendKeys($user->getUsername());
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
         $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
         foreach ($results as $result) {
             if ($result->getAttribute('user-id') == $user->getId()) {
@@ -401,7 +408,7 @@ class Album {
         $user = User::withId($user);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#shareDiv #user-search')));
         $this->driver->findElement(WebDriverBy::cssSelector('#shareDiv #user-search'))->clear()->sendKeys($user->getUsername());
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
         $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
         foreach ($results as $result) {
             if ($result->getAttribute('user-id') == $user->getId()) {
