@@ -51,7 +51,6 @@ class Gallery {
     public function openSlideShow($imgNum) {
         $this->justOpenSlideShow($imgNum);
         $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::cssSelector('.modal-carousel')));
-        $this->waitForActiveImage($imgNum - 1);
     }
 
     public function getSlideShowImage(): RemoteWebElement {
