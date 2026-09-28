@@ -41,6 +41,17 @@ class UserPagesHttpTest extends HttpTestBase {
         self::assertSame(8, $this->elementCount($response, "//*[@id='albums']//thead//th"));
     }
 
+    public function testRegularUserAlbumsPage(): void {
+        $this->loginAs('5510b5e6fffd897c234cafe499f76146');
+        $response = $this->get('user/index.php');
+
+        $this->assertPage($response, 'View Albums');
+        self::assertSame(1, $this->elementCount($response, "//*[@id='add-album-div']"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='add-album-btn']"));
+        self::assertSame(4, $this->elementCount($response, "//*[@id='albums']//thead//th"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='thumbnail-status-filter']"));
+    }
+
     public function testAdminProfilePage(): void {
         $this->adminLogin();
         $response = $this->get('user/profile.php');
