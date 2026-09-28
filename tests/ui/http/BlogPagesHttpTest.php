@@ -116,6 +116,23 @@ class BlogPagesHttpTest extends HttpTestBase {
         self::assertSame('999', $this->attribute($response, "//*[@id='post']", 'post-id'));
         self::assertSame('HTTP Fixture 9f3c7b', $this->attribute($response, "//*[@id='post-title-input']", 'value'));
         self::assertSame('2031-01-01', $this->attribute($response, "//*[@id='post-date-input']", 'value'));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='update-post']"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='save-post']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='schedule-saved-post']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='publish-saved-post']"));
+        self::assertStringContainsString('Home Blog Edit Post', $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' breadcrumb ')]"));
+    }
+
+    public function testAdminEditActivePostDoesNotOfferPublishActions(): void {
+        $this->insertBlog(true);
+        $this->adminLogin();
+
+        $response = $this->get('blog/new.php?p=999');
+        $this->assertPage($response, 'Edit Post');
+        self::assertSame(1, $this->elementCount($response, "//*[@id='update-post']"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='save-post']"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='schedule-saved-post']"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='publish-saved-post']"));
     }
 
     public function testActivePostRendersForGuestWithAnonymousCommentFields(): void {
