@@ -58,6 +58,23 @@ class ContactFeatureContext implements Context {
         $this->driver->findElement(WebDriverBy::id('submit-contact-form'))->click();
     }
 
+
+    /**
+     * @When /^I submit the contact form too quickly$/
+     */
+    public function iSubmitTheContactFormTooQuickly() {
+        $loadTime = base_convert((string) time(), 10, 36);
+        $this->driver->executeScript("document.getElementById('loadtime').value = arguments[0];", [$loadTime]);
+        $this->driver->findElement(WebDriverBy::id('submit-contact-form'))->click();
+    }
+
+    /**
+     * @Then /^no contact emails are sent$/
+     */
+    public function noContactEmailsAreSent() {
+        CustomAsserts::assertEmailCount(0);
+    }
+
     /**
      * @Then /^I see an error indicating contact name is required$/
      */
