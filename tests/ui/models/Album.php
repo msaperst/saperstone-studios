@@ -16,7 +16,6 @@ use Facebook\WebDriver\WebDriverWait;
 use Sql;
 use User;
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Gallery.php';
 
 class Album {
     /**
@@ -27,15 +26,9 @@ class Album {
      * @var WebDriverWait
      */
     private $wait;
-    /**
-     * @var Gallery
-     */
-    private $gallery;
-
     public function __construct($driver, $wait) {
         $this->driver = $driver;
         $this->wait = $wait;
-        $this->gallery = new Gallery($this->driver, $this->wait);
     }
 
     /**
@@ -147,12 +140,19 @@ class Album {
      * @throws TimeoutException
      */
     public function openSlideShow($imgNum) {
-        $this->gallery->justOpenSlideShow($imgNum);
+        $card = $this->getImageCard($imgNum);
+        $this->wait->until(
+            WebDriverExpectedCondition::elementToBeClickable(
+                WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . " .album-card-action[data-action='view']")
+            )
+        );
+        $card->findElement(WebDriverBy::cssSelector(".album-card-action[data-action='view']"))->click();
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOf(
                 $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
             )
         );
+        $this->waitForActiveImage($imgNum);
     }
 
     /**
@@ -170,7 +170,15 @@ class Album {
      * @throws TimeoutException
      */
     public function waitForImagesToLoad($rows) {
-        $this->gallery->waitForImagesToLoad($rows);
+        $imageCount = (int) $rows * 4;
+        $this->wait->until(function () use ($imageCount) {
+            if (count($this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'))) >= $imageCount) {
+                return true;
+            }
+
+            $this->driver->executeScript("window.scrollTo(0, document.body.scrollHeight); window.dispatchEvent(new Event('scroll'));");
+            return false;
+        });
     }
 
     /**
@@ -180,7 +188,16 @@ class Album {
      * @throws TimeoutException
      */
     public function hoverOverImage($imgNum): WebDriverElement {
-        return $this->gallery->hoverOverImage($imgNum);
+        $card = $this->getImageCard($imgNum);
+        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
+        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
+        $this->wait->until(
+            WebDriverExpectedCondition::visibilityOf(
+                $card->findElement(WebDriverBy::className('album-card-actions'))
+            )
+        );
+        return $card;
     }
 
     /**
@@ -188,7 +205,9 @@ class Album {
      * @throws TimeoutException
      */
     public function advanceToNextImage() {
-        $this->gallery->advanceToNextImage();
+        $current = $this->getActiveImageId();
+        $this->driver->findElement(WebDriverBy::id('album-next-btn'))->click();
+        $this->waitForActiveImage($this->getAdjacentImageId($current, 1));
     }
 
     /**
@@ -196,7 +215,9 @@ class Album {
      * @throws TimeoutException
      */
     public function advanceToPreviousImage() {
-        $this->gallery->advanceToPreviousImage();
+        $current = $this->getActiveImageId();
+        $this->driver->findElement(WebDriverBy::id('album-prev-btn'))->click();
+        $this->waitForActiveImage($this->getAdjacentImageId($current, -1));
     }
 
     /**
@@ -205,7 +226,7 @@ class Album {
      * @throws TimeoutException
      */
     public function advanceToImage($img) {
-        $this->gallery->advanceToImage($img);
+        $this->openSlideShow($img);
     }
 
     /**
@@ -319,7 +340,10 @@ class Album {
      * @throws TimeoutException
      */
     public function getSlideShowImage(): WebDriverElement {
-        return $this->gallery->getSlideShowImage();
+        $this->wait->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('album-viewer-overlay'))
+        );
+        return $this->driver->findElement(WebDriverBy::id('album-viewer-image'));
     }
 
                                         /**
@@ -513,6 +537,43 @@ class Album {
      * @throws TimeoutException
      */
     public function closeSlideShow() {
-        $this->gallery->closeSlideShow();
+        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
+        $this->driver->findElement(WebDriverBy::id('album-viewer-close'))->click();
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($overlay)));
+    }
+
+    private function getImageCardSelector($imgNum): string {
+        return "#album-grid .album-card[data-image-id='" . ((int) $imgNum - 1) . "']";
+    }
+
+    private function getImageCard($imgNum): WebDriverElement {
+        $this->waitForImagesToLoad((int) ceil(((int) $imgNum) / 4));
+        $selector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum));
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        return $this->driver->findElement($selector);
+    }
+
+    private function getActiveImageId(): int {
+        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
+        return (int) $overlay->getAttribute('image-id');
+    }
+
+    private function getAdjacentImageId(int $current, int $offset): int {
+        $cards = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'));
+        $count = count($cards);
+        if ($count === 0) {
+            return $current;
+        }
+        return ($current + $offset + $count) % $count;
+    }
+
+    private function waitForActiveImage($imgNum): void {
+        $expectedImageId = (int) $imgNum - 1;
+        $this->wait->until(function () use ($expectedImageId) {
+            $overlay = $this->driver->findElements(WebDriverBy::id('album-viewer-overlay'));
+            return count($overlay) === 1
+                && $overlay[0]->isDisplayed()
+                && (int) $overlay[0]->getAttribute('image-id') === $expectedImageId;
+        });
     }
 }
