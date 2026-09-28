@@ -47,11 +47,11 @@ Feature: Blog
     Then I see the "2nd" blog post load
 
   Scenario: Search Blog Previews Displayed
-    Given I am on the "blog/search.php?s=sample" page
+    Given I am on the blog search page for "sample"
     Then I see the "1st" blog previews load
 
   Scenario: Search Blog Previews Keep Loading
-    Given I am on the "blog/search.php?s=sample" page
+    Given I am on the blog search page for "sample"
     When I scroll to the bottom of the page
     Then I see the "2nd" blog previews load
 
