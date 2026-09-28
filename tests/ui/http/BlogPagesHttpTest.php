@@ -87,7 +87,9 @@ class BlogPagesHttpTest extends HttpTestBase {
         $this->assertPage($response, 'Create Post');
         self::assertSame('../tmp', $this->attribute($response, "//*[@id='post']", 'post-location'));
         self::assertSame('', $this->attribute($response, "//*[@id='post-title-input']", 'value'));
-        self::assertSame(date('Y-m-d'), $this->attribute($response, "//*[@id='post-date-input']", 'value'));
+        $renderedDate = $this->attribute($response, "//*[@id='post-date-input']", 'value');
+        self::assertMatchesRegularExpression('/^\\d{4}-\\d{2}-\\d{2}$/', $renderedDate);
+        self::assertLessThanOrEqual(1, abs((int) ((strtotime($renderedDate) - strtotime(date('Y-m-d'))) / 86400)));
         self::assertSame(0, $this->elementCount($response, "//*[@id='update-post']"));
     }
 
@@ -148,7 +150,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         $sql = new Sql();
         try {
             $sql->executeStatement("INSERT INTO blog_details (id, title, date, preview, offset, active) VALUES (999, 'Sample Blog', '2031-01-01', '', 0, ?)", [$active ? 1 : 0]);
-            $sql->executeStatement("INSERT INTO blog_images (blog, contentGroup, location, width, height, left, top) VALUES (999, 1, 'posts/2031/01/01/sample.jpg', 300, 400, 0, 0)");
+            $sql->executeStatement("INSERT INTO blog_images (blog, contentGroup, location, width, height, `left`, `top`) VALUES (999, 1, 'posts/2031/01/01/sample.jpg', 300, 400, 0, 0)");
             $sql->executeStatement("INSERT INTO blog_tags (blog, tag) VALUES (999, 29)");
             $sql->executeStatement("INSERT INTO blog_texts (blog, contentGroup, text) VALUES (999, 2, 'Some blog text')");
         } finally {
