@@ -79,6 +79,34 @@ class TemplateHttpTest extends HttpTestBase {
         self::assertSame(0, $this->elementCount($response, "//a[@href='/user/users.php']"));
     }
 
+    public function testMainNavigationExposesCurrentSections(): void {
+        $response = $this->get();
+        foreach (["B'Nai Mitzvahs", 'Portraits', 'Weddings', 'Commercial', 'Blog', 'Information'] as $label) {
+            self::assertGreaterThan(0, $this->elementCount($response, "//*[@id='bs-example-navbar-collapse-1']//a[contains(normalize-space(.), \"$label\")]"), "Missing main navigation section $label");
+        }
+    }
+
+    public function testGuestBlogAndInformationNavigation(): void {
+        $response = $this->get();
+        foreach (['/blog/posts.php', '/blog/categories.php', '/about.php', '/leighAnn.php', '/reviews.php', '/contact.php'] as $href) {
+            self::assertSame(1, $this->elementCount($response, "//a[@href='$href']"), "Missing guest navigation link $href");
+        }
+        self::assertSame(1, $this->elementCount($response, "//a[@href='#album']"));
+        self::assertSame(0, $this->elementCount($response, "//a[@href='/blog/new.php']"));
+        self::assertSame(0, $this->elementCount($response, "//a[@href='/blog/manage.php']"));
+    }
+
+    public function testAdminBlogAndInformationNavigation(): void {
+        $this->adminLogin();
+        $response = $this->get();
+        self::assertSame(1, $this->elementCount($response, "//a[@href='/blog/new.php']"));
+        self::assertSame(1, $this->elementCount($response, "//a[@href='/blog/manage.php']"));
+        self::assertSame(0, $this->elementCount($response, "//a[@href='#album']"));
+        foreach (['/about.php', '/leighAnn.php', '/reviews.php', '/contact.php'] as $href) {
+            self::assertSame(1, $this->elementCount($response, "//a[@href='$href']"), "Missing admin information link $href");
+        }
+    }
+
     public function testRegularUserNavigationOffersUserActions(): void {
         $this->loginAs('c90788c0e409eac6a95f6c6360d8dbf7');
         $response = $this->get();
