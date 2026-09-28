@@ -238,7 +238,9 @@ class Album {
     public function removeFavorite($image) {
         $selector = "#album-grid .album-card[data-image-id='" . ($image - 1) . "']";
         $card = $this->driver->findElement(WebDriverBy::cssSelector($selector));
+        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
         $button = $card->findElement(WebDriverBy::cssSelector(".album-card-action[data-action='favorite']"));
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
         $button->click();
         $this->wait->until(function () use ($selector) {
             $cards = $this->driver->findElements(WebDriverBy::cssSelector($selector));
