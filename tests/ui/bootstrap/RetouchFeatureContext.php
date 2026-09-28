@@ -72,9 +72,10 @@ class RetouchFeatureContext implements Context {
      * @Then /^I see thumbnails of each retouched image$/
      */
     public function iSeeThumbnailsOfEachRetouchedImage() {
-        $source = $this->driver->getPageSource();
-        $count = preg_match_all("/images\[\d+\]/", $source);
-        Assert::assertEquals($count, sizeof($this->driver->findElements(WebDriverBy::className('col-lg-1'))));
+        Assert::assertCount(
+            count($this->getConfiguredImages()),
+            $this->driver->findElements(WebDriverBy::className('col-lg-1'))
+        );
     }
 
     /**
