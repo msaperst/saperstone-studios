@@ -51,6 +51,21 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * Removes stale database state for a fixed-id album fixture.
+     *
+     * This keeps scenarios deterministic after interrupted or failed test runs
+     * without silently reusing an album created by a previous scenario.
+     */
+    private function resetAlbumFixture(int $albumId): void {
+        $sql = new Sql();
+        foreach (['favorites', 'download_rights', 'share_rights', 'user_logs', 'notification_emails', 'albums_for_users', 'album_images'] as $table) {
+            $sql->executeStatement("DELETE FROM `$table` WHERE `album` = ?", [$albumId]);
+        }
+        $sql->executeStatement("DELETE FROM `albums` WHERE `id` = ?", [$albumId]);
+        $sql->disconnect();
+    }
+
+    /**
      * @var Environment
      */
     private $environment;
@@ -118,7 +133,7 @@ class AlbumFeatureContext implements Context {
      * @param $albumId
      * @throws Exception
      */
-    public function albumExists($albumId) {
+    public function albumExists($albumId) {\n        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1);");
@@ -130,7 +145,7 @@ class AlbumFeatureContext implements Context {
      * @param $albumId
      * @throws Exception
      */
-    public function iHaveCreatedAlbum($albumId) {
+    public function iHaveCreatedAlbum($albumId) {\n        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
@@ -144,7 +159,7 @@ class AlbumFeatureContext implements Context {
      * @param $albumCode
      * @throws Exception
      */
-    public function albumExistsWithCode($albumId, $albumCode) {
+    public function albumExistsWithCode($albumId, $albumCode) {\n        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $sql = new Sql();
         $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1, '$albumCode');");
@@ -169,7 +184,7 @@ class AlbumFeatureContext implements Context {
      * @param $images
      * @throws Exception
      */
-    public function albumExistsWithImages($albumId, $images) {
+    public function albumExistsWithImages($albumId, $images) {\n        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
@@ -193,7 +208,7 @@ class AlbumFeatureContext implements Context {
      * @param $albumId
      * @throws Exception
      */
-    public function iHaveCreatedAlbumWithImages($albumId, $images) {
+    public function iHaveCreatedAlbumWithImages($albumId, $images) {\n        $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
@@ -750,6 +765,47 @@ class AlbumFeatureContext implements Context {
     public function iSetAccessToMyAlbum() {
         $this->driver->findElement(WebDriverBy::className('glyphicon-picture'))->click();
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
+    }
+
+    /**
+     * @When /^I upload test image "([^"]*)"$/
+     * @param string $fileName
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iUploadTestImage(string $fileName): void {
+        $filePath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . $fileName;
+        if (!is_file($filePath)) {
+            throw new Exception("Upload fixture '$fileName' does not exist");
+        }
+        $album = new Album($this->driver, $this->wait);
+        $album->uploadImage(realpath($filePath));
+    }
+
+    /**
+     * @Then /^album (\d+) contains uploaded image "([^"]*)" and has (\d+) images$/
+     * @param int $albumId
+     * @param string $fileName
+     * @param int $imageCount
+     * @throws TimeoutException
+     */
+    public function albumContainsUploadedImageAndHasImages(int $albumId, string $fileName, int $imageCount): void {
+        $image = $this->wait->until(function () use ($albumId, $fileName, $imageCount) {
+            $sql = new Sql();
+            $album = $sql->getRow("SELECT images, location FROM albums WHERE id = ?", [$albumId]);
+            $image = $sql->getRow("SELECT location FROM album_images WHERE album = ? AND title = ?", [$albumId, $fileName]);
+            $sql->disconnect();
+
+            if ($album === null || $image === null || (int) $album['images'] !== $imageCount) {
+                return false;
+            }
+
+            return ['album' => $album, 'image' => $image];
+        });
+
+        $expectedLocation = DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $image['album']['location'] . DIRECTORY_SEPARATOR . $fileName;
+        Assert::assertEquals($expectedLocation, $image['image']['location']);
+        Assert::assertFileExists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . $expectedLocation);
     }
 
     /**
