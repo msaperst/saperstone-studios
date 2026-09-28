@@ -32,6 +32,7 @@ class ServicePagesHttpTest extends HttpTestBase {
             'portrait newborn faq' => ['portrait/newborn-faq.php', 'Newborn Frequently Asked Questions'],
             'portrait retouch detail' => ['portrait/portrait-retouch.php', 'Portrait Retouch'],
             'portrait process' => ['portrait/process.php', 'The Process'],
+            'portrait products' => ['portrait/products.php', 'Products & Investment'],
             'portrait restoration' => ['portrait/restoration.php', 'Restoration'],
             'portrait retouch' => ['portrait/retouch.php', 'Retouch'],
             'portrait sessions' => ['portrait/sessions.php', 'Session Information'],
@@ -45,6 +46,7 @@ class ServicePagesHttpTest extends HttpTestBase {
             'wedding night' => ['wedding/night.php', 'Night Photography'],
             'wedding photobooth' => ['wedding/photobooth.php', 'Photobooth'],
             'wedding process' => ['wedding/process.php', 'The Process'],
+            'wedding products' => ['wedding/products.php', 'Products & Investment'],
             'wedding retouch' => ['wedding/retouch.php', 'Retouch'],
             'wedding studio' => ['wedding/studio.php', 'Home Studio'],
         ];
