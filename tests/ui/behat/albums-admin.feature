@@ -70,9 +70,6 @@ Feature: Admin Albums
     And I edit album 99999
     Then I see the edit album details modal for album 99999
 
-  Scenario: Upload images to album
-    #TODO - gotta figure this one out...
-
   Scenario: Able to set access
     When I edit album 99999
     And I set access to my album
