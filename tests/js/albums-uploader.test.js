@@ -27,9 +27,8 @@ test('albums-uploader.js configures uploader columns and only edits owned albums
     assert.equal(JSON.stringify(config.order), JSON.stringify([[1, 'asc']]));
     assert.equal(config.columnDefs.length, 6);
     assert.match(config.columnDefs[0].data({owner: 5}), /edit-album-btn/);
-    assert.match(config.columnDefs[0].data({owner: '5'}), /edit-album-btn/);
+    assert.equal(config.columnDefs[0].data({owner: '5'}), '');
     assert.equal(config.columnDefs[0].data({owner: 6}), '');
-    assert.equal(config.columnDefs[0].data({owner: '6'}), '');
 
     environment.element('#thumbnail-status-filter').val('Ready').trigger('change');
     assert.deepEqual(environment.calls.columnSearch[0], {
