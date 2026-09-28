@@ -234,7 +234,13 @@ class BlogFeatureContext implements Context {
      * @param $ord
      */
     public function iSeeTheNextBlogPostLoad($ord) {
-        $this->verifyBlogPost(intval($ord) - 1);
+        $start = intval($ord) - 1;
+        if ($start > 0) {
+            $this->waitForLazyLoadedBlogContent(
+                fn() => count($this->driver->findElements(WebDriverBy::cssSelector('#post-content > div'))) > $start
+            );
+        }
+        $this->verifyBlogPost($start);
     }
 
     /**
@@ -242,7 +248,25 @@ class BlogFeatureContext implements Context {
      * @param $ord
      */
     public function iSeeTheNextBlogPreviewsLoad($ord) {
-        $this->verifyBlogPreview(intval($ord) - 1);
+        $start = intval($ord) - 1;
+        if ($start > 0) {
+            $expectedCount = ($start + 1) * 3;
+            $this->waitForLazyLoadedBlogContent(
+                fn() => count($this->driver->findElements(WebDriverBy::cssSelector('.col-gallery .post'))) >= $expectedCount
+            );
+        }
+        $this->verifyBlogPreview($start);
+    }
+
+    private function waitForLazyLoadedBlogContent(callable $contentLoaded): void {
+        $this->wait->until(function () use ($contentLoaded) {
+            if ($contentLoaded()) {
+                return true;
+            }
+
+            $this->driver->executeScript("window.scrollTo(0, document.body.scrollHeight); window.dispatchEvent(new Event('scroll'));");
+            return false;
+        });
     }
 
     /**
