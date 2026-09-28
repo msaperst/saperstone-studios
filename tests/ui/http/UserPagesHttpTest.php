@@ -13,6 +13,8 @@ class UserPagesHttpTest extends HttpTestBase {
         self::assertSame(401, $response->getStatusCode());
         self::assertSame('401 Unauthorized', $this->text($response, '//h1'));
         self::assertSame($this->copyright, $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' copyright ')]"));
+        $this->submitErrorReport($response);
+        \CustomAsserts::assertEmailSubjectExists('401 Error');
     }
 
     public static function protectedPageProvider(): array {
