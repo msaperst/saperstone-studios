@@ -65,7 +65,7 @@ Feature: Uploader Albums
     When I add a new album
     And I provide "My New Album" for the album "name"
     And I create my album
-    Then I see the album details modal for album 100000
+    Then I see the album details modal for the new album
 
   Scenario: Add new album full
     When I add a new album
@@ -73,7 +73,7 @@ Feature: Uploader Albums
     And I provide "Some sample test album" for the album "description"
     And I provide "01/01/2030" for the album "date"
     And I create my album
-    Then I see the album details modal for album 100000
+    Then I see the album details modal for the new album
 
   Scenario: Cant remove album name
     When I edit album 99997
