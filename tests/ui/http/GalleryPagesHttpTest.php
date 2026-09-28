@@ -208,10 +208,29 @@ class GalleryPagesHttpTest extends HttpTestBase {
         $this->assertPage($this->get($path), $heading);
     }
 
+    /**
+     * @dataProvider serviceReviewEntryPointProvider
+     */
+    public function testServiceReviewEntryPointUsesSharedReviewsPage(string $path, string $heading): void {
+        $response = $this->get($path);
+
+        $this->assertPage($response, $heading);
+        self::assertSame(1, $this->elementCount($response, "//ol[contains(@class, 'breadcrumb')]//li[contains(@class, 'active') and normalize-space(.)='Raves']"));
+    }
+
+    public static function serviceReviewEntryPointProvider(): array {
+        return [
+            'portrait wrapper' => ['portrait/reviews.php?c=1', 'Portrait Raves'],
+            'wedding wrapper' => ['wedding/reviews.php?c=2', 'Wedding Raves'],
+            'commercial symlink' => ['commercial/reviews.php?c=3', 'Commercial Raves'],
+            'mitzvah symlink' => ['b-nai-mitzvah/reviews.php?c=4', "B'nai Mitzvah Raves"],
+        ];
+    }
+
     public static function reviewPageProvider(): array {
         return [
-            'mitzvah reviews' => ['b-nai-mitzvah/reviews.php?c=4', "B'nai Mitzvah Raves"],
-            'commercial reviews' => ['commercial/reviews.php?c=3', 'Commercial Raves'],
+            'mitzvah reviews symlink' => ['b-nai-mitzvah/reviews.php?c=4', "B'nai Mitzvah Raves"],
+            'commercial reviews symlink' => ['commercial/reviews.php?c=3', 'Commercial Raves'],
             'portrait reviews' => ['portrait/reviews.php?c=1', 'Portrait Raves'],
             'wedding reviews' => ['wedding/reviews.php?c=2', 'Wedding Raves'],
         ];
