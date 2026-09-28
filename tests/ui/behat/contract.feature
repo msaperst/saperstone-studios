@@ -2,11 +2,11 @@
 Feature: Contract
   As a user
   I want to be able to view and sign my contract
-  So that I can employ saperstone studios to do my bidding
+  So that I can authorize Saperstone Studios to provide photography services
 
   Background:
     Given contract 99999 exists
-    Given I am on the "contract.php?c=8e07fb32bf072e1825df8290a7bcdc57" page
+    And I am on the "contract.php?c=8e07fb32bf072e1825df8290a7bcdc57" page
 
   Scenario: Unable to sign contract without name
     Then the submit contract button is disabled
@@ -53,7 +53,7 @@ Feature: Contract
     And the submit contract button is not present
     And I see a success message indicating my contract will be emailed to me
     And I see the signed contract displayed
-    And I the signed contract exists for 99999
+    And the signed contract exists for 99999
     And contract 99999 was emailed to me
     And a copy of contract 99999 was emailed to the admin
 
