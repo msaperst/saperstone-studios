@@ -103,11 +103,44 @@ class GalleryPagesHttpTest extends HttpTestBase {
         ];
     }
 
+    public function testProductGalleryRendersExpectedChildHierarchy(): void {
+        $response = $this->get('portrait/gallery.php?w=28');
+
+        $this->assertPage($response, 'Product Gallery');
+        foreach ([
+            29 => 'Story Grids',
+            30 => 'Heirloom Albums',
+            31 => 'Acrylic Prints',
+            33 => 'Stand Out Frames',
+            34 => 'Canvas Pro',
+            50 => 'Album Block',
+            51 => 'Keepsake USB',
+            62 => 'Reveal Box',
+            88 => 'Gift Prints',
+        ] as $id => $title) {
+            self::assertSame(
+                1,
+                $this->elementCount($response, "//*[@section='$title']//a[contains(@href, 'w=$id')]"),
+                "Missing $title child gallery"
+            );
+        }
+    }
+
+    public function testGalleryDescriptionAndProtectedImageMarkup(): void {
+        $response = $this->get('portrait/galleries.php?w=91');
+
+        $this->assertPage($response, 'Curved Metal Gallery');
+        self::assertStringContainsString('perfect metal print display', $this->text($response, "//*[@id='gallery-comment']"));
+        self::assertGreaterThanOrEqual(0, $this->elementCount($response, "//*[@data-background-image]"));
+        self::assertSame(0, $this->elementCount($response, "//*[contains(@class, 'carousel-inner')]//img"));
+    }
+
     /**
      * @dataProvider invalidGalleryPageProvider
      */
     public function testInvalidGalleryPage(string $path): void {
         $response = $this->get($path);
+        self::assertSame(404, $response->getStatusCode());
         self::assertSame('404 Not Found', $this->text($response, '//h1'));
         self::assertSame($this->copyright, $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' copyright ')]"));
         $this->submitErrorReport($response);
