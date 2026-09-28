@@ -178,7 +178,6 @@ class GalleryFeatureContext implements Context {
 
     /**
      * @Then /^I see the gallery view control$/
-     * @param $imgNum
      */
     public function iSeeTheGalleryViewControl() {
         Assert::assertTrue($this->image->findElement(WebDriverBy::className('info'))->isDisplayed());
