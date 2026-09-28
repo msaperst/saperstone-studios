@@ -4,7 +4,6 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use CustomAsserts;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -100,20 +99,6 @@ class RegistrationFeatureContext implements Context {
         } catch (Exception $e) {
             $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->dontDeleteUser();
         }
-    }
-
-    /**
-     * @When /^I try to register a user with "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)", "([^"]*)"$/
-     * @param $username
-     * @param $password
-     * @param $confirmPassword
-     * @param $firstName
-     * @param $lastName
-     * @param $email
-     */
-    public function iTryToRegisterAUserWith($username, $password, $confirmPassword, $firstName, $lastName, $email) {
-        $register = new Registration($this->driver, $this->wait);
-        $register->enterAUserInfo($username, $password, $confirmPassword, $firstName, $lastName, $email);
     }
 
     /**
@@ -377,7 +362,7 @@ class RegistrationFeatureContext implements Context {
     /**
      * @Then /^I see a success icon indicating a good email$/
      */
-    public function iSeeASuccessIconIndicatingABadEmail() {
+    public function iSeeASuccessIconIndicatingAGoodEmail() {
         Assert::assertTrue($this->driver->findElement(WebDriverBy::cssSelector('#profile-email + span.glyphicon-ok'))->isDisplayed());
         $error = $this->driver->findElement(WebDriverBy::id('update-profile-email-message'));
         Assert::assertFalse($error->isDisplayed());
@@ -429,11 +414,11 @@ class RegistrationFeatureContext implements Context {
     }
 
     /**
-     * @Given /^my user information is updated$/
+     * @Then /^my user information is updated$/
      */
     public function myUserInformationIsUpdated() {
         $sql = new Sql();
-        $userDetails = $sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = {$this->user->getId()};");
+        $userDetails = $sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = ?;", [$this->user->getId()]);
         Assert::assertEquals($this->username, $userDetails['usr']);
         Assert::assertTrue(password_verify($this->password, $userDetails['pass']));
         Assert::assertEquals($this->firstName, $userDetails['firstName']);
