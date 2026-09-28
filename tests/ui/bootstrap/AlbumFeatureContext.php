@@ -815,6 +815,11 @@ class AlbumFeatureContext implements Context {
         );
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
 
+        // Album images are intentionally lazy-loaded. Scroll the newly uploaded
+        // card into view so the normal scroll handler loads its protected
+        // background image just as it would for a user browsing the gallery.
+        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
+
         $media = $card->findElement(WebDriverBy::className('album-card-media'));
         $this->wait->until(function () use ($media) {
             $backgroundImage = $media->getCSSValue('background-image');
