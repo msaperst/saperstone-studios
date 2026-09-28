@@ -143,6 +143,7 @@ class TemplateHttpTest extends HttpTestBase {
 
     public static function serviceNavigationProvider(): array {
         return [
+            'mitzvah' => ['b-nai-mitzvah/'],
             'portrait' => ['portrait/'],
             'wedding' => ['wedding/'],
             'commercial' => ['commercial/'],
