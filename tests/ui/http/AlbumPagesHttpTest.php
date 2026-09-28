@@ -138,6 +138,15 @@ class AlbumPagesHttpTest extends HttpTestBase {
         self::assertSame('3', $this->attribute($response, "//*[@id='album-page-config']", 'data-total'));
     }
 
+    public function testAlbumViewerDoesNotExposePhotoInImageSource(): void {
+        $this->setSearchedCookie();
+        $response = $this->get('user/album.php?album=99999');
+
+        self::assertSame('', $this->attribute($response, "//*[@id='album-viewer-image']", 'src'));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='album-grid']//img"));
+        self::assertStringNotContainsString('<img src="sample', (string) $response->getBody());
+    }
+
     public function testAlbumServerRenderedModalStateForAdmin(): void {
         $this->adminLogin();
         $response = $this->get('user/album.php?album=99999');
