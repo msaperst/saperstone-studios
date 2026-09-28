@@ -21,7 +21,6 @@ class ServicePagesHttpTest extends HttpTestBase {
             'commercial faq' => ['commercial/faq.php', 'FAQ'],
             'commercial index' => ['commercial/index.php', 'Commercial'],
             'commercial pricing' => ['commercial/pricing.php', 'Pricing'],
-            'commercial privia' => ['commercial/privia.php', 'Privia Health Terms of Service'],
             'commercial retouch' => ['commercial/retouch.php', 'Retouch'],
             'commercial services' => ['commercial/services.php', 'Services'],
             'commercial studio' => ['commercial/studio.php', 'Home Studio'],
