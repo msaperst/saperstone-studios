@@ -104,6 +104,28 @@ class Album {
     }
 
     /**
+     * Uploads a file through the real album upload control.
+     *
+     * WebDriver sends the absolute path directly to the file input, avoiding
+     * the native operating-system file chooser while still exercising the
+     * browser upload workflow.
+     *
+     * @param string $filePath
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function uploadImage(string $filePath): void {
+        $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::cssSelector('#add-images-button input[type="file"]')
+            )
+        );
+        $this->driver
+            ->findElement(WebDriverBy::cssSelector('#add-images-button input[type="file"]'))
+            ->sendKeys($filePath);
+    }
+
+    /**
      * @param $imgNum
      * @throws NoSuchElementException
      * @throws TimeoutException
