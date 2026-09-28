@@ -371,7 +371,8 @@ class AlbumFeatureContext implements Context {
      * @param $albumCode
      */
     public function iHaveSearchedForAlbum($albumCode) {
-        $this->driver->get($this->baseUrl . '#album' . rawurlencode($albumCode));
+        $baseUrl = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getBaseUrl();
+        $this->driver->get($baseUrl . '#album' . rawurlencode($albumCode));
         $this->wait->until(WebDriverExpectedCondition::urlContains('/user/album.php?album='));
     }
 
@@ -972,12 +973,15 @@ class AlbumFeatureContext implements Context {
      */
     public function iSeeTheAlbumImagesLoad($ord) {
         $album = new Album($this->driver, $this->wait);
-        $row = intval($ord);
+        $row = (int) $ord;
         $album->waitForImagesToLoad($row);
-        $s = ($row - 1) * 4;
+        $start = ($row - 1) * 4;
         for ($i = 0; $i < 4; $i++) {
-            $image = $this->driver->findElement((WebDriverBy::cssSelector("#col-$i > div.gallery:nth-child($row)")));
-            Assert::assertEquals('Image ' . ($s + $i), $image->findElement(WebDriverBy::tagName('img'))->getAttribute('alt'), $image->findElement(WebDriverBy::tagName('img'))->getAttribute('alt'));
+            $sequence = $start + $i;
+            $image = $this->driver->findElement(
+                WebDriverBy::cssSelector("#album-grid .album-card[data-image-id='$sequence']")
+            );
+            Assert::assertEquals('Image ' . $sequence, $image->getAttribute('data-title'));
         }
     }
 
@@ -986,7 +990,7 @@ class AlbumFeatureContext implements Context {
      * @param $imgNum
      */
     public function iSeeTheInfoIconOnImage($imgNum) {
-        Assert::assertTrue($this->image->findElement(WebDriverBy::className('info'))->isDisplayed());
+        Assert::assertTrue($this->image->findElement(WebDriverBy::className('album-card-overlay'))->isDisplayed());
     }
 
     /**
@@ -996,11 +1000,13 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSeeImageInThePreviewModal($imgNum) {
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
-        Assert::assertTrue($this->driver->findElement(WebDriverBy::id('album'))->isDisplayed());
+        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($overlay));
+        Assert::assertTrue($overlay->isDisplayed());
         $album = new Album($this->driver, $this->wait);
         $img = $album->getSlideShowImage();
-        Assert::assertEquals('Image ' . ($imgNum - 1), $img->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'), $img->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'));
+        Assert::assertEquals((string) ($imgNum - 1), $img->getAttribute('data-image-id'));
+        Assert::assertEquals('Image ' . ($imgNum - 1), $this->driver->findElement(WebDriverBy::id('album-viewer-title'))->getText());
     }
 
     /**
@@ -1010,9 +1016,10 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSeeTheCaptionDisplayed($caption) {
-        $album = new Album($this->driver, $this->wait);
-        $img = $album->getSlideShowImage();
-        Assert::assertEquals($caption, $img->findElement(WebDriverBy::tagName('h2'))->getText());
+        $this->wait->until(function () use ($caption) {
+            return $this->driver->findElement(WebDriverBy::id('album-viewer-caption'))->getText() === $caption;
+        });
+        Assert::assertEquals($caption, $this->driver->findElement(WebDriverBy::id('album-viewer-caption'))->getText());
     }
 
     /**
@@ -1021,15 +1028,17 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iDoNotSeeAnyCaptions() {
-        $album = new Album($this->driver, $this->wait);
-        $img = $album->getSlideShowImage();
-        Assert::assertEquals('', $img->findElement(WebDriverBy::tagName('h2'))->getText());
+        Assert::assertEquals('', $this->driver->findElement(WebDriverBy::id('album-viewer-caption'))->getText());
     }
 
     /**
      * @Then /^I see the image as a favorite$/
      */
     public function iSeeTheImageAsAFavorite() {
+        $this->wait->until(function () {
+            return !$this->driver->findElement(WebDriverBy::id('set-favorite-image-btn'))->isDisplayed()
+                && $this->driver->findElement(WebDriverBy::id('unset-favorite-image-btn'))->isDisplayed();
+        });
         Assert::assertFalse($this->driver->findElement(WebDriverBy::id('set-favorite-image-btn'))->isDisplayed());
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('unset-favorite-image-btn'))->isDisplayed());
     }
@@ -1046,6 +1055,10 @@ class AlbumFeatureContext implements Context {
      * @Then /^I do not see the image as a favorite$/
      */
     public function iDoNotSeeTheImageAsAFavorite() {
+        $this->wait->until(function () {
+            return $this->driver->findElement(WebDriverBy::id('set-favorite-image-btn'))->isDisplayed()
+                && !$this->driver->findElement(WebDriverBy::id('unset-favorite-image-btn'))->isDisplayed();
+        });
         Assert::assertTrue($this->driver->findElement(WebDriverBy::id('set-favorite-image-btn'))->isDisplayed());
         Assert::assertFalse($this->driver->findElement(WebDriverBy::id('unset-favorite-image-btn'))->isDisplayed());
     }
@@ -1055,7 +1068,18 @@ class AlbumFeatureContext implements Context {
      * @param $favorites
      */
     public function iSeeFavorites($favorites) {
-        Assert::assertEquals($favorites, sizeof($this->driver->findElements(WebDriverBy::className('img-favorite'))));
+        $this->wait->until(function () use ($favorites) {
+            $visibleFavorites = array_filter(
+                $this->driver->findElements(WebDriverBy::cssSelector("#album-grid .album-card[data-favorite='1']")),
+                fn($card) => $card->isDisplayed()
+            );
+            return count($visibleFavorites) === (int) $favorites;
+        });
+        $visibleFavorites = array_filter(
+            $this->driver->findElements(WebDriverBy::cssSelector("#album-grid .album-card[data-favorite='1']")),
+            fn($card) => $card->isDisplayed()
+        );
+        Assert::assertCount((int) $favorites, $visibleFavorites);
     }
 
     /**
@@ -1065,15 +1089,18 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSeeAlbumImageAsAFavorite($image) {
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image - 1) . "']"))));
-        Assert::assertTrue($this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image - 1) . "']"))->isDisplayed());
+        $card = $this->driver->findElement(
+            WebDriverBy::cssSelector("#album-grid .album-card[data-image-id='" . ($image - 1) . "'][data-favorite='1']")
+        );
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
+        Assert::assertTrue($card->isDisplayed());
     }
 
     /**
      * @Then /^the download favorites button is disabled$/
      */
     public function theDownloadFavoritesButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy:: id('downloadable-favorites-btn'))->isEnabled());
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->isDisplayed());
     }
 
     /**
@@ -1087,7 +1114,7 @@ class AlbumFeatureContext implements Context {
      * @Then /^the submit favorites button is disabled$/
      */
     public function theSubmitFavoritesButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy:: id('submit-favorites-btn'))->isEnabled());
+        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('submit-favorites-btn'))->isDisplayed());
     }
 
     /**
@@ -1897,8 +1924,8 @@ $image\r
      * @throws TimeoutException
      */
     public function iDonTSeeTheAlbumPreviewModal() {
-        $modal = $this->driver->findElement(WebDriverBy::id('album'));
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
-        Assert::assertFalse($modal->isDisplayed());
+        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($overlay)));
+        Assert::assertFalse($overlay->isDisplayed());
     }
 }
