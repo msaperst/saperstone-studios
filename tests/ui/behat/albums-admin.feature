@@ -79,15 +79,15 @@ Feature: Admin Albums
     Then I see the ability to set access
 
   Scenario: Able to view users with album access
-    Given user 4 has access to album 99999
+    Given user uploader has access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4" with album access
+    Then I see users "uploader" with album access
     And I see users "" with download access
     And I see users "" with share access
 
   Scenario: Unable to download images without album access
-    Given user 4 has download access to album 99999
+    Given user uploader has download access to album 99999
     When I edit album 99999
     And I set access to my album
     Then I see users "" with album access
@@ -95,16 +95,16 @@ Feature: Admin Albums
     And I see users "" with share access
 
   Scenario: Able to view users with download access
-    Given user 4 has access to album 99999
-    Given user 4 has download access to album 99999
+    Given user uploader has access to album 99999
+    Given user uploader has download access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4" with album access
-    And I see users "4" with download access
+    Then I see users "uploader" with album access
+    And I see users "uploader" with download access
     And I see users "" with share access
 
   Scenario: Unable to share images without album access
-    Given user 4 has share access to album 99999
+    Given user uploader has share access to album 99999
     When I edit album 99999
     And I set access to my album
     Then I see users "" with album access
@@ -112,26 +112,26 @@ Feature: Admin Albums
     And I see users "" with share access
 
   Scenario: Able to view users with share access
-    Given user 4 has access to album 99999
-    Given user 4 has share access to album 99999
+    Given user uploader has access to album 99999
+    Given user uploader has share access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4" with album access
+    Then I see users "uploader" with album access
     And I see users "" with download access
-    And I see users "4" with share access
+    And I see users "uploader" with share access
 
   Scenario: Able to add user for album access
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for album access
-    Then I see users "4" with album access
-    And users "4" have access to album 99999
+    And I add user uploader for album access
+    Then I see users "uploader" with album access
+    And users "uploader" have access to album 99999
 
   Scenario: Able to remove user for album access
-    Given user 4 has access to album 99999
+    Given user uploader has access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I remove user 4 for album access
+    And I remove user uploader for album access
     Then I see users "" with album access
     And users "" have access to album 99999
 
@@ -145,27 +145,27 @@ Feature: Admin Albums
   Scenario: Unable to add user without album access to download access
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for download access
+    And I add user uploader for download access
     Then I see users "" with download access
     And users "" can download album 99999
 
   Scenario: Able to add user with album access to download access
-    Given user 4 has access to album 99999
+    Given user uploader has access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for download access
-    Then I see users "4" with download access
-    And users "4" can download album 99999
+    And I add user uploader for download access
+    Then I see users "uploader" with download access
+    And users "uploader" can download album 99999
 
   Scenario: Able to remove user for download access
-    Given user 4 has access to album 99999
-    Given user 4 has download access to album 99999
+    Given user uploader has access to album 99999
+    Given user uploader has download access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I remove user 4 for download access
-    Then I see users "4" with album access
+    And I remove user uploader for download access
+    Then I see users "uploader" with album access
     Then I see users "" with download access
-    And users "4" have access to album 99999
+    And users "uploader" have access to album 99999
     And users "" can download album 99999
 
   Scenario: Able to add all users for share access
@@ -178,27 +178,27 @@ Feature: Admin Albums
   Scenario: Unable to add user without album access to share access
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for share access
+    And I add user uploader for share access
     Then I see users "" with share access
     And users "" can share album 99999
 
   Scenario: Able to add user with album access to share access
-    Given user 4 has access to album 99999
+    Given user uploader has access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for share access
-    Then I see users "4" with share access
-    And users "4" can share album 99999
+    And I add user uploader for share access
+    Then I see users "uploader" with share access
+    And users "uploader" can share album 99999
 
   Scenario: Able to remove user for share access
-    Given user 4 has access to album 99999
-    Given user 4 has share access to album 99999
+    Given user uploader has access to album 99999
+    Given user uploader has share access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I remove user 4 for share access
-    Then I see users "4" with album access
+    And I remove user uploader for share access
+    Then I see users "uploader" with album access
     Then I see users "" with share access
-    And users "4" have access to album 99999
+    And users "uploader" have access to album 99999
     And users "" can share album 99999
 
   Scenario: Delete album
