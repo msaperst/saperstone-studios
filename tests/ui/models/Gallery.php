@@ -45,7 +45,18 @@ class Gallery {
     }
 
     public function justOpenSlideShow($imgNum) {
-        $this->hoverOverImage($imgNum)->findElement(WebDriverBy::className('info'))->click();
+        $col = ($imgNum - 1) % 4;
+        $row = intdiv($imgNum - 1, 4) + 1;
+        $this->waitForImagesToLoad($row);
+        $image = $this->driver->findElement(
+            WebDriverBy::cssSelector("#col-$col > div.gallery:nth-child($row)")
+        );
+        $this->driver->executeScript(
+            "arguments[0].scrollIntoView({block: 'center'});",
+            [$image]
+        );
+        $info = $image->findElement(WebDriverBy::className('info'));
+        $this->driver->executeScript("arguments[0].click();", [$info]);
     }
 
     public function openSlideShow($imgNum) {
