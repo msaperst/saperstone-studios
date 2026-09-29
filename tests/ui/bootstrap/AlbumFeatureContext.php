@@ -770,8 +770,18 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSetAccessToMyAlbum() {
+        $this->wait->until(
+            WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('glyphicon-picture'))
+        );
         $this->driver->findElement(WebDriverBy::className('glyphicon-picture'))->click();
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
+        $this->wait->until(
+            WebDriverExpectedCondition::elementToBeClickable(
+                WebDriverBy::cssSelector('#albumDiv #user-search')
+            )
+        );
+        $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users'))
+        );
     }
 
     /**
