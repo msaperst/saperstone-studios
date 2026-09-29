@@ -436,13 +436,16 @@ class Album {
         $user = User::withId($user);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#downloadDiv #user-search')));
         $this->driver->findElement(WebDriverBy::cssSelector('#downloadDiv #user-search'))->clear()->sendKeys($user->getUsername());
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
-        $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
-        foreach ($results as $result) {
-            if ($result->getAttribute('user-id') == $user->getId()) {
-                $result->click();
-            }
-        }
+        $resultSelector = WebDriverBy::cssSelector(
+            "#downloadDiv .search-results a[user-id='" . $user->getId() . "']"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($resultSelector));
+        $this->driver->findElement($resultSelector)->click();
+        $this->wait->until(function () use ($user) {
+            return count($this->driver->findElements(
+                WebDriverBy::cssSelector("#download-users span[user-id='" . $user->getId() . "']")
+            )) === 1;
+        });
     }
 
     /**
