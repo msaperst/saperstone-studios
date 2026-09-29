@@ -143,6 +143,7 @@ class Album {
         $card = $this->getImageCard($imgNum);
         $overlaySelector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . ' .album-card-overlay');
         $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
+        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($overlaySelector));
         $this->driver->findElement($overlaySelector)->click();
         $this->wait->until(
