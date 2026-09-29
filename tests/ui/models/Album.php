@@ -501,14 +501,14 @@ class Album {
      */
     public function removeUserDownloadAccess($user) {
         $user = User::withId($user);
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
-        $downloaders = $this->getAlbumDownloaders();
-        foreach ($downloaders as $downloader) {
-            if ($downloader->getAttribute('user-id') == $user->getId()) {
-                $action = new WebDriverActions($this->driver);
-                $action->moveToElement($downloader, intval($downloader->getSize()->getWidth() * 0.5 - 5))->click()->perform();
-            }
-        }
+        $selector = WebDriverBy::cssSelector("#download-users span[user-id='" . $user->getId() . "']");
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
+        $downloader = $this->driver->findElement($selector);
+        $action = new WebDriverActions($this->driver);
+        $action->moveToElement($downloader, intval($downloader->getSize()->getWidth() * 0.5 - 5))->click()->perform();
+        $this->wait->until(function () use ($selector) {
+            return count($this->driver->findElements($selector)) === 0;
+        });
     }
 
     /**
