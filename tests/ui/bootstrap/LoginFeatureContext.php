@@ -90,6 +90,9 @@ class LoginFeatureContext implements Context {
      * @throws Exception
      */
     public function anEnabledUserAccountExists() {
+        $this->user = $this->environment
+            ->getContext('ui\bootstrap\BaseFeatureContext')
+            ->getUser();
         $this->user->create();
     }
 
