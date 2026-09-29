@@ -159,8 +159,19 @@ class CustomAsserts {
         }
 
         $client = self::getMailpitClient();
-        $response = $client->request('GET', 'messages');
-        $data = json_decode((string)$response->getBody(), true);
+        $data = ['messages' => []];
+
+        for ($attempt = 0; $attempt < 20; $attempt++) {
+            $response = $client->request('GET', 'messages');
+            $data = json_decode((string)$response->getBody(), true);
+            $matchingMessages = array_filter($data['messages'] ?? [], static function ($message) use ($expectedSubject) {
+                return ($message['Subject'] ?? '') === $expectedSubject;
+            });
+            if (!empty($matchingMessages)) {
+                break;
+            }
+            usleep(250000);
+        }
 
         $found = false;
         $seen = [];
