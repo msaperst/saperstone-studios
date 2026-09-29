@@ -71,6 +71,11 @@ class Login {
         $this->openResetPassword();
         $this->driver->findElement(WebDriverBy::id('forgot-password-email'))->sendKeys($email);
         $this->driver->findElement(WebDriverBy::id('forgot-password-submit'))->click();
+        $this->wait->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(
+                WebDriverBy::id('forgot-password-reset-password')
+            )
+        );
     }
 
     public function requestResetPassword($email, $code, $password, $confirm) {
