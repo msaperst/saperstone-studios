@@ -259,7 +259,10 @@ class LoginFeatureContext implements Context {
      */
     public function iSubmitInNewCredentials() {
         $login = new Login($this->driver, $this->wait);
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-info')));
+        $this->wait->until(function () {
+            $resetKey = User::withId($this->user->getId())->getDataBasic()['resetKey'] ?? '';
+            return $resetKey !== '';
+        });
         $login->requestResetPassword($this->user->getEmail(), User::withId($this->user->getId())->getDataBasic()['resetKey'], $this->user->getPassword(), $this->user->getPassword());
     }
 
