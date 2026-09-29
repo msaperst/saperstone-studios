@@ -753,9 +753,13 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iDeleteMyAlbum() {
-        $this->driver->findElement(WebDriverBy::className('glyphicon-trash'))->click();
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child')));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child'))));
+        $editDialog = $this->driver->findElement(WebDriverBy::cssSelector('.bootstrap-dialog'));
+        $deleteAlbumButton = WebDriverBy::xpath(".//button[contains(@class, 'btn-danger')][contains(normalize-space(.), 'Delete Album')]");
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($deleteAlbumButton));
+        $editDialog->findElement($deleteAlbumButton)->click();
+
+        $confirmButton = WebDriverBy::xpath("//div[contains(@class, 'bootstrap-dialog')][.//div[contains(@class, 'bootstrap-dialog-title')][normalize-space(.)='Are You Sure?']]//button[contains(@class, 'btn-danger')][contains(normalize-space(.), 'Delete')]");
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($confirmButton));
     }
 
     /**
@@ -764,9 +768,12 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iConfirmMyDeletionOfMyAlbum() {
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child')));
-        $this->driver->findElement(WebDriverBy::cssSelector('div.bootstrap-dialog-footer-buttons > .btn-danger:first-child'))->click();
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save')));
+        $confirmButton = WebDriverBy::xpath("//div[contains(@class, 'bootstrap-dialog')][.//div[contains(@class, 'bootstrap-dialog-title')][normalize-space(.)='Are You Sure?']]//button[contains(@class, 'btn-danger')][contains(normalize-space(.), 'Delete')]");
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($confirmButton));
+        $this->driver->findElement($confirmButton)->click();
+        $this->wait->until(WebDriverExpectedCondition::not(
+            WebDriverExpectedCondition::presenceOfElementLocated($confirmButton)
+        ));
     }
 
     /**
