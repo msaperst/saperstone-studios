@@ -528,6 +528,11 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iConfirmMyDownload() {
+        $downloadDirectory = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads';
+        foreach (glob($downloadDirectory . DIRECTORY_SEPARATOR . 'Album *.zip') ?: [] as $download) {
+            unlink($download);
+        }
+
         $album = new Album($this->driver, $this->wait);
         $album->confirmDownload();
     }
