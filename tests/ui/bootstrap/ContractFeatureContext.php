@@ -140,7 +140,10 @@ class ContractFeatureContext implements Context {
      * @throws Exception
      */
     public function iSeeTheSignedContractDisplayed() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::tagName('embed')));
+        if (count($this->driver->findElements(WebDriverBy::tagName('embed'))) === 0) {
+            $this->driver->navigate()->refresh();
+        }
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('embed')));
         Assert::assertTrue($this->driver->findElement(WebDriverBy::tagName('embed'))->isDisplayed());
     }
 
