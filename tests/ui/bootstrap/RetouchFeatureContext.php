@@ -7,6 +7,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
 
 class RetouchFeatureContext implements Context {
@@ -15,6 +16,7 @@ class RetouchFeatureContext implements Context {
      * @var RemoteWebDriver
      */
     private $driver;
+    private $wait;
     private $baseUrl;
 
     /** @BeforeScenario
@@ -23,6 +25,7 @@ class RetouchFeatureContext implements Context {
     public function gatherContexts(BeforeScenarioScope $scope) {
         $environment = $scope->getEnvironment();
         $this->driver = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getDriver();
+        $this->wait = new WebDriverWait($this->driver, 20);
         $this->baseUrl = $environment->getContext('ui\bootstrap\BaseFeatureContext')->getBaseUrl();
     }
 
