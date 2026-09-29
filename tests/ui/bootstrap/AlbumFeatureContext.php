@@ -1431,6 +1431,23 @@ Comment',
     }
 
     /**
+     * @Then /^I see album (\d+) has (\d+) images$/
+     */
+    public function iSeeAlbumHasImages(int $albumId, int $imageCount): void {
+        $album = new Album($this->driver, $this->wait);
+        $this->wait->until(function () use ($album, $albumId, $imageCount) {
+            $row = $album->getAlbumRow($albumId);
+            return (int) $row->findElement(WebDriverBy::className('album-images'))->getText() === $imageCount;
+        });
+
+        $row = $album->getAlbumRow($albumId);
+        Assert::assertSame(
+            $imageCount,
+            (int) $row->findElement(WebDriverBy::className('album-images'))->getText()
+        );
+    }
+
+    /**
      * @Then /^I don't see album (\d+) album (.*)/
      * @param $albumId
      * @param $albumAttribute
