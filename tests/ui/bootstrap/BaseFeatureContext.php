@@ -23,6 +23,7 @@ require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 class BaseFeatureContext implements Context {
 
     const string reportDir = __DIR__ . '/../../../reports/behat/';
+    const string downloadDir = __DIR__ . '/../../../tmp/behat-downloads/';
     /**
      * @var RemoteWebDriver
      */
@@ -46,6 +47,10 @@ class BaseFeatureContext implements Context {
         return $this->baseUrl;
     }
 
+    public function getDownloadDirectory(): string {
+        return realpath(self::downloadDir) ?: self::downloadDir;
+    }
+
     public function setUser(User $user): void {
         $this->user = $user;
     }
@@ -58,9 +63,14 @@ class BaseFeatureContext implements Context {
      * @BeforeSuite
      */
     public static function setupTestReport(): void {
-        $screenshotDir = BaseFeatureContext::reportDir . 'screenshots';
-        if (!is_dir($screenshotDir) && !mkdir($screenshotDir, 0777, true) && !is_dir($screenshotDir)) {
-            throw new \RuntimeException("Unable to create Behat screenshot directory: $screenshotDir");
+        $directories = [
+            BaseFeatureContext::reportDir . 'screenshots',
+            BaseFeatureContext::downloadDir,
+        ];
+        foreach ($directories as $directory) {
+            if (!is_dir($directory) && !mkdir($directory, 0777, true) && !is_dir($directory)) {
+                throw new \RuntimeException("Unable to create Behat directory: $directory");
+            }
         }
     }
 
@@ -89,6 +99,11 @@ class BaseFeatureContext implements Context {
             if ($headless) {
                 $chromeOptions->addArguments(['-headless']);
             }
+            $chromeOptions->setExperimentalOption('prefs', [
+                'download.default_directory' => $this->getDownloadDirectory(),
+                'download.prompt_for_download' => false,
+                'download.directory_upgrade' => true,
+            ]);
             $desiredCapabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
         }
         if (getenv('PROXY') != NULL) {
