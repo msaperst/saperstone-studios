@@ -4,6 +4,14 @@ This document describes the automated validation performed by GitHub Actions. It
 
 For instructions on running the test suites yourself, see [Testing](testing.md). For image publishing and production deployment, see [Deployment](deployment.md).
 
+## CI philosophy
+
+A change is not complete simply because it works locally. The CI/testing pipeline is a core engineering asset and should continually become more comprehensive.
+
+When a defect, security issue, or regression escapes the pipeline, determine what automated test or pipeline check could have caught it and add that protection when practical. Prefer repeatable automated verification over recurring manual checks.
+
+Investigate CI failures rather than assuming they are unrelated or flaky. Fix stale tests or infrastructure rather than changing production behavior merely to make CI green. Coverage, SonarCloud, CodeQL, dependency/SCA analysis, container scanning, and OWASP ZAP are engineering feedback and acceptance checks, not reports to ignore after implementation.
+
 ## Pull request validation
 
 Pull requests targeting `develop` run several independent workflows. Keeping the checks separate makes it easier to identify whether a failure is in application behavior, browser behavior, dependencies, or security scanning.
