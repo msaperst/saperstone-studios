@@ -96,7 +96,13 @@ class RetouchFeatureContext implements Context {
         if ($width > 0) {
             Assert::assertTrue($img->isDisplayed());
         }
-        Assert::assertStringContainsString("width: $width%", $img->getAttribute('style'));
+        $actualWidth = $this->getRetouchWidthPercent();
+        Assert::assertEqualsWithDelta(
+            (float) $width,
+            $actualWidth,
+            1.0,
+            "Expected retouched image width to be approximately $width%, got $actualWidth%"
+        );
         Assert::assertStringEndsWith($editImg, $img->findElement(WebDriverBy::tagName('img'))->getAttribute('src'));
     }
 
@@ -111,9 +117,16 @@ class RetouchFeatureContext implements Context {
 
     private function waitForRetouchWidth(int $width): void {
         $this->wait->until(function () use ($width) {
-            $style = $this->driver->findElement(WebDriverBy::id('edit'))->getAttribute('style');
-            return str_contains($style, "width: $width%");
+            return abs($this->getRetouchWidthPercent() - $width) <= 1.0;
         });
+    }
+
+    private function getRetouchWidthPercent(): float {
+        return (float) $this->driver->executeScript(
+            "var edit = document.getElementById('edit');" .
+            "var parent = edit.parentElement;" .
+            "return parent.clientWidth === 0 ? 0 : (edit.getBoundingClientRect().width / parent.clientWidth) * 100;"
+        );
     }
 
     private function getConfiguredImages(): array {
