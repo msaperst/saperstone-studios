@@ -148,7 +148,7 @@ Feature: Admin Albums
   Scenario: Admin cannot grant download access without album access
     When I edit album 99999
     And I set access to my album
-    And I add user uploader for download access
+    And I try to add user uploader for download access
     Then I see users "" with download access
     And users "" can download album 99999
 
