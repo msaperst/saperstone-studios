@@ -51,6 +51,7 @@ class RetouchFeatureContext implements Context {
         $sliderWidth = $slider->getSize()->getWidth();
         $move = new WebDriverActions($this->driver);
         $move->moveToElement($slider, intval(($sliderWidth * $width / 100) - ($sliderWidth * .5)))->click()->perform();
+        $this->waitForRetouchWidth((int) $width);
     }
 
     /**
@@ -103,6 +104,13 @@ class RetouchFeatureContext implements Context {
     public function iSeeTheImageComment($ord) {
         $comment = $this->getConfiguredImages()[intval($ord) - 1]['text'];
         Assert::assertEquals(str_replace("  ", " ", $comment), $this->driver->findElement(WebDriverBy::className('comment'))->getText());
+    }
+
+    private function waitForRetouchWidth(int $width): void {
+        $this->wait->until(function () use ($width) {
+            $style = $this->driver->findElement(WebDriverBy::id('edit'))->getAttribute('style');
+            return str_contains($style, "width: $width%");
+        });
     }
 
     private function getConfiguredImages(): array {
