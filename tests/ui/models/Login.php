@@ -59,6 +59,9 @@ class Login {
         $this->driver->findElement(WebDriverBy::linkText($username))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('logout-button'))));
         $this->driver->findElement(WebDriverBy::id('logout-button'))->click();
+        $this->wait->until(
+            WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('login-menu-item'))
+        );
     }
 
     public function openResetPassword() {
