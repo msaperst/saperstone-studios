@@ -44,6 +44,7 @@ class Album {
         }
         $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code);
         $this->driver->findElement(WebDriverBy::className('btn-success'))->click();
+        $this->waitForFinderSubmission();
     }
 
     /**
@@ -82,11 +83,19 @@ class Album {
             $this->driver->findElement(WebDriverBy::id('find-album-add'))->click();
         }
         $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code)->sendKeys(WebDriverKeys::ENTER);
+        $this->waitForFinderSubmission();
     }
 
     /**
      * @param $code
      */
+    private function waitForFinderSubmission(): void {
+        $this->wait->until(function () {
+            return strpos($this->driver->getCurrentUrl(), '/user/album.php?album=') !== false
+                || count($this->driver->findElements(WebDriverBy::cssSelector('.bootstrap-dialog .alert-danger'))) > 0;
+        });
+    }
+
     public function add($code) {
         $this->driver->findElement(WebDriverBy::id('album-code'))->sendKeys($code);
         $this->driver->findElement(WebDriverBy::id('album-code-add'))->click();
