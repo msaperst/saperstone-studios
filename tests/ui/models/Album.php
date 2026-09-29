@@ -401,12 +401,17 @@ class Album {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#albumDiv #user-search')));
         $this->driver->findElement(WebDriverBy::cssSelector('#albumDiv #user-search'))->clear()->sendKeys($user->getUsername());
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
-        $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
-        foreach ($results as $result) {
-            if ($result->getAttribute('user-id') == $user->getId()) {
-                $result->click();
-            }
-        }
+        $resultSelector = WebDriverBy::cssSelector(
+            "#albumDiv .search-results a[user-id='" . $user->getId() . "']"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($resultSelector));
+        $this->driver->findElement($resultSelector)->click();
+        $this->wait->until(function () use ($user) {
+            $matches = $this->driver->findElements(
+                WebDriverBy::cssSelector("#album-users span[user-id='" . $user->getId() . "']")
+            );
+            return count($matches) === 1;
+        });
     }
 
     /**
