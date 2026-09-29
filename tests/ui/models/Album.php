@@ -449,6 +449,27 @@ class Album {
     }
 
     /**
+     * Attempts to find a user in the download-access search without assuming
+     * that the user is eligible to be granted access.
+     *
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function tryToGiveUserDownloadAccess($user) {
+        $user = User::withId($user);
+        $search = WebDriverBy::cssSelector('#downloadDiv #user-search');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($search));
+        $this->driver->findElement($search)->clear()->sendKeys($user->getUsername());
+        $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::cssSelector('#downloadDiv .search-results')
+            )
+        );
+    }
+
+    /**
      * @param $user
      * @throws NoSuchElementException
      * @throws TimeoutException
