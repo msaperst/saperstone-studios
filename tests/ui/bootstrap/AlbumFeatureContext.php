@@ -528,7 +528,7 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iConfirmMyDownload() {
-        $downloadDirectory = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads';
+        $downloadDirectory = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getDownloadDirectory();
         foreach (glob($downloadDirectory . DIRECTORY_SEPARATOR . 'Album *.zip') ?: [] as $download) {
             unlink($download);
         }
@@ -1291,7 +1291,7 @@ Comment',
      * @param $album
      */
     public function iSeeAlbumDownloadWithMyFavorites($album) {
-        $downloadDirectory = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads';
+        $downloadDirectory = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getDownloadDirectory();
         $pattern = $downloadDirectory . DIRECTORY_SEPARATOR . "Album $album *.zip";
         $startedAt = time() - 2;
         $filename = null;
@@ -1338,7 +1338,7 @@ Comment',
         date_default_timezone_set('America/New_York');
         $now = date("Y-m-d H-i-s");
         $count = 0;
-        $downloadDirectory = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads';
+        $downloadDirectory = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getDownloadDirectory();
         $filename = $downloadDirectory . DIRECTORY_SEPARATOR . "Album $album $now.zip";
         while (!file_exists($filename)) {
             $matches = glob($downloadDirectory . DIRECTORY_SEPARATOR . "Album $album *.zip");
