@@ -622,6 +622,18 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @When /^I try to add user ([A-Za-z0-9_-]+) for download access$/
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function iTryToAddUserForDownloadAccess($user) {
+        $user = $this->resolveUserId((string) $user);
+        $album = new Album($this->driver, $this->wait);
+        $album->tryToGiveUserDownloadAccess($user);
+    }
+
+    /**
      * @When /^I add user ([A-Za-z0-9_-]+) for share access$/
      * @param $user
      * @throws NoSuchElementException
