@@ -51,9 +51,12 @@ class Album {
      * @throws TimeoutException
      */
     public function openFinder() {
-        $this->driver->findElement(WebDriverBy::linkText('Information'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::linkText('Find Album'))));
-        $this->driver->findElement(WebDriverBy::linkText('Find Album'))->click();
+        $information = WebDriverBy::linkText('Information');
+        $findAlbum = WebDriverBy::linkText('Find Album');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($information));
+        $this->driver->findElement($information)->click();
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($findAlbum));
+        $this->driver->findElement($findAlbum)->click();
         $this->waitForFinder();
     }
 
