@@ -1333,8 +1333,17 @@ Comment',
         date_default_timezone_set('America/New_York');
         $now = date("Y-m-d H-i-s");
         $count = 0;
-        $filename = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads' . DIRECTORY_SEPARATOR . "Album $album $now.zip";
+        $downloadDirectory = getenv('HOME') . DIRECTORY_SEPARATOR . 'Downloads';
+        $filename = $downloadDirectory . DIRECTORY_SEPARATOR . "Album $album $now.zip";
         while (!file_exists($filename)) {
+            $matches = glob($downloadDirectory . DIRECTORY_SEPARATOR . "Album $album *.zip");
+            if (!empty($matches)) {
+                usort($matches, static function ($left, $right) {
+                    return filemtime($right) <=> filemtime($left);
+                });
+                $filename = $matches[0];
+                break;
+            }
             sleep(1);
             $count++;
             if ($count > 120) {
