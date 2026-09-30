@@ -37,5 +37,8 @@ Feature: Gallery Administration
   Scenario: Admin can upload an image to a gallery
     When I open the gallery for editing
     And I upload the gallery test image
-    And I reload the page
     Then I see 5 gallery images
+    And I see the uploaded gallery image
+    When I reload the page
+    Then I see 5 gallery images
+    And I see the uploaded gallery image
