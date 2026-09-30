@@ -1693,35 +1693,6 @@ Comment',
     }
 
     /**
-     * @Then /^I have created "([^"]*)" thumbnail images for album (\d+)$/
-     */
-    public function iHaveCreatedThumbnailImages($thumbType, $albumId) {
-        $sql = new Sql();
-        $albumLocation = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
-        $images = $sql->getRows("SELECT * FROM album_images WHERE album = $albumId");
-        $sql->disconnect();
-        Assert::assertTrue(is_dir($albumLocation . DIRECTORY_SEPARATOR . 'full'));
-        foreach ($images as $image) {
-            //ensure original files are in 'full' directory
-            $parts = explode(DIRECTORY_SEPARATOR, $image['location']);
-            array_splice($parts, 3, 0, "full");
-            CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . implode(DIRECTORY_SEPARATOR, $parts));
-            switch ($thumbType) {
-                case 'proof':
-                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-proof.jpeg';
-                    break;
-                case 'watermark':
-                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-watermark.jpeg';
-                    break;
-                case 'nothing':
-                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-thumbed.jpeg';
-                    break;
-            }
-            CustomAsserts::filesAreEqual($file, dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . $image['location']);
-        }
-    }
-
-    /**
      * @Then /^I see album logs:$/
      * @param TableNode $table
      * @throws NoSuchElementException
