@@ -65,3 +65,38 @@ test('loadImages requests the next batch and advances loaded count', () => {
     });
     assert.equal(loaded, 4);
 });
+
+
+test('gallery rename updates the visible page heading after save succeeds', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    const windowObject = {location: {search: '?w=999'}};
+    environment.queueGet('/api/get-gallery.php', {
+        type: 'success',
+        data: {title: 'Gallery 999'}
+    });
+    environment.queuePost('/api/update-gallery.php', {type: 'success', data: ''});
+
+    loadBrowserScript('public/js/gallery-admin.js', {
+        $: environment.$,
+        document: environment.document,
+        window: windowObject,
+        BootstrapDialog: environment.BootstrapDialog,
+        gallery: {loadImages() {}},
+        total: 4,
+        loaded: 4
+    });
+
+    environment.element('#new-gallery-title').val('Updated Gallery');
+    environment.element('#edit-gallery-btn').click();
+
+    const dialogConfig = environment.dialogs[0];
+    const dialog = environment.createDialog();
+    dialogConfig.buttons[0].action.call(environment.createButton(), dialog);
+
+    assert.equal(environment.element('.page-header').text(), 'Updated Gallery Gallery');
+    assert.equal(dialog.closed, true);
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post[0])), {
+        url: '/api/update-gallery.php',
+        data: {id: '999', title: 'Updated Gallery'}
+    });
+});
