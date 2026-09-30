@@ -129,7 +129,7 @@ Feature: Album
     And I download my favorites
     And I confirm my download
     Then I see an info message indicating download will start shortly
-    And I see album 99999 download with my favorites
+    And I see album 99999 download with images "2"
     And I see an email indicating images "2" from album 99999 downloaded
 
   Scenario: Download multiple favorites
@@ -143,7 +143,7 @@ Feature: Album
     And I download my favorites
     And I confirm my download
     Then I see an info message indicating download will start shortly
-    And I see album 99999 download with my favorites
+    And I see album 99999 download with images "2, 7"
     And I see an email indicating images "2, 7" from album 99999 downloaded
 
 
@@ -174,7 +174,7 @@ Feature: Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
-    And an email is sent indicating album 99999 favorites submitted
+    And an email is sent indicating album 99999 images "2" submitted
     And I receive an email indicating I have submitted my selects
 
 
@@ -236,7 +236,7 @@ Feature: Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
-    And an email is sent indicating album 99999 image 2 submitted
+    And an email is sent indicating album 99999 images "2" submitted
     And I receive an email indicating I have submitted my selects
 
   Scenario: Request email updates no email
