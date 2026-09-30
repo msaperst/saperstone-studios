@@ -204,7 +204,7 @@ class GalleryAdminFeatureContext implements Context {
         // button in the dialog footer, not inside #upload-container.
         $input = WebDriverBy::cssSelector('.bootstrap-dialog.modal.in input[type="file"][name^="myfile"]');
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($input));
-        $file = realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower.jpeg');
+        $file = realpath(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower.jpeg');
         if ($file === false) {
             throw new Exception('Unable to resolve gallery upload test image');
         }
