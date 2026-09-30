@@ -83,14 +83,20 @@ Feature: Blog
   Scenario: Anonymous user can leave comment
     Given I am on the "blog/post.php?p=2039" page
     When I leave the comment "This is a great post"
-    Then I see the blog post's comments
+    Then I see the comment "This is a great post"
+
+  Scenario: New blog comment persists after reload
+    Given I am on the "blog/post.php?p=2039" page
+    When I leave the comment "This is a great post"
+    And I reload the page
+    Then I see the comment "This is a great post"
 
   Scenario: User can leave comment
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the "blog/post.php?p=2039" page
     When I leave the comment "This is a great post"
-    Then I see the blog post's comments
+    Then I see the comment "This is a great post"
 
   Scenario: Anonymous user cannot delete existing comments
     Given I am on the "blog/post.php?p=2039" page
@@ -113,13 +119,22 @@ Feature: Blog
     And I have left the comment "This is a great post" on blog 2039
     And I am on the "blog/post.php?p=2039" page
     When I delete the "1st" comment
-    Then I see the blog post's comments
+    Then I do not see the comment "This is a great post"
+
+  Scenario: Deleted blog comment remains deleted after reload
+    Given an enabled user account exists
+    And I am logged in with saved credentials
+    And I have left the comment "This is a great post" on blog 2039
+    And I am on the "blog/post.php?p=2039" page
+    When I delete the "1st" comment
+    And I reload the page
+    Then I do not see the comment "This is a great post"
 
   Scenario: Admin can delete any comment
     Given I am logged in with admin credentials
     And I am on the "blog/post.php?p=2039" page
     When I delete the "2nd" comment
-    Then I see the blog post's comments
+    Then I do not see the comment "hehehehehe this rules!"
 
   Scenario: User can delete their own new comment
     Given an enabled user account exists
@@ -127,4 +142,4 @@ Feature: Blog
     And I am on the "blog/post.php?p=2039" page
     When I leave the comment "This is a great post"
     And I delete the "1st" comment
-    Then I see the blog post's comments
+    Then I do not see the comment "This is a great post"
