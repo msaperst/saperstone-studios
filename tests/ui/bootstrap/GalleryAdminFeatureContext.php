@@ -232,20 +232,24 @@ JS
         if ($file === false) {
             throw new Exception('Unable to resolve gallery upload test image');
         }
-        $initialCount = count($this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery')));
         // WebDriver file selection fires the native change event. The upload
         // plugin handles that event by removing this input/form and creating a
         // replacement, so do not retain or interact with this element after
         // sendKeys().
         $this->driver->findElement($input)->sendKeys($file);
 
-        // A successful upload calls gallery.loadImages(1). Wait until the
-        // uploaded image is actually visible in the gallery, not merely until
-        // the upload widget has stopped spinning.
-        $this->wait->until(function () use ($initialCount) {
-            return count($this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery')))
-                === $initialCount + 1;
+        $close = WebDriverBy::xpath(
+            "//div[contains(@class, 'bootstrap-dialog') and contains(@class, 'modal') and contains(@class, 'in')]//button[normalize-space(.)='Close']"
+        );
+
+        // onSubmit disables the dialog controls; afterUploadAll enables them
+        // only after the upload request has completed. Observe both states so
+        // we cannot mistake the dialog's initial enabled state for completion.
+        $this->wait->until(function () use ($close) {
+            $buttons = $this->driver->findElements($close);
+            return count($buttons) === 1 && !$buttons[0]->isEnabled();
         });
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($close));
     }
 
     private function visibleGalleryImageOrder(): array {
