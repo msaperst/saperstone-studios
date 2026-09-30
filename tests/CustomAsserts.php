@@ -132,6 +132,49 @@ class CustomAsserts {
         );
     }
 
+    public static function getEmailText(
+        string $expectedTo,
+        string $expectedFrom,
+        string $expectedSubject
+    ): string {
+        $client = self::getMailpitClient();
+        $seen = [];
+
+        for ($attempt = 0; $attempt < 20; $attempt++) {
+            $response = $client->request('GET', 'messages');
+            $data = json_decode((string)$response->getBody(), true);
+
+            foreach (($data['messages'] ?? []) as $msg) {
+                if (($msg['Subject'] ?? '') !== $expectedSubject) {
+                    continue;
+                }
+
+                $messageId = $msg['ID'];
+                $detailResponse = $client->request('GET', "message/{$messageId}");
+                $detail = json_decode((string)$detailResponse->getBody(), true);
+                $toAddresses = array_column($detail['To'] ?? [], 'Address');
+                $fromAddress = $detail['From']['Address'] ?? '';
+                $seen[] = sprintf(
+                    '%s -> %s: %s',
+                    $fromAddress,
+                    implode(', ', $toAddresses),
+                    $detail['Subject'] ?? ''
+                );
+
+                if (in_array($expectedTo, $toAddresses, true) && $fromAddress === $expectedFrom) {
+                    return (string)($detail['Text'] ?? '');
+                }
+            }
+
+            usleep(250000);
+        }
+
+        Assert::fail(
+            "Expected $expectedFrom -> $expectedTo: $expectedSubject. Mailpit contained: "
+            . implode('; ', $seen)
+        );
+    }
+
     /**
      * Error pages send their reports to the webmaster via Mailpit in CI.
      */
