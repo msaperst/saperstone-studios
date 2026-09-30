@@ -227,6 +227,19 @@ JS
             throw new Exception('Unable to resolve gallery upload test image');
         }
         $this->driver->findElement($input)->sendKeys($file);
+
+        // Upload completion is reflected by the dialog returning its upload
+        // icon from the spinning state and re-enabling its buttons.
+        $spinner = WebDriverBy::cssSelector(
+            '.bootstrap-dialog.modal.in .bootstrap-dialog-footer-buttons .glyphicon-asterisk.icon-spin'
+        );
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($spinner));
+        $this->wait->until(WebDriverExpectedCondition::invisibilityOfElementLocated($spinner));
+
+        $close = WebDriverBy::xpath(
+            "//div[contains(@class, 'bootstrap-dialog') and contains(@class, 'modal') and contains(@class, 'in')]//button[normalize-space(.)='Close']"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($close));
     }
 
     private function visibleGalleryImageOrder(): array {
