@@ -148,7 +148,13 @@ class GalleryAdminFeatureContext implements Context {
 
         $button = WebDriverBy::id('sort-gallery-btn');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
-        $this->driver->findElement($button)->click();
+        $sortButton = $this->driver->findElement($button);
+        $this->driver->executeScript(
+            "arguments[0].scrollIntoView({block: 'center'});",
+            [$sortButton]
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $sortButton->click();
         $this->wait->until(function () {
             return $this->driver->executeScript("return $('.image-grid').hasClass('ui-sortable');") === true;
         });
@@ -227,7 +233,17 @@ JS
             throw new Exception('Unable to resolve gallery upload test image');
         }
         $initialCount = count($this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery')));
-        $this->driver->findElement($input)->sendKeys($file);
+        $fileInput = $this->driver->findElement($input);
+        $fileInput->sendKeys($file);
+
+        // Selenium assigns the file to the input, but this legacy upload
+        // plugin starts its workflow from the input's change handler. Dispatch
+        // change explicitly so the same plugin path used by a real selection
+        // is guaranteed to run.
+        $this->driver->executeScript(
+            "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));",
+            [$fileInput]
+        );
 
         // A successful upload calls gallery.loadImages(1). Wait until the
         // uploaded image is actually visible in the gallery, not merely until
