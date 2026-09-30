@@ -96,7 +96,27 @@ class GalleryAdminFeatureContext implements Context {
             $filenameMatch->click();
         }
 
+        $activeImage = $this->driver->findElement(
+            WebDriverBy::cssSelector('.modal-carousel .carousel-inner .item.active div[image-id]')
+        );
+        $imageId = (int) $activeImage->getAttribute('image-id');
+
         $this->clickDialogButton('Update');
+
+        // The update is asynchronous. Wait for the persisted metadata rather
+        // than using the dialog animation as a proxy for completion.
+        $this->wait->until(function () use ($imageId, $title, $caption) {
+            $sql = new Sql();
+            $image = $sql->getRow(
+                'SELECT title, caption FROM gallery_images WHERE id = ?',
+                [$imageId]
+            );
+            $sql->disconnect();
+
+            return ($image['title'] ?? null) === $title
+                && ($image['caption'] ?? null) === $caption;
+        });
+
         $this->wait->until(
             WebDriverExpectedCondition::invisibilityOfElementLocated($titleInput)
         );
