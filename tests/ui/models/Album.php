@@ -14,7 +14,6 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverWait;
 use Sql;
-use User;
 
 
 class Album {
@@ -408,19 +407,18 @@ class Album {
      * @throws TimeoutException
      * @throws Exception
      */
-    public function giveUserAlbumAccess($user) {
-        $user = User::withId($user);
+    public function giveUserAlbumAccess(string $userId, string $username): void {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#albumDiv #user-search')));
-        $this->driver->findElement(WebDriverBy::cssSelector('#albumDiv #user-search'))->clear()->sendKeys($user->getUsername());
+        $this->driver->findElement(WebDriverBy::cssSelector('#albumDiv #user-search'))->clear()->sendKeys($username);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
         $resultSelector = WebDriverBy::cssSelector(
-            "#albumDiv .search-results a[user-id='" . $user->getId() . "']"
+            "#albumDiv .search-results a[user-id='$userId']"
         );
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($resultSelector));
         $this->driver->findElement($resultSelector)->click();
-        $this->wait->until(function () use ($user) {
+        $this->wait->until(function () use ($userId) {
             $matches = $this->driver->findElements(
-                WebDriverBy::cssSelector("#album-users span[user-id='" . $user->getId() . "']")
+                WebDriverBy::cssSelector("#album-users span[user-id='$userId']")
             );
             return count($matches) === 1;
         });
@@ -432,18 +430,17 @@ class Album {
      * @throws TimeoutException
      * @throws Exception
      */
-    public function giveUserDownloadAccess($user) {
-        $user = User::withId($user);
+    public function giveUserDownloadAccess(string $userId, string $username): void {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#downloadDiv #user-search')));
-        $this->driver->findElement(WebDriverBy::cssSelector('#downloadDiv #user-search'))->clear()->sendKeys($user->getUsername());
+        $this->driver->findElement(WebDriverBy::cssSelector('#downloadDiv #user-search'))->clear()->sendKeys($username);
         $resultSelector = WebDriverBy::cssSelector(
-            "#downloadDiv .search-results a[user-id='" . $user->getId() . "']"
+            "#downloadDiv .search-results a[user-id='$userId']"
         );
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($resultSelector));
         $this->driver->findElement($resultSelector)->click();
-        $this->wait->until(function () use ($user) {
+        $this->wait->until(function () use ($userId) {
             return count($this->driver->findElements(
-                WebDriverBy::cssSelector("#download-users span[user-id='" . $user->getId() . "']")
+                WebDriverBy::cssSelector("#download-users span[user-id='$userId']")
             )) === 1;
         });
     }
@@ -457,11 +454,10 @@ class Album {
      * @throws TimeoutException
      * @throws Exception
      */
-    public function tryToGiveUserDownloadAccess($user) {
-        $user = User::withId($user);
+    public function tryToGiveUserDownloadAccess(string $username): void {
         $search = WebDriverBy::cssSelector('#downloadDiv #user-search');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($search));
-        $this->driver->findElement($search)->clear()->sendKeys($user->getUsername());
+        $this->driver->findElement($search)->clear()->sendKeys($username);
         $this->wait->until(
             WebDriverExpectedCondition::presenceOfElementLocated(
                 WebDriverBy::cssSelector('#downloadDiv .search-results')
@@ -475,14 +471,13 @@ class Album {
      * @throws TimeoutException
      * @throws Exception
      */
-    public function giveUserShareAccess($user) {
-        $user = User::withId($user);
+    public function giveUserShareAccess(string $userId, string $username): void {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#shareDiv #user-search')));
-        $this->driver->findElement(WebDriverBy::cssSelector('#shareDiv #user-search'))->clear()->sendKeys($user->getUsername());
+        $this->driver->findElement(WebDriverBy::cssSelector('#shareDiv #user-search'))->clear()->sendKeys($username);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
         $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
         foreach ($results as $result) {
-            if ($result->getAttribute('user-id') == $user->getId()) {
+            if ($result->getAttribute('user-id') === $userId) {
                 $result->click();
             }
         }
@@ -494,12 +489,11 @@ class Album {
      * @throws TimeoutException
      * @throws Exception
      */
-    public function removeUserAlbumAccess($user) {
-        $user = User::withId($user);
+    public function removeUserAlbumAccess(string $userId): void {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
         $accessors = $this->getAlbumAccessors();
         foreach ($accessors as $accessor) {
-            if ($accessor->getAttribute('user-id') == $user->getId()) {
+            if ($accessor->getAttribute('user-id') === $userId) {
                 $action = new WebDriverActions($this->driver);
                 $action->moveToElement($accessor, intval($accessor->getSize()->getWidth() * 0.5 - 5))->click()->perform();
             }
@@ -523,9 +517,8 @@ class Album {
      * @throws TimeoutException
      * @throws Exception
      */
-    public function removeUserDownloadAccess($user) {
-        $user = User::withId($user);
-        $selector = WebDriverBy::cssSelector("#download-users span[user-id='" . $user->getId() . "']");
+    public function removeUserDownloadAccess(string $userId): void {
+        $selector = WebDriverBy::cssSelector("#download-users span[user-id='$userId']");
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
         $downloader = $this->driver->findElement($selector);
         $action = new WebDriverActions($this->driver);
@@ -552,12 +545,11 @@ class Album {
      * @throws TimeoutException
      * @throws Exception
      */
-    public function removeUserShareAccess($user) {
-        $user = User::withId($user);
+    public function removeUserShareAccess(string $userId): void {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
         $sharers = $this->getAlbumSharers();
         foreach ($sharers as $sharer) {
-            if ($sharer->getAttribute('user-id') == $user->getId()) {
+            if ($sharer->getAttribute('user-id') === $userId) {
                 $action = new WebDriverActions($this->driver);
                 $action->moveToElement($sharer, intval($sharer->getSize()->getWidth() * 0.5 - 5))->click()->perform();
             }
