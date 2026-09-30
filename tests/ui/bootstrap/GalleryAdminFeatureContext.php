@@ -143,14 +143,17 @@ class GalleryAdminFeatureContext implements Context {
      * @Then /^I see the uploaded gallery image$/
      */
     public function iSeeUploadedGalleryImage(): void {
-        // The fixture starts with sequences 0-3, so the uploaded image is the
-        // newly appended sequence 4. Verify the user can see/select that new
-        // gallery card without coupling the functional test to its filename.
-        $selector = WebDriverBy::cssSelector('.image-grid .gallery[sequence="4"] a.info[href="#4"]');
-        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($selector));
+        $cards = $this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery'));
+        Assert::assertCount(5, $cards);
 
-        $images = $this->driver->findElements($selector);
-        Assert::assertCount(1, $images);
+        // The fixture starts with four images, so the fifth visible card is
+        // the image added through the upload workflow. Verify it is rendered
+        // as a usable gallery item rather than coupling this functional test
+        // to its database id, sequence, or filename.
+        $uploaded = $cards[4];
+        Assert::assertTrue($uploaded->isDisplayed());
+        Assert::assertCount(1, $uploaded->findElements(WebDriverBy::tagName('img')));
+        Assert::assertCount(1, $uploaded->findElements(WebDriverBy::cssSelector('a.info')));
     }
 
     /**
