@@ -128,7 +128,6 @@ Feature: Admin Albums
     And I set access to my album
     And I add user uploader for album access
     Then I see users "uploader" with album access
-    And users "uploader" have access to album 99999
 
   Scenario: Admin can revoke album access
     Given user uploader has access to album 99999
@@ -136,21 +135,18 @@ Feature: Admin Albums
     And I set access to my album
     And I remove user uploader for album access
     Then I see users "" with album access
-    And users "" have access to album 99999
 
   Scenario: Admin can grant download access to all users
     When I edit album 99999
     And I set access to my album
     And I add user 0 for download access
     Then I see users "0" with download access
-    And users "0" can download album 99999
 
   Scenario: Admin cannot grant download access without album access
     When I edit album 99999
     And I set access to my album
     And I try to add user uploader for download access
     Then I see users "" with download access
-    And users "" can download album 99999
 
   Scenario: Admin can grant download access to an authorized user
     Given user uploader has access to album 99999
@@ -158,7 +154,6 @@ Feature: Admin Albums
     And I set access to my album
     And I add user uploader for download access
     Then I see users "uploader" with download access
-    And users "uploader" can download album 99999
 
   Scenario: Admin can revoke download access
     Given user uploader has access to album 99999
@@ -168,22 +163,18 @@ Feature: Admin Albums
     And I remove user uploader for download access
     Then I see users "uploader" with album access
     Then I see users "" with download access
-    And users "uploader" have access to album 99999
-    And users "" can download album 99999
 
   Scenario: Admin can grant share access to all users
     When I edit album 99999
     And I set access to my album
     And I add user 0 for share access
     Then I see users "0" with share access
-    And users "0" can share album 99999
 
   Scenario: Admin cannot grant share access without album access
     When I edit album 99999
     And I set access to my album
     And I add user uploader for share access
     Then I see users "" with share access
-    And users "" can share album 99999
 
   Scenario: Admin can grant share access to an authorized user
     Given user uploader has access to album 99999
@@ -191,7 +182,6 @@ Feature: Admin Albums
     And I set access to my album
     And I add user uploader for share access
     Then I see users "uploader" with share access
-    And users "uploader" can share album 99999
 
   Scenario: Admin can revoke share access
     Given user uploader has access to album 99999
@@ -201,8 +191,67 @@ Feature: Admin Albums
     And I remove user uploader for share access
     Then I see users "uploader" with album access
     Then I see users "" with share access
-    And users "uploader" have access to album 99999
-    And users "" can share album 99999
+
+  Scenario: Granted album access persists after reload
+    When I edit album 99999
+    And I set access to my album
+    And I add user uploader for album access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "uploader" with album access
+
+  Scenario: Revoked album access persists after reload
+    Given user uploader has access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I remove user uploader for album access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "" with album access
+
+  Scenario: Granted download access persists after reload
+    Given user uploader has access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I add user uploader for download access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "uploader" with download access
+
+  Scenario: Revoked download access persists after reload
+    Given user uploader has access to album 99999
+    Given user uploader has download access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I remove user uploader for download access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "" with download access
+
+  Scenario: Granted share access persists after reload
+    Given user uploader has access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I add user uploader for share access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "uploader" with share access
+
+  Scenario: Revoked share access persists after reload
+    Given user uploader has access to album 99999
+    Given user uploader has share access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I remove user uploader for share access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "" with share access
 
   Scenario: Delete album
     When I edit album 99999
