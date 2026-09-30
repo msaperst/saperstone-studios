@@ -62,12 +62,10 @@ class GalleryFeatureContext implements Context {
         $count++;
         $sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
         $sql->disconnect();
-        system("rm -rf " . escapeshellarg(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
+        $this->removeDirectory(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/sample');
         foreach ($this->galleryIds as $galleryId) {
-            system(
-                "rm -rf " . escapeshellarg(
-                    dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/gallery-' . $galleryId
-                )
+            $this->removeDirectory(
+                dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/gallery-' . $galleryId
             );
         }
     }
@@ -84,10 +82,8 @@ class GalleryFeatureContext implements Context {
         // Gallery uploads are stored under a path derived from the fixture
         // gallery title. Remove leftovers from interrupted/repeated runs so
         // each scenario starts with a clean filesystem as well as a clean DB.
-        system(
-            "rm -rf " . escapeshellarg(
-                dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/gallery-' . $galleryId
-            )
+        $this->removeDirectory(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/gallery-' . $galleryId
         );
 
         $sql = new Sql();
@@ -258,4 +254,24 @@ class GalleryFeatureContext implements Context {
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
         Assert::assertFalse($modal->isDisplayed());
     }
+
+    private function removeDirectory(string $directory): void {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($items as $item) {
+            if ($item->isDir()) {
+                rmdir($item->getPathname());
+            } else {
+                unlink($item->getPathname());
+            }
+        }
+        rmdir($directory);
+    }
+
 }
