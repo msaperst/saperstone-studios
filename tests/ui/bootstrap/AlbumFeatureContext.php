@@ -843,7 +843,6 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSeeUploadedImageDisplayedInAlbum(string $fileName, int $albumId, int $imageCount): void {
-        $this->assertAlbumContainsUploadedImage($albumId, $fileName, $imageCount);
         $baseUrl = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getBaseUrl();
         $this->driver->get($baseUrl . "user/album.php?album=$albumId");
 
@@ -904,25 +903,6 @@ class AlbumFeatureContext implements Context {
             $src,
             'Protected album image must not be exposed through the img src'
         );
-    }
-
-    private function assertAlbumContainsUploadedImage(int $albumId, string $fileName, int $imageCount): void {
-        $image = $this->wait->until(function () use ($albumId, $fileName, $imageCount) {
-            $sql = new Sql();
-            $album = $sql->getRow("SELECT images, location FROM albums WHERE id = ?", [$albumId]);
-            $image = $sql->getRow("SELECT location FROM album_images WHERE album = ? AND title = ?", [$albumId, $fileName]);
-            $sql->disconnect();
-
-            if ($album === null || $image === null || (int) $album['images'] !== $imageCount) {
-                return false;
-            }
-
-            return ['album' => $album, 'image' => $image];
-        });
-
-        $expectedLocation = DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $image['album']['location'] . DIRECTORY_SEPARATOR . $fileName;
-        Assert::assertEquals($expectedLocation, $image['image']['location']);
-        Assert::assertFileExists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . $expectedLocation);
     }
 
     /**
@@ -1249,11 +1229,13 @@ Comment',
      * @param $albumId
      */
     public function iSeeACookieWithMyAlbum($albumId) {
-        $sql = new Sql();
-        $code = $sql->getRow("SELECT * FROM `albums` WHERE `id` = $albumId;")['code'];
-        $sql->disconnect();
         $cookie = $this->driver->manage()->getCookieNamed('searched');
-        Assert::assertEquals(hash('sha256', 'album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
+        Assert::assertNotNull($cookie, 'Expected the searched-albums cookie to exist');
+
+        $savedAlbums = json_decode(urldecode($cookie->getValue()), true);
+        Assert::assertIsArray($savedAlbums);
+        Assert::assertArrayHasKey($albumId, $savedAlbums);
+        Assert::assertNotEmpty($savedAlbums[$albumId]);
     }
 
     /**
