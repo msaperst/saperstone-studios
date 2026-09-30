@@ -67,13 +67,35 @@ Feature: Admin Albums
     And I provide "01/01/2030" for the album "date"
     And I provide "sample code" for the album "code"
     And I update my album
-    And I edit album 99999
-    Then I see the edit album details modal for album 99999
+    Then I see album 99999 album name
+    And I see album 99999 album description
+    And I see album 99999 album date
+    And I see album 99999 album code
+
+  Scenario: Album information updates persist after reload
+    When I edit album 99999
+    And I provide "My New Album" for the album "name"
+    And I provide "Some sample test album" for the album "description"
+    And I provide "01/01/2030" for the album "date"
+    And I provide "sample code" for the album "code"
+    And I update my album
+    And I reload the page
+    Then I see album 99999 album name
+    And I see album 99999 album description
+    And I see album 99999 album date
+    And I see album 99999 album code
 
   Scenario: Upload image to album
     When I edit album 99999
     And I upload test image "flower.jpeg"
     And I close the album details modal
+    Then I see album 99999 has 17 images
+
+  Scenario: Uploaded album image count persists after reload
+    When I edit album 99999
+    And I upload test image "flower.jpeg"
+    And I close the album details modal
+    And I reload the page
     Then I see album 99999 has 17 images
 
   Scenario: Admin can manage album access
@@ -257,6 +279,13 @@ Feature: Admin Albums
     When I edit album 99999
     And I delete my album
     And I confirm my deletion of my album
+    Then I don't see album 99999 listed
+
+  Scenario: Deleted album remains deleted after reload
+    When I edit album 99999
+    And I delete my album
+    And I confirm my deletion of my album
+    And I reload the page
     Then I don't see album 99999 listed
 
   Scenario Outline: Admin can create thumbnails
