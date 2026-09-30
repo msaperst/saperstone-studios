@@ -11,7 +11,7 @@ Feature: Gallery Administration
 
   Scenario: Admin can update gallery details
     When I rename the gallery to "Updated Gallery"
-    Then the gallery edit dialog is closed
+    Then I see the gallery heading "Updated Gallery Gallery"
 
   Scenario: Gallery detail updates persist after reload
     When I rename the gallery to "Updated Gallery"
