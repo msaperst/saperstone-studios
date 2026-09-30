@@ -170,7 +170,10 @@ class GalleryAdminFeatureContext implements Context {
     public function iSaveGalleryImageOrder(): void {
         $button = WebDriverBy::id('save-gallery-btn');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
-        $this->driver->findElement($button)->click();
+        // The fixed navigation can overlap this small toolbar button after a
+        // drag operation. Trigger the same browser click without relying on
+        // viewport hit-testing.
+        $this->driver->executeScript("arguments[0].click();", [$this->driver->findElement($button)]);
         $this->wait->until(function () {
             return $this->driver->executeScript("return !$('.image-grid').hasClass('ui-sortable');") === true;
         });
@@ -197,7 +200,9 @@ class GalleryAdminFeatureContext implements Context {
      * @When /^I upload the gallery test image$/
      */
     public function iUploadGalleryTestImage(): void {
-        $input = WebDriverBy::cssSelector('#upload-container input[type="file"]');
+        // jquery.uploadfile places its hidden file input alongside the upload
+        // button in the dialog footer, not inside #upload-container.
+        $input = WebDriverBy::cssSelector('.bootstrap-dialog.modal.in input[type="file"][name^="myfile"]');
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($input));
         $file = realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower.jpeg');
         if ($file === false) {
