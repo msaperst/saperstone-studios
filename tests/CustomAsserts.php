@@ -149,7 +149,8 @@ class CustomAsserts {
         string  $expectedText,
         string  $expectedHtml,
         ?string $expectedAuthUser = null,
-        ?string $expectedAttachmentPath = null // <-- Add optional attachment path
+        ?string $expectedAttachmentPath = null,
+        ?string $expectedAttachmentExtension = null
     ): void {
         if ($expectedAuthUser === null) {
             $credentialKey = str_ends_with($expectedTo, '@saperstonestudios.com')
@@ -197,33 +198,44 @@ class CustomAsserts {
                 $actualAuthUser = $detail['Username'] ?? '';
                 Assert::assertEquals($expectedAuthUser, $actualAuthUser, "SMTP Username mismatch.");
 
-                // Assert Attachment if expected
-                if ($expectedAttachmentPath !== null) {
+                // Assert externally observable attachment behavior when requested.
+                if ($expectedAttachmentPath !== null || $expectedAttachmentExtension !== null) {
                     Assert::assertNotEmpty($detail['Attachments'], "Expected an attachment, but none were found.");
 
-                    // Grab the first attachment metadata block
                     $attachmentMeta = $detail['Attachments'][0];
                     $partId = $attachmentMeta['PartID'];
                     $fileName = $attachmentMeta['FileName'];
-
-                    // Verify the file name matches what you expect
-                    $expectedFileName = basename($expectedAttachmentPath);
-                    Assert::assertEquals($expectedFileName, $fileName, "Attachment filename mismatch.");
-
-                    // Download the binary attachment payload from Mailpit
                     $downloadResponse = $client->request('GET', "message/{$messageId}/part/{$partId}");
+                    $attachmentBody = (string)$downloadResponse->getBody();
 
-                    // Save it to a temporary local file to run your existing comparison logic
-                    $tmpFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $fileName;
-                    file_put_contents($tmpFile, (string)$downloadResponse->getBody());
+                    if ($expectedAttachmentExtension !== null) {
+                        Assert::assertStringEndsWith(
+                            $expectedAttachmentExtension,
+                            $fileName,
+                            "Attachment filename did not have the expected extension."
+                        );
+                        if (strtolower($expectedAttachmentExtension) === '.pdf') {
+                            Assert::assertStringStartsWith(
+                                '%PDF-',
+                                $attachmentBody,
+                                'Expected the delivered attachment to contain PDF data.'
+                            );
+                        }
+                    }
 
-                    try {
-                        // Use your existing binary file comparison method
-                        self::filesAreEqual($expectedAttachmentPath, $tmpFile);
-                    } finally {
-                        // Clean up the downloaded temp file immediately
-                        if (file_exists($tmpFile)) {
-                            unlink($tmpFile);
+                    if ($expectedAttachmentPath !== null) {
+                        $expectedFileName = basename($expectedAttachmentPath);
+                        Assert::assertEquals($expectedFileName, $fileName, "Attachment filename mismatch.");
+
+                        $tmpFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $fileName;
+                        file_put_contents($tmpFile, $attachmentBody);
+
+                        try {
+                            self::filesAreEqual($expectedAttachmentPath, $tmpFile);
+                        } finally {
+                            if (file_exists($tmpFile)) {
+                                unlink($tmpFile);
+                            }
                         }
                     }
                 }
