@@ -11,10 +11,19 @@ Feature: Gallery Administration
 
   Scenario: Admin can update gallery details
     When I rename the gallery to "Updated Gallery"
+    Then the gallery edit dialog is closed
+
+  Scenario: Gallery detail updates persist after reload
+    When I rename the gallery to "Updated Gallery"
     And I reload the page
     Then I see the gallery heading "Updated Gallery Gallery"
 
   Scenario: Admin can update gallery image metadata
+    When I view gallery image 1
+    And I update the current gallery image title to "Updated Image" and caption to "Updated caption"
+    Then I see the current gallery image title "Updated Image" and caption "Updated caption"
+
+  Scenario: Gallery image metadata updates persist after reload
     When I view gallery image 1
     And I update the current gallery image title to "Updated Image" and caption to "Updated caption"
     And I reload the page
@@ -22,6 +31,11 @@ Feature: Gallery Administration
     Then I see the current gallery image title "Updated Image" and caption "Updated caption"
 
   Scenario: Admin can delete a gallery image
+    When I view gallery image 1
+    And I delete the current gallery image
+    Then I see 3 gallery images
+
+  Scenario: Deleted gallery images remain deleted after reload
     When I view gallery image 1
     And I delete the current gallery image
     And I reload the page
@@ -39,6 +53,10 @@ Feature: Gallery Administration
     And I upload the gallery test image
     Then I see 5 gallery images
     And I see the uploaded gallery image
-    When I reload the page
+
+  Scenario: Uploaded gallery images persist after reload
+    When I open the gallery for editing
+    And I upload the gallery test image
+    And I reload the page
     Then I see 5 gallery images
     And I see the uploaded gallery image
