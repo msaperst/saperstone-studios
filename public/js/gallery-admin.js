@@ -332,8 +332,8 @@ function editGallery(id) {
                         if ($.isArray(data)) {
                             pd.statusbar.remove();
                             $.each(files, function () {
-                                total++;
-                                loaded = gallery.loadImages(1);
+                                gallery.totalImages++;
+                                gallery.loadImages(1);
                             });
                         } else {
                             pd.statusbar.parent().removeClass('ajax-file-upload-container');
