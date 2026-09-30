@@ -65,7 +65,7 @@ Feature: Admin Album
 
   Scenario: Favoriting image increases favorites count
     Given I am on the "user/album.php?album=99999#1" page
-    And I favorite the image
+    When I favorite the image
     Then I see the image as a favorite
     And I see the favorite count is "1"
 
@@ -186,7 +186,7 @@ Feature: Admin Album
   Scenario: Able to download single image
     Given I have download rights for album 99999 image 2
     And I am on the "user/album.php?album=99999#1" page
-    And I download the image
+    When I download the image
     Then I see the download terms of service
 
   Scenario: Download single image
