@@ -100,3 +100,45 @@ test('gallery rename updates the visible page heading after save succeeds', () =
         data: {id: '999', title: 'Updated Gallery'}
     });
 });
+
+
+test('successful gallery upload updates gallery count and dynamically loads the new image', () => {
+    const environment = createJQueryEnvironment({autoReady: false});
+    environment.queueGet('/api/get-gallery.php', {
+        type: 'success',
+        data: {title: 'Gallery 999'}
+    });
+    const gallery = {
+        totalImages: 4,
+        loadImagesCalls: [],
+        loadImages(howMany) {
+            this.loadImagesCalls.push(howMany);
+            return 5;
+        }
+    };
+
+    const context = loadBrowserScript('public/js/gallery-admin.js', {
+        $: environment.$,
+        document: environment.document,
+        window: {location: {search: '?w=999'}},
+        BootstrapDialog: environment.BootstrapDialog,
+        gallery
+    });
+
+    context.editGallery(999);
+    const dialogConfig = environment.dialogs[0];
+    const dialog = environment.createDialog();
+    dialogConfig.onshown(dialog);
+
+    const statusbar = environment.element('__statusbar__');
+    environment.uploadOptions.onSuccess(
+        ['flower.jpeg'],
+        JSON.stringify(['flower.jpeg']),
+        {},
+        {statusbar}
+    );
+
+    assert.equal(gallery.totalImages, 5);
+    assert.deepEqual(gallery.loadImagesCalls, [1]);
+    assert.equal(statusbar.removed, true);
+});
