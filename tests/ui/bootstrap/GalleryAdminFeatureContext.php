@@ -151,7 +151,14 @@ class GalleryAdminFeatureContext implements Context {
         // as a usable gallery item rather than coupling this functional test
         // to its database id, sequence, or filename.
         $uploaded = $cards[4];
-        Assert::assertTrue($uploaded->isDisplayed());
+        $this->driver->executeScript(
+            "arguments[0].scrollIntoView({block: 'center'});",
+            [$uploaded]
+        );
+        $this->wait->until(function () use ($uploaded) {
+            return $uploaded->isDisplayed();
+        });
+
         Assert::assertCount(1, $uploaded->findElements(WebDriverBy::tagName('img')));
         Assert::assertCount(1, $uploaded->findElements(WebDriverBy::cssSelector('a.info')));
     }
