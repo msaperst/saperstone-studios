@@ -77,6 +77,21 @@ Feature: Album
     Then I do not see the image as a favorite
     And I see the favorite count is ""
 
+  Scenario: Favorited image remains favorited after reload
+    Given I am on the "user/album.php?album=99999#1" page
+    When I favorite the image
+    And I reload the page
+    Then I see the image as a favorite
+    And I see the favorite count is "1"
+
+  Scenario: Defavorited image remains unfavorited after reload
+    Given album 99999 image 2 is a favorite
+    And I am on the "user/album.php?album=99999#1" page
+    When I defavorite the image
+    And I reload the page
+    Then I do not see the image as a favorite
+    And I see the favorite count is ""
+
   Scenario: No favorites shows empty favorites
     Given I am on the "user/album.php?album=99999" page
     When I view my favorites
