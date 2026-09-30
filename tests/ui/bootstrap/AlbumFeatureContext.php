@@ -1735,17 +1735,6 @@ Comment',
     }
 
     /**
-     * @Then /^my email address is recorded for album (\d+) notifications$/
-     * @param $albumId
-     */
-    public function myEmailAddressIsRecordedForAlbumNotifications($albumId) {
-        $sql = new Sql();
-        $emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = $albumId AND email = '{$this->user->getEmail()}';");
-        $sql->disconnect();
-        Assert::assertEquals(1, sizeof($emails));
-    }
-
-    /**
      * @Then /^I don't see any email notification messages$/
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -1766,17 +1755,6 @@ Comment',
         for ($i = 0; $i < sizeof($emails); $i++) {
             Assert::assertEquals($table->getRow($i + 1)[0], $emails[$i]->getText(), $table->getRow($i + 1)[0] . " " . $emails[$i]->getText());
         }
-    }
-
-    /**
-     * @Then /^email notifications are marked as sent for album (\d+)$/
-     * @param $albumId
-     */
-    public function emailNotificationsAreMarkedAsSentForAlbum($albumId) {
-        $sql = new Sql();
-        $count = $sql->getRowCount("SELECT * FROM notification_emails WHERE album = $albumId AND contacted = FALSE");
-        $sql->disconnect();
-        Assert::assertEquals(0, $count);
     }
 
     /**
