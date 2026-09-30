@@ -12,7 +12,6 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
-use Sql;
 use ui\models\Registration;
 use User;
 
@@ -414,17 +413,25 @@ class RegistrationFeatureContext implements Context {
     }
 
     /**
-     * @Then /^my user information is updated$/
+     * @Then /^I see my updated profile information$/
      */
-    public function myUserInformationIsUpdated() {
-        $sql = new Sql();
-        $userDetails = $sql->getRow("SELECT * FROM `users` WHERE `users`.`id` = ?;", [$this->user->getId()]);
-        Assert::assertEquals($this->username, $userDetails['usr']);
-        Assert::assertTrue(password_verify($this->password, $userDetails['pass']));
-        Assert::assertEquals($this->firstName, $userDetails['firstName']);
-        Assert::assertEquals($this->lastName, $userDetails['lastName']);
-        Assert::assertEquals($this->email, $userDetails['email']);
-        $sql->disconnect();
+    public function iSeeMyUpdatedProfileInformation(): void {
+        Assert::assertSame(
+            $this->username,
+            $this->driver->findElement(WebDriverBy::id('profile-username'))->getAttribute('value')
+        );
+        Assert::assertSame(
+            $this->firstName,
+            $this->driver->findElement(WebDriverBy::id('profile-firstname'))->getAttribute('value')
+        );
+        Assert::assertSame(
+            $this->lastName,
+            $this->driver->findElement(WebDriverBy::id('profile-lastname'))->getAttribute('value')
+        );
+        Assert::assertSame(
+            $this->email,
+            $this->driver->findElement(WebDriverBy::id('profile-email'))->getAttribute('value')
+        );
     }
 
     /**
