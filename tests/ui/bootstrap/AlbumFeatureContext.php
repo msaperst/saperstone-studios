@@ -87,6 +87,9 @@ class AlbumFeatureContext implements Context {
      */
     private $image;
     private $albumIds = [];
+    private $albumFixtures = [];
+    private $editingAlbumId = null;
+    private $pendingAlbumFields = [];
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -128,6 +131,28 @@ class AlbumFeatureContext implements Context {
         $sql->disconnect();
     }
 
+    private function rememberAlbumFixture(int $albumId, int $images = 0, string $code = ''): void {
+        $this->albumFixtures[$albumId] = [
+            'name' => "Album $albumId",
+            'description' => 'sample album for testing',
+            'date' => '2020-01-01',
+            'lastAccessed' => '',
+            'code' => $code,
+            'images' => (string) $images,
+        ];
+    }
+
+    private function captureAlbumFormValues(): array {
+        $values = [];
+        foreach (['name', 'description', 'date', 'code'] as $field) {
+            $elements = $this->driver->findElements(WebDriverBy::id('new-album-' . $field));
+            if ($elements !== []) {
+                $values[$field] = (string) $elements[0]->getAttribute('value');
+            }
+        }
+        return $values;
+    }
+
     /**
      * @Given /^album (\d+) exists$/
      * @param $albumId
@@ -137,8 +162,9 @@ class AlbumFeatureContext implements Context {
         $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1);");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample', 1);");
         $sql->disconnect();
+        $this->rememberAlbumFixture((int) $albumId);
     }
 
     /**
@@ -151,8 +177,9 @@ class AlbumFeatureContext implements Context {
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', {$this->user->getId()});");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample', {$this->user->getId()});");
         $sql->disconnect();
+        $this->rememberAlbumFixture((int) $albumId);
     }
 
     /**
@@ -165,8 +192,9 @@ class AlbumFeatureContext implements Context {
         $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1, '$albumCode');");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`, `code`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample', 1, '$albumCode');");
         $sql->disconnect();
+        $this->rememberAlbumFixture((int) $albumId, 0, (string) $albumCode);
     }
 
     /**
@@ -179,6 +207,9 @@ class AlbumFeatureContext implements Context {
         $sql = new Sql();
         $sql->executeStatement("UPDATE `albums` SET `code` = '$albumCode' WHERE `id` = $albumId;");
         $sql->disconnect();
+        if (isset($this->albumFixtures[(int) $albumId])) {
+            $this->albumFixtures[(int) $albumId]['code'] = (string) $albumCode;
+        }
     }
 
     /**
@@ -192,7 +223,8 @@ class AlbumFeatureContext implements Context {
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', 1, '$images');");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample-album', 1, '$images');");
+        $this->rememberAlbumFixture((int) $albumId, (int) $images);
         $oldMask = umask(0);
         if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
             mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
@@ -217,7 +249,8 @@ class AlbumFeatureContext implements Context {
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', {$this->user->getId()}, '$images');");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample-album', {$this->user->getId()}, '$images');");
+        $this->rememberAlbumFixture((int) $albumId, (int) $images);
         $oldMask = umask(0);
         if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
             mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
@@ -687,6 +720,8 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iAddANewAlbum() {
+        $this->editingAlbumId = null;
+        $this->pendingAlbumFields = [];
         $this->driver->findElement(WebDriverBy::id('add-album-btn'))->click();
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-folder-close')));
     }
@@ -699,8 +734,11 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iProvideForTheAlbum($value, $field) {
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-' . $field)));
-        $this->driver->findElement(WebDriverBy::id('new-album-' . $field))->clear()->sendKeys($value);
+        $selector = WebDriverBy::id('new-album-' . $field);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
+        $input = $this->driver->findElement($selector);
+        $input->clear()->sendKeys($value);
+        $this->pendingAlbumFields[$field] = (string) $input->getAttribute('value');
     }
 
     /**
@@ -709,14 +747,25 @@ class AlbumFeatureContext implements Context {
      */
     public function iCreateMyAlbum() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-folder-close')));
+        $submitted = $this->captureAlbumFormValues();
         $this->driver->findElement(WebDriverBy::className('glyphicon-folder-close'))->click();
-        //if this is a success, we need to add the new album to the cleanup list
+        // If this is a success, remember the browser-submitted values for later UI assertions.
         try {
             $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album')));
-            //this means we added an album, grab the id, so we can later delete it
-            $this->albumIds[] = $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id');
+            $albumId = (int) $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id');
+            $this->albumIds[] = $albumId;
+            $this->editingAlbumId = $albumId;
+            $this->albumFixtures[$albumId] = [
+                'name' => $submitted['name'] ?? '',
+                'description' => $submitted['description'] ?? '',
+                'date' => $submitted['date'] ?? '',
+                'lastAccessed' => '',
+                'code' => $submitted['code'] ?? '',
+                'images' => '0',
+            ];
+            $this->pendingAlbumFields = [];
         } catch (TimeoutException|NoSuchElementException $e) {
-            // do nothing, we're in an error condition, which is fine
+            // Do nothing: validation/error scenarios intentionally remain in the dialog.
         }
     }
 
@@ -727,6 +776,8 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iEditAlbum($albumId) {
+        $this->editingAlbumId = (int) $albumId;
+        $this->pendingAlbumFields = [];
         $album = new Album($this->driver, $this->wait);
         $albumRow = $album->getAlbumRow($albumId);
         $albumRow->findElement(WebDriverBy::className('edit-album-btn'))->click();
@@ -754,8 +805,15 @@ class AlbumFeatureContext implements Context {
         $this->driver->findElement(WebDriverBy::className('glyphicon-save'))->click();
         try {
             $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save'))));
+            if ($this->editingAlbumId !== null && isset($this->albumFixtures[$this->editingAlbumId])) {
+                foreach ($this->pendingAlbumFields as $field => $value) {
+                    $fixtureField = $field === 'last-accessed' ? 'lastAccessed' : $field;
+                    $this->albumFixtures[$this->editingAlbumId][$fixtureField] = (string) $value;
+                }
+            }
+            $this->pendingAlbumFields = [];
         } catch (Exception|TimeoutException|NoSuchElementException $e) {
-            // do nothing, we're in an error condition, which is fine
+            // Do nothing: validation/error scenarios intentionally remain in the dialog.
         }
     }
 
@@ -1398,17 +1456,16 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeAlbumAlbum($albumId, $albumAttribute) {
+        $albumId = (int) $albumId;
+        Assert::assertArrayHasKey($albumId, $this->albumFixtures, "No expected fixture state for album $albumId");
+
         $album = new Album($this->driver, $this->wait);
         $albumRow = $album->getAlbumRow($albumId);
-        Assert::assertTrue($albumRow->findElement(WebDriverBy::className('album-' . str_replace(' ', '-', $albumAttribute)))->isDisplayed());
-        $sql = new Sql();
-        $albumInfo = $sql->getRow("SELECT * FROM albums WHERE id = $albumId");
-        $sql->disconnect();
-        $expected = $albumInfo[$this->toCamelCase($albumAttribute)];
-        if ($albumAttribute == 'date') {
-            $expected = explode(' ', $expected)[0];
-        }
-        Assert::assertEquals($expected, $albumRow->findElement(WebDriverBy::className('album-' . str_replace(' ', '-', $albumAttribute)))->getText());
+        $field = $this->toCamelCase($albumAttribute);
+        $element = $albumRow->findElement(WebDriverBy::className('album-' . str_replace(' ', '-', $albumAttribute)));
+
+        Assert::assertTrue($element->isDisplayed());
+        Assert::assertSame((string) $this->albumFixtures[$albumId][$field], $element->getText());
     }
 
     /**
@@ -1532,15 +1589,7 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeTheAlbumDetailsModalForAlbum($albumId) {
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-name')));
-        $sql = new Sql();
-        $album = $sql->getRow("SELECT * FROM `albums` WHERE `albums`.`id` = $albumId;");
-        $sql->disconnect();
-        Assert::assertEquals($albumId, $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
-        Assert::assertEquals($album['name'], $this->driver->findElement(WebDriverBy::id('new-album-name'))->getAttribute('value'));
-        Assert::assertEquals($album['description'], $this->driver->findElement(WebDriverBy::id('new-album-description'))->getAttribute('value'));
-        Assert::assertEquals(substr($album['date'], 0, 10), $this->driver->findElement(WebDriverBy::id('new-album-date'))->getAttribute('value'));
-        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('new-album-code'))));
+        $this->assertAlbumDetailsModal((int) $albumId, false);
     }
 
     /**
@@ -1576,15 +1625,26 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeTheEditAlbumDetailsModalForAlbum($albumId) {
+        $this->assertAlbumDetailsModal((int) $albumId, true);
+    }
+
+    private function assertAlbumDetailsModal(int $albumId, bool $expectCode): void {
+        Assert::assertArrayHasKey($albumId, $this->albumFixtures, "No expected fixture state for album $albumId");
+        $expected = $this->albumFixtures[$albumId];
+
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-name')));
-        $sql = new Sql();
-        $album = $sql->getRow("SELECT * FROM `albums` WHERE `albums`.`id` = $albumId;");
-        $sql->disconnect();
-        Assert::assertEquals($albumId, $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
-        Assert::assertEquals($album['name'], $this->driver->findElement(WebDriverBy::id('new-album-name'))->getAttribute('value'));
-        Assert::assertEquals($album['description'], $this->driver->findElement(WebDriverBy::id('new-album-description'))->getAttribute('value'));
-        Assert::assertEquals(substr($album['date'], 0, 10), $this->driver->findElement(WebDriverBy::id('new-album-date'))->getAttribute('value'));
-        Assert::assertEquals($album['code'], $this->driver->findElement(WebDriverBy::id('new-album-code'))->getAttribute('value'));
+        Assert::assertSame((string) $albumId, $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
+        Assert::assertSame($expected['name'], $this->driver->findElement(WebDriverBy::id('new-album-name'))->getAttribute('value'));
+        Assert::assertSame($expected['description'], $this->driver->findElement(WebDriverBy::id('new-album-description'))->getAttribute('value'));
+        Assert::assertSame($expected['date'], $this->driver->findElement(WebDriverBy::id('new-album-date'))->getAttribute('value'));
+
+        $code = $this->driver->findElements(WebDriverBy::id('new-album-code'));
+        if ($expectCode) {
+            Assert::assertCount(1, $code);
+            Assert::assertSame($expected['code'], $code[0]->getAttribute('value'));
+        } else {
+            Assert::assertCount(0, $code);
+        }
     }
 
     /**
