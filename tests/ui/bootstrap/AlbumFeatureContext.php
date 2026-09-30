@@ -1630,6 +1630,14 @@ Comment',
     }
 
     /**
+     * @Then /^I see the new album listed$/
+     */
+    public function iSeeTheNewAlbumListed(): void {
+        Assert::assertNotNull($this->editingAlbumId, 'No newly created album id was captured from the browser');
+        $this->iSeeAlbumListed($this->editingAlbumId);
+    }
+
+    /**
      * @Then /^I don't see album (\d+) listed$/
      * @param $albumId
      * @throws NoSuchElementException
