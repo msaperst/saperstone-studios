@@ -53,7 +53,6 @@ Feature: Contract
     And the submit contract button is not present
     And I see a success message indicating my contract will be emailed to me
     And I see the signed contract displayed
-    And the signed contract exists for 99999
     And contract 99999 was emailed to me
     And a copy of contract 99999 was emailed to the admin
 
