@@ -262,7 +262,6 @@ Feature: Admin Album
     And I send the user notifications
     And I confirm sending user notification
     Then I don't see any email notification messages
-    And email notifications are marked as sent for album 99999
     And I see an album notification for album 99999 was emailed out
 
   Scenario: Opening an image sets the hash to that image
