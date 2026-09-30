@@ -63,6 +63,13 @@ class GalleryFeatureContext implements Context {
         $sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
         $sql->disconnect();
         system("rm -rf " . escapeshellarg(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
+        foreach ($this->galleryIds as $galleryId) {
+            system(
+                "rm -rf " . escapeshellarg(
+                    dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/img/gallery-' . $galleryId
+                )
+            );
+        }
     }
 
     /**
@@ -73,6 +80,16 @@ class GalleryFeatureContext implements Context {
      */
     public function galleryExistsWithImages($galleryId, $images) {
         $this->galleryIds[] = $galleryId;
+
+        // Gallery uploads are stored under a path derived from the fixture
+        // gallery title. Remove leftovers from interrupted/repeated runs so
+        // each scenario starts with a clean filesystem as well as a clean DB.
+        system(
+            "rm -rf " . escapeshellarg(
+                dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/img/gallery-' . $galleryId
+            )
+        );
+
         $sql = new Sql();
         // A prior interrupted Behat run must not poison this deterministic fixture.
         $sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery` = ?", [$galleryId]);
