@@ -155,17 +155,6 @@ class ContractFeatureContext implements Context {
     }
 
     /**
-     * @Then /^the signed contract exists for (\d+)$/
-     * @param $contractId
-     */
-    public function theSignedContractExistsFor($contractId) {
-        $sql = new Sql();
-        $contract = dirname(__DIR__, 3) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
-        $sql->disconnect();
-        Assert::assertTrue(file_exists("$contract"));
-    }
-
-    /**
      * @Then /^contract (\d+) was emailed to me$/
      * @param $contractId
      * @throws ExceptionAlias
