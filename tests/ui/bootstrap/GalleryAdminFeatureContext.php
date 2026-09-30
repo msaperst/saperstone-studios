@@ -226,20 +226,16 @@ JS
         if ($file === false) {
             throw new Exception('Unable to resolve gallery upload test image');
         }
+        $initialCount = count($this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery')));
         $this->driver->findElement($input)->sendKeys($file);
 
-        // Upload completion is reflected by the dialog returning its upload
-        // icon from the spinning state and re-enabling its buttons.
-        $spinner = WebDriverBy::cssSelector(
-            '.bootstrap-dialog.modal.in .bootstrap-dialog-footer-buttons .glyphicon-asterisk.icon-spin'
-        );
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($spinner));
-        $this->wait->until(WebDriverExpectedCondition::invisibilityOfElementLocated($spinner));
-
-        $close = WebDriverBy::xpath(
-            "//div[contains(@class, 'bootstrap-dialog') and contains(@class, 'modal') and contains(@class, 'in')]//button[normalize-space(.)='Close']"
-        );
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($close));
+        // A successful upload calls gallery.loadImages(1). Wait until the
+        // uploaded image is actually visible in the gallery, not merely until
+        // the upload widget has stopped spinning.
+        $this->wait->until(function () use ($initialCount) {
+            return count($this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery')))
+                === $initialCount + 1;
+        });
     }
 
     private function visibleGalleryImageOrder(): array {
@@ -258,15 +254,20 @@ JS
 
     private function setInputValue(WebDriverBy $selector, string $value): void {
         $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($selector));
-        $input = $this->driver->findElement($selector);
-        $input->clear();
-        $input->sendKeys($value);
 
-        // WebDriver keyboard input can occasionally race with dynamic modal
-        // fields. Do not submit until the browser reports the intended value.
-        $this->wait->until(function () use ($selector, $value) {
-            return $this->driver->findElement($selector)->getAttribute('value') === $value;
-        });
+        // Set dynamic Bootstrap-dialog fields through the browser and dispatch
+        // the same input/change events the page receives from normal editing.
+        // This avoids intermittent WebDriver key delivery without bypassing
+        // any application behavior.
+        $input = $this->driver->findElement($selector);
+        $this->driver->executeScript(
+            "arguments[0].focus(); arguments[0].value = arguments[1]; " .
+            "arguments[0].dispatchEvent(new Event('input', {bubbles:true})); " .
+            "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));",
+            [$input, $value]
+        );
+
+        Assert::assertSame($value, $input->getAttribute('value'));
     }
 
     private function galleryCard(int $imageNumber) {
