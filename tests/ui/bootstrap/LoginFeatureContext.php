@@ -262,11 +262,22 @@ class LoginFeatureContext implements Context {
      */
     public function iSubmitInNewCredentials() {
         $login = new Login($this->driver, $this->wait);
-        $this->wait->until(function () {
-            $resetKey = User::withId($this->user->getId())->getDataBasic()['resetKey'] ?? '';
-            return $resetKey !== '';
-        });
-        $login->requestResetPassword($this->user->getEmail(), User::withId($this->user->getId())->getDataBasic()['resetKey'], $this->user->getPassword(), $this->user->getPassword());
+        $emailText = CustomAsserts::getEmailText(
+            $this->user->getEmail(),
+            'noreply@saperstonestudios.com',
+            'Reset Key For Saperstone Studios Account'
+        );
+
+        Assert::assertMatchesRegularExpression('/\\t([A-Za-z0-9]{8})\\s*$/', $emailText);
+        preg_match('/\\t([A-Za-z0-9]{8})\\s*$/', $emailText, $matches);
+        $resetKey = $matches[1];
+
+        $login->requestResetPassword(
+            $this->user->getEmail(),
+            $resetKey,
+            $this->user->getPassword(),
+            $this->user->getPassword()
+        );
     }
 
     /**
