@@ -233,17 +233,11 @@ JS
             throw new Exception('Unable to resolve gallery upload test image');
         }
         $initialCount = count($this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery')));
-        $fileInput = $this->driver->findElement($input);
-        $fileInput->sendKeys($file);
-
-        // Selenium assigns the file to the input, but this legacy upload
-        // plugin starts its workflow from the input's change handler. Dispatch
-        // change explicitly so the same plugin path used by a real selection
-        // is guaranteed to run.
-        $this->driver->executeScript(
-            "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));",
-            [$fileInput]
-        );
+        // WebDriver file selection fires the native change event. The upload
+        // plugin handles that event by removing this input/form and creating a
+        // replacement, so do not retain or interact with this element after
+        // sendKeys().
+        $this->driver->findElement($input)->sendKeys($file);
 
         // A successful upload calls gallery.loadImages(1). Wait until the
         // uploaded image is actually visible in the gallery, not merely until
