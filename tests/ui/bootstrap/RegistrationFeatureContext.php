@@ -5,13 +5,13 @@ namespace ui\bootstrap;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use CustomAsserts;
-use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Google\Exception as ExceptionAlias;
 use PHPUnit\Framework\Assert;
+use Sql;
 use ui\models\Registration;
 use User;
 
@@ -42,6 +42,7 @@ class RegistrationFeatureContext implements Context {
     private $lastName;
     private $email;
     private $username;
+    private array $registeredUsernames = [];
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -52,6 +53,25 @@ class RegistrationFeatureContext implements Context {
         $this->wait = new WebDriverWait($this->driver, 10);
         $this->baseUrl = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getBaseUrl();
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
+    }
+
+    /**
+     * @AfterScenario
+     */
+    public function cleanupRegisteredUsers(): void {
+        if ($this->registeredUsernames === []) {
+            return;
+        }
+
+        // Teardown is fixture management, so direct persistence access is
+        // appropriate here even though browser actions/assertions never use it.
+        $sql = new Sql();
+        foreach ($this->registeredUsernames as $username) {
+            $sql->executeStatement('DELETE FROM users WHERE usr = ?', [$username]);
+        }
+        $nextId = ((int) $sql->getRow('SELECT MAX(id) AS count FROM users')['count']) + 1;
+        $sql->executeStatement("ALTER TABLE users AUTO_INCREMENT = $nextId");
+        $sql->disconnect();
     }
 
     /**
@@ -73,12 +93,8 @@ class RegistrationFeatureContext implements Context {
      */
     public function iRegisterMyUser() {
         $register = new Registration($this->driver, $this->wait);
-        try {
-            $user = $register->registerMyUser($this->user);
-            $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($user);
-        } catch (Exception $e) {
-            $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->dontDeleteUser();
-        }
+        $register->registerMyUser($this->user);
+        $this->registeredUsernames[] = $this->user->getUsername();
     }
 
     /**
@@ -92,12 +108,7 @@ class RegistrationFeatureContext implements Context {
      */
     public function iRegisterAUserWith($username, $password, $confirmPassword, $firstName, $lastName, $email) {
         $register = new Registration($this->driver, $this->wait);
-        try {
-            $user = $register->registerAUser($username, $password, $confirmPassword, $firstName, $lastName, $email);
-            $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->setUser($user);
-        } catch (Exception $e) {
-            $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->dontDeleteUser();
-        }
+        $register->registerAUser($username, $password, $confirmPassword, $firstName, $lastName, $email);
     }
 
     /**
