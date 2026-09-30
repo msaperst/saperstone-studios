@@ -58,5 +58,6 @@ Feature: Gallery Administration
     When I open the gallery for editing
     And I upload the gallery test image
     And I reload the page
+    And I scroll to the bottom of the page
     Then I see 5 gallery images
     And I see the uploaded gallery image
