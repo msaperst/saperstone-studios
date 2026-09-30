@@ -362,6 +362,14 @@ class BlogFeatureContext implements Context {
         $blog = new Blog($this->driver, $this->wait);
         $blog->waitForCommentsToLoad();
 
+        $this->wait->until(function () use ($blog, $comment) {
+            $comments = array_map(
+                fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
+                $blog->getCommentBlocks()
+            );
+            return in_array($comment, $comments, true);
+        });
+
         $comments = array_map(
             fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
             $blog->getCommentBlocks()
@@ -375,6 +383,14 @@ class BlogFeatureContext implements Context {
     public function iDoNotSeeTheComment($comment): void {
         $blog = new Blog($this->driver, $this->wait);
         $blog->waitForCommentsToLoad();
+
+        $this->wait->until(function () use ($blog, $comment) {
+            $comments = array_map(
+                fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
+                $blog->getCommentBlocks()
+            );
+            return !in_array($comment, $comments, true);
+        });
 
         $comments = array_map(
             fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
