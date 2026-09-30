@@ -196,4 +196,5 @@ class ContractFeatureContext implements Context {
             null,
             '.pdf'
         );
-    }}
+    }
+}
