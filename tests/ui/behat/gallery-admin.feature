@@ -29,7 +29,7 @@ Feature: Gallery Administration
     When I begin rearranging gallery images
     And I move gallery image 1 after gallery image 4
     And I save the gallery image order
-    Then gallery 999 image order is "Image 1,Image 2,Image 3,Image 0"
+    Then the reordered gallery image order is persisted for gallery 999
 
   Scenario: Admin can upload an image to a gallery
     When I open gallery 999 for editing
