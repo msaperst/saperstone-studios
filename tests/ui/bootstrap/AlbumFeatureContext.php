@@ -28,19 +28,30 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPAR
 
 class AlbumFeatureContext implements Context {
 
-    private function resolveUserId(string $user): string {
-        if (ctype_digit($user)) {
-            return $user;
+    private const FIXTURE_USERS = [
+        '0' => ['id' => '0', 'username' => '<i>All Users</i>'],
+        'msaperst' => ['id' => '1', 'username' => 'msaperst'],
+        'lsaperst' => ['id' => '2', 'username' => 'lsaperst'],
+        'downloader' => ['id' => '3', 'username' => 'downloader'],
+        'uploader' => ['id' => '4', 'username' => 'uploader'],
+    ];
+
+    private function resolveTestUser(string $user): array {
+        if (isset(self::FIXTURE_USERS[$user])) {
+            return self::FIXTURE_USERS[$user];
         }
-        $sql = new Sql();
-        $rows = $sql->getRows("SELECT id, usr FROM users");
-        $sql->disconnect();
-        foreach ($rows as $row) {
-            if ($row['usr'] === $user) {
-                return (string) $row['id'];
+
+        foreach (self::FIXTURE_USERS as $fixture) {
+            if ($fixture['id'] === $user) {
+                return $fixture;
             }
         }
+
         throw new Exception("Unable to resolve test user '$user'");
+    }
+
+    private function resolveUserId(string $user): string {
+        return $this->resolveTestUser($user)['id'];
     }
 
     private function resolveUserIds(string $users): array {
@@ -666,9 +677,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iAddUserForAlbumAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->giveUserAlbumAccess($user);
+        $album->giveUserAlbumAccess($user['id'], $user['username']);
     }
 
     /**
@@ -678,9 +689,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iAddUserForDownloadAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->giveUserDownloadAccess($user);
+        $album->giveUserDownloadAccess($user['id'], $user['username']);
     }
 
     /**
@@ -690,9 +701,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iTryToAddUserForDownloadAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->tryToGiveUserDownloadAccess($user);
+        $album->tryToGiveUserDownloadAccess($user['username']);
     }
 
     /**
@@ -702,9 +713,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iAddUserForShareAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->giveUserShareAccess($user);
+        $album->giveUserShareAccess($user['id'], $user['username']);
     }
 
     /**
@@ -714,9 +725,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iRemoveUserForAlbumAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->removeUserAlbumAccess($user);
+        $album->removeUserAlbumAccess($user['id']);
     }
 
     /**
@@ -726,9 +737,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iRemoveUserForDownloadAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->removeUserDownloadAccess($user);
+        $album->removeUserDownloadAccess($user['id']);
     }
 
     /**
@@ -738,9 +749,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iRemoveUserForShareAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->removeUserShareAccess($user);
+        $album->removeUserShareAccess($user['id']);
     }
 
     /**
