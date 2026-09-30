@@ -101,6 +101,13 @@ Feature: Profile Administration
     And I am taken to the "user/profile.php" page
     And I receive a welcome email
 
+  Scenario: Registered account can log in again
+    Given I am on the registration page
+    When I register my user
+    And I logout
+    And I log in to the site using credentials "testUser" "12345"
+    Then I see my user name displayed
+
   Scenario: Username cannot be changed from the profile
     Given an enabled user account exists
     And I am logged in with saved credentials
