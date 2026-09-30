@@ -146,6 +146,26 @@ The Behat tests exercise browser and JavaScript behavior and therefore still req
 composer ui-behat-test
 ```
 
+### Behat functional-test design
+
+Behat is the full-stack, user-facing test layer. A scenario should prove behavior through the same browser-visible interface a user exercises rather than using lower-level state as a shortcut.
+
+- **Given steps may establish fixtures directly.** Database, filesystem, Mailpit cleanup, and similar setup are appropriate when they put the application into a deterministic known state without being the behavior under test.
+- **When steps must exercise the application through the browser UI.** Do not perform the action by updating the database, calling an API directly, or invoking application internals from test glue. If browser interaction cannot perform the behavior, the Behat scenario is not proving the full-stack workflow.
+- **Then steps must verify user-observable behavior through the browser UI.** Do not use database queries, direct API calls, or internal application state as the assertion. Those checks belong in unit, integration, or API tests.
+- Test the **user outcome**, not an implementation proxy. For example, assert that updated content is visible rather than merely that a modal closed or an AJAX request completed.
+- Use explicit browser-visible synchronization instead of arbitrary sleeps. Wait for the state the user would observe: a dialog closes, a control becomes enabled, content appears, navigation completes, or an error is displayed.
+- Preserve intentional UI behavior such as lazy loading and protected-image rendering. Interact with it as a user would instead of bypassing it to make a test easier.
+
+For mutations that affect the current page, distinguish two contracts when both matter:
+
+1. **Immediate UI behavior:** after the action completes, the current page reflects the change without an unnecessary reload.
+2. **Persistence:** after a reload or later navigation, the changed state is still visible.
+
+These should normally be separate scenarios so a persistence check cannot hide a broken immediate UI update. Not every mutation needs both: if the action itself is the visible change (for example, drag-and-drop reordering), test that interaction and add a reload scenario when persistence is the meaningful additional contract. Likewise, do not invent an immediate UI requirement that the product intentionally does not provide.
+
+Keep lower-layer verification in the appropriate suite. Behat may overlap with Jest/API/Page tests at important workflow boundaries, but its purpose is to prove that the assembled application works from the user's perspective.
+
 ## Test command reference
 
 | Suite | Command |
