@@ -261,6 +261,17 @@ class LoginFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSubmitInNewCredentials() {
+        $this->submitResetPassword($this->user->getPassword());
+    }
+
+    /**
+     * @When /^I reset my password to "([^"]*)" using the emailed key$/
+     */
+    public function iResetMyPasswordToUsingTheEmailedKey($password): void {
+        $this->submitResetPassword((string) $password);
+    }
+
+    private function submitResetPassword(string $password): void {
         $login = new Login($this->driver, $this->wait);
         $emailText = CustomAsserts::getEmailText(
             $this->user->getEmail(),
@@ -270,13 +281,12 @@ class LoginFeatureContext implements Context {
 
         Assert::assertMatchesRegularExpression('/\\t([A-Za-z0-9]{8})\\s*$/', $emailText);
         preg_match('/\\t([A-Za-z0-9]{8})\\s*$/', $emailText, $matches);
-        $resetKey = $matches[1];
 
         $login->requestResetPassword(
             $this->user->getEmail(),
-            $resetKey,
-            $this->user->getPassword(),
-            $this->user->getPassword()
+            $matches[1],
+            $password,
+            $password
         );
     }
 
