@@ -1681,54 +1681,6 @@ Comment',
     }
 
     /**
-     * @Then /^users "([^"]*)" have access to album (\d+)$/
-     * @param $users
-     * @param $albumId
-     */
-    public function usersHaveAlbumAccess($users, $albumId) {
-        $users = $this->resolveUserIds((string) $users);
-        $sql = new Sql();
-        $accessors = $sql->getRows("SELECT * FROM albums_for_users WHERE album = $albumId");
-        $sql->disconnect();
-        Assert::assertEquals(sizeof($users), sizeof($accessors));
-        for ($i = 0; $i < sizeof($accessors); $i++) {
-            Assert::assertEquals($users[$i], $accessors[$i]['user']);
-        }
-    }
-
-    /**
-     * @Then /^users "([^"]*)" can download album (\d+)$/
-     * @param $users
-     * @param $albumId
-     */
-    public function usersCanDownloadAlbum($users, $albumId) {
-        $users = $this->resolveUserIds((string) $users);
-        $sql = new Sql();
-        $downloaders = $sql->getRows("SELECT * FROM download_rights WHERE album = $albumId");
-        $sql->disconnect();
-        Assert::assertEquals(sizeof($users), sizeof($downloaders));
-        for ($i = 0; $i < sizeof($downloaders); $i++) {
-            Assert::assertEquals($users[$i], $downloaders[$i]['user']);
-        }
-    }
-
-    /**
-     * @Then /^users "([^"]*)" can share album (\d+)$/
-     * @param $users
-     * @param $albumId
-     */
-    public function usersCanShareAlbum($users, $albumId) {
-        $users = $this->resolveUserIds((string) $users);
-        $sql = new Sql();
-        $sharers = $sql->getRows("SELECT * FROM share_rights WHERE album = $albumId");
-        $sql->disconnect();
-        Assert::assertEquals(sizeof($users), sizeof($sharers));
-        for ($i = 0; $i < sizeof($sharers); $i++) {
-            Assert::assertEquals($users[$i], $sharers[$i]['user']);
-        }
-    }
-
-    /**
      * @Then /^I see thumbnails being created$/
      * @throws NoSuchElementException
      * @throws TimeoutException
