@@ -54,15 +54,6 @@ class GalleryAdminFeatureContext implements Context {
     }
 
     /**
-     * @Then /^the gallery edit dialog is closed$/
-     */
-    public function galleryEditDialogIsClosed(): void {
-        $selector = WebDriverBy::id('new-gallery-title');
-        $this->wait->until(WebDriverExpectedCondition::invisibilityOfElementLocated($selector));
-        Assert::assertCount(0, $this->driver->findElements($selector));
-    }
-
-    /**
      * @Then /^I see the gallery heading "([^"]*)"$/
      */
     public function iSeeGalleryHeading($heading): void {
