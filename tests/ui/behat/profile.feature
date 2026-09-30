@@ -227,7 +227,8 @@ Feature: Profile Administration
     And I try to update to an email of "msaperst+sstest2@gmail.com"
     And I update my user
     Then I see a success message indicating my user was updated
-    And my user information is updated
+    When I reload the page
+    Then I see my updated profile information
 
   Scenario: User can update profile information and password
     Given an enabled user account exists
@@ -241,4 +242,5 @@ Feature: Profile Administration
     And I try to update to an email of "msaperst+sstest2@gmail.com"
     And I update my user
     Then I see a success message indicating my user was updated
-    And my user information is updated
+    When I reload the page
+    Then I see my updated profile information
