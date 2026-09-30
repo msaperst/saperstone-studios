@@ -238,10 +238,13 @@ class ContactMeTest extends TestCase {
         CustomAsserts::assertEmailCount(0);
     }
 
-    public function testEncodedLoadTimeTooFastIsDropped(): void {
+    /**
+     * @dataProvider tooFastLoadTimes
+     */
+    public function testEncodedLoadTimeTooFastIsDropped(int $secondsAgo): void {
         $response = $this->http->request('POST', 'api/contact-me.php', [
             'form_params' => [
-                'loadtime' => base_convert((string)(time() + 10), 10, 36),
+                'loadtime' => base_convert((string)(time() - $secondsAgo), 10, 36),
                 'name' => 'Max',
                 'phone' => '571-245-3351',
                 'email' => 'msaperst+sstest@gmail.com',
@@ -252,6 +255,33 @@ class ContactMeTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
+    }
+
+    public static function tooFastLoadTimes(): array {
+        return [
+            'submitted immediately' => [0],
+            'submitted after one second' => [1],
+            'submitted after two seconds' => [2],
+        ];
+    }
+
+    public function testEncodedLoadTimeAtMinimumDelaySendsEmail(): void {
+        $response = $this->http->request('POST', 'api/contact-me.php', [
+            'form_params' => [
+                'loadtime' => base_convert((string)(time() - 3), 10, 36),
+                'name' => 'Max',
+                'phone' => '571-245-3351',
+                'email' => 'msaperst+sstest@gmail.com',
+                'message' => 'Hi There! I am a test email'
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(
+            "Thank you for submitting your comment. We greatly appreciate your interest and feedback. Someone will get back to you within 24 hours.",
+            (string)$response->getBody()
+        );
+        CustomAsserts::assertEmailCount(2);
     }
 
     public function testEncodedLoadTimeOldEnoughSendsEmail(): void {

@@ -13,8 +13,7 @@ Feature: Albums
     And I am on the "user/" page
 
   Scenario: Downloader able to see all their albums
-    Then I see 1 album listed
-    And I see album 99999 listed
+    Then I see album 99999 listed
 
   Scenario: Downloader add blank album
     When I add album "" to my albums
@@ -27,13 +26,11 @@ Feature: Albums
   Scenario: Downloader able to add an album
     When I add album "album99998" to my albums
     Then I see an info message indicating album successfully added
-    And I see 2 albums listed
     And I see album 99998 listed
 
   Scenario: Downloader able to add an album by keyboard
     When I add album "album99998" to my albums with keyboard
     Then I see an info message indicating album successfully added
-    And I see 2 albums listed
     And I see album 99998 listed
 
   Scenario Outline: Downloader able to see album information

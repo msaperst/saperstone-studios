@@ -36,6 +36,7 @@ $images = $sql->getRows("SELECT
         album_images.width, 
         album_images.location, 
         album_images.title, 
+        album_images.caption,
         album_images.sequence, 
         IF(favorites.image IS NULL, 0, 1) AS favorite,
         IF(

@@ -74,6 +74,9 @@ class GalleryFeatureContext implements Context {
     public function galleryExistsWithImages($galleryId, $images) {
         $this->galleryIds[] = $galleryId;
         $sql = new Sql();
+        // A prior interrupted Behat run must not poison this deterministic fixture.
+        $sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery` = ?", [$galleryId]);
+        $sql->executeStatement("DELETE FROM `galleries` WHERE `id` = ?", [$galleryId]);
         $sql->executeStatement("INSERT INTO `galleries` (`id`, `parent`, `image`, `title`, `comment`) VALUES ($galleryId, '1', 'sample.jpg', 'Gallery $galleryId', NULL);");
         $oldMask = umask(0);
         if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/sample')) {
@@ -90,13 +93,13 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Given /^gallery (\d+) image (\d+) has captain "([^"]*)"$/
+     * @Given /^gallery (\d+) image (\d+) has caption "([^"]*)"$/
      * @param $gallery
      * @param $image
      * @param $caption
      * @throws Exception
      */
-    public function galleryImageHasCaptain($gallery, $image, $caption) {
+    public function galleryImageHasCaption($gallery, $image, $caption) {
         $sql = new Sql();
         $sql->executeStatement("UPDATE `gallery_images` SET caption = '$caption' WHERE `gallery` = $gallery AND sequence = " . ($image - 1));
         $sql->disconnect();
@@ -174,25 +177,25 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see the info icon on gallery image (\d+)$/
-     * @param $imgNum
+     * @Then /^I see the gallery view control$/
      */
-    public function iSeeTheInfoIconOnImage($imgNum) {
+    public function iSeeTheGalleryViewControl() {
         Assert::assertTrue($this->image->findElement(WebDriverBy::className('info'))->isDisplayed());
     }
 
     /**
-     * @Then /^I see gallery image (\d+) in the preview modal$/
+     * @Then /^I see gallery image (\d+) in the gallery viewer$/
      * @param $imgNum
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function iSeeImageInThePreviewModal($imgNum) {
-        $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id($slideShowId))));
-        Assert::assertTrue($this->driver->findElement(WebDriverBy::id($slideShowId))->isDisplayed());
-        $activeImage = $this->driver->findElement(WebDriverBy::cssSelector('div.active'));
-        Assert::assertEquals('Image ' . ($imgNum - 1), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'), $activeImage->findElement(WebDriverBy::tagName('div'))->getAttribute('alt'));
+    public function iSeeImageInTheGalleryViewer($imgNum) {
+        $modal = $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel'));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($modal));
+        Assert::assertTrue($modal->isDisplayed());
+        $gallery = new Gallery($this->driver, $this->wait);
+        $activeImage = $gallery->getSlideShowImage()->findElement(WebDriverBy::className('contain'));
+        Assert::assertEquals('Image ' . ($imgNum - 1), $activeImage->getAttribute('alt'), $activeImage->getAttribute('alt'));
     }
 
     /**
@@ -229,13 +232,12 @@ class GalleryFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I don't see the gallery preview modal$/
+     * @Then /^I don't see the gallery viewer$/
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public function iDonTSeeTheGalleryPreviewModal() {
-        $slideShowId = str_replace(" ", "-", substr($this->driver->findElement(WebDriverBy::tagName('h1'))->getText(), 0, -8));
-        $modal = $this->driver->findElement(WebDriverBy::id($slideShowId));
+    public function iDonTSeeTheGalleryViewer() {
+        $modal = $this->driver->findElement(WebDriverBy::cssSelector('.modal-carousel'));
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
         Assert::assertFalse($modal->isDisplayed());
     }

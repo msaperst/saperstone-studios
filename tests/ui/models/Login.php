@@ -59,6 +59,9 @@ class Login {
         $this->driver->findElement(WebDriverBy::linkText($username))->click();
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('logout-button'))));
         $this->driver->findElement(WebDriverBy::id('logout-button'))->click();
+        $this->wait->until(
+            WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('login-menu-item'))
+        );
     }
 
     public function openResetPassword() {
@@ -71,6 +74,18 @@ class Login {
         $this->openResetPassword();
         $this->driver->findElement(WebDriverBy::id('forgot-password-email'))->sendKeys($email);
         $this->driver->findElement(WebDriverBy::id('forgot-password-submit'))->click();
+        if ($email !== '') {
+            $this->wait->until(function () {
+                return $this->driver->findElement(WebDriverBy::id('forgot-password-reset-password'))->isDisplayed()
+                    || count($this->driver->findElements(WebDriverBy::cssSelector('#forgot-password-modal .alert-danger'))) > 0;
+            });
+        } else {
+            $this->wait->until(
+                WebDriverExpectedCondition::presenceOfElementLocated(
+                    WebDriverBy::cssSelector('#forgot-password-modal .alert-danger')
+                )
+            );
+        }
     }
 
     public function requestResetPassword($email, $code, $password, $confirm) {

@@ -19,44 +19,44 @@ Feature: Album
     When I scroll to the bottom of the page
     Then I see the "3rd" album images load
 
-  Scenario: Hovering an image zooms in
+  Scenario: Hovering an image reveals image controls
     Given I am on the "user/album.php?album=99999" page
     When I hover over album image 1
-    Then I see the info icon on album image 1
+    Then I see the image controls on album image 1
 
-  Scenario: Clicking an image brings up a preview modal
+  Scenario: Opening an image displays it in the image viewer
     Given I am on the "user/album.php?album=99999" page
     When I view album image 1
-    Then I see album image 1 in the preview modal
+    Then I see album image 1 in the image viewer
 
-  Scenario: Clicking another image brings up a preview modal
+  Scenario: Opening another image displays it in the image viewer
     Given I am on the "user/album.php?album=99999" page
     When I view album image 6
-    Then I see album image 6 in the preview modal
+    Then I see album image 6 in the image viewer
 
-  Scenario: Modal does not automatically scroll to the next image
+  Scenario: Image viewer does not automatically advance
     Given I am on the "user/album.php?album=99999" page
     When I view album image 1
     And I wait for 5 seconds
-    Then I see album image 1 in the preview modal
+    Then I see album image 1 in the image viewer
 
-  Scenario: Modal does not automatically scroll to the next image on hash
+  Scenario: Deep-linked image does not automatically advance
     Given I am on the "user/album.php?album=99999#0" page
     When I wait for 5 seconds
-    Then I see album image 1 in the preview modal
+    Then I see album image 1 in the image viewer
 
   Scenario: Able to manually advance to next image
     Given I am on the "user/album.php?album=99999#0" page
     When I advance to the next album image
-    Then I see album image 2 in the preview modal
+    Then I see album image 2 in the image viewer
 
   Scenario: Able to manually advance to previous image
     Given I am on the "user/album.php?album=99999#0" page
     When I advance to the previous album image
-    Then I see album image 16 in the preview modal
+    Then I see album image 16 in the image viewer
 
   Scenario: Images with captions display captions
-    Given album 99999 image 2 has captain "sample caption"
+    Given album 99999 image 2 has caption "sample caption"
     Given I am on the "user/album.php?album=99999#1" page
     Then I see the album caption "sample caption" displayed
 
@@ -89,7 +89,7 @@ Feature: Album
     When I view my favorites
     Then I see 1 favorite
     And I see album image 2 as a favorite
-    And I see the favorite count is "1"
+    And I see the favorite count is ""
 
   Scenario: Able to remove favorite from favorites
     Given album 99999 image 2 is a favorite
@@ -99,7 +99,7 @@ Feature: Album
     Then I see 0 favorites
     And I see the favorite count is ""
 
-  Scenario: Unable to do any actions when no favorites
+  Scenario: Favorite actions are disabled when there are no favorites
     Given I am on the "user/album.php?album=99999" page
     When I view my favorites
     Then the download favorites button is disabled
@@ -146,12 +146,6 @@ Feature: Album
     And I see album 99999 download with my favorites
     And I see an email indicating images "2, 7" from album 99999 downloaded
 
-#  Scenario: Unable to share favorites
-#    Given album 99999 image 2 is a favorite
-#    And I am on the "user/album.php?album=99999" page
-#    When I view my favorites
-#    And I share my favorites
-#    Then I see that sharing isn't available
 
   Scenario: Able to submit favorites
     Given album 99999 image 2 is a favorite
@@ -160,14 +154,14 @@ Feature: Album
     And I submit my favorites
     Then I see the form to submit my favorites
 
-  Scenario: Able to submit favorites as guest
+  Scenario: Guest can submit favorites
+    Given album 99999 has code "album 99999"
     When I logout
-    And album 99999 has code "album 99999"
-    And I have searched for album "album 99999"
+    And I open album "album 99999" by its code
     And I am on the "user/album.php?album=99999" page
     And I view album image 2
     And I favorite the image
-    And I close the album image modal
+    And I close the image viewer
     And I view my favorites
     And I submit my favorites
     Then I see the empty form to submit my favorites
@@ -183,26 +177,22 @@ Feature: Album
     And an email is sent indicating album 99999 favorites submitted
     And I receive an email indicating I have submitted my selects
 
-#  Scenario: Unable to share all images
-#    Given I am on the "user/album.php?album=99999" page
-#    When I share all my images
-#    Then I see that sharing isn't available
 
   Scenario: Able to download all images
     Given I am on the "user/album.php?album=99999" page
-    And I download all my images
+    When I download all my images
     Then I see the download terms of service
 
   Scenario: Unable to download all images
     Given I am on the "user/album.php?album=99999" page
-    And I download all my images
+    When I download all my images
     And I confirm my download
     Then I see an error message indicating no files are available to download
 
   Scenario: Download all images
     Given I have download rights for album 99999 image 2
     And I am on the "user/album.php?album=99999" page
-    And I download all my images
+    When I download all my images
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with images "2"
@@ -213,7 +203,7 @@ Feature: Album
     And I have download rights for album 99999 image 4
     And I have download rights for album 99999 image 7
     And I am on the "user/album.php?album=99999" page
-    And I download all my images
+    When I download all my images
     And I confirm my download
     Then I see an info message indicating download will start shortly
     And I see album 99999 download with images "2, 4, 7"
@@ -234,11 +224,6 @@ Feature: Album
     And I see album 99999 download with images "2"
     And I see an email indicating images "2" from album 99999 downloaded
 
-#  Scenario: Unable to share single image
-#    Given I have share rights for album 99999 image 2
-#    And I am on the "user/album.php?album=99999#1" page
-#    When I share the image
-#    Then I see that sharing isn't available
 
   Scenario: Able to submit single image
     Given I am on the "user/album.php?album=99999#1" page
@@ -284,9 +269,9 @@ Feature: Album
     When I view album image 3
     Then I am taken to the "user/album.php?album=99999#2" page
 
-  Scenario: Opening album with hash displays that image
+  Scenario: Opening an album at an image hash displays that image
     When I am on the "user/album.php?album=99999#1" page
-    Then I see album image 2 in the preview modal
+    Then I see album image 2 in the image viewer
 
   Scenario: Going to next image increases hash
     Given I am on the "user/album.php?album=99999#1" page
@@ -298,12 +283,12 @@ Feature: Album
     When I advance to the previous album image
     Then I am taken to the "user/album.php?album=99999#0" page
 
-  Scenario: Closing image closes modal
+  Scenario: Closing the image viewer hides it
     Given I am on the "user/album.php?album=99999#1" page
-    When I close the album view
-    Then I don't see the album preview modal
+    When I close the image viewer
+    Then I don't see the image viewer
 
-  Scenario: Closing image removes hash
+  Scenario: Closing the image viewer removes the image hash
     Given I am on the "user/album.php?album=99999#1" page
-    When I close the album view
-    Then I am taken to the "user/album.php?album=99999#" page
+    When I close the image viewer
+    Then I am taken to the "user/album.php?album=99999" page

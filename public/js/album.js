@@ -496,6 +496,11 @@ function rebuildAlbumBreadcrumbs() {
     $('#actions').before(filterCrumb);
 }
 
+function setFavoriteActionAvailability(hasFavorites) {
+    $('#downloadable-favorites-btn').prop('disabled', !hasFavorites);
+    $('#submit-favorites-btn').prop('disabled', !hasFavorites);
+}
+
 Album.prototype.applyFilter = function () {
     var Album = this;
 
@@ -549,6 +554,9 @@ Album.prototype.applyFilter = function () {
         $('#downloadable-all-btn').hide();
         $('#downloadable-favorites-btn').show();
         $('#submit-favorites-btn').show();
+        setFavoriteActionAvailability(
+            $('#album-grid .album-card[data-favorite="1"]').length > 0
+        );
     }
     rebuildAlbumBreadcrumbs();
 

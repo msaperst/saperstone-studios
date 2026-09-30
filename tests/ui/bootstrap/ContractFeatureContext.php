@@ -80,10 +80,12 @@ class ContractFeatureContext implements Context {
     }
 
     /**
-     * @When /^I initial the contract$/
+     * @When /^I add my initials to the contract$/
      */
-    public function iInitialTheContract() {
-        $initialCanvas = $this->driver->findElement(WebDriverBy::cssSelector('#contract-initial > canvas'));
+    public function iAddMyInitialsToTheContract() {
+        $selector = WebDriverBy::cssSelector('#contract-initial canvas');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        $initialCanvas = $this->driver->findElement($selector);
         $draw = new WebDriverActions($this->driver);
         $draw->clickAndHold($initialCanvas)->moveByOffset(-5, -10)->moveByOffset(20, 20)->moveByOffset(10, -5)->release()->perform();
     }
@@ -92,13 +94,15 @@ class ContractFeatureContext implements Context {
      * @When /^I sign the contract$/
      */
     public function iSignTheContract() {
-        $initialCanvas = $this->driver->findElement(WebDriverBy::cssSelector('#contract-signature > canvas'));
+        $selector = WebDriverBy::cssSelector('#contract-signature canvas');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        $signatureCanvas = $this->driver->findElement($selector);
         $draw = new WebDriverActions($this->driver);
-        $draw->clickAndHold($initialCanvas)->moveByOffset(-20, -10)->moveByOffset(20, 30)->moveByOffset(30, -15)->release()->perform();
+        $draw->clickAndHold($signatureCanvas)->moveByOffset(-20, -10)->moveByOffset(20, 30)->moveByOffset(30, -15)->release()->perform();
     }
 
     /**
-     * @Given /^I submit the contract$/
+     * @When /^I submit the contract$/
      * @throws Exception
      */
     public function iSubmitTheContract() {
@@ -136,7 +140,10 @@ class ContractFeatureContext implements Context {
      * @throws Exception
      */
     public function iSeeTheSignedContractDisplayed() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::tagName('embed')));
+        if (count($this->driver->findElements(WebDriverBy::tagName('embed'))) === 0) {
+            $this->driver->navigate()->refresh();
+        }
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('embed')));
         Assert::assertTrue($this->driver->findElement(WebDriverBy::tagName('embed'))->isDisplayed());
     }
 
@@ -148,10 +155,10 @@ class ContractFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I the signed contract exists for (\d+)$/
+     * @Then /^the signed contract exists for (\d+)$/
      * @param $contractId
      */
-    public function iTheSignedContractExistsFor($contractId) {
+    public function theSignedContractExistsFor($contractId) {
         $sql = new Sql();
         $contract = dirname(__DIR__, 3) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
         $sql->disconnect();

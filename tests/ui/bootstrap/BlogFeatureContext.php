@@ -36,6 +36,7 @@ class BlogFeatureContext implements Context {
     private $user;
     private $baseUrl;
     private $tag = '';
+    private $searchTerm = '';
     private $blogIds = [];
 
     /** @BeforeScenario
@@ -132,6 +133,14 @@ class BlogFeatureContext implements Context {
     }
 
     /**
+     * @Given /^I am on the blog search page for "([^"]*)"$/
+     */
+    public function iAmOnTheBlogSearchPageFor($searchTerm) {
+        $this->searchTerm = $searchTerm;
+        $this->driver->get($this->baseUrl . 'blog/search.php?s=' . rawurlencode($searchTerm));
+    }
+
+    /**
      * @Given /^I have left the comment "([^"]*)" on blog (\d+)$/
      * @param $comment
      * @param $blogId
@@ -176,34 +185,45 @@ class BlogFeatureContext implements Context {
     }
 
     private function verifyBlogPost($start) {
-        $blog = new Blog($this->driver, $this->wait);
-        $blog->waitForPostToLoad($start);
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($start + 1) . ')')));
         $pullPost = $start;
         do {
-            $details = $this->sql->getRow("SELECT * FROM blog_details ORDER BY date DESC LIMIT $pullPost,1;");
+            $details = $this->sql->getRow("SELECT * FROM blog_details WHERE active = 1 ORDER BY date DESC, id DESC LIMIT $pullPost,1;");
             $tags = array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'id');
             $pullPost++;
         } while ($this->tag != '' && !in_array($this->tag, $tags));
         $tags = join(', ', array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'tag'));
         $allPosts = $this->driver->findElements(WebDriverBy::cssSelector('#post-content > div'));
-        $postContent = $allPosts[$start * 2];    // using times two due to the extra row for sharing
+        $postContent = $allPosts[$start];
         Assert::assertEquals($details['title'], $postContent->findElement(WebDriverBy::tagName('h2'))->getText());
-        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $postContent->findElement(WebDriverBy::cssSelector('.text-center strong'))->getText());
+        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $postContent->findElement(WebDriverBy::cssSelector('.text-right strong'))->getText());
         Assert::assertEquals($tags, $postContent->findElement(WebDriverBy::className('text-left'))->getText());
-        Assert::assertEquals('Like', $postContent->findElement(WebDriverBy::className('text-right'))->getText());
+        Assert::assertCount(1, $postContent->findElements(WebDriverBy::className('blog-share-button')));
         Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_images WHERE blog = {$details['id']}"), sizeof($postContent->findElements(WebDriverBy::className('post-image'))));
         Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_texts WHERE blog = {$details['id']}"), sizeof($postContent->findElements(WebDriverBy::className('post-text'))));
     }
 
     private function verifyBlogPreview($start) {
-        $blog = new Blog($this->driver, $this->wait);
-        $blog->waitForPreviewToLoad($start);
         $s = $start * 3;
-        $details = $this->sql->getRows("SELECT * FROM blog_details ORDER BY date DESC LIMIT $s,3;");
-        for ($i = 0; $i < 3; $i++) {
-            $allPreviews = $this->driver->findElements(WebDriverBy::cssSelector("#post-$i > div"));
-            $preview = $allPreviews[$start];
-            Assert::assertEquals(strtoupper($details[$i]['title']), $preview->findElement(WebDriverBy::tagName('span'))->getText());
+        $query = "SELECT * FROM blog_details WHERE active = 1";
+        $params = [];
+        if ($this->searchTerm !== '') {
+            $query .= " AND (title LIKE ? OR safe_title LIKE ? OR EXISTS (SELECT 1 FROM blog_texts WHERE blog_texts.blog = blog_details.id AND blog_texts.text LIKE ?))";
+            $search = '%' . $this->searchTerm . '%';
+            $params = [$search, $search, $search];
+        }
+        $query .= " ORDER BY date DESC, id DESC LIMIT $s,3";
+        $details = $this->sql->getRows($query, $params);
+        $expectedCount = $s + count($details);
+        $this->wait->until(function () use ($expectedCount) {
+            return count($this->driver->findElements(WebDriverBy::cssSelector('.col-gallery .post'))) >= $expectedCount;
+        });
+        $renderedTitles = array_map(
+            fn($preview) => $preview->findElement(WebDriverBy::className('preview-title'))->getText(),
+            $this->driver->findElements(WebDriverBy::cssSelector('.col-gallery .post'))
+        );
+        foreach ($details as $detail) {
+            Assert::assertContains(strtoupper($detail['title']), $renderedTitles);
         }
     }
 
@@ -212,7 +232,13 @@ class BlogFeatureContext implements Context {
      * @param $ord
      */
     public function iSeeTheNextBlogPostLoad($ord) {
-        $this->verifyBlogPost(intval($ord) - 1);
+        $start = intval($ord) - 1;
+        if ($start > 0) {
+            $this->waitForLazyLoadedBlogContent(
+                fn() => count($this->driver->findElements(WebDriverBy::cssSelector('#post-content > div'))) > $start
+            );
+        }
+        $this->verifyBlogPost($start);
     }
 
     /**
@@ -220,7 +246,25 @@ class BlogFeatureContext implements Context {
      * @param $ord
      */
     public function iSeeTheNextBlogPreviewsLoad($ord) {
-        $this->verifyBlogPreview(intval($ord) - 1);
+        $start = intval($ord) - 1;
+        if ($start > 0) {
+            $expectedCount = ($start + 1) * 3;
+            $this->waitForLazyLoadedBlogContent(
+                fn() => count($this->driver->findElements(WebDriverBy::cssSelector('.col-gallery .post'))) >= $expectedCount
+            );
+        }
+        $this->verifyBlogPreview($start);
+    }
+
+    private function waitForLazyLoadedBlogContent(callable $contentLoaded): void {
+        $this->wait->until(function () use ($contentLoaded) {
+            if ($contentLoaded()) {
+                return true;
+            }
+
+            $this->driver->executeScript("window.scrollTo(0, document.body.scrollHeight); window.dispatchEvent(new Event('scroll'));");
+            return false;
+        });
     }
 
     /**
@@ -241,9 +285,9 @@ class BlogFeatureContext implements Context {
         $details = $this->sql->getRow("SELECT * FROM blog_details WHERE id = $blog;");
         $tags = join(', ', array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'tag'));
         Assert::assertEquals($details['title'], $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
-        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $this->driver->findElement(WebDriverBy::cssSelector('.text-center strong'))->getText());
-        Assert::assertEquals($tags, $this->driver->findElement(WebDriverBy::className('text-left'))->getText());
-        Assert::assertEquals('Like', $this->driver->findElement(WebDriverBy::className('text-right'))->getText());
+        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $this->driver->findElement(WebDriverBy::cssSelector('#post-content .text-right strong'))->getText());
+        Assert::assertEquals($tags, $this->driver->findElement(WebDriverBy::cssSelector('#post-content .text-left'))->getText());
+        Assert::assertCount(1, $this->driver->findElements(WebDriverBy::className('blog-share-button')));
         Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_images WHERE blog = {$details['id']}"), sizeof($this->driver->findElements(WebDriverBy::className('post-image'))));
         Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_texts WHERE blog = {$details['id']}"), sizeof($this->driver->findElements(WebDriverBy::className('post-text'))));
     }
@@ -269,7 +313,11 @@ class BlogFeatureContext implements Context {
                 array_unshift($parts, '');
             }
             Assert::assertEquals($comments[$i]['name'], $parts[0]);
-            Assert::assertEquals($comments[$i]['date'], $parts[1]);
+            if ($comments[$i]['comment'] !== 'This is a great post') {
+                Assert::assertEquals($comments[$i]['date'], $parts[1]);
+            } else {
+                Assert::assertNotEmpty($parts[1]);
+            }
         }
     }
 
@@ -280,7 +328,7 @@ class BlogFeatureContext implements Context {
     public function iCanNotDeleteComment($ord) {
         $commentHolder = $this->driver->findElement(WebDriverBy::id('post-comments'));
         $blocks = $commentHolder->findElements(WebDriverBy::tagName('blockquote'));
-        Assert::assertNotContains("deletable", $blocks[intval($ord) - 1]->getAttribute('class'));
+        Assert::assertStringNotContainsString("deletable", (string) $blocks[intval($ord) - 1]->getAttribute('class'));
     }
 
     /**

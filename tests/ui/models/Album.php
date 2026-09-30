@@ -16,7 +16,6 @@ use Facebook\WebDriver\WebDriverWait;
 use Sql;
 use User;
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Gallery.php';
 
 class Album {
     /**
@@ -27,15 +26,9 @@ class Album {
      * @var WebDriverWait
      */
     private $wait;
-    /**
-     * @var Gallery
-     */
-    private $gallery;
-
     public function __construct($driver, $wait) {
         $this->driver = $driver;
         $this->wait = $wait;
-        $this->gallery = new Gallery($this->driver, $this->wait);
     }
 
     /**
@@ -51,6 +44,7 @@ class Album {
         }
         $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code);
         $this->driver->findElement(WebDriverBy::className('btn-success'))->click();
+        $this->waitForFinderSubmission();
     }
 
     /**
@@ -58,9 +52,12 @@ class Album {
      * @throws TimeoutException
      */
     public function openFinder() {
-        $this->driver->findElement(WebDriverBy::linkText('Information'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::linkText('Find Album'))));
-        $this->driver->findElement(WebDriverBy::linkText('Find Album'))->click();
+        $information = WebDriverBy::linkText('Information');
+        $findAlbum = WebDriverBy::linkText('Find Album');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($information));
+        $this->driver->findElement($information)->click();
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($findAlbum));
+        $this->driver->findElement($findAlbum)->click();
         $this->waitForFinder();
     }
 
@@ -86,11 +83,19 @@ class Album {
             $this->driver->findElement(WebDriverBy::id('find-album-add'))->click();
         }
         $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code)->sendKeys(WebDriverKeys::ENTER);
+        $this->waitForFinderSubmission();
     }
 
     /**
      * @param $code
      */
+    private function waitForFinderSubmission(): void {
+        $this->wait->until(function () {
+            return strpos($this->driver->getCurrentUrl(), '/user/album.php?album=') !== false
+                || count($this->driver->findElements(WebDriverBy::cssSelector('.bootstrap-dialog .alert-danger'))) > 0;
+        });
+    }
+
     public function add($code) {
         $this->driver->findElement(WebDriverBy::id('album-code'))->sendKeys($code);
         $this->driver->findElement(WebDriverBy::id('album-code-add'))->click();
@@ -104,13 +109,61 @@ class Album {
     }
 
     /**
+     * Uploads a file through the real album upload control.
+     *
+     * WebDriver sends the absolute path directly to the file input, avoiding
+     * the native operating-system file chooser while still exercising the
+     * browser upload workflow.
+     *
+     * @param string $filePath
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     */
+    public function uploadImage(string $filePath): void {
+        $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::cssSelector('#add-images-button input[type="file"]')
+            )
+        );
+        $this->driver
+            ->findElement(WebDriverBy::cssSelector('#add-images-button input[type="file"]'))
+            ->sendKeys($filePath);
+
+        // File selection starts an asynchronous upload. The production upload
+        // workflow disables the dialog while the queue is active and only
+        // re-enables it from afterUploadAll, so synchronize on that lifecycle
+        // instead of racing the next browser step against the request.
+        $closeButton = WebDriverBy::xpath(
+            "//div[contains(@class, 'bootstrap-dialog')]//button[normalize-space(.)='Close']"
+        );
+        $this->wait->until(function () use ($closeButton) {
+            $buttons = $this->driver->findElements($closeButton);
+            return !empty($buttons) && !$buttons[count($buttons) - 1]->isEnabled();
+        });
+        $this->wait->until(function () use ($closeButton) {
+            $buttons = $this->driver->findElements($closeButton);
+            return !empty($buttons) && $buttons[count($buttons) - 1]->isEnabled();
+        });
+    }
+
+    /**
      * @param $imgNum
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
     public function openSlideShow($imgNum) {
-        $this->gallery->justOpenSlideShow($imgNum);
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album'))));
+        $card = $this->getImageCard($imgNum);
+        $overlaySelector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . ' .album-card-overlay');
+        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
+        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($overlaySelector));
+        $this->driver->findElement($overlaySelector)->click();
+        $this->wait->until(
+            WebDriverExpectedCondition::visibilityOf(
+                $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
+            )
+        );
+        $this->waitForActiveImage($imgNum);
     }
 
     /**
@@ -128,7 +181,15 @@ class Album {
      * @throws TimeoutException
      */
     public function waitForImagesToLoad($rows) {
-        $this->gallery->waitForImagesToLoad($rows);
+        $imageCount = (int) $rows * 4;
+        $this->wait->until(function () use ($imageCount) {
+            if (count($this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'))) >= $imageCount) {
+                return true;
+            }
+
+            $this->driver->executeScript("window.scrollTo(0, document.body.scrollHeight); window.dispatchEvent(new Event('scroll'));");
+            return false;
+        });
     }
 
     /**
@@ -138,7 +199,16 @@ class Album {
      * @throws TimeoutException
      */
     public function hoverOverImage($imgNum): WebDriverElement {
-        return $this->gallery->hoverOverImage($imgNum);
+        $card = $this->getImageCard($imgNum);
+        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
+        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
+        $this->wait->until(
+            WebDriverExpectedCondition::visibilityOf(
+                $card->findElement(WebDriverBy::className('album-card-actions'))
+            )
+        );
+        return $card;
     }
 
     /**
@@ -146,7 +216,9 @@ class Album {
      * @throws TimeoutException
      */
     public function advanceToNextImage() {
-        $this->gallery->advanceToNextImage();
+        $current = $this->getActiveImageId();
+        $this->driver->findElement(WebDriverBy::id('album-next-btn'))->click();
+        $this->waitForActiveImageId($this->getAdjacentImageId($current, 1));
     }
 
     /**
@@ -154,7 +226,9 @@ class Album {
      * @throws TimeoutException
      */
     public function advanceToPreviousImage() {
-        $this->gallery->advanceToPreviousImage();
+        $current = $this->getActiveImageId();
+        $this->driver->findElement(WebDriverBy::id('album-prev-btn'))->click();
+        $this->waitForActiveImageId($this->getAdjacentImageId($current, -1));
     }
 
     /**
@@ -163,7 +237,7 @@ class Album {
      * @throws TimeoutException
      */
     public function advanceToImage($img) {
-        $this->gallery->advanceToImage($img);
+        $this->openSlideShow($img);
     }
 
     /**
@@ -194,11 +268,18 @@ class Album {
      * @throws TimeoutException
      */
     public function removeFavorite($image) {
-        $favorite = $this->driver->findElement(WebDriverBy:: cssSelector("li[image-id='" . ($image - 1) . "']"));
-        sleep(1);
-        $action = new WebDriverActions($this->driver);
-        $action->moveToElement($favorite, intval($favorite->getSize()->getWidth() * 0.5 - 10), intval($favorite->getSize()->getHeight() * -0.5 + 10))->click()->perform();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy:: cssSelector("li[image-id='" . ($image - 1) . "']"))));
+        $selector = "#album-grid .album-card[data-image-id='" . ($image - 1) . "']";
+        $card = $this->driver->findElement(WebDriverBy::cssSelector($selector));
+        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
+        $buttonSelector = WebDriverBy::cssSelector(
+            $selector . " .album-card-action[data-action='favorite']"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($buttonSelector));
+        $this->driver->findElement($buttonSelector)->click();
+        $this->wait->until(function () use ($selector) {
+            $cards = $this->driver->findElements(WebDriverBy::cssSelector($selector));
+            return empty($cards) || !$cards[0]->isDisplayed() || $cards[0]->getAttribute('data-favorite') === '0';
+        });
     }
 
     /**
@@ -270,7 +351,13 @@ class Album {
      * @throws TimeoutException
      */
     public function getSlideShowImage(): WebDriverElement {
-        return $this->gallery->getSlideShowImage();
+        $this->wait->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('album-viewer-overlay'))
+        );
+        $imageId = $this->getActiveImageId();
+        return $this->driver->findElement(
+            WebDriverBy::cssSelector("#album-grid .album-card[data-image-id='$imageId']")
+        );
     }
 
                                         /**
@@ -325,13 +412,18 @@ class Album {
         $user = User::withId($user);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#albumDiv #user-search')));
         $this->driver->findElement(WebDriverBy::cssSelector('#albumDiv #user-search'))->clear()->sendKeys($user->getUsername());
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
-        $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
-        foreach ($results as $result) {
-            if ($result->getAttribute('user-id') == $user->getId()) {
-                $result->click();
-            }
-        }
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
+        $resultSelector = WebDriverBy::cssSelector(
+            "#albumDiv .search-results a[user-id='" . $user->getId() . "']"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($resultSelector));
+        $this->driver->findElement($resultSelector)->click();
+        $this->wait->until(function () use ($user) {
+            $matches = $this->driver->findElements(
+                WebDriverBy::cssSelector("#album-users span[user-id='" . $user->getId() . "']")
+            );
+            return count($matches) === 1;
+        });
     }
 
     /**
@@ -344,13 +436,37 @@ class Album {
         $user = User::withId($user);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#downloadDiv #user-search')));
         $this->driver->findElement(WebDriverBy::cssSelector('#downloadDiv #user-search'))->clear()->sendKeys($user->getUsername());
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
-        $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
-        foreach ($results as $result) {
-            if ($result->getAttribute('user-id') == $user->getId()) {
-                $result->click();
-            }
-        }
+        $resultSelector = WebDriverBy::cssSelector(
+            "#downloadDiv .search-results a[user-id='" . $user->getId() . "']"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($resultSelector));
+        $this->driver->findElement($resultSelector)->click();
+        $this->wait->until(function () use ($user) {
+            return count($this->driver->findElements(
+                WebDriverBy::cssSelector("#download-users span[user-id='" . $user->getId() . "']")
+            )) === 1;
+        });
+    }
+
+    /**
+     * Attempts to find a user in the download-access search without assuming
+     * that the user is eligible to be granted access.
+     *
+     * @param $user
+     * @throws NoSuchElementException
+     * @throws TimeoutException
+     * @throws Exception
+     */
+    public function tryToGiveUserDownloadAccess($user) {
+        $user = User::withId($user);
+        $search = WebDriverBy::cssSelector('#downloadDiv #user-search');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($search));
+        $this->driver->findElement($search)->clear()->sendKeys($user->getUsername());
+        $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::cssSelector('#downloadDiv .search-results')
+            )
+        );
     }
 
     /**
@@ -363,7 +479,7 @@ class Album {
         $user = User::withId($user);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('#shareDiv #user-search')));
         $this->driver->findElement(WebDriverBy::cssSelector('#shareDiv #user-search'))->clear()->sendKeys($user->getUsername());
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('search-results')));
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector('.search-results')));
         $results = $this->driver->findElements(WebDriverBy::cssSelector('.search-results a'));
         foreach ($results as $result) {
             if ($result->getAttribute('user-id') == $user->getId()) {
@@ -409,14 +525,14 @@ class Album {
      */
     public function removeUserDownloadAccess($user) {
         $user = User::withId($user);
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-search')));
-        $downloaders = $this->getAlbumDownloaders();
-        foreach ($downloaders as $downloader) {
-            if ($downloader->getAttribute('user-id') == $user->getId()) {
-                $action = new WebDriverActions($this->driver);
-                $action->moveToElement($downloader, intval($downloader->getSize()->getWidth() * 0.5 - 5))->click()->perform();
-            }
-        }
+        $selector = WebDriverBy::cssSelector("#download-users span[user-id='" . $user->getId() . "']");
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
+        $downloader = $this->driver->findElement($selector);
+        $action = new WebDriverActions($this->driver);
+        $action->moveToElement($downloader, intval($downloader->getSize()->getWidth() * 0.5 - 5))->click()->perform();
+        $this->wait->until(function () use ($selector) {
+            return count($this->driver->findElements($selector)) === 0;
+        });
     }
 
     /**
@@ -464,8 +580,46 @@ class Album {
      * @throws TimeoutException
      */
     public function closeSlideShow() {
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::cssSelector("#album [data-dismiss='modal']")));
-        $this->driver->findElement(WebDriverBy::cssSelector("#album [data-dismiss='modal']"))->click();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('album')))));
+        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
+        $this->driver->findElement(WebDriverBy::id('album-viewer-close'))->click();
+        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($overlay)));
+    }
+
+    private function getImageCardSelector($imgNum): string {
+        return "#album-grid .album-card[data-image-id='" . ((int) $imgNum - 1) . "']";
+    }
+
+    private function getImageCard($imgNum): WebDriverElement {
+        $this->waitForImagesToLoad((int) ceil(((int) $imgNum) / 4));
+        $selector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum));
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        return $this->driver->findElement($selector);
+    }
+
+    private function getActiveImageId(): int {
+        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
+        return (int) $overlay->getAttribute('image-id');
+    }
+
+    private function getAdjacentImageId(int $current, int $offset): int {
+        $cards = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'));
+        $count = count($cards);
+        if ($count === 0) {
+            return $current;
+        }
+        return ($current + $offset + $count) % $count;
+    }
+
+    private function waitForActiveImage($imgNum): void {
+        $this->waitForActiveImageId((int) $imgNum - 1);
+    }
+
+    private function waitForActiveImageId(int $expectedImageId): void {
+        $this->wait->until(function () use ($expectedImageId) {
+            $overlay = $this->driver->findElements(WebDriverBy::id('album-viewer-overlay'));
+            return count($overlay) === 1
+                && $overlay[0]->isDisplayed()
+                && (int) $overlay[0]->getAttribute('image-id') === $expectedImageId;
+        });
     }
 }

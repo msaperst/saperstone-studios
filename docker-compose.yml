@@ -54,6 +54,7 @@ services:
     volumes:
       # Application source is bind-mounted for immediate local PHP/JS/CSS edits.
       - ./public:/var/www/public
+      - jsignature:/var/www/public/js/jSignature
       - ./src:/var/www/src
       - ./templates:/var/www/templates
       - ./bin:/var/www/bin
@@ -95,3 +96,4 @@ services:
 
 volumes:
   mysql:
+  jsignature:

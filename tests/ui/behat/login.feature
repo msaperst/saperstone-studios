@@ -1,20 +1,20 @@
 @login
 Feature: System Authentication
   As a user of the website
-  I want to have a login
-  So that I can access my stored data
+  I want to authenticate securely
+  So that I can access my account and saved content
 
-  Scenario: Login as a good user
+  Scenario: Enabled user can log in
     Given an enabled user account exists
     When I log in to the site
-    And I see my user name displayed
+    Then I see my user name displayed
 
-  Scenario: Login as a disabled user
+  Scenario: Disabled user cannot log in
     Given a disabled user account exists
     When I log in to the site
     Then I see an error message indicating my account has been disabled
 
-  Scenario: Login as a bad user
+  Scenario: Invalid credentials are rejected
     When I log in to the site
     Then I see an error message indicating my credentials aren't valid
 
@@ -39,7 +39,7 @@ Feature: System Authentication
     Then I see the logon option to remember me
 
   Scenario: 'Remember Me' is unavailable when preference cookies are rejected
-    Given I have cookies disabled
+    Given I have rejected preference cookies
     When I try to login to the site
     Then I don't see the logon option to remember me
 
@@ -49,72 +49,72 @@ Feature: System Authentication
     And I try to login to the site
     Then I don't see the logon option to remember me
 
-  Scenario: Able to 'Remember Me'
+  Scenario: Remember Me creates persistent login credentials
     Given an enabled user account exists
     When I stay logged in to the site
     Then I see my user name displayed
     And I see a cookie with my credentials
 
-  Scenario: Able to stay logged in
+  Scenario: Remember Me restores the login session
     Given an enabled user account exists
     And I am logged in with saved credentials
     Then I see my user name displayed
 
-  Scenario: Able to logout
+  Scenario: User can log out
     Given an enabled user account exists
     And I am logged in with saved credentials
     When I logout
     Then I don't see my user name displayed
     And I don't see a cookie with my credentials
 
-  Scenario: Logout keeps you on unauth pages
+  Scenario: Logout keeps the user on public pages
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the "portrait/" page
     When I logout
     Then I am taken to the "portrait/" page
 
-  Scenario: Logout returns to homepage on auth pages
+  Scenario: Logout returns the user home from protected pages
     Given an enabled user account exists
     And I am logged in with saved credentials
     And I am on the "user" page
     When I logout
     Then I am taken to the "" page
 
-  Scenario: Able to enter reset credentials
+  Scenario: Password reset request provides reset credentials
     Given an enabled user account exists
     When I request a reset key
     Then I can enter in new credentials
     And I receive an email with my reset key
 
-  Scenario: Able to enter old reset credentials
+  Scenario: Existing reset key opens the password reset form
     Given an enabled user account exists
     When I have a reset key
     Then I can enter in new credentials
 
-  Scenario: Unable to 'Remember Me' on reset
-    Given I have cookies disabled
+  Scenario: Remember Me is unavailable during reset when preference cookies are rejected
+    Given I have rejected preference cookies
     And an enabled user account exists
     When I have a reset key
     Then I see that there is no reset option to remember me
 
-  Scenario: Blank email for password reset
+  Scenario: Password reset requires an email address
     Given an enabled user account exists
     When I submit email "" for reset
     Then I see an error message indicating all fields need to be filled in
 
-  Scenario: Bad email for password reset
+  Scenario: Password reset rejects an invalid email address
     Given an enabled user account exists
     When I submit email "nonaddress" for reset
     Then I see an error message indicating invalid field values
 
-  Scenario: Able to reset credentials
+  Scenario: User can reset credentials with a valid reset key
     Given an enabled user account exists
     When I request a reset key
     And I submit reset credentials
     Then I see my user name displayed
 
-  Scenario Outline: Bad reset credentials
+  Scenario Outline: Incomplete reset credentials are rejected
     Given an enabled user account exists
     When I have a reset key
     And I submit "<email>" "<code>" "<password>" "<confirm>" reset credentials
@@ -126,13 +126,13 @@ Feature: System Authentication
       | msaperst@gmail.com | 123456 |          |         |
       | msaperst@gmail.com | 123456 | password |         |
 
-  Scenario: Bad reset credentials password mismatch
+  Scenario: Password reset rejects mismatched passwords
     Given an enabled user account exists
     When I have a reset key
     And I submit "e@12.co" "123456" "password" "password1" reset credentials
     Then I see an error message indicating passwords do not match
 
-  Scenario Outline: Bad reset credentials no resetKey
+  Scenario Outline: Invalid reset key credentials are rejected
     Given an enabled user account exists
     When I have a reset key
     And I submit "<email>" "<code>" "<password>" "<confirm>" reset credentials
