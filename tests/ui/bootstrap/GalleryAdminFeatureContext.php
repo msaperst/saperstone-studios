@@ -87,8 +87,11 @@ class GalleryAdminFeatureContext implements Context {
 
         $titleInput = WebDriverBy::id('gallery-title');
         $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($titleInput));
-        $this->driver->findElement($titleInput)->clear()->sendKeys($title);
-        $this->driver->findElement(WebDriverBy::id('gallery-caption'))->clear()->sendKeys($caption);
+        $this->setInputValue($titleInput, $title);
+
+        $captionInput = WebDriverBy::id('gallery-caption');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($captionInput));
+        $this->setInputValue($captionInput, $caption);
 
         // Metadata changes should not rename the fixture file in this scenario.
         $filenameMatch = $this->driver->findElement(WebDriverBy::id('gallery-filename-match'));
@@ -267,6 +270,19 @@ JS
             throw new Exception('Unable to resolve gallery upload test image');
         }
         $this->driver->findElement($input)->sendKeys($file);
+    }
+
+    private function setInputValue(WebDriverBy $selector, string $value): void {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($selector));
+        $input = $this->driver->findElement($selector);
+        $input->clear();
+        $input->sendKeys($value);
+
+        // WebDriver keyboard input can occasionally race with dynamic modal
+        // fields. Do not submit until the browser reports the intended value.
+        $this->wait->until(function () use ($selector, $value) {
+            return $this->driver->findElement($selector)->getAttribute('value') === $value;
+        });
     }
 
     private function galleryCard(int $imageNumber) {
