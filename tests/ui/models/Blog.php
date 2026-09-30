@@ -8,7 +8,6 @@ use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
-use Sql;
 
 class Blog {
     /**
@@ -46,10 +45,15 @@ class Blog {
     }
 
     public function waitForCommentsToLoad() {
-        $sql = new Sql();
-        $comments = $sql->getRows("SELECT * FROM blog_comments WHERE blog = {$this->getBlogId()} ORDER BY date DESC");
-        $sql->disconnect();
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-comments > div:nth-child(' . (sizeof($comments) + 1) . ')')));
+        $header = WebDriverBy::cssSelector('#post-comments h2');
+        $this->wait->until(function () use ($header) {
+            $headers = $this->driver->findElements($header);
+            if (count($headers) !== 1) {
+                return false;
+            }
+
+            return preg_match('/^\\d+ Comments?$/', trim($headers[0]->getText())) === 1;
+        });
     }
 
     public function deleteComment($ord) {
