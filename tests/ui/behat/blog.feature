@@ -71,7 +71,7 @@ Feature: Blog
   Scenario Outline: Comments containing blocked words cannot be submitted
     Given I am on the "blog/post.php?p=2039" page
     When I try to leave the comment "<comment>"
-    And the submit comment button is disabled
+    Then the submit comment button is disabled
     Examples:
       | comment                      |
       | fuck this page               |
