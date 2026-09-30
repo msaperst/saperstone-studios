@@ -264,6 +264,16 @@ Feature: Admin Album
     Then I don't see any email notification messages
     And I see an album notification for album 99999 was emailed out
 
+  Scenario: Sent notification list remains cleared after reload
+    Given album 99999 has notifications:
+      | email                     | contacted |
+      | msaperst+sstest@gmail.com | 0         |
+    When I am on the "user/album.php?album=99999" page
+    And I send the user notifications
+    And I confirm sending user notification
+    And I reload the page
+    Then I don't see any email notification messages
+
   Scenario: Opening an image sets the hash to that image
     Given I am on the "user/album.php?album=99999" page
     When I view album image 3
