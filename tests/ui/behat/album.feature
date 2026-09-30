@@ -262,7 +262,14 @@ Feature: Album
     And I submit my email for album notification
     Then I see a success message indicating I will be notified when images are added
     And I don't see the album notification form
-    And my email address is recorded for album 99998 notifications
+
+  Scenario: Email update request persists after reload
+    Given album 99998 exists
+    And I have access to album 99998
+    And I am on the "user/album.php?album=99998" page
+    When I submit my email for album notification
+    And I reload the page
+    Then I don't see the album notification form
 
   Scenario: Opening an image sets the hash to that image
     Given I am on the "user/album.php?album=99999" page
