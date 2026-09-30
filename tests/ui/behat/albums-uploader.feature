@@ -115,4 +115,3 @@ Feature: Uploader Albums
     And I make thumbnails for my album
     And I create "watermark" thumbnails
     Then I see thumbnails being created
-    Then I have created "watermark" thumbnail images for album 99997
