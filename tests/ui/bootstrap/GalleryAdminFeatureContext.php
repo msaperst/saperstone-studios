@@ -262,6 +262,15 @@ JS
             return count($buttons) === 1 && !$buttons[0]->isEnabled();
         });
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($close));
+
+        // Surface upload failures as the user sees them instead of allowing a
+        // later image-count assertion to fail with an opaque timeout.
+        $errors = $this->driver->findElements(
+            WebDriverBy::cssSelector('.bootstrap-dialog.modal.in .ajax-file-upload-statusbar.alert-danger')
+        );
+        if ($errors !== []) {
+            Assert::fail('Gallery upload failed in the UI: ' . trim($errors[0]->getText()));
+        }
     }
 
     private function visibleGalleryImageOrder(): array {
