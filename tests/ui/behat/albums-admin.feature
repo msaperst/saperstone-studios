@@ -42,6 +42,14 @@ Feature: Admin Albums
     And I create my album
     Then I see the edit album details modal for the new album
 
+  Scenario: New album persists after reload
+    When I add a new album
+    And I provide "My New Album" for the album "name"
+    And I create my album
+    And I close the album details modal
+    And I reload the page
+    Then I see the new album listed
+
   Scenario: Add new album full
     When I add a new album
     And I provide "My New Album" for the album "name"
