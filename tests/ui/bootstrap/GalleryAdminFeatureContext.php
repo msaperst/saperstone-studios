@@ -17,6 +17,9 @@ use ui\models\Gallery;
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Gallery.php';
 
 class GalleryAdminFeatureContext implements Context {
+    private array $originalImageOrder = [];
+    private array $reorderedImageOrder = [];
+
 
     private RemoteWebDriver $driver;
     private WebDriverWait $wait;
@@ -147,6 +150,15 @@ class GalleryAdminFeatureContext implements Context {
     public function iBeginRearrangingGalleryImages(): void {
         $gallery = new Gallery($this->driver, $this->wait);
         $gallery->waitForImagesToLoad(1);
+
+        $sql = new Sql();
+        $images = $sql->getRows(
+            'SELECT id FROM gallery_images WHERE gallery = ? ORDER BY sequence',
+            [999]
+        );
+        $sql->disconnect();
+        $this->originalImageOrder = array_map('intval', array_column($images, 'id'));
+
         $button = WebDriverBy::id('sort-gallery-btn');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
         $this->driver->findElement($button)->click();
@@ -162,6 +174,34 @@ class GalleryAdminFeatureContext implements Context {
         $source = $this->galleryCard($sourceNumber);
         $target = $this->galleryCard($targetNumber);
         (new WebDriverActions($this->driver))->dragAndDrop($source, $target)->perform();
+
+        $this->reorderedImageOrder = array_map('intval', $this->driver->executeScript(<<<'JS'
+            var images = [];
+            $('div.gallery').each(function () {
+                images.push({
+                    id: $(this).attr('image-id'),
+                    col: $(this).parent().attr('id'),
+                    height: $(this).position().top
+                });
+            });
+            images.sort(function (a, b) {
+                if (a.height === b.height) {
+                    var x = a.col.toLowerCase(), y = b.col.toLowerCase();
+                    return x < y ? -1 : x > y ? 1 : 0;
+                }
+                return a.height - b.height;
+            });
+            return images.map(function (image) {
+                return image.id;
+            });
+JS
+        ));
+
+        Assert::assertNotSame(
+            $this->originalImageOrder,
+            $this->reorderedImageOrder,
+            'Dragging the gallery image did not change its visual order'
+        );
     }
 
     /**
@@ -180,19 +220,32 @@ class GalleryAdminFeatureContext implements Context {
     }
 
     /**
-     * @Then /^gallery (\d+) image order is "([^"]*)"$/
+     * @Then /^the reordered gallery image order is persisted for gallery (\d+)$/
      */
-    public function galleryImageOrderIs($galleryId, $expectedOrder): void {
+    public function reorderedGalleryImageOrderIsPersisted($galleryId): void {
+        Assert::assertNotEmpty($this->reorderedImageOrder, 'No reordered gallery image order was captured');
+
+        $this->wait->until(function () use ($galleryId) {
+            $sql = new Sql();
+            $images = $sql->getRows(
+                'SELECT id FROM gallery_images WHERE gallery = ? ORDER BY sequence',
+                [$galleryId]
+            );
+            $sql->disconnect();
+
+            return array_map('intval', array_column($images, 'id')) === $this->reorderedImageOrder;
+        });
+
         $sql = new Sql();
         $images = $sql->getRows(
-            'SELECT title FROM gallery_images WHERE gallery = ? ORDER BY sequence',
+            'SELECT id FROM gallery_images WHERE gallery = ? ORDER BY sequence',
             [$galleryId]
         );
         $sql->disconnect();
 
         Assert::assertSame(
-            explode(',', $expectedOrder),
-            array_column($images, 'title')
+            $this->reorderedImageOrder,
+            array_map('intval', array_column($images, 'id'))
         );
     }
 
