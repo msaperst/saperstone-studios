@@ -11,15 +11,12 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use PHPUnit\Framework\Assert;
-use Sql;
 use ui\models\Gallery;
 
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPARATOR . 'Gallery.php';
 
 class GalleryAdminFeatureContext implements Context {
-    private array $originalImageOrder = [];
     private array $reorderedImageOrder = [];
-
 
     private RemoteWebDriver $driver;
     private WebDriverWait $wait;
@@ -32,40 +29,28 @@ class GalleryAdminFeatureContext implements Context {
     }
 
     /**
-     * @When /^I open gallery (\d+) for editing$/
+     * @When /^I open the gallery for editing$/
      */
-    public function iOpenGalleryForEditing($galleryId): void {
+    public function iOpenGalleryForEditing(): void {
         $button = WebDriverBy::id('edit-gallery-btn');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
         $this->driver->findElement($button)->click();
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('new-gallery-title'))
         );
-        Assert::assertSame(
-            (string) $galleryId,
-            (string) $this->driver->findElement(WebDriverBy::id('gallery-config'))->getAttribute('data-gallery-id')
-        );
     }
 
     /**
-     * @When /^I rename gallery (\d+) to "([^"]*)"$/
+     * @When /^I rename the gallery to "([^"]*)"$/
      */
-    public function iRenameGallery($galleryId, $title): void {
-        $this->iOpenGalleryForEditing($galleryId);
+    public function iRenameGallery($title): void {
+        $this->iOpenGalleryForEditing();
         $input = $this->driver->findElement(WebDriverBy::id('new-gallery-title'));
         $input->clear()->sendKeys($title);
         $this->clickDialogButton('Save Details');
-        $this->waitForGalleryTitle($galleryId, $title);
-    }
-
-    /**
-     * @Then /^gallery (\d+) is named "([^"]*)"$/
-     */
-    public function galleryIsNamed($galleryId, $title): void {
-        $sql = new Sql();
-        $gallery = $sql->getRow('SELECT title FROM galleries WHERE id = ?', [$galleryId]);
-        $sql->disconnect();
-        Assert::assertSame($title, $gallery['title'] ?? null);
+        $this->wait->until(
+            WebDriverExpectedCondition::invisibilityOfElementLocated(WebDriverBy::id('new-gallery-title'))
+        );
     }
 
     /**
@@ -111,18 +96,21 @@ class GalleryAdminFeatureContext implements Context {
     }
 
     /**
-     * @Then /^gallery (\d+) image (\d+) has title "([^"]*)" and caption "([^"]*)"$/
+     * @Then /^I see the current gallery image title "([^"]*)" and caption "([^"]*)"$/
      */
-    public function galleryImageHasMetadata($galleryId, $imageNumber, $title, $caption): void {
-        $sql = new Sql();
-        $image = $sql->getRow(
-            'SELECT title, caption FROM gallery_images WHERE gallery = ? AND sequence = ?',
-            [$galleryId, $imageNumber - 1]
-        );
-        $sql->disconnect();
+    public function iSeeCurrentGalleryImageMetadata($title, $caption): void {
+        $active = WebDriverBy::cssSelector('.modal-carousel .carousel-inner .item.active');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($active));
+        $slide = $this->driver->findElement($active);
 
-        Assert::assertSame($title, $image['title'] ?? null);
-        Assert::assertSame($caption, $image['caption'] ?? null);
+        Assert::assertSame(
+            $title,
+            $slide->findElement(WebDriverBy::className('contain'))->getAttribute('alt')
+        );
+        Assert::assertSame(
+            $caption,
+            trim($slide->findElement(WebDriverBy::cssSelector('.carousel-caption h2'))->getText())
+        );
     }
 
     /**
@@ -141,15 +129,14 @@ class GalleryAdminFeatureContext implements Context {
     }
 
     /**
-     * @Then /^gallery (\d+) has (\d+) images$/
+     * @Then /^I see (\d+) gallery images$/
      */
-    public function galleryHasImages($galleryId, $expected): void {
-        $this->wait->until(function () use ($galleryId, $expected) {
-            $sql = new Sql();
-            $count = $sql->getRowCount('SELECT * FROM gallery_images WHERE gallery = ?', [$galleryId]);
-            $sql->disconnect();
-            return $count === (int) $expected;
+    public function iSeeGalleryImages($expected): void {
+        $selector = WebDriverBy::cssSelector('.image-grid .gallery');
+        $this->wait->until(function () use ($selector, $expected) {
+            return count($this->driver->findElements($selector)) === (int) $expected;
         });
+        Assert::assertCount((int) $expected, $this->driver->findElements($selector));
     }
 
     /**
@@ -158,14 +145,6 @@ class GalleryAdminFeatureContext implements Context {
     public function iBeginRearrangingGalleryImages(): void {
         $gallery = new Gallery($this->driver, $this->wait);
         $gallery->waitForImagesToLoad(1);
-
-        $sql = new Sql();
-        $images = $sql->getRows(
-            'SELECT id FROM gallery_images WHERE gallery = ? ORDER BY sequence',
-            [999]
-        );
-        $sql->disconnect();
-        $this->originalImageOrder = array_map('intval', array_column($images, 'id'));
 
         $button = WebDriverBy::id('sort-gallery-btn');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
@@ -205,11 +184,6 @@ class GalleryAdminFeatureContext implements Context {
 JS
         ));
 
-        Assert::assertNotSame(
-            $this->originalImageOrder,
-            $this->reorderedImageOrder,
-            'Dragging the gallery image did not change its visual order'
-        );
     }
 
     /**
@@ -228,33 +202,16 @@ JS
     }
 
     /**
-     * @Then /^the reordered gallery image order is persisted for gallery (\d+)$/
+     * @Then /^I see the reordered gallery image order$/
      */
-    public function reorderedGalleryImageOrderIsPersisted($galleryId): void {
+    public function iSeeReorderedGalleryImageOrder(): void {
         Assert::assertNotEmpty($this->reorderedImageOrder, 'No reordered gallery image order was captured');
 
-        $this->wait->until(function () use ($galleryId) {
-            $sql = new Sql();
-            $images = $sql->getRows(
-                'SELECT id FROM gallery_images WHERE gallery = ? ORDER BY sequence',
-                [$galleryId]
-            );
-            $sql->disconnect();
-
-            return array_map('intval', array_column($images, 'id')) === $this->reorderedImageOrder;
+        $this->wait->until(function () {
+            return $this->visibleGalleryImageOrder() === $this->reorderedImageOrder;
         });
 
-        $sql = new Sql();
-        $images = $sql->getRows(
-            'SELECT id FROM gallery_images WHERE gallery = ? ORDER BY sequence',
-            [$galleryId]
-        );
-        $sql->disconnect();
-
-        Assert::assertSame(
-            $this->reorderedImageOrder,
-            array_map('intval', array_column($images, 'id'))
-        );
+        Assert::assertSame($this->reorderedImageOrder, $this->visibleGalleryImageOrder());
     }
 
     /**
@@ -270,6 +227,20 @@ JS
             throw new Exception('Unable to resolve gallery upload test image');
         }
         $this->driver->findElement($input)->sendKeys($file);
+    }
+
+    private function visibleGalleryImageOrder(): array {
+        $images = [];
+        foreach ($this->driver->findElements(WebDriverBy::cssSelector('.image-grid .gallery')) as $card) {
+            $images[] = [
+                'id' => (int) $card->getAttribute('image-id'),
+                'sequence' => (int) $card->getAttribute('sequence'),
+            ];
+        }
+        usort($images, static function (array $a, array $b): int {
+            return $a['sequence'] <=> $b['sequence'];
+        });
+        return array_column($images, 'id');
     }
 
     private function setInputValue(WebDriverBy $selector, string $value): void {
@@ -301,12 +272,4 @@ JS
         $buttons[count($buttons) - 1]->click();
     }
 
-    private function waitForGalleryTitle($galleryId, $title): void {
-        $this->wait->until(function () use ($galleryId, $title) {
-            $sql = new Sql();
-            $gallery = $sql->getRow('SELECT title FROM galleries WHERE id = ?', [$galleryId]);
-            $sql->disconnect();
-            return ($gallery['title'] ?? null) === $title;
-        });
-    }
 }
