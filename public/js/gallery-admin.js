@@ -288,10 +288,12 @@ function editGallery(id) {
                     // element.
                     $button.spin();
                     disableDialogButtons(dialogItself);
+                    var title = $('#new-gallery-title').val();
                     $.post("/api/update-gallery.php", {
                         id: id,
-                        title: $('#new-gallery-title').val()
+                        title: title
                     }).done(function () {
+                        $('.page-header').text(title + ' Gallery');
                         dialogItself.close();
                     });
                 }
