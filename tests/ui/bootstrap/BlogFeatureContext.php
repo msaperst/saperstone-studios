@@ -356,6 +356,34 @@ class BlogFeatureContext implements Context {
     }
 
     /**
+     * @Then /^I see the comment "([^"]*)"$/
+     */
+    public function iSeeTheComment($comment): void {
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->waitForCommentsToLoad();
+
+        $comments = array_map(
+            fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
+            $blog->getCommentBlocks()
+        );
+        Assert::assertContains($comment, $comments);
+    }
+
+    /**
+     * @Then /^I do not see the comment "([^"]*)"$/
+     */
+    public function iDoNotSeeTheComment($comment): void {
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->waitForCommentsToLoad();
+
+        $comments = array_map(
+            fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
+            $blog->getCommentBlocks()
+        );
+        Assert::assertNotContains($comment, $comments);
+    }
+
+    /**
      * @Then /^I can not delete the "([^"]*)" comment$/
      * @param $ord
      */
