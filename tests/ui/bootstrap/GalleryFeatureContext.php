@@ -66,7 +66,7 @@ class GalleryFeatureContext implements Context {
         foreach ($this->galleryIds as $galleryId) {
             system(
                 "rm -rf " . escapeshellarg(
-                    dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/img/gallery-' . $galleryId
+                    dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/gallery-' . $galleryId
                 )
             );
         }
@@ -86,7 +86,7 @@ class GalleryFeatureContext implements Context {
         // each scenario starts with a clean filesystem as well as a clean DB.
         system(
             "rm -rf " . escapeshellarg(
-                dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/img/gallery-' . $galleryId
+                dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/portrait/gallery-' . $galleryId
             )
         );
 
