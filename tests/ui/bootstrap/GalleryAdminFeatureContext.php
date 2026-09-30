@@ -140,6 +140,18 @@ class GalleryAdminFeatureContext implements Context {
     }
 
     /**
+     * @Then /^I see the uploaded gallery image$/
+     */
+    public function iSeeUploadedGalleryImage(): void {
+        $selector = WebDriverBy::cssSelector('.image-grid .gallery img[alt="flower.jpeg"]');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($selector));
+
+        $images = $this->driver->findElements($selector);
+        Assert::assertCount(1, $images);
+        Assert::assertSame('flower.jpeg', $images[0]->getAttribute('alt'));
+    }
+
+    /**
      * @When /^I begin rearranging gallery images$/
      */
     public function iBeginRearrangingGalleryImages(): void {
