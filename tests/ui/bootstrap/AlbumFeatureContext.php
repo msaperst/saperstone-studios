@@ -132,6 +132,13 @@ class AlbumFeatureContext implements Context {
     }
 
     private function rememberAlbumFixture(int $albumId, int $images = 0, string $code = ''): void {
+        $imageFiles = [];
+        $imageTitles = [];
+        for ($i = 0; $i < $images; $i++) {
+            $imageFiles[$i + 1] = "sample$i.jpg";
+            $imageTitles[$i + 1] = "Image $i";
+        }
+
         $this->albumFixtures[$albumId] = [
             'name' => "Album $albumId",
             'description' => 'sample album for testing',
@@ -139,7 +146,29 @@ class AlbumFeatureContext implements Context {
             'lastAccessed' => '',
             'code' => $code,
             'images' => (string) $images,
+            'imageFiles' => $imageFiles,
+            'imageTitles' => $imageTitles,
         ];
+    }
+
+    private function fixtureImageFileName(int $albumId, int $imageNumber): string {
+        Assert::assertArrayHasKey($albumId, $this->albumFixtures, "No fixture state exists for album $albumId");
+        Assert::assertArrayHasKey(
+            $imageNumber,
+            $this->albumFixtures[$albumId]['imageFiles'],
+            "No fixture image $imageNumber exists for album $albumId"
+        );
+        return $this->albumFixtures[$albumId]['imageFiles'][$imageNumber];
+    }
+
+    private function fixtureImageTitle(int $albumId, int $imageNumber): string {
+        Assert::assertArrayHasKey($albumId, $this->albumFixtures, "No fixture state exists for album $albumId");
+        Assert::assertArrayHasKey(
+            $imageNumber,
+            $this->albumFixtures[$albumId]['imageTitles'],
+            "No fixture image $imageNumber exists for album $albumId"
+        );
+        return $this->albumFixtures[$albumId]['imageTitles'][$imageNumber];
     }
 
     private function captureAlbumFormValues(): array {
@@ -1346,49 +1375,6 @@ Comment',
     }
 
     /**
-     * @Then /^I see album (\d+) download with my favorites$/
-     * @param $album
-     */
-    public function iSeeAlbumDownloadWithMyFavorites($album) {
-        $downloadDirectory = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getDownloadDirectory();
-        $pattern = $downloadDirectory . DIRECTORY_SEPARATOR . "Album $album *.zip";
-        $startedAt = time() - 2;
-        $filename = null;
-        for ($count = 0; $count <= 120; $count++) {
-            $matches = array_filter(glob($pattern) ?: [], static function ($candidate) use ($startedAt) {
-                return filemtime($candidate) >= $startedAt;
-            });
-            if (!empty($matches)) {
-                usort($matches, static function ($a, $b) {
-                    return filemtime($b) <=> filemtime($a);
-                });
-                $filename = $matches[0];
-                break;
-            }
-            sleep(1);
-        }
-        Assert::assertNotNull($filename, "Album $album download was not created");
-        $za = new ZipArchive();
-        $za->open($filename);
-        $sql = new Sql();
-        if ($this->user->isAdmin()) {
-            $favorites = array_column($sql->getRows("SELECT * FROM `favorites` WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
-        } else {
-            $favorites = array_column($sql->getRows("SELECT * FROM `download_rights` INNER JOIN `favorites` ON download_rights.user = favorites.user AND download_rights.album = favorites.album AND download_rights.image = favorites.image WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
-        }
-        Assert::assertEquals(sizeof($favorites), $za->numFiles);
-        for ($i = 0; $i < sizeof($favorites); $i++) {
-            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND id = {$favorites[$i]};")['location'];
-            $parts = explode('/', $imgLoc);
-            $img = $parts[sizeof($parts) - 1];
-            Assert::assertEquals($img, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
-        }
-        $sql->disconnect();
-        // cleanup
-        unlink($filename);
-    }
-
-    /**
      * @Then /^I see album (\d+) download with images "([^"]*)"$/
      * @param $album
      * @param $images
@@ -1415,18 +1401,14 @@ Comment',
             }
         }
         Assert::assertTrue(file_exists($filename));
-        $images = explode(", ", $images);
+        $images = array_map('intval', explode(", ", $images));
         $za = new ZipArchive();
         $za->open($filename);
         Assert::assertEquals(sizeof($images), $za->numFiles);
-        $sql = new Sql();
         for ($i = 0; $i < sizeof($images); $i++) {
-            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND sequence = " . ($images[$i] - 1))['location'];
-            $parts = explode('/', $imgLoc);
-            $img = $parts[sizeof($parts) - 1];
-            Assert::assertEquals($img, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
+            $expected = $this->fixtureImageFileName((int) $album, $images[$i]);
+            Assert::assertEquals($expected, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
         }
-        $sql->disconnect();
         // cleanup
         unlink($filename);
     }
@@ -1851,15 +1833,11 @@ Images have been posted to album Album $albumId. You can access your images by l
      * @throws ExceptionAlias
      */
     public function iSeeAnEmailIndicatingImagesFromAlbumDownloaded($images, $albumId) {
-        $images = explode(", ", $images);
-        $imgs = [];
-        $sql = new Sql();
-        for ($i = 0; $i < sizeof($images); $i++) {
-            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $albumId AND sequence = " . ($images[$i] - 1))['location'];
-            $parts = explode('/', $imgLoc);
-            $imgs[] = $parts[sizeof($parts) - 1];
-        }
-        $sql->disconnect();
+        $imageNumbers = array_map('intval', explode(", ", $images));
+        $imgs = array_map(
+            fn(int $imageNumber): string => $this->fixtureImageFileName((int) $albumId, $imageNumber),
+            $imageNumbers
+        );
         $images = implode("\r\n", $imgs);
         $imagesLi = implode("</li><li>", $imgs);
         CustomAsserts::assertEmailMatches((string)getenv('EMAIL_ACTIONS'), 'actions@saperstonestudios.com', 'Someone Downloaded Something', "This is an automatically generated message from Saperstone Studios
@@ -1878,46 +1856,26 @@ Full UA: %s", "<html><body><p>This is an automatically generated message from Sa
     }
 
     /**
-     * @Then /^an email is sent indicating album (\d+) favorites submitted$/
-     * @param $albumId
-     * @throws ExceptionAlias
+     * @Then /^an email is sent indicating album (\d+) images "([^"]*)" submitted$/
      */
-    public function anEmailIsSentIndicatingFavoritesSubmitted($albumId) {
-        $sql = new Sql();
-        $imgs = array_column($sql->getRows("SELECT * FROM `favorites` LEFT JOIN album_images ON favorites.image = album_images.id WHERE favorites.album = $albumId AND favorites.user = {$this->user->getId()}"), 'title');
-        $sql->disconnect();
-        $images = implode("\r\n", $imgs);
-        $imagesLi = implode("</li><li>", $imgs);
+    public function anEmailIsSentIndicatingImagesSubmitted($albumId, $images) {
+        $imageNumbers = array_map('intval', explode(", ", $images));
+        $titles = array_map(
+            fn(int $imageNumber): string => $this->fixtureImageTitle((int) $albumId, $imageNumber),
+            $imageNumbers
+        );
+        $imagesText = implode("\r\n", $titles);
+        $imagesLi = implode("</li><li>", $titles);
+
         CustomAsserts::assertEmailMatches((string)getenv('EMAIL_SELECTS'), 'selects@saperstonestudios.com', 'Selects Have Been Made',
             "This is an automatically generated message from Saperstone Studios\r
 \r
 {$this->user->getName()} has made a selection from the Album $albumId album at %s://%s/user/album.php?album=$albumId. Their email address is {$this->user->getEmail()}\r
 \r
-$images\r
+$imagesText\r
 \r
 \t\t",
             "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href='mailto:{$this->user->getEmail()}'>{$this->user->getName()}</a> has made a selection from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$imagesLi</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>");
-    }
-
-    /**
-     * @Then /^an email is sent indicating album (\d+) image (\d+) submitted$/
-     * @param $albumId
-     * @param $image
-     * @throws ExceptionAlias
-     */
-    public function anEmailIsSentIndicatingImageSubmitted($albumId, $image) {
-        $sql = new Sql();
-        $image = $sql->getRow("SELECT * FROM album_images WHERE album = $albumId AND sequence = " . ($image - 1))['title'];
-        $sql->disconnect();
-        CustomAsserts::assertEmailMatches((string)getenv('EMAIL_SELECTS'), 'selects@saperstonestudios.com', 'Selects Have Been Made',
-            "This is an automatically generated message from Saperstone Studios\r
-\r
-{$this->user->getName()} has made a selection from the Album $albumId album at %s://%s/user/album.php?album=$albumId. Their email address is {$this->user->getEmail()}\r
-\r
-$image\r
-\r
-\t\t",
-            "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href='mailto:{$this->user->getEmail()}'>{$this->user->getName()}</a> has made a selection from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$image</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>");
     }
 
     /**
