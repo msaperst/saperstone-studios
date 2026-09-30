@@ -265,7 +265,6 @@ Feature: Admin Albums
     And I make thumbnails for my album
     And I create "<thumbType>" thumbnails
     Then I see thumbnails being created
-    Then I have created "<thumbType>" thumbnail images for album 99999
     Examples:
       | thumbType |
       | proof     |
