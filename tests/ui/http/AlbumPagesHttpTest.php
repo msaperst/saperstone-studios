@@ -126,6 +126,25 @@ class AlbumPagesHttpTest extends HttpTestBase {
         self::assertSame('0', $this->attribute($response, "//*[@id='album-page-config']", 'data-total'));
     }
 
+    public function testEmptyAlbumSuppressesNotificationFormAfterRequest(): void {
+        $this->sql->executeStatement('DELETE FROM album_images WHERE album = 99999');
+        $this->sql->executeStatement('INSERT INTO albums_for_users (user, album) VALUES (3, 99999)');
+        $this->sql->executeStatement(
+            "INSERT INTO notification_emails (album, user, email, contacted) VALUES (99999, '3', 'email@example.org', 0)"
+        );
+        $this->loginAs('5510b5e6fffd897c234cafe499f76146');
+
+        $response = $this->get('user/album.php?album=99999');
+
+        self::assertSame(1, $this->elementCount($response, "//*[@id='album-empty-state']"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='notify-email']"));
+        self::assertSame(0, $this->elementCount($response, "//*[@id='notify-submit']"));
+        self::assertSame(
+            'You have already asked to be notified when images are added.',
+            $this->text($response, "//*[@id='notification-requested']")
+        );
+    }
+
     public function testAlbumServerRenderedModalStateForGuest(): void {
         $this->setSearchedCookie();
         $response = $this->get('user/album.php?album=99999');
