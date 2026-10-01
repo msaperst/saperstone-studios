@@ -64,6 +64,14 @@ class UserPagesHttpTest extends HttpTestBase {
         self::assertSame('msaperst@gmail.com', $this->attribute($response, "//*[@id='profile-email']", 'value'));
     }
 
+    public function testRegularUserCannotAccessUsersPage(): void {
+        $this->loginAs('5510b5e6fffd897c234cafe499f76146');
+        $response = $this->get('user/users.php');
+
+        self::assertSame(401, $response->getStatusCode());
+        self::assertSame('401 Unauthorized', $this->text($response, '//h1'));
+    }
+
     public function testAdminUsersPage(): void {
         $this->adminLogin();
         $response = $this->get('user/users.php');
