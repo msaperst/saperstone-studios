@@ -242,15 +242,15 @@ class SiteImageAdminFeatureContext implements Context {
                 }
 
                 $save = $holder->findElements(WebDriverBy::cssSelector('.saveme button'));
-                $images = $holder->findElements(WebDriverBy::tagName('img'));
+                $images = $holder->findElements(WebDriverBy::cssSelector('img.img-responsive'));
                 return count($save) === 1
                     && $save[0]->isDisplayed()
                     && count($images) === 1
                     && str_contains((string)$images[0]->getAttribute('src'), '/tmp_portraits.jpg');
             });
         } catch (\Facebook\WebDriver\Exception\TimeoutException $exception) {
-            $images = $holder->findElements(WebDriverBy::tagName('img'));
-            $src = count($images) === 1 ? (string)$images[0]->getAttribute('src') : '<unexpected image count>';
+            $images = $holder->findElements(WebDriverBy::cssSelector('img.img-responsive'));
+            $src = count($images) === 1 ? (string)$images[0]->getAttribute('src') : '<unexpected content image count>';
             $saveCount = count($holder->findElements(WebDriverBy::cssSelector('.saveme button')));
             $overlayCount = count($holder->findElements(WebDriverBy::className('overlay')));
             throw new RuntimeException(
@@ -287,7 +287,7 @@ class SiteImageAdminFeatureContext implements Context {
     }
 
     private function siteImage(string $section): RemoteWebElement {
-        return $this->siteImageHolder($section)->findElement(WebDriverBy::tagName('img'));
+        return $this->siteImageHolder($section)->findElement(WebDriverBy::cssSelector('img.img-responsive'));
     }
 
     private function waitForImageLoad(RemoteWebElement $image): void {
