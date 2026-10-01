@@ -87,3 +87,132 @@ test('edit user active checkbox handles numeric and string API values', () => {
         assert.equal(activeInput.prop('checked'), expected);
     }
 });
+
+
+function sampleUser(overrides = {}) {
+    return {
+        id: 17,
+        usr: 'sample',
+        firstName: 'Sample',
+        lastName: 'User',
+        email: 'sample@example.org',
+        role: 'downloader',
+        resetKey: '',
+        active: 1,
+        ...overrides
+    };
+}
+
+function dialogButton(config, id) {
+    return config.buttons.find((button) => button.id === id);
+}
+
+test('creating a user reloads the table and opens the created user for editing', () => {
+    const {context, environment} = createContext();
+    const created = sampleUser({id: 23, usr: 'created-user'});
+
+    environment.element('#user-username').val(created.usr);
+    environment.element('#user-first-name').val(created.firstName);
+    environment.element('#user-last-name').val(created.lastName);
+    environment.element('#user-email').val(created.email);
+    environment.element('#user-role').val(created.role);
+    environment.element('#user-active').prop('checked', true);
+
+    environment.queuePost('/api/create-user.php', {type: 'success', data: '23'});
+    environment.queueGet('/api/get-user.php', {type: 'success', data: created});
+
+    context.editUser(null);
+    const config = environment.dialogs[0];
+    const dialog = environment.createDialog();
+    dialogButton(config, 'user-save-btn').action.call(environment.createButton(), dialog);
+
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post[0])), {
+        url: '/api/create-user.php',
+        data: {
+            username: 'created-user',
+            firstName: 'Sample',
+            lastName: 'User',
+            email: 'sample@example.org',
+            role: 'downloader',
+            active: 1
+        }
+    });
+    assert.equal(environment.calls.reload.length, 1);
+    assert.equal(dialog.closed, true);
+    assert.equal(environment.dialogs.length, 2);
+    assert.equal(environment.dialogs[1].title(), 'Edit User <b>created-user</b>');
+});
+
+test('updating a user reloads the table after a successful save', () => {
+    const {context, environment} = createContext();
+    const user = sampleUser();
+
+    environment.element('#user-username').val(user.usr);
+    environment.element('#user-first-name').val('Updated');
+    environment.element('#user-last-name').val('Person');
+    environment.element('#user-email').val('updated@example.org');
+    environment.element('#user-role').val('uploader');
+    environment.element('#user-active').prop('checked', false);
+
+    environment.queuePost('/api/update-user.php', {type: 'success', data: ''});
+
+    context.editUser(user);
+    const config = environment.dialogs[0];
+    const dialog = environment.createDialog();
+    dialogButton(config, 'user-update-btn').action.call(environment.createButton(), dialog);
+
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post[0])), {
+        url: '/api/update-user.php',
+        data: {
+            id: 17,
+            username: 'sample',
+            firstName: 'Updated',
+            lastName: 'Person',
+            email: 'updated@example.org',
+            role: 'uploader',
+            active: 0
+        }
+    });
+    assert.equal(dialog.closed, true);
+    assert.equal(environment.calls.reload.length, 1);
+});
+
+test('deleting a user reloads the table and closes the edit dialog', () => {
+    const {context, environment} = createContext();
+    const user = sampleUser();
+    environment.queuePost('/api/delete-user.php', {type: 'success', data: ''});
+
+    context.editUser(user);
+    const editConfig = environment.dialogs[0];
+    const editDialog = environment.createDialog();
+    dialogButton(editConfig, 'user-delete-btn').action.call(environment.createButton(), editDialog);
+
+    const confirmConfig = environment.dialogs[1];
+    const confirmDialog = environment.createDialog();
+    confirmConfig.buttons[0].action.call(environment.createButton(), confirmDialog);
+
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post[0])), {
+        url: '/api/delete-user.php',
+        data: {id: 17}
+    });
+    assert.equal(environment.calls.reload.length, 1);
+    assert.equal(editDialog.closed, true);
+    assert.equal(confirmDialog.closed, true);
+});
+
+test('view as user posts the selected user and redirects after success', () => {
+    const {context, environment, windowObject} = createContext();
+    const button = environment.element('.view-as-user-btn');
+    const row = environment.element('__user_row__').attr('user-id', '17');
+    button.closestResult = row;
+
+    environment.queuePost('/api/login-as-user.php', {type: 'success', data: ''});
+    context.setupEdit();
+    button.click();
+
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post[0])), {
+        url: '/api/login-as-user.php',
+        data: {id: '17'}
+    });
+    assert.equal(windowObject.location.href, 'index.php');
+});
