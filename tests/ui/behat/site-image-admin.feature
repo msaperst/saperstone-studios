@@ -18,13 +18,16 @@ Feature: Site Image Administration
 
   Scenario: Admin can save a replacement site image
     When I upload "flower.jpeg" for the "Portraits" site image
-    And I save the "Portraits" site image
+    Then I see the "Portraits" site image ready to save
+    When I save the "Portraits" site image
     Then I see the saved "Portraits" site image
 
   Scenario: Saved site image persists after reload
     When I upload "flower.jpeg" for the "Portraits" site image
-    And I save the "Portraits" site image
-    And I reload the page
+    Then I see the "Portraits" site image ready to save
+    When I save the "Portraits" site image
+    Then I see the saved "Portraits" site image
+    When I reload the page
     Then I see the saved "Portraits" site image after reload
 
   Scenario: Too-small replacement image shows a useful error
