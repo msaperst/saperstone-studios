@@ -47,8 +47,11 @@ class SiteImageAdminFeatureContext implements Context {
             throw new RuntimeException("Unable to remove edited site image {$this->imagePath}");
         }
 
-        if (!rename($this->backupPath, $this->imagePath)) {
+        if (!copy($this->backupPath, $this->imagePath)) {
             throw new RuntimeException("Unable to restore site image {$this->imagePath}");
+        }
+        if (!unlink($this->backupPath)) {
+            throw new RuntimeException("Unable to remove site image backup {$this->backupPath}");
         }
 
         $this->backupPath = null;
