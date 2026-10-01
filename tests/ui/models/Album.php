@@ -40,8 +40,15 @@ class Album {
         if ($save) {
             $this->driver->findElement(WebDriverBy::id('find-album-add'))->click();
         }
-        $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code);
-        $this->driver->findElement(WebDriverBy::className('btn-success'))->click();
+
+        $input = $this->finderInput();
+        $input->clear();
+        $input->sendKeys($code);
+        $this->waitForFinderCode((string) $code);
+
+        $submit = WebDriverBy::cssSelector('.bootstrap-dialog.modal.in button.btn-success');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($submit));
+        $this->driver->findElement($submit)->click();
         $this->waitForFinderSubmission();
     }
 
@@ -80,8 +87,25 @@ class Album {
         if ($save) {
             $this->driver->findElement(WebDriverBy::id('find-album-add'))->click();
         }
-        $this->driver->findElement(WebDriverBy::id('find-album-code'))->sendKeys($code)->sendKeys(WebDriverKeys::ENTER);
+
+        $input = $this->finderInput();
+        $input->clear();
+        $input->sendKeys($code);
+        $this->waitForFinderCode((string) $code);
+        $input->sendKeys(WebDriverKeys::ENTER);
         $this->waitForFinderSubmission();
+    }
+
+    private function finderInput(): WebDriverElement {
+        $selector = WebDriverBy::cssSelector('.bootstrap-dialog.modal.in #find-album-code');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
+        return $this->driver->findElement($selector);
+    }
+
+    private function waitForFinderCode(string $code): void {
+        $this->wait->until(function () use ($code) {
+            return (string) $this->finderInput()->getAttribute('value') === $code;
+        });
     }
 
     /**
