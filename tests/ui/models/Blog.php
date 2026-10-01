@@ -70,13 +70,39 @@ class Blog {
 
     public function deleteComment($ord) {
         $this->waitForCommentsToLoad();
+        $index = intval($ord) - 1;
+
+        $this->wait->until(function () use ($index) {
+            $blocks = $this->getCommentBlocks();
+            return isset($blocks[$index])
+                && str_contains((string)$blocks[$index]->getAttribute('class'), 'deletable');
+        });
+
         $blocks = $this->getCommentBlocks();
-        $commentBlockSize = $blocks[intval($ord) - 1]->getSize();
+        $comment = $blocks[$index];
+        $this->driver->executeScript(
+            "arguments[0].scrollIntoView({block: 'center'});",
+            [$comment]
+        );
+
+        // The legacy delete affordance is a CSS :after pseudo-element on the
+        // blockquote. Click its visible top-right area as a user would.
+        $commentBlockSize = $comment->getSize();
         $action = new WebDriverActions($this->driver);
-        $action->moveToElement($blocks[intval($ord) - 1], intval($commentBlockSize->getWidth() * 0.5 - 5), intval($commentBlockSize->getHeight() * -0.5 + 5))->click()->perform();
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('btn-danger')));
-        $this->driver->findElement(WebDriverBy::className('btn-danger'))->click();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('btn-danger'))));
+        $action->moveToElement(
+            $comment,
+            intval($commentBlockSize->getWidth() * 0.5 - 5),
+            intval($commentBlockSize->getHeight() * -0.5 + 5)
+        )->click()->perform();
+
+        $confirm = WebDriverBy::xpath(
+            "//div[contains(@class, 'bootstrap-dialog')][.//div[contains(@class, 'bootstrap-dialog-title')][normalize-space(.)='Are You Sure?']]//button[contains(@class, 'btn-danger')][contains(normalize-space(.), 'Delete')]"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($confirm));
+        $this->driver->findElement($confirm)->click();
+        $this->wait->until(WebDriverExpectedCondition::not(
+            WebDriverExpectedCondition::presenceOfElementLocated($confirm)
+        ));
     }
 
     public function getCommentHolder(): RemoteWebElement {
