@@ -75,3 +75,90 @@ test('failed image upload unblocks the page and displays the API response', () =
     assert.equal(environment.dialogs.length, 1);
     assert.equal(environment.dialogs[0].message, 'Image does not meet minimum width');
 });
+
+
+test('successful upload prepares a narrow site image for arrangement', () => {
+    const {context, environment} = createContext('/index.php');
+    const editControl = environment.element('.editme');
+    const holder = environment.element('__editable_holder__').addClass('horizontal');
+    const column = environment.element('__editable_column__').attr('class', 'col-md-6');
+    const img = holder.find('img').attr('src', '/img/main/portraits.jpg');
+
+    editControl.parentResult = holder;
+    holder.parentResult = column;
+    environment.$.blockUI = () => {};
+    environment.$.unblockUI = () => {};
+
+    let arranged = null;
+    context.arrangeImage = (image, scale) => {
+        arranged = {image, scale};
+    };
+
+    environment.runReady();
+    editControl.uploadOptions.onSuccess(['flower.jpeg'], '');
+
+    assert.equal(arranged.image, img);
+    assert.equal(arranged.scale, 2 / 3);
+});
+
+test('successful upload prepares a full-width site image for cropping', () => {
+    const {context, environment} = createContext('/index.php');
+    const editControl = environment.element('.editme');
+    const holder = environment.element('__editable_holder__').addClass('horizontal');
+    const column = environment.element('__editable_column__').attr('class', 'col-md-12');
+    const img = holder.find('img').attr('src', '/img/main/portraits.jpg');
+
+    editControl.parentResult = holder;
+    holder.parentResult = column;
+    environment.$.blockUI = () => {};
+    environment.$.unblockUI = () => {};
+
+    let cropped = null;
+    context.cropImage = (image) => {
+        cropped = image;
+    };
+
+    environment.runReady();
+    editControl.uploadOptions.onSuccess(['flower.jpeg'], '');
+
+    assert.equal(cropped, img);
+});
+
+test('saving an edited image posts crop coordinates and restores the normal image state', () => {
+    const {context, environment} = createContext('/index.php');
+    const img = environment.element('__img__')
+        .attr('src', '/img/main/tmp_portraits.jpg?42')
+        .css('top', '-10px');
+    img.widthValue = 600;
+
+    const parent = environment.element('__parent__')
+        .attr('section', 'Portraits')
+        .attr('link', '/portrait/index.php')
+        .css('height', '400px');
+    img.parentResult = parent;
+
+    const save = parent.find('.saveme');
+    const watermark = parent.find('.watermark');
+    environment.queuePost('/api/crop-image.php', {type: 'success', data: ''});
+    context.randomImgNumber = () => 12345;
+
+    context.saveImg(img);
+
+    assert.deepEqual(environment.calls.post[0], {
+        url: '/api/crop-image.php',
+        data: {
+            image: '..//img/main/tmp_portraits.jpg',
+            top: 10,
+            bottom: 410,
+            'max-width': 600
+        }
+    });
+    assert.equal(save.properties.get('disabled'), true);
+    assert.equal(save.removed, true);
+    assert.equal(watermark.removed, true);
+    assert.equal(img.attr('src'), '/img/main/portraits.jpg?12345');
+    assert.equal(img.draggableOptions, 'destroy');
+    assert.equal(parent.hasClass('hovereffect'), true);
+    assert.equal(parent.styles.height, '');
+    assert.equal(parent.styles.cursor, '');
+});
