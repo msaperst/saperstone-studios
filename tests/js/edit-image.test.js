@@ -99,7 +99,7 @@ test('successful upload prepares a narrow site image for arrangement', () => {
     editControl.uploadOptions.onSuccess(['flower.jpeg'], '');
 
     assert.equal(arranged.image, img);
-    assert.equal(arranged.scale, 2 / 3);
+    assert.equal(arranged.scale, String(2 / 3));
 });
 
 test('successful upload prepares a full-width site image for cropping', () => {
