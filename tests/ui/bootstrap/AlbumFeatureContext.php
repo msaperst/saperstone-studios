@@ -1785,6 +1785,18 @@ Comment',
     }
 
     /**
+     * @Then /^I see that I already requested an album notification$/
+     */
+    public function iSeeThatIAlreadyRequestedAnAlbumNotification(): void {
+        $notice = WebDriverBy::id('notification-requested');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($notice));
+        Assert::assertSame(
+            'You have already asked to be notified when images are added.',
+            trim($this->driver->findElement($notice)->getText())
+        );
+    }
+
+    /**
      * @Then /^I don't see the album notification form$/
      */
     public function iDonTSeeTheAlbumNotificationForm() {
