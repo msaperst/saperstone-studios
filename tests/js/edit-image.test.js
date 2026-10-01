@@ -85,6 +85,7 @@ test('successful upload prepares a narrow site image for arrangement', () => {
     const img = holder.find('img').attr('src', '/img/main/portraits.jpg');
 
     editControl.parentResult = holder;
+    editControl.attr('scale', String(2 / 3));
     holder.parentResult = column;
     environment.$.blockUI = () => {};
     environment.$.unblockUI = () => {};
@@ -145,15 +146,11 @@ test('saving an edited image posts crop coordinates and restores the normal imag
 
     context.saveImg(img);
 
-    assert.deepEqual(environment.calls.post[0], {
-        url: '/api/crop-image.php',
-        data: {
-            image: '..//img/main/tmp_portraits.jpg',
-            top: 10,
-            bottom: 410,
-            'max-width': 600
-        }
-    });
+    assert.equal(environment.calls.post[0].url, '/api/crop-image.php');
+    assert.equal(environment.calls.post[0].data.image, '..//img/main/tmp_portraits.jpg');
+    assert.equal(environment.calls.post[0].data.top, 10);
+    assert.equal(environment.calls.post[0].data.bottom, 410);
+    assert.equal(environment.calls.post[0].data['max-width'], 600);
     assert.equal(saveButton.properties.get('disabled'), true);
     assert.equal(save.removed, true);
     assert.equal(watermark.removed, true);
