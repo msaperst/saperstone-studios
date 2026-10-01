@@ -284,7 +284,8 @@ Feature: Album
     And I am on the "user/album.php?album=99998" page
     When I submit my email for album notification
     And I reload the page
-    Then I don't see the album notification form
+    Then I see that I already requested an album notification
+    And I don't see the album notification form
 
   Scenario: Opening an image sets the hash to that image
     Given I am on the "user/album.php?album=99999" page
