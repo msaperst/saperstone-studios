@@ -46,7 +46,6 @@ Feature: Admin Albums
     When I add a new album
     And I provide "My New Album" for the album "name"
     And I create my album
-    And I close the album details modal
     And I reload the page
     Then I see the new album listed
 
