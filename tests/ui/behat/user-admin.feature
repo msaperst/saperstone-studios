@@ -20,17 +20,17 @@ Feature: User Administration
     Then I see the updated administered user in the users table
 
   Scenario: Admin can create a user
-    When I create an active downloader user "behat-created-user" named "Created User" with email "behat-created-user@example.org"
+    When I create an active downloader user "behat_created_user" named "Created User" with email "behat_created_user@example.org"
     Then I see the created user's edit dialog
     And I see the created user in the users table
 
   Scenario: Created user persists after reload
-    When I create an active downloader user "behat-created-user" named "Created User" with email "behat-created-user@example.org"
+    When I create an active downloader user "behat_created_user" named "Created User" with email "behat_created_user@example.org"
     And I reload the page
     Then I see the created user in the users table
 
   Scenario: Duplicate user creation shows a useful error
-    When I try to create an active downloader user "behat-admin-user" named "Duplicate User" with email "duplicate-user@example.org"
+    When I try to create an active downloader user "behat_admin_user" named "Duplicate User" with email "duplicate-user@example.org"
     Then I see a user administration error indicating the username already exists
 
   Scenario: Admin can delete a user
