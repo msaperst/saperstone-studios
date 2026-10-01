@@ -138,6 +138,7 @@ test('saving an edited image posts crop coordinates and restores the normal imag
     img.parentResult = parent;
 
     const save = parent.find('.saveme');
+    const saveButton = parent.find('.saveme button');
     const watermark = parent.find('.watermark');
     environment.queuePost('/api/crop-image.php', {type: 'success', data: ''});
     context.randomImgNumber = () => 12345;
@@ -153,7 +154,7 @@ test('saving an edited image posts crop coordinates and restores the normal imag
             'max-width': 600
         }
     });
-    assert.equal(save.properties.get('disabled'), true);
+    assert.equal(saveButton.properties.get('disabled'), true);
     assert.equal(save.removed, true);
     assert.equal(watermark.removed, true);
     assert.equal(img.attr('src'), '/img/main/portraits.jpg?12345');
@@ -161,4 +162,31 @@ test('saving an edited image posts crop coordinates and restores the normal imag
     assert.equal(parent.hasClass('hovereffect'), true);
     assert.equal(parent.styles.height, '');
     assert.equal(parent.styles.cursor, '');
+});
+
+
+test('failed image save shows the crop error and allows the user to retry', () => {
+    const {context, environment} = createContext('/index.php');
+    const img = environment.element('__failed_img__')
+        .attr('src', '/img/main/tmp_portraits.jpg?42')
+        .css('top', '-10px');
+    img.widthValue = 600;
+
+    const parent = environment.element('__failed_parent__').css('height', '400px');
+    img.parentResult = parent;
+    const saveButton = parent.find('.saveme button');
+
+    environment.queuePost('/api/crop-image.php', {
+        type: 'failure',
+        xhr: {responseText: 'Cropped image is smaller than the required image'},
+        error: 'Bad Request'
+    });
+
+    context.saveImg(img);
+
+    assert.equal(saveButton.properties.get('disabled'), false);
+    assert.equal(environment.dialogs.length, 1);
+    assert.equal(environment.dialogs[0].title, 'Whoops, Something Went Wrong');
+    assert.equal(environment.dialogs[0].message, 'Cropped image is smaller than the required image');
+    assert.equal(img.attr('src'), '/img/main/tmp_portraits.jpg?42');
 });
