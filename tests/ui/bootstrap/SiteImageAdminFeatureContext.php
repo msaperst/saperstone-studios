@@ -264,7 +264,7 @@ class SiteImageAdminFeatureContext implements Context {
     private function waitForSavedImage(string $section): void {
         $this->wait->until(function () use ($section) {
             $holder = $this->siteImageHolder($section);
-            $images = $holder->findElements(WebDriverBy::tagName('img'));
+            $images = $holder->findElements(WebDriverBy::cssSelector('img.img-responsive'));
             if (count($images) !== 1) {
                 return false;
             }
