@@ -118,7 +118,8 @@ Feature: System Authentication
     Given an enabled user account exists
     When I request a reset key
     And I reset my password to "password1" using the emailed key
-    And I logout
+    Then I see my user name displayed
+    When I logout
     And I log in to the site using credentials "testUser" "password1"
     Then I see my user name displayed
 
