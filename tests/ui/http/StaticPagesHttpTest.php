@@ -9,6 +9,39 @@ class StaticPagesHttpTest extends HttpTestBase {
         $this->assertPage($this->get(), 'Welcome to Saperstone Studios', 'h2');
     }
 
+    public function testMainPageDoesNotExposeImageEditingToGuest(): void {
+        $response = $this->get();
+
+        self::assertSame(
+            0,
+            $this->elementCount(
+                $response,
+                "//*[contains(concat(' ', normalize-space(@class), ' '), ' editable ')]"
+            )
+        );
+        self::assertSame(
+            0,
+            $this->elementCount($response, "//script[contains(@src, '/js/edit-image.js')]")
+        );
+    }
+
+    public function testMainPageExposesImageEditingToAdmin(): void {
+        $this->adminLogin();
+        $response = $this->get();
+
+        self::assertSame(
+            4,
+            $this->elementCount(
+                $response,
+                "//*[contains(concat(' ', normalize-space(@class), ' '), ' editable ')]"
+            )
+        );
+        self::assertSame(
+            1,
+            $this->elementCount($response, "//script[contains(@src, '/js/edit-image.js')]")
+        );
+    }
+
     public function testAboutPage(): void {
         $this->assertPage($this->get('about.php'), 'About Saperstone Studios');
     }
