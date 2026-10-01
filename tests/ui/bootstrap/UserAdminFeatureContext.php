@@ -17,7 +17,7 @@ use ui\models\Login;
 class UserAdminFeatureContext implements Context {
 
     private const USER_ID = 9898;
-    private const USERNAME = 'behat-admin-user';
+    private const USERNAME = 'behat_admin_user';
     private const USER_EMAIL = 'behat-admin-user@example.org';
     private const ALBUM_ID = 98989;
     private const ALBUM_NAME = 'User Admin Test Album';
@@ -56,7 +56,7 @@ class UserAdminFeatureContext implements Context {
         }
 
         // A create scenario can fail before its generated id is captured.
-        $created = $sql->getRow('SELECT id FROM users WHERE usr = ?', ['behat-created-user']);
+        $created = $sql->getRow('SELECT id FROM users WHERE usr = ?', ['behat_created_user']);
         if ($created !== null) {
             $createdId = (int)$created['id'];
             $sql->executeStatement('DELETE FROM albums_for_users WHERE user = ?', [$createdId]);
