@@ -1340,8 +1340,18 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeAlbumListed($albumId) {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("tr[album-id='$albumId']")));
-        Assert::assertStringEndsWith("album.php?album=$albumId", $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'), $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'));
+        $albumId = (int) $albumId;
+        $rowSelector = WebDriverBy::cssSelector("tr[album-id='$albumId']");
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($rowSelector));
+
+        $row = $this->driver->findElement($rowSelector);
+        $link = $row->findElement(WebDriverBy::cssSelector('.album-name a'));
+        $href = $link->getAttribute('href');
+
+        Assert::assertStringEndsWith("album.php?album=$albumId", $href, $href);
+        if (isset($this->albumFixtures[$albumId])) {
+            Assert::assertSame($this->albumFixtures[$albumId]['name'], $link->getText());
+        }
     }
 
     /**
