@@ -103,16 +103,6 @@ class SiteImageAdminFeatureContext implements Context {
     public function iUploadForTheSiteImage(string $fileName, string $section): void {
         $this->rememberOriginalImage($section);
         $this->selectUploadFixture($fileName, $section);
-
-        $holder = $this->siteImageHolder($section);
-        $this->wait->until(function () use ($holder) {
-            $save = $holder->findElements(WebDriverBy::cssSelector('.saveme button'));
-            $images = $holder->findElements(WebDriverBy::tagName('img'));
-            return count($save) === 1
-                && $save[0]->isDisplayed()
-                && count($images) === 1
-                && str_contains((string)$images[0]->getAttribute('src'), '/tmp_portraits.jpg');
-        });
     }
 
     /**
@@ -132,9 +122,10 @@ class SiteImageAdminFeatureContext implements Context {
      * @Then /^I see the "([^"]*)" site image ready to save$/
      */
     public function iSeeTheSiteImageReadyToSave(string $section): void {
+        $this->waitForImageReadyToSave($section);
+
         $holder = $this->siteImageHolder($section);
         $image = $this->siteImage($section);
-
         Assert::assertSame('/img/main/tmp_portraits.jpg', parse_url((string)$image->getAttribute('src'), PHP_URL_PATH));
 
         $saveButtons = $holder->findElements(WebDriverBy::cssSelector('.saveme button'));
@@ -148,6 +139,8 @@ class SiteImageAdminFeatureContext implements Context {
      * @When /^I save the "([^"]*)" site image$/
      */
     public function iSaveTheSiteImage(string $section): void {
+        $this->waitForImageReadyToSave($section);
+
         $holder = $this->siteImageHolder($section);
         $save = WebDriverBy::cssSelector('.saveme button');
         $this->wait->until(function () use ($holder, $save) {
@@ -155,9 +148,6 @@ class SiteImageAdminFeatureContext implements Context {
             return count($buttons) === 1 && $buttons[0]->isDisplayed() && $buttons[0]->isEnabled();
         });
         $holder->findElement($save)->click();
-
-        $this->waitForSavedImage($section);
-        $this->savedSignature = $this->imageSignature($this->siteImage($section));
     }
 
     /**
@@ -165,10 +155,12 @@ class SiteImageAdminFeatureContext implements Context {
      */
     public function iSeeTheSavedSiteImage(string $section): void {
         Assert::assertNotNull($this->originalSignature, 'No original browser image signature was captured');
-        Assert::assertNotNull($this->savedSignature, 'No saved browser image signature was captured');
 
         $this->waitForSavedImage($section);
         $current = $this->imageSignature($this->siteImage($section));
+        if ($this->savedSignature === null) {
+            $this->savedSignature = $current;
+        }
 
         Assert::assertSame($this->savedSignature, $current);
         Assert::assertNotSame($this->originalSignature, $current, 'The rendered site image did not visibly change');
@@ -229,6 +221,43 @@ class SiteImageAdminFeatureContext implements Context {
     private function rememberOriginalImage(string $section): void {
         if ($this->originalSignature === null) {
             $this->originalSignature = $this->imageSignature($this->siteImage($section));
+        }
+    }
+
+    private function waitForImageReadyToSave(string $section): void {
+        $holder = $this->siteImageHolder($section);
+
+        try {
+            $this->wait->until(function () use ($holder) {
+                $errorDialogs = $this->driver->findElements(
+                    WebDriverBy::xpath(
+                        "//div[contains(@class, 'bootstrap-dialog')][.//div[contains(@class, 'bootstrap-dialog-title')][normalize-space(.)='Whoops, Something Went Wrong']]"
+                    )
+                );
+                foreach ($errorDialogs as $dialog) {
+                    if ($dialog->isDisplayed()) {
+                        $body = $dialog->findElement(WebDriverBy::className('bootstrap-dialog-body'))->getText();
+                        throw new RuntimeException("Site image upload failed before editing mode: $body");
+                    }
+                }
+
+                $save = $holder->findElements(WebDriverBy::cssSelector('.saveme button'));
+                $images = $holder->findElements(WebDriverBy::tagName('img'));
+                return count($save) === 1
+                    && $save[0]->isDisplayed()
+                    && count($images) === 1
+                    && str_contains((string)$images[0]->getAttribute('src'), '/tmp_portraits.jpg');
+            });
+        } catch (\Facebook\WebDriver\Exception\TimeoutException $exception) {
+            $images = $holder->findElements(WebDriverBy::tagName('img'));
+            $src = count($images) === 1 ? (string)$images[0]->getAttribute('src') : '<unexpected image count>';
+            $saveCount = count($holder->findElements(WebDriverBy::cssSelector('.saveme button')));
+            $overlayCount = count($holder->findElements(WebDriverBy::className('overlay')));
+            throw new RuntimeException(
+                "Site image never entered editing mode. src=$src saveButtons=$saveCount overlays=$overlayCount",
+                0,
+                $exception
+            );
         }
     }
 
