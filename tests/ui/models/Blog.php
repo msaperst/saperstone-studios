@@ -42,6 +42,18 @@ class Blog {
         $this->fillOutCommentForm($name, $email, $message);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('post-comment-submit')));
         $this->driver->findElement(WebDriverBy::id('post-comment-submit'))->click();
+
+        // Comment creation is asynchronous. Do not let the action complete
+        // until the new comment is visible in the UI; otherwise a following
+        // action can operate on the previously first comment.
+        $this->wait->until(function () use ($message) {
+            foreach ($this->getCommentBlocks() as $block) {
+                if ($block->findElement(WebDriverBy::tagName('p'))->getText() === $message) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     public function waitForCommentsToLoad() {
