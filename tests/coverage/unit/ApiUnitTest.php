@@ -81,8 +81,14 @@ class ApiUnitTest extends TestCase {
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_SERVER['HTTP_HOST'] = 'example.test';
         $_SERVER['SERVER_NAME'] = 'example.test';
+        $_SERVER['SERVER_PORT'] = '80';
         $_SERVER['HTTP_ORIGIN'] = 'http://example.test';
-        unset($_SERVER['HTTP_X_CSRF_TOKEN']);
+        unset(
+            $_SERVER['HTTPS'],
+            $_SERVER['HTTP_X_FORWARDED_PROTO'],
+            $_SERVER['HTTP_X_FORWARDED_HOST'],
+            $_SERVER['HTTP_X_CSRF_TOKEN']
+        );
 
         $this->assertTrue(Api::requireCsrfProtection());
     }
