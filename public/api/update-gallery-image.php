@@ -16,6 +16,7 @@ try {
         $caption = $api->retrievePostString('caption', 'Caption');
     }
     $filename = $api->retrievePostString('filename', 'Filename');
+    File::validateImageExtension(basename($filename));
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);
     echo $e->getMessage();
