@@ -49,6 +49,7 @@ class UploadAlbumImagesTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/upload-album-images.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody());
@@ -119,6 +120,7 @@ class UploadAlbumImagesTest extends TestCase {
                 ],
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(403, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());

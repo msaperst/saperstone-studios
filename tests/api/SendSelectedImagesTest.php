@@ -116,6 +116,7 @@ class SendSelectedImagesTest extends TestCase {
                     'album' => '999'
                 ]
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(403, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
