@@ -45,3 +45,77 @@ test('dynamically added contract line item uses a native title', () => {
     assert.equal(removeButton.attr('data-toggle'), undefined);
     assert.equal(removeButton.attr('data-placement'), undefined);
 });
+
+
+test('contract admin requires a client name before saving', () => {
+    const {context, environment} = createContext();
+    const button = environment.createButton('__contract_save_button__');
+    const modal = environment.element('__contract_modal__');
+    button.closestResult = modal;
+
+    environment.element('#contract-type').val('commercial');
+    environment.element('#contract-name').val('');
+    environment.element('#contract-session').val('Session');
+
+    assert.equal(context.requiredInfo(button), false);
+
+    const body = modal.find('.bootstrap-dialog-body');
+    assert.equal(body.appended.length, 1);
+    assert.match(String(body.appended[0]), /Please enter a Client Name/);
+});
+
+test('successful contract submit closes the dialog and reloads the contract table', () => {
+    const {context, environment} = createContext();
+    const button = environment.createButton('__contract_submit_button__');
+    const modal = environment.element('__contract_submit_modal__');
+    button.closestResult = modal;
+    const dialog = environment.createDialog();
+
+    environment.queuePost('/api/update-contract.php', {type: 'success', data: '98980'});
+
+    context.submitContract(
+        {id: 98980, type: 'commercial', name: 'Client', session: 'Session', content: 'Content'},
+        '/api/update-contract.php',
+        dialog,
+        button
+    );
+
+    assert.equal(environment.calls.post.length, 1);
+    assert.equal(environment.calls.post[0].url, '/api/update-contract.php');
+    assert.equal(environment.calls.post[0].data.name, 'Client');
+    assert.equal(dialog.closed, true);
+    assert.equal(environment.calls.reload.length, 1);
+    assert.equal(button.stopSpinCount, 1);
+    assert.equal(dialog.buttonsEnabled, true);
+    assert.equal(dialog.closable, true);
+});
+
+test('failed contract submit displays the server error and restores dialog controls', () => {
+    const {context, environment} = createContext();
+    const button = environment.createButton('__contract_failed_submit_button__');
+    const modal = environment.element('__contract_failed_submit_modal__');
+    button.closestResult = modal;
+    const dialog = environment.createDialog();
+
+    environment.queuePost('/api/update-contract.php', {
+        type: 'failure',
+        xhr: {responseText: 'Contract email is not valid'},
+        error: 'Bad Request'
+    });
+
+    context.submitContract(
+        {id: 98980, type: 'commercial', name: 'Client', session: 'Session', content: 'Content'},
+        '/api/update-contract.php',
+        dialog,
+        button
+    );
+
+    const body = modal.find('.bootstrap-dialog-body');
+    assert.equal(body.appended.length, 1);
+    assert.match(String(body.appended[0]), /Contract email is not valid/);
+    assert.equal(dialog.closed, false);
+    assert.equal(environment.calls.reload.length, 0);
+    assert.equal(button.stopSpinCount, 1);
+    assert.equal(dialog.buttonsEnabled, true);
+    assert.equal(dialog.closable, true);
+});
