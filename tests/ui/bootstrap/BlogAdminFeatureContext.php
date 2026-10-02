@@ -594,14 +594,21 @@ class BlogAdminFeatureContext implements Context {
     }
 
     /**
+     * @When /^I reopen the deleted blog administration post$/
+     */
+    public function iReopenTheDeletedBlogAdministrationPost(): void {
+        $this->driver->get($this->baseUrl . 'blog/post.php?p=' . $this->fixtureId());
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('h1')));
+    }
+
+    /**
      * @Then /^the blog administration draft no longer exists$/
      */
     public function theBlogAdministrationDraftNoLongerExists(): void {
-        $selector = WebDriverBy::cssSelector("#posts tbody tr[post-id='" . $this->fixtureId() . "']");
-        $this->wait->until(function () use ($selector) {
-            return count($this->driver->findElements($selector)) === 0;
-        });
-        Assert::assertCount(0, $this->driver->findElements($selector));
+        Assert::assertSame(
+            '404 Not Found',
+            trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
+        );
     }
 
     private function clickEditorButton(string $id): void {
