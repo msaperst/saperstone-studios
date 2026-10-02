@@ -29,18 +29,27 @@ $sql->disconnect();
 //rename the file if it needs it
 if ($filename != $image->getLocation()) {
     if (Strings::startsWith($image->getLocation(), '/')) {
-        $originalFile = dirname(__DIR__) . $image->getLocation();
-        $newFile = dirname(__DIR__) . $filename;
+        $originalFile = Api::resolvePublicPath($image->getLocation());
+        $newFile = Api::resolvePublicPath($filename);
     } elseif (isset($_SERVER['HTTP_REFERER'])) {
-        $originalFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . explode('/', $_SERVER ['HTTP_REFERER'])[3] . DIRECTORY_SEPARATOR . $image->getLocation();
-        $newFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . explode('/', $_SERVER ['HTTP_REFERER'])[3] . DIRECTORY_SEPARATOR . $filename;
+        $refererPath = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+        $section = explode('/', trim((string)$refererPath, '/'))[0] ?? '';
+        $originalFile = Api::resolvePublicPath('/' . $section . '/' . $image->getLocation());
+        $newFile = Api::resolvePublicPath('/' . $section . '/' . $filename);
     } else {
         http_response_code(500);
         echo "Unable to find original image to rename!";
         exit();
     }
+
+    if ($originalFile === null || $newFile === null) {
+        http_response_code(400);
+        echo "Filename is not valid";
+        exit();
+    }
+
     if (file_exists($originalFile) && !file_exists($newFile)) {
-        rename("$originalFile", "$newFile");
+        rename($originalFile, $newFile);
         $sql = new Sql();
         $sql->executeStatement("UPDATE gallery_images SET location = ? WHERE gallery = ? AND id = ?", [$filename, $gallery->getId(), $image->getId()]);
         $sql->disconnect();
