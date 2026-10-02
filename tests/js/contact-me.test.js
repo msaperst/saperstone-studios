@@ -113,7 +113,7 @@ test('contact form submits all fields and displays success state', () => {
 
     assert.equal(result.prevented, true);
     assert.equal(getButtonDisabledDuringAjax(), true);
-    assert.deepEqual(ajaxCalls, [{
+    assert.deepEqual(JSON.parse(JSON.stringify(ajaxCalls)), [{
         url: 'api/contact-me.php',
         type: 'POST',
         data: {
