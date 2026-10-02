@@ -76,7 +76,7 @@ test('gallery rename updates the visible page heading after save succeeds', () =
     });
     environment.queuePost('/api/update-gallery.php', {type: 'success', data: ''});
 
-    loadBrowserScript('public/js/gallery-admin.js', {
+    const context = loadBrowserScript('public/js/gallery-admin.js', {
         $: environment.$,
         document: environment.document,
         window: windowObject,
@@ -86,8 +86,8 @@ test('gallery rename updates the visible page heading after save succeeds', () =
         loaded: 4
     });
 
+    context.editGallery(999);
     environment.element('#new-gallery-title').val('Updated Gallery');
-    environment.element('#edit-gallery-btn').click();
 
     const dialogConfig = environment.dialogs[0];
     const dialog = environment.createDialog();
