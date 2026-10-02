@@ -5,6 +5,7 @@ namespace ui\bootstrap;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -323,10 +324,22 @@ class UserAdminFeatureContext implements Context {
      */
     public function iRemoveTheUserAdministrationTestAlbum(): void {
         $this->waitForSelectedAlbum(true);
-        $selected = WebDriverBy::cssSelector(
-            "#user-albums .selected-album[album-id='" . self::ALBUM_ID . "']"
+        $selected = $this->driver->findElement(
+            WebDriverBy::cssSelector(
+                "#user-albums .selected-album[album-id='" . self::ALBUM_ID . "']"
+            )
         );
-        $this->driver->findElement($selected)->click();
+
+        // The chip itself intentionally ignores pointer events; its red
+        // :after pseudo-element is the actual remove control.
+        $size = $selected->getSize();
+        $action = new WebDriverActions($this->driver);
+        $action->moveToElement(
+            $selected,
+            intval($size->getWidth() * 0.5 - 8),
+            0
+        )->click()->perform();
+
         $this->waitForSelectedAlbum(false);
     }
 
