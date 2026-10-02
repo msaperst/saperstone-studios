@@ -116,6 +116,34 @@ class ApiUnitTest extends TestCase {
         $this->assertSame(403, http_response_code());
     }
 
+    public function testResolvePublicPathAllowsApiRelativePathInsidePublicRoot(): void {
+        $path = Api::resolvePublicPath('../img/main/portraits.jpg', 'api');
+
+        $this->assertSame(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'img'
+                . DIRECTORY_SEPARATOR . 'main' . DIRECTORY_SEPARATOR . 'portraits.jpg',
+            $path
+        );
+    }
+
+    public function testResolvePublicPathAllowsPublicAbsolutePathInsidePublicRoot(): void {
+        $path = Api::resolvePublicPath('/portrait/img/sample.jpg');
+
+        $this->assertSame(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'portrait'
+                . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'sample.jpg',
+            $path
+        );
+    }
+
+    public function testResolvePublicPathRejectsTraversalOutsidePublicRoot(): void {
+        $this->assertNull(Api::resolvePublicPath('../../outside.jpg', 'api'));
+    }
+
+    public function testResolvePublicPathRejectsNullByte(): void {
+        $this->assertNull(Api::resolvePublicPath("/portrait/img/image.jpg\0.php"));
+    }
+
     // ------------------------
     // Post Int
     // ------------------------
