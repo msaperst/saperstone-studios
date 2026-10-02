@@ -85,6 +85,36 @@ class CsrfProtectionTest extends TestCase {
         ));
     }
 
+    public function testValidSessionTokenAllowsWriteWithoutOrigin(): void {
+        $cookies = $this->adminCookies();
+        $page = $this->http->request('GET', '/', [
+            'cookies' => $cookies,
+        ]);
+        self::assertSame(
+            1,
+            preg_match(
+                '/name="csrf_token"[^>]*value="([a-f0-9]{64})"/',
+                (string)$page->getBody(),
+                $matches
+            )
+        );
+
+        $response = $this->http->request('POST', 'api/create-blog-tag.php', [
+            'headers' => [
+                'Origin' => '',
+                'X-CSRF-Token' => $matches[1],
+            ],
+            'form_params' => ['tag' => self::TEST_TAG],
+            'cookies' => $cookies,
+        ]);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(1, $this->sql->getRowCount(
+            'SELECT * FROM tags WHERE tag = ?',
+            [self::TEST_TAG]
+        ));
+    }
+
     public function testSameOriginAdminWriteRemainsAllowed(): void {
         $response = $this->http->request('POST', 'api/create-blog-tag.php', [
             'form_params' => ['tag' => self::TEST_TAG],
