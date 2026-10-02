@@ -2,6 +2,7 @@
 
 namespace api;
 
+use Api;
 use GuzzleHttp\Cookie\CookieJar;
 use PHPUnit\Framework\TestCase;
 use Sql;
