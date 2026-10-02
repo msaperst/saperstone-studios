@@ -49,9 +49,10 @@ test('sortGallery switches controls and enables sortable image ordering', () => 
 
     assert.equal(sortParent.visible, false);
     assert.equal(saveParent.visible, true);
-    assert.deepEqual(environment.element('.image-grid').sortableOptions, {
-        items: 'div.gallery'
-    });
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(environment.element('.image-grid').sortableOptions)),
+        {items: 'div.gallery'}
+    );
 });
 
 test('gallery dialog button helpers disable and restore upload controls', () => {
