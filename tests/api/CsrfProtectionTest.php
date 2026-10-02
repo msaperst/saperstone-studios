@@ -36,6 +36,12 @@ class CsrfProtectionTest extends TestCase {
         $this->sql->executeStatement('DELETE FROM albums WHERE id = ?', [self::TEST_ALBUM_ID]);
         $this->sql->executeStatement('DELETE FROM tags WHERE tag = ?', [self::TEST_TAG]);
         $this->sql->executeStatement('DELETE FROM remember_tokens WHERE user IN (1, 4)');
+
+        $nextAlbumId = ((int)$this->sql->getRow('SELECT MAX(id) AS maxId FROM albums')['maxId']) + 1;
+        $this->sql->executeStatement("ALTER TABLE albums AUTO_INCREMENT = $nextAlbumId");
+        $nextTagId = ((int)$this->sql->getRow('SELECT MAX(id) AS maxId FROM tags')['maxId']) + 1;
+        $this->sql->executeStatement("ALTER TABLE tags AUTO_INCREMENT = $nextTagId");
+
         $this->sql->disconnect();
         unset($this->http);
     }
