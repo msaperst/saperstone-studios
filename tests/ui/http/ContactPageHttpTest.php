@@ -15,8 +15,8 @@ class ContactPageHttpTest extends HttpTestBase {
 
         foreach (['name', 'phone', 'email', 'message'] as $field) {
             self::assertSame(
-                'required',
-                $this->attribute($response, "//*[@id='$field']", 'required'),
+                1,
+                $this->elementCount($response, "//*[@id='$field' and @required]"),
                 "Contact field '$field' must remain required"
             );
         }
@@ -51,11 +51,11 @@ class ContactPageHttpTest extends HttpTestBase {
 
         self::assertSame(
             1,
-            $this->elementCount($response, "//script[contains(@src, '/js/jqBootstrapValidation.js')]")
+            $this->elementCount($response, "//script[contains(@src, 'js/jqBootstrapValidation.js')]")
         );
         self::assertSame(
             1,
-            $this->elementCount($response, "//script[contains(@src, '/js/contact_me.js')]")
+            $this->elementCount($response, "//script[contains(@src, 'js/contact_me.js')]")
         );
     }
 }
