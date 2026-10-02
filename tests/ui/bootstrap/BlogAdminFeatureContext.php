@@ -418,7 +418,7 @@ class BlogAdminFeatureContext implements Context {
             '/blog/post.php?p=' . $this->fixtureId(),
             $this->driver->getCurrentURL()
         );
-        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('h1')));
+        $this->waitForPostTitle($this->expectedTitle);
         Assert::assertSame(
             $this->expectedTitle,
             trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
@@ -449,7 +449,7 @@ class BlogAdminFeatureContext implements Context {
             '/blog/post.php?p=' . $this->fixtureId(),
             $this->driver->getCurrentURL()
         );
-        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('h1')));
+        $this->waitForPostTitle(self::FIXTURE_TITLE);
         Assert::assertSame(
             self::FIXTURE_TITLE,
             trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
@@ -811,7 +811,16 @@ class BlogAdminFeatureContext implements Context {
     }
 
     private function adminHeaders(): array {
-        return ['Cookie' => 'hash=1d7505e7f434a7713e84ba399e937191'];
+        $parts = parse_url($this->baseUrl);
+        $origin = ($parts['scheme'] ?? 'http') . '://' . ($parts['host'] ?? 'localhost');
+        if (isset($parts['port'])) {
+            $origin .= ':' . $parts['port'];
+        }
+
+        return [
+            'Cookie' => 'hash=1d7505e7f434a7713e84ba399e937191',
+            'Origin' => $origin,
+        ];
     }
 
     private function createdPostId(): int {
@@ -819,6 +828,13 @@ class BlogAdminFeatureContext implements Context {
             throw new \LogicException('Blog administration post has not been created');
         }
         return $this->createdPostId;
+    }
+
+    private function waitForPostTitle(string $title): void {
+        $this->wait->until(function () use ($title) {
+            $headings = $this->driver->findElements(WebDriverBy::tagName('h1'));
+            return count($headings) === 1 && trim($headings[0]->getText()) === $title;
+        });
     }
 
     private function waitForPostContent(string $text): void {
