@@ -4,6 +4,7 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Facebook\WebDriver\Exception\StaleElementReferenceException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
@@ -327,8 +328,12 @@ class ContractAdminFeatureContext implements Context {
     private function saveOpenContract(): void {
         $this->clickContractSaveButton();
 
-        $this->wait->until(function () {
-            return count($this->driver->findElements(WebDriverBy::id('contract-name'))) === 0;
+        // previewContract() replaces the form inputs before the AJAX save finishes,
+        // so waiting for #contract-name to disappear can race the DataTables reload.
+        // Wait for BootstrapDialog to finish closing instead.
+        $dialog = WebDriverBy::cssSelector('.bootstrap-dialog.modal');
+        $this->wait->until(function () use ($dialog) {
+            return count($this->driver->findElements($dialog)) === 0;
         });
     }
 
@@ -360,10 +365,14 @@ class ContractAdminFeatureContext implements Context {
 
     private function assertContractRowById(int $id, array $expected): void {
         $this->wait->until(function () use ($id, $expected) {
-            $rows = $this->driver->findElements(
-                WebDriverBy::cssSelector("#contracts tbody tr[contract-id='$id']")
-            );
-            return count($rows) === 1 && $this->contractRowMatches($rows[0], $expected);
+            try {
+                $rows = $this->driver->findElements(
+                    WebDriverBy::cssSelector("#contracts tbody tr[contract-id='$id']")
+                );
+                return count($rows) === 1 && $this->contractRowMatches($rows[0], $expected);
+            } catch (StaleElementReferenceException) {
+                return false;
+            }
         });
 
         $this->assertContractRow($this->contractRowById($id), $expected);
