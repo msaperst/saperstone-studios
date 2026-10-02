@@ -236,7 +236,7 @@ function saveGallery(id) {
         return a.height - b.height;
     });
     for (var i = 0; i < imgs.length; i++) {
-        $("div.gallery[sequence='" + imgs[i].sequence + "'").attr('new-sequence', i);
+        $("div.gallery[sequence='" + imgs[i].sequence + "']").attr('new-sequence', i);
     }
 
     // save our updates
