@@ -21,6 +21,9 @@ class CsrfProtectionTest extends TestCase {
             'base_uri' => 'http://' . getenv('DB_HOST') . ':' . getenv('HTTP_PORT') . '/',
         ]);
         $this->sql = new Sql();
+        $this->sql->executeStatement('DELETE FROM albums_for_users WHERE album = ?', [self::TEST_ALBUM_ID]);
+        $this->sql->executeStatement('DELETE FROM albums WHERE id = ?', [self::TEST_ALBUM_ID]);
+        $this->sql->executeStatement('DELETE FROM tags WHERE tag = ?', [self::TEST_TAG]);
         $this->sql->executeStatement(
             "INSERT INTO albums (id, name, description, location, owner, code) VALUES (?, 'CSRF test album', '', 'csrf-test', 4, ?)",
             [self::TEST_ALBUM_ID, self::TEST_ALBUM_CODE]
@@ -46,7 +49,7 @@ class CsrfProtectionTest extends TestCase {
 
         self::assertSame(403, $response->getStatusCode());
         self::assertSame(
-            'Your session has expired. Please refresh the page and try again.',
+            Api::CSRF_ERROR,
             (string)$response->getBody()
         );
         self::assertSame(0, $this->sql->getRowCount(
@@ -83,6 +86,35 @@ class CsrfProtectionTest extends TestCase {
             'SELECT * FROM albums_for_users WHERE user = 4 AND album = ?',
             [self::TEST_ALBUM_ID]
         ));
+    }
+
+    public function testCrossOriginAlbumCreationIsRejectedBeforeValidation(): void {
+        $response = $this->http->request('POST', 'api/create-album.php', [
+            'http_errors' => false,
+            'headers' => ['Origin' => 'https://cross-origin.example'],
+            'cookies' => $this->uploaderCookies(),
+        ]);
+
+        self::assertSame(403, $response->getStatusCode());
+        self::assertSame(Api::CSRF_ERROR, (string)$response->getBody());
+    }
+
+    public function testCrossOriginAlbumUpdateIsRejectedWithoutSideEffect(): void {
+        $response = $this->http->request('POST', 'api/update-album.php', [
+            'http_errors' => false,
+            'headers' => ['Origin' => 'https://cross-origin.example'],
+            'form_params' => ['id' => self::TEST_ALBUM_ID],
+            'cookies' => $this->uploaderCookies(),
+        ]);
+
+        self::assertSame(403, $response->getStatusCode());
+        self::assertSame(
+            'CSRF test album',
+            $this->sql->getRow(
+                'SELECT name FROM albums WHERE id = ?',
+                [self::TEST_ALBUM_ID]
+            )['name']
+        );
     }
 
     public function testValidSessionTokenAllowsWriteWithoutOrigin(): void {
