@@ -468,6 +468,7 @@ class BlogAdminFeatureContext implements Context {
      * @Then /^I see the published blog administration post as a visitor$/
      */
     public function iSeeThePublishedBlogAdministrationPostAsAVisitor(): void {
+        $this->waitForPostTitle(self::FIXTURE_TITLE);
         Assert::assertSame(
             self::FIXTURE_TITLE,
             trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
