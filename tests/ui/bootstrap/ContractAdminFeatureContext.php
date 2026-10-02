@@ -359,17 +359,18 @@ class ContractAdminFeatureContext implements Context {
     }
 
     private function assertContractRowById(int $id, array $expected): void {
+        $this->wait->until(function () use ($id, $expected) {
+            $rows = $this->driver->findElements(
+                WebDriverBy::cssSelector("#contracts tbody tr[contract-id='$id']")
+            );
+            return count($rows) === 1 && $this->contractRowMatches($rows[0], $expected);
+        });
+
         $this->assertContractRow($this->contractRowById($id), $expected);
     }
 
     private function assertContractRow(RemoteWebElement $row, array $expected): void {
-        $this->wait->until(function () use ($row, $expected) {
-            return trim($row->findElement(WebDriverBy::className('contract-name'))->getText()) === $expected['name']
-                && trim($row->findElement(WebDriverBy::className('contract-type'))->getText()) === $expected['type']
-                && trim($row->findElement(WebDriverBy::className('contract-session'))->getText()) === $expected['session']
-                && trim($row->findElement(WebDriverBy::className('contract-date'))->getText()) === $expected['date'];
-        });
-
+        Assert::assertTrue($this->contractRowMatches($row, $expected));
         Assert::assertSame($expected['name'], trim($row->findElement(WebDriverBy::className('contract-name'))->getText()));
         Assert::assertSame($expected['type'], trim($row->findElement(WebDriverBy::className('contract-type'))->getText()));
         Assert::assertSame($expected['session'], trim($row->findElement(WebDriverBy::className('contract-session'))->getText()));
@@ -378,6 +379,14 @@ class ContractAdminFeatureContext implements Context {
             $expected['signed'],
             strtolower(trim($row->findElement(WebDriverBy::className('contract-signed'))->getText()))
         );
+    }
+
+    private function contractRowMatches(RemoteWebElement $row, array $expected): bool {
+        return trim($row->findElement(WebDriverBy::className('contract-name'))->getText()) === $expected['name']
+            && trim($row->findElement(WebDriverBy::className('contract-type'))->getText()) === $expected['type']
+            && trim($row->findElement(WebDriverBy::className('contract-session'))->getText()) === $expected['session']
+            && trim($row->findElement(WebDriverBy::className('contract-date'))->getText()) === $expected['date']
+            && strtolower(trim($row->findElement(WebDriverBy::className('contract-signed'))->getText())) === $expected['signed'];
     }
 
     private function contractRowById(int $id): RemoteWebElement {
