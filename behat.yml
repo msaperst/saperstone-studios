@@ -16,6 +16,7 @@ default:
         - ui\bootstrap\GalleryAdminFeatureContext
         - ui\bootstrap\SiteImageAdminFeatureContext
         - ui\bootstrap\UserAdminFeatureContext
+        - ui\bootstrap\ContractAdminFeatureContext
         - ui\bootstrap\ContractFeatureContext
         - ui\bootstrap\ContactFeatureContext
   formatters:
