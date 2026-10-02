@@ -3,9 +3,11 @@
 namespace coverage\integration;
 
 use Album;
+use BadImageException;
 use Exception;
 use Gallery;
 use Image;
+use ImageException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -60,75 +62,66 @@ class ImageIntegrationTest extends TestCase {
     }
 
     public function testNullImageSequence() {
-        try {
-            new Image(Gallery::withId(2), NULL);
-        } catch (Exception $e) {
-            $this->assertEquals("Image id is required", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id is required');
+
+        new Image(Gallery::withId(2), NULL);
     }
 
     public function testBlankImageSequence() {
-        try {
-            new Image(Gallery::withId(2), "");
-        } catch (Exception $e) {
-            $this->assertEquals("Image id can not be blank", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id can not be blank');
+
+        new Image(Gallery::withId(2), '');
     }
 
     public function testAlbumLetterImageSequence() {
-        try {
-            new Image(Album::withId(899), "a");
-        } catch (Exception $e) {
-            $this->assertEquals("Image id does not match any images", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id does not match any images');
+
+        new Image(Album::withId(899), 'a');
     }
 
     public function testGalleryLetterImageSequence() {
-        try {
-            new Image(Gallery::withId(2), "a");
-        } catch (Exception $e) {
-            $this->assertEquals("Image id does not match any images", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id does not match any images');
+
+        new Image(Gallery::withId(2), 'a');
     }
 
     public function testBadImageSequence() {
-        try {
-            new Image(Gallery::withId(2), 8999);
-        } catch (Exception $e) {
-            $this->assertEquals("Image id does not match any images", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id does not match any images');
+
+        new Image(Gallery::withId(2), 8999);
     }
 
     public function testBadStringImageSequence() {
-        try {
-            new Image(Gallery::withId(2), "8999");
-        } catch (Exception $e) {
-            $this->assertEquals("Image id does not match any images", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id does not match any images');
+
+        new Image(Gallery::withId(2), '8999');
     }
 
     public function testNullContainer() {
-        try {
-            new Image(Null, 1);
-        } catch (Exception $e) {
-            $this->assertEquals("Parent (album or gallery) is required", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Parent (album or gallery) is required');
+
+        new Image(NULL, 1);
     }
 
     public function testStringContainer() {
-        try {
-            new Image('hi', 1);
-        } catch (Exception $e) {
-            $this->assertEquals("Parent (album or gallery) is required", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Parent (album or gallery) is required');
+
+        new Image('hi', 1);
     }
 
     public function testArrayContainer() {
-        try {
-            new Image(array(), 1);
-        } catch (Exception $e) {
-            $this->assertEquals("Parent (album or gallery) is required", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Parent (album or gallery) is required');
+
+        new Image([], 1);
     }
 
     /**
@@ -246,9 +239,11 @@ class ImageIntegrationTest extends TestCase {
         $image = new Image(Album::withId(899), 2);
         try {
             $image->delete();
-        } catch (Exception $e) {
-            $this->assertEquals("User not authorized to delete image", $e->getMessage());
+            self::fail('Expected unauthorized image deletion to be rejected');
+        } catch (ImageException $e) {
+            $this->assertEquals('User not authorized to delete image', $e->getMessage());
         }
+
         $this->assertEquals(2, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
         $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
