@@ -17,6 +17,9 @@ class UploadImageTest extends TestCase {
 
     public function tearDown(): void {
         $this->http = NULL;
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg');
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_security-test.jpg');
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/tmp_security-test.jpg');
     }
 
     public function testNotLoggedIn() {
@@ -139,6 +142,68 @@ class UploadImageTest extends TestCase {
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image does not meet the minimum width requirements of 1200px. Image is 1000 x 750", (string)$response->getBody());
         $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg'));
+    }
+
+    public function testRejectsNonImageUpload(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/upload-image.php', [
+            'multipart' => [
+                [
+                    'name' => 'location',
+                    'contents' => '..//img/main/security-test.jpg',
+                ],
+                [
+                    'name' => 'min-width',
+                    'contents' => '400',
+                ],
+                [
+                    'name' => 'myfile',
+                    'contents' => 'not an image',
+                    'filename' => 'not-image.jpg',
+                    'headers' => ['Content-Type:' => 'image/jpeg']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Uploaded file is not a valid image', (string)$response->getBody());
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_security-test.jpg'
+        ));
+    }
+
+    public function testRejectsLocationTraversalOutsidePublicRoot(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/upload-image.php', [
+            'multipart' => [
+                [
+                    'name' => 'location',
+                    'contents' => '../../content/security-test.jpg',
+                ],
+                [
+                    'name' => 'min-width',
+                    'contents' => '400',
+                ],
+                [
+                    'name' => 'myfile',
+                    'contents' => fopen(dirname(__DIR__) . '/resources/flower.jpeg', 'r'),
+                    'filename' => 'flower.jpeg',
+                    'headers' => ['Content-Type:' => 'image/jpeg']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Image location is not valid', (string)$response->getBody());
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/tmp_security-test.jpg'
+        ));
     }
 
     public function testSingleFile() {
