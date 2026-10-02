@@ -56,6 +56,15 @@ Feature: Blog Administration
     Then the blog administration draft contains the full editor changes
     And I see the blog administration draft post
 
+
+  Scenario: Admin can publish an existing draft
+    Given a blog administration draft exists
+    And I am on the "blog/manage.php" page
+    When I open the full editor for the blog administration draft
+    And I publish the blog administration draft
+    Then the blog administration draft is published
+    And I see the published blog administration post
+
   Scenario: Admin can quick edit draft metadata
     Given a blog administration draft exists
     And I am on the "blog/manage.php" page
