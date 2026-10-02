@@ -114,14 +114,27 @@ Full UA: \r
 ", '<strong>Location</strong>: Mountain View, California 94043 - US (estimated location based on IP: 8.8.8.8)<br/><strong>Hostname</strong>: dns.google<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: <br/>');
     }
 
-    public function testOtherCredentialsBadEmail() {
+    public function testDomainRecipientUsesAlternateCredentials() {
         $oldCredentials = getenv('EMAIL_USER_X');
         try {
             putenv('EMAIL_USER_X=bar');
-            $email = new Email('Webmaster <webmaster@saperstonestudios.com>', 'la@saperstonestudios.com', 'test');
+            $email = new Email(
+                'Webmaster <webmaster@saperstonestudios.com>',
+                'la@saperstonestudios.com',
+                'alternate credentials'
+            );
+            $email->setText('Alternate credentials email');
+            $email->setHtml('<b>Alternate credentials email</b>');
             $email->sendEmail();
-        } catch (Exception $e) {
-            $this->assertNotNull($e->getMessage());
+
+            CustomAsserts::assertEmailMatches(
+                'webmaster@saperstonestudios.com',
+                'la@saperstonestudios.com',
+                'alternate credentials',
+                'Alternate credentials email',
+                '<b>Alternate credentials email</b>',
+                'bar'
+            );
         } finally {
             putenv("EMAIL_USER_X=$oldCredentials");
         }
