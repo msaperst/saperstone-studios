@@ -285,6 +285,34 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals("Filename can not be blank", (string)$response->getBody());
     }
 
+    public function testRejectsExecutableRenameExtension(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 998,
+                'title' => 'sample',
+                'filename' => '/portrait/img/sample/image.php'
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Uploaded file type is not supported', (string)$response->getBody());
+        $image = $this->sql->getRow(
+            "SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 998;"
+        );
+        $this->assertEquals('/portrait/img/sample/sample1.jpg', $image['location']);
+        $this->assertTrue(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg'
+        ));
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/image.php'
+        ));
+    }
+
     public function testRejectsRenameTraversalOutsidePublicRoot(): void {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
