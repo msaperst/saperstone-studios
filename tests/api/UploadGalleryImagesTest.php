@@ -20,7 +20,8 @@ class UploadGalleryImagesTest extends TestCase {
 
     public function tearDown(): void {
         $this->http = NULL;
-        $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`title` = 'flower.jpeg';");
+        $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`title` IN ('flower.jpeg', 'not-image.jpg');");
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/not-image.jpg');
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `gallery_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
@@ -165,6 +166,36 @@ class UploadGalleryImagesTest extends TestCase {
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Image does not meet the minimum height requirements of 760px. Image is 1600 x 678", json_decode($response->getBody()));
         $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/flower.jpeg'));
+    }
+
+    public function testRejectsNonImageUploadWithoutDatabaseSideEffects(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/upload-gallery-images.php', [
+            'multipart' => [
+                [
+                    'name' => 'gallery',
+                    'contents' => 2,
+                ],
+                [
+                    'name' => 'myfile',
+                    'contents' => 'not an image',
+                    'filename' => 'not-image.jpg',
+                    'headers' => ['Content-Type:' => 'image/jpeg']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Uploaded file is not a valid image', json_decode($response->getBody()));
+        $this->assertEquals(0, $this->sql->getRowCount(
+            "SELECT * FROM gallery_images WHERE gallery = 2 AND title = 'not-image.jpg'"
+        ));
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/maternity/not-image.jpg'
+        ));
     }
 
     public function testSingleFile() {
