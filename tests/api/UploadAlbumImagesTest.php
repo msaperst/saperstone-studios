@@ -141,6 +141,36 @@ class UploadAlbumImagesTest extends TestCase {
         $this->assertEquals("File(s) are required", (string)$response->getBody());
     }
 
+    public function testRejectsExecutableExtensionEvenForValidImageContent(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/upload-album-images.php', [
+            'multipart' => [
+                [
+                    'name' => 'album',
+                    'contents' => 998,
+                ],
+                [
+                    'name' => 'myfile',
+                    'contents' => fopen(dirname(__DIR__) . '/resources/flower.jpeg', 'r'),
+                    'filename' => 'image.php',
+                    'headers' => ['Content-Type:' => 'image/jpeg']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Uploaded file type is not supported', (string)$response->getBody());
+        $this->assertEquals(0, $this->sql->getRowCount(
+            "SELECT * FROM album_images WHERE album = 998 AND title = 'image.php'"
+        ));
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/image.php'
+        ));
+    }
+
     public function testRejectsNonImageUploadWithoutDatabaseSideEffects(): void {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
