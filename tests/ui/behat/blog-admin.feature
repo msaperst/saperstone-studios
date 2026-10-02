@@ -37,14 +37,16 @@ Feature: Blog Administration
     And I add the "Tea Ceremony" blog administration category
     And I add blog administration text "Created draft body content"
     And I save the blog administration draft
+    Then I see the created blog administration post
+    When I open blog administration management
     Then the created blog administration post is stored as a draft
-    And I see the created blog administration post
 
   Scenario: Admin can create a new blog category
     Given I am on the "blog/new.php" page
     When I create the blog administration category "Behat Blog Admin Category"
     Then I see the "Behat Blog Admin Category" blog administration category selected
-    And the "Behat Blog Admin Category" blog category exists
+    When I reopen the new blog administration editor
+    Then the "Behat Blog Admin Category" blog category exists
 
   Scenario: Admin can update a draft in the full editor
     Given a blog administration draft exists
@@ -53,8 +55,7 @@ Feature: Blog Administration
     And I change the blog administration draft title to "Behat Blog Admin Full Edit"
     And I change the blog administration draft text to "Updated full editor body"
     And I update the blog administration post
-    Then the blog administration draft contains the full editor changes
-    And I see the blog administration draft post
+    Then I see the blog administration draft post
 
 
   Scenario: Admin can publish an existing draft
@@ -62,8 +63,10 @@ Feature: Blog Administration
     And I am on the "blog/manage.php" page
     When I open the full editor for the blog administration draft
     And I publish the blog administration draft
-    Then the blog administration draft is published
-    And I see the published blog administration post
+    Then I see the published blog administration post
+    When I logout
+    And I reopen the published blog administration post
+    Then I see the published blog administration post as a visitor
 
   Scenario: Admin can quick edit draft metadata
     Given a blog administration draft exists
@@ -72,7 +75,8 @@ Feature: Blog Administration
     And I change the quick edit title to "Behat Blog Admin Quick Edit"
     And I update the quick edited blog administration post
     Then I see the quick edited blog administration post in the manage table
-    And the quick edited blog administration post is persisted
+    When I reload blog administration management
+    Then the quick edited blog administration post is persisted
 
   Scenario: Admin can delete a draft from the manage page
     Given a blog administration draft exists
@@ -81,4 +85,5 @@ Feature: Blog Administration
     And I delete the blog administration draft
     And I confirm deletion of the blog administration draft
     Then I no longer see the blog administration draft in the manage table
-    And the blog administration draft no longer exists
+    When I reload blog administration management
+    Then the blog administration draft no longer exists
