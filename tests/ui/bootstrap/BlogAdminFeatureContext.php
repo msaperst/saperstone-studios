@@ -27,7 +27,6 @@ class BlogAdminFeatureContext implements Context {
 
     private RemoteWebDriver $driver;
     private WebDriverWait $wait;
-    private string $baseUrl;
     private Sql $sql;
     private ?int $createdPostId = null;
     private string $expectedTitle = '';
@@ -42,7 +41,6 @@ class BlogAdminFeatureContext implements Context {
         $base = $environment->getContext('ui\\bootstrap\\BaseFeatureContext');
 
         $this->driver = $base->getDriver();
-        $this->baseUrl = $base->getBaseUrl();
         $this->wait = new WebDriverWait($this->driver, 15);
         $this->sql = new Sql();
         $this->createdPostId = null;
@@ -216,7 +214,7 @@ class BlogAdminFeatureContext implements Context {
      * @When /^I upload the blog administration test image$/
      */
     public function iUploadTheBlogAdministrationTestImage(): void {
-        $source = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower.jpeg';
+        $source = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower-short.jpeg';
         $localUpload = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::UPLOAD_FILENAME;
         if (!copy($source, $localUpload)) {
             throw new \RuntimeException('Unable to prepare blog administration upload fixture');
@@ -250,10 +248,6 @@ class BlogAdminFeatureContext implements Context {
     public function iSelectTheUploadedImageAsTheBlogAdministrationPreview(): void {
         $selectElement = $this->driver->findElement(WebDriverBy::id('post-preview-image'));
         (new WebDriverSelect($selectElement))->selectByVisibleText(self::UPLOAD_FILENAME);
-        $this->driver->executeScript(
-            "arguments[0].dispatchEvent(new Event('change', {bubbles: true}));",
-            [$selectElement]
-        );
 
         $this->wait->until(function () {
             $images = $this->driver->findElements(WebDriverBy::cssSelector('#post-preview-holder img.blog-preview-image'));
@@ -268,10 +262,6 @@ class BlogAdminFeatureContext implements Context {
     public function iAddTheBlogAdministrationCategory(string $category): void {
         $selectElement = $this->driver->findElement(WebDriverBy::id('post-tags-select'));
         (new WebDriverSelect($selectElement))->selectByVisibleText($category);
-        $this->driver->executeScript(
-            "arguments[0].dispatchEvent(new Event('change', {bubbles: true}));",
-            [$selectElement]
-        );
         $this->waitForSelectedCategory($category);
     }
 
@@ -338,10 +328,6 @@ class BlogAdminFeatureContext implements Context {
     public function iCreateTheBlogAdministrationCategory(string $category): void {
         $selectElement = $this->driver->findElement(WebDriverBy::id('post-tags-select'));
         (new WebDriverSelect($selectElement))->selectByVisibleText('New Category');
-        $this->driver->executeScript(
-            "arguments[0].dispatchEvent(new Event('change', {bubbles: true}));",
-            [$selectElement]
-        );
 
         $input = WebDriverBy::id('new-category-name');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($input));
