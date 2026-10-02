@@ -11,23 +11,25 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverSelect;
 use Facebook\WebDriver\WebDriverWait;
+use GuzzleHttp\Client;
 use PHPUnit\Framework\Assert;
 use Sql;
 
 class BlogAdminFeatureContext implements Context {
 
-    private const FIXTURE_ID = 98990;
     private const FIXTURE_DATE = '2099-12-29';
     private const FIXTURE_TITLE = 'Behat Blog Admin Draft';
-    private const FIXTURE_PREVIEW = 'posts/2099/12/29/behat-blog-admin-preview.jpg';
+    private const FIXTURE_UPLOAD_FILENAME = 'behat-blog-admin-fixture.jpg';
     private const CREATED_DATE = '2099-12-30';
     private const TITLE_PREFIX = 'Behat Blog Admin ';
-    private const UPLOAD_FILENAME = 'behat-blog-admin-upload.jpg';
+    private const UPLOAD_FILENAME = 'flower-short.jpeg';
     private const NEW_CATEGORY = 'Behat Blog Admin Category';
 
     private RemoteWebDriver $driver;
     private WebDriverWait $wait;
+    private string $baseUrl;
     private Sql $sql;
+    private ?int $fixtureId = null;
     private ?int $createdPostId = null;
     private string $expectedTitle = '';
     private string $expectedText = '';
@@ -41,8 +43,10 @@ class BlogAdminFeatureContext implements Context {
         $base = $environment->getContext('ui\\bootstrap\\BaseFeatureContext');
 
         $this->driver = $base->getDriver();
+        $this->baseUrl = $base->getBaseUrl();
         $this->wait = new WebDriverWait($this->driver, 15);
         $this->sql = new Sql();
+        $this->fixtureId = null;
         $this->createdPostId = null;
         $this->expectedTitle = '';
         $this->expectedText = '';
@@ -68,33 +72,7 @@ class BlogAdminFeatureContext implements Context {
      * @Given /^a blog administration draft exists$/
      */
     public function aBlogAdministrationDraftExists(): void {
-        $this->deleteBlogRows(self::FIXTURE_ID);
-        $this->removeDirectory($this->blogDateDirectory(self::FIXTURE_DATE));
-
-        $directory = $this->blogDateDirectory(self::FIXTURE_DATE);
-        if (!is_dir($directory) && !mkdir($directory, 0777, true) && !is_dir($directory)) {
-            throw new \RuntimeException("Unable to create blog administration fixture directory: $directory");
-        }
-
-        $source = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower.jpeg';
-        $preview = $this->repoRoot() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog'
-            . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, self::FIXTURE_PREVIEW);
-        if (!copy($source, $preview)) {
-            throw new \RuntimeException('Unable to create blog administration preview fixture');
-        }
-
-        $this->sql->executeStatement(
-            'INSERT INTO blog_details (id, title, date, preview, offset, active) VALUES (?, ?, ?, ?, ?, ?)',
-            [self::FIXTURE_ID, self::FIXTURE_TITLE, self::FIXTURE_DATE, self::FIXTURE_PREVIEW, 0, 0]
-        );
-        $this->sql->executeStatement(
-            'INSERT INTO blog_texts (blog, contentGroup, text) VALUES (?, ?, ?)',
-            [self::FIXTURE_ID, 1, 'Original blog administration body']
-        );
-        $this->sql->executeStatement(
-            'INSERT INTO blog_tags (blog, tag) VALUES (?, ?)',
-            [self::FIXTURE_ID, 29]
-        );
+        $this->fixtureId = $this->createFixtureDraft();
     }
 
     /**
@@ -175,7 +153,10 @@ class BlogAdminFeatureContext implements Context {
     public function iReturnToBlogAdministrationEditing(): void {
         $button = WebDriverBy::id('edit-post');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
-        $this->driver->findElement($button)->click();
+        $element = $this->driver->findElement($button);
+        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$element]);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $element->click();
     }
 
     /**
@@ -214,15 +195,16 @@ class BlogAdminFeatureContext implements Context {
      * @When /^I upload the blog administration test image$/
      */
     public function iUploadTheBlogAdministrationTestImage(): void {
-        $source = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower-short.jpeg';
-        $localUpload = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::UPLOAD_FILENAME;
-        if (!copy($source, $localUpload)) {
-            throw new \RuntimeException('Unable to prepare blog administration upload fixture');
+        $source = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . self::UPLOAD_FILENAME;
+        if (!is_file($source)) {
+            throw new \RuntimeException('Blog administration upload fixture does not exist');
         }
 
+        // Selenium runs in a separate process/container, so use the repository
+        // fixture path that is shared with the browser instead of a host /tmp file.
         $fileInput = WebDriverBy::cssSelector('#add-images-button input[type="file"]');
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($fileInput));
-        $this->driver->findElement($fileInput)->sendKeys(realpath($localUpload));
+        $this->driver->findElement($fileInput)->sendKeys(realpath($source));
 
         $this->wait->until(function () {
             foreach ($this->driver->findElements(WebDriverBy::cssSelector('#post-preview-image option')) as $option) {
@@ -364,13 +346,13 @@ class BlogAdminFeatureContext implements Context {
      * @When /^I open the full editor for the blog administration draft$/
      */
     public function iOpenTheFullEditorForTheBlogAdministrationDraft(): void {
-        $row = $this->postRowById(self::FIXTURE_ID);
+        $row = $this->postRowById($this->fixtureId());
         $button = $row->findElement(WebDriverBy::className('edit-post-btn'));
         $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$button]);
         $button->click();
 
         $this->wait->until(function () {
-            return str_contains($this->driver->getCurrentURL(), '/blog/new.php?p=' . self::FIXTURE_ID);
+            return str_contains($this->driver->getCurrentURL(), '/blog/new.php?p=' . $this->fixtureId());
         });
         $this->wait->until(function () {
             $title = $this->driver->findElements(WebDriverBy::id('post-title-input'));
@@ -415,14 +397,14 @@ class BlogAdminFeatureContext implements Context {
     public function theBlogAdministrationDraftContainsTheFullEditorChanges(): void {
         $row = $this->sql->getRow(
             'SELECT title, active FROM blog_details WHERE id = ?',
-            [self::FIXTURE_ID]
+            [$this->fixtureId()]
         );
         Assert::assertSame($this->expectedTitle, $row['title']);
         Assert::assertSame('0', (string)$row['active']);
 
         $texts = $this->sql->getRows(
             'SELECT text FROM blog_texts WHERE blog = ? ORDER BY contentGroup',
-            [self::FIXTURE_ID]
+            [$this->fixtureId()]
         );
         Assert::assertNotEmpty($texts);
         Assert::assertStringContainsString($this->expectedText, strip_tags($texts[0]['text']));
@@ -433,7 +415,7 @@ class BlogAdminFeatureContext implements Context {
      */
     public function iSeeTheBlogAdministrationDraftPost(): void {
         Assert::assertStringContainsString(
-            '/blog/post.php?p=' . self::FIXTURE_ID,
+            '/blog/post.php?p=' . $this->fixtureId(),
             $this->driver->getCurrentURL()
         );
         $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('h1')));
@@ -461,14 +443,14 @@ class BlogAdminFeatureContext implements Context {
         $this->wait->until(function () {
             $row = $this->sql->getRow(
                 'SELECT active FROM blog_details WHERE id = ?',
-                [self::FIXTURE_ID]
+                [$this->fixtureId()]
             );
             return isset($row['active']) && (string)$row['active'] === '1';
         });
 
         $row = $this->sql->getRow(
             'SELECT active FROM blog_details WHERE id = ?',
-            [self::FIXTURE_ID]
+            [$this->fixtureId()]
         );
         Assert::assertSame('1', (string)$row['active']);
     }
@@ -478,7 +460,7 @@ class BlogAdminFeatureContext implements Context {
      */
     public function iSeeThePublishedBlogAdministrationPost(): void {
         Assert::assertStringContainsString(
-            '/blog/post.php?p=' . self::FIXTURE_ID,
+            '/blog/post.php?p=' . $this->fixtureId(),
             $this->driver->getCurrentURL()
         );
         $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('h1')));
@@ -492,7 +474,7 @@ class BlogAdminFeatureContext implements Context {
      * @When /^I quick edit the blog administration draft$/
      */
     public function iQuickEditTheBlogAdministrationDraft(): void {
-        $row = $this->postRowById(self::FIXTURE_ID);
+        $row = $this->postRowById($this->fixtureId());
         $button = $row->findElement(WebDriverBy::className('quick-edit-post-btn'));
         $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$button]);
         $button->click();
@@ -529,15 +511,15 @@ class BlogAdminFeatureContext implements Context {
             $modals = $this->driver->findElements(WebDriverBy::cssSelector('#post.modal.in'));
             return empty($modals) || !$modals[0]->isDisplayed();
         });
-        $this->waitForPostRowTitle(self::FIXTURE_ID, $this->expectedTitle);
+        $this->waitForPostRowTitle($this->fixtureId(), $this->expectedTitle);
     }
 
     /**
      * @Then /^I see the quick edited blog administration post in the manage table$/
      */
     public function iSeeTheQuickEditedBlogAdministrationPostInTheManageTable(): void {
-        $this->waitForPostRowTitle(self::FIXTURE_ID, $this->expectedTitle);
-        $row = $this->postRowById(self::FIXTURE_ID);
+        $this->waitForPostRowTitle($this->fixtureId(), $this->expectedTitle);
+        $row = $this->postRowById($this->fixtureId());
         Assert::assertSame(
             $this->expectedTitle,
             trim($row->findElement(WebDriverBy::className('post-title'))->getText())
@@ -550,7 +532,7 @@ class BlogAdminFeatureContext implements Context {
     public function theQuickEditedBlogAdministrationPostIsPersisted(): void {
         $row = $this->sql->getRow(
             'SELECT title, active FROM blog_details WHERE id = ?',
-            [self::FIXTURE_ID]
+            [$this->fixtureId()]
         );
         Assert::assertSame($this->expectedTitle, $row['title']);
         Assert::assertSame('0', (string)$row['active']);
@@ -588,7 +570,7 @@ class BlogAdminFeatureContext implements Context {
      * @Then /^I no longer see the blog administration draft in the manage table$/
      */
     public function iNoLongerSeeTheBlogAdministrationDraftInTheManageTable(): void {
-        $selector = WebDriverBy::cssSelector("#posts tbody tr[post-id='" . self::FIXTURE_ID . "']");
+        $selector = WebDriverBy::cssSelector("#posts tbody tr[post-id='" . $this->fixtureId() . "']");
         $this->wait->until(function () use ($selector) {
             return count($this->driver->findElements($selector)) === 0;
         });
@@ -600,7 +582,7 @@ class BlogAdminFeatureContext implements Context {
     public function theBlogAdministrationDraftNoLongerExists(): void {
         $rows = $this->sql->getRows(
             'SELECT id FROM blog_details WHERE id = ?',
-            [self::FIXTURE_ID]
+            [$this->fixtureId()]
         );
         Assert::assertCount(0, $rows);
     }
@@ -699,11 +681,14 @@ class BlogAdminFeatureContext implements Context {
 
     private function removeStaleTestData(): void {
         $rows = $this->sql->getRows(
-            'SELECT id FROM blog_details WHERE id = ? OR title LIKE ?',
-            [self::FIXTURE_ID, self::TITLE_PREFIX . '%']
+            'SELECT id FROM blog_details WHERE title LIKE ?',
+            [self::TITLE_PREFIX . '%']
         );
         foreach ($rows as $row) {
-            $this->deleteBlogRows((int)$row['id']);
+            $id = (int)$row['id'];
+            if (!$this->deletePostViaApi($id)) {
+                $this->deleteBlogRows($id);
+            }
         }
 
         $categoryRows = $this->sql->getRows('SELECT id FROM tags WHERE tag = ?', [self::NEW_CATEGORY]);
@@ -712,19 +697,103 @@ class BlogAdminFeatureContext implements Context {
             $this->sql->executeStatement('DELETE FROM tags WHERE id = ?', [(int)$row['id']]);
         }
 
-        $this->removeDirectory($this->blogDateDirectory(self::FIXTURE_DATE));
-        $this->removeDirectory($this->blogDateDirectory(self::CREATED_DATE));
-
         $uploaded = $this->repoRoot() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'tmp'
             . DIRECTORY_SEPARATOR . self::UPLOAD_FILENAME;
         if (is_file($uploaded)) {
             unlink($uploaded);
         }
 
-        $localUpload = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::UPLOAD_FILENAME;
-        if (is_file($localUpload)) {
-            unlink($localUpload);
+    }
+
+    private function createFixtureDraft(): int {
+        $client = $this->httpClient();
+        $source = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'flower-short.jpeg';
+
+        $upload = $client->request('POST', 'api/upload-blog-images.php', [
+            'headers' => $this->adminHeaders(),
+            'http_errors' => false,
+            'multipart' => [[
+                'name' => 'myfile',
+                'contents' => fopen($source, 'rb'),
+                'filename' => self::FIXTURE_UPLOAD_FILENAME,
+                'headers' => ['Content-Type' => 'image/jpeg'],
+            ]],
+        ]);
+        if ($upload->getStatusCode() !== 200) {
+            throw new \RuntimeException(
+                'Unable to upload blog administration fixture: ' . (string)$upload->getBody()
+            );
         }
+
+        $uploaded = json_decode((string)$upload->getBody(), true);
+        if ($uploaded !== [self::FIXTURE_UPLOAD_FILENAME]) {
+            throw new \RuntimeException('Unexpected blog administration fixture upload response');
+        }
+
+        $temporaryImage = '../tmp/' . self::FIXTURE_UPLOAD_FILENAME;
+        $create = $client->request('POST', 'api/create-blog-post.php', [
+            'headers' => $this->adminHeaders(),
+            'http_errors' => false,
+            'form_params' => [
+                'title' => self::FIXTURE_TITLE,
+                'date' => self::FIXTURE_DATE,
+                'tags' => [29],
+                'preview' => [
+                    'img' => $temporaryImage,
+                    'offset' => '0',
+                ],
+                'content' => [
+                    1 => [
+                        'group' => 1,
+                        'type' => 'images',
+                        'imgs' => [[
+                            'location' => $temporaryImage,
+                            'top' => '0',
+                            'left' => '0',
+                            'width' => '600',
+                            'height' => '450',
+                        ]],
+                    ],
+                    2 => [
+                        'group' => 2,
+                        'type' => 'text',
+                        'text' => 'Original blog administration body',
+                    ],
+                ],
+            ],
+        ]);
+        if ($create->getStatusCode() !== 200 || !ctype_digit(trim((string)$create->getBody()))) {
+            throw new \RuntimeException(
+                'Unable to create blog administration fixture: ' . (string)$create->getBody()
+            );
+        }
+
+        return (int)trim((string)$create->getBody());
+    }
+
+    private function deletePostViaApi(int $id): bool {
+        $response = $this->httpClient()->request('POST', 'api/delete-blog.php', [
+            'headers' => $this->adminHeaders(),
+            'http_errors' => false,
+            'form_params' => ['post' => $id],
+        ]);
+
+        return $response->getStatusCode() === 200 && trim((string)$response->getBody()) === '';
+    }
+
+    private function httpClient(): Client {
+        return new Client(['base_uri' => $this->baseUrl]);
+    }
+
+    private function adminHeaders(): array {
+        return ['Cookie' => 'hash=1d7505e7f434a7713e84ba399e937191'];
+    }
+
+    private function fixtureId(): int {
+        if ($this->fixtureId === null) {
+            throw new \LogicException('Blog administration fixture has not been created');
+        }
+        return $this->fixtureId;
     }
 
     private function deleteBlogRows(int $id): void {
@@ -741,29 +810,7 @@ class BlogAdminFeatureContext implements Context {
         $this->sql->executeStatement("ALTER TABLE `$table` AUTO_INCREMENT = $next");
     }
 
-    private function blogDateDirectory(string $date): string {
-        return $this->repoRoot() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog'
-            . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR
-            . str_replace('-', DIRECTORY_SEPARATOR, $date);
-    }
-
     private function repoRoot(): string {
         return dirname(__DIR__, 3);
-    }
-
-    private function removeDirectory(string $directory): void {
-        if (!is_dir($directory)) {
-            return;
-        }
-
-        foreach (array_diff(scandir($directory), ['.', '..']) as $entry) {
-            $path = $directory . DIRECTORY_SEPARATOR . $entry;
-            if (is_dir($path)) {
-                $this->removeDirectory($path);
-            } else {
-                unlink($path);
-            }
-        }
-        rmdir($directory);
     }
 }
