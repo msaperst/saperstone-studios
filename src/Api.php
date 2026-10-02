@@ -25,6 +25,34 @@ class Api {
         return true;
     }
 
+    /**
+     * Protect authenticated state-changing requests against cross-site request forgery.
+     *
+     * Browser requests normally provide both a same-origin Origin header and the
+     * synchronizer token added by nav.js. Accept either defense so normal requests
+     * remain robust if a proxy or browser strips one of them.
+     */
+    public static function requireCsrfProtection(): bool {
+        $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+        if (in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+            return true;
+        }
+
+        $session = new Session();
+        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf_token'] ?? null);
+        if ($session->isCsrfTokenValid($token)) {
+            return true;
+        }
+
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if ($origin !== '' && rtrim(strtolower($origin), '/') === strtolower($session->getBaseURL())) {
+            return true;
+        }
+
+        http_response_code(403);
+        return false;
+    }
+
     private function retrievePost($variable, $variableName, $type) {
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
             switch ($type) {
@@ -130,6 +158,10 @@ class Api {
             echo "You must be logged in to perform this action";
             exit ();
         }
+        if (!self::requireCsrfProtection()) {
+            echo 'Your session has expired. Please refresh the page and try again.';
+            exit ();
+        }
     }
 
     function forceAdmin() {
@@ -138,6 +170,10 @@ class Api {
             if ($this->user->isLoggedIn()) {
                 echo "You do not have appropriate rights to perform this action";
             }
+            exit ();
+        }
+        if (!self::requireCsrfProtection()) {
+            echo 'Your session has expired. Please refresh the page and try again.';
             exit ();
         }
     }
