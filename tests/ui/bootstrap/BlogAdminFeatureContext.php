@@ -283,8 +283,7 @@ class BlogAdminFeatureContext implements Context {
         );
         Assert::assertSame('29', (string)$tag['tag']);
 
-        $preview = $this->repoRoot() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog'
-            . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $row['preview']);
+        $preview = $this->blogContentPath($row['preview']);
         Assert::assertFileExists($preview);
     }
 
@@ -697,10 +696,11 @@ class BlogAdminFeatureContext implements Context {
             $this->sql->executeStatement('DELETE FROM tags WHERE id = ?', [(int)$row['id']]);
         }
 
-        $uploaded = $this->repoRoot() . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'tmp'
-            . DIRECTORY_SEPARATOR . self::UPLOAD_FILENAME;
-        if (is_file($uploaded)) {
-            unlink($uploaded);
+        foreach ([self::UPLOAD_FILENAME, self::FIXTURE_UPLOAD_FILENAME] as $filename) {
+            $uploaded = $this->repoRoot() . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . $filename;
+            if (is_file($uploaded)) {
+                @unlink($uploaded);
+            }
         }
 
     }
@@ -808,6 +808,12 @@ class BlogAdminFeatureContext implements Context {
         $row = $this->sql->getRow("SELECT MAX(id) AS maxId FROM `$table`");
         $next = ((int)($row['maxId'] ?? 0)) + 1;
         $this->sql->executeStatement("ALTER TABLE `$table` AUTO_INCREMENT = $next");
+    }
+
+    private function blogContentPath(string $blogPath): string {
+        $relative = preg_replace('#^posts/#', '', str_replace('\\\\', '/', $blogPath));
+        return $this->repoRoot() . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog'
+            . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative);
     }
 
     private function repoRoot(): string {
