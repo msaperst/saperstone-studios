@@ -47,18 +47,36 @@ class File {
         return $name;
     }
 
+    public static function validateImageExtension(string $filename): void {
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif'], true)) {
+            throw new BadRequestException('Uploaded file type is not supported');
+        }
+    }
+
+    private function removeUploadedFiles(): void {
+        foreach ($this->files as $uploadedFile) {
+            $uploadedPath = $this->location . $uploadedFile;
+            if (is_file($uploadedPath)) {
+                unlink($uploadedPath);
+            }
+        }
+    }
+
     private function getValidatedImageSizes(): array {
         $sizes = [];
         foreach ($this->files as $index => $file) {
+            try {
+                self::validateImageExtension($file);
+            } catch (BadRequestException $e) {
+                $this->removeUploadedFiles();
+                throw $e;
+            }
+
             $path = $this->location . $file;
             $size = @getimagesize($path);
             if ($size === false) {
-                foreach ($this->files as $uploadedFile) {
-                    $uploadedPath = $this->location . $uploadedFile;
-                    if (is_file($uploadedPath)) {
-                        unlink($uploadedPath);
-                    }
-                }
+                $this->removeUploadedFiles();
                 throw new BadRequestException('Uploaded file is not a valid image');
             }
             $sizes[$index] = $size;
