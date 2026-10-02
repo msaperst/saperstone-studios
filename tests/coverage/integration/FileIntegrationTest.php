@@ -88,6 +88,20 @@ class FileIntegrationTest extends TestCase {
         }
     }
 
+    public function testRejectsUnsupportedImageExtension(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('Uploaded file type is not supported');
+
+        File::validateImageExtension('image.php');
+    }
+
+    public function testAllowsProtectedImageExtensions(): void {
+        foreach (['image.jpg', 'image.jpeg', 'image.png', 'image.gif', 'IMAGE.JPG'] as $filename) {
+            File::validateImageExtension($filename);
+            $this->addToAssertionCount(1);
+        }
+    }
+
     public function testRejectsUnixPathInUploadedFilename(): void {
         $this->expectException(BadRequestException::class);
         $this->expectExceptionMessage('File name can not contain a path');
