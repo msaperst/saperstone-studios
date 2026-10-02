@@ -13,6 +13,10 @@ if (!$systemUser->isAdmin() && $systemUser->getRole() != "uploader") {
     }
     exit ();
 }
+if (!Api::requireCsrfProtection()) {
+    echo Api::CSRF_ERROR;
+    exit ();
+}
 
 try {
     $album = Album::withParams($_POST);
