@@ -2,6 +2,7 @@
 
 namespace coverage\integration;
 
+use BadRequestException;
 use Exception;
 use File;
 use PHPUnit\Framework\TestCase;
@@ -85,6 +86,39 @@ class FileIntegrationTest extends TestCase {
         } catch (Exception $e) {
             $this->assertEquals('File upload location can not be blank', $e->getMessage());
         }
+    }
+
+    public function testRejectsUnixPathInUploadedFilename(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name can not contain a path');
+
+        new File([
+            'error' => '0',
+            'name' => '../outside.jpeg',
+            'tmp_name' => '/tmp/file'
+        ]);
+    }
+
+    public function testRejectsWindowsPathInUploadedFilename(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name can not contain a path');
+
+        new File([
+            'error' => '0',
+            'name' => '..\\outside.jpeg',
+            'tmp_name' => '/tmp/file'
+        ]);
+    }
+
+    public function testRejectsNullByteInUploadedFilename(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name is not valid');
+
+        new File([
+            'error' => '0',
+            'name' => "image.jpeg\0.php",
+            'tmp_name' => '/tmp/file'
+        ]);
     }
 
     /**
