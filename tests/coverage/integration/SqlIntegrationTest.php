@@ -2,7 +2,6 @@
 
 namespace coverage\integration;
 
-use Exception;
 use mysqli_sql_exception;
 use PHPUnit\Framework\TestCase;
 use Sql;
@@ -156,11 +155,12 @@ class SqlIntegrationTest extends TestCase {
 
     public function testExecuteStatementDisconnected() {
         $this->sql->disconnect();
-        try {
-            $this->sql->executeStatement("INSERT INTO `tags` (`tag`) VALUES ('test-tag');");
-        } catch (Exception $e) {
-            $this->assertEquals('Not connected, unable to execute statement: \'INSERT INTO `tags` (`tag`) VALUES (\'test-tag\');\'', $e->getMessage());
-        }
+        $this->expectException(SqlException::class);
+        $this->expectExceptionMessage(
+            'Not connected, unable to execute statement: \'INSERT INTO `tags` (`tag`) VALUES (\'test-tag\');\''
+        );
+
+        $this->sql->executeStatement("INSERT INTO `tags` (`tag`) VALUES ('test-tag');");
     }
 
     public function testGetEnumValues() {
