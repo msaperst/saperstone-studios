@@ -56,9 +56,15 @@ class Login {
     }
 
     public function logout($username) {
-        $this->driver->findElement(WebDriverBy::linkText($username))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('logout-button'))));
-        $this->driver->findElement(WebDriverBy::id('logout-button'))->click();
+        $accountMenu = WebDriverBy::xpath(
+            "//li[contains(@class,'dropdown')][.//*[@id='logout-button']]/a[contains(@class,'dropdown-toggle')]"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($accountMenu));
+        $this->driver->findElement($accountMenu)->click();
+
+        $logout = WebDriverBy::id('logout-button');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($logout));
+        $this->driver->findElement($logout)->click();
         $this->wait->until(
             WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('login-menu-item'))
         );
