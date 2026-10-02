@@ -85,5 +85,5 @@ Feature: Blog Administration
     And I delete the blog administration draft
     And I confirm deletion of the blog administration draft
     Then I no longer see the blog administration draft in the manage table
-    When I reload blog administration management
+    When I reopen the deleted blog administration post
     Then the blog administration draft no longer exists
