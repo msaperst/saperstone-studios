@@ -179,6 +179,10 @@ class MockElement {
         return this.offsetValue;
     }
 
+    position() {
+        return this.offsetValue;
+    }
+
     after(value) {
         this.afterValues.push(value);
         return this;
@@ -331,12 +335,14 @@ class MockElement {
         const matching = selector === 'img'
             ? children.filter((child) => child.tagName === 'img')
             : children;
-        return {
-            each(callback) {
-                matching.forEach((child, index) => callback.call(child, index, child));
-                return this;
-            }
+        const childCollection = this.environment.element(
+            `${this.selector} __children__${selector ? ' ' + selector : ''}`
+        );
+        childCollection.each = function (callback) {
+            matching.forEach((child, index) => callback.call(child, index, child));
+            return this;
         };
+        return childCollection;
     }
 
     next() {
@@ -346,6 +352,12 @@ class MockElement {
     before(value) {
         this.beforeValues = this.beforeValues || [];
         this.beforeValues.push(value);
+        return this;
+    }
+
+    prepend(value) {
+        this.prepended = this.prepended || [];
+        this.prepended.push(value);
         return this;
     }
 
@@ -448,7 +460,9 @@ function createJQueryEnvironment(options = {}) {
         post: [],
         reload: [],
         rowAdd: [],
-        columnSearch: []
+        columnSearch: [],
+        blockUI: [],
+        unblockUI: 0
     };
     const ajaxResponses = {
         get: new Map(),
@@ -569,6 +583,14 @@ function createJQueryEnvironment(options = {}) {
         return typeof value === 'function';
     };
 
+    $.blockUI = function (options) {
+        calls.blockUI.push(options);
+    };
+
+    $.unblockUI = function () {
+        calls.unblockUI += 1;
+    };
+
     $.each = function (collection, callback) {
         if (Array.isArray(collection)) {
             collection.forEach((value, index) => callback(index, value));
@@ -601,6 +623,9 @@ function createJQueryEnvironment(options = {}) {
             },
             close() {
                 this.closed = true;
+            },
+            getModal() {
+                return element(`__dialog_modal_${dialogs.length}__`);
             }
         };
     }
