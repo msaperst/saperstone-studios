@@ -217,10 +217,10 @@ test('saveGallery posts image order and restores the sorting controls', () => {
             }]
         }
     });
-    assert.equal(
-        environment.element("div.gallery[sequence='3'").attr('new-sequence'),
-        '0'
-    );
+    const sequenceSelector = Array.from(environment.elements.keys())
+        .find((selector) => selector.startsWith('div.gallery[sequence='));
+    assert.equal(sequenceSelector, "div.gallery[sequence='3']");
+    assert.equal(environment.element(sequenceSelector).attr('new-sequence'), '0');
     assert.equal(environment.element('.image-grid').sortableOptions, 'destroy');
     assert.equal(sortParent.visible, true);
     assert.equal(saveParent.visible, false);
