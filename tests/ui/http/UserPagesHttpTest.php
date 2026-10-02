@@ -26,6 +26,14 @@ class UserPagesHttpTest extends HttpTestBase {
         ];
     }
 
+    public function testRegularUserCannotAccessContractsPage(): void {
+        $this->loginAs('5510b5e6fffd897c234cafe499f76146');
+        $response = $this->get('user/contracts.php');
+
+        self::assertSame(401, $response->getStatusCode());
+        self::assertSame('401 Unauthorized', $this->text($response, '//h1'));
+    }
+
     public function testAdminContractsPage(): void {
         $this->adminLogin();
         $response = $this->get('user/contracts.php');
