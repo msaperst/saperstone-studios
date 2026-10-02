@@ -13,7 +13,6 @@ use SqlException;
 
 class ApiUnitTest extends TestCase {
     private Api $api;
-    private ?string $requestMethod = null;
     private array $serverState = [];
     private array $sessionState = [];
 
@@ -22,7 +21,6 @@ class ApiUnitTest extends TestCase {
         $this->serverState = $_SERVER;
         $this->sessionState = $_SESSION ?? [];
         $this->api = new Api();
-        $this->requestMethod = $_SERVER['REQUEST_METHOD'] ?? null;
     }
 
     protected function tearDown(): void {
