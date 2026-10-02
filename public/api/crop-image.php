@@ -8,13 +8,17 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $image = $api->retrievePostString('image', 'Image');
+    $imageRequest = $api->retrievePostString('image', 'Image');
+    $image = Api::resolvePublicPath($imageRequest, 'api');
+    if ($image === null) {
+        throw new BadRequestException('Image location is not valid');
+    }
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
-if (!file_exists($_POST['image'])) {
+if (!file_exists($image)) {
     http_response_code(400);
     echo "Image does not exist";
     exit ();
