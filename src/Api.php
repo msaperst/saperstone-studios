@@ -3,6 +3,8 @@
 //TODO - redo this by throwing errors?
 
 class Api {
+    public const CSRF_ERROR = 'Your session has expired. Please refresh the page and try again.';
+
     private $user;
 
     function __construct() {
@@ -159,7 +161,7 @@ class Api {
             exit ();
         }
         if (!self::requireCsrfProtection()) {
-            echo 'Your session has expired. Please refresh the page and try again.';
+            echo self::CSRF_ERROR;
             exit ();
         }
     }
@@ -173,7 +175,7 @@ class Api {
             exit ();
         }
         if (!self::requireCsrfProtection()) {
-            echo 'Your session has expired. Please refresh the page and try again.';
+            echo self::CSRF_ERROR;
             exit ();
         }
     }
