@@ -444,6 +444,51 @@ class BlogAdminFeatureContext implements Context {
     }
 
     /**
+     * @When /^I publish the blog administration draft$/
+     */
+    public function iPublishTheBlogAdministrationDraft(): void {
+        $button = WebDriverBy::id('publish-saved-post');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $this->driver->findElement($button)->click();
+
+        $this->waitForPostRedirect();
+    }
+
+    /**
+     * @Then /^the blog administration draft is published$/
+     */
+    public function theBlogAdministrationDraftIsPublished(): void {
+        $this->wait->until(function () {
+            $row = $this->sql->getRow(
+                'SELECT active FROM blog_details WHERE id = ?',
+                [self::FIXTURE_ID]
+            );
+            return isset($row['active']) && (string)$row['active'] === '1';
+        });
+
+        $row = $this->sql->getRow(
+            'SELECT active FROM blog_details WHERE id = ?',
+            [self::FIXTURE_ID]
+        );
+        Assert::assertSame('1', (string)$row['active']);
+    }
+
+    /**
+     * @Then /^I see the published blog administration post$/
+     */
+    public function iSeeThePublishedBlogAdministrationPost(): void {
+        Assert::assertStringContainsString(
+            '/blog/post.php?p=' . self::FIXTURE_ID,
+            $this->driver->getCurrentURL()
+        );
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('h1')));
+        Assert::assertSame(
+            self::FIXTURE_TITLE,
+            trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
+        );
+    }
+
+    /**
      * @When /^I quick edit the blog administration draft$/
      */
     public function iQuickEditTheBlogAdministrationDraft(): void {
