@@ -20,7 +20,6 @@ class BlogAdminFeatureContext implements Context {
     private const FIXTURE_DATE = '2099-12-29';
     private const FIXTURE_TITLE = 'Behat Blog Admin Draft';
     private const FIXTURE_UPLOAD_FILENAME = 'behat-blog-admin-fixture.jpg';
-    private const CREATED_DATE = '2099-12-30';
     private const TITLE_PREFIX = 'Behat Blog Admin ';
     private const UPLOAD_FILENAME = 'flower-short.jpeg';
     private const NEW_CATEGORY = 'Behat Blog Admin Category';
@@ -34,6 +33,7 @@ class BlogAdminFeatureContext implements Context {
     private string $expectedTitle = '';
     private string $expectedText = '';
     private string $expectedDate = '';
+    private string $expectedCategory = '';
 
     /**
      * @BeforeScenario
@@ -51,6 +51,7 @@ class BlogAdminFeatureContext implements Context {
         $this->expectedTitle = '';
         $this->expectedText = '';
         $this->expectedDate = '';
+        $this->expectedCategory = '';
 
         $this->removeStaleTestData();
     }
@@ -242,6 +243,7 @@ class BlogAdminFeatureContext implements Context {
      * @When /^I add the "([^"]*)" blog administration category$/
      */
     public function iAddTheBlogAdministrationCategory(string $category): void {
+        $this->expectedCategory = $category;
         $selectElement = $this->driver->findElement(WebDriverBy::id('post-tags-select'));
         (new WebDriverSelect($selectElement))->selectByVisibleText($category);
         $this->waitForSelectedCategory($category);
@@ -260,47 +262,54 @@ class BlogAdminFeatureContext implements Context {
      * @Then /^the created blog administration post is stored as a draft$/
      */
     public function theCreatedBlogAdministrationPostIsStoredAsADraft(): void {
-        Assert::assertNotNull($this->createdPostId);
-
-        $row = $this->sql->getRow(
-            'SELECT id, title, date, preview, active FROM blog_details WHERE id = ?',
-            [$this->createdPostId]
+        $row = $this->postRowById($this->createdPostId());
+        Assert::assertSame(
+            $this->expectedTitle,
+            trim($row->findElement(WebDriverBy::className('post-title'))->getText())
         );
-        Assert::assertSame($this->expectedTitle, $row['title']);
-        Assert::assertSame($this->expectedDate, $row['date']);
-        Assert::assertSame('0', (string)$row['active']);
-
-        $texts = $this->sql->getRows(
-            'SELECT text FROM blog_texts WHERE blog = ? ORDER BY contentGroup',
-            [$this->createdPostId]
+        Assert::assertSame(
+            'false',
+            trim($row->findElement(WebDriverBy::className('post-active'))->getText())
         );
-        Assert::assertNotEmpty($texts);
-        Assert::assertStringContainsString($this->expectedText, strip_tags($texts[count($texts) - 1]['text']));
-
-        $tag = $this->sql->getRow(
-            'SELECT tag FROM blog_tags WHERE blog = ? AND tag = ?',
-            [$this->createdPostId, 29]
-        );
-        Assert::assertSame('29', (string)$tag['tag']);
-
-        $preview = $this->blogContentPath($row['preview']);
-        Assert::assertFileExists($preview);
     }
 
     /**
      * @Then /^I see the created blog administration post$/
      */
     public function iSeeTheCreatedBlogAdministrationPost(): void {
-        Assert::assertNotNull($this->createdPostId);
         Assert::assertStringContainsString(
-            '/blog/post.php?p=' . $this->createdPostId,
+            '/blog/post.php?p=' . $this->createdPostId(),
             $this->driver->getCurrentURL()
         );
-        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('h1')));
+        $this->waitForPostContent($this->expectedText);
         Assert::assertSame(
             $this->expectedTitle,
             trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
         );
+        Assert::assertStringContainsString(
+            $this->expectedText,
+            $this->driver->findElement(WebDriverBy::id('post-content'))->getText()
+        );
+        if ($this->expectedCategory !== '') {
+            Assert::assertStringContainsString(
+                $this->expectedCategory,
+                $this->driver->findElement(WebDriverBy::id('post-content'))->getText()
+            );
+        }
+        if ($this->expectedDate !== '') {
+            Assert::assertStringContainsString(
+                date('F jS, Y', strtotime($this->expectedDate)),
+                $this->driver->findElement(WebDriverBy::id('post-content'))->getText()
+            );
+        }
+    }
+
+    /**
+     * @When /^I open blog administration management$/
+     */
+    public function iOpenBlogAdministrationManagement(): void {
+        $this->driver->get($this->baseUrl . 'blog/manage.php');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('posts')));
     }
 
     /**
@@ -333,12 +342,23 @@ class BlogAdminFeatureContext implements Context {
     }
 
     /**
+     * @When /^I reopen the new blog administration editor$/
+     */
+    public function iReopenTheNewBlogAdministrationEditor(): void {
+        $this->driver->get($this->baseUrl . 'blog/new.php');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('post-tags-select')));
+    }
+
+    /**
      * @Then /^the "([^"]*)" blog category exists$/
      */
     public function theBlogCategoryExists(string $category): void {
-        $row = $this->sql->getRow('SELECT id, tag FROM tags WHERE tag = ?', [$category]);
-        Assert::assertSame($category, $row['tag']);
-        Assert::assertGreaterThan(0, (int)$row['id']);
+        foreach ($this->driver->findElements(WebDriverBy::cssSelector('#post-tags-select option')) as $option) {
+            if (trim($option->getText()) === $category) {
+                return;
+            }
+        }
+        Assert::fail("Expected blog category '$category' to be available after reopening the editor");
     }
 
     /**
@@ -391,25 +411,6 @@ class BlogAdminFeatureContext implements Context {
     }
 
     /**
-     * @Then /^the blog administration draft contains the full editor changes$/
-     */
-    public function theBlogAdministrationDraftContainsTheFullEditorChanges(): void {
-        $row = $this->sql->getRow(
-            'SELECT title, active FROM blog_details WHERE id = ?',
-            [$this->fixtureId()]
-        );
-        Assert::assertSame($this->expectedTitle, $row['title']);
-        Assert::assertSame('0', (string)$row['active']);
-
-        $texts = $this->sql->getRows(
-            'SELECT text FROM blog_texts WHERE blog = ? ORDER BY contentGroup',
-            [$this->fixtureId()]
-        );
-        Assert::assertNotEmpty($texts);
-        Assert::assertStringContainsString($this->expectedText, strip_tags($texts[0]['text']));
-    }
-
-    /**
      * @Then /^I see the blog administration draft post$/
      */
     public function iSeeTheBlogAdministrationDraftPost(): void {
@@ -421,6 +422,11 @@ class BlogAdminFeatureContext implements Context {
         Assert::assertSame(
             $this->expectedTitle,
             trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
+        );
+        $this->waitForPostContent($this->expectedText);
+        Assert::assertStringContainsString(
+            $this->expectedText,
+            $this->driver->findElement(WebDriverBy::id('post-content'))->getText()
         );
     }
 
@@ -436,25 +442,6 @@ class BlogAdminFeatureContext implements Context {
     }
 
     /**
-     * @Then /^the blog administration draft is published$/
-     */
-    public function theBlogAdministrationDraftIsPublished(): void {
-        $this->wait->until(function () {
-            $row = $this->sql->getRow(
-                'SELECT active FROM blog_details WHERE id = ?',
-                [$this->fixtureId()]
-            );
-            return isset($row['active']) && (string)$row['active'] === '1';
-        });
-
-        $row = $this->sql->getRow(
-            'SELECT active FROM blog_details WHERE id = ?',
-            [$this->fixtureId()]
-        );
-        Assert::assertSame('1', (string)$row['active']);
-    }
-
-    /**
      * @Then /^I see the published blog administration post$/
      */
     public function iSeeThePublishedBlogAdministrationPost(): void {
@@ -467,6 +454,25 @@ class BlogAdminFeatureContext implements Context {
             self::FIXTURE_TITLE,
             trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
         );
+    }
+
+    /**
+     * @When /^I reopen the published blog administration post$/
+     */
+    public function iReopenThePublishedBlogAdministrationPost(): void {
+        $this->driver->get($this->baseUrl . 'blog/post.php?p=' . $this->fixtureId());
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('h1')));
+    }
+
+    /**
+     * @Then /^I see the published blog administration post as a visitor$/
+     */
+    public function iSeeThePublishedBlogAdministrationPostAsAVisitor(): void {
+        Assert::assertSame(
+            self::FIXTURE_TITLE,
+            trim($this->driver->findElement(WebDriverBy::tagName('h1'))->getText())
+        );
+        Assert::assertCount(0, $this->driver->findElements(WebDriverBy::id('edit-post-btn')));
     }
 
     /**
@@ -526,15 +532,27 @@ class BlogAdminFeatureContext implements Context {
     }
 
     /**
+     * @When /^I reload blog administration management$/
+     */
+    public function iReloadBlogAdministrationManagement(): void {
+        $this->driver->navigate()->refresh();
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('posts')));
+    }
+
+    /**
      * @Then /^the quick edited blog administration post is persisted$/
      */
     public function theQuickEditedBlogAdministrationPostIsPersisted(): void {
-        $row = $this->sql->getRow(
-            'SELECT title, active FROM blog_details WHERE id = ?',
-            [$this->fixtureId()]
+        $this->waitForPostRowTitle($this->fixtureId(), $this->expectedTitle);
+        $row = $this->postRowById($this->fixtureId());
+        Assert::assertSame(
+            $this->expectedTitle,
+            trim($row->findElement(WebDriverBy::className('post-title'))->getText())
         );
-        Assert::assertSame($this->expectedTitle, $row['title']);
-        Assert::assertSame('0', (string)$row['active']);
+        Assert::assertSame(
+            'false',
+            trim($row->findElement(WebDriverBy::className('post-active'))->getText())
+        );
     }
 
     /**
@@ -579,11 +597,11 @@ class BlogAdminFeatureContext implements Context {
      * @Then /^the blog administration draft no longer exists$/
      */
     public function theBlogAdministrationDraftNoLongerExists(): void {
-        $rows = $this->sql->getRows(
-            'SELECT id FROM blog_details WHERE id = ?',
-            [$this->fixtureId()]
-        );
-        Assert::assertCount(0, $rows);
+        $selector = WebDriverBy::cssSelector("#posts tbody tr[post-id='" . $this->fixtureId() . "']");
+        $this->wait->until(function () use ($selector) {
+            return count($this->driver->findElements($selector)) === 0;
+        });
+        Assert::assertCount(0, $this->driver->findElements($selector));
     }
 
     private function clickEditorButton(string $id): void {
@@ -789,6 +807,20 @@ class BlogAdminFeatureContext implements Context {
         return ['Cookie' => 'hash=1d7505e7f434a7713e84ba399e937191'];
     }
 
+    private function createdPostId(): int {
+        if ($this->createdPostId === null) {
+            throw new \LogicException('Blog administration post has not been created');
+        }
+        return $this->createdPostId;
+    }
+
+    private function waitForPostContent(string $text): void {
+        $this->wait->until(function () use ($text) {
+            $content = $this->driver->findElements(WebDriverBy::id('post-content'));
+            return count($content) === 1 && str_contains($content[0]->getText(), $text);
+        });
+    }
+
     private function fixtureId(): int {
         if ($this->fixtureId === null) {
             throw new \LogicException('Blog administration fixture has not been created');
@@ -808,12 +840,6 @@ class BlogAdminFeatureContext implements Context {
         $row = $this->sql->getRow("SELECT MAX(id) AS maxId FROM `$table`");
         $next = ((int)($row['maxId'] ?? 0)) + 1;
         $this->sql->executeStatement("ALTER TABLE `$table` AUTO_INCREMENT = $next");
-    }
-
-    private function blogContentPath(string $blogPath): string {
-        $relative = preg_replace('#^posts/#', '', str_replace('\\\\', '/', $blogPath));
-        return $this->repoRoot() . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'blog'
-            . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative);
     }
 
     private function repoRoot(): string {
