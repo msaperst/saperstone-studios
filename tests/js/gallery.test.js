@@ -97,7 +97,7 @@ test('gallery rename updates the visible page heading after save succeeds', () =
     assert.equal(dialog.closed, true);
     assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post[0])), {
         url: '/api/update-gallery.php',
-        data: {id: '999', title: 'Updated Gallery'}
+        data: {id: 999, title: 'Updated Gallery'}
     });
 });
 
