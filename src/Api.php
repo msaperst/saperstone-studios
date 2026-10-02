@@ -55,6 +55,45 @@ class Api {
         return false;
     }
 
+    /**
+     * Resolve a browser-supplied path without allowing it to escape the public tree.
+     *
+     * Absolute-style paths are treated as public-root relative. Relative paths are
+     * resolved from the supplied public subdirectory, which is "api" for legacy
+     * image-edit requests such as ../img/main/example.jpg.
+     */
+    public static function resolvePublicPath(string $path, string $base = ''): ?string {
+        if (str_contains($path, "\0")) {
+            return null;
+        }
+
+        $path = str_replace('\\', '/', $path);
+        $base = str_replace('\\', '/', $base);
+        $relativePath = str_starts_with($path, '/')
+            ? ltrim($path, '/')
+            : trim($base, '/') . ($base === '' ? '' : '/') . $path;
+
+        $segments = [];
+        foreach (explode('/', $relativePath) as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+            if ($segment === '..') {
+                if ($segments === []) {
+                    return null;
+                }
+                array_pop($segments);
+                continue;
+            }
+            $segments[] = $segment;
+        }
+
+        $publicRoot = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public';
+        return $publicRoot . ($segments === []
+            ? ''
+            : DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $segments));
+    }
+
     private function retrievePost($variable, $variableName, $type) {
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
             switch ($type) {
