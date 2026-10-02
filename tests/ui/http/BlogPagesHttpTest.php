@@ -155,7 +155,7 @@ class BlogPagesHttpTest extends HttpTestBase {
         self::assertSame(1, $this->elementCount($response, "//*[@id='publish-saved-post']"));
         self::assertStringContainsString('Home Blog Edit Post', $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' breadcrumb ')]"));
 
-        self::assertSame(['29'], json_decode(
+        self::assertSame([29], json_decode(
             $this->attribute($response, "//*[@id='post-editor-config']", 'data-tags'),
             true
         ));
