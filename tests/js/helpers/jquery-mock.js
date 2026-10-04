@@ -8,6 +8,7 @@ class MockElement {
         this.styles = {};
         this.classes = new Set();
         this.handlers = new Map();
+        this.delegatedHandlers = new Map();
         this.appended = [];
         this.value = '';
         this.htmlValue = '';
@@ -254,13 +255,24 @@ class MockElement {
         return this;
     }
 
-    off() {
-        this.handlers.clear();
+    off(event, selector) {
+        if (event && selector) {
+            this.delegatedHandlers.delete(event + ' ' + selector);
+        } else if (event) {
+            this.handlers.delete(event);
+        } else {
+            this.handlers.clear();
+            this.delegatedHandlers.clear();
+        }
         return this;
     }
 
-    on(event, handler) {
-        this.handlers.set(event, handler);
+    on(event, selectorOrHandler, handler) {
+        if (typeof handler === 'function') {
+            this.delegatedHandlers.set(event + ' ' + selectorOrHandler, handler);
+        } else {
+            this.handlers.set(event, selectorOrHandler);
+        }
         return this;
     }
 
@@ -381,6 +393,40 @@ class MockElement {
         this.visible = !this.visible;
         if (callback) callback();
         return this;
+    }
+
+    slideDown(duration, callback) {
+        this.visible = true;
+        if (callback) callback();
+        return this;
+    }
+
+    hover(enter, leave) {
+        this.handlers.set('mouseenter', enter);
+        this.handlers.set('mouseleave', leave);
+        return this;
+    }
+
+    focusout(handler) {
+        this.handlers.set('focusout', handler);
+        return this;
+    }
+
+    not() {
+        return this;
+    }
+
+    removeData() {
+        return this;
+    }
+
+    load(url) {
+        this.loadUrl = url;
+        return this;
+    }
+
+    serializeArray() {
+        return this.serializedValues || [];
     }
 
     find(selector) {
@@ -615,6 +661,8 @@ function createJQueryEnvironment(options = {}) {
             closable: true,
             closed: false,
             $modalFooter: element(`__dialog_footer_${dialogs.length}__`),
+            $modalBody: element(`__dialog_body_${dialogs.length}__`),
+            message: null,
             enableButtons(value) {
                 this.buttonsEnabled = value;
             },
@@ -623,6 +671,9 @@ function createJQueryEnvironment(options = {}) {
             },
             close() {
                 this.closed = true;
+            },
+            setMessage(value) {
+                this.message = value;
             },
             getModal() {
                 return element(`__dialog_modal_${dialogs.length}__`);
