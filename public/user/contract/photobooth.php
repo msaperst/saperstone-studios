@@ -30,7 +30,7 @@ if (isset ($_GET ['id'])) {
 
 <div>
     <h2>Saperstone Studios LLC. Photobooth Contract</h2>
-    <input id='contract-type' type='hidden' value='contractor'/> <input
+    <input id='contract-type' type='hidden' value='photobooth'/> <input
             id='contract-session' type='hidden' value='contractor'/>
     <p>
         <strong>Saperstone Studios</strong> hereby hires the undersigned
