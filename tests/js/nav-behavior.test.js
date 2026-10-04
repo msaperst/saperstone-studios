@@ -11,6 +11,7 @@ function createNavContext(options = {}) {
     const calls = {
         post: [],
         expiredCookies: [],
+        createdCookies: [],
         reloads: 0,
         timeouts: []
     };
@@ -131,9 +132,9 @@ function createNavContext(options = {}) {
     $.isNumeric = (value) => value !== null && value !== '' && !Number.isNaN(Number(value));
 
     const location = {
-        hash: '',
+        hash: options.hash || '',
         pathname: options.pathname || '/',
-        search: '',
+        search: options.search || '',
         hostname: 'example.test',
         href: '',
         reload() {
@@ -148,7 +149,7 @@ function createNavContext(options = {}) {
         window: windowObject,
         location,
         top: {location: {pathname: '/'}},
-        document: {cookie: ''},
+        document: {cookie: options.documentCookie || ''},
         readCookie(name) {
             return cookies.has(name) ? cookies.get(name) : null;
         },
@@ -156,7 +157,9 @@ function createNavContext(options = {}) {
             calls.expiredCookies.push({name, domain});
             cookies.delete(name);
         },
-        createCookie() {},
+        createCookie(name, value) {
+            calls.createdCookies.push({name, value});
+        },
         BootstrapDialog: {
             show() {}
         },
@@ -305,4 +308,169 @@ test('nav forgotPasswordReset submits reset details and reloads after the succes
 
     runTimeouts();
     assert.equal(calls.reloads, 1);
+});
+
+
+test('nav cookie preference helper recognizes granted preferences', () => {
+    const {context} = createNavContext({
+        cookies: {CookiePreferences: '["preferences","analytics"]'}
+    });
+
+    assert.equal(context.hasCookiePreference('preferences'), true);
+    assert.equal(context.hasCookiePreference('social'), false);
+});
+
+test('nav clears analytics and social cookies across host cookie scopes', () => {
+    const {calls, context} = createNavContext({
+        documentCookie: '_ga=1; _ga_TEST=2; _gid=3; __atuvc=4; essential=5'
+    });
+
+    context.clearAnalyticsCookies();
+    context.clearSocialCookies();
+
+    assert.deepEqual(
+        calls.expiredCookies.map(({name, domain}) => [name, domain]),
+        [
+            ['_ga', ''],
+            ['_ga', 'example.test'],
+            ['_ga', '.example.test'],
+            ['_ga_TEST', ''],
+            ['_ga_TEST', 'example.test'],
+            ['_ga_TEST', '.example.test'],
+            ['_gid', ''],
+            ['_gid', 'example.test'],
+            ['_gid', '.example.test'],
+            ['__atuvc', ''],
+            ['__atuvc', 'example.test'],
+            ['__atuvc', '.example.test']
+        ]
+    );
+});
+
+test('nav submitLogin surfaces response-text failures', () => {
+    const {context, element, queuePost} = createNavContext();
+    queuePost('/api/login.php', {
+        type: 'failure',
+        xhr: {responseText: 'Account disabled'}
+    });
+
+    context.submitLogin();
+
+    assert.match(
+        element('#login-modal .modal-body').appended.join(''),
+        /Account disabled/
+    );
+});
+
+test('nav submitLogin surfaces unauthorized and generic failures', () => {
+    for (const [error, expected] of [
+        ['Unauthorized', /session has timed out/],
+        ['Network Error', /unexpected error occurred/]
+    ]) {
+        const {context, element, queuePost} = createNavContext();
+        queuePost('/api/login.php', {
+            type: 'failure',
+            xhr: {responseText: ''},
+            error
+        });
+
+        context.submitLogin();
+
+        assert.match(
+            element('#login-modal .modal-body').appended.join(''),
+            expected
+        );
+    }
+});
+
+test('nav logout reloads non-user pages', () => {
+    const {calls, context, queuePost} = createNavContext({pathname: '/blog/'});
+    queuePost('/api/login.php', {type: 'success', data: ''});
+
+    context.logout();
+
+    assert.equal(calls.reloads, 1);
+});
+
+test('nav forgotPassword resets and opens the password reset modal', () => {
+    const {context, element} = createNavContext();
+    element('#forgot-password-code').show();
+    element('#forgot-password-new-password').show();
+    element('#forgot-password-new-password-confirm').show();
+    element('#forgot-password-reset-password').show();
+
+    context.forgotPassword();
+
+    assert.deepEqual(element('#login-modal').modalCalls, ['hide']);
+    assert.equal(element('#forgot-password-instructions').visible, true);
+    assert.equal(element('#forgot-password-code').visible, false);
+    assert.equal(element('#forgot-password-new-password').visible, false);
+    assert.equal(element('#forgot-password-new-password-confirm').visible, false);
+    assert.equal(element('#forgot-password-reset-password').visible, false);
+    assert.deepEqual(element('#forgot-password-modal').modalCalls, ['show']);
+});
+
+test('nav forgotPasswordSubmit shows validation and transport failures and re-enables the button', () => {
+    for (const response of [
+        {type: 'success', data: 'Unknown email address'},
+        {type: 'failure', xhr: {responseText: 'Reset unavailable'}},
+        {type: 'failure', xhr: {responseText: ''}, error: 'Unauthorized'},
+        {type: 'failure', xhr: {responseText: ''}, error: 'Network Error'}
+    ]) {
+        const {context, element, queuePost} = createNavContext();
+        queuePost('/api/send-reset-code.php', response);
+
+        context.forgotPasswordSubmit();
+
+        assert.equal(element('#forgot-password-submit').disabled, false);
+        assert.ok(
+            element('#forgot-password-modal .modal-body').appended.length > 0,
+            'Expected a visible password reset message'
+        );
+    }
+});
+
+test('nav forgotPasswordReset shows validation and transport failures and re-enables the button', () => {
+    for (const response of [
+        {type: 'success', data: 'Reset code is invalid'},
+        {type: 'failure', xhr: {responseText: 'Reset failed'}},
+        {type: 'failure', xhr: {responseText: ''}, error: 'Unauthorized'},
+        {type: 'failure', xhr: {responseText: ''}, error: 'Network Error'}
+    ]) {
+        const {context, element, queuePost} = createNavContext();
+        queuePost('/api/reset-password.php', response);
+
+        context.forgotPasswordReset();
+
+        assert.equal(element('#forgot-password-reset-password').disabled, false);
+        assert.ok(
+            element('#forgot-password-modal .modal-body').appended.length > 0,
+            'Expected a visible password reset message'
+        );
+    }
+});
+
+test('nav extracts URL-encoded album codes from the hash', () => {
+    const {context} = createNavContext({hash: '#album=ABC%20123'});
+
+    assert.equal(context.getAlbumCodeFromHash(), 'ABC 123');
+    context.window.location.hash = '#something-else';
+    assert.equal(context.getAlbumCodeFromHash(), null);
+});
+
+test('nav searchBlog navigates using the current search text', () => {
+    const {context, element} = createNavContext();
+    element('#nav-search-input').val('family portraits');
+
+    context.searchBlog();
+
+    assert.equal(context.window.location, '/blog/search.php?s=family portraits');
+});
+
+test('nav query parsing returns matching values and false for missing keys', () => {
+    const {context} = createNavContext({search: '?album=42&mode=full'});
+
+    assert.equal(context.getQueryVariable('album'), '42');
+    assert.equal(context.getQueryVariable('mode'), 'full');
+    assert.equal(context.getQueryVariable('missing'), false);
 });
