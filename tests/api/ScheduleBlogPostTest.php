@@ -224,7 +224,7 @@ class ScheduleBlogPostTest extends TestCase {
     public function testScheduleBlogPost() {
         date_default_timezone_set("America/New_York");
         $time = new DateTime();
-        $time->add(new DateInterval('PT' . 2 . 'M'));
+        $time->add(new DateInterval('PT90S'));
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -239,8 +239,13 @@ class ScheduleBlogPostTest extends TestCase {
         $this->assertEquals(200, $response->getStatusCode());
         $blogDetails = $this->sql->getRow("SELECT * FROM blog_details WHERE id = 999");
         $this->assertEquals(0, $blogDetails['active']);
-        sleep(120);
-        $blogDetails = $this->sql->getRow("SELECT * FROM blog_details WHERE id = 999");
+
+        $deadline = time() + 100;
+        do {
+            usleep(250000);
+            $blogDetails = $this->sql->getRow("SELECT * FROM blog_details WHERE id = 999");
+        } while ((int)$blogDetails['active'] !== 1 && time() < $deadline);
+
         $this->assertEquals(1, $blogDetails['active']);
     }
 }
