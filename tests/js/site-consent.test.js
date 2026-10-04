@@ -126,6 +126,7 @@ test('site consent accept persists selected preferences and immediately enables 
     });
 
     body.bsgdprcookies();
+    environment.element('#bs-gdpr-cookies-modal').modalCalls = [];
 
     const choices = environment.element('input[name="bsgdpr[]"]');
     choices.serializedValues = [
