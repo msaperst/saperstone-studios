@@ -19,7 +19,7 @@ fake_requests = types.SimpleNamespace(
     head=lambda *args, **kwargs: None,
     RequestException=FakeRequestException,
 )
-sys.modules.setdefault("requests", fake_requests)
+sys.modules["requests"] = fake_requests
 
 spec = importlib.util.spec_from_file_location(
     "create_site_map",
