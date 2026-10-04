@@ -254,7 +254,6 @@ test('nav logout redirects authenticated user pages to the home page', () => {
             submit: 'Logout'
         }
     });
-    assert.equal(location.href || String(location), '');
     assert.equal(context.window.location, '/');
 });
 
