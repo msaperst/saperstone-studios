@@ -93,6 +93,16 @@ composer coverage-test
 
 This runs the unit and integration suites and merges their Clover coverage output.
 
+## Script tests
+
+Repository and CI helper scripts have lightweight regression coverage using Python's standard library test runner:
+
+```bash
+python3 -m unittest discover -s tests/scripts -p 'test_*.py'
+```
+
+These tests protect CI/reporting behavior without introducing another Python test dependency. Operational PHP workers that depend on filesystem or Mailpit behavior are covered in the integration suite.
+
 ## Full-stack test environment
 
 API, HTTP Page, UI/Behat, and ZAP CI jobs use the same full Docker Compose application. The local composite GitHub Action at `.github/actions/setup-full-stack/action.yml` is the canonical CI setup. It writes the common `.env`, prepares writable test folders, disables the production Let's Encrypt certificate reference, launches the application with Docker Compose, and waits for HTTP port 90 to become available.
@@ -176,6 +186,7 @@ Keep lower-layer verification in the appropriate suite. Behat may overlap with J
 | Integration | `composer integration-test` |
 | Integration cleanup | `composer integration-post-test` |
 | Combined coverage | `composer coverage-test` |
+| CI/script helpers | `python3 -m unittest discover -s tests/scripts -p 'test_*.py'` |
 | API | `composer api-test` |
 | HTTP page tests | `composer http-page-test` |
 | Behat UI tests | `composer ui-behat-test` |
