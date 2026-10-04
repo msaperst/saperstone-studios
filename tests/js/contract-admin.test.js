@@ -274,3 +274,50 @@ test('contract admin reports malformed success and unauthorized submit responses
         assert.equal(dialog.closable, true);
     }
 });
+
+
+test('contract admin edit dialog loads the correct template for existing and new contracts', () => {
+    for (const [data, expectedTitle, expectedUrl] of [
+        [
+            {id: 77, type: 'portrait', name: 'Client', session: 'Family'},
+            'Edit Contract <b>Client Family</b>',
+            'contract/portrait.php?id=77'
+        ],
+        ['Photobooth', 'Add New Photobooth Contract', 'contract/photobooth.php?']
+    ]) {
+        const {context, environment} = createContext();
+
+        context.editContract(data);
+
+        const config = environment.dialogs.at(-1);
+        assert.equal(config.title, expectedTitle);
+        assert.equal(config.closable, false);
+        assert.equal(config.draggable, true);
+        assert.equal(config.size, environment.BootstrapDialog.SIZE_WIDE);
+        assert.equal(config.message.loadUrl, expectedUrl);
+        assert.deepEqual(
+            Array.from(config.buttons, (button) => button.label.trim()),
+            ['Save', 'Close']
+        );
+    }
+});
+
+test('contract admin form synchronization mirrors duplicate fields and session defaults', () => {
+    const {context, environment} = createContext();
+    environment.element('#contract-name').val('Updated Client');
+    environment.element('[id$=-dup]').attr('id', 'contract-name-dup');
+    environment.element('option:selected')
+        .attr('cost', '425')
+        .attr('details', 'Four hour session');
+
+    context.setupFormFill();
+
+    const mirror = environment.element('input,textarea,select').handlers.get('keyup keypress blur change');
+    assert.equal(typeof mirror, 'function');
+    mirror.call(environment.element('input,textarea,select'));
+    assert.equal(environment.element('[id$=-dup]').val(), 'Updated Client');
+
+    environment.element('select#contract-session').trigger('change');
+    assert.equal(environment.element('#contract-amount').val(), '425');
+    assert.equal(environment.element('#contract-details').val(), 'Four hour session');
+});
