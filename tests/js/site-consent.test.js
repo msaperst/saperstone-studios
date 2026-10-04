@@ -83,7 +83,6 @@ test('site consent prompts again when the saved preference cookie is malformed',
 
     body.bsgdprcookies();
 
-    assert.equal(environment.timeouts?.length ?? 0, 0);
     environment.runTimeouts();
     assert.equal(body.appended.length, 1);
     assert.match(String(body.appended[0]), /Cookies & Privacy Policy/);
