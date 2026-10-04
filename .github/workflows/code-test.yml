@@ -143,9 +143,20 @@ jobs:
             reports/js-lcov.info
             reports/js-junit.xml
 
+  script-testing:
+    name: Script Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v7
+
+      - name: Script Test 🤞
+        run: python3 -m unittest discover -s tests/scripts -p 'test_*.py'
+
   sonar:
     name: SonarCloud
-    needs: [ unit-testing, integration-testing, javascript-unit-testing ]
+    needs: [ unit-testing, integration-testing, javascript-unit-testing, script-testing ]
     runs-on: ubuntu-latest
 
     steps:
