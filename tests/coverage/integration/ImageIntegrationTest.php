@@ -51,6 +51,9 @@ class ImageIntegrationTest extends TestCase {
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`id` = 899;");
         $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`id` = 898;");
         $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`id` = 899;");
+        $this->sql->executeStatement("DELETE FROM `favorites` WHERE `album` = 899;");
+        $this->sql->executeStatement("DELETE FROM `download_rights` WHERE `album` = '899';");
+        $this->sql->executeStatement("DELETE FROM `share_rights` WHERE `album` = '899';");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
@@ -271,6 +274,64 @@ class ImageIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRow("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;")['sequence']);
         $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
         $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteAlbumCleansOnlyDeletedImageRights(): void {
+        $this->sql->executeStatement(
+            "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('cleanup-test', 899, 898), ('cleanup-test', 899, 899)"
+        );
+        $this->sql->executeStatement(
+            "INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('cleanup-test', '899', '898'), ('cleanup-test', '899', '899'), ('cleanup-test', '899', '*')"
+        );
+        $this->sql->executeStatement(
+            "INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('cleanup-test', '899', '898'), ('cleanup-test', '899', '899'), ('cleanup-test', '899', '*')"
+        );
+
+        $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
+        try {
+            $image = new Image(Album::withId(899), 1);
+            $image->delete();
+        } finally {
+            unset($_SESSION['hash']);
+        }
+
+        $this->assertEquals(
+            0,
+            $this->sql->getRowCount("SELECT * FROM `favorites` WHERE `album` = 899 AND `image` = 898")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `favorites` WHERE `album` = 899 AND `image` = 899")
+        );
+
+        $this->assertEquals(
+            0,
+            $this->sql->getRowCount("SELECT * FROM `download_rights` WHERE `album` = '899' AND `image` = '898'")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `download_rights` WHERE `album` = '899' AND `image` = '899'")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `download_rights` WHERE `album` = '899' AND `image` = '*'")
+        );
+
+        $this->assertEquals(
+            0,
+            $this->sql->getRowCount("SELECT * FROM `share_rights` WHERE `album` = '899' AND `image` = '898'")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `share_rights` WHERE `album` = '899' AND `image` = '899'")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `share_rights` WHERE `album` = '899' AND `image` = '*'")
+        );
     }
 
     /**
