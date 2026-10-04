@@ -58,6 +58,14 @@ Feature: Blog Administration
     Then I see the blog administration draft post
 
 
+  Scenario: Admin sees validation when scheduling a draft in the past
+    Given a blog administration draft exists
+    And I am on the "blog/manage.php" page
+    When I open the full editor for the blog administration draft
+    And I try to schedule the blog administration draft in the past
+    Then I see the blog administration dialog message "This time is not in the future, please select a future time to schedule this post"
+    And the blog administration scheduling dialog remains usable
+
   Scenario: Admin can publish an existing draft
     Given a blog administration draft exists
     And I am on the "blog/manage.php" page
