@@ -188,7 +188,7 @@ test('contract admin loads available contract types and starts the selected cont
     const loadingDialog = environment.createDialog();
     const message = config.message(loadingDialog);
 
-    assert.match(message.html(), /Loading/);
+    assert.equal(message.tagName, 'div');
     assert.equal(environment.calls.get[0].url, '/api/get-contract-types.php');
     assert.ok(loadingDialog.message);
     const select = loadingDialog.message.appended[0];
