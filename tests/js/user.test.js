@@ -216,3 +216,217 @@ test('view as user posts the selected user and redirects after success', () => {
     });
     assert.equal(windowObject.location.href, 'index.php');
 });
+
+
+test('updating user albums posts selected album ids and restores both dialogs', () => {
+    const {context, environment} = createContext();
+    const user = sampleUser();
+    context.editUser(user);
+
+    const editConfig = environment.dialogs[0];
+    const editDialog = environment.createDialog();
+    const parentButton = environment.createButton('__user_albums_parent_button__');
+    parentButton.closestResult = environment.element('__user_albums_parent_modal__');
+    dialogButton(editConfig, 'user-albums-btn').action.call(parentButton, editDialog);
+
+    const albumsConfig = environment.dialogs[1];
+    const albumsDialog = environment.createDialog();
+    environment.element('#user-albums .selected-album').attr('album-id', '12');
+    environment.queuePost('/api/update-user-albums.php', {type: 'success', data: ''});
+
+    albumsConfig.buttons[0].action.call(
+        environment.createButton('__user_albums_update_button__'),
+        albumsDialog
+    );
+
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post[0])), {
+        url: '/api/update-user-albums.php',
+        data: {
+            user: 17,
+            albums: ['12']
+        }
+    });
+    assert.equal(albumsDialog.closed, true);
+    assert.equal(parentButton.stopSpinCount, 1);
+    assert.equal(editDialog.buttonsEnabled, true);
+    assert.equal(editDialog.closable, true);
+});
+
+test('user album validation responses remain visible instead of closing the dialog', () => {
+    const {context, environment} = createContext();
+    const user = sampleUser();
+    context.editUser(user);
+
+    const editConfig = environment.dialogs[0];
+    const editDialog = environment.createDialog();
+    const parentButton = environment.createButton('__user_albums_validation_parent__');
+    const parentModal = environment.element('__user_albums_validation_parent_modal__');
+    parentButton.closestResult = parentModal;
+    dialogButton(editConfig, 'user-albums-btn').action.call(parentButton, editDialog);
+
+    const albumsConfig = environment.dialogs[1];
+    const albumsDialog = environment.createDialog();
+    const updateButton = environment.createButton('__user_albums_validation_update__');
+    updateButton.closestResult = parentModal;
+    environment.queuePost('/api/update-user-albums.php', {
+        type: 'success',
+        data: 'One or more albums are invalid'
+    });
+
+    albumsConfig.buttons[0].action.call(updateButton, albumsDialog);
+
+    assert.match(
+        parentModal.find('.bootstrap-dialog-body').appended.join(''),
+        /One or more albums are invalid/
+    );
+    assert.equal(albumsDialog.closed, false);
+    assert.equal(albumsDialog.buttonsEnabled, true);
+    assert.equal(albumsDialog.closable, true);
+});
+
+test('user album dialog loads existing album assignments when shown', () => {
+    const {context, environment} = createContext();
+    const added = [];
+    context.addAlbum = (id) => added.push(id);
+    context.editUser(sampleUser());
+
+    const editConfig = environment.dialogs[0];
+    const editDialog = environment.createDialog();
+    dialogButton(editConfig, 'user-albums-btn').action.call(
+        environment.createButton('__user_albums_load_parent__'),
+        editDialog
+    );
+
+    const albumsConfig = environment.dialogs[1];
+    const albumsDialog = environment.createDialog();
+    environment.queueGet('/api/get-user-albums.php', {
+        type: 'success',
+        data: [{album: 7}, {album: 8}]
+    });
+
+    albumsConfig.onshown(albumsDialog);
+
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.get.at(-1))), {
+        url: '/api/get-user-albums.php',
+        data: {user: 17}
+    });
+    assert.deepEqual(added, [7, 8]);
+    assert.equal(albumsDialog.$modalBody.afterValues.length, 1);
+});
+
+test('updating a user password posts both password fields and closes on success', () => {
+    const {context, environment} = createContext();
+    context.editUser(sampleUser());
+
+    const editConfig = environment.dialogs[0];
+    const editDialog = environment.createDialog();
+    const parentButton = environment.createButton('__user_password_parent__');
+    dialogButton(editConfig, 'user-update-password-btn').action.call(parentButton, editDialog);
+
+    const passwordConfig = environment.dialogs[1];
+    environment.element('#user-password').val('new-password');
+    environment.element('#user-password-confirm').val('new-password');
+    environment.queuePost('/api/update-user-password.php', {type: 'success', data: ''});
+
+    const passwordDialog = environment.createDialog();
+    passwordConfig.buttons[0].action.call(
+        environment.createButton('__user_password_update__'),
+        passwordDialog
+    );
+
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post[0])), {
+        url: '/api/update-user-password.php',
+        data: {
+            id: 17,
+            password: 'new-password',
+            passwordConfirm: 'new-password'
+        }
+    });
+    assert.equal(passwordDialog.closed, true);
+    assert.equal(parentButton.stopSpinCount, 1);
+    assert.equal(editDialog.buttonsEnabled, true);
+    assert.equal(editDialog.closable, true);
+});
+
+test('user password failures stay visible and restore nested dialog controls', () => {
+    const {context, environment} = createContext();
+    context.editUser(sampleUser());
+
+    const editConfig = environment.dialogs[0];
+    const editDialog = environment.createDialog();
+    const parentButton = environment.createButton('__user_password_failure_parent__');
+    dialogButton(editConfig, 'user-update-password-btn').action.call(parentButton, editDialog);
+
+    const passwordConfig = environment.dialogs[1];
+    const passwordDialog = environment.createDialog();
+    const updateButton = environment.createButton('__user_password_failure_update__');
+    const modal = environment.element('__user_password_failure_modal__');
+    updateButton.closestResult = modal;
+    environment.queuePost('/api/update-user-password.php', {
+        type: 'failure',
+        xhr: {responseText: 'Passwords do not match'}
+    });
+
+    passwordConfig.buttons[0].action.call(updateButton, passwordDialog);
+
+    assert.match(
+        modal.find('.bootstrap-dialog-body').appended.join(''),
+        /Passwords do not match/
+    );
+    assert.equal(passwordDialog.closed, false);
+    assert.equal(updateButton.stopSpinCount, 1);
+    assert.equal(passwordDialog.buttonsEnabled, true);
+    assert.equal(passwordDialog.closable, true);
+});
+
+test('user deletion failures keep confirmation open so the error remains visible', () => {
+    const {context, environment} = createContext();
+    context.editUser(sampleUser());
+
+    const editConfig = environment.dialogs[0];
+    const editDialog = environment.createDialog();
+    dialogButton(editConfig, 'user-delete-btn').action.call(
+        environment.createButton('__user_delete_failure_parent__'),
+        editDialog
+    );
+
+    const confirmConfig = environment.dialogs[1];
+    const confirmDialog = environment.createDialog();
+    const confirmButton = environment.createButton('__user_delete_failure_confirm__');
+    const modal = environment.element('__user_delete_failure_modal__');
+    confirmButton.closestResult = modal;
+    environment.queuePost('/api/delete-user.php', {
+        type: 'failure',
+        xhr: {responseText: 'User still owns protected content'}
+    });
+
+    confirmConfig.buttons[0].action.call(confirmButton, confirmDialog);
+
+    assert.match(
+        modal.find('.bootstrap-dialog-body').appended.join(''),
+        /User still owns protected content/
+    );
+    assert.equal(confirmDialog.closed, false);
+    assert.equal(editDialog.closed, false);
+    assert.equal(confirmButton.stopSpinCount, 1);
+    assert.equal(confirmDialog.buttonsEnabled, true);
+    assert.equal(confirmDialog.closable, true);
+});
+
+test('edit user dialog hides controls that do not apply to admin and new users', () => {
+    for (const [user, removed] of [
+        [sampleUser({role: 'admin'}), ['#user-albums-btn', '#user-save-btn']],
+        [null, ['#user-albums-btn', '#user-update-password-btn', '#user-delete-btn', '#user-update-btn']]
+    ]) {
+        const {context, environment} = createContext();
+        context.editUser(user);
+        const config = environment.dialogs[0];
+        const dialog = environment.createDialog();
+
+        config.onshow(dialog);
+
+        for (const selector of removed) {
+            assert.equal(dialog.$modalFooter.find(selector).removed, true, selector);
+        }
+    }
+});
