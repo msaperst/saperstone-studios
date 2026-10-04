@@ -431,6 +431,50 @@ class BlogAdminFeatureContext implements Context {
     }
 
     /**
+     * @When /^I try to schedule the blog administration draft in the past$/
+     */
+    public function iTryToScheduleTheBlogAdministrationDraftInThePast(): void {
+        $button = WebDriverBy::id('schedule-saved-post');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $this->driver->findElement($button)->click();
+
+        $date = WebDriverBy::id('post-publish-date');
+        $time = WebDriverBy::id('post-publish-time');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($date));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($time));
+
+        $this->setElementValue('post-publish-date', '2020-01-01');
+        $this->setElementValue('post-publish-time', '08:00');
+
+        $schedule = WebDriverBy::xpath(
+            "//div[contains(@class,'bootstrap-dialog') and contains(@class,'modal') and contains(@class,'in')]" .
+            "[.//*[@id='post-publish-date'] and .//*[@id='post-publish-time']]" .
+            "//button[contains(@class,'btn-success') and contains(normalize-space(.),'Schedule')]"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($schedule));
+        $this->driver->findElement($schedule)->click();
+    }
+
+    /**
+     * @Then /^the blog administration scheduling dialog remains usable$/
+     */
+    public function theBlogAdministrationSchedulingDialogRemainsUsable(): void {
+        $dialog = WebDriverBy::xpath(
+            "//div[contains(@class,'bootstrap-dialog') and contains(@class,'modal') and contains(@class,'in')]" .
+            "[.//*[@id='post-publish-date'] and .//*[@id='post-publish-time']]"
+        );
+        $schedule = WebDriverBy::xpath(
+            "//div[contains(@class,'bootstrap-dialog') and contains(@class,'modal') and contains(@class,'in')]" .
+            "[.//*[@id='post-publish-date'] and .//*[@id='post-publish-time']]" .
+            "//button[contains(@class,'btn-success') and contains(normalize-space(.),'Schedule')]"
+        );
+
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($dialog));
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($schedule));
+        Assert::assertTrue($this->driver->findElement($schedule)->isEnabled());
+    }
+
+    /**
      * @When /^I publish the blog administration draft$/
      */
     public function iPublishTheBlogAdministrationDraft(): void {
