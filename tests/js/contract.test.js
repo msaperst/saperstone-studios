@@ -61,7 +61,7 @@ test('contract submit stops before posting when required signing data is incompl
 
     context.submitContract();
 
-    assert.equal(environment.dialogs.length, 0);
+    assert.deepEqual(environment.alerts, ['Please finish signing the contract before submitting.']);
     assert.equal(environment.calls.post.length, 0);
 });
 
