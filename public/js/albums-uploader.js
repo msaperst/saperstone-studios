@@ -85,6 +85,7 @@ function editAlbum(id) {
                             cssClass: 'btn-danger',
                             action: function (dialogInItself) {
                                 var $button = this;
+                                var modal = $button.closest('.modal-content');
                                 $button.spin();
                                 dialogInItself.enableButtons(false);
                                 dialogInItself.setClosable(false);
