@@ -146,7 +146,10 @@ test('contract preview captures contact details and replaces signatures with ren
     assert.equal(inputs.email, 'signer@example.com');
     assert.equal(inputs.signature, 'signature-data');
     assert.equal(inputs.initial, 'signature-data');
-    assert.match(String(environment.element('#contract-signature-holder').html()), /MockElement|object/i);
+    const signatureImage = environment.element('#contract-signature-holder').html();
+    const initialImage = environment.element('#contract-initial-holder').html();
+    assert.equal(signatureImage.attr('src'), 'data:image/svg+xml;base64,abc');
+    assert.equal(initialImage.attr('src'), 'data:image/svg+xml;base64,abc');
     assert.equal(environment.element('#contract-signature-holder').hasClass('signature-holder'), false);
     assert.equal(environment.element('#contract-initial-holder').hasClass('signature-holder'), false);
 });
