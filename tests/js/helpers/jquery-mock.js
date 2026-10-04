@@ -515,6 +515,7 @@ function createJQueryEnvironment(options = {}) {
         post: new Map()
     };
     const dialogs = [];
+    const alerts = [];
     const timeouts = [];
     const intervals = [];
     const readyCallbacks = [];
@@ -652,6 +653,9 @@ function createJQueryEnvironment(options = {}) {
         show(config) {
             dialogs.push(config);
             return createDialog();
+        },
+        alert(message) {
+            alerts.push(message);
         }
     };
 
@@ -708,6 +712,7 @@ function createJQueryEnvironment(options = {}) {
         elements,
         calls,
         dialogs,
+        alerts,
         dataTable: {
             config: null,
             instance: dataTableInstance
