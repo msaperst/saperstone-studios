@@ -122,8 +122,8 @@ test('site consent removes the legacy CookieShow marker when initializing', () =
 test('site consent accept persists selected preferences and immediately enables remember-me controls', () => {
     const {body, calls, environment} = createConsentContext(null);
     let preferenceEvent = null;
-    environment.element('__document__').on('cookiePreferencesChanged', (preferences) => {
-        preferenceEvent = preferences;
+    environment.element('__document__').on('cookiePreferencesChanged', (eventData) => {
+        preferenceEvent = eventData[0];
     });
 
     body.bsgdprcookies();
