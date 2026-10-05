@@ -183,7 +183,7 @@ class SiteImageAdminFeatureContext implements Context {
     public function iSeeTheFirstSiteImageReadyToSave(string $section): void {
         $this->assertSiteImageReadyToSave(
             $section,
-            '/b-nai-mitzvah/img/tmp_details.jpg'
+            'img/tmp_details.jpg'
         );
     }
 
