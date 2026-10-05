@@ -227,7 +227,7 @@ class LoginFeatureContext implements Context {
      */
     public function iLogout() {
         $login = new Login($this->driver, $this->wait);
-        $login->logout($this->user->getUsername());
+        $login->logout();
     }
 
     /**
