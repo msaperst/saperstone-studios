@@ -181,6 +181,8 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Get UT Coverage
         uses: actions/download-artifact@v8
