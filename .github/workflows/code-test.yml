@@ -152,7 +152,26 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Script Test 🤞
-        run: python3 -m unittest discover -s tests/scripts -p 'test_*.py'
+        run: |
+          python3 .github/scripts/unittest-junit.py \
+            --start-directory tests/scripts \
+            --pattern 'test_*.py' \
+            --junit reports/script-junit.xml
+
+      - name: Script Test Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/test-summary.py \
+            --title "Script Tests" \
+            --junit reports/script-junit.xml | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Script Test Report 📊
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: script-test-report
+          path: reports/script-junit.xml
+          if-no-files-found: warn
 
   sonar:
     name: SonarCloud

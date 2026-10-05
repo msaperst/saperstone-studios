@@ -1,4 +1,5 @@
 import importlib.util
+import types
 import json
 import tempfile
 import unittest
@@ -17,6 +18,7 @@ def load_script(name, relative_path):
 
 
 test_summary = load_script("test_summary", ".github/scripts/test-summary.py")
+unittest_junit = load_script("unittest_junit", ".github/scripts/unittest-junit.py")
 zap_summary = load_script("zap_summary", ".github/scripts/zap-summary.py")
 
 
@@ -81,6 +83,44 @@ end_of_record
         self.assertAlmostEqual(86.6666667, result["line"])
         self.assertAlmostEqual(66.6666667, result["branch"])
         self.assertAlmostEqual(66.6666667, result["function"])
+
+
+class UnittestJunitScriptTests(unittest.TestCase):
+    def test_write_junit_is_compatible_with_test_summary(self):
+        class DummyTest:
+            def __init__(self, test_id):
+                self.test_id = test_id
+
+            def id(self):
+                return self.test_id
+
+        passing = DummyTest("Example.test_passes")
+        failing = DummyTest("Example.test_fails")
+        skipped = DummyTest("Example.test_skips")
+        result = types.SimpleNamespace(
+            testsRun=3,
+            failures=[(failing, "expected failure details")],
+            errors=[],
+            skipped=[(skipped, "expected skip")],
+            expectedFailures=[],
+            unexpectedSuccesses=[],
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "script-junit.xml"
+            unittest_junit.write_junit(
+                path,
+                [passing, failing, skipped],
+                result,
+                0.25,
+            )
+            parsed = test_summary.parse_junit(path)
+
+        self.assertEqual(3, parsed["total"])
+        self.assertEqual(1, parsed["passed"])
+        self.assertEqual(1, parsed["failed"])
+        self.assertEqual(0, parsed["errors"])
+        self.assertEqual(1, parsed["skipped"])
 
 
 class ZapSummaryScriptTests(unittest.TestCase):

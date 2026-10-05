@@ -28,7 +28,7 @@ The unit job runs `composer unit-test` and publishes JUnit results plus HTML Tes
 
 The integration job creates its test environment, starts the supporting SQL and Mailpit services through the Composer setup command, initializes the database, and runs `composer integration-test`. It also publishes JUnit results plus HTML and coverage artifacts.
 
-The same workflow also runs lightweight Python regression tests for CI/reporting helper scripts under `tests/scripts/`. SonarCloud waits for the unit, integration, JavaScript, and script-test jobs before analysis.
+The same workflow also runs lightweight Python regression tests for CI/reporting helper scripts under `tests/scripts/`. The script-test job writes JUnit XML, adds the same pass/fail/skip summary used by the other test jobs to the GitHub Actions summary, and uploads the JUnit report as an artifact. SonarCloud waits for the unit, integration, JavaScript, and script-test jobs before analysis.
 
 After the PHP and JavaScript jobs complete, their coverage artifacts are combined and sent to SonarCloud for analysis.
 
