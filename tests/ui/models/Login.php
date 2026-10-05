@@ -55,7 +55,7 @@ class Login {
         $this->driver->findElement(WebDriverBy::id('login-submit'))->click();
     }
 
-    public function logout($username) {
+    public function logout() {
         $accountMenu = WebDriverBy::xpath(
             "//li[contains(@class,'dropdown')][.//*[@id='logout-button']]/a[contains(@class,'dropdown-toggle')]"
         );
