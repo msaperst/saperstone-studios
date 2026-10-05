@@ -47,11 +47,11 @@ jobs:
           sarif_file: php-results.sarif
           category: php
 
-      - name: Find fixable high or critical vulnerabilities
+      - name: Generate fixable vulnerability report
         uses: anchore/scan-action@v7
         with:
           image: "saperstone-studios/php:latest"
-          fail-build: true
+          fail-build: false
           severity-cutoff: high
           only-fixed: true
           output-format: sarif
@@ -60,6 +60,7 @@ jobs:
       - name: PHP Container Scan Summary 📊
         if: always()
         run: |
+          set -o pipefail
           python3 .github/scripts/container-scan-summary.py \
             --image "PHP" \
             --all php-results.sarif \
@@ -107,11 +108,11 @@ jobs:
           sarif_file: sql-results.sarif
           category: sql
 
-      - name: Find fixable high or critical vulnerabilities
+      - name: Generate fixable vulnerability report
         uses: anchore/scan-action@v7
         with:
           image: "saperstone-studios/sql:latest"
-          fail-build: true
+          fail-build: false
           severity-cutoff: high
           only-fixed: true
           output-format: sarif
@@ -120,6 +121,7 @@ jobs:
       - name: SQL Container Scan Summary 📊
         if: always()
         run: |
+          set -o pipefail
           python3 .github/scripts/container-scan-summary.py \
             --image "SQL" \
             --all sql-results.sarif \

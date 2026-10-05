@@ -31,9 +31,22 @@ def normalize_severity(value):
     return severity if severity in SEVERITIES else None
 
 
+def severity_from_text(value):
+    match = re.search(
+        r"\b(critical|high|medium|low|negligible|unknown)\s+vulnerability\b",
+        str(value or ""),
+        re.I,
+    )
+    return match.group(1).lower() if match else None
+
+
 def severity_from_tags(tags):
     for tag in tags or []:
-        match = re.search(r"(?:severity[:=]?)?\s*(critical|high|medium|low|negligible)", str(tag), re.I)
+        match = re.search(
+            r"(?:severity[:=]?)?\s*(critical|high|medium|low|negligible)",
+            str(tag),
+            re.I,
+        )
         if match:
             return match.group(1).lower()
     return None
@@ -44,10 +57,26 @@ def result_severity(result, rule):
         severity = normalize_severity(properties.get("severity"))
         if severity:
             return severity
-        severity = severity_from_score(properties.get("security-severity"))
+
+    for text in (
+        result.get("message", {}).get("text"),
+        rule.get("shortDescription", {}).get("text"),
+        rule.get("fullDescription", {}).get("text"),
+    ):
+        severity = severity_from_text(text)
         if severity:
             return severity
+
+    for properties in (result.get("properties", {}), rule.get("properties", {})):
         severity = severity_from_tags(properties.get("tags"))
+        if severity:
+            return severity
+
+    # Generic SARIF producers may expose only a numeric security score. Grype
+    # also emits this field, but its distro-aware severity is present in the
+    # result/rule text above and takes precedence.
+    for properties in (result.get("properties", {}), rule.get("properties", {})):
+        severity = severity_from_score(properties.get("security-severity"))
         if severity:
             return severity
 
@@ -92,6 +121,10 @@ def severity_counts(findings):
     return Counter(item["severity"] for item in findings)
 
 
+def has_fixable_findings(findings):
+    return bool(findings)
+
+
 def write_summary(image_name, all_findings, fixable_findings):
     all_counts = severity_counts(all_findings)
     fixable_counts = severity_counts(fixable_findings)
@@ -108,22 +141,17 @@ def write_summary(image_name, all_findings, fixable_findings):
         f"| Total | **{len(all_findings)}** | **{len(fixable_findings)}** |"
     )
 
-    blocking = [
-        finding
-        for finding in fixable_findings
-        if finding["severity"] in {"critical", "high"}
-    ]
-    if blocking:
-        print("\n### Fixable High/Critical findings\n")
-        for finding in blocking[:20]:
+    if fixable_findings:
+        print("\n### Fixable findings\n")
+        for finding in fixable_findings[:20]:
             print(
                 f"- **{finding['severity'].capitalize()}** — "
                 f"`{finding['rule_id']}` — {finding['description']}"
             )
-        if len(blocking) > 20:
-            print(f"- …and {len(blocking) - 20} more")
+        if len(fixable_findings) > 20:
+            print(f"- …and {len(fixable_findings) - 20} more")
     else:
-        print("\nNo fixable High or Critical vulnerabilities were reported.")
+        print("\nNo fixable vulnerabilities were reported.")
 
     fixable_keys = {
         (item["rule_id"], item["description"]) for item in fixable_findings
@@ -146,7 +174,11 @@ def write_summary(image_name, all_findings, fixable_findings):
             print(f"- …and {len(unresolved) - 20} more")
         print("\n</details>")
 
-    print("\n**Merge gate:** only fixable High or Critical vulnerabilities fail the container scan. The complete report remains visible for risk review and future remediation.")
+    print(
+        "\n**Merge gate:** any vulnerability with an available fix fails "
+        "the container scan. Findings without a current fix remain visible "
+        "for risk review and future remediation."
+    )
 
 
 def main():
@@ -165,7 +197,7 @@ def main():
         return 2
 
     write_summary(args.image, all_findings, fixable_findings)
-    return 0
+    return 1 if has_fixable_findings(fixable_findings) else 0
 
 
 if __name__ == "__main__":

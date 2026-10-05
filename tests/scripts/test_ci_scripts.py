@@ -234,7 +234,7 @@ class UnittestJunitScriptTests(unittest.TestCase):
 
 
 class ContainerScanSummaryScriptTests(unittest.TestCase):
-    def test_parse_sarif_uses_security_score_and_tags(self):
+    def test_parse_sarif_prefers_grype_severity_over_security_score(self):
         sarif = {
             "runs": [
                 {
@@ -242,21 +242,37 @@ class ContainerScanSummaryScriptTests(unittest.TestCase):
                         "driver": {
                             "rules": [
                                 {
-                                    "id": "CVE-critical",
-                                    "shortDescription": {"text": "Critical issue"},
-                                    "properties": {"security-severity": "9.8"},
+                                    "id": "ELSA-medium",
+                                    "shortDescription": {
+                                        "text": "ELSA medium vulnerability for openssl package"
+                                    },
+                                    "properties": {"security-severity": "9.1"},
                                 },
                                 {
-                                    "id": "CVE-medium",
-                                    "shortDescription": {"text": "Medium issue"},
-                                    "properties": {"tags": ["severity: medium"]},
+                                    "id": "CVE-low",
+                                    "shortDescription": {
+                                        "text": "CVE low vulnerability for package"
+                                    },
+                                    "properties": {"security-severity": "3.3"},
                                 },
                             ]
                         }
                     },
                     "results": [
-                        {"ruleId": "CVE-critical", "level": "error"},
-                        {"ruleId": "CVE-medium", "level": "warning"},
+                        {
+                            "ruleId": "ELSA-medium",
+                            "level": "warning",
+                            "message": {
+                                "text": "A medium vulnerability in rpm package: openssl"
+                            },
+                        },
+                        {
+                            "ruleId": "CVE-low",
+                            "level": "note",
+                            "message": {
+                                "text": "A low vulnerability in go-module package"
+                            },
+                        },
                     ],
                 }
             ]
@@ -267,9 +283,47 @@ class ContainerScanSummaryScriptTests(unittest.TestCase):
             path.write_text(json.dumps(sarif), encoding="utf-8")
             findings = container_scan_summary.parse_sarif(path)
 
+        self.assertEqual("medium", findings[0]["severity"])
+        self.assertEqual(
+            "A medium vulnerability in rpm package: openssl",
+            findings[0]["description"],
+        )
+        self.assertEqual("low", findings[1]["severity"])
+
+    def test_security_score_is_fallback_when_no_explicit_severity_exists(self):
+        sarif = {
+            "runs": [
+                {
+                    "tool": {
+                        "driver": {
+                            "rules": [
+                                {
+                                    "id": "generic",
+                                    "shortDescription": {"text": "Generic issue"},
+                                    "properties": {"security-severity": "9.8"},
+                                }
+                            ]
+                        }
+                    },
+                    "results": [{"ruleId": "generic", "level": "error"}],
+                }
+            ]
+        }
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "scan.sarif"
+            path.write_text(json.dumps(sarif), encoding="utf-8")
+            findings = container_scan_summary.parse_sarif(path)
+
         self.assertEqual("critical", findings[0]["severity"])
-        self.assertEqual("x", findings[0]["description"])
-        self.assertEqual("medium", findings[1]["severity"])
+
+    def test_any_fixable_finding_blocks_the_container_gate(self):
+        self.assertFalse(container_scan_summary.has_fixable_findings([]))
+        self.assertTrue(
+            container_scan_summary.has_fixable_findings(
+                [{"severity": "low", "rule_id": "CVE-low", "description": "Low"}]
+            )
+        )
 
     def test_severity_counts_include_fixable_findings(self):
         findings = [
