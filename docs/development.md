@@ -101,6 +101,8 @@ docker compose up --build -d
 
 The local Compose file includes MySQL, PHP, phpMyAdmin, and Mailpit. Application source directories are bind-mounted into the PHP container, so edits to PHP, JavaScript, CSS, templates, and scripts are visible immediately without rebuilding or restarting the container. Rebuild only when container dependencies or Docker configuration change.
 
+Local Compose runs `bin/prepare-local-content.sh` before Apache starts. The script creates the content directories used by site-image, album, blog, and contract uploads and makes those bind-mounted directories writable by the local Apache process. This is intentionally a local-development setup step; `docker-compose.prod.yml` is unchanged and production continues to use the permissions of its existing `/mnt/server-data` content volume. This also means a fresh checkout can accept the first image upload for a section whose content directory did not previously exist.
+
 Production uses `docker-compose.prod.yml`, which contains only MySQL and PHP and consumes the prebuilt GHCR images. The production PHP image generates minified siblings for first-party JavaScript and CSS during its Docker build. `Strings::assetUrl()` automatically serves the generated `.min.js` or `.min.css` file when present, while local development falls back to the readable source file.
 
 ## Testing
