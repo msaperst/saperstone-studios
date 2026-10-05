@@ -20,14 +20,14 @@ Use the least expensive, most deterministic layer that proves the behavior:
 - **Integration:** database, filesystem, configuration, and multi-component behavior.
 - **API:** real endpoint contracts including methods, auth/authz, CSRF, validation, errors, status/body/headers, and side effects.
 - **Page/HTTP:** pages, navigation, access rules, redirects, forms, rendered content, and server behavior that does not require JavaScript.
-- **Jest:** JavaScript/DOM behavior, AJAX success/failure, galleries, lazy loading, favorites, downloads, cookies, errors, and state transitions.
+- **JavaScript (`node:test`):** DOM behavior, AJAX success/failure, galleries, lazy loading, favorites, downloads, cookies, errors, and state transitions.
 - **Behat:** important real-browser/user workflows requiring JavaScript or multi-step interaction.
 
 Avoid expensive Behat coverage when a lower-level test proves the same behavior reliably.
 
 ### New features and regression coverage
 
-Every new feature requires appropriate automated tests. At minimum, add unit tests for testable logic, API/integration/Jest coverage where applicable, and **new or updated Page/HTTP and/or Behat tests for user-facing behavior**. New pages need Page/HTTP coverage; important interactive workflows need Behat coverage.
+Every new feature requires appropriate automated tests. At minimum, add unit tests for testable logic, API/integration/JavaScript coverage where applicable, and **new or updated Page/HTTP and/or Behat tests for user-facing behavior**. New pages need Page/HTTP coverage; important interactive workflows need Behat coverage.
 
 Do not test only happy paths. Consider failures, malformed or missing input, boundaries, authentication/authorization, guest/user/admin differences, CSRF, HTTP methods, empty states, transitions, AJAX/network failures, side effects, and security behavior.
 
@@ -92,6 +92,21 @@ composer coverage-test
 ```
 
 This runs the unit and integration suites and merges their Clover coverage output.
+
+## JavaScript tests
+
+Run the first-party JavaScript unit/DOM suite with:
+
+```bash
+bash bin/test-js.sh
+```
+
+The suite uses Node's built-in `node:test` runner and generates:
+
+- JUnit: `reports/js-junit.xml`
+- LCOV: `reports/js-lcov.info`
+
+Coverage includes first-party files under `public/js/` and excludes the vendored jQuery validation/form/upload helpers configured in `bin/test-js.sh` and `sonar-project.properties`.
 
 ## Script tests
 
@@ -186,6 +201,7 @@ Keep lower-layer verification in the appropriate suite. Behat may overlap with J
 | Integration | `composer integration-test` |
 | Integration cleanup | `composer integration-post-test` |
 | Combined coverage | `composer coverage-test` |
+| JavaScript | `bash bin/test-js.sh` |
 | CI/script helpers | `python3 -m unittest discover -s tests/scripts -p 'test_*.py'` |
 | API | `composer api-test` |
 | HTTP page tests | `composer http-page-test` |
