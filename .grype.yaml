@@ -15,3 +15,67 @@ ignore:
     package:
       name: gnutls
       type: rpm
+
+  # Grype also reports these standard Oracle Linux 9 packages as fixable by
+  # alternate epoch-10 FIPS-stream packages. They are the same cross-stream
+  # false-positive class as the exceptions above.
+  - vulnerability: ELSA-2024-12675
+    package:
+      name: openssl
+      type: rpm
+  - vulnerability: ELSA-2024-12675
+    package:
+      name: openssl-libs
+      type: rpm
+  - vulnerability: ELSA-2024-12336
+    package:
+      name: gnutls
+      type: rpm
+  - vulnerability: ELSA-2025-28011
+    package:
+      name: openssl
+      type: rpm
+  - vulnerability: ELSA-2025-28011
+    package:
+      name: openssl-libs
+      type: rpm
+  - vulnerability: ELSA-2025-20606
+    package:
+      name: gnutls
+      type: rpm
+  - vulnerability: ELSA-2026-50379
+    package:
+      name: openssl
+      type: rpm
+  - vulnerability: ELSA-2026-50379
+    package:
+      name: openssl-libs
+      type: rpm
+  - vulnerability: ELSA-2026-50345
+    package:
+      name: openssl
+      type: rpm
+  - vulnerability: ELSA-2026-50345
+    package:
+      name: openssl-libs
+      type: rpm
+  - vulnerability: ELSA-2024-12364
+    package:
+      name: gnutls
+      type: rpm
+  - vulnerability: ELSA-2026-50149
+    package:
+      name: gnutls
+      type: rpm
+  - vulnerability: ELSA-2026-500145
+    package:
+      name: libgcrypt
+      type: rpm
+
+  # GO-2026-5024 affects golang.org/x/sys/windows NewNTUnicodeString. This gosu
+  # binary is built for the Linux SQL image, so the vulnerable symbol is not
+  # present/reachable even though Grype sees the module version in the binary.
+  - vulnerability: GO-2026-5024
+    package:
+      name: golang.org/x/sys
+      type: go-module
