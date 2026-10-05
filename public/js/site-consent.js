@@ -216,7 +216,7 @@
     $.fn.bsgdprcookies.PreferenceExists = function (pref) {
         var preferences = $.fn.bsgdprcookies.GetUserPreferences();
 
-        if (preferences === false || preferences.indexOf(pref) === -1) {
+        if (preferences.indexOf(pref) === -1) {
             return false;
         }
 
