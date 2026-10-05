@@ -54,8 +54,8 @@ class UpdateGalleryImageTest extends TestCase {
         $count++;
         $this->sql->executeStatement("ALTER TABLE `gallery_images` AUTO_INCREMENT = $count;");
         system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample'));
-        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
-        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/x 5 &.jpg'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/x.jpg'));
+        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/x +5, &.jpg'));
         @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/gallery-security.jpg');
         $this->sql->disconnect();
     }
@@ -341,10 +341,7 @@ class UpdateGalleryImageTest extends TestCase {
         ));
     }
 
-    /**
-     * @throws GuzzleException
-     */
-    public function testUpdateSimple() {
+    public function testRejectsRenameToDifferentDirectory(): void {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
         ], getenv('DB_HOST'));
@@ -357,6 +354,34 @@ class UpdateGalleryImageTest extends TestCase {
             ],
             'cookies' => $cookieJar
         ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Filename is not valid', (string)$response->getBody());
+        $image = $this->sql->getRow(
+            "SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 998;"
+        );
+        $this->assertEquals('/portrait/img/sample/sample1.jpg', $image['location']);
+        $this->assertTrue(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/sample1.jpg'
+        ));
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public function testUpdateSimple() {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/update-gallery-image.php', [
+            'form_params' => [
+                'gallery' => 999,
+                'image' => 998,
+                'title' => 'sample',
+                'filename' => '/portrait/img/sample/x.jpg'
+            ],
+            'cookies' => $cookieJar
+        ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
         $image = $this->sql->getRow("SELECT * FROM `gallery_images` WHERE `gallery_images`.`id` = 998;");
@@ -365,11 +390,11 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals('sample', $image['title']);
         $this->assertEquals(0, $image['sequence']);
         $this->assertEquals('', $image['caption']);
-        $this->assertEquals('/portrait/img/x.jpg', $image['location']);
+        $this->assertEquals('/portrait/img/sample/x.jpg', $image['location']);
         $this->assertEquals(300, $image['width']);
         $this->assertEquals(400, $image['height']);
         $this->assertEquals(1, $image['active']);
-        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/x.jpg'));
+        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/x.jpg'));
     }
 
     /**
@@ -385,7 +410,7 @@ class UpdateGalleryImageTest extends TestCase {
                 'image' => 998,
                 'title' => '"\'123$!?',
                 'caption' => 'I like dirt',
-                'filename' => '/portrait/img/x 5 &.jpg'
+                'filename' => '/portrait/img/sample/x +5, &.jpg'
             ],
             'cookies' => $cookieJar
         ]);
@@ -397,11 +422,11 @@ class UpdateGalleryImageTest extends TestCase {
         $this->assertEquals('"\'123$!?', $image['title']);
         $this->assertEquals(0, $image['sequence']);
         $this->assertEquals('I like dirt', $image['caption']);
-        $this->assertEquals('/portrait/img/x 5 &.jpg', $image['location']);
+        $this->assertEquals('/portrait/img/sample/x +5, &.jpg', $image['location']);
         $this->assertEquals(300, $image['width']);
         $this->assertEquals(400, $image['height']);
         $this->assertEquals(1, $image['active']);
-        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/x 5 &.jpg'));
+        $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/portrait/sample/x +5, &.jpg'));
     }
 
     /**
@@ -416,7 +441,7 @@ class UpdateGalleryImageTest extends TestCase {
                 'gallery' => 999,
                 'image' => 999,
                 'title' => 'sample',
-                'filename' => 'img/x.jpg'
+                'filename' => 'img/sample/x.jpg'
             ],
             'cookies' => $cookieJar
         ]);
