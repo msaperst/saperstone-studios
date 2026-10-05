@@ -44,9 +44,7 @@ Representative runtimes below are from the successful October 5, 2026 PR run and
 
 The production-image workflow runs only after a push reaches `develop`. Its PHP and SQL builds are a deployment gate rather than a pull-request merge gate; production polling should deploy only successfully built images.
 
-The repository ruleset should mirror this policy. The October 5, 2026 audit found that all of the intended Actions checks above were required except **Behat Testing**. The ruleset should add `Behat Testing` as a required status check.
-
-The ruleset also currently requires the SARIF-generated `dependency-check` code-scanning status in addition to the `SCA` job. The SCA job now owns the dependency severity gate and still publishes SARIF for GitHub Security visibility, so the extra `dependency-check` required status is redundant once the new Composer audit has completed successfully in CI. Remove that legacy required status after validating this workflow change. CodeQL's workflow and code-scanning statuses remain intentionally required because CodeQL does not implement a separate severity gate in repository scripts.
+The repository ruleset mirrors this policy. Behat is required as a browser-level merge gate. Composer dependency severity is enforced by the `SCA` GitHub Actions job; the separate SARIF upload remains available in GitHub Security under the `composer-audit` tool identity but is not a required status check. SonarQube Cloud's `SonarCloud Code Analysis` status is the required Sonar quality gate. CodeQL's workflow and code-scanning statuses remain intentionally required because CodeQL does not implement a separate severity gate in repository scripts.
 
 External required checks such as GitGuardian remain part of the repository ruleset even though they are not defined in this repository's workflow YAML.
 
@@ -88,7 +86,7 @@ Browser/JavaScript workflows belong in Behat; page behavior that can be verified
 
 ### Dependency analysis
 
-`.github/workflows/dependency-checks.yml` runs Composer's native security audit against the locked PHP dependency graph on pull requests and weekly. The job summary reports the number of locked dependencies audited, advisory counts by severity, and abandoned packages. Critical or High advisories fail the SCA job; Medium/Low advisories and abandoned packages remain visible for review. The audit is converted to SARIF for GitHub Security visibility and the JSON/SARIF reports are retained as workflow artifacts.
+`.github/workflows/software-composition-analysis.yml` runs Composer's native security audit against the locked PHP dependency graph on pull requests and weekly. The job summary reports the number of locked dependencies audited, advisory counts by severity, and abandoned packages. Critical or High advisories fail the SCA job; Medium/Low advisories and abandoned packages remain visible for review. The audit is converted to SARIF for GitHub Security visibility and the JSON/SARIF reports are retained as workflow artifacts.
 
 ### Container scanning
 

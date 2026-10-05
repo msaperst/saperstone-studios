@@ -171,7 +171,7 @@ class ComposerAuditSummaryScriptTests(unittest.TestCase):
 
         self.assertEqual(2, composer_audit_summary.dependency_count(lock))
 
-    def test_sarif_keeps_existing_dependency_check_tool_identity(self):
+    def test_sarif_uses_composer_audit_tool_identity(self):
         advisories = composer_audit_summary.flatten_advisories(
             {
                 "advisories": {
@@ -190,7 +190,7 @@ class ComposerAuditSummaryScriptTests(unittest.TestCase):
         sarif = composer_audit_summary.build_sarif(advisories)
         run = sarif["runs"][0]
 
-        self.assertEqual("dependency-check", run["tool"]["driver"]["name"])
+        self.assertEqual("composer-audit", run["tool"]["driver"]["name"])
         self.assertEqual("9.5", run["tool"]["driver"]["rules"][0]["properties"]["security-severity"])
         self.assertEqual("error", run["results"][0]["level"])
 

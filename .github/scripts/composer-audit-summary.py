@@ -139,9 +139,7 @@ def build_sarif(advisories):
             {
                 "tool": {
                     "driver": {
-                        # Keep the existing tool identity so GitHub's current
-                        # dependency-check code-scanning check remains stable.
-                        "name": "dependency-check",
+                        "name": "composer-audit",
                         "informationUri": "https://getcomposer.org/doc/03-cli.md#audit",
                         "rules": rules,
                     }
