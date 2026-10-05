@@ -20,6 +20,7 @@ class UploadImageTest extends TestCase {
         @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_portraits.jpg');
         @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/main/tmp_security-test.jpg');
         @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/tmp_security-test.jpg');
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/b-nai-mitzvah/tmp_details.jpg');
     }
 
     public function testNotLoggedIn() {
@@ -204,6 +205,48 @@ class UploadImageTest extends TestCase {
         $this->assertFalse(file_exists(
             dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/tmp_security-test.jpg'
         ));
+    }
+
+    public function testSingleFileToPreviouslyEmptySiteSection(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $destinationDirectory = dirname(__DIR__, 2)
+            . DIRECTORY_SEPARATOR . 'content/b-nai-mitzvah';
+        $this->assertTrue(is_dir($destinationDirectory));
+        $this->assertTrue(
+            is_writable($destinationDirectory),
+            'Fresh local content directory must be writable by the application'
+        );
+
+        $response = $this->http->request('POST', 'api/upload-image.php', [
+            'multipart' => [
+                [
+                    'name' => 'location',
+                    'contents' => '../b-nai-mitzvah/img/details.jpg',
+                ],
+                [
+                    'name' => 'min-width',
+                    'contents' => '400',
+                ],
+                [
+                    'name' => 'myfile',
+                    'contents' => fopen(dirname(__DIR__) . '/resources/flower.jpeg', 'r'),
+                    'filename' => 'flower.jpeg',
+                    'headers' => ['Content-Type:' => 'image/jpeg']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('', (string)$response->getBody());
+
+        $uploaded = $destinationDirectory . DIRECTORY_SEPARATOR . 'tmp_details.jpg';
+        $this->assertTrue(file_exists($uploaded));
+        $size = getimagesize($uploaded);
+        $this->assertEquals(1600, $size[0]);
+        $this->assertEquals(1200, $size[1]);
     }
 
     public function testSingleFile() {

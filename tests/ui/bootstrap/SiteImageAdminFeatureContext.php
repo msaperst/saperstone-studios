@@ -34,7 +34,7 @@ class SiteImageAdminFeatureContext implements Context {
      * @AfterScenario
      */
     public function restoreSiteImage(): void {
-        if ($this->imagePath === null || $this->backupPath === null) {
+        if ($this->imagePath === null) {
             return;
         }
 
@@ -47,13 +47,16 @@ class SiteImageAdminFeatureContext implements Context {
             throw new RuntimeException("Unable to remove edited site image {$this->imagePath}");
         }
 
-        if (!copy($this->backupPath, $this->imagePath)) {
-            throw new RuntimeException("Unable to restore site image {$this->imagePath}");
-        }
-        if (!unlink($this->backupPath)) {
-            throw new RuntimeException("Unable to remove site image backup {$this->backupPath}");
+        if ($this->backupPath !== null) {
+            if (!copy($this->backupPath, $this->imagePath)) {
+                throw new RuntimeException("Unable to restore site image {$this->imagePath}");
+            }
+            if (!unlink($this->backupPath)) {
+                throw new RuntimeException("Unable to remove site image backup {$this->backupPath}");
+            }
         }
 
+        $this->imagePath = null;
         $this->backupPath = null;
     }
 
@@ -82,6 +85,45 @@ class SiteImageAdminFeatureContext implements Context {
     }
 
     /**
+     * @Given /^the B'nai Mitzvah "([^"]*)" site image has not been uploaded yet$/
+     */
+    public function theBnaiMitzvahSiteImageHasNotBeenUploadedYet(string $section): void {
+        Assert::assertSame('Details', $section);
+
+        $this->imagePath = dirname(__DIR__, 3)
+            . DIRECTORY_SEPARATOR . 'content'
+            . DIRECTORY_SEPARATOR . 'b-nai-mitzvah'
+            . DIRECTORY_SEPARATOR . 'details.jpg';
+        $this->backupPath = null;
+
+        $directory = dirname($this->imagePath);
+        Assert::assertDirectoryExists(
+            $directory,
+            'Local content setup did not create the B\'nai Mitzvah content directory'
+        );
+        Assert::assertTrue(
+            is_writable($directory),
+            'B\'nai Mitzvah content directory is not writable by the test application'
+        );
+
+        $temporaryImage = $directory . DIRECTORY_SEPARATOR . 'tmp_' . basename($this->imagePath);
+        if (is_file($temporaryImage) && !unlink($temporaryImage)) {
+            throw new RuntimeException("Unable to remove stale temporary site image $temporaryImage");
+        }
+
+        if (is_file($this->imagePath)) {
+            $backup = tempnam(sys_get_temp_dir(), 'site-image-admin-');
+            if ($backup === false || !copy($this->imagePath, $backup)) {
+                throw new RuntimeException('Unable to back up the existing B\'nai Mitzvah Details image');
+            }
+            $this->backupPath = $backup;
+            if (!unlink($this->imagePath)) {
+                throw new RuntimeException("Unable to remove existing site image {$this->imagePath}");
+            }
+        }
+    }
+
+    /**
      * @Then /^I see an edit control for the "([^"]*)" site image$/
      */
     public function iSeeAnEditControlForTheSiteImage(string $section): void {
@@ -106,6 +148,13 @@ class SiteImageAdminFeatureContext implements Context {
     }
 
     /**
+     * @When /^I upload "([^"]*)" for the first "([^"]*)" site image$/
+     */
+    public function iUploadForTheFirstSiteImage(string $fileName, string $section): void {
+        $this->selectUploadFixture($fileName, $section);
+    }
+
+    /**
      * @When /^I try to upload "([^"]*)" for the "([^"]*)" site image$/
      */
     public function iTryToUploadForTheSiteImage(string $fileName, string $section): void {
@@ -122,17 +171,20 @@ class SiteImageAdminFeatureContext implements Context {
      * @Then /^I see the "([^"]*)" site image ready to save$/
      */
     public function iSeeTheSiteImageReadyToSave(string $section): void {
-        $this->waitForImageReadyToSave($section);
+        $this->assertSiteImageReadyToSave(
+            $section,
+            '/img/main/tmp_portraits.jpg'
+        );
+    }
 
-        $holder = $this->siteImageHolder($section);
-        $image = $this->siteImage($section);
-        Assert::assertSame('/img/main/tmp_portraits.jpg', parse_url((string)$image->getAttribute('src'), PHP_URL_PATH));
-
-        $saveButtons = $holder->findElements(WebDriverBy::cssSelector('.saveme button'));
-        Assert::assertCount(1, $saveButtons);
-        Assert::assertTrue($saveButtons[0]->isDisplayed());
-        Assert::assertStringContainsString('Save This Image', $saveButtons[0]->getText());
-        Assert::assertCount(0, $holder->findElements(WebDriverBy::className('overlay')));
+    /**
+     * @Then /^I see the first "([^"]*)" site image ready to save$/
+     */
+    public function iSeeTheFirstSiteImageReadyToSave(string $section): void {
+        $this->assertSiteImageReadyToSave(
+            $section,
+            '/b-nai-mitzvah/img/tmp_details.jpg'
+        );
     }
 
     /**
@@ -224,11 +276,31 @@ class SiteImageAdminFeatureContext implements Context {
         }
     }
 
-    private function waitForImageReadyToSave(string $section): void {
+    private function assertSiteImageReadyToSave(string $section, string $expectedPath): void {
+        $this->waitForImageReadyToSave($section, $expectedPath);
+
+        $holder = $this->siteImageHolder($section);
+        $image = $this->siteImage($section);
+        Assert::assertSame(
+            $expectedPath,
+            parse_url((string)$image->getAttribute('src'), PHP_URL_PATH)
+        );
+
+        $saveButtons = $holder->findElements(WebDriverBy::cssSelector('.saveme button'));
+        Assert::assertCount(1, $saveButtons);
+        Assert::assertTrue($saveButtons[0]->isDisplayed());
+        Assert::assertStringContainsString('Save This Image', $saveButtons[0]->getText());
+        Assert::assertCount(0, $holder->findElements(WebDriverBy::className('overlay')));
+    }
+
+    private function waitForImageReadyToSave(
+        string $section,
+        string $expectedPath = '/img/main/tmp_portraits.jpg'
+    ): void {
         $holder = $this->siteImageHolder($section);
 
         try {
-            $this->wait->until(function () use ($holder) {
+            $this->wait->until(function () use ($holder, $expectedPath) {
                 $errorDialogs = $this->driver->findElements(
                     WebDriverBy::xpath(
                         "//div[contains(@class, 'bootstrap-dialog')][.//div[contains(@class, 'bootstrap-dialog-title')][normalize-space(.)='Whoops, Something Went Wrong']]"
@@ -243,10 +315,14 @@ class SiteImageAdminFeatureContext implements Context {
 
                 $save = $holder->findElements(WebDriverBy::cssSelector('.saveme button'));
                 $images = $holder->findElements(WebDriverBy::cssSelector('img.img-responsive'));
-                return count($save) === 1
-                    && $save[0]->isDisplayed()
-                    && count($images) === 1
-                    && str_contains((string)$images[0]->getAttribute('src'), '/tmp_portraits.jpg');
+                if (count($save) !== 1 || !$save[0]->isDisplayed() || count($images) !== 1) {
+                    return false;
+                }
+
+                return parse_url(
+                    (string)$images[0]->getAttribute('src'),
+                    PHP_URL_PATH
+                ) === $expectedPath;
             });
         } catch (\Facebook\WebDriver\Exception\TimeoutException $exception) {
             $images = $holder->findElements(WebDriverBy::cssSelector('img.img-responsive'));
