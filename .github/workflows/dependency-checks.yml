@@ -34,6 +34,7 @@ jobs:
       - name: Dependency Audit Summary 📊
         if: always()
         run: |
+          set -o pipefail
           python3 .github/scripts/composer-audit-summary.py \
             --report reports/composer-audit.json \
             --lock composer.lock \

@@ -268,6 +268,7 @@ class ContainerScanSummaryScriptTests(unittest.TestCase):
             findings = container_scan_summary.parse_sarif(path)
 
         self.assertEqual("critical", findings[0]["severity"])
+        self.assertEqual("x", findings[0]["description"])
         self.assertEqual("medium", findings[1]["severity"])
 
     def test_severity_counts_include_fixable_findings(self):

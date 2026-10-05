@@ -73,8 +73,8 @@ def parse_sarif(path):
             rule_id = result.get("ruleId") or "unknown vulnerability"
             rule = rules.get(rule_id, {})
             description = (
-                rule.get("shortDescription", {}).get("text")
-                or result.get("message", {}).get("text")
+                result.get("message", {}).get("text")
+                or rule.get("shortDescription", {}).get("text")
                 or rule_id
             )
             findings.append(
@@ -125,11 +125,14 @@ def write_summary(image_name, all_findings, fixable_findings):
     else:
         print("\nNo fixable High or Critical vulnerabilities were reported.")
 
+    fixable_keys = {
+        (item["rule_id"], item["description"]) for item in fixable_findings
+    }
     unresolved = [
         finding
         for finding in all_findings
         if finding["severity"] in {"critical", "high"}
-        and finding["rule_id"] not in {item["rule_id"] for item in fixable_findings}
+        and (finding["rule_id"], finding["description"]) not in fixable_keys
     ]
     if unresolved:
         print("\n<details>")
