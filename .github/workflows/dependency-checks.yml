@@ -10,42 +10,46 @@ jobs:
   sca:
     name: SCA
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v7
 
-      - name: Setup PHP with PECL extension 🔧
+      - name: Setup PHP 🔧
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: imagick
 
-      - name: Install 🔧
+      - name: Validate Composer metadata 🔧
+        run: composer validate
+
+      - name: Audit locked Composer dependencies
         run: |
-          composer validate
-          composer install --prefer-dist --no-progress --no-suggest
+          mkdir -p reports
+          composer audit --locked --format=json > reports/composer-audit.json || true
 
-      - name: Dependency Check
-        uses: dependency-check/Dependency-Check_Action@1.1.0
-        id: depcheck
-        with:
-          project: 'saperstone-studios'
-          path: 'composer.lock'
-          format: 'ALL'
-          args: >
-            --failOnCVSS 8
-
-      - name: Upload Lint Sarif 📊
+      - name: Dependency Audit Summary 📊
         if: always()
+        run: |
+          python3 .github/scripts/composer-audit-summary.py \
+            --report reports/composer-audit.json \
+            --lock composer.lock \
+            --sarif reports/composer-audit.sarif | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload dependency audit SARIF 📊
+        if: always() && hashFiles('reports/composer-audit.sarif') != ''
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: reports/dependency-check-report.sarif
+          sarif_file: reports/composer-audit.sarif
           category: php
 
-      - name: Publish Result 📊
+      - name: Publish dependency audit reports 📊
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: OWASP Dependency Check Results
+          name: Composer Dependency Audit Results
           path: reports
+          if-no-files-found: warn

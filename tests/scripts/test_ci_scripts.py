@@ -20,6 +20,10 @@ def load_script(name, relative_path):
 test_summary = load_script("test_summary", ".github/scripts/test-summary.py")
 unittest_junit = load_script("unittest_junit", ".github/scripts/unittest-junit.py")
 zap_summary = load_script("zap_summary", ".github/scripts/zap-summary.py")
+composer_audit_summary = load_script(
+    "composer_audit_summary",
+    ".github/scripts/composer-audit-summary.py",
+)
 
 
 class TestSummaryScriptTests(unittest.TestCase):
@@ -83,6 +87,82 @@ end_of_record
         self.assertAlmostEqual(86.6666667, result["line"])
         self.assertAlmostEqual(66.6666667, result["branch"])
         self.assertAlmostEqual(66.6666667, result["function"])
+
+
+class ComposerAuditSummaryScriptTests(unittest.TestCase):
+    def test_flattens_advisories_and_blocks_high_severity(self):
+        report = {
+            "advisories": {
+                "vendor/high": [
+                    {
+                        "advisoryId": "PKSA-high",
+                        "title": "High issue",
+                        "severity": "high",
+                    }
+                ],
+                "vendor/low": [
+                    {
+                        "advisoryId": "PKSA-low",
+                        "title": "Low issue",
+                        "severity": "low",
+                    }
+                ],
+            }
+        }
+
+        advisories = composer_audit_summary.flatten_advisories(report)
+
+        self.assertEqual(2, len(advisories))
+        self.assertEqual("vendor/high", advisories[0]["packageName"])
+        self.assertTrue(composer_audit_summary.has_blocking_advisories(advisories))
+
+    def test_medium_and_low_advisories_do_not_block(self):
+        advisories = composer_audit_summary.flatten_advisories(
+            {
+                "advisories": {
+                    "vendor/example": [
+                        {"severity": "medium"},
+                        {"severity": "low"},
+                    ]
+                }
+            }
+        )
+
+        self.assertFalse(composer_audit_summary.has_blocking_advisories(advisories))
+
+    def test_dependency_count_includes_runtime_and_dev_packages_once(self):
+        lock = {
+            "packages": [{"name": "vendor/runtime"}],
+            "packages-dev": [
+                {"name": "vendor/dev"},
+                {"name": "vendor/runtime"},
+            ],
+        }
+
+        self.assertEqual(2, composer_audit_summary.dependency_count(lock))
+
+    def test_sarif_keeps_existing_dependency_check_tool_identity(self):
+        advisories = composer_audit_summary.flatten_advisories(
+            {
+                "advisories": {
+                    "vendor/example": [
+                        {
+                            "advisoryId": "PKSA-example",
+                            "title": "Example issue",
+                            "severity": "critical",
+                            "link": "https://example.invalid/advisory",
+                        }
+                    ]
+                }
+            }
+        )
+
+        sarif = composer_audit_summary.build_sarif(advisories)
+        run = sarif["runs"][0]
+
+        self.assertEqual("dependency-check", run["tool"]["driver"]["name"])
+        self.assertEqual("9.5", run["tool"]["driver"]["rules"][0]["properties"]["security-severity"])
+        self.assertEqual("error", run["results"][0]["level"])
 
 
 class UnittestJunitScriptTests(unittest.TestCase):
