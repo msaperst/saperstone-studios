@@ -80,9 +80,31 @@ class BlogPagesHttpTest extends HttpTestBase {
         ];
     }
 
+    /**
+     * @dataProvider adminBlogPageProvider
+     */
+    public function testAdminBlogPageRejectsRegularUser(string $path): void {
+        $this->loginAs('5510b5e6fffd897c234cafe499f76146');
+        $response = $this->get($path);
+
+        self::assertSame(401, $response->getStatusCode());
+        self::assertSame('401 Unauthorized', $this->text($response, '//h1'));
+    }
+
     public function testAdminManagePage(): void {
         $this->adminLogin();
-        $this->assertPage($this->get('blog/manage.php'), 'Manage Blog Posts');
+        $response = $this->get('blog/manage.php');
+        $this->assertPage($response, 'Manage Blog Posts');
+
+        self::assertSame(4, $this->elementCount($response, "//*[@id='posts']//thead//th"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='post']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='post-title-input']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='post-date-input']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='post-active-input']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='post-tags-select']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='post-preview-image']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='post-update-button']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='post-delete-button']"));
     }
 
     public function testAdminNewPostPage(): void {
@@ -95,6 +117,17 @@ class BlogPagesHttpTest extends HttpTestBase {
         self::assertMatchesRegularExpression('/^\\d{4}-\\d{2}-\\d{2}$/', $renderedDate);
         self::assertLessThanOrEqual(1, abs((int) ((strtotime($renderedDate) - strtotime(date('Y-m-d'))) / 86400)));
         self::assertSame(0, $this->elementCount($response, "//*[@id='update-post']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='save-post']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='schedule-post']"));
+        self::assertSame(1, $this->elementCount($response, "//*[@id='publish-post']"));
+        self::assertSame([], json_decode(
+            $this->attribute($response, "//*[@id='post-editor-config']", 'data-tags'),
+            true
+        ));
+        self::assertSame([], json_decode(
+            $this->attribute($response, "//*[@id='post-editor-config']", 'data-groups'),
+            true
+        ));
     }
 
     public function testAdminEditUnknownPostReturnsNotFound(): void {
@@ -121,6 +154,30 @@ class BlogPagesHttpTest extends HttpTestBase {
         self::assertSame(1, $this->elementCount($response, "//*[@id='schedule-saved-post']"));
         self::assertSame(1, $this->elementCount($response, "//*[@id='publish-saved-post']"));
         self::assertStringContainsString('Home Blog Edit Post', $this->text($response, "//*[contains(concat(' ', normalize-space(@class), ' '), ' breadcrumb ')]"));
+
+        self::assertSame([29], json_decode(
+            $this->attribute($response, "//*[@id='post-editor-config']", 'data-tags'),
+            true
+        ));
+        self::assertSame([
+            [
+                'type' => 'images',
+                'images' => [[
+                    'location' => 'posts/2031/01/01/sample.jpg',
+                    'top' => 0,
+                    'left' => 0,
+                    'width' => 300,
+                    'height' => 400,
+                ]],
+            ],
+            [
+                'type' => 'text',
+                'text' => 'Some blog text',
+            ],
+        ], json_decode(
+            $this->attribute($response, "//*[@id='post-editor-config']", 'data-groups'),
+            true
+        ));
     }
 
     public function testAdminEditActivePostDoesNotOfferPublishActions(): void {
@@ -133,6 +190,27 @@ class BlogPagesHttpTest extends HttpTestBase {
         self::assertSame(0, $this->elementCount($response, "//*[@id='save-post']"));
         self::assertSame(0, $this->elementCount($response, "//*[@id='schedule-saved-post']"));
         self::assertSame(0, $this->elementCount($response, "//*[@id='publish-saved-post']"));
+    }
+
+
+    public function testInactivePostIsHiddenFromGuest(): void {
+        $this->insertBlog(false);
+
+        $response = $this->get('blog/post.php?p=999');
+
+        self::assertSame(404, $response->getStatusCode());
+        self::assertSame('404 Not Found', $this->text($response, '//h1'));
+    }
+
+    public function testInactivePostRendersForAdmin(): void {
+        $this->insertBlog(false);
+        $this->adminLogin();
+
+        $response = $this->get('blog/post.php?p=999');
+
+        $this->assertPage($response, 'Recent Blog Posts');
+        self::assertSame(1, $this->elementCount($response, "//*[@id='edit-post-btn']"));
+        self::assertSame('999', $this->attribute($response, "//*[@id='blog-page-config']", 'data-post'));
     }
 
     public function testActivePostRendersForGuestWithAnonymousCommentFields(): void {

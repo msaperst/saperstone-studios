@@ -3,9 +3,11 @@
 namespace coverage\integration;
 
 use Album;
+use BadImageException;
 use Exception;
 use Gallery;
 use Image;
+use ImageException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 
@@ -49,6 +51,9 @@ class ImageIntegrationTest extends TestCase {
         $this->sql->executeStatement("DELETE FROM `album_images` WHERE `album_images`.`id` = 899;");
         $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`id` = 898;");
         $this->sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery_images`.`id` = 899;");
+        $this->sql->executeStatement("DELETE FROM `favorites` WHERE `album` = 899;");
+        $this->sql->executeStatement("DELETE FROM `download_rights` WHERE `album` = '899';");
+        $this->sql->executeStatement("DELETE FROM `share_rights` WHERE `album` = '899';");
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
@@ -60,75 +65,66 @@ class ImageIntegrationTest extends TestCase {
     }
 
     public function testNullImageSequence() {
-        try {
-            new Image(Gallery::withId(2), NULL);
-        } catch (Exception $e) {
-            $this->assertEquals("Image id is required", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id is required');
+
+        new Image(Gallery::withId(2), NULL);
     }
 
     public function testBlankImageSequence() {
-        try {
-            new Image(Gallery::withId(2), "");
-        } catch (Exception $e) {
-            $this->assertEquals("Image id can not be blank", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id can not be blank');
+
+        new Image(Gallery::withId(2), '');
     }
 
     public function testAlbumLetterImageSequence() {
-        try {
-            new Image(Album::withId(899), "a");
-        } catch (Exception $e) {
-            $this->assertEquals("Image id does not match any images", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id does not match any images');
+
+        new Image(Album::withId(899), 'a');
     }
 
     public function testGalleryLetterImageSequence() {
-        try {
-            new Image(Gallery::withId(2), "a");
-        } catch (Exception $e) {
-            $this->assertEquals("Image id does not match any images", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id does not match any images');
+
+        new Image(Gallery::withId(2), 'a');
     }
 
     public function testBadImageSequence() {
-        try {
-            new Image(Gallery::withId(2), 8999);
-        } catch (Exception $e) {
-            $this->assertEquals("Image id does not match any images", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id does not match any images');
+
+        new Image(Gallery::withId(2), 8999);
     }
 
     public function testBadStringImageSequence() {
-        try {
-            new Image(Gallery::withId(2), "8999");
-        } catch (Exception $e) {
-            $this->assertEquals("Image id does not match any images", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Image id does not match any images');
+
+        new Image(Gallery::withId(2), '8999');
     }
 
     public function testNullContainer() {
-        try {
-            new Image(Null, 1);
-        } catch (Exception $e) {
-            $this->assertEquals("Parent (album or gallery) is required", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Parent (album or gallery) is required');
+
+        new Image(NULL, 1);
     }
 
     public function testStringContainer() {
-        try {
-            new Image('hi', 1);
-        } catch (Exception $e) {
-            $this->assertEquals("Parent (album or gallery) is required", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Parent (album or gallery) is required');
+
+        new Image('hi', 1);
     }
 
     public function testArrayContainer() {
-        try {
-            new Image(array(), 1);
-        } catch (Exception $e) {
-            $this->assertEquals("Parent (album or gallery) is required", $e->getMessage());
-        }
+        $this->expectException(BadImageException::class);
+        $this->expectExceptionMessage('Parent (album or gallery) is required');
+
+        new Image([], 1);
     }
 
     /**
@@ -246,9 +242,11 @@ class ImageIntegrationTest extends TestCase {
         $image = new Image(Album::withId(899), 2);
         try {
             $image->delete();
-        } catch (Exception $e) {
-            $this->assertEquals("User not authorized to delete image", $e->getMessage());
+            self::fail('Expected unauthorized image deletion to be rejected');
+        } catch (ImageException $e) {
+            $this->assertEquals('User not authorized to delete image', $e->getMessage());
         }
+
         $this->assertEquals(2, $this->sql->getRowCount("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;"));
         $this->assertTrue(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
     }
@@ -276,6 +274,64 @@ class ImageIntegrationTest extends TestCase {
         $this->assertEquals(0, $this->sql->getRow("SELECT * FROM `album_images` WHERE `album_images`.`album` = 899;")['sequence']);
         $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/sample.jpg'));
         $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums/sample/full/sample.jpg'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testDeleteAlbumCleansOnlyDeletedImageRights(): void {
+        $this->sql->executeStatement(
+            "INSERT INTO `favorites` (`user`, `album`, `image`) VALUES ('cleanup-test', 899, 898), ('cleanup-test', 899, 899)"
+        );
+        $this->sql->executeStatement(
+            "INSERT INTO `download_rights` (`user`, `album`, `image`) VALUES ('cleanup-test', '899', '898'), ('cleanup-test', '899', '899'), ('cleanup-test', '899', '*')"
+        );
+        $this->sql->executeStatement(
+            "INSERT INTO `share_rights` (`user`, `album`, `image`) VALUES ('cleanup-test', '899', '898'), ('cleanup-test', '899', '899'), ('cleanup-test', '899', '*')"
+        );
+
+        $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
+        try {
+            $image = new Image(Album::withId(899), 1);
+            $image->delete();
+        } finally {
+            unset($_SESSION['hash']);
+        }
+
+        $this->assertEquals(
+            0,
+            $this->sql->getRowCount("SELECT * FROM `favorites` WHERE `album` = 899 AND `image` = 898")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `favorites` WHERE `album` = 899 AND `image` = 899")
+        );
+
+        $this->assertEquals(
+            0,
+            $this->sql->getRowCount("SELECT * FROM `download_rights` WHERE `album` = '899' AND `image` = '898'")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `download_rights` WHERE `album` = '899' AND `image` = '899'")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `download_rights` WHERE `album` = '899' AND `image` = '*'")
+        );
+
+        $this->assertEquals(
+            0,
+            $this->sql->getRowCount("SELECT * FROM `share_rights` WHERE `album` = '899' AND `image` = '898'")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `share_rights` WHERE `album` = '899' AND `image` = '899'")
+        );
+        $this->assertEquals(
+            1,
+            $this->sql->getRowCount("SELECT * FROM `share_rights` WHERE `album` = '899' AND `image` = '*'")
+        );
     }
 
     /**

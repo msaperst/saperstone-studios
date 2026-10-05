@@ -2,6 +2,7 @@
 
 namespace coverage\integration;
 
+use BadRequestException;
 use Exception;
 use File;
 use PHPUnit\Framework\TestCase;
@@ -13,41 +14,37 @@ require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 class FileIntegrationTest extends TestCase {
 
     public function testNullConstructor() {
-        try {
-            new File(NULL);
-        } catch (Exception $e) {
-            $this->assertEquals('File(s) are required', $e->getMessage());
-        }
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File(s) are required');
+
+        new File(NULL);
     }
 
     public function testBlankConstructor() {
-        try {
-            new File('');
-        } catch (Exception $e) {
-            $this->assertEquals('File(s) can not be blank', $e->getMessage());
-        }
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File(s) can not be blank');
+
+        new File('');
     }
 
     public function testSomeErrorConstructor() {
         $params = [
             'error' => 'error, we failed!'
         ];
-        try {
-            new File($params);
-        } catch (Exception $e) {
-            $this->assertEquals('error, we failed!', $e->getMessage());
-        }
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('error, we failed!');
+
+        new File($params);
     }
 
     public function testNoNameConstructor() {
         $params = [
             'error' => '0'
         ];
-        try {
-            new File($params);
-        } catch (Exception $e) {
-            $this->assertEquals('File name is required', $e->getMessage());
-        }
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name is required');
+
+        new File($params);
     }
 
     public function testBlankNameConstructor() {
@@ -55,11 +52,10 @@ class FileIntegrationTest extends TestCase {
             'error' => '0',
             'name' => ''
         ];
-        try {
-            new File($params);
-        } catch (Exception $e) {
-            $this->assertEquals('File name can not be blank', $e->getMessage());
-        }
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name can not be blank');
+
+        new File($params);
     }
 
     public function testNoTmpNameConstructor() {
@@ -67,11 +63,10 @@ class FileIntegrationTest extends TestCase {
             'error' => '0',
             'name' => 'file'
         ];
-        try {
-            new File($params);
-        } catch (Exception $e) {
-            $this->assertEquals('File upload location is required', $e->getMessage());
-        }
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File upload location is required');
+
+        new File($params);
     }
 
     public function testBlankTmpNameConstructor() {
@@ -80,11 +75,57 @@ class FileIntegrationTest extends TestCase {
             'name' => 'file',
             'tmp_name' => ''
         ];
-        try {
-            new File($params);
-        } catch (Exception $e) {
-            $this->assertEquals('File upload location can not be blank', $e->getMessage());
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File upload location can not be blank');
+
+        new File($params);
+    }
+
+    public function testRejectsUnsupportedImageExtension(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('Uploaded file type is not supported');
+
+        File::validateImageExtension('image.php');
+    }
+
+    public function testAllowsProtectedImageExtensions(): void {
+        foreach (['image.jpg', 'image.jpeg', 'image.png', 'image.gif', 'IMAGE.JPG'] as $filename) {
+            File::validateImageExtension($filename);
+            $this->addToAssertionCount(1);
         }
+    }
+
+    public function testRejectsUnixPathInUploadedFilename(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name can not contain a path');
+
+        new File([
+            'error' => '0',
+            'name' => '../outside.jpeg',
+            'tmp_name' => '/tmp/file'
+        ]);
+    }
+
+    public function testRejectsWindowsPathInUploadedFilename(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name can not contain a path');
+
+        new File([
+            'error' => '0',
+            'name' => '..\\outside.jpeg',
+            'tmp_name' => '/tmp/file'
+        ]);
+    }
+
+    public function testRejectsNullByteInUploadedFilename(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name is not valid');
+
+        new File([
+            'error' => '0',
+            'name' => "image.jpeg\0.php",
+            'tmp_name' => '/tmp/file'
+        ]);
     }
 
     /**
@@ -318,37 +359,49 @@ class FileIntegrationTest extends TestCase {
     }
 
     public function testResizeTooSmallWidth() {
+        $params = [
+            'error' => '0',
+            'name' => 'sample.jpeg',
+            'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+        ];
+        $file = new File($params);
+        $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+
         try {
-            $params = [
-                'error' => '0',
-                'name' => 'sample.jpeg',
-                'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
-            ];
-            $file = new File($params);
-            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
-            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $file->resize(2000, 1500);
-        } catch (Exception $e) {
-            $this->assertEquals('Image does not meet the minimum width requirements of 2000px. Image is 1600 x 1200', $e->getMessage());
-            $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
+            self::fail('Expected undersized image width to be rejected');
+        } catch (BadRequestException $e) {
+            $this->assertEquals(
+                'Image does not meet the minimum width requirements of 2000px. Image is 1600 x 1200',
+                $e->getMessage()
+            );
         }
+
+        $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
     }
 
     public function testResizeTooSmallHeight() {
+        $params = [
+            'error' => '0',
+            'name' => 'sample.jpeg',
+            'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
+        ];
+        $file = new File($params);
+        $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
+
         try {
-            $params = [
-                'error' => '0',
-                'name' => 'sample.jpeg',
-                'tmp_name' => dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg'
-            ];
-            $file = new File($params);
-            $file->upload(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR);
-            copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg');
             $file->resize(1000, 1500);
-        } catch (Exception $e) {
-            $this->assertEquals('Image does not meet the minimum height requirements of 1500px. Image is 1600 x 1200', $e->getMessage());
-            $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
+            self::fail('Expected undersized image height to be rejected');
+        } catch (BadRequestException $e) {
+            $this->assertEquals(
+                'Image does not meet the minimum height requirements of 1500px. Image is 1600 x 1200',
+                $e->getMessage()
+            );
         }
+
+        $this->assertFalse(file_exists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'sample.jpeg'));
     }
 
     /**

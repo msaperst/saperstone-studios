@@ -28,6 +28,11 @@ Feature: Albums
     Then I see an info message indicating album successfully added
     And I see album 99998 listed
 
+  Scenario: Added album remains listed after reload
+    When I add album "album99998" to my albums
+    And I reload the page
+    Then I see album 99998 listed
+
   Scenario: Downloader able to add an album by keyboard
     When I add album "album99998" to my albums with keyboard
     Then I see an info message indicating album successfully added

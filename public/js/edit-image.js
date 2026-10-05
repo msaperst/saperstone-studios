@@ -158,7 +158,8 @@ function cleanImage(img) {
 }
 
 function saveImg(img) {
-    img.parent().find('.saveme').prop('disabled', true);
+    var saveButton = img.parent().find('.saveme button');
+    saveButton.prop('disabled', true);
     $.post("/api/crop-image.php", {
         "image": ".." + folder + "/" + img.attr('src').split("?")[0],
         "top": (parseInt(img.css('top')) * -1),
@@ -166,6 +167,7 @@ function saveImg(img) {
         "max-width": parseInt(img.width())
     }).done(function (data) {
         if (data !== "") {
+            saveButton.prop('disabled', false);
             BootstrapDialog.show({
                 draggable: true,
                 title: 'Whoops, Something Went Wrong',
@@ -211,6 +213,20 @@ function saveImg(img) {
             div.append(link);
             img.parent().append(div);
         }
+    }).fail(function (xhr, status, error) {
+        saveButton.prop('disabled', false);
+        const response = xhr?.responseText || error;
+        BootstrapDialog.show({
+            draggable: true,
+            title: 'Whoops, Something Went Wrong',
+            message: response || 'The image could not be saved.',
+            buttons: [{
+                label: 'Close',
+                action: function (dialog) {
+                    dialog.close();
+                }
+            }]
+        });
     });
 }
 

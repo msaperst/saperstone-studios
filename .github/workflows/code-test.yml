@@ -143,14 +143,46 @@ jobs:
             reports/js-lcov.info
             reports/js-junit.xml
 
-  sonar:
-    name: SonarCloud
-    needs: [ unit-testing, integration-testing, javascript-unit-testing ]
+  script-testing:
+    name: Script Testing
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v7
+
+      - name: Script Test 🤞
+        run: |
+          python3 .github/scripts/unittest-junit.py \
+            --start-directory tests/scripts \
+            --pattern 'test_*.py' \
+            --junit reports/script-junit.xml
+
+      - name: Script Test Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/test-summary.py \
+            --title "Script Tests" \
+            --junit reports/script-junit.xml | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Script Test Report 📊
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: script-test-report
+          path: reports/script-junit.xml
+          if-no-files-found: warn
+
+  sonar:
+    name: SonarCloud
+    needs: [ unit-testing, integration-testing, javascript-unit-testing, script-testing ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Get UT Coverage
         uses: actions/download-artifact@v8

@@ -66,7 +66,7 @@ Feature: Album
 
   Scenario: Favoriting image increases favorites count
     Given I am on the "user/album.php?album=99999#1" page
-    And I favorite the image
+    When I favorite the image
     Then I see the image as a favorite
     And I see the favorite count is "1"
 
@@ -74,6 +74,21 @@ Feature: Album
     Given album 99999 image 2 is a favorite
     When I am on the "user/album.php?album=99999#1" page
     And I defavorite the image
+    Then I do not see the image as a favorite
+    And I see the favorite count is ""
+
+  Scenario: Favorited image remains favorited after reload
+    Given I am on the "user/album.php?album=99999#1" page
+    When I favorite the image
+    And I reload the page
+    Then I see the image as a favorite
+    And I see the favorite count is "1"
+
+  Scenario: Defavorited image remains unfavorited after reload
+    Given album 99999 image 2 is a favorite
+    And I am on the "user/album.php?album=99999#1" page
+    When I defavorite the image
+    And I reload the page
     Then I do not see the image as a favorite
     And I see the favorite count is ""
 
@@ -129,7 +144,7 @@ Feature: Album
     And I download my favorites
     And I confirm my download
     Then I see an info message indicating download will start shortly
-    And I see album 99999 download with my favorites
+    And I see album 99999 download with images "2"
     And I see an email indicating images "2" from album 99999 downloaded
 
   Scenario: Download multiple favorites
@@ -143,7 +158,7 @@ Feature: Album
     And I download my favorites
     And I confirm my download
     Then I see an info message indicating download will start shortly
-    And I see album 99999 download with my favorites
+    And I see album 99999 download with images "2, 7"
     And I see an email indicating images "2, 7" from album 99999 downloaded
 
 
@@ -174,7 +189,7 @@ Feature: Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
-    And an email is sent indicating album 99999 favorites submitted
+    And an email is sent indicating album 99999 images "2" submitted
     And I receive an email indicating I have submitted my selects
 
 
@@ -212,7 +227,7 @@ Feature: Album
   Scenario: Able to download single image
     Given I have download rights for album 99999 image 2
     And I am on the "user/album.php?album=99999#1" page
-    And I download the image
+    When I download the image
     Then I see the download terms of service
 
   Scenario: Download single image
@@ -236,7 +251,7 @@ Feature: Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
-    And an email is sent indicating album 99999 image 2 submitted
+    And an email is sent indicating album 99999 images "2" submitted
     And I receive an email indicating I have submitted my selects
 
   Scenario: Request email updates no email
@@ -259,10 +274,18 @@ Feature: Album
     Given album 99998 exists
     And I have access to album 99998
     And I am on the "user/album.php?album=99998" page
-    And I submit my email for album notification
+    When I submit my email for album notification
     Then I see a success message indicating I will be notified when images are added
     And I don't see the album notification form
-    And my email address is recorded for album 99998 notifications
+
+  Scenario: Email update request persists after reload
+    Given album 99998 exists
+    And I have access to album 99998
+    And I am on the "user/album.php?album=99998" page
+    When I submit my email for album notification
+    And I reload the page
+    Then I see that I already requested an album notification
+    And I don't see the album notification form
 
   Scenario: Opening an image sets the hash to that image
     Given I am on the "user/album.php?album=99999" page

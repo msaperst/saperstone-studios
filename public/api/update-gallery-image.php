@@ -15,7 +15,22 @@ try {
     if (isset ($_POST ['caption']) && $_POST ['caption'] != "") {
         $caption = $api->retrievePostString('caption', 'Caption');
     }
-    $filename = $api->retrievePostString('filename', 'Filename');
+    $requestedLocation = str_replace('\\', '/', $api->retrievePostString('filename', 'Filename'));
+    if (str_contains($requestedLocation, "\0")) {
+        throw new BadRequestException('Filename is not valid');
+    }
+    $filename = basename($requestedLocation);
+    if ($filename === '' || $filename === '.' || $filename === '..') {
+        throw new BadRequestException('Filename is not valid');
+    }
+    File::validateImageExtension($filename);
+
+    $currentLocation = str_replace('\\', '/', $image->getLocation());
+    $currentDirectory = dirname($currentLocation);
+    $newLocation = ($currentDirectory === '.' ? '' : rtrim($currentDirectory, '/') . '/') . $filename;
+    if ($requestedLocation !== $newLocation) {
+        throw new BadRequestException('Filename is not valid');
+    }
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);
     echo $e->getMessage();
@@ -27,22 +42,35 @@ $sql = new Sql();
 $sql->executeStatement("UPDATE gallery_images SET title = ?, caption = ? WHERE gallery = ? AND id = ?", [$title, $caption, $gallery->getId(), $image->getId()]);
 $sql->disconnect();
 //rename the file if it needs it
-if ($filename != $image->getLocation()) {
-    if (Strings::startsWith($image->getLocation(), '/')) {
-        $originalFile = dirname(__DIR__) . $image->getLocation();
-        $newFile = dirname(__DIR__) . $filename;
+if ($newLocation !== $currentLocation) {
+    if (Strings::startsWith($currentLocation, '/')) {
+        $originalFile = Api::resolvePublicPath($currentLocation);
+        $newFile = $originalFile === null
+            ? null
+            : dirname($originalFile) . DIRECTORY_SEPARATOR . $filename;
     } elseif (isset($_SERVER['HTTP_REFERER'])) {
-        $originalFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . explode('/', $_SERVER ['HTTP_REFERER'])[3] . DIRECTORY_SEPARATOR . $image->getLocation();
-        $newFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . explode('/', $_SERVER ['HTTP_REFERER'])[3] . DIRECTORY_SEPARATOR . $filename;
+        $refererPath = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+        $section = explode('/', trim((string)$refererPath, '/'))[0] ?? '';
+        $originalFile = Api::resolvePublicPath('/' . $section . '/' . $currentLocation);
+        $newFile = $originalFile === null
+            ? null
+            : dirname($originalFile) . DIRECTORY_SEPARATOR . $filename;
     } else {
         http_response_code(500);
         echo "Unable to find original image to rename!";
         exit();
     }
+
+    if ($originalFile === null || $newFile === null) {
+        http_response_code(400);
+        echo "Filename is not valid";
+        exit();
+    }
+
     if (file_exists($originalFile) && !file_exists($newFile)) {
-        rename("$originalFile", "$newFile");
+        rename($originalFile, $newFile);
         $sql = new Sql();
-        $sql->executeStatement("UPDATE gallery_images SET location = ? WHERE gallery = ? AND id = ?", [$filename, $gallery->getId(), $image->getId()]);
+        $sql->executeStatement("UPDATE gallery_images SET location = ? WHERE gallery = ? AND id = ?", [$newLocation, $gallery->getId(), $image->getId()]);
         $sql->disconnect();
     } else {
         http_response_code(500);

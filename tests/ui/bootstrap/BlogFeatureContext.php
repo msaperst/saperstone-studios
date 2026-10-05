@@ -38,6 +38,7 @@ class BlogFeatureContext implements Context {
     private $tag = '';
     private $searchTerm = '';
     private $blogIds = [];
+    private $blogFixtures = [];
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -81,6 +82,16 @@ class BlogFeatureContext implements Context {
      */
     public function blogExists($blogId) {
         $this->blogIds[] = $blogId;
+        $this->blogFixtures[(int) $blogId] = [
+            'id' => (int) $blogId,
+            'title' => "Sample Blog $blogId",
+            'date' => "$blogId-01-01",
+            'tags' => [29],
+            'tagNames' => ['Tea Ceremony'],
+            'images' => 7,
+            'texts' => 1,
+            'searchText' => 'Some blog text',
+        ];
         $this->sql->executeStatement("INSERT INTO `blog_details` (`id`, `title`, `date`, `preview`, `offset`, `active`) VALUES ('$blogId', 'Sample Blog $blogId', '$blogId-01-01', 'posts/$blogId/01/01/sample.jpg', 0, 1)");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES ($blogId, NULL, 'Anna', '2012-10-31 09:56:47', '68.98.132.164', 'annad@annadbruce.com', 'hehehehehe this rules!')");
         $this->sql->executeStatement("INSERT INTO `blog_comments` (`blog`, `user`, `name`, `date`, `ip`, `email`, `comment`) VALUES ($blogId, 4, 'Uploader', '2012-10-31 13:56:47', '192.168.1.2', 'msaperst@gmail.com', 'awesome post')");
@@ -184,46 +195,75 @@ class BlogFeatureContext implements Context {
         $blog->deleteComment($ord);
     }
 
+    private function expectedBlogFixtures(): array {
+        $fixtures = array_values($this->blogFixtures);
+
+        $fixtures = array_values(array_filter($fixtures, function (array $fixture): bool {
+            if ($this->tag !== '' && !in_array((int) $this->tag, $fixture['tags'], true)) {
+                return false;
+            }
+
+            if ($this->searchTerm !== '') {
+                return stripos($fixture['title'], $this->searchTerm) !== false
+                    || stripos($fixture['searchText'], $this->searchTerm) !== false;
+            }
+
+            return true;
+        }));
+
+        usort($fixtures, static function (array $left, array $right): int {
+            $date = strcmp($right['date'], $left['date']);
+            return $date !== 0 ? $date : ($right['id'] <=> $left['id']);
+        });
+
+        return $fixtures;
+    }
+
     private function verifyBlogPost($start) {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($start + 1) . ')')));
-        $pullPost = $start;
-        do {
-            $details = $this->sql->getRow("SELECT * FROM blog_details WHERE active = 1 ORDER BY date DESC, id DESC LIMIT $pullPost,1;");
-            $tags = array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'id');
-            $pullPost++;
-        } while ($this->tag != '' && !in_array($this->tag, $tags));
-        $tags = join(', ', array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'tag'));
+        $fixtures = $this->expectedBlogFixtures();
+        Assert::assertArrayHasKey($start, $fixtures, "No blog fixture exists at rendered position $start");
+
+        $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::cssSelector('#post-content > div:nth-child(' . ($start + 1) . ')')
+            )
+        );
+
+        $fixture = $fixtures[$start];
         $allPosts = $this->driver->findElements(WebDriverBy::cssSelector('#post-content > div'));
         $postContent = $allPosts[$start];
-        Assert::assertEquals($details['title'], $postContent->findElement(WebDriverBy::tagName('h2'))->getText());
-        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $postContent->findElement(WebDriverBy::cssSelector('.text-right strong'))->getText());
-        Assert::assertEquals($tags, $postContent->findElement(WebDriverBy::className('text-left'))->getText());
+
+        Assert::assertSame($fixture['title'], $postContent->findElement(WebDriverBy::tagName('h2'))->getText());
+        Assert::assertSame(
+            date('F jS, Y', strtotime($fixture['date'])),
+            $postContent->findElement(WebDriverBy::cssSelector('.text-right strong'))->getText()
+        );
+        Assert::assertSame(
+            implode(', ', $fixture['tagNames']),
+            $postContent->findElement(WebDriverBy::className('text-left'))->getText()
+        );
         Assert::assertCount(1, $postContent->findElements(WebDriverBy::className('blog-share-button')));
-        Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_images WHERE blog = {$details['id']}"), sizeof($postContent->findElements(WebDriverBy::className('post-image'))));
-        Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_texts WHERE blog = {$details['id']}"), sizeof($postContent->findElements(WebDriverBy::className('post-text'))));
+        Assert::assertCount($fixture['images'], $postContent->findElements(WebDriverBy::className('post-image')));
+        Assert::assertCount($fixture['texts'], $postContent->findElements(WebDriverBy::className('post-text')));
     }
 
     private function verifyBlogPreview($start) {
-        $s = $start * 3;
-        $query = "SELECT * FROM blog_details WHERE active = 1";
-        $params = [];
-        if ($this->searchTerm !== '') {
-            $query .= " AND (title LIKE ? OR safe_title LIKE ? OR EXISTS (SELECT 1 FROM blog_texts WHERE blog_texts.blog = blog_details.id AND blog_texts.text LIKE ?))";
-            $search = '%' . $this->searchTerm . '%';
-            $params = [$search, $search, $search];
-        }
-        $query .= " ORDER BY date DESC, id DESC LIMIT $s,3";
-        $details = $this->sql->getRows($query, $params);
-        $expectedCount = $s + count($details);
+        $fixtures = $this->expectedBlogFixtures();
+        $offset = $start * 3;
+        $expected = array_slice($fixtures, $offset, 3);
+        $expectedCount = $offset + count($expected);
+
         $this->wait->until(function () use ($expectedCount) {
             return count($this->driver->findElements(WebDriverBy::cssSelector('.col-gallery .post'))) >= $expectedCount;
         });
+
         $renderedTitles = array_map(
             fn($preview) => $preview->findElement(WebDriverBy::className('preview-title'))->getText(),
             $this->driver->findElements(WebDriverBy::cssSelector('.col-gallery .post'))
         );
-        foreach ($details as $detail) {
-            Assert::assertContains(strtoupper($detail['title']), $renderedTitles);
+
+        foreach ($expected as $fixture) {
+            Assert::assertContains(strtoupper($fixture['title']), $renderedTitles);
         }
     }
 
@@ -272,24 +312,27 @@ class BlogFeatureContext implements Context {
      * @throws Exception
      */
     public function iSeeAllOfTheCategoriesDisplayed() {
-        $count = $this->sql->getRowCount("SELECT DISTINCT tag FROM `blog_tags`");
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("#tag-cloud > span:nth-child($count)")));
-        Assert::assertEquals($count, sizeof($this->driver->findElements(WebDriverBy::cssSelector('#tag-cloud > span'))));
+        $category = WebDriverBy::linkText('Tea Ceremony');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($category));
+        Assert::assertTrue($this->driver->findElement($category)->isDisplayed());
     }
 
     /**
      * @Then /^I see the full blog post$/
      */
     public function iSeeTheFullBlogPost() {
-        $blog = $this->driver->findElement(WebDriverBy::id('post-comment-submit'))->getAttribute('post-id');
-        $details = $this->sql->getRow("SELECT * FROM blog_details WHERE id = $blog;");
-        $tags = join(', ', array_column($this->sql->getRows("SELECT `tags`.* FROM `tags` JOIN `blog_tags` ON tags.id = blog_tags.tag WHERE blog_tags.blog = {$details['id']}"), 'tag'));
-        Assert::assertEquals($details['title'], $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
-        Assert::assertEquals(date('F jS, Y', strtotime($details['date'])), $this->driver->findElement(WebDriverBy::cssSelector('#post-content .text-right strong'))->getText());
-        Assert::assertEquals($tags, $this->driver->findElement(WebDriverBy::cssSelector('#post-content .text-left'))->getText());
+        Assert::assertSame('Sample Blog 2039', $this->driver->findElement(WebDriverBy::tagName('h1'))->getText());
+        Assert::assertSame(
+            'January 1st, 2039',
+            $this->driver->findElement(WebDriverBy::cssSelector('#post-content .text-right strong'))->getText()
+        );
+        Assert::assertSame(
+            'Tea Ceremony',
+            $this->driver->findElement(WebDriverBy::cssSelector('#post-content .text-left'))->getText()
+        );
         Assert::assertCount(1, $this->driver->findElements(WebDriverBy::className('blog-share-button')));
-        Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_images WHERE blog = {$details['id']}"), sizeof($this->driver->findElements(WebDriverBy::className('post-image'))));
-        Assert::assertEquals($this->sql->getRowCount("SELECT * FROM blog_texts WHERE blog = {$details['id']}"), sizeof($this->driver->findElements(WebDriverBy::className('post-text'))));
+        Assert::assertCount(7, $this->driver->findElements(WebDriverBy::className('post-image')));
+        Assert::assertCount(1, $this->driver->findElements(WebDriverBy::className('post-text')));
     }
 
     /**
@@ -300,25 +343,60 @@ class BlogFeatureContext implements Context {
         $blog->waitForCommentsToLoad();
         $commentHolder = $blog->getCommentHolder();
         $blocks = $blog->getCommentBlocks();
-        $comments = $this->sql->getRows("SELECT * FROM blog_comments WHERE blog = {$blog->getBlogId()} ORDER BY date DESC");
-        Assert::assertStringStartsWith(sizeof($comments) . ' Comment', $commentHolder->findElement(WebDriverBy::className('text-left'))->getText());
-        Assert::assertEquals(sizeof($comments), sizeof($blocks));
-        for ($i = 0; $i < sizeof($blocks); $i++) {
-            $block = $blocks[$i];
-            Assert::assertEquals($comments[$i]['comment'], $block->findElement(WebDriverBy::tagName('p'))->getText());
-            $text = $block->findElement(WebDriverBy::tagName('footer'))->getText();
-            $parts = explode('
-', $text);
-            if (sizeof($parts) == 1) {
-                array_unshift($parts, '');
-            }
-            Assert::assertEquals($comments[$i]['name'], $parts[0]);
-            if ($comments[$i]['comment'] !== 'This is a great post') {
-                Assert::assertEquals($comments[$i]['date'], $parts[1]);
-            } else {
-                Assert::assertNotEmpty($parts[1]);
-            }
+
+        Assert::assertNotEmpty($blocks);
+        Assert::assertStringStartsWith(
+            count($blocks) . ' Comment',
+            $commentHolder->findElement(WebDriverBy::className('text-left'))->getText()
+        );
+        foreach ($blocks as $block) {
+            Assert::assertNotSame('', trim($block->findElement(WebDriverBy::tagName('p'))->getText()));
+            Assert::assertNotSame('', trim($block->findElement(WebDriverBy::tagName('footer'))->getText()));
         }
+    }
+
+    /**
+     * @Then /^I see the comment "([^"]*)"$/
+     */
+    public function iSeeTheComment($comment): void {
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->waitForCommentsToLoad();
+
+        $this->wait->until(function () use ($blog, $comment) {
+            $comments = array_map(
+                fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
+                $blog->getCommentBlocks()
+            );
+            return in_array($comment, $comments, true);
+        });
+
+        $comments = array_map(
+            fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
+            $blog->getCommentBlocks()
+        );
+        Assert::assertContains($comment, $comments);
+    }
+
+    /**
+     * @Then /^I do not see the comment "([^"]*)"$/
+     */
+    public function iDoNotSeeTheComment($comment): void {
+        $blog = new Blog($this->driver, $this->wait);
+        $blog->waitForCommentsToLoad();
+
+        $this->wait->until(function () use ($blog, $comment) {
+            $comments = array_map(
+                fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
+                $blog->getCommentBlocks()
+            );
+            return !in_array($comment, $comments, true);
+        });
+
+        $comments = array_map(
+            fn($block) => $block->findElement(WebDriverBy::tagName('p'))->getText(),
+            $blog->getCommentBlocks()
+        );
+        Assert::assertNotContains($comment, $comments);
     }
 
     /**

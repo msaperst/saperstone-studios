@@ -374,3 +374,70 @@ test('posts-manage keeps quick-manage functions separate from post-admin globals
     assert.notEqual(context.editPost, context.editManagedPost);
     assert.notEqual(context.updatePost, context.updateManagedPost);
 });
+
+
+test('posts-manage deletePost displays request failures and restores controls', () => {
+    const {context, environment} = createManageContext();
+    environment.queuePost('/api/delete-blog.php', {
+        type: 'failure',
+        xhr: {responseText: 'Delete request failed'},
+        error: 'Server Error'
+    });
+
+    context.deleteManagedPost(71);
+
+    assert.match(environment.element('#post .modal-body').appended.join(''), /Delete request failed/);
+    assert.equal(environment.element('#post-update-button').prop('disabled'), false);
+    assert.equal(environment.element('#post-delete-button').prop('disabled'), false);
+    assert.equal(environment.element('#post-update-close-button').prop('disabled'), false);
+});
+
+test('posts-manage updatePost displays request failures without reloading', () => {
+    const {context, environment} = createManageContext();
+    let reloads = 0;
+    context.post_table = {
+        ajax: {
+            reload() {
+                reloads += 1;
+            }
+        }
+    };
+    environment.queuePost('/api/update-blog-post.php', {
+        type: 'failure',
+        xhr: {responseText: 'Update request failed'},
+        error: 'Server Error'
+    });
+
+    context.updateManagedPost(72);
+
+    assert.equal(reloads, 0);
+    assert.match(environment.element('#post .modal-body').appended.join(''), /Update request failed/);
+    assert.equal(environment.element('#post-update-button').prop('disabled'), false);
+});
+
+test('posts-manage publish failure after activation leaves the modal open with an error', () => {
+    const {context, environment} = createManageContext();
+    let reloads = 0;
+    context.post_table = {
+        ajax: {
+            reload() {
+                reloads += 1;
+            }
+        }
+    };
+    environment.queuePost('/api/update-blog-post.php', {
+        type: 'success',
+        data: 'published'
+    });
+    environment.queuePost('/api/publish-blog-post.php', {
+        type: 'failure',
+        xhr: {responseText: 'Publish request failed'},
+        error: 'Server Error'
+    });
+
+    context.updateManagedPost(73);
+
+    assert.equal(reloads, 0);
+    assert.match(environment.element('#post .modal-body').appended.join(''), /Publish request failed/);
+    assert.equal(environment.element('#post-update-button').prop('disabled'), false);
+});

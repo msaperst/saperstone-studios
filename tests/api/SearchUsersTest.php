@@ -22,6 +22,7 @@ class SearchUsersTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/search-users.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -36,6 +37,7 @@ class SearchUsersTest extends TestCase {
             $this->http->request('POST', 'api/search-users.php', [
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());

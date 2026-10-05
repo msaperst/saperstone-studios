@@ -2,17 +2,26 @@
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 $session = new Session();
 
+if ($argc < 3) {
+    fwrite(STDERR, "Usage: send-download-email.php <email> <file>\n");
+    exit(2);
+}
+
 $email = $argv[1];
 $file = $argv[2];
 
+$maxWaitSeconds = getenv('DOWNLOAD_FILE_WAIT_SECONDS');
+$maxWaitSeconds = $maxWaitSeconds === false ? 1200 : max(0, (int)$maxWaitSeconds);
+
 $counter = 0;
-do {
-    if (file_exists($file)) {
-        break;
-    }
-    sleep(1);   //  or whatever …
+while (!file_exists($file) && $counter < $maxWaitSeconds) {
+    sleep(1);
     $counter++;
-} while(!file_exists($file) || $counter < 1200);
+}
+
+if (!file_exists($file)) {
+    exit(1);
+}
 
 // send email
 $from = "noreply@saperstonestudios.com";

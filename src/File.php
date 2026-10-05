@@ -25,15 +25,63 @@ class File {
         }
         // extract out all of the files
         if (!is_array($files['name'])) {
+            $files['name'] = self::validateFileName($files['name']);
             $this->files[] = $files;
         } else {
             for ($i = 0; $i < sizeof($files['name']); $i++) {
                 $this->files[] = [
-                    'name' => $files['name'][$i],
+                    'name' => self::validateFileName($files['name'][$i]),
                     'tmp_name' => $files['tmp_name'][$i]
                 ];
             }
         }
+    }
+
+    private static function validateFileName($name): string {
+        if (!is_string($name) || str_contains($name, "\0")) {
+            throw new BadRequestException('File name is not valid');
+        }
+        if (str_contains($name, '/') || str_contains($name, '\\')) {
+            throw new BadRequestException('File name can not contain a path');
+        }
+        return $name;
+    }
+
+    public static function validateImageExtension(string $filename): void {
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif'], true)) {
+            throw new BadRequestException('Uploaded file type is not supported');
+        }
+    }
+
+    private function removeUploadedFiles(): void {
+        foreach ($this->files as $uploadedFile) {
+            $uploadedPath = $this->location . $uploadedFile;
+            if (is_file($uploadedPath)) {
+                unlink($uploadedPath);
+            }
+        }
+    }
+
+    private function getValidatedImageSizes(): array {
+        $sizes = [];
+        foreach ($this->files as $index => $file) {
+            try {
+                self::validateImageExtension($file);
+            } catch (BadRequestException $e) {
+                $this->removeUploadedFiles();
+                throw $e;
+            }
+
+            $path = $this->location . $file;
+            $size = @getimagesize($path);
+            if ($size === false) {
+                $this->removeUploadedFiles();
+                throw new BadRequestException('Uploaded file is not a valid image');
+            }
+            $sizes[$index] = $size;
+        }
+        return $sizes;
     }
 
     function getFiles() {
@@ -57,8 +105,9 @@ class File {
     }
 
     function resize($width, $height) {
-        foreach ($this->files as $file) {
-            $size = getimagesize($this->location . $file);
+        $sizes = $this->getValidatedImageSizes();
+        foreach ($this->files as $index => $file) {
+            $size = $sizes[$index];
             if ($size [0] < $width) { //verify the width
                 unlink($this->location . $file);
                 throw new BadRequestException("Image does not meet the minimum width requirements of {$width}px. Image is {$size[0]} x {$size[1]}");
@@ -73,6 +122,7 @@ class File {
     }
 
     function addToDatabase($database, $parent, $parentId, $parentCol, $locationPrefix) {
+        $sizes = $this->getValidatedImageSizes();
         $systemUser = User::fromSystem();
         $sql = new Sql();
         $databaseIdentifier = $sql->quoteIdentifier($database);
@@ -83,8 +133,8 @@ class File {
         } else {
             $nextSeq = 0;
         }
-        foreach ($this->files as $file) {
-            $size = getimagesize($this->location . $file);
+        foreach ($this->files as $index => $file) {
+            $size = $sizes[$index];
             $width = $size[0];
             $height = $size[1];
 

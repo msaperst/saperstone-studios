@@ -78,13 +78,15 @@ class Registration {
         $this->enterEmailInfo($user->getEmail());
     }
 
-    public function registerMyUser(User $user) {
+    public function registerMyUser(User $user): void {
         $this->enterMyUserInfo($user);
         $this->driver->findElement(WebDriverBy::id('update-profile'))->click();
-        // waiting for the next page to load, so we can ensure the user is created
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::linkText($user->getUsername())));
-        //need to save off this user key
-        return User::fromEmail($user->getEmail());
+        // Registration is complete when the authenticated UI shows the new username.
+        $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::linkText($user->getUsername())
+            )
+        );
     }
 
     public function enterAUserInfo($username, $password, $confirmPassword, $firstName, $lastName, $email) {
@@ -96,11 +98,9 @@ class Registration {
         $this->enterEmailInfo($email);
     }
 
-    public function registerAUser($username, $password, $confirmPassword, $firstName, $lastName, $email) {
+    public function registerAUser($username, $password, $confirmPassword, $firstName, $lastName, $email): void {
         $this->enterAUserInfo($username, $password, $confirmPassword, $firstName, $lastName, $email);
         $this->driver->findElement(WebDriverBy::id('update-profile'))->click();
-        //need to save off this user key
-        return User::fromLogin($username, $password);
     }
 
     public function updateUserInfo($currentPassword, $password, $confirmPassword, $firstName, $lastName, $email) {

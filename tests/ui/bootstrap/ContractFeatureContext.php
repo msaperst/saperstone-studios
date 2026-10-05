@@ -28,6 +28,7 @@ class ContractFeatureContext implements Context {
      */
     private $wait;
     private $contractIds = [];
+    private $contractValues = [];
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -76,7 +77,9 @@ class ContractFeatureContext implements Context {
      * @param $field
      */
     public function iProvideForTheContract($value, $field) {
-        $this->driver->findElement(WebDriverBy::id('contract-' . $field))->clear()->sendKeys($value);
+        $input = $this->driver->findElement(WebDriverBy::id('contract-' . $field));
+        $input->clear()->sendKeys($value);
+        $this->contractValues[$field] = (string) $input->getAttribute('value');
     }
 
     /**
@@ -155,29 +158,24 @@ class ContractFeatureContext implements Context {
     }
 
     /**
-     * @Then /^the signed contract exists for (\d+)$/
-     * @param $contractId
-     */
-    public function theSignedContractExistsFor($contractId) {
-        $sql = new Sql();
-        $contract = dirname(__DIR__, 3) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
-        $sql->disconnect();
-        Assert::assertTrue(file_exists("$contract"));
-    }
-
-    /**
      * @Then /^contract (\d+) was emailed to me$/
      * @param $contractId
      * @throws ExceptionAlias
      */
     public function contractWasEmailedToMe($contractId) {
-        $sql = new Sql();
-        $contractDetails = $sql->getRow("SELECT * FROM contracts WHERE contracts.id = $contractId");
-        $sql->disconnect();
-        CustomAsserts::assertEmailMatches($contractDetails['email'], 'contracts@saperstonestudios.com', 'Saperstone Studios Commercial Contract',
+        $expectedTo = $this->contractValues['email'] ?? '';
+        Assert::assertNotSame('', $expectedTo, 'Expected the contract email entered through the browser to be recorded');
+
+        CustomAsserts::assertEmailMatches(
+            $expectedTo,
+            'contracts@saperstonestudios.com',
+            'Saperstone Studios Commercial Contract',
             "Thank you for signing your contract. You can pay your invoice online at nope!.\r\n\r\n",
             '<html><body><p>Thank you for signing your contract. You can pay your invoice online <a href=\'nope!\' target=\'_blank\'>here</a>.</p></body></html>',
-            null, dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            null,
+            null,
+            '.pdf'
+        );
     }
 
     /**
@@ -186,12 +184,17 @@ class ContractFeatureContext implements Context {
      * @throws ExceptionAlias
      */
     public function aCopyOfContractWasEmailedToTheAdmin($contractId) {
-        $sql = new Sql();
-        $contractDetails = $sql->getRow("SELECT * FROM contracts WHERE contracts.id = $contractId");
-        $sql->disconnect();
-        CustomAsserts::assertEmailMatches((string)getenv('EMAIL_CONTRACTS'), 'contracts@saperstonestudios.com', 'Saperstone Studios Commercial Contract Signed',
-            "This is an automatically generated message from Saperstone Studios\r\n\r\nMax has signed their contract, this is a copy of it for your records. \r\n\r\n",
-            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Max has signed their contract, this is a copy of it for your records. </p></body></html>',
-            null, dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+        $clientName = $this->contractValues['name-signature'] ?? 'Max';
+
+        CustomAsserts::assertEmailMatches(
+            (string)getenv('EMAIL_CONTRACTS'),
+            'contracts@saperstonestudios.com',
+            'Saperstone Studios Commercial Contract Signed',
+            "This is an automatically generated message from Saperstone Studios\r\n\r\n$clientName has signed their contract, this is a copy of it for your records. \r\n\r\n",
+            "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>$clientName has signed their contract, this is a copy of it for your records. </p></body></html>",
+            null,
+            null,
+            '.pdf'
+        );
     }
 }

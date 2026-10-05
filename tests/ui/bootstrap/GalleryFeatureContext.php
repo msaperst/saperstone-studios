@@ -73,6 +73,7 @@ class GalleryFeatureContext implements Context {
      */
     public function galleryExistsWithImages($galleryId, $images) {
         $this->galleryIds[] = $galleryId;
+
         $sql = new Sql();
         // A prior interrupted Behat run must not poison this deterministic fixture.
         $sql->executeStatement("DELETE FROM `gallery_images` WHERE `gallery` = ?", [$galleryId]);
@@ -241,4 +242,5 @@ class GalleryFeatureContext implements Context {
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
         Assert::assertFalse($modal->isDisplayed());
     }
+
 }

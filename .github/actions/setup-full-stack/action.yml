@@ -7,12 +7,6 @@ runs:
     - name: Set up CI environment
       uses: ./.github/actions/setup-ci-env
 
-    - name: Set up folders
-      shell: bash
-      run: |
-        chmod -R 777 content
-        mkdir -m 777 -p content/albums content/blog content/contracts logs tmp
-
     - name: Disable production SSL certificate
       shell: bash
       run: sed -i '/letsencrypt/ s/^/#/' .docker/php/default-ssl.conf

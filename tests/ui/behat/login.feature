@@ -114,6 +114,15 @@ Feature: System Authentication
     And I submit reset credentials
     Then I see my user name displayed
 
+  Scenario: Reset password persists for future logins
+    Given an enabled user account exists
+    When I request a reset key
+    And I reset my password to "password1" using the emailed key
+    Then I see my user name displayed
+    When I logout
+    And I log in to the site using credentials "testUser" "password1"
+    Then I see my user name displayed
+
   Scenario Outline: Incomplete reset credentials are rejected
     Given an enabled user account exists
     When I have a reset key

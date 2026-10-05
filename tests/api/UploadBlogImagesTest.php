@@ -17,11 +17,13 @@ class UploadBlogImagesTest extends TestCase {
 
     public function tearDown(): void {
         $this->http = NULL;
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/not-image.jpg');
     }
 
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/upload-blog-images.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('', $e->getResponse()->getBody());
@@ -36,6 +38,7 @@ class UploadBlogImagesTest extends TestCase {
             $this->http->request('POST', 'api/upload-blog-images.php', [
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
@@ -73,6 +76,29 @@ class UploadBlogImagesTest extends TestCase {
         $this->assertEquals("Image does not meet the minimum width requirements of 1200px. Image is 1000 x 750", json_decode($response->getBody()));
         //TODO - unable to verify image not present
 //        $this->assertFalse(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/flower.jpeg'));
+    }
+
+    public function testRejectsNonImageUpload(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/upload-blog-images.php', [
+            'multipart' => [
+                [
+                    'name' => 'myfile',
+                    'contents' => 'not an image',
+                    'filename' => 'not-image.jpg',
+                    'headers' => ['Content-Type:' => 'image/jpeg']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Uploaded file is not a valid image', json_decode($response->getBody()));
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tmp/not-image.jpg'
+        ));
     }
 
     public function testSingleFile() {

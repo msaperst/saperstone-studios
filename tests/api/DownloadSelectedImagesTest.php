@@ -632,6 +632,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                     'album' => 999
                 ]
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -650,6 +651,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                     'album' => 999
                 ]
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -668,6 +670,7 @@ Full UA: GuzzleHttp/7', "<html><body><p>This is an automatically generated messa
                     'album' => 999
                 ]
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());

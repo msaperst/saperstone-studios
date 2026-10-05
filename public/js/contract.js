@@ -50,6 +50,7 @@ function checkInputs() {
 function submitContract() {
     if (!checkInputs()) {
         BootstrapDialog.alert('Please finish signing the contract before submitting.');
+        return;
     }
 
     $('#contract-submit').prop('disabled', true);

@@ -101,6 +101,13 @@ Feature: Profile Administration
     And I am taken to the "user/profile.php" page
     And I receive a welcome email
 
+  Scenario: Registered account can log in again
+    Given I am on the registration page
+    When I register my user
+    And I logout
+    And I log in to the site using credentials "testUser" "12345"
+    Then I see my user name displayed
+
   Scenario: Username cannot be changed from the profile
     Given an enabled user account exists
     And I am logged in with saved credentials
@@ -227,7 +234,17 @@ Feature: Profile Administration
     And I try to update to an email of "msaperst+sstest2@gmail.com"
     And I update my user
     Then I see a success message indicating my user was updated
-    And my user information is updated
+
+  Scenario: Profile information updates persist after reload
+    Given an enabled user account exists
+    And I am logged in with saved credentials
+    And I am on the profile page
+    When I try to update to a first name of "Max"
+    And I try to update to a last name of "Saperstone"
+    And I try to update to an email of "msaperst+sstest2@gmail.com"
+    And I update my user
+    And I reload the page
+    Then I see my updated profile information
 
   Scenario: User can update profile information and password
     Given an enabled user account exists
@@ -241,4 +258,15 @@ Feature: Profile Administration
     And I try to update to an email of "msaperst+sstest2@gmail.com"
     And I update my user
     Then I see a success message indicating my user was updated
-    And my user information is updated
+
+  Scenario: Updated password persists for future logins
+    Given an enabled user account exists
+    And I am logged in with saved credentials
+    And I am on the profile page
+    When I try to set my password of "12345"
+    And I try to update to a password of "password1"
+    And I try to update to a password confirm of "password1"
+    And I update my user
+    And I logout
+    And I log in to the site using credentials "testUser" "password1"
+    Then I see my user name displayed

@@ -93,10 +93,6 @@ function setupEdit() {
         var link = $(this).closest('tr').attr('contract-file');
         window.open(link);
     });
-    $('.view-contract-btn').off().click(function () {
-        var link = $(this).closest('tr').attr('contract-link');
-        window.location.href = '/contract.php?c=' + link;
-    });
 }
 
 function setupAddLineItem() {

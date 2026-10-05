@@ -3,8 +3,8 @@
 namespace coverage\integration;
 
 use BadGalleryException;
-use Exception;
 use Gallery;
+use GalleryException;
 use PHPUnit\Framework\TestCase;
 use Sql;
 use SqlException;
@@ -15,51 +15,45 @@ require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 class GalleryIntegrationTest extends TestCase {
 
     public function testNullGalleryId() {
-        try {
-            Gallery::withId(NULL);
-        } catch (Exception $e) {
-            $this->assertEquals("Gallery id is required", $e->getMessage());
-        }
+        $this->expectException(BadGalleryException::class);
+        $this->expectExceptionMessage('Gallery id is required');
+
+        Gallery::withId(NULL);
     }
 
     public function testBlankGalleryId() {
-        try {
-            Gallery::withId("");
-        } catch (Exception $e) {
-            $this->assertEquals("Gallery id can not be blank", $e->getMessage());
-        }
+        $this->expectException(BadGalleryException::class);
+        $this->expectExceptionMessage('Gallery id can not be blank');
+
+        Gallery::withId('');
     }
 
     public function testLetterGalleryId() {
-        try {
-            Gallery::withId("546fchgj78");
-        } catch (Exception $e) {
-            $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
-        }
+        $this->expectException(BadGalleryException::class);
+        $this->expectExceptionMessage('Gallery id does not match any galleries');
+
+        Gallery::withId('546fchgj78');
     }
 
     public function testBadGalleryId() {
-        try {
-            Gallery::withId(8999);
-        } catch (Exception $e) {
-            $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
-        }
+        $this->expectException(BadGalleryException::class);
+        $this->expectExceptionMessage('Gallery id does not match any galleries');
+
+        Gallery::withId(8999);
     }
 
     public function testBadStringGalleryId() {
-        try {
-            Gallery::withId("8999");
-        } catch (Exception $e) {
-            $this->assertEquals("Gallery id does not match any galleries", $e->getMessage());
-        }
+        $this->expectException(BadGalleryException::class);
+        $this->expectExceptionMessage('Gallery id does not match any galleries');
+
+        Gallery::withId('8999');
     }
 
     public function testWithParams() {
-        try {
-            Gallery::withParams(NULL);
-        } catch (Exception $e) {
-            $this->assertEquals("Not yet implemented: null", $e->getMessage());
-        }
+        $this->expectException(GalleryException::class);
+        $this->expectExceptionMessage('Not yet implemented: null');
+
+        Gallery::withParams(NULL);
     }
 
     /**
@@ -523,12 +517,10 @@ class GalleryIntegrationTest extends TestCase {
      * @throws BadGalleryException
      */
     public function testGetParentNoParent() {
-        try {
-            $gallery = Gallery::withId(1);
-            $gallery->getParent();
-        } catch (TypeError $e) {
-            $this->assertEquals('Gallery::getParent(): Return value must be of type Gallery, null returned', $e->getMessage());
-        }
+        $gallery = Gallery::withId(1);
+        $this->expectException(TypeError::class);
+
+        $gallery->getParent();
     }
 
     /**

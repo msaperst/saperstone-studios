@@ -83,6 +83,7 @@ class MakeThumbsTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/make-thumbs.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody());
@@ -168,6 +169,7 @@ class MakeThumbsTest extends TestCase {
                 ],
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(403, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -268,7 +270,7 @@ class MakeThumbsTest extends TestCase {
         ]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        sleep(5);
+        $this->waitForThumbnailStatus(998, 1);
 
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-watermark.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
@@ -339,7 +341,7 @@ class MakeThumbsTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
+        $this->waitForThumbnailStatus(998, 1);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
@@ -373,7 +375,7 @@ class MakeThumbsTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        sleep(5);   //waiting for process to complete - ugly, but unsure how to do this dynamically
+        $this->waitForThumbnailStatus(999, 1);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
@@ -412,7 +414,7 @@ class MakeThumbsTest extends TestCase {
         ]);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("", (string)$response->getBody());
-        sleep(1);   //waiting for process to complete - ugly, but unsure how to do this dynamically
+        $this->waitForThumbnailStatus(998, 1);
         //ensure original files are in 'full' directory
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');

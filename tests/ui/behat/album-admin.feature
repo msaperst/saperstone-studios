@@ -65,7 +65,7 @@ Feature: Admin Album
 
   Scenario: Favoriting image increases favorites count
     Given I am on the "user/album.php?album=99999#1" page
-    And I favorite the image
+    When I favorite the image
     Then I see the image as a favorite
     And I see the favorite count is "1"
 
@@ -120,7 +120,7 @@ Feature: Admin Album
     And I download my favorites
     And I confirm my download
     Then I see an info message indicating download will start shortly
-    And I see album 99999 download with my favorites
+    And I see album 99999 download with images "2"
     And I see an email indicating images "2" from album 99999 downloaded
 
   Scenario: Download multiple favorites
@@ -134,7 +134,7 @@ Feature: Admin Album
     And I download my favorites
     And I confirm my download
     Then I see an info message indicating download will start shortly
-    And I see album 99999 download with my favorites
+    And I see album 99999 download with images "2, 4, 7"
     And I see an email indicating images "2, 4, 7" from album 99999 downloaded
 
 
@@ -165,7 +165,7 @@ Feature: Admin Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
-    And an email is sent indicating album 99999 favorites submitted
+    And an email is sent indicating album 99999 images "2" submitted
     And I receive an email indicating I have submitted my selects
 
 
@@ -186,7 +186,7 @@ Feature: Admin Album
   Scenario: Able to download single image
     Given I have download rights for album 99999 image 2
     And I am on the "user/album.php?album=99999#1" page
-    And I download the image
+    When I download the image
     Then I see the download terms of service
 
   Scenario: Download single image
@@ -210,7 +210,7 @@ Feature: Admin Album
     And I confirm my submission
     Then the submit submission button is disabled
     And the confirm submission dialog is no longer present
-    And an email is sent indicating album 99999 image 2 submitted
+    And an email is sent indicating album 99999 images "2" submitted
     And I receive an email indicating I have submitted my selects
 
   Scenario: No email updates
@@ -262,8 +262,17 @@ Feature: Admin Album
     And I send the user notifications
     And I confirm sending user notification
     Then I don't see any email notification messages
-    And email notifications are marked as sent for album 99999
     And I see an album notification for album 99999 was emailed out
+
+  Scenario: Sent notification list remains cleared after reload
+    Given album 99999 has notifications:
+      | email                     | contacted |
+      | msaperst+sstest@gmail.com | 0         |
+    When I am on the "user/album.php?album=99999" page
+    And I send the user notifications
+    And I confirm sending user notification
+    And I reload the page
+    Then I don't see any email notification messages
 
   Scenario: Opening an image sets the hash to that image
     Given I am on the "user/album.php?album=99999" page

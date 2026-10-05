@@ -227,7 +227,7 @@ class LoginFeatureContext implements Context {
      */
     public function iLogout() {
         $login = new Login($this->driver, $this->wait);
-        $login->logout($this->user->getUsername());
+        $login->logout();
     }
 
     /**
@@ -252,7 +252,7 @@ class LoginFeatureContext implements Context {
      */
     public function iSubmitEmailForReset($email) {
         $login = new Login($this->driver, $this->wait);
-        $login->requestResetKey($email);
+        $login->requestResetKey($email, false);
     }
 
     /**
@@ -261,12 +261,33 @@ class LoginFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSubmitInNewCredentials() {
+        $this->submitResetPassword($this->user->getPassword());
+    }
+
+    /**
+     * @When /^I reset my password to "([^"]*)" using the emailed key$/
+     */
+    public function iResetMyPasswordToUsingTheEmailedKey($password): void {
+        $this->submitResetPassword((string) $password);
+    }
+
+    private function submitResetPassword(string $password): void {
         $login = new Login($this->driver, $this->wait);
-        $this->wait->until(function () {
-            $resetKey = User::withId($this->user->getId())->getDataBasic()['resetKey'] ?? '';
-            return $resetKey !== '';
-        });
-        $login->requestResetPassword($this->user->getEmail(), User::withId($this->user->getId())->getDataBasic()['resetKey'], $this->user->getPassword(), $this->user->getPassword());
+        $emailText = CustomAsserts::getEmailText(
+            $this->user->getEmail(),
+            'noreply@saperstonestudios.com',
+            'Reset Key For Saperstone Studios Account'
+        );
+
+        Assert::assertMatchesRegularExpression('/\\t([A-Za-z0-9]{8})\\s*$/', $emailText);
+        preg_match('/\\t([A-Za-z0-9]{8})\\s*$/', $emailText, $matches);
+
+        $login->requestResetPassword(
+            $this->user->getEmail(),
+            $matches[1],
+            $password,
+            $password
+        );
     }
 
     /**

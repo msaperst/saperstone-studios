@@ -33,6 +33,7 @@ class ContractTemplatesHttpTest extends HttpTestBase {
             'contractor' => ['user/contract/contractor.php', 'Saperstone Studios LLC. Contractor Contract', 'contractor'],
             'event' => ['user/contract/event.php', 'Saperstone Studios LLC. Event Contract', 'event'],
             'partnership' => ['user/contract/partnership.php', 'Saperstone Studios LLC. Partnership Contract', 'partnership'],
+            'photobooth' => ['user/contract/photobooth.php', 'Saperstone Studios LLC. Photobooth Contract', 'photobooth'],
             'portrait' => ['user/contract/portrait.php', 'Saperstone Studios LLC. Portrait Contract', 'portrait'],
             'wedding' => ['user/contract/wedding.php', 'Saperstone Studios LLC. Wedding Contract', 'wedding'],
         ];

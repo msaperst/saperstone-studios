@@ -220,7 +220,14 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
     <!-- Services Section -->
     <div id="album-thumbs" class="album-page">
         <?php
-        $notification_emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = {$album->getId()} AND contacted = FALSE;");
+        $notification_emails = $sql->getRows(
+            "SELECT * FROM notification_emails WHERE album = ? AND contacted = FALSE",
+            [$album->getId()]
+        );
+        $notification_requested = $sql->getRowCount(
+            "SELECT 1 FROM notification_emails WHERE album = ? AND user = ? AND contacted = FALSE",
+            [$album->getId(), (string)$user->getIdentifier()]
+        ) > 0;
         $sql->disconnect();
         if ($user->isAdmin() && sizeof($notification_emails) > 0) {
             ?>
@@ -322,22 +329,28 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
         if (count($images) === 0) {
             ?>
             <div id="album-empty-state" class="row">
-                <div class="col-md-offset-2 col-md-8 text-center">Sorry, no images have
-                    been uploaded to your gallery yet. You can submit your email to be
-                    notified when images are added if you would like. Your email address
-                    will not be used for any other purposes.
+                <div class="col-md-offset-2 col-md-8 text-center">
+                    Sorry, no images have been uploaded to your gallery yet.
+                    <?php if ($notification_requested) { ?>
+                        <span id="notification-requested">You have already asked to be notified when images are added.</span>
+                    <?php } else { ?>
+                        You can submit your email to be notified when images are added if you would like.
+                        Your email address will not be used for any other purposes.
+                    <?php } ?>
                 </div>
-                <div class="col-md-4 col-md-offset-4 text-center">
-                    <form>
-                        <label class="sr-only" for="notify-email">Email</label> <input
-                                id="notify-email" type="email" placeholder="Email"
-                                class="form-control" value="<?php echo Strings::escapeHtmlAttribute($user->getEmail()); ?>"
-                                required/>
-                    </form>
-                    <button id="notify-submit" type="submit" class="btn btn-primary">
-                        <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Submit
-                    </button>
-                </div>
+                <?php if (!$notification_requested) { ?>
+                    <div class="col-md-4 col-md-offset-4 text-center">
+                        <form>
+                            <label class="sr-only" for="notify-email">Email</label> <input
+                                    id="notify-email" type="email" placeholder="Email"
+                                    class="form-control" value="<?php echo Strings::escapeHtmlAttribute($user->getEmail()); ?>"
+                                    required/>
+                        </form>
+                        <button id="notify-submit" type="submit" class="btn btn-primary">
+                            <em class="fa fa-paper-plane-o" aria-hidden="true"></em> Submit
+                        </button>
+                    </div>
+                <?php } ?>
             </div>
 
             <?php

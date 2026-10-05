@@ -56,6 +56,7 @@ class GetAlbumsTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('GET', 'api/get-albums.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody());

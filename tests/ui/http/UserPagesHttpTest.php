@@ -26,6 +26,14 @@ class UserPagesHttpTest extends HttpTestBase {
         ];
     }
 
+    public function testRegularUserCannotAccessContractsPage(): void {
+        $this->loginAs('5510b5e6fffd897c234cafe499f76146');
+        $response = $this->get('user/contracts.php');
+
+        self::assertSame(401, $response->getStatusCode());
+        self::assertSame('401 Unauthorized', $this->text($response, '//h1'));
+    }
+
     public function testAdminContractsPage(): void {
         $this->adminLogin();
         $response = $this->get('user/contracts.php');
@@ -62,6 +70,14 @@ class UserPagesHttpTest extends HttpTestBase {
         self::assertSame('Max', $this->attribute($response, "//*[@id='profile-firstname']", 'value'));
         self::assertSame('Saperstone', $this->attribute($response, "//*[@id='profile-lastname']", 'value'));
         self::assertSame('msaperst@gmail.com', $this->attribute($response, "//*[@id='profile-email']", 'value'));
+    }
+
+    public function testRegularUserCannotAccessUsersPage(): void {
+        $this->loginAs('5510b5e6fffd897c234cafe499f76146');
+        $response = $this->get('user/users.php');
+
+        self::assertSame(401, $response->getStatusCode());
+        self::assertSame('401 Unauthorized', $this->text($response, '//h1'));
     }
 
     public function testAdminUsersPage(): void {

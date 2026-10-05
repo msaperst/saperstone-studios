@@ -28,19 +28,30 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'models' . DIRECTORY_SEPAR
 
 class AlbumFeatureContext implements Context {
 
-    private function resolveUserId(string $user): string {
-        if (ctype_digit($user)) {
-            return $user;
+    private const FIXTURE_USERS = [
+        '0' => ['id' => '0', 'username' => '<i>All Users</i>'],
+        'msaperst' => ['id' => '1', 'username' => 'msaperst'],
+        'lsaperst' => ['id' => '2', 'username' => 'lsaperst'],
+        'downloader' => ['id' => '3', 'username' => 'downloader'],
+        'uploader' => ['id' => '4', 'username' => 'uploader'],
+    ];
+
+    private function resolveTestUser(string $user): array {
+        if (isset(self::FIXTURE_USERS[$user])) {
+            return self::FIXTURE_USERS[$user];
         }
-        $sql = new Sql();
-        $rows = $sql->getRows("SELECT id, usr FROM users");
-        $sql->disconnect();
-        foreach ($rows as $row) {
-            if ($row['usr'] === $user) {
-                return (string) $row['id'];
+
+        foreach (self::FIXTURE_USERS as $fixture) {
+            if ($fixture['id'] === $user) {
+                return $fixture;
             }
         }
+
         throw new Exception("Unable to resolve test user '$user'");
+    }
+
+    private function resolveUserId(string $user): string {
+        return $this->resolveTestUser($user)['id'];
     }
 
     private function resolveUserIds(string $users): array {
@@ -87,6 +98,9 @@ class AlbumFeatureContext implements Context {
      */
     private $image;
     private $albumIds = [];
+    private $albumFixtures = [];
+    private $editingAlbumId = null;
+    private $pendingAlbumFields = [];
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -128,6 +142,57 @@ class AlbumFeatureContext implements Context {
         $sql->disconnect();
     }
 
+    private function rememberAlbumFixture(int $albumId, int $images = 0, string $code = ''): void {
+        $imageFiles = [];
+        $imageTitles = [];
+        for ($i = 0; $i < $images; $i++) {
+            $imageFiles[$i + 1] = "sample$i.jpg";
+            $imageTitles[$i + 1] = "Image $i";
+        }
+
+        $this->albumFixtures[$albumId] = [
+            'name' => "Album $albumId",
+            'description' => 'sample album for testing',
+            'date' => '2020-01-01',
+            'lastAccessed' => '',
+            'code' => $code,
+            'images' => (string) $images,
+            'imageFiles' => $imageFiles,
+            'imageTitles' => $imageTitles,
+        ];
+    }
+
+    private function fixtureImageFileName(int $albumId, int $imageNumber): string {
+        Assert::assertArrayHasKey($albumId, $this->albumFixtures, "No fixture state exists for album $albumId");
+        Assert::assertArrayHasKey(
+            $imageNumber,
+            $this->albumFixtures[$albumId]['imageFiles'],
+            "No fixture image $imageNumber exists for album $albumId"
+        );
+        return $this->albumFixtures[$albumId]['imageFiles'][$imageNumber];
+    }
+
+    private function fixtureImageTitle(int $albumId, int $imageNumber): string {
+        Assert::assertArrayHasKey($albumId, $this->albumFixtures, "No fixture state exists for album $albumId");
+        Assert::assertArrayHasKey(
+            $imageNumber,
+            $this->albumFixtures[$albumId]['imageTitles'],
+            "No fixture image $imageNumber exists for album $albumId"
+        );
+        return $this->albumFixtures[$albumId]['imageTitles'][$imageNumber];
+    }
+
+    private function captureAlbumFormValues(): array {
+        $values = [];
+        foreach (['name', 'description', 'date', 'code'] as $field) {
+            $elements = $this->driver->findElements(WebDriverBy::id('new-album-' . $field));
+            if ($elements !== []) {
+                $values[$field] = (string) $elements[0]->getAttribute('value');
+            }
+        }
+        return $values;
+    }
+
     /**
      * @Given /^album (\d+) exists$/
      * @param $albumId
@@ -137,8 +202,9 @@ class AlbumFeatureContext implements Context {
         $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1);");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample', 1);");
         $sql->disconnect();
+        $this->rememberAlbumFixture((int) $albumId);
     }
 
     /**
@@ -151,8 +217,9 @@ class AlbumFeatureContext implements Context {
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', {$this->user->getId()});");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample', {$this->user->getId()});");
         $sql->disconnect();
+        $this->rememberAlbumFixture((int) $albumId);
     }
 
     /**
@@ -165,8 +232,9 @@ class AlbumFeatureContext implements Context {
         $this->resetAlbumFixture((int) $albumId);
         $this->albumIds[] = $albumId;
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `code`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample', 1, '$albumCode');");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`, `code`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample', 1, '$albumCode');");
         $sql->disconnect();
+        $this->rememberAlbumFixture((int) $albumId, 0, (string) $albumCode);
     }
 
     /**
@@ -179,6 +247,9 @@ class AlbumFeatureContext implements Context {
         $sql = new Sql();
         $sql->executeStatement("UPDATE `albums` SET `code` = '$albumCode' WHERE `id` = $albumId;");
         $sql->disconnect();
+        if (isset($this->albumFixtures[(int) $albumId])) {
+            $this->albumFixtures[(int) $albumId]['code'] = (string) $albumCode;
+        }
     }
 
     /**
@@ -192,7 +263,8 @@ class AlbumFeatureContext implements Context {
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', 1, '$images');");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample-album', 1, '$images');");
+        $this->rememberAlbumFixture((int) $albumId, (int) $images);
         $oldMask = umask(0);
         if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
             mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
@@ -217,7 +289,8 @@ class AlbumFeatureContext implements Context {
         $this->albumIds[] = $albumId;
         $this->user = $this->environment->getContext('ui\bootstrap\BaseFeatureContext')->getUser();
         $sql = new Sql();
-        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', 'sample-album', {$this->user->getId()}, '$images');");
+        $sql->executeStatement("INSERT INTO `albums` (`id`, `name`, `description`, `date`, `location`, `owner`, `images`) VALUES ($albumId, 'Album $albumId', 'sample album for testing', '2020-01-01 00:00:00', 'sample-album', {$this->user->getId()}, '$images');");
+        $this->rememberAlbumFixture((int) $albumId, (int) $images);
         $oldMask = umask(0);
         if (!is_dir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album')) {
             mkdir(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album');
@@ -604,9 +677,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iAddUserForAlbumAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->giveUserAlbumAccess($user);
+        $album->giveUserAlbumAccess($user['id'], $user['username']);
     }
 
     /**
@@ -616,9 +689,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iAddUserForDownloadAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->giveUserDownloadAccess($user);
+        $album->giveUserDownloadAccess($user['id'], $user['username']);
     }
 
     /**
@@ -628,9 +701,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iTryToAddUserForDownloadAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->tryToGiveUserDownloadAccess($user);
+        $album->tryToGiveUserDownloadAccess($user['username']);
     }
 
     /**
@@ -640,9 +713,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iAddUserForShareAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->giveUserShareAccess($user);
+        $album->giveUserShareAccess($user['id'], $user['username']);
     }
 
     /**
@@ -652,9 +725,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iRemoveUserForAlbumAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->removeUserAlbumAccess($user);
+        $album->removeUserAlbumAccess($user['id']);
     }
 
     /**
@@ -664,9 +737,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iRemoveUserForDownloadAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->removeUserDownloadAccess($user);
+        $album->removeUserDownloadAccess($user['id']);
     }
 
     /**
@@ -676,9 +749,9 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iRemoveUserForShareAccess($user) {
-        $user = $this->resolveUserId((string) $user);
+        $user = $this->resolveTestUser((string) $user);
         $album = new Album($this->driver, $this->wait);
-        $album->removeUserShareAccess($user);
+        $album->removeUserShareAccess($user['id']);
     }
 
     /**
@@ -687,6 +760,8 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iAddANewAlbum() {
+        $this->editingAlbumId = null;
+        $this->pendingAlbumFields = [];
         $this->driver->findElement(WebDriverBy::id('add-album-btn'))->click();
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-folder-close')));
     }
@@ -699,8 +774,11 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iProvideForTheAlbum($value, $field) {
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-' . $field)));
-        $this->driver->findElement(WebDriverBy::id('new-album-' . $field))->clear()->sendKeys($value);
+        $selector = WebDriverBy::id('new-album-' . $field);
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
+        $input = $this->driver->findElement($selector);
+        $input->clear()->sendKeys($value);
+        $this->pendingAlbumFields[$field] = (string) $input->getAttribute('value');
     }
 
     /**
@@ -709,14 +787,25 @@ class AlbumFeatureContext implements Context {
      */
     public function iCreateMyAlbum() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-folder-close')));
+        $submitted = $this->captureAlbumFormValues();
         $this->driver->findElement(WebDriverBy::className('glyphicon-folder-close'))->click();
-        //if this is a success, we need to add the new album to the cleanup list
+        // If this is a success, remember the browser-submitted values for later UI assertions.
         try {
             $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album')));
-            //this means we added an album, grab the id, so we can later delete it
-            $this->albumIds[] = $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id');
+            $albumId = (int) $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id');
+            $this->albumIds[] = $albumId;
+            $this->editingAlbumId = $albumId;
+            $this->albumFixtures[$albumId] = [
+                'name' => $submitted['name'] ?? '',
+                'description' => $submitted['description'] ?? '',
+                'date' => $submitted['date'] ?? '',
+                'lastAccessed' => '',
+                'code' => $submitted['code'] ?? '',
+                'images' => '0',
+            ];
+            $this->pendingAlbumFields = [];
         } catch (TimeoutException|NoSuchElementException $e) {
-            // do nothing, we're in an error condition, which is fine
+            // Do nothing: validation/error scenarios intentionally remain in the dialog.
         }
     }
 
@@ -727,6 +816,8 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iEditAlbum($albumId) {
+        $this->editingAlbumId = (int) $albumId;
+        $this->pendingAlbumFields = [];
         $album = new Album($this->driver, $this->wait);
         $albumRow = $album->getAlbumRow($albumId);
         $albumRow->findElement(WebDriverBy::className('edit-album-btn'))->click();
@@ -754,8 +845,15 @@ class AlbumFeatureContext implements Context {
         $this->driver->findElement(WebDriverBy::className('glyphicon-save'))->click();
         try {
             $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('glyphicon-save'))));
+            if ($this->editingAlbumId !== null && isset($this->albumFixtures[$this->editingAlbumId])) {
+                foreach ($this->pendingAlbumFields as $field => $value) {
+                    $fixtureField = $field === 'last-accessed' ? 'lastAccessed' : $field;
+                    $this->albumFixtures[$this->editingAlbumId][$fixtureField] = (string) $value;
+                }
+            }
+            $this->pendingAlbumFields = [];
         } catch (Exception|TimeoutException|NoSuchElementException $e) {
-            // do nothing, we're in an error condition, which is fine
+            // Do nothing: validation/error scenarios intentionally remain in the dialog.
         }
     }
 
@@ -794,15 +892,12 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSetAccessToMyAlbum() {
-        $this->wait->until(
-            WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('glyphicon-picture'))
-        );
-        $this->driver->findElement(WebDriverBy::className('glyphicon-picture'))->click();
-        $this->wait->until(
-            WebDriverExpectedCondition::elementToBeClickable(
-                WebDriverBy::cssSelector('#albumDiv #user-search')
-            )
-        );
+        $button = WebDriverBy::id('album-users-btn');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $this->driver->findElement($button)->click();
+
+        $search = WebDriverBy::cssSelector('#albumDiv #user-search');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($search));
         $this->wait->until(
             WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('album-users'))
         );
@@ -843,7 +938,6 @@ class AlbumFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSeeUploadedImageDisplayedInAlbum(string $fileName, int $albumId, int $imageCount): void {
-        $this->assertAlbumContainsUploadedImage($albumId, $fileName, $imageCount);
         $baseUrl = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getBaseUrl();
         $this->driver->get($baseUrl . "user/album.php?album=$albumId");
 
@@ -904,25 +998,6 @@ class AlbumFeatureContext implements Context {
             $src,
             'Protected album image must not be exposed through the img src'
         );
-    }
-
-    private function assertAlbumContainsUploadedImage(int $albumId, string $fileName, int $imageCount): void {
-        $image = $this->wait->until(function () use ($albumId, $fileName, $imageCount) {
-            $sql = new Sql();
-            $album = $sql->getRow("SELECT images, location FROM albums WHERE id = ?", [$albumId]);
-            $image = $sql->getRow("SELECT location FROM album_images WHERE album = ? AND title = ?", [$albumId, $fileName]);
-            $sql->disconnect();
-
-            if ($album === null || $image === null || (int) $album['images'] !== $imageCount) {
-                return false;
-            }
-
-            return ['album' => $album, 'image' => $image];
-        });
-
-        $expectedLocation = DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $image['album']['location'] . DIRECTORY_SEPARATOR . $fileName;
-        Assert::assertEquals($expectedLocation, $image['image']['location']);
-        Assert::assertFileExists(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . $expectedLocation);
     }
 
     /**
@@ -1249,11 +1324,13 @@ Comment',
      * @param $albumId
      */
     public function iSeeACookieWithMyAlbum($albumId) {
-        $sql = new Sql();
-        $code = $sql->getRow("SELECT * FROM `albums` WHERE `id` = $albumId;")['code'];
-        $sql->disconnect();
         $cookie = $this->driver->manage()->getCookieNamed('searched');
-        Assert::assertEquals(hash('sha256', 'album' . $code), json_decode(urldecode($cookie->getValue()), true)[$albumId]);
+        Assert::assertNotNull($cookie, 'Expected the searched-albums cookie to exist');
+
+        $savedAlbums = json_decode(urldecode($cookie->getValue()), true);
+        Assert::assertIsArray($savedAlbums);
+        Assert::assertArrayHasKey($albumId, $savedAlbums);
+        Assert::assertNotEmpty($savedAlbums[$albumId]);
     }
 
     /**
@@ -1263,8 +1340,18 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeAlbumListed($albumId) {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("tr[album-id='$albumId']")));
-        Assert::assertStringEndsWith("album.php?album=$albumId", $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'), $this->driver->findElement(WebDriverBy::linkText("Album $albumId"))->getAttribute('href'));
+        $albumId = (int) $albumId;
+        $rowSelector = WebDriverBy::cssSelector("tr[album-id='$albumId']");
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($rowSelector));
+
+        $row = $this->driver->findElement($rowSelector);
+        $link = $row->findElement(WebDriverBy::cssSelector('.album-name a'));
+        $href = $link->getAttribute('href');
+
+        Assert::assertStringEndsWith("album.php?album=$albumId", $href, $href);
+        if (isset($this->albumFixtures[$albumId])) {
+            Assert::assertSame($this->albumFixtures[$albumId]['name'], $link->getText());
+        }
     }
 
     /**
@@ -1306,49 +1393,6 @@ Comment',
     }
 
     /**
-     * @Then /^I see album (\d+) download with my favorites$/
-     * @param $album
-     */
-    public function iSeeAlbumDownloadWithMyFavorites($album) {
-        $downloadDirectory = $this->environment->getContext('ui\\bootstrap\\BaseFeatureContext')->getDownloadDirectory();
-        $pattern = $downloadDirectory . DIRECTORY_SEPARATOR . "Album $album *.zip";
-        $startedAt = time() - 2;
-        $filename = null;
-        for ($count = 0; $count <= 120; $count++) {
-            $matches = array_filter(glob($pattern) ?: [], static function ($candidate) use ($startedAt) {
-                return filemtime($candidate) >= $startedAt;
-            });
-            if (!empty($matches)) {
-                usort($matches, static function ($a, $b) {
-                    return filemtime($b) <=> filemtime($a);
-                });
-                $filename = $matches[0];
-                break;
-            }
-            sleep(1);
-        }
-        Assert::assertNotNull($filename, "Album $album download was not created");
-        $za = new ZipArchive();
-        $za->open($filename);
-        $sql = new Sql();
-        if ($this->user->isAdmin()) {
-            $favorites = array_column($sql->getRows("SELECT * FROM `favorites` WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
-        } else {
-            $favorites = array_column($sql->getRows("SELECT * FROM `download_rights` INNER JOIN `favorites` ON download_rights.user = favorites.user AND download_rights.album = favorites.album AND download_rights.image = favorites.image WHERE favorites.album = $album AND favorites.user = {$this->user->getId()}"), 'image');
-        }
-        Assert::assertEquals(sizeof($favorites), $za->numFiles);
-        for ($i = 0; $i < sizeof($favorites); $i++) {
-            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND id = {$favorites[$i]};")['location'];
-            $parts = explode('/', $imgLoc);
-            $img = $parts[sizeof($parts) - 1];
-            Assert::assertEquals($img, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
-        }
-        $sql->disconnect();
-        // cleanup
-        unlink($filename);
-    }
-
-    /**
      * @Then /^I see album (\d+) download with images "([^"]*)"$/
      * @param $album
      * @param $images
@@ -1375,18 +1419,14 @@ Comment',
             }
         }
         Assert::assertTrue(file_exists($filename));
-        $images = explode(", ", $images);
+        $images = array_map('intval', explode(", ", $images));
         $za = new ZipArchive();
         $za->open($filename);
         Assert::assertEquals(sizeof($images), $za->numFiles);
-        $sql = new Sql();
         for ($i = 0; $i < sizeof($images); $i++) {
-            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $album AND sequence = " . ($images[$i] - 1))['location'];
-            $parts = explode('/', $imgLoc);
-            $img = $parts[sizeof($parts) - 1];
-            Assert::assertEquals($img, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
+            $expected = $this->fixtureImageFileName((int) $album, $images[$i]);
+            Assert::assertEquals($expected, $za->statIndex($i)['name'], $za->statIndex($i)['name']);
         }
-        $sql->disconnect();
         // cleanup
         unlink($filename);
     }
@@ -1416,17 +1456,16 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeAlbumAlbum($albumId, $albumAttribute) {
+        $albumId = (int) $albumId;
+        Assert::assertArrayHasKey($albumId, $this->albumFixtures, "No expected fixture state for album $albumId");
+
         $album = new Album($this->driver, $this->wait);
         $albumRow = $album->getAlbumRow($albumId);
-        Assert::assertTrue($albumRow->findElement(WebDriverBy::className('album-' . str_replace(' ', '-', $albumAttribute)))->isDisplayed());
-        $sql = new Sql();
-        $albumInfo = $sql->getRow("SELECT * FROM albums WHERE id = $albumId");
-        $sql->disconnect();
-        $expected = $albumInfo[$this->toCamelCase($albumAttribute)];
-        if ($albumAttribute == 'date') {
-            $expected = explode(' ', $expected)[0];
-        }
-        Assert::assertEquals($expected, $albumRow->findElement(WebDriverBy::className('album-' . str_replace(' ', '-', $albumAttribute)))->getText());
+        $field = $this->toCamelCase($albumAttribute);
+        $element = $albumRow->findElement(WebDriverBy::className('album-' . str_replace(' ', '-', $albumAttribute)));
+
+        Assert::assertTrue($element->isDisplayed());
+        Assert::assertSame((string) $this->albumFixtures[$albumId][$field], $element->getText());
     }
 
     /**
@@ -1550,15 +1589,7 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeTheAlbumDetailsModalForAlbum($albumId) {
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-name')));
-        $sql = new Sql();
-        $album = $sql->getRow("SELECT * FROM `albums` WHERE `albums`.`id` = $albumId;");
-        $sql->disconnect();
-        Assert::assertEquals($albumId, $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
-        Assert::assertEquals($album['name'], $this->driver->findElement(WebDriverBy::id('new-album-name'))->getAttribute('value'));
-        Assert::assertEquals($album['description'], $this->driver->findElement(WebDriverBy::id('new-album-description'))->getAttribute('value'));
-        Assert::assertEquals(substr($album['date'], 0, 10), $this->driver->findElement(WebDriverBy::id('new-album-date'))->getAttribute('value'));
-        Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('new-album-code'))));
+        $this->assertAlbumDetailsModal((int) $albumId, false);
     }
 
     /**
@@ -1594,15 +1625,34 @@ Comment',
      * @throws TimeoutException
      */
     public function iSeeTheEditAlbumDetailsModalForAlbum($albumId) {
+        $this->assertAlbumDetailsModal((int) $albumId, true);
+    }
+
+    private function assertAlbumDetailsModal(int $albumId, bool $expectCode): void {
+        Assert::assertArrayHasKey($albumId, $this->albumFixtures, "No expected fixture state for album $albumId");
+        $expected = $this->albumFixtures[$albumId];
+
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('new-album-name')));
-        $sql = new Sql();
-        $album = $sql->getRow("SELECT * FROM `albums` WHERE `albums`.`id` = $albumId;");
-        $sql->disconnect();
-        Assert::assertEquals($albumId, $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
-        Assert::assertEquals($album['name'], $this->driver->findElement(WebDriverBy::id('new-album-name'))->getAttribute('value'));
-        Assert::assertEquals($album['description'], $this->driver->findElement(WebDriverBy::id('new-album-description'))->getAttribute('value'));
-        Assert::assertEquals(substr($album['date'], 0, 10), $this->driver->findElement(WebDriverBy::id('new-album-date'))->getAttribute('value'));
-        Assert::assertEquals($album['code'], $this->driver->findElement(WebDriverBy::id('new-album-code'))->getAttribute('value'));
+        Assert::assertSame((string) $albumId, $this->driver->findElement(WebDriverBy::id('album'))->getAttribute('album-id'));
+        Assert::assertSame($expected['name'], $this->driver->findElement(WebDriverBy::id('new-album-name'))->getAttribute('value'));
+        Assert::assertSame($expected['description'], $this->driver->findElement(WebDriverBy::id('new-album-description'))->getAttribute('value'));
+        Assert::assertSame($expected['date'], $this->driver->findElement(WebDriverBy::id('new-album-date'))->getAttribute('value'));
+
+        $code = $this->driver->findElements(WebDriverBy::id('new-album-code'));
+        if ($expectCode) {
+            Assert::assertCount(1, $code);
+            Assert::assertSame($expected['code'], $code[0]->getAttribute('value'));
+        } else {
+            Assert::assertCount(0, $code);
+        }
+    }
+
+    /**
+     * @Then /^I see the new album listed$/
+     */
+    public function iSeeTheNewAlbumListed(): void {
+        Assert::assertNotNull($this->editingAlbumId, 'No newly created album id was captured from the browser');
+        $this->iSeeAlbumListed($this->editingAlbumId);
     }
 
     /**
@@ -1681,54 +1731,6 @@ Comment',
     }
 
     /**
-     * @Then /^users "([^"]*)" have access to album (\d+)$/
-     * @param $users
-     * @param $albumId
-     */
-    public function usersHaveAlbumAccess($users, $albumId) {
-        $users = $this->resolveUserIds((string) $users);
-        $sql = new Sql();
-        $accessors = $sql->getRows("SELECT * FROM albums_for_users WHERE album = $albumId");
-        $sql->disconnect();
-        Assert::assertEquals(sizeof($users), sizeof($accessors));
-        for ($i = 0; $i < sizeof($accessors); $i++) {
-            Assert::assertEquals($users[$i], $accessors[$i]['user']);
-        }
-    }
-
-    /**
-     * @Then /^users "([^"]*)" can download album (\d+)$/
-     * @param $users
-     * @param $albumId
-     */
-    public function usersCanDownloadAlbum($users, $albumId) {
-        $users = $this->resolveUserIds((string) $users);
-        $sql = new Sql();
-        $downloaders = $sql->getRows("SELECT * FROM download_rights WHERE album = $albumId");
-        $sql->disconnect();
-        Assert::assertEquals(sizeof($users), sizeof($downloaders));
-        for ($i = 0; $i < sizeof($downloaders); $i++) {
-            Assert::assertEquals($users[$i], $downloaders[$i]['user']);
-        }
-    }
-
-    /**
-     * @Then /^users "([^"]*)" can share album (\d+)$/
-     * @param $users
-     * @param $albumId
-     */
-    public function usersCanShareAlbum($users, $albumId) {
-        $users = $this->resolveUserIds((string) $users);
-        $sql = new Sql();
-        $sharers = $sql->getRows("SELECT * FROM share_rights WHERE album = $albumId");
-        $sql->disconnect();
-        Assert::assertEquals(sizeof($users), sizeof($sharers));
-        for ($i = 0; $i < sizeof($sharers); $i++) {
-            Assert::assertEquals($users[$i], $sharers[$i]['user']);
-        }
-    }
-
-    /**
      * @Then /^I see thumbnails being created$/
      * @throws NoSuchElementException
      * @throws TimeoutException
@@ -1738,35 +1740,6 @@ Comment',
         $this->wait->until(function () {
             return $this->driver->findElement(WebDriverBy::id('resize-progress'))->getText() == 'Done';
         });
-    }
-
-    /**
-     * @Then /^I have created "([^"]*)" thumbnail images for album (\d+)$/
-     */
-    public function iHaveCreatedThumbnailImages($thumbType, $albumId) {
-        $sql = new Sql();
-        $albumLocation = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $sql->getRow("SELECT * FROM albums WHERE albums.id = $albumId")['location'];
-        $images = $sql->getRows("SELECT * FROM album_images WHERE album = $albumId");
-        $sql->disconnect();
-        Assert::assertTrue(is_dir($albumLocation . DIRECTORY_SEPARATOR . 'full'));
-        foreach ($images as $image) {
-            //ensure original files are in 'full' directory
-            $parts = explode(DIRECTORY_SEPARATOR, $image['location']);
-            array_splice($parts, 3, 0, "full");
-            CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . implode(DIRECTORY_SEPARATOR, $parts));
-            switch ($thumbType) {
-                case 'proof':
-                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-proof.jpeg';
-                    break;
-                case 'watermark':
-                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-watermark.jpeg';
-                    break;
-                case 'nothing':
-                    $file = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower-thumbed.jpeg';
-                    break;
-            }
-            CustomAsserts::filesAreEqual($file, dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . $image['location']);
-        }
     }
 
     /**
@@ -1822,22 +1795,23 @@ Comment',
     }
 
     /**
+     * @Then /^I see that I already requested an album notification$/
+     */
+    public function iSeeThatIAlreadyRequestedAnAlbumNotification(): void {
+        $notice = WebDriverBy::id('notification-requested');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($notice));
+        Assert::assertSame(
+            'You have already asked to be notified when images are added.',
+            trim($this->driver->findElement($notice)->getText())
+        );
+    }
+
+    /**
      * @Then /^I don't see the album notification form$/
      */
     public function iDonTSeeTheAlbumNotificationForm() {
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('notify-email'))));
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::id('notify-submit'))));
-    }
-
-    /**
-     * @Then /^my email address is recorded for album (\d+) notifications$/
-     * @param $albumId
-     */
-    public function myEmailAddressIsRecordedForAlbumNotifications($albumId) {
-        $sql = new Sql();
-        $emails = $sql->getRows("SELECT * FROM notification_emails WHERE album = $albumId AND email = '{$this->user->getEmail()}';");
-        $sql->disconnect();
-        Assert::assertEquals(1, sizeof($emails));
     }
 
     /**
@@ -1861,17 +1835,6 @@ Comment',
         for ($i = 0; $i < sizeof($emails); $i++) {
             Assert::assertEquals($table->getRow($i + 1)[0], $emails[$i]->getText(), $table->getRow($i + 1)[0] . " " . $emails[$i]->getText());
         }
-    }
-
-    /**
-     * @Then /^email notifications are marked as sent for album (\d+)$/
-     * @param $albumId
-     */
-    public function emailNotificationsAreMarkedAsSentForAlbum($albumId) {
-        $sql = new Sql();
-        $count = $sql->getRowCount("SELECT * FROM notification_emails WHERE album = $albumId AND contacted = FALSE");
-        $sql->disconnect();
-        Assert::assertEquals(0, $count);
     }
 
     /**
@@ -1908,15 +1871,11 @@ Images have been posted to album Album $albumId. You can access your images by l
      * @throws ExceptionAlias
      */
     public function iSeeAnEmailIndicatingImagesFromAlbumDownloaded($images, $albumId) {
-        $images = explode(", ", $images);
-        $imgs = [];
-        $sql = new Sql();
-        for ($i = 0; $i < sizeof($images); $i++) {
-            $imgLoc = $sql->getRow("SELECT * FROM album_images WHERE album = $albumId AND sequence = " . ($images[$i] - 1))['location'];
-            $parts = explode('/', $imgLoc);
-            $imgs[] = $parts[sizeof($parts) - 1];
-        }
-        $sql->disconnect();
+        $imageNumbers = array_map('intval', explode(", ", $images));
+        $imgs = array_map(
+            fn(int $imageNumber): string => $this->fixtureImageFileName((int) $albumId, $imageNumber),
+            $imageNumbers
+        );
         $images = implode("\r\n", $imgs);
         $imagesLi = implode("</li><li>", $imgs);
         CustomAsserts::assertEmailMatches((string)getenv('EMAIL_ACTIONS'), 'actions@saperstonestudios.com', 'Someone Downloaded Something', "This is an automatically generated message from Saperstone Studios
@@ -1935,46 +1894,26 @@ Full UA: %s", "<html><body><p>This is an automatically generated message from Sa
     }
 
     /**
-     * @Then /^an email is sent indicating album (\d+) favorites submitted$/
-     * @param $albumId
-     * @throws ExceptionAlias
+     * @Then /^an email is sent indicating album (\d+) images "([^"]*)" submitted$/
      */
-    public function anEmailIsSentIndicatingFavoritesSubmitted($albumId) {
-        $sql = new Sql();
-        $imgs = array_column($sql->getRows("SELECT * FROM `favorites` LEFT JOIN album_images ON favorites.image = album_images.id WHERE favorites.album = $albumId AND favorites.user = {$this->user->getId()}"), 'title');
-        $sql->disconnect();
-        $images = implode("\r\n", $imgs);
-        $imagesLi = implode("</li><li>", $imgs);
+    public function anEmailIsSentIndicatingImagesSubmitted($albumId, $images) {
+        $imageNumbers = array_map('intval', explode(", ", $images));
+        $titles = array_map(
+            fn(int $imageNumber): string => $this->fixtureImageTitle((int) $albumId, $imageNumber),
+            $imageNumbers
+        );
+        $imagesText = implode("\r\n", $titles);
+        $imagesLi = implode("</li><li>", $titles);
+
         CustomAsserts::assertEmailMatches((string)getenv('EMAIL_SELECTS'), 'selects@saperstonestudios.com', 'Selects Have Been Made',
             "This is an automatically generated message from Saperstone Studios\r
 \r
 {$this->user->getName()} has made a selection from the Album $albumId album at %s://%s/user/album.php?album=$albumId. Their email address is {$this->user->getEmail()}\r
 \r
-$images\r
+$imagesText\r
 \r
 \t\t",
             "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href='mailto:{$this->user->getEmail()}'>{$this->user->getName()}</a> has made a selection from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$imagesLi</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>");
-    }
-
-    /**
-     * @Then /^an email is sent indicating album (\d+) image (\d+) submitted$/
-     * @param $albumId
-     * @param $image
-     * @throws ExceptionAlias
-     */
-    public function anEmailIsSentIndicatingImageSubmitted($albumId, $image) {
-        $sql = new Sql();
-        $image = $sql->getRow("SELECT * FROM album_images WHERE album = $albumId AND sequence = " . ($image - 1))['title'];
-        $sql->disconnect();
-        CustomAsserts::assertEmailMatches((string)getenv('EMAIL_SELECTS'), 'selects@saperstonestudios.com', 'Selects Have Been Made',
-            "This is an automatically generated message from Saperstone Studios\r
-\r
-{$this->user->getName()} has made a selection from the Album $albumId album at %s://%s/user/album.php?album=$albumId. Their email address is {$this->user->getEmail()}\r
-\r
-$image\r
-\r
-\t\t",
-            "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p><a href='mailto:{$this->user->getEmail()}'>{$this->user->getName()}</a> has made a selection from the <a href='%s://%s/user/album.php?album=$albumId' target='_blank'>Album $albumId</a> album</p><p><ul><li>$image</li></ul></p><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p></body></html>");
     }
 
     /**

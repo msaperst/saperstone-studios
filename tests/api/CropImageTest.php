@@ -20,6 +20,8 @@ class CropImageTest extends TestCase {
 
     public function tearDown(): void {
         $this->http = NULL;
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/tmp_crop-security.jpeg');
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/crop-security.jpeg');
         $this->sql->disconnect();
     }
 
@@ -41,6 +43,7 @@ class CropImageTest extends TestCase {
             $this->http->request('POST', 'api/crop-image.php', [
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
@@ -203,6 +206,34 @@ class CropImageTest extends TestCase {
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals('Cropped image is smaller than the required image', (string)$response->getBody());
         $this->assertFalse(file_exists('content/blog/tmp_flower.jpeg'));
+    }
+
+    public function testRejectsImageTraversalOutsidePublicRoot(): void {
+        copy(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg',
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/tmp_crop-security.jpeg'
+        );
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/crop-image.php', [
+            'form_params' => [
+                'image' => '../../content/tmp_crop-security.jpeg',
+                'max-width' => '300',
+                'top' => '10',
+                'bottom' => '110'
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Image location is not valid', (string)$response->getBody());
+        $this->assertTrue(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/tmp_crop-security.jpeg'
+        ));
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/crop-security.jpeg'
+        ));
     }
 
     public function testProperlyResizedImage() {

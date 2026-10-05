@@ -8,7 +8,6 @@ use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
-use Sql;
 
 class Blog {
     /**
@@ -43,24 +42,67 @@ class Blog {
         $this->fillOutCommentForm($name, $email, $message);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('post-comment-submit')));
         $this->driver->findElement(WebDriverBy::id('post-comment-submit'))->click();
+
+        // Comment creation is asynchronous. Do not let the action complete
+        // until the new comment is visible in the UI; otherwise a following
+        // action can operate on the previously first comment.
+        $this->wait->until(function () use ($message) {
+            foreach ($this->getCommentBlocks() as $block) {
+                if ($block->findElement(WebDriverBy::tagName('p'))->getText() === $message) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     public function waitForCommentsToLoad() {
-        $sql = new Sql();
-        $comments = $sql->getRows("SELECT * FROM blog_comments WHERE blog = {$this->getBlogId()} ORDER BY date DESC");
-        $sql->disconnect();
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector('#post-comments > div:nth-child(' . (sizeof($comments) + 1) . ')')));
+        $header = WebDriverBy::cssSelector('#post-comments h2');
+        $this->wait->until(function () use ($header) {
+            $headers = $this->driver->findElements($header);
+            if (count($headers) !== 1) {
+                return false;
+            }
+
+            return preg_match('/^\\d+ Comments?$/', trim($headers[0]->getText())) === 1;
+        });
     }
 
     public function deleteComment($ord) {
         $this->waitForCommentsToLoad();
+        $index = intval($ord) - 1;
+
+        $this->wait->until(function () use ($index) {
+            $blocks = $this->getCommentBlocks();
+            return isset($blocks[$index])
+                && str_contains((string)$blocks[$index]->getAttribute('class'), 'deletable');
+        });
+
         $blocks = $this->getCommentBlocks();
-        $commentBlockSize = $blocks[intval($ord) - 1]->getSize();
+        $comment = $blocks[$index];
+        $this->driver->executeScript(
+            "arguments[0].scrollIntoView({block: 'center'});",
+            [$comment]
+        );
+
+        // The legacy delete affordance is a CSS :after pseudo-element on the
+        // blockquote. Click its visible top-right area as a user would.
+        $commentBlockSize = $comment->getSize();
         $action = new WebDriverActions($this->driver);
-        $action->moveToElement($blocks[intval($ord) - 1], intval($commentBlockSize->getWidth() * 0.5 - 5), intval($commentBlockSize->getHeight() * -0.5 + 5))->click()->perform();
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::className('btn-danger')));
-        $this->driver->findElement(WebDriverBy::className('btn-danger'))->click();
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('btn-danger'))));
+        $action->moveToElement(
+            $comment,
+            intval($commentBlockSize->getWidth() * 0.5 - 5),
+            intval($commentBlockSize->getHeight() * -0.5 + 5)
+        )->click()->perform();
+
+        $confirm = WebDriverBy::xpath(
+            "//div[contains(@class, 'bootstrap-dialog')][.//div[contains(@class, 'bootstrap-dialog-title')][normalize-space(.)='Are You Sure?']]//button[contains(@class, 'btn-danger')][contains(normalize-space(.), 'Delete')]"
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($confirm));
+        $this->driver->findElement($confirm)->click();
+        $this->wait->until(WebDriverExpectedCondition::not(
+            WebDriverExpectedCondition::presenceOfElementLocated($confirm)
+        ));
     }
 
     public function getCommentHolder(): RemoteWebElement {
