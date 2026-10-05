@@ -58,6 +58,32 @@ class TestSummaryScriptTests(unittest.TestCase):
             result,
         )
 
+    def test_parse_clover_reads_php_statement_and_method_coverage(self):
+        xml = """<?xml version="1.0"?>
+        <coverage>
+          <project>
+            <metrics
+              statements="100"
+              coveredstatements="86"
+              methods="20"
+              coveredmethods="15"
+            />
+          </project>
+        </coverage>
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "coverage.xml"
+            path.write_text(xml, encoding="utf-8")
+
+            result = test_summary.parse_clover(path)
+
+        self.assertEqual(100, result["lines"])
+        self.assertEqual(86, result["covered_lines"])
+        self.assertEqual(20, result["functions"])
+        self.assertEqual(15, result["covered_functions"])
+        self.assertEqual(86.0, result["line"])
+        self.assertEqual(75.0, result["function"])
+
     def test_parse_lcov_aggregates_multiple_files(self):
         lcov = """SF:first.js
 FNF:2
