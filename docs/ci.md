@@ -38,8 +38,8 @@ Representative runtimes below are from the successful October 5, 2026 PR run and
 | Behat Testing | Yes | No | No | ~25m 49s | Required |
 | CodeQL JavaScript analysis | Yes | Yes | Yes | ~1m 4s | Required |
 | Composer SCA | Yes | No | Yes | ~1m | Required for Critical/High advisories |
-| PHP Container Scan | Yes | No | Yes | ~3m 16s | Required for fixable Critical/High findings |
-| SQL Container Scan | Yes | No | Yes | ~2m 46s | Required for fixable Critical/High findings |
+| PHP Container Scan | Yes | No | Yes | ~3m 16s | Required for any fixable finding |
+| SQL Container Scan | Yes | No | Yes | ~2m 46s | Required for any fixable finding |
 | ZAP baseline/full | Baseline | No | Full | ~3m 48s baseline | Required for reportable Low+ findings |
 
 The production-image workflow runs only after a push reaches `develop`. Its PHP and SQL builds are a deployment gate rather than a pull-request merge gate; production polling should deploy only successfully built images.
@@ -92,7 +92,7 @@ Browser/JavaScript workflows belong in Behat; page behavior that can be verified
 
 ### Container scanning
 
-`.github/workflows/container-scan.yml` builds the PHP and SQL Docker images and scans each with Anchore/Grype on pull requests and weekly. Each job keeps a complete vulnerability report and a second report containing findings for which a fix is available. The GitHub Actions summary shows both sets by severity. Only **fixable High or Critical** vulnerabilities fail the merge gate; unfixable findings remain visible in the summary, SARIF/code-scanning results, and uploaded artifacts so they can be reviewed and remediated when upstream fixes become available.
+`.github/workflows/container-scan.yml` builds the PHP and SQL Docker images and scans each with Anchore/Grype on pull requests and weekly. Each job keeps a complete vulnerability report and a second report containing findings for which a fix is available. The GitHub Actions summary shows both sets by severity. **Any vulnerability with an available fix** fails the merge gate. Findings without a current fix remain visible in the summary, SARIF/code-scanning results, and uploaded artifacts so they can be reviewed and remediated when upstream fixes become available.
 
 ### ZAP scans
 
