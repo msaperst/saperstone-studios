@@ -317,13 +317,85 @@ class ContainerScanSummaryScriptTests(unittest.TestCase):
 
         self.assertEqual("critical", findings[0]["severity"])
 
-    def test_any_fixable_finding_blocks_the_container_gate(self):
-        self.assertFalse(container_scan_summary.has_fixable_findings([]))
-        self.assertTrue(
-            container_scan_summary.has_fixable_findings(
-                [{"severity": "low", "rule_id": "CVE-low", "description": "Low"}]
+    def test_only_non_allowlisted_fixable_findings_block_the_container_gate(self):
+        allowlist = {"CVE-reviewed": "Reviewed false positive"}
+        reviewed = {
+            "severity": "low",
+            "rule_id": "CVE-reviewed",
+            "description": "Reviewed",
+        }
+        actionable = {
+            "severity": "low",
+            "rule_id": "CVE-actionable",
+            "description": "Actionable",
+        }
+
+        self.assertFalse(
+            container_scan_summary.has_actionable_fixable_findings(
+                [reviewed],
+                allowlist,
             )
         )
+        self.assertTrue(
+            container_scan_summary.has_actionable_fixable_findings(
+                [reviewed, actionable],
+                allowlist,
+            )
+        )
+
+    def test_filtered_sarif_keeps_raw_findings_out_of_code_scanning_only(self):
+        sarif = {
+            "runs": [
+                {
+                    "tool": {
+                        "driver": {
+                            "rules": [
+                                {"id": "CVE-reviewed"},
+                                {"id": "CVE-actionable"},
+                            ]
+                        }
+                    },
+                    "results": [
+                        {"ruleId": "CVE-reviewed"},
+                        {"ruleId": "CVE-actionable"},
+                    ],
+                }
+            ]
+        }
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "filtered.sarif"
+            container_scan_summary.write_filtered_sarif(
+                sarif,
+                {"CVE-reviewed": "Reviewed false positive"},
+                output,
+            )
+            filtered = json.loads(output.read_text(encoding="utf-8"))
+
+        run = filtered["runs"][0]
+        self.assertEqual(
+            ["CVE-actionable"],
+            [result["ruleId"] for result in run["results"]],
+        )
+        self.assertEqual(
+            ["CVE-actionable"],
+            [rule["id"] for rule in run["tool"]["driver"]["rules"]],
+        )
+        self.assertEqual(2, len(sarif["runs"][0]["results"]))
+
+    def test_load_allowlist_requires_unique_reviewed_rules(self):
+        data = {
+            "entries": [
+                {"rule_id": "CVE-one", "reason": "Reviewed"},
+                {"rule_id": "CVE-one", "reason": "Duplicate"},
+            ]
+        }
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "allowlist.json"
+            path.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Duplicate"):
+                container_scan_summary.load_allowlist(path)
 
     def test_severity_counts_include_fixable_findings(self):
         findings = [

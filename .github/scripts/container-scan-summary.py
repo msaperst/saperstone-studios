@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import copy
 import json
 import re
 import sys
@@ -88,8 +89,11 @@ def result_severity(result, rule):
     }.get(str(result.get("level", "")).lower(), "unknown")
 
 
-def parse_sarif(path):
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+def load_sarif(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def findings_from_sarif(data):
     findings = []
 
     for run in data.get("runs", []):
@@ -117,50 +121,141 @@ def parse_sarif(path):
     return findings
 
 
+def parse_sarif(path):
+    return findings_from_sarif(load_sarif(path))
+
+
+def load_allowlist(path):
+    if path is None:
+        return {}
+
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    allowlist = {}
+    for entry in data.get("entries", []):
+        rule_id = str(entry.get("rule_id", "")).strip()
+        reason = str(entry.get("reason", "")).strip()
+        if not rule_id or not reason:
+            raise ValueError("Container scan allowlist entries require rule_id and reason")
+        if rule_id in allowlist:
+            raise ValueError(f"Duplicate container scan allowlist entry: {rule_id}")
+        allowlist[rule_id] = reason
+
+    return allowlist
+
+
+def reviewed_findings(findings, allowlist):
+    return [
+        {**finding, "reason": allowlist[finding["rule_id"]]}
+        for finding in findings
+        if finding["rule_id"] in allowlist
+    ]
+
+
+def actionable_fixable_findings(findings, allowlist):
+    return [
+        finding
+        for finding in findings
+        if finding["rule_id"] not in allowlist
+    ]
+
+
 def severity_counts(findings):
     return Counter(item["severity"] for item in findings)
 
 
-def has_fixable_findings(findings):
-    return bool(findings)
+def has_actionable_fixable_findings(findings, allowlist):
+    return bool(actionable_fixable_findings(findings, allowlist))
 
 
-def write_summary(image_name, all_findings, fixable_findings):
+def write_filtered_sarif(data, allowlist, output_path):
+    filtered = copy.deepcopy(data)
+
+    for run in filtered.get("runs", []):
+        results = [
+            result
+            for result in run.get("results", [])
+            if result.get("ruleId") not in allowlist
+        ]
+        run["results"] = results
+
+        used_rule_ids = {
+            result.get("ruleId")
+            for result in results
+            if result.get("ruleId")
+        }
+        driver = run.get("tool", {}).get("driver", {})
+        if "rules" in driver:
+            driver["rules"] = [
+                rule
+                for rule in driver.get("rules", [])
+                if rule.get("id") in used_rule_ids
+            ]
+
+    Path(output_path).write_text(
+        json.dumps(filtered, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def write_summary(image_name, all_findings, fixable_findings, allowlist):
+    reviewed = reviewed_findings(all_findings, allowlist)
+    actionable_fixable = actionable_fixable_findings(fixable_findings, allowlist)
+
     all_counts = severity_counts(all_findings)
     fixable_counts = severity_counts(fixable_findings)
+    reviewed_counts = severity_counts(reviewed)
+    actionable_counts = severity_counts(actionable_fixable)
 
     print(f"### {image_name} Container Security Scan\n")
-    print("| Severity | All findings | Fixable findings |")
-    print("| --- | ---: | ---: |")
+    print(
+        "| Severity | Detected | Fixable | Reviewed exceptions | "
+        "Actionable fixable |"
+    )
+    print("| --- | ---: | ---: | ---: | ---: |")
     for severity in SEVERITIES:
         print(
             f"| {severity.capitalize()} | **{all_counts[severity]}** | "
-            f"**{fixable_counts[severity]}** |"
+            f"**{fixable_counts[severity]}** | **{reviewed_counts[severity]}** | "
+            f"**{actionable_counts[severity]}** |"
         )
     print(
-        f"| Total | **{len(all_findings)}** | **{len(fixable_findings)}** |"
+        f"| Total | **{len(all_findings)}** | **{len(fixable_findings)}** | "
+        f"**{len(reviewed)}** | **{len(actionable_fixable)}** |"
     )
 
-    if fixable_findings:
-        print("\n### Fixable findings\n")
-        for finding in fixable_findings[:20]:
+    if actionable_fixable:
+        print("\n### Actionable fixable findings\n")
+        for finding in actionable_fixable[:20]:
             print(
                 f"- **{finding['severity'].capitalize()}** — "
                 f"`{finding['rule_id']}` — {finding['description']}"
             )
-        if len(fixable_findings) > 20:
-            print(f"- …and {len(fixable_findings) - 20} more")
+        if len(actionable_fixable) > 20:
+            print(f"- …and {len(actionable_fixable) - 20} more")
     else:
-        print("\nNo fixable vulnerabilities were reported.")
+        print("\nNo actionable fixable vulnerabilities were reported.")
 
-    fixable_keys = {
-        (item["rule_id"], item["description"]) for item in fixable_findings
+    if reviewed:
+        print("\n<details>")
+        print("<summary>Reviewed exceptions</summary>\n")
+        for finding in reviewed[:30]:
+            print(
+                f"- **{finding['severity'].capitalize()}** — "
+                f"`{finding['rule_id']}` — {finding['reason']}"
+            )
+        if len(reviewed) > 30:
+            print(f"- …and {len(reviewed) - 30} more")
+        print("\n</details>")
+
+    actionable_fixable_keys = {
+        (item["rule_id"], item["description"]) for item in actionable_fixable
     }
     unresolved = [
         finding
         for finding in all_findings
-        if finding["severity"] in {"critical", "high"}
-        and (finding["rule_id"], finding["description"]) not in fixable_keys
+        if finding["rule_id"] not in allowlist
+        and finding["severity"] in {"critical", "high"}
+        and (finding["rule_id"], finding["description"]) not in actionable_fixable_keys
     ]
     if unresolved:
         print("\n<details>")
@@ -175,9 +270,9 @@ def write_summary(image_name, all_findings, fixable_findings):
         print("\n</details>")
 
     print(
-        "\n**Merge gate:** any vulnerability with an available fix fails "
-        "the container scan. Findings without a current fix remain visible "
-        "for risk review and future remediation."
+        "\n**Merge gate:** any fixable vulnerability that is not covered by "
+        "a documented reviewed exception fails the container scan. Raw reports "
+        "retain every detected finding."
     )
 
 
@@ -186,18 +281,25 @@ def main():
     parser.add_argument("--image", required=True)
     parser.add_argument("--all", dest="all_report", required=True)
     parser.add_argument("--fixable", required=True)
+    parser.add_argument("--allowlist")
+    parser.add_argument("--filtered-sarif")
     args = parser.parse_args()
 
     try:
-        all_findings = parse_sarif(args.all_report)
+        all_data = load_sarif(args.all_report)
+        all_findings = findings_from_sarif(all_data)
         fixable_findings = parse_sarif(args.fixable)
-    except (OSError, json.JSONDecodeError) as error:
+        allowlist = load_allowlist(args.allowlist)
+    except (OSError, json.JSONDecodeError, ValueError) as error:
         print(f"### {args.image} Container Security Scan\n")
-        print(f"⚠️ Unable to read container scan report: {error}")
+        print(f"⚠️ Unable to read container scan data: {error}")
         return 2
 
-    write_summary(args.image, all_findings, fixable_findings)
-    return 1 if has_fixable_findings(fixable_findings) else 0
+    if args.filtered_sarif:
+        write_filtered_sarif(all_data, allowlist, args.filtered_sarif)
+
+    write_summary(args.image, all_findings, fixable_findings, allowlist)
+    return 1 if has_actionable_fixable_findings(fixable_findings, allowlist) else 0
 
 
 if __name__ == "__main__":

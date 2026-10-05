@@ -92,7 +92,7 @@ Browser/JavaScript workflows belong in Behat; page behavior that can be verified
 
 ### Container scanning
 
-`.github/workflows/container-scan.yml` builds the PHP and SQL Docker images and scans each with Anchore/Grype on pull requests and weekly. Each job keeps a complete vulnerability report and a second report containing findings for which a fix is available. The GitHub Actions summary shows both sets by severity. **Any vulnerability with an available fix** fails the merge gate. Findings without a current fix remain visible in the summary, SARIF/code-scanning results, and uploaded artifacts so they can be reviewed and remediated when upstream fixes become available.
+`.github/workflows/container-scan.yml` builds the PHP and SQL Docker images and scans each with Anchore/Grype on pull requests and weekly. Grype itself is configured not to hide findings. Each job keeps a raw complete vulnerability report, a raw report containing findings for which a fix is available, and a filtered SARIF report for GitHub Security. The GitHub Actions summary shows **Detected**, **Fixable**, **Reviewed exceptions**, and **Actionable fixable** counts by severity. **Any fixable vulnerability not covered by a documented reviewed exception** fails the merge gate. Reviewed false positives/non-applicable findings are listed in `.github/container-scan-allowlist.json` with an explicit reason; they remain visible in the raw artifacts and job summary rather than disappearing from the scan. Findings without a current fix remain visible for risk review and future remediation.
 
 ### ZAP scans
 
