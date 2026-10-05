@@ -252,7 +252,7 @@ class LoginFeatureContext implements Context {
      */
     public function iSubmitEmailForReset($email) {
         $login = new Login($this->driver, $this->wait);
-        $login->requestResetKey($email);
+        $login->requestResetKey($email, false);
     }
 
     /**

@@ -73,34 +73,79 @@ class Login {
     public function openResetPassword() {
         $this->openLogin();
         $this->driver->findElement(WebDriverBy::id('login-forgot-password'))->click();
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('forgot-password-submit'))));
+        $this->wait->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(
+                WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-submit')
+            )
+        );
     }
 
-    public function requestResetKey($email) {
+    public function requestResetKey($email, bool $expectSuccess = true) {
         $this->openResetPassword();
-        $this->driver->findElement(WebDriverBy::id('forgot-password-email'))->sendKeys($email);
-        $this->driver->findElement(WebDriverBy::id('forgot-password-submit'))->click();
-        if ($email !== '') {
-            $this->wait->until(function () {
-                return $this->driver->findElement(WebDriverBy::id('forgot-password-reset-password'))->isDisplayed()
-                    || count($this->driver->findElements(WebDriverBy::cssSelector('#forgot-password-modal .alert-danger'))) > 0;
-            });
-        } else {
+
+        $emailSelector = WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-email');
+        $this->setInputValue($emailSelector, (string) $email);
+
+        $submitSelector = WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-submit');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($submitSelector));
+        $this->driver->findElement($submitSelector)->click();
+
+        if ($expectSuccess) {
             $this->wait->until(
-                WebDriverExpectedCondition::presenceOfElementLocated(
-                    WebDriverBy::cssSelector('#forgot-password-modal .alert-danger')
+                WebDriverExpectedCondition::visibilityOfElementLocated(
+                    WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-reset-password')
                 )
             );
+            return;
         }
+
+        $this->wait->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::cssSelector('#forgot-password-modal.in .alert-danger')
+            )
+        );
     }
 
     public function requestResetPassword($email, $code, $password, $confirm) {
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('forgot-password-reset-password'))));
-        $this->driver->findElement(WebDriverBy::id('forgot-password-email'))->clear();
-        $this->driver->findElement(WebDriverBy::id('forgot-password-email'))->sendKeys($email);
-        $this->driver->findElement(WebDriverBy::id('forgot-password-code'))->sendKeys($code);
-        $this->driver->findElement(WebDriverBy::id('forgot-password-new-password'))->sendKeys($password);
-        $this->driver->findElement(WebDriverBy::id('forgot-password-new-password-confirm'))->sendKeys($confirm);
-        $this->driver->findElement(WebDriverBy::id('forgot-password-reset-password'))->click();
+        $resetSelector = WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-reset-password');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($resetSelector));
+
+        $this->setInputValue(
+            WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-email'),
+            (string) $email
+        );
+        $this->setInputValue(
+            WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-code'),
+            (string) $code
+        );
+        $this->setInputValue(
+            WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-new-password'),
+            (string) $password
+        );
+        $this->setInputValue(
+            WebDriverBy::cssSelector('#forgot-password-modal.in #forgot-password-new-password-confirm'),
+            (string) $confirm
+        );
+
+        $this->driver->findElement($resetSelector)->click();
+    }
+
+    private function setInputValue(WebDriverBy $selector, string $value): void {
+        $this->wait->until(function () use ($selector, $value) {
+            $inputs = $this->driver->findElements($selector);
+            if (count($inputs) !== 1 || !$inputs[0]->isDisplayed() || !$inputs[0]->isEnabled()) {
+                return false;
+            }
+
+            $input = $inputs[0];
+            if ($input->getAttribute('value') !== $value) {
+                $input->clear();
+                if ($value !== '') {
+                    $input->sendKeys($value);
+                }
+            }
+
+            return $input->getAttribute('value') === $value;
+        });
     }
 }

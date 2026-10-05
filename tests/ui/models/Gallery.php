@@ -33,10 +33,7 @@ class Gallery {
     }
 
     public function hoverOverImage($imgNum): RemoteWebElement {
-        $col = ($imgNum - 1) % 4;
-        $row = intdiv($imgNum - 1, 4) + 1;
-        $this->waitForImagesToLoad($row);
-        $image = $this->driver->findElement(WebDriverBy::cssSelector("#col-$col > div.gallery:nth-child($row)"));
+        $image = $this->getGridImage($imgNum);
         $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$image]);
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($image));
         (new WebDriverActions($this->driver))->moveToElement($image)->perform();
@@ -45,12 +42,7 @@ class Gallery {
     }
 
     public function justOpenSlideShow($imgNum) {
-        $col = ($imgNum - 1) % 4;
-        $row = intdiv($imgNum - 1, 4) + 1;
-        $this->waitForImagesToLoad($row);
-        $image = $this->driver->findElement(
-            WebDriverBy::cssSelector("#col-$col > div.gallery:nth-child($row)")
-        );
+        $image = $this->getGridImage($imgNum);
         $this->driver->executeScript(
             "arguments[0].scrollIntoView({block: 'center'});",
             [$image]
@@ -97,6 +89,19 @@ class Gallery {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($close));
         $this->driver->findElement($close)->click();
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($modal)));
+    }
+
+    private function getGridImage($imgNum): RemoteWebElement {
+        $row = intdiv($imgNum - 1, 4) + 1;
+        $this->waitForImagesToLoad($row);
+
+        $sequence = $imgNum - 1;
+        $selector = WebDriverBy::cssSelector(
+            ".image-grid .gallery[sequence='" . $sequence . "']"
+        );
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+
+        return $this->driver->findElement($selector);
     }
 
     private function getActiveSequence(): int {

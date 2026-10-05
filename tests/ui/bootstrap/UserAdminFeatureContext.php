@@ -523,7 +523,11 @@ class UserAdminFeatureContext implements Context {
 
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('add-user-btn')));
         $this->driver->findElement(WebDriverBy::id('add-user-btn'))->click();
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('user-save-btn')));
+        $this->wait->until(
+            WebDriverExpectedCondition::elementToBeClickable(
+                WebDriverBy::cssSelector('.bootstrap-dialog.modal.in #user-save-btn')
+            )
+        );
 
         $this->setInputValue('user-username', $username);
         $this->setInputValue('user-first-name', $firstName);
@@ -552,11 +556,15 @@ class UserAdminFeatureContext implements Context {
         $this->createdUser = $expected;
 
         $this->wait->until(function () use ($username) {
-            $inputs = $this->driver->findElements(WebDriverBy::id('user-username'));
+            $inputs = $this->driver->findElements(
+                WebDriverBy::cssSelector('.bootstrap-dialog.modal.in #user-username')
+            );
             return count($inputs) === 1
                 && $inputs[0]->isDisplayed()
                 && $inputs[0]->getAttribute('value') === $username
-                && count($this->driver->findElements(WebDriverBy::id('user-update-btn'))) === 1;
+                && count($this->driver->findElements(
+                    WebDriverBy::cssSelector('.bootstrap-dialog.modal.in #user-update-btn')
+                )) === 1;
         });
     }
 
@@ -565,14 +573,18 @@ class UserAdminFeatureContext implements Context {
         $row->findElement(WebDriverBy::className('edit-user-btn'))->click();
 
         $this->wait->until(function () use ($username) {
-            $inputs = $this->driver->findElements(WebDriverBy::id('user-username'));
+            $inputs = $this->driver->findElements(
+                WebDriverBy::cssSelector('.bootstrap-dialog.modal.in #user-username')
+            );
             return count($inputs) === 1
                 && $inputs[0]->isDisplayed()
                 && $inputs[0]->getAttribute('value') === $username;
         });
 
         $this->wait->until(function () {
-            $selects = $this->driver->findElements(WebDriverBy::id('user-role'));
+            $selects = $this->driver->findElements(
+                WebDriverBy::cssSelector('.bootstrap-dialog.modal.in #user-role')
+            );
             return count($selects) === 1
                 && count($selects[0]->findElements(WebDriverBy::tagName('option'))) >= 3;
         });
@@ -628,8 +640,9 @@ class UserAdminFeatureContext implements Context {
     }
 
     private function selectRole(string $role): void {
-        $this->wait->until(function () use ($role) {
-            $selects = $this->driver->findElements(WebDriverBy::id('user-role'));
+        $selector = WebDriverBy::cssSelector('.bootstrap-dialog.modal.in #user-role');
+        $this->wait->until(function () use ($role, $selector) {
+            $selects = $this->driver->findElements($selector);
             if (count($selects) !== 1) {
                 return false;
             }
@@ -641,23 +654,32 @@ class UserAdminFeatureContext implements Context {
             return false;
         });
 
-        $select = new WebDriverSelect($this->driver->findElement(WebDriverBy::id('user-role')));
+        $select = new WebDriverSelect($this->driver->findElement($selector));
         $select->selectByValue($role);
     }
 
     private function setInputValue(string $id, string $value): void {
-        $selector = WebDriverBy::id($id);
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
-        $input = $this->driver->findElement($selector);
-        $input->clear();
-        $input->sendKeys($value);
+        $selector = WebDriverBy::cssSelector(".bootstrap-dialog.modal.in #$id");
         $this->wait->until(function () use ($selector, $value) {
-            return $this->driver->findElement($selector)->getAttribute('value') === $value;
+            $inputs = $this->driver->findElements($selector);
+            if (count($inputs) !== 1 || !$inputs[0]->isDisplayed() || !$inputs[0]->isEnabled()) {
+                return false;
+            }
+
+            $input = $inputs[0];
+            if ($input->getAttribute('value') !== $value) {
+                $input->clear();
+                $input->sendKeys($value);
+            }
+
+            return $input->getAttribute('value') === $value;
         });
     }
 
     private function setCheckbox(string $id, bool $checked): void {
-        $checkbox = $this->driver->findElement(WebDriverBy::id($id));
+        $selector = WebDriverBy::cssSelector(".bootstrap-dialog.modal.in #$id");
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
+        $checkbox = $this->driver->findElement($selector);
         if ($checkbox->isSelected() !== $checked) {
             $checkbox->click();
         }
