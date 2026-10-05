@@ -24,6 +24,10 @@ composer_audit_summary = load_script(
     "composer_audit_summary",
     ".github/scripts/composer-audit-summary.py",
 )
+container_scan_summary = load_script(
+    "container_scan_summary",
+    ".github/scripts/container-scan-summary.py",
+)
 
 
 class TestSummaryScriptTests(unittest.TestCase):
@@ -201,6 +205,57 @@ class UnittestJunitScriptTests(unittest.TestCase):
         self.assertEqual(1, parsed["failed"])
         self.assertEqual(0, parsed["errors"])
         self.assertEqual(1, parsed["skipped"])
+
+
+class ContainerScanSummaryScriptTests(unittest.TestCase):
+    def test_parse_sarif_uses_security_score_and_tags(self):
+        sarif = {
+            "runs": [
+                {
+                    "tool": {
+                        "driver": {
+                            "rules": [
+                                {
+                                    "id": "CVE-critical",
+                                    "shortDescription": {"text": "Critical issue"},
+                                    "properties": {"security-severity": "9.8"},
+                                },
+                                {
+                                    "id": "CVE-medium",
+                                    "shortDescription": {"text": "Medium issue"},
+                                    "properties": {"tags": ["severity: medium"]},
+                                },
+                            ]
+                        }
+                    },
+                    "results": [
+                        {"ruleId": "CVE-critical", "level": "error"},
+                        {"ruleId": "CVE-medium", "level": "warning"},
+                    ],
+                }
+            ]
+        }
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "scan.sarif"
+            path.write_text(json.dumps(sarif), encoding="utf-8")
+            findings = container_scan_summary.parse_sarif(path)
+
+        self.assertEqual("critical", findings[0]["severity"])
+        self.assertEqual("medium", findings[1]["severity"])
+
+    def test_severity_counts_include_fixable_findings(self):
+        findings = [
+            {"severity": "high"},
+            {"severity": "high"},
+            {"severity": "low"},
+        ]
+
+        counts = container_scan_summary.severity_counts(findings)
+
+        self.assertEqual(2, counts["high"])
+        self.assertEqual(1, counts["low"])
+        self.assertEqual(0, counts["critical"])
 
 
 class ZapSummaryScriptTests(unittest.TestCase):

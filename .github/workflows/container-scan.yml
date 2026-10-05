@@ -47,14 +47,33 @@ jobs:
           sarif_file: php-results.sarif
           category: php
 
-      - name: Fail on fixable high or critical vulnerabilities
+      - name: Find fixable high or critical vulnerabilities
         uses: anchore/scan-action@v7
         with:
           image: "saperstone-studios/php:latest"
           fail-build: true
           severity-cutoff: high
           only-fixed: true
-          output-format: table
+          output-format: sarif
+          output-file: php-fixable-results.sarif
+
+      - name: PHP Container Scan Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/container-scan-summary.py \
+            --image "PHP" \
+            --all php-results.sarif \
+            --fixable php-fixable-results.sarif | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload PHP container scan reports 📊
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: php-container-scan-reports
+          path: |
+            php-results.sarif
+            php-fixable-results.sarif
+          if-no-files-found: warn
 
   sql:
     name: SQL Container Scan
@@ -88,11 +107,30 @@ jobs:
           sarif_file: sql-results.sarif
           category: sql
 
-      - name: Fail on fixable high or critical vulnerabilities
+      - name: Find fixable high or critical vulnerabilities
         uses: anchore/scan-action@v7
         with:
           image: "saperstone-studios/sql:latest"
           fail-build: true
           severity-cutoff: high
           only-fixed: true
-          output-format: table
+          output-format: sarif
+          output-file: sql-fixable-results.sarif
+
+      - name: SQL Container Scan Summary 📊
+        if: always()
+        run: |
+          python3 .github/scripts/container-scan-summary.py \
+            --image "SQL" \
+            --all sql-results.sarif \
+            --fixable sql-fixable-results.sarif | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload SQL container scan reports 📊
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: sql-container-scan-reports
+          path: |
+            sql-results.sarif
+            sql-fixable-results.sarif
+          if-no-files-found: warn
