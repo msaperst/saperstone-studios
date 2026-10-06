@@ -4,6 +4,8 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "autoloader.php";
 
 class Blog {
 
+    private const INVALID_PREVIEW_MESSAGE = 'Blog preview image is not valid';
+
     private $raw;
     private $id;
     private $title;
@@ -273,12 +275,12 @@ class Blog {
     private static function resolvePreviewSource(string $preview): string {
         $resolved = Api::resolvePublicPath($preview, 'blog');
         if ($resolved === null) {
-            throw new BadBlogException('Blog preview image is not valid');
+            throw new BadBlogException(self::INVALID_PREVIEW_MESSAGE);
         }
 
         $source = realpath($resolved);
         if ($source === false || !is_file($source)) {
-            throw new BadBlogException('Blog preview image is not valid');
+            throw new BadBlogException(self::INVALID_PREVIEW_MESSAGE);
         }
 
         $publicRoot = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public';
@@ -294,7 +296,7 @@ class Blog {
             }
         }
 
-        throw new BadBlogException('Blog preview image is not valid');
+        throw new BadBlogException(self::INVALID_PREVIEW_MESSAGE);
     }
 
     /**
@@ -314,8 +316,8 @@ class Blog {
         $previewSource = self::resolvePreviewSource($this->preview);
         copy($previewSource, $this->directory . DIRECTORY_SEPARATOR . 'preview_image.jpg');
         $this->preview = $this->directory . DIRECTORY_SEPARATOR . 'preview_image.jpg';
-        ImageProcessor::mogrify($this->preview, ['-resize', '360x']);
-        ImageProcessor::mogrify($this->preview, ['-density', '72']);
+        ImageProcessor::resize($this->preview, 360);
+        ImageProcessor::setDensity($this->preview, 72);
 
         // write our initial blog information
         $sql = new Sql();
@@ -361,8 +363,8 @@ class Blog {
             $previewSource = self::resolvePreviewSource($this->preview);
             copy($previewSource, $this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg");
             $this->preview = $this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg";
-            ImageProcessor::mogrify($this->preview, ['-resize', '360x']);
-            ImageProcessor::mogrify($this->preview, ['-density', '72']);
+            ImageProcessor::resize($this->preview, 360);
+            ImageProcessor::setDensity($this->preview, 72);
             $this->preview = substr($this->directory . DIRECTORY_SEPARATOR . "preview_image-{$this->id}.jpg", strlen(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR));
         }
 
