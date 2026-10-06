@@ -217,6 +217,7 @@ test('posts-manage updatePost sends quick-edit fields and reloads the table', ()
     });
     environment.element('#post-tags span').attr('tag-id', '4');
     environment.element('#post-preview-image').val('preview.jpg');
+    environment.element('#post').attr('post-location', 'posts/2026/09/25/');
     environment.element('#post-preview-holder img').css('top', '-8px');
     environment.element('#post-title-input').val('Changed');
     environment.element('#post-date-input').val('2026-09-25');
@@ -241,7 +242,7 @@ test('posts-manage updatePost sends quick-edit fields and reloads the table', ()
             date: '2026-09-25',
             tags: ['4'],
             preview: {
-                img: 'preview.jpg',
+                img: 'posts/2026/09/25/preview.jpg',
                 offset: '-8px'
             },
             active: 1
@@ -249,6 +250,20 @@ test('posts-manage updatePost sends quick-edit fields and reloads the table', ()
     });
     assert.equal(reloads, 1);
     assert.equal(environment.element('#post-update-button').prop('disabled'), false);
+});
+
+test('posts-manage updatePost preserves filename-only fallback when location is unavailable', () => {
+    const {context, environment} = createManageContext();
+    environment.element('#post-preview-image').val('preview.jpg');
+    environment.element('#post-preview-holder img').css('top', '0px');
+    environment.element('#post-title-input').val('Changed');
+    environment.element('#post-date-input').val('2026-09-25');
+    context.post_table = {ajax: {reload() {}}};
+    environment.queuePost('/api/update-blog-post.php', {type: 'success', data: ''});
+
+    context.updateManagedPost(53);
+
+    assert.equal(environment.calls.post[0].data.preview.img, 'preview.jpg');
 });
 
 test('posts-manage updatePost publishes when the update endpoint returns published', () => {
