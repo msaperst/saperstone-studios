@@ -121,8 +121,8 @@ class File {
                 throw new BadRequestException("Image does not meet the minimum height requirements of {$height}px. Image is {$size[0]} x {$size[1]}");
             } elseif ($width > 0 && $height > 0) {
                 $imagePath = $this->location . $file;
-                ImageProcessor::mogrify($imagePath, ['-resize', "{$width}x{$height}"]);
-                ImageProcessor::mogrify($imagePath, ['-density', '72']);
+                ImageProcessor::resize($imagePath, (int)$width, (int)$height);
+                ImageProcessor::setDensity($imagePath, 72);
             }
         }
     }
