@@ -300,6 +300,27 @@ class UpdateBlogPostTest extends TestCase {
         $this->assertEquals("Blog preview image can not be blank", (string)$response->getBody());
     }
 
+    public function testRejectsPreviewImagePathTraversal(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+
+        $response = $this->http->request('POST', 'api/update-blog-post.php', [
+            'form_params' => [
+                'post' => 999,
+                'title' => 'Sample Blog',
+                'date' => '2030-01-01',
+                'preview' => [
+                    'img' => '../../../../etc/passwd'
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Blog preview image is not valid', (string)$response->getBody());
+    }
+
     /**
      * @throws GuzzleException
      */
