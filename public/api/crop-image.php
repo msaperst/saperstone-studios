@@ -43,8 +43,8 @@ if ($top < 0) {
 }
 
 // fix our image with it's width
-system("mogrify -resize {$maxWidth}x " . escapeshellarg($image));
-system("mogrify -density 72 " . escapeshellarg($image));
+ImageProcessor::mogrify($image, ['-resize', "{$maxWidth}x"]);
+ImageProcessor::mogrify($image, ['-density', '72']);
 
 // verify that our image can fit in the specified crop
 if (getimagesize($image) [1] < ($height - 1)) {
@@ -55,7 +55,7 @@ if (getimagesize($image) [1] < ($height - 1)) {
 }
 
 // crop our image
-system("mogrify -crop {$maxWidth}x$height+0+$top " . escapeshellarg($image));
+ImageProcessor::mogrify($image, ['-crop', "{$maxWidth}x{$height}+0+{$top}"]);
 
 // rename the image
 $filePath = dirname($image);
