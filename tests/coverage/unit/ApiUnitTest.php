@@ -167,6 +167,14 @@ class ApiUnitTest extends TestCase {
         $this->assertNull(Api::resolveStoragePath('../../outside.jpg', 'api'));
     }
 
+    public function testResolveStoragePathRejectsTraversalBeforeCanonicalization(): void {
+        $this->assertNull(Api::resolveStoragePath('../../outside.jpg', 'api'));
+    }
+
+    public function testResolveStoragePathRejectsNullByteBeforeCanonicalization(): void {
+        $this->assertNull(Api::resolveStoragePath("/portrait/img/image.jpg\0.php"));
+    }
+
     public function testResolveStoragePathRejectsMissingFile(): void {
         $this->assertNull(Api::resolveStoragePath('/does-not-exist.jpg'));
     }
@@ -199,6 +207,14 @@ class ApiUnitTest extends TestCase {
 
     public function testResolveStorageDirectoryRejectsTraversalBeforeCanonicalization(): void {
         $this->assertNull(Api::resolveStorageDirectory('../../outside.jpg', 'api'));
+    }
+
+    public function testResolveStorageDirectoryRejectsTraversalBeforeCanonicalization(): void {
+        $this->assertNull(Api::resolveStorageDirectory('../../outside.jpg', 'api'));
+    }
+
+    public function testResolveStorageDirectoryRejectsNullByteBeforeCanonicalization(): void {
+        $this->assertNull(Api::resolveStorageDirectory("/portrait/img/image.jpg\0.php"));
     }
 
     public function testResolveStorageDirectoryReturnsCanonicalParent(): void {
