@@ -9,24 +9,12 @@ $api->forceAdmin();
 
 try {
     $imageRequest = $api->retrievePostString('image', 'Image');
-    $image = Api::resolvePublicPath($imageRequest, 'api');
+    $image = Api::resolveStoragePath($imageRequest, 'api');
     if ($image === null) {
-        throw new BadRequestException('Image location is not valid');
-    }
-
-    $image = realpath($image);
-    if ($image === false) {
-        throw new BadRequestException('Image does not exist');
-    }
-
-    $projectRoot = dirname(__DIR__, 2);
-    $publicRoot = realpath($projectRoot . DIRECTORY_SEPARATOR . 'public');
-    $contentRoot = realpath($projectRoot . DIRECTORY_SEPARATOR . 'content');
-    $isPublicPath = $publicRoot !== false
-        && ($image === $publicRoot || str_starts_with($image, $publicRoot . DIRECTORY_SEPARATOR));
-    $isContentPath = $contentRoot !== false
-        && ($image === $contentRoot || str_starts_with($image, $contentRoot . DIRECTORY_SEPARATOR));
-    if (!$isPublicPath && !$isContentPath) {
+        $resolvedImage = Api::resolvePublicPath($imageRequest, 'api');
+        if ($resolvedImage !== null && !file_exists($resolvedImage)) {
+            throw new BadRequestException('Image does not exist');
+        }
         throw new BadRequestException('Image location is not valid');
     }
 } catch (Exception $e) {
