@@ -2,11 +2,6 @@
 
 class ImageProcessor {
 
-    private const NULL_DEVICE = '/dev/null';
-    private const RESIZE_OPERATION = '-resize';
-    private const DENSITY_OPERATION = '-density';
-    private const CROP_OPERATION = '-crop';
-
     /**
      * @throws ImageProcessingException
      */
@@ -15,8 +10,15 @@ class ImageProcessor {
             throw new ImageProcessingException('Image resize dimensions must be positive');
         }
 
-        $geometry = $height === null ? "{$width}x" : "{$width}x{$height}";
-        self::runMogrify($imagePath, self::RESIZE_OPERATION, $geometry);
+        self::process($imagePath, static function (Imagick $image) use ($width, $height): void {
+            foreach ($image as $frame) {
+                if ($height === null) {
+                    $frame->resizeImage($width, 0, Imagick::FILTER_LANCZOS, 1);
+                } else {
+                    $frame->resizeImage($width, $height, Imagick::FILTER_LANCZOS, 1, true);
+                }
+            }
+        });
     }
 
     /**
@@ -27,7 +29,11 @@ class ImageProcessor {
             throw new ImageProcessingException('Image density must be positive');
         }
 
-        self::runMogrify($imagePath, self::DENSITY_OPERATION, (string)$density);
+        self::process($imagePath, static function (Imagick $image) use ($density): void {
+            foreach ($image as $frame) {
+                $frame->setImageResolution($density, $density);
+            }
+        });
     }
 
     /**
@@ -38,52 +44,41 @@ class ImageProcessor {
             throw new ImageProcessingException('Image crop dimensions are not valid');
         }
 
-        self::runMogrify($imagePath, self::CROP_OPERATION, "{$width}x{$height}+0+{$top}");
+        self::process($imagePath, static function (Imagick $image) use ($width, $height, $top): void {
+            foreach ($image as $frame) {
+                $frame->cropImage($width, $height, 0, $top);
+            }
+        });
     }
 
     /**
-     * Run ImageMagick without invoking a shell.
+     * Apply an image operation without invoking an external process.
      *
-     * The operation is normalized to an internal constant, the option value is
-     * validated against the operation's numeric grammar, and "--" terminates
-     * ImageMagick option parsing before the canonical image path.
+     * ImageMagick processing failures remain non-fatal to preserve the legacy
+     * behavior of the previous mogrify calls, which ignored nonzero exit codes.
      *
      * @throws ImageProcessingException
      */
-    private static function runMogrify(string $imagePath, string $operation, string $value): void {
-        [$safeOperation, $valuePattern] = match ($operation) {
-            self::RESIZE_OPERATION => [self::RESIZE_OPERATION, '/^\\d+x\\d*$/D'],
-            self::DENSITY_OPERATION => [self::DENSITY_OPERATION, '/^\\d+$/D'],
-            self::CROP_OPERATION => [self::CROP_OPERATION, '/^\\d+x\\d+\\+0\\+\\d+$/D'],
-            default => throw new ImageProcessingException('ImageMagick operation is not supported'),
-        };
-
-        if (preg_match($valuePattern, $value) !== 1) {
-            throw new ImageProcessingException('ImageMagick operation value is not valid');
-        }
-
+    private static function process(string $imagePath, callable $operation): void {
         $canonicalPath = realpath($imagePath);
         if ($canonicalPath === false || !is_file($canonicalPath)) {
             throw new ImageProcessingException('Image file does not exist');
         }
 
-        $process = proc_open(
-            ['mogrify', $safeOperation, $value, '--', $canonicalPath],
-            [
-                0 => ['file', self::NULL_DEVICE, 'r'],
-                1 => ['file', self::NULL_DEVICE, 'w'],
-                2 => ['file', self::NULL_DEVICE, 'w'],
-            ],
-            $pipes
-        );
-
-        if (!is_resource($process)) {
-            throw new ImageProcessingException('Unable to start ImageMagick');
+        if (!class_exists(Imagick::class)) {
+            throw new ImageProcessingException('Imagick extension is not available');
         }
 
-        // Preserve legacy behavior: ImageMagick processing failures were
-        // intentionally non-fatal to callers. Security validation happens
-        // before process launch; the exit status is not an API contract.
-        proc_close($process);
+        try {
+            $image = new Imagick($canonicalPath);
+            try {
+                $operation($image);
+                $image->writeImages($canonicalPath, true);
+            } finally {
+                $image->clear();
+            }
+        } catch (ImagickException) {
+            // Preserve legacy behavior: invalid/unprocessable images were non-fatal.
+        }
     }
 }
