@@ -365,7 +365,11 @@ class SignContractTest extends TestCase {
                     'content' => 'some contract content'
                 ]
             ]);
-            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals(
+                200,
+                $response->getStatusCode(),
+                'Unexpected sign-contract response: ' . (string)$response->getBody()
+            );
             $this->assertEquals('', (string)$response->getBody());
             $contractDetails = $this->sql->getRow("SELECT * FROM contracts WHERE contracts.id = 999");
             $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5)));
@@ -432,7 +436,11 @@ class SignContractTest extends TestCase {
                     'content' => 'some contract content'
                 ]
             ]);
-            $this->assertEquals(200, $response->getStatusCode());
+            $this->assertEquals(
+                200,
+                $response->getStatusCode(),
+                'Unexpected sign-contract response: ' . (string)$response->getBody()
+            );
             $this->assertEquals('', (string)$response->getBody());
             $contractDetails = $this->sql->getRow("SELECT * FROM contracts WHERE contracts.id = 999");
             $this->assertTrue(file_exists(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5)));
