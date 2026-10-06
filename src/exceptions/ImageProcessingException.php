@@ -1,5 +1,5 @@
 <?php
 
-class ImageProcessingException extends SaperstoneStudiosException {
+class ImageProcessingException extends RuntimeException {
 
 }
