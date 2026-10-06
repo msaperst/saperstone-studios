@@ -238,6 +238,31 @@ class BlogPagesHttpTest extends HttpTestBase {
         self::assertSame('msaperst@gmail.com', $this->attribute($response, "//*[@id='post-comment-email']", 'value'));
     }
 
+    public function testSearchEscapesUserInputInBreadcrumb(): void {
+        $search = '<script>alert("xss")</script>';
+        $response = $this->get('blog/search.php?s=' . rawurlencode($search));
+
+        $this->assertPage($response, 'Blog Posts');
+        self::assertSame(
+            $search,
+            $this->text(
+                $response,
+                "(//ol[contains(concat(' ', normalize-space(@class), ' '), ' breadcrumb ')])[1]/li[last()]"
+            )
+        );
+        self::assertSame(
+            0,
+            $this->elementCount(
+                $response,
+                "(//ol[contains(concat(' ', normalize-space(@class), ' '), ' breadcrumb ')])[1]//script"
+            )
+        );
+        self::assertSame(
+            $search,
+            $this->attribute($response, "//*[@id='blog-page-config']", 'data-search')
+        );
+    }
+
     public function testSearchReportsMatchingPostCountToJavascriptLoader(): void {
         $this->insertBlog(true);
 
