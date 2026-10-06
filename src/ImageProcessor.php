@@ -65,10 +65,6 @@ class ImageProcessor {
             throw new ImageProcessingException('Image file does not exist');
         }
 
-        if (!class_exists(Imagick::class)) {
-            throw new ImageProcessingException('Imagick extension is not available');
-        }
-
         try {
             $image = new Imagick($canonicalPath);
             try {
