@@ -20,7 +20,9 @@ RUN apt-get update && \
         default-mysql-client \
         gnupg \
         imagemagick \
+        libmagickwand-dev \
         libonig-dev \
+        $PHPIZE_DEPS \
         libpng-dev \
         libzip-dev \
         unzip \
@@ -42,7 +44,10 @@ COPY .docker/php/security-headers.conf /etc/apache2/conf-available/zz-saperstone
 COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY .docker/php/security.ini /usr/local/etc/php/conf.d/security.ini
 RUN a2enmod headers rewrite expires speling ssl && a2enconf zz-saperstone-security
-RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif
+RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif && \
+    pecl install imagick && \
+    docker-php-ext-enable imagick && \
+    apt-get purge -y --auto-remove $PHPIZE_DEPS libmagickwand-dev
 
 # copy over files
 COPY bin /var/www/bin
