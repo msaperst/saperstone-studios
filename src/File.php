@@ -44,7 +44,12 @@ class File {
         if (str_contains($name, '/') || str_contains($name, '\\')) {
             throw new BadRequestException('File name can not contain a path');
         }
-        return $name;
+
+        $fileName = basename($name);
+        if ($fileName !== $name || $fileName === '.' || $fileName === '..') {
+            throw new BadRequestException('File name is not valid');
+        }
+        return $fileName;
     }
 
     public static function validateImageExtension(string $filename): void {
@@ -115,8 +120,9 @@ class File {
                 unlink($this->location . $file);
                 throw new BadRequestException("Image does not meet the minimum height requirements of {$height}px. Image is {$size[0]} x {$size[1]}");
             } elseif ($width > 0 && $height > 0) {
-                system("mogrify -resize {$width}x{$height} " . escapeshellarg($this->location . $file));
-                system("mogrify -density 72 " . escapeshellarg($this->location . $file));
+                $imagePath = $this->location . $file;
+                ImageProcessor::mogrify($imagePath, ['-resize', "{$width}x{$height}"]);
+                ImageProcessor::mogrify($imagePath, ['-density', '72']);
             }
         }
     }
