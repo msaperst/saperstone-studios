@@ -262,6 +262,33 @@ class CreateBlogPostTest extends TestCase {
 //         $this->assertEquals("Unexpected content present, please consult the webmaster", (string) $response->getBody() );
 //     }
 
+    public function testRejectsPreviewImagePathTraversal(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+
+        $response = $this->http->request('POST', 'api/create-blog-post.php', [
+            'form_params' => [
+                'title' => 'Traversal attempt',
+                'date' => '2030-01-01',
+                'preview' => [
+                    'img' => '../../../../etc/passwd'
+                ],
+                'content' => [
+                    1 => [
+                        'group' => 1,
+                        'type' => 'text',
+                        'text' => 'Security regression test'
+                    ]
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Blog preview image is not valid', (string)$response->getBody());
+    }
+
     /**
      * @throws GuzzleException
      * @throws Exception

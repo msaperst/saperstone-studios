@@ -117,6 +117,17 @@ class FileIntegrationTest extends TestCase {
         ]);
     }
 
+    public function testRejectsDotDotUploadedFilename(): void {
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('File name is not valid');
+
+        new File([
+            'error' => '0',
+            'name' => '..',
+            'tmp_name' => '/tmp/file'
+        ]);
+    }
+
     public function testRejectsNullByteInUploadedFilename(): void {
         $this->expectException(BadRequestException::class);
         $this->expectExceptionMessage('File name is not valid');

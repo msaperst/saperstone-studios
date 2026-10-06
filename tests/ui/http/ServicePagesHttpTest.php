@@ -12,6 +12,30 @@ class ServicePagesHttpTest extends HttpTestBase {
         $this->assertPage($this->get($path), $heading);
     }
 
+    /**
+     * @dataProvider studioSectionProvider
+     */
+    public function testStudioPageUsesExpectedSectionNavigation(string $path, string $section): void {
+        $response = $this->get($path);
+        $this->assertPage($response, 'Home Studio');
+
+        self::assertSame(
+            $section,
+            $this->text(
+                $response,
+                "(//ol[contains(concat(' ', normalize-space(@class), ' '), ' breadcrumb ')])[1]/li[2]"
+            )
+        );
+    }
+
+    public static function studioSectionProvider(): array {
+        return [
+            'commercial studio navigation' => ['commercial/studio.php', 'Commercial'],
+            'portrait studio navigation' => ['portrait/studio.php', 'Portrait'],
+            'wedding studio navigation' => ['wedding/studio.php', 'Wedding'],
+        ];
+    }
+
     public static function servicePageProvider(): array {
         return [
             'mitzvah details' => ['b-nai-mitzvah/details.php', "B'nai Mitzvah Details"],

@@ -27,7 +27,20 @@ $sql->disconnect();
 
 <body>
 
-<?php $nav = explode("/", $_SERVER ['REQUEST_URI']) [1];
+<?php
+$requestedNav = explode("/", $_SERVER['REQUEST_URI'])[1] ?? "";
+switch ($requestedNav) {
+    case "commercial":
+        $nav = "commercial";
+        break;
+    case "wedding":
+        $nav = "wedding";
+        break;
+    case "portrait":
+    default:
+        $nav = "portrait";
+        break;
+}
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/nav.php"; ?>
 
 <!-- Page Content -->

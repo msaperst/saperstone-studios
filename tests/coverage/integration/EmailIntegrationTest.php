@@ -162,6 +162,18 @@ Full UA: \r
         $this->assertEquals('<strong>Location</strong>: Jeddah, Mecca Region - SA (estimated location based on IP: 5.82.134.1)<br/><strong>Browser</strong>: unknown unknown<br/><strong>Resolution</strong>: <br/><strong>OS</strong>: unknown<br/><strong>Full UA</strong>: <br/>', $email->getUserInfoHtml());
     }
 
+    public function testInvalidClientIpIsNotUsedForGeoLookup(): void {
+        $_SERVER["HTTP_USER_AGENT"] = '';
+        $_SERVER["HTTP_CLIENT_IP"] = '../../etc/passwd';
+
+        $email = new Email('msaperst@gmail.com', 'la@saperstonestudios.com', 'test');
+
+        $this->assertStringContainsString(
+            'Location: unknown',
+            $email->getUserInfoText()
+        );
+    }
+
     public function testBasicUserInfoText() {
         $_SERVER["HTTP_USER_AGENT"] = '';
         $_SERVER["HTTP_CLIENT_IP"] = '8.8.8.8';

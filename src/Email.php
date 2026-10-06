@@ -45,8 +45,12 @@ class Email {
      * Helper to safely fetch geo info from ipinfo.io without generating PHP warnings.
      */
     private function fetchGeoInfo($IP) {
-        // The @ operator suppresses the E_WARNING on a 429 or network failure
-        $response = @file_get_contents("http://ipinfo.io/$IP/json");
+        if (!is_string($IP) || filter_var($IP, FILTER_VALIDATE_IP) === false) {
+            return (object)[];
+        }
+
+        // The @ operator suppresses the E_WARNING on a 429 or network failure.
+        $response = @file_get_contents('https://ipinfo.io/' . rawurlencode($IP) . '/json');
 
         if ($response === false) {
             return (object)[]; // Return empty object to prevent property access errors

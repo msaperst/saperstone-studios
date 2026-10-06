@@ -1,5 +1,6 @@
 var textAreas = 0;
 var imageAreas = 0;
+var imageId;
 
 var elementBuilder = "#post-content";
 var imageBuilder = ".image-builder";
