@@ -94,6 +94,53 @@ class Api {
             : DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $segments));
     }
 
+    /**
+     * Resolve an existing browser-supplied path and require its canonical target
+     * to remain inside application-controlled public/content storage.
+     */
+    public static function resolveStoragePath(string $path, string $base = ''): ?string {
+        $resolved = self::resolvePublicPath($path, $base);
+        if ($resolved === null) {
+            return null;
+        }
+
+        return self::validateStoragePath($resolved);
+    }
+
+    /**
+     * Resolve the parent directory for a browser-supplied public path and require
+     * the canonical directory to remain inside application-controlled storage.
+     */
+    public static function resolveStorageDirectory(string $path, string $base = ''): ?string {
+        $resolved = self::resolvePublicPath($path, $base);
+        if ($resolved === null) {
+            return null;
+        }
+
+        return self::validateStoragePath(dirname($resolved));
+    }
+
+    private static function validateStoragePath(string $path): ?string {
+        $canonicalPath = realpath($path);
+        if ($canonicalPath === false) {
+            return null;
+        }
+
+        foreach ([
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public',
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . 'content'
+        ] as $storageRoot) {
+            $canonicalRoot = realpath($storageRoot);
+            if ($canonicalRoot !== false
+                && ($canonicalPath === $canonicalRoot
+                    || str_starts_with($canonicalPath, $canonicalRoot . DIRECTORY_SEPARATOR))) {
+                return $canonicalPath;
+            }
+        }
+
+        return null;
+    }
+
     private function retrievePost($variable, $variableName, $type) {
         if (isset ($_POST [$variable]) && $_POST [$variable] != "") {
             switch ($type) {
