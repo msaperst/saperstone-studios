@@ -30,6 +30,11 @@ class ApiUnitTest extends TestCase {
         $_SERVER = $this->serverState;
         $_SESSION = $this->sessionState;
         http_response_code(200);
+
+        $projectRoot = dirname(__DIR__, 3);
+        @unlink($projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-escape');
+        @unlink($projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-content-link');
+        @unlink($projectRoot . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'unit-storage-content.txt');
     }
 
     // ------------------------
@@ -142,6 +147,68 @@ class ApiUnitTest extends TestCase {
 
     public function testResolvePublicPathRejectsNullByte(): void {
         $this->assertNull(Api::resolvePublicPath("/portrait/img/image.jpg\0.php"));
+    }
+
+    public function testResolveStoragePathAllowsExistingPublicFile(): void {
+        $path = Api::resolveStoragePath('/css/saperstone-studios.css');
+
+        $this->assertSame(
+            realpath(
+                dirname(__DIR__, 3)
+                . DIRECTORY_SEPARATOR . 'public'
+                . DIRECTORY_SEPARATOR . 'css'
+                . DIRECTORY_SEPARATOR . 'saperstone-studios.css'
+            ),
+            $path
+        );
+    }
+
+    public function testResolveStoragePathRejectsMissingFile(): void {
+        $this->assertNull(Api::resolveStoragePath('/does-not-exist.jpg'));
+    }
+
+    public function testResolveStoragePathRejectsSymlinkOutsideStorageRoots(): void {
+        $projectRoot = dirname(__DIR__, 3);
+        $link = $projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-escape';
+        @unlink($link);
+        $this->assertTrue(symlink('../src/Strings.php', $link));
+
+        $this->assertNull(Api::resolveStoragePath('/unit-storage-escape'));
+    }
+
+    public function testResolveStoragePathAllowsSymlinkIntoContentStorage(): void {
+        $projectRoot = dirname(__DIR__, 3);
+        $contentRoot = $projectRoot . DIRECTORY_SEPARATOR . 'content';
+        if (!is_dir($contentRoot)) {
+            $this->assertTrue(mkdir($contentRoot));
+        }
+
+        $target = $contentRoot . DIRECTORY_SEPARATOR . 'unit-storage-content.txt';
+        file_put_contents($target, 'fixture');
+
+        $link = $projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-content-link';
+        @unlink($link);
+        $this->assertTrue(symlink('../content/unit-storage-content.txt', $link));
+
+        $this->assertSame(realpath($target), Api::resolveStoragePath('/unit-storage-content-link'));
+    }
+
+    public function testResolveStorageDirectoryReturnsCanonicalParent(): void {
+        $path = Api::resolveStorageDirectory('/css/example.css');
+
+        $this->assertSame(
+            realpath(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'css'),
+            $path
+        );
+    }
+
+    public function testResolveStorageDirectoryRejectsSymlinkOutsideStorageRoots(): void {
+        $projectRoot = dirname(__DIR__, 3);
+        $link = $projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-escape';
+        @unlink($link);
+        $this->assertTrue(symlink('../src', $link));
+
+        $this->assertNull(Api::resolveStorageDirectory('/unit-storage-escape/image.jpg'));
     }
 
     // ------------------------
