@@ -13,17 +13,16 @@ try {
     if ($image === null) {
         throw new BadRequestException('Image location is not valid');
     }
+
+    $image = realpath($image);
+    if ($image === false) {
+        throw new BadRequestException('Image does not exist');
+    }
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
-if (!file_exists($image)) {
-    http_response_code(400);
-    echo "Image does not exist";
-    exit ();
-}
-
 try {
     $maxWidth = $api->retrievePostInt('max-width', 'Image max-width');
     $top = $api->retrievePostInt('top', 'Image top');
