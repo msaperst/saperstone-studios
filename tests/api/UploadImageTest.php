@@ -212,6 +212,7 @@ class UploadImageTest extends TestCase {
         $link = dirname(__DIR__, 2)
             . DIRECTORY_SEPARATOR . 'public'
             . DIRECTORY_SEPARATOR . 'security-upload-link';
+        @unlink($link);
         $this->assertTrue(symlink('../src', $link));
 
         $cookieJar = CookieJar::fromArray([
