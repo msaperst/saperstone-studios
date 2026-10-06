@@ -20,6 +20,34 @@ API, HTTP Page, UI/Behat, and ZAP jobs all exercise the same full Docker Compose
 
 The shared stack uses fixed local-only CI credentials for MySQL and Mailpit. These values are not production credentials and do not require GitHub secrets. Tests that communicate with external services still configure their required secrets in their own workflow steps.
 
+### Validation policy
+
+The merge gate should require checks that are deterministic, protect distinct behavior, and are important enough to block a production-bound merge. Scheduled scans provide additional defense in depth but do not retroactively gate an already merged commit.
+
+Representative runtimes below are from the successful October 5, 2026 PR run and are intended as rough operational guidance, not performance budgets.
+
+| Check | PR | Push to `develop` | Weekly | Representative runtime | Merge policy |
+| --- | :---: | :---: | :---: | ---: | --- |
+| Unit Testing | Yes | Yes | No | ~20s | Required |
+| Integration Testing | Yes | Yes | No | ~2m 19s | Required |
+| JavaScript Unit Testing | Yes | Yes | No | ~7s | Required |
+| Script Testing | Yes | Yes | No | ~5s | Required |
+| SonarCloud | Yes | Yes | No | ~1m 12s after coverage jobs | Required quality gate |
+| API Testing | Yes | No | No | ~7m 56s | Required |
+| HTTP Page Testing | Yes | No | No | ~2m 56s | Required |
+| Behat Testing | Yes | No | No | ~25m 49s | Required |
+| CodeQL JavaScript analysis | Yes | Yes | Yes | ~1m 4s | Required |
+| Composer SCA | Yes | No | Yes | ~1m | Required for Critical/High advisories |
+| PHP Container Scan | Yes | No | Yes | ~3m 16s | Required for any fixable finding |
+| SQL Container Scan | Yes | No | Yes | ~2m 46s | Required for any fixable finding |
+| ZAP baseline/full | Baseline | No | Full | ~3m 48s baseline | Required for reportable Low+ findings |
+
+The production-image workflow runs only after a push reaches `develop`. Its PHP and SQL builds are a deployment gate rather than a pull-request merge gate; production polling should deploy only successfully built images.
+
+The repository ruleset mirrors this policy. Behat is required as a browser-level merge gate. Composer dependency severity is enforced by the `SCA` GitHub Actions job; the separate SARIF upload remains available in GitHub Security under the `composer-audit` tool identity but is not a required status check. SonarQube Cloud's `SonarCloud Code Analysis` status is the required Sonar quality gate. CodeQL's workflow and code-scanning statuses remain intentionally required because CodeQL does not implement a separate severity gate in repository scripts.
+
+External required checks such as GitGuardian remain part of the repository ruleset even though they are not defined in this repository's workflow YAML.
+
 ### Unit and integration tests
 
 `.github/workflows/code-test.yml` runs both PHPUnit suites on PHP 8.4.
@@ -58,11 +86,11 @@ Browser/JavaScript workflows belong in Behat; page behavior that can be verified
 
 ### Dependency analysis
 
-`.github/workflows/dependency-checks.yml` runs OWASP Dependency-Check against `composer.lock` on pull requests and weekly. It is configured to fail on vulnerabilities with CVSS 8 or higher and uploads SARIF and report artifacts.
+`.github/workflows/software-composition-analysis.yml` runs Composer's native security audit against the locked PHP dependency graph on pull requests and weekly. The job summary reports the number of locked dependencies audited, advisory counts by severity, and abandoned packages. Critical or High advisories fail the SCA job; Medium/Low advisories and abandoned packages remain visible for review. The audit is converted to SARIF for GitHub Security visibility and the JSON/SARIF reports are retained as workflow artifacts.
 
 ### Container scanning
 
-`.github/workflows/container-scan.yml` builds the PHP and SQL Docker images and scans each with Anchore. It runs on pull requests and weekly, fails for findings at the configured `high` severity cutoff, and uploads SARIF results to GitHub.
+`.github/workflows/container-scan.yml` builds the PHP and SQL Docker images and scans each with Anchore/Grype on pull requests and weekly. Grype itself is configured not to hide findings. Each job keeps a raw complete vulnerability report, a raw report containing findings for which a fix is available, and a filtered SARIF report for GitHub Security. The GitHub Actions summary shows **Detected**, **Fixable**, **Reviewed exceptions**, and **Actionable fixable** counts by severity. **Any fixable vulnerability not covered by a documented reviewed exception** fails the merge gate. Reviewed false positives/non-applicable findings are listed in `.github/container-scan-allowlist.json` with an explicit reason; they remain visible in the raw artifacts and job summary rather than disappearing from the scan. Findings without a current fix remain visible for risk review and future remediation.
 
 ### ZAP scans
 
@@ -78,7 +106,7 @@ When ZAP fails, review the alert in the job summary and uploaded reports, reprod
 
 ## Reports and artifacts
 
-The functional workflows publish JUnit results directly into GitHub where configured. HTML, coverage, and custom reports are retained as workflow artifacts so additional detail is available after a run.
+The functional workflows publish concise GitHub Actions summaries and retain detailed artifacts. PHPUnit Unit and Integration summaries include Clover statement and method coverage; JavaScript summaries include line, branch, and function coverage. SCA, container scanning, and ZAP each provide severity-oriented security summaries while retaining machine-readable reports for deeper investigation.
 
 When diagnosing a CI failure, start with the failing job log and GitHub test report. ZAP's job summary provides its routine security overview; use the uploaded artifacts when detailed ZAP evidence or other TestDox, coverage, or browser-test output is needed.
 
