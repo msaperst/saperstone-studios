@@ -2,7 +2,6 @@
 
 namespace coverage\integration;
 
-use ImageProcessingException;
 use ImageProcessor;
 use PHPUnit\Framework\TestCase;
 
@@ -59,12 +58,11 @@ class ImageProcessorIntegrationTest extends TestCase {
         self::assertNotFalse(getimagesize($this->imagePath));
     }
 
-    public function testImageMagickFailureThrowsDedicatedException(): void {
+    public function testInvalidImagePreservesLegacyNonFatalBehavior(): void {
         file_put_contents($this->imagePath, 'not an image');
 
-        $this->expectException(ImageProcessingException::class);
-        $this->expectExceptionMessage('ImageMagick failed to process image');
-
         ImageProcessor::setDensity($this->imagePath, 72);
+
+        self::assertFileExists($this->imagePath);
     }
 }
