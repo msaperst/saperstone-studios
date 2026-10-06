@@ -47,6 +47,7 @@ RUN a2enmod headers rewrite expires speling ssl && a2enconf zz-saperstone-securi
 RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif && \
     pecl install imagick && \
     docker-php-ext-enable imagick && \
+    php -r 'if (!extension_loaded("imagick")) { fwrite(STDERR, "Imagick extension is required" . PHP_EOL); exit(1); }' && \
     apt-get purge -y --auto-remove $PHPIZE_DEPS libmagickwand-dev
 
 # copy over files
