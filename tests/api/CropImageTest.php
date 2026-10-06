@@ -241,6 +241,7 @@ class CropImageTest extends TestCase {
         $link = dirname(__DIR__, 2)
             . DIRECTORY_SEPARATOR . 'public'
             . DIRECTORY_SEPARATOR . 'security-crop-link.jpeg';
+        @unlink($link);
         $this->assertTrue(symlink('../src/Strings.php', $link));
 
         $cookieJar = CookieJar::fromArray([
