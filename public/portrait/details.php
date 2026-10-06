@@ -85,7 +85,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive" src="img/session.jpg<?php echo $rand; ?>"
                         alt="Session Information">
                 <div class="overlay">
-                    <br /> <br /> <br /> <a class="info" href="sessions.php">See More</a>
+                    <br/> <br/> <br/> <a class="info" href="sessions.php">See More</a>
                 </div>
             </div>
         </div>
@@ -98,7 +98,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive" src="img/process.jpg<?php echo $rand; ?>"
                         alt="The Process">
                 <div class="overlay">
-                    <br /> <br /> <br /> <a class="info" href="process.php">See More</a>
+                    <br/> <br/> <br/> <a class="info" href="process.php">See More</a>
                 </div>
             </div>
         </div>
@@ -111,7 +111,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive" src="img/products.jpg<?php echo $rand; ?>"
                         alt="Products and Investment">
                 <div class="overlay">
-                    <br /> <br /> <br /> <a class="info" href="products.php">See More</a>
+                    <br/> <br/> <br/> <a class="info" href="products.php">See More</a>
                 </div>
             </div>
         </div>
@@ -124,7 +124,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive"
                         src="img/what-to-wear.jpg<?php echo $rand; ?>" alt="What to Wear">
                 <div class="overlay">
-                    <br /> <br /> <br /> <a class="info" href="what-to-wear.php">See
+                    <br/> <br/> <br/> <a class="info" href="what-to-wear.php">See
                         More</a>
                 </div>
             </div>
@@ -138,7 +138,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive" src="img/studio.jpg<?php echo $rand; ?>"
                         alt="Home Studio">
                 <div class="overlay">
-                    <br /> <br /> <br /> <a class="info" href="studio.php">See More</a>
+                    <br/> <br/> <br/> <a class="info" href="studio.php">See More</a>
                 </div>
             </div>
         </div>
@@ -150,7 +150,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                 <span class='preview-title'>FAQs</span> <img class="img-responsive"
                                                              src="img/faq.jpg<?php echo $rand; ?>" alt="FAQs">
                 <div class="overlay">
-                    <br /> <br /> <br /> <a class="info" href="faq.php">See More</a>
+                    <br/> <br/> <br/> <a class="info" href="faq.php">See More</a>
                 </div>
             </div>
         </div>

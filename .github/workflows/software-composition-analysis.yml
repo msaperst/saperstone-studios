@@ -1,0 +1,56 @@
+name: Software Composition Analysis
+
+on:
+  pull_request:
+    branches: [ develop ]
+  schedule:
+    - cron: '23 22 * * 1'
+
+jobs:
+  sca:
+    name: SCA
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v7
+
+      - name: Setup PHP 🔧
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
+      - name: Validate Composer metadata 🔧
+        run: composer validate
+
+      - name: Audit locked Composer dependencies
+        run: |
+          mkdir -p reports
+          composer audit --locked --format=json > reports/composer-audit.json || true
+
+      - name: Dependency Audit Summary 📊
+        if: always()
+        run: |
+          set -o pipefail
+          python3 .github/scripts/composer-audit-summary.py \
+            --report reports/composer-audit.json \
+            --lock composer.lock \
+            --sarif reports/composer-audit.sarif | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload dependency audit SARIF 📊
+        if: always() && hashFiles('reports/composer-audit.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: reports/composer-audit.sarif
+          category: php
+
+      - name: Publish dependency audit reports 📊
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: Composer Dependency Audit Results
+          path: reports
+          if-no-files-found: warn

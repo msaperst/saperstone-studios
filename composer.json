@@ -6,14 +6,13 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^10.0",
-    "guzzlehttp/guzzle": "7.4.5.0",
+    "guzzlehttp/guzzle": "^7.15.5",
     "ramsey/uuid": "4.9.3",
     "ext-json": "*",
     "ext-zip": "*",
     "php-webdriver/webdriver": "^1.15.2",
     "behat/behat": "v3.25.0",
     "behat/gherkin": ">=4.9.0",
-    "emuse/behat-html-formatter": "^0.2.0",
     "google/apiclient": "^2.0",
     "ext-curl": "*"
   },
