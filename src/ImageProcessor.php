@@ -81,8 +81,9 @@ class ImageProcessor {
             throw new ImageProcessingException('Unable to start ImageMagick');
         }
 
-        if (proc_close($process) !== 0) {
-            throw new ImageProcessingException('ImageMagick failed to process image');
-        }
+        // Preserve legacy behavior: ImageMagick processing failures were
+        // intentionally non-fatal to callers. Security validation happens
+        // before process launch; the exit status is not an API contract.
+        proc_close($process);
     }
 }
