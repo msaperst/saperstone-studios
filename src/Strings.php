@@ -11,9 +11,13 @@ class Strings {
         $charactersLength = strlen($characters);
         $randomString = '';
         for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters [rand(0, $charactersLength - 1)];
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
         }
         return $randomString;
+    }
+
+    static function randomToken(int $bytes = 32): string {
+        return bin2hex(random_bytes($bytes));
     }
 
     /**
