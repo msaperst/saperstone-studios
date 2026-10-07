@@ -11,6 +11,9 @@ require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 
 class DownloadEmailJobUnitTest extends TestCase {
 
+    private const MISSING_TOKEN = '00000000000000000000000000000000';
+    private const MALFORMED_TOKEN = '11111111111111111111111111111111';
+
     private array $tokens = [];
 
     protected function tearDown(): void {
@@ -18,7 +21,7 @@ class DownloadEmailJobUnitTest extends TestCase {
             DownloadEmailJob::delete($token);
         }
 
-        foreach (['00000000000000000000000000000000', '11111111111111111111111111111111'] as $token) {
+        foreach ([self::MISSING_TOKEN, self::MALFORMED_TOKEN] as $token) {
             @unlink($this->jobPath($token));
         }
     }
@@ -62,11 +65,11 @@ class DownloadEmailJobUnitTest extends TestCase {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Download email job does not exist');
 
-        DownloadEmailJob::load('00000000000000000000000000000000');
+        DownloadEmailJob::load(self::MISSING_TOKEN);
     }
 
     public function testLoadRejectsMalformedJob(): void {
-        $token = '11111111111111111111111111111111';
+        $token = self::MALFORMED_TOKEN;
         $this->ensureJobDirectory();
         file_put_contents($this->jobPath($token), '{not json');
 
@@ -86,7 +89,7 @@ class DownloadEmailJobUnitTest extends TestCase {
     }
 
     private function ensureJobDirectory(): void {
-        $directory = dirname($this->jobPath('00000000000000000000000000000000'));
+        $directory = dirname($this->jobPath(self::MISSING_TOKEN));
         if (!is_dir($directory)) {
             mkdir($directory, 0700, true);
         }
