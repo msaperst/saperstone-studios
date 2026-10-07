@@ -58,7 +58,7 @@ try {
         $email->setText($text);
         try {
             $email->sendEmail();
-        } catch (Exception $e) {
+        } catch (Exception) {
             // Preserve legacy behavior: notification failures do not change the worker exit status.
         }
     }
