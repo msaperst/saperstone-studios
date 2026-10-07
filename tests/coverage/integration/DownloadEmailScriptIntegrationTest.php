@@ -19,8 +19,9 @@ class DownloadEmailScriptIntegrationTest extends TestCase {
         $missingFile = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'missing-download.zip';
 
         @unlink($missingFile);
+        $jobStore = new DownloadEmailJob();
         $token = DownloadEmailJob::generateToken();
-        DownloadEmailJob::create($token, 'test@example.com', $missingFile);
+        $jobStore->create($token, 'test@example.com', $missingFile);
 
         $command = sprintf(
             'SEND_EMAIL_AFTER=0 DOWNLOAD_FILE_WAIT_SECONDS=0 %s -f %s %s 2>&1',
@@ -44,8 +45,9 @@ class DownloadEmailScriptIntegrationTest extends TestCase {
 
         try {
             self::assertTrue(touch($file), 'Failed to create download fixture');
+            $jobStore = new DownloadEmailJob();
             $token = DownloadEmailJob::generateToken();
-            DownloadEmailJob::create($token, 'test@example.com', $file);
+            $jobStore->create($token, 'test@example.com', $file);
 
             $command = sprintf(
                 'SEND_EMAIL_AFTER=0 DOWNLOAD_FILE_WAIT_SECONDS=0 %s -f %s %s 2>&1',
