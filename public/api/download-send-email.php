@@ -27,7 +27,8 @@ try {
         throw new BadRequestException('Invalid download file provided.');
     }
 
-    $jobToken = DownloadEmailJob::create($email, $resolvedFile);
+    $jobToken = DownloadEmailJob::generateToken();
+    DownloadEmailJob::create($jobToken, $email, $resolvedFile);
     $worker = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'send-download-email.php';
     $command = sprintf(
         'php -f %s %s > /dev/null 2>&1 &',
