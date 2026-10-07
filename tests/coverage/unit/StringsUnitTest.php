@@ -61,6 +61,20 @@ class StringsUnitTest extends TestCase {
         $this->assertEquals(1, preg_match('/^[a-zA-Z0-9]+$/', $result));
     }
 
+    public function testRandomTokenUsesExpectedHexLength(): void {
+        $token = Strings::randomToken();
+
+        $this->assertEquals(64, strlen($token));
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $token);
+    }
+
+    public function testRandomTokenSupportsRequestedByteLength(): void {
+        $token = Strings::randomToken(16);
+
+        $this->assertEquals(32, strlen($token));
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{32}$/D', $token);
+    }
+
     public function testAssetUrlAddsStableModificationTimeVersion() {
         $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'asset-url-' . uniqid();
         mkdir($root . DIRECTORY_SEPARATOR . 'js', 0777, true);
