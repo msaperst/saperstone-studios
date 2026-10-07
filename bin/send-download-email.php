@@ -8,8 +8,10 @@ if ($argc < 2) {
 
 $jobToken = $argv[1];
 
+$jobStore = new DownloadEmailJob();
+
 try {
-    $job = DownloadEmailJob::load($jobToken);
+    $job = $jobStore->load($jobToken);
 } catch (Exception $e) {
     fwrite(STDERR, $e->getMessage() . "\n");
     exit(2);
@@ -63,7 +65,7 @@ try {
         }
     }
 } finally {
-    DownloadEmailJob::delete($jobToken);
+    $jobStore->delete($jobToken);
 }
 
 exit($exitCode);
