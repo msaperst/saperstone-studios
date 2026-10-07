@@ -617,7 +617,7 @@ class AlbumIntegrationTest extends TestCase {
             ];
             $album = Album::withParams($params);
             $this->expectException(AlbumException::class);
-            $this->expectExceptionMessage('mkdir(): No such file or directory<br/>Unable to create album');
+            $this->expectExceptionMessage('Unable to create directory<br/>Unable to create album');
             $album->create();
         } finally {
             rename(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/tmp_albums', dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/albums');
