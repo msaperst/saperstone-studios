@@ -72,7 +72,7 @@ class User {
         $user->md5Pass = password_hash($user->password, PASSWORD_DEFAULT);
         // some common values
         $sql->disconnect();
-        $user->hash = md5($user->username . $user->password);
+        $user->hash = Strings::randomToken();
         return $user;
     }
 
@@ -272,7 +272,13 @@ class User {
         $row = $sql->getRow("SELECT * FROM users WHERE usr = ?", [$username]);
         if ($row != null && self::passwordMatches($password, $row['pass'])) {
             if (password_needs_rehash($row['pass'], PASSWORD_DEFAULT)) {
-                $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [password_hash($password, PASSWORD_DEFAULT), $row['id']]);
+                $sql->executeStatement(
+                    "UPDATE users SET pass = ? WHERE id = ?",
+                    [password_hash($password, PASSWORD_DEFAULT), $row['id']]
+                );
+            }
+            if (self::needsAuthenticationHashUpgrade((string)$row['hash'])) {
+                self::rotateAuthenticationHash($sql, (int)$row['id']);
             }
         } else {
             $row = null;
@@ -293,6 +299,16 @@ class User {
             return password_verify($password, $storedHash);
         }
         return hash_equals($storedHash, md5($password)); // NOSONAR legacy migration path only
+    }
+
+    private static function needsAuthenticationHashUpgrade(string $hash): bool {
+        return preg_match('/^[a-f0-9]{64}$/D', $hash) !== 1;
+    }
+
+    private static function rotateAuthenticationHash(Sql $sql, int $userId): string {
+        $hash = Strings::randomToken();
+        $sql->executeStatement("UPDATE users SET hash = ? WHERE id = ?", [$hash, $userId]);
+        return $hash;
     }
 
     /**
@@ -482,7 +498,11 @@ class User {
         }
         $this->password = $params['password'];
         $this->md5Pass = password_hash($this->password, PASSWORD_DEFAULT);
+        $this->hash = self::rotateAuthenticationHash($sql, (int)$this->getId());
         $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [$this->md5Pass, $this->getId()]);
+        if ($systemUser->getId() == $this->getId()) {
+            $_SESSION['hash'] = $this->hash;
+        }
         RememberMe::forgetAllForUser((int)$this->getId());
     }
 
