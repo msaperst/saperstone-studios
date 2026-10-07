@@ -27,8 +27,9 @@ try {
         throw new BadRequestException('Invalid download file provided.');
     }
 
+    $jobStore = new DownloadEmailJob();
     $jobToken = DownloadEmailJob::generateToken();
-    DownloadEmailJob::create($jobToken, $email, $resolvedFile);
+    $jobStore->create($jobToken, $email, $resolvedFile);
     $worker = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'send-download-email.php';
     $command = sprintf(
         'php -f %s %s > /dev/null 2>&1 &',
@@ -39,7 +40,7 @@ try {
     $exitCode = 0;
     system($command, $exitCode);
     if ($exitCode !== 0) {
-        DownloadEmailJob::delete($jobToken);
+        $jobStore->delete($jobToken);
         throw new RuntimeException('Unable to start download email job');
     }
 } catch (Exception $e) {
