@@ -226,7 +226,7 @@ class CreateContractTest extends TestCase {
             $contractId = (string)$response->getBody();
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = $contractId;");
             $this->assertSame((string)$contractId, (string)$contractDetails['id']);
-            $this->assertEquals(md5($contractId . "weddingMaxMaxMaxfunsies"), $contractDetails['link']);
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $contractDetails['link']);
             $this->assertEquals('wedding', $contractDetails['type']);
             $this->assertEquals('MaxMaxMax', $contractDetails['name']);
             $this->assertNull($contractDetails['address']);
@@ -315,7 +315,7 @@ class CreateContractTest extends TestCase {
             $contractId = (int)(string)$response->getBody();
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = $contractId;");
             $this->assertEquals($contractId, $contractDetails['id']);
-            $this->assertEquals(md5($contractId . "weddingMaxMaxMaxfunsies"), $contractDetails['link']);
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $contractDetails['link']);
             $this->assertEquals('wedding', $contractDetails['type']);
             $this->assertEquals('MaxMaxMax', $contractDetails['name']);
             $this->assertEquals('123 Seasame Street', $contractDetails['address']);

@@ -70,7 +70,7 @@ test('contract submit sends signed content and shows success before delayed relo
     environment.element('.keep').val('filled');
     sig.nativeData = [[1, 2]];
     ini.nativeData = [[3, 4]];
-    environment.element('#contract-id').val('81');
+    environment.element('#contract-link').val('secure-contract-token');
     environment.element('#contract-name-signature').val('Client Name');
     environment.element('#contract-address').val('123 Main');
     environment.element('#contract-number').val('555-1212');
@@ -83,7 +83,7 @@ test('contract submit sends signed content and shows success before delayed relo
     assert.equal(environment.calls.post.length, 1);
     const request = environment.calls.post[0];
     assert.equal(request.url, '/api/sign-contract.php');
-    assert.equal(request.data.id, '81');
+    assert.equal(request.data.link, 'secure-contract-token');
     assert.equal(request.data.name, 'Client Name');
     assert.equal(request.data.email, 'client@example.com');
     assert.equal(request.data.signature, 'signature-data');
@@ -129,7 +129,7 @@ test('contract submit surfaces validation and HTTP failures and restores the sub
 
 test('contract preview captures contact details and replaces signatures with renderable images', () => {
     const {context, environment, sig, ini} = createContext();
-    environment.element('#contract-id').val('19');
+    environment.element('#contract-link').val('another-secure-token');
     environment.element('#contract-name-signature').val('Signer');
     environment.element('#contract-address').val('456 Oak');
     environment.element('#contract-number').val('602-555-0100');
@@ -139,7 +139,7 @@ test('contract preview captures contact details and replaces signatures with ren
 
     const inputs = context.previewContract();
 
-    assert.equal(inputs.id, '19');
+    assert.equal(inputs.link, 'another-secure-token');
     assert.equal(inputs.name, 'Signer');
     assert.equal(inputs.address, '456 Oak');
     assert.equal(inputs.number, '602-555-0100');

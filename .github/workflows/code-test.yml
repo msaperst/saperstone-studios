@@ -184,28 +184,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get UT Coverage
+      - name: Download Coverage Reports
         uses: actions/download-artifact@v8
         with:
-          name: ut-coverage
-          path: ut
-
-      - name: Get IT Coverage
-        uses: actions/download-artifact@v8
-        with:
-          name: it-coverage
-          path: it/
-
-      - name: Get JS Coverage
-        uses: actions/download-artifact@v8
-        with:
-          name: js-coverage
-          path: js/
-
-      - name: Combine Reports
-        run: mkdir reports; mv ut/* reports/; mv it/* reports/; mv js/* reports/
+          pattern: '*-coverage'
+          path: reports
+          merge-multiple: true
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+

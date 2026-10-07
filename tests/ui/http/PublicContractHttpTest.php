@@ -46,7 +46,7 @@ class PublicContractHttpTest extends HttpTestBase {
         $response = $this->get('contract.php?c=' . self::CONTRACT_LINK);
         $this->assertPage($response, 'Saperstone Studios Contracts');
 
-        self::assertSame((string) self::CONTRACT_ID, $this->attribute($response, "//*[@id='contract-id']", 'value'));
+        self::assertSame(self::CONTRACT_LINK, $this->attribute($response, "//*[@id='contract-link']", 'value'));
         self::assertSame(0, $this->elementCount($response, '//embed'));
         self::assertSame(1, $this->elementCount($response, "//*[@id='contract']"));
         self::assertSame(1, $this->elementCount($response, "//*[@id='contract-initial-holder']"));

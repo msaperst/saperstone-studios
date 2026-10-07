@@ -321,7 +321,8 @@ class UpdateUserTest extends TestCase {
             $this->assertEquals('Saperstone', $userDetails['lastName']);
             $this->assertEquals('uploader@example.org', $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
-            $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
+            $this->assertNotSame('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
             $this->assertEquals(0, $userDetails['active']);
             $this->assertNull($userDetails['resetKey']);
             $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");

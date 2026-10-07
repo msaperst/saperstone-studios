@@ -7,7 +7,7 @@ require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SE
 $api = new Api();
 
 try {
-    $contract = Contract::withId($api->retrievePostString('id', 'Contract id'));
+    $contract = Contract::withLink($api->retrievePostString('link', 'Contract link'));
     $file = $contract->sign($_POST);
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);

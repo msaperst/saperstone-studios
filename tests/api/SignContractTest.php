@@ -13,6 +13,8 @@ require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'CustomAsserts.php';
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'autoloader.php';
 
 class SignContractTest extends TestCase {
+
+    private const CONTRACT_LINK = '8e07fb32bf072e1825df8290a7bcdc57';
     /**
      * @var Client
      */
@@ -48,38 +50,50 @@ class SignContractTest extends TestCase {
     /**
      * @throws GuzzleException
      */
-    public function testWithIdNoContractId() {
+    public function testWithLinkNoContractLink() {
         $response = $this->http->request('POST', 'api/sign-contract.php');
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals('Contract id is required', (string)$response->getBody());
+        $this->assertEquals('Contract link is required', (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
+    }
+
+    public function testNumericContractIdDoesNotAuthorizeSigning() {
+        $response = $this->http->request('POST', 'api/sign-contract.php', [
+            'form_params' => [
+                'id' => '999'
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Contract link is required', (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
 
     /**
      * @throws GuzzleException
      */
-    public function testWithIdBlankContractId() {
+    public function testWithLinkBlankContractLink() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => ''
+                'link' => ''
             ]
         ]);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals('Contract id can not be blank', (string)$response->getBody());
+        $this->assertEquals('Contract link can not be blank', (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
 
     /**
      * @throws GuzzleException
      */
-    public function testWithIdBadContractId() {
+    public function testWithLinkBadContractLink() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '998'
+                'link' => 'bad-link'
             ]
         ]);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertEquals('Contract id does not match any contracts', (string)$response->getBody());
+        $this->assertEquals('Contract link does not match any contracts', (string)$response->getBody());
         CustomAsserts::assertEmailCount(0);
     }
 
@@ -89,7 +103,7 @@ class SignContractTest extends TestCase {
     public function testSignContractNoName() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999'
+                'link' => self::CONTRACT_LINK
             ]
         ]);
         $this->assertEquals(400, $response->getStatusCode());
@@ -103,7 +117,7 @@ class SignContractTest extends TestCase {
     public function testSignContractBlankName() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => ''
             ]
         ]);
@@ -118,7 +132,7 @@ class SignContractTest extends TestCase {
     public function testSignContractNoAddress() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax'
             ]
         ]);
@@ -133,7 +147,7 @@ class SignContractTest extends TestCase {
     public function testSignContractBlankAddress() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => ''
             ]
@@ -149,7 +163,7 @@ class SignContractTest extends TestCase {
     public function testSignContractNoNumber() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street'
             ]
@@ -165,7 +179,7 @@ class SignContractTest extends TestCase {
     public function testSignContractBlankNumber() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => ''
@@ -182,7 +196,7 @@ class SignContractTest extends TestCase {
     public function testSignContractNoEmail() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -199,7 +213,7 @@ class SignContractTest extends TestCase {
     public function testSignContractBlankEmail() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -217,7 +231,7 @@ class SignContractTest extends TestCase {
     public function testSignContractBadEmail() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -235,7 +249,7 @@ class SignContractTest extends TestCase {
     public function testSignContractNoSignature() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -253,7 +267,7 @@ class SignContractTest extends TestCase {
     public function testSignContractBlankSignature() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -272,7 +286,7 @@ class SignContractTest extends TestCase {
     public function testSignContractNoInitials() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -291,7 +305,7 @@ class SignContractTest extends TestCase {
     public function testSignContractBlankInitials() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -311,7 +325,7 @@ class SignContractTest extends TestCase {
     public function testSignContractNoContent() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -331,7 +345,7 @@ class SignContractTest extends TestCase {
     public function testSignContractBlankContent() {
         $response = $this->http->request('POST', 'api/sign-contract.php', [
             'form_params' => [
-                'id' => '999',
+                'link' => self::CONTRACT_LINK,
                 'name' => 'EleMax',
                 'address' => '123 Street',
                 'number' => '12345',
@@ -355,7 +369,7 @@ class SignContractTest extends TestCase {
         try {
             $response = $this->http->request('POST', 'api/sign-contract.php', [
                 'form_params' => [
-                    'id' => '999',
+                    'link' => self::CONTRACT_LINK,
                     'name' => 'EleMax',
                     'address' => '123 Street',
                     'number' => '12345',
@@ -422,7 +436,7 @@ class SignContractTest extends TestCase {
         try {
             $response = $this->http->request('POST', 'api/sign-contract.php', [
                 'form_params' => [
-                    'id' => '999',
+                    'link' => self::CONTRACT_LINK,
                     'name' => 'EleMax',
                     'address' => '123 Street',
                     'number' => '12345',
