@@ -216,34 +216,18 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          task_url="$(awk -F= '$1 == "ceTaskUrl" { print $2 }' .scannerwork/report-task.txt)"
-          if [ -z "$task_url" ]; then
-            echo "SonarCloud task URL was not found." >&2
-            exit 1
-          fi
+          # SonarCloud processes the uploaded report asynchronously. Give the
+          # PR analysis a short window to become queryable before requesting it.
+          sleep 10
 
-          for attempt in {1..30}; do
-            task_json="$(curl --fail-with-body --silent --show-error --header "Authorization: Bearer $SONAR_TOKEN" "$task_url")"
-            task_status="$(printf '%s' "$task_json" | jq -r '.task.status')"
-            case "$task_status" in
-              SUCCESS)
-                break
-                ;;
-              FAILED|CANCELED)
-                echo "SonarCloud analysis task ended with status $task_status." >&2
-                exit 1
-                ;;
-            esac
-
-            if [ "$attempt" -eq 30 ]; then
-              echo "Timed out waiting for SonarCloud analysis processing." >&2
-              exit 1
-            fi
-            sleep 2
-          done
-
-          issues_url="https://sonarcloud.io/api/issues/search?componentKeys=msaperst_saperstone-studios&pullRequest=${SONAR_PR_NUMBER}&issueStatuses=OPEN,CONFIRMED&sinceLeakPeriod=true&ps=100"
-          issues_json="$(curl --fail-with-body --silent --show-error --header "Authorization: Bearer $SONAR_TOKEN" "$issues_url")"
+          issues_json="$(curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer $SONAR_TOKEN" \
+            --get \
+            --data-urlencode "componentKeys=msaperst_saperstone-studios" \
+            --data-urlencode "pullRequest=$SONAR_PR_NUMBER" \
+            --data-urlencode "issueStatuses=OPEN,CONFIRMED" \
+            --data-urlencode "ps=100" \
+            "https://sonarcloud.io/api/issues/search")"
 
           {
             echo "### SonarCloud PR Issues"
