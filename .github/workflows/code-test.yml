@@ -212,6 +212,7 @@ jobs:
 
       - name: SonarCloud PR Issue Summary
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PR_NUMBER: ${{ github.event.pull_request.number }}
