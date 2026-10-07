@@ -10,7 +10,6 @@ try {
     $contract = Contract::withLink($contractLink);
 } catch (Exception $e) {
     $errors->throw404();
-    exit();
 }
 ?>
 <!DOCTYPE html>
