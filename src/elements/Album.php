@@ -214,11 +214,10 @@ class Album {
         $location = $location . "_" . time();
         $this->location = $location;
         try {
-            $oldMask = umask(0);
-            if (!mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $location, 0775)) {
-                throw new Exception("Mkdir failed: " . error_get_last()['message']);
-            }
-            umask($oldMask);
+            Filesystem::createPublicDirectory(
+                dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public'
+                    . DIRECTORY_SEPARATOR . 'albums' . DIRECTORY_SEPARATOR . $location
+            );
         } catch (Exception $e) {
             $sql->disconnect();
             throw new AlbumException($e->getMessage() . "<br/>Unable to create album");
