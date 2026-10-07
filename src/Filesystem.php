@@ -2,8 +2,8 @@
 
 final class Filesystem {
 
-    // Public asset directories need owner/group write access for web and maintenance processes.
-    // World access is read/execute only; HTTP authorization remains independent of filesystem mode.
+    // Web/storage directories need owner/group write access for application and maintenance processes.
+    // World access is read/execute only; Apache/application access controls are enforced separately.
     private const PUBLIC_DIRECTORY_MODE = 0775;
 
     public static function createPublicDirectory(string $path, bool $recursive = false): void {
