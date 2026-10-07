@@ -490,11 +490,15 @@ class User {
             "UPDATE users SET pass = ?, hash = ? WHERE id = ?",
             [$this->md5Pass, $this->hash, $this->getId()]
         );
+        $this->updateCurrentSessionHash($systemUser);
+        $sql->disconnect();
+        RememberMe::forgetAllForUser((int)$this->getId());
+    }
+
+    private function updateCurrentSessionHash(User $systemUser): void {
         if ($systemUser->getId() == $this->getId()) {
             $_SESSION['hash'] = $this->hash;
         }
-        $sql->disconnect();
-        RememberMe::forgetAllForUser((int)$this->getId());
     }
 
     /**
