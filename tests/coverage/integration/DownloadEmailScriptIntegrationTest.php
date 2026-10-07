@@ -19,7 +19,8 @@ class DownloadEmailScriptIntegrationTest extends TestCase {
         $missingFile = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'missing-download.zip';
 
         @unlink($missingFile);
-        $token = DownloadEmailJob::create('test@example.com', $missingFile);
+        $token = DownloadEmailJob::generateToken();
+        DownloadEmailJob::create($token, 'test@example.com', $missingFile);
 
         $command = sprintf(
             'SEND_EMAIL_AFTER=0 DOWNLOAD_FILE_WAIT_SECONDS=0 %s -f %s %s 2>&1',
@@ -43,7 +44,8 @@ class DownloadEmailScriptIntegrationTest extends TestCase {
 
         try {
             touch($file);
-            $token = DownloadEmailJob::create('test@example.com', $file);
+            $token = DownloadEmailJob::generateToken();
+            DownloadEmailJob::create($token, 'test@example.com', $file);
 
             $command = sprintf(
                 'SEND_EMAIL_AFTER=0 DOWNLOAD_FILE_WAIT_SECONDS=0 %s -f %s %s 2>&1',
