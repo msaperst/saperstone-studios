@@ -224,6 +224,16 @@ Feature: Album
     And I see album 99999 download with images "2, 4, 7"
     And I see an email indicating images "2, 4, 7" from album 99999 downloaded
 
+  Scenario: Large download emails a ready link
+    Given album 99999 has 101 lightweight images
+    And I have download access to album 99999
+    And I am on the "user/album.php?album=99999" page
+    When I download all my images
+    And I confirm my download
+    Then I see the large download email prompt
+    When I submit my email for the large download
+    Then I receive a ready email for album 99999
+
   Scenario: Able to download single image
     Given I have download rights for album 99999 image 2
     And I am on the "user/album.php?album=99999#1" page
