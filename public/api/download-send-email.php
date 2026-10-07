@@ -41,7 +41,7 @@ try {
     system($command, $exitCode);
     if ($exitCode !== 0) {
         $jobStore->delete($jobToken);
-        throw new RuntimeException('Unable to start download email job');
+        throw new DownloadEmailJobException('Unable to start download email job');
     }
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);
