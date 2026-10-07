@@ -132,6 +132,12 @@ class AlbumFeatureContext implements Context {
             if ($albumLocation !== null && is_dir($albumLocation)) {
                 system("rm -rf " . escapeshellarg($albumLocation));
             }
+            if ($album !== null) {
+                $tmpDirectory = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'tmp';
+                foreach (glob($tmpDirectory . DIRECTORY_SEPARATOR . $album['name'] . ' *.zip') ?: [] as $download) {
+                    @unlink($download);
+                }
+            }
         }
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
@@ -280,6 +286,55 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @Given /^album (\d+) has (\d+) lightweight images$/
+     */
+    public function albumHasLightweightImages($albumId, $images): void {
+        $albumId = (int) $albumId;
+        $images = (int) $images;
+        Assert::assertGreaterThan(0, $images);
+
+        $albumDirectory = dirname(__DIR__, 3)
+            . DIRECTORY_SEPARATOR . 'content'
+            . DIRECTORY_SEPARATOR . 'albums'
+            . DIRECTORY_SEPARATOR . 'sample-album';
+        if (!is_dir($albumDirectory)) {
+            Assert::assertTrue(mkdir($albumDirectory, 0777, true));
+        }
+
+        $sourceImage = dirname(__DIR__, 2)
+            . DIRECTORY_SEPARATOR . 'resources'
+            . DIRECTORY_SEPARATOR . 'flower.jpeg';
+
+        $sql = new Sql();
+        $sql->executeStatement("DELETE FROM album_images WHERE album = ?", [$albumId]);
+        $sql->executeStatement(
+            "UPDATE albums SET images = ?, location = 'sample-album' WHERE id = ?",
+            [$images, $albumId]
+        );
+        $this->rememberAlbumFixture($albumId, $images);
+
+        for ($i = 0; $i < $images; $i++) {
+            $fileName = "lightweight-$i.jpg";
+            $target = $albumDirectory . DIRECTORY_SEPARATOR . $fileName;
+            @unlink($target);
+            if (!@link($sourceImage, $target)) {
+                Assert::assertTrue(copy($sourceImage, $target));
+            }
+
+            $location = "/albums/sample-album/$fileName";
+            $sql->executeStatement(
+                "INSERT INTO album_images (album, title, sequence, caption, location, width, height, active) "
+                    . "VALUES (?, ?, ?, '', ?, 1, 1, 1)",
+                [$albumId, "Image $i", $i, $location]
+            );
+            $this->albumFixtures[$albumId]['imageFiles'][$i + 1] = $fileName;
+            $this->albumFixtures[$albumId]['imageTitles'][$i + 1] = "Image $i";
+        }
+
+        $sql->disconnect();
+    }
+
+    /**
      * @Given /^I have created album (\d+) with (\d+) images$/
      * @param $albumId
      * @throws Exception
@@ -370,6 +425,18 @@ class AlbumFeatureContext implements Context {
         $sql = new Sql();
         $img = $sql->getRow("SELECT * FROM `album_images` WHERE `album` = $album AND `sequence` = " . ($image - 1))['id'];
         $sql->executeStatement("INSERT INTO `download_rights` VALUES( {$this->user->getId()}, $album, $img);");
+        $sql->disconnect();
+    }
+
+    /**
+     * @Given /^I have download access to album (\d+)$/
+     */
+    public function iHaveDownloadAccessToAlbum($albumId): void {
+        $sql = new Sql();
+        $sql->executeStatement(
+            "INSERT INTO download_rights (`user`, `album`, `image`) VALUES (?, ?, '*')",
+            [$this->user->getId(), (int) $albumId]
+        );
         $sql->disconnect();
     }
 
@@ -1310,6 +1377,70 @@ Comment',
             $actual = $decoded['error'];
         }
         Assert::assertEquals($expected, $actual);
+    }
+
+    /**
+     * @Then /^I see the large download email prompt$/
+     */
+    public function iSeeTheLargeDownloadEmailPrompt(): void {
+        $selector = WebDriverBy::id('download-email-address-alert');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($selector));
+
+        $alert = $this->driver->findElement($selector);
+        Assert::assertStringContainsString(
+            'Please enter your email to receive a link to the files once they are ready for download',
+            $alert->getText()
+        );
+        Assert::assertTrue($alert->findElement(WebDriverBy::id('download-email-address'))->isDisplayed());
+    }
+
+    /**
+     * @When /^I submit my email for the large download$/
+     */
+    public function iSubmitMyEmailForTheLargeDownload(): void {
+        $input = WebDriverBy::id('download-email-address');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($input));
+        $this->driver->findElement($input)->clear()->sendKeys($this->user->getEmail());
+
+        $submit = WebDriverBy::cssSelector('#download-email-address-alert button.btn-info');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($submit));
+        $this->driver->findElement($submit)->click();
+
+        $this->wait->until(function () {
+            return count($this->driver->findElements(WebDriverBy::cssSelector('.bootstrap-dialog.modal.in'))) === 0;
+        });
+    }
+
+    /**
+     * @Then /^I receive a ready email for album (\d+)$/
+     */
+    public function iReceiveAReadyEmailForAlbum($albumId): void {
+        $text = CustomAsserts::getEmailText(
+            $this->user->getEmail(),
+            'noreply@saperstonestudios.com',
+            'Your Download Is Ready'
+        );
+
+        $albumName = preg_quote("Album $albumId", '#');
+        $pattern = "#https://saperstonestudios\\.com/tmp/($albumName \\d{4}-\\d{2}-\\d{2} \\d{2}-\\d{2}-\\d{2}\\.zip)#";
+        Assert::assertSame(1, preg_match($pattern, $text, $matches), $text);
+        Assert::assertStringContainsString(
+            'This download will be available for the next 48 hours',
+            $text
+        );
+
+        $zipPath = dirname(__DIR__, 3)
+            . DIRECTORY_SEPARATOR . 'tmp'
+            . DIRECTORY_SEPARATOR . $matches[1];
+        Assert::assertFileExists($zipPath, 'The emailed large-download ZIP does not exist');
+
+        $zip = new ZipArchive();
+        Assert::assertTrue($zip->open($zipPath) === true, 'The emailed download is not a valid ZIP');
+        $expectedImageCount = (int) $this->albumFixtures[(int) $albumId]['images'];
+        Assert::assertSame($expectedImageCount, $zip->numFiles);
+        Assert::assertNotFalse($zip->locateName($this->fixtureImageFileName((int) $albumId, 1)));
+        Assert::assertNotFalse($zip->locateName($this->fixtureImageFileName((int) $albumId, $expectedImageCount)));
+        $zip->close();
     }
 
     /**

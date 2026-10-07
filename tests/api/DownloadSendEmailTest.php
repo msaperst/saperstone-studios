@@ -84,6 +84,34 @@ class DownloadSendEmailTest extends TestCase {
         CustomAsserts::assertEmailCount(0);
     }
 
+    public function testRejectsDownloadOutsideTemporaryDirectory() {
+        $response = $this->http->request('POST', 'api/download-send-email.php', [
+            'form_params' => [
+                'email' => 'validuser@gmail.com',
+                'file' => '../../src/Strings.php'
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $result = json_decode($response->getBody(), true);
+        $this->assertEquals('Invalid download file provided.', $result['error']);
+        CustomAsserts::assertEmailCount(0);
+    }
+
+    public function testRejectsNonZipDownload() {
+        $response = $this->http->request('POST', 'api/download-send-email.php', [
+            'form_params' => [
+                'email' => 'validuser@gmail.com',
+                'file' => '../tmp/sample.txt'
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $result = json_decode($response->getBody(), true);
+        $this->assertEquals('Invalid download file provided.', $result['error']);
+        CustomAsserts::assertEmailCount(0);
+    }
+
     public function testSuccessfulExecutionTrigger() {
         try {
             $response = $this->http->request('POST', 'api/download-send-email.php', [
