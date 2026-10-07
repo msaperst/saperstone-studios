@@ -277,9 +277,6 @@ class User {
                     [password_hash($password, PASSWORD_DEFAULT), $row['id']]
                 );
             }
-            if (self::needsAuthenticationHashUpgrade((string)$row['hash'])) {
-                self::rotateAuthenticationHash($sql, (int)$row['id']);
-            }
         } else {
             $row = null;
         }
@@ -299,16 +296,6 @@ class User {
             return password_verify($password, $storedHash);
         }
         return hash_equals($storedHash, md5($password)); // NOSONAR legacy migration path only
-    }
-
-    private static function needsAuthenticationHashUpgrade(string $hash): bool {
-        return preg_match('/^[a-f0-9]{64}$/D', $hash) !== 1;
-    }
-
-    private static function rotateAuthenticationHash(Sql $sql, int $userId): string {
-        $hash = Strings::randomToken();
-        $sql->executeStatement("UPDATE users SET hash = ? WHERE id = ?", [$hash, $userId]);
-        return $hash;
     }
 
     /**
