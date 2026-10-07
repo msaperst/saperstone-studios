@@ -57,6 +57,18 @@ class SignContractTest extends TestCase {
         CustomAsserts::assertEmailCount(0);
     }
 
+    public function testNumericContractIdDoesNotAuthorizeSigning() {
+        $response = $this->http->request('POST', 'api/sign-contract.php', [
+            'form_params' => [
+                'id' => '999'
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Contract link is required', (string)$response->getBody());
+        CustomAsserts::assertEmailCount(0);
+    }
+
     /**
      * @throws GuzzleException
      */
