@@ -493,6 +493,7 @@ class User {
         if ($systemUser->getId() == $this->getId()) {
             $_SESSION['hash'] = $this->hash;
         }
+        $sql->disconnect();
         RememberMe::forgetAllForUser((int)$this->getId());
     }
 
