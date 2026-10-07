@@ -209,3 +209,62 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: SonarCloud PR Issue Summary
+        if: github.event_name == 'pull_request'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          task_url="$(awk -F= '$1 == "ceTaskUrl" { print $2 }' .scannerwork/report-task.txt)"
+          if [ -z "$task_url" ]; then
+            echo "SonarCloud task URL was not found." >&2
+            exit 1
+          fi
+
+          for attempt in {1..30}; do
+            task_json="$(curl --fail --silent --show-error -u "$SONAR_TOKEN:" "$task_url")"
+            task_status="$(printf '%s' "$task_json" | jq -r '.task.status')"
+            case "$task_status" in
+              SUCCESS)
+                break
+                ;;
+              FAILED|CANCELED)
+                echo "SonarCloud analysis task ended with status $task_status." >&2
+                exit 1
+                ;;
+            esac
+
+            if [ "$attempt" -eq 30 ]; then
+              echo "Timed out waiting for SonarCloud analysis processing." >&2
+              exit 1
+            fi
+            sleep 2
+          done
+
+          issues_url="https://sonarcloud.io/api/issues/search?componentKeys=msaperst_saperstone-studios&pullRequest=${SONAR_PR_NUMBER}&issueStatuses=OPEN,CONFIRMED&sinceLeakPeriod=true&ps=100"
+          issues_json="$(curl --fail --silent --show-error -u "$SONAR_TOKEN:" "$issues_url")"
+
+          {
+            echo "### SonarCloud PR Issues"
+            echo
+            issue_count="$(printf '%s' "$issues_json" | jq '.issues | length')"
+            echo "Open issues on new code: **$issue_count**"
+            echo
+            if [ "$issue_count" -gt 0 ]; then
+              echo '| File | Line | Rule | Severity | Quality | Message |'
+              echo '| --- | ---: | --- | --- | --- | --- |'
+              printf '%s' "$issues_json" | jq -r '
+                .issues[] |
+                [
+                  (.component | split(":")[-1]),
+                  (.line // ""),
+                  .rule,
+                  (.severity // ""),
+                  ((.impacts // []) | map(.softwareQuality + "/" + .severity) | join(", ")),
+                  (.message | gsub("\\|"; "\\\\|"))
+                ] |
+                "| " + join(" | ") + " |"
+              '
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
