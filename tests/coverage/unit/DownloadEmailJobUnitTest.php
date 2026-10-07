@@ -24,7 +24,9 @@ class DownloadEmailJobUnitTest extends TestCase {
     }
 
     public function testCreateAndLoadJob(): void {
-        $token = DownloadEmailJob::create(
+        $token = DownloadEmailJob::generateToken();
+        DownloadEmailJob::create(
+            $token,
             'test@example.com',
             '/var/www/public/tmp/sample 1234.zip'
         );
@@ -42,7 +44,11 @@ class DownloadEmailJobUnitTest extends TestCase {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Download email address is not valid');
 
-        DownloadEmailJob::create('not-an-email', '/tmp/sample.zip');
+        DownloadEmailJob::create(
+            DownloadEmailJob::generateToken(),
+            'not-an-email',
+            '/tmp/sample.zip'
+        );
     }
 
     public function testLoadRejectsInvalidToken(): void {
@@ -71,7 +77,8 @@ class DownloadEmailJobUnitTest extends TestCase {
     }
 
     public function testDeleteRemovesJob(): void {
-        $token = DownloadEmailJob::create('test@example.com', '/tmp/sample.zip');
+        $token = DownloadEmailJob::generateToken();
+        DownloadEmailJob::create($token, 'test@example.com', '/tmp/sample.zip');
 
         DownloadEmailJob::delete($token);
 
