@@ -40,10 +40,10 @@ class DownloadEmailScriptIntegrationTest extends TestCase {
 
     public function testExistingDownloadSendsReadyEmail(): void {
         $script = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR . 'send-download-email.php';
-        $file = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'worker-download.zip';
+        $file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'worker-download.zip';
 
         try {
-            touch($file);
+            self::assertTrue(touch($file), 'Failed to create download fixture');
             $token = DownloadEmailJob::generateToken();
             DownloadEmailJob::create($token, 'test@example.com', $file);
 
