@@ -85,7 +85,7 @@ function submitContract() {
 
 function previewContract() {
     var inputs = {};
-    inputs.id = $('#contract-id').val();
+    inputs.link = $('#contract-link').val();
     inputs.name = $('#contract-name-signature').val();
     inputs.address = $('#contract-address').val();
     inputs.number = $('#contract-number').val();
