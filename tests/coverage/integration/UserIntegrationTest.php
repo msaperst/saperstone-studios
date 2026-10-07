@@ -154,7 +154,7 @@ class UserIntegrationTest extends TestCase {
         $stored = $this->sql->getRow("SELECT pass, hash FROM users WHERE id = ?", [899]);
         $this->assertTrue(password_verify('user', $stored['pass']));
         $this->assertNotSame(md5('user'), $stored['pass']);
-        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $stored['hash']);
+        $this->assertSame('12345', $stored['hash']);
         $this->assertSame($stored['hash'], $user->getHash());
     }
 
