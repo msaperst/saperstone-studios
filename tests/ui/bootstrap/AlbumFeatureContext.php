@@ -434,7 +434,7 @@ class AlbumFeatureContext implements Context {
     public function iHaveDownloadAccessToAlbum($albumId): void {
         $sql = new Sql();
         $sql->executeStatement(
-            "INSERT INTO download_rights (user, album, image) VALUES (?, ?, '*')",
+            "INSERT INTO download_rights (`user`, `album`, `image`) VALUES (?, ?, '*')",
             [$this->user->getId(), (int) $albumId]
         );
         $sql->disconnect();
@@ -1422,14 +1422,25 @@ Comment',
         );
 
         $albumName = preg_quote("Album $albumId", '#');
-        Assert::assertMatchesRegularExpression(
-            "#https://saperstonestudios\\.com/tmp/$albumName \\d{4}-\\d{2}-\\d{2} \\d{2}-\\d{2}-\\d{2}\\.zip#",
-            $text
-        );
+        $pattern = "#https://saperstonestudios\\.com/tmp/($albumName \\d{4}-\\d{2}-\\d{2} \\d{2}-\\d{2}-\\d{2}\\.zip)#";
+        Assert::assertSame(1, preg_match($pattern, $text, $matches), $text);
         Assert::assertStringContainsString(
             'This download will be available for the next 48 hours',
             $text
         );
+
+        $zipPath = dirname(__DIR__, 3)
+            . DIRECTORY_SEPARATOR . 'tmp'
+            . DIRECTORY_SEPARATOR . $matches[1];
+        Assert::assertFileExists($zipPath, 'The emailed large-download ZIP does not exist');
+
+        $zip = new ZipArchive();
+        Assert::assertTrue($zip->open($zipPath) === true, 'The emailed download is not a valid ZIP');
+        $expectedImageCount = (int) $this->albumFixtures[(int) $albumId]['images'];
+        Assert::assertSame($expectedImageCount, $zip->numFiles);
+        Assert::assertNotFalse($zip->locateName($this->fixtureImageFileName((int) $albumId, 1)));
+        Assert::assertNotFalse($zip->locateName($this->fixtureImageFileName((int) $albumId, $expectedImageCount)));
+        $zip->close();
     }
 
     /**
