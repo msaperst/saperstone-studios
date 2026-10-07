@@ -184,72 +184,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get UT Coverage
+      - name: Download Coverage Reports
         uses: actions/download-artifact@v8
         with:
-          name: ut-coverage
-          path: ut
-
-      - name: Get IT Coverage
-        uses: actions/download-artifact@v8
-        with:
-          name: it-coverage
-          path: it/
-
-      - name: Get JS Coverage
-        uses: actions/download-artifact@v8
-        with:
-          name: js-coverage
-          path: js/
-
-      - name: Combine Reports
-        run: mkdir reports; mv ut/* reports/; mv it/* reports/; mv js/* reports/
+          pattern: '*-coverage'
+          path: reports
+          merge-multiple: true
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: SonarCloud PR Issue Summary
-        if: github.event_name == 'pull_request'
-        continue-on-error: true
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          # SonarCloud processes the uploaded report asynchronously. Give the
-          # PR analysis a short window to become queryable before requesting it.
-          sleep 10
-
-          issues_json="$(curl --fail-with-body --silent --show-error \
-            --header "Authorization: Bearer $SONAR_TOKEN" \
-            --get \
-            --data-urlencode "componentKeys=msaperst_saperstone-studios" \
-            --data-urlencode "pullRequest=$SONAR_PR_NUMBER" \
-            --data-urlencode "issueStatuses=OPEN,CONFIRMED" \
-            --data-urlencode "ps=100" \
-            "https://sonarcloud.io/api/issues/search")"
-
-          {
-            echo "### SonarCloud PR Issues"
-            echo
-            issue_count="$(printf '%s' "$issues_json" | jq '.issues | length')"
-            echo "Open issues on new code: **$issue_count**"
-            echo
-            if [ "$issue_count" -gt 0 ]; then
-              echo '| File | Line | Rule | Severity | Quality | Message |'
-              echo '| --- | ---: | --- | --- | --- | --- |'
-              printf '%s' "$issues_json" | jq -r '
-                .issues[] |
-                [
-                  (.component | split(":")[-1]),
-                  (.line // ""),
-                  .rule,
-                  (.severity // ""),
-                  ((.impacts // []) | map(.softwareQuality + "/" + .severity) | join(", ")),
-                  (.message | gsub("\\|"; "\\\\|"))
-                ] |
-                "| " + join(" | ") + " |"
-              '
-            fi
-          } | tee -a "$GITHUB_STEP_SUMMARY"
