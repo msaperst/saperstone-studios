@@ -23,6 +23,8 @@ class FilesystemUnitTest extends TestCase {
     }
 
     public function testCreatesPublicDirectoryWithExpectedPermissionsAndRestoresUmask(): void {
+        self::assertTrue(mkdir($this->testRoot, 0700, true));
+
         $originalMask = umask(0027);
         try {
             $path = $this->testRoot . DIRECTORY_SEPARATOR . 'public';
