@@ -167,10 +167,6 @@ class ApiUnitTest extends TestCase {
         $this->assertNull(Api::resolveStoragePath('../../outside.jpg', 'api'));
     }
 
-    public function testResolveStoragePathRejectsTraversalBeforeCanonicalization(): void {
-        $this->assertNull(Api::resolveStoragePath('../../outside.jpg', 'api'));
-    }
-
     public function testResolveStoragePathRejectsNullByteBeforeCanonicalization(): void {
         $this->assertNull(Api::resolveStoragePath("/portrait/img/image.jpg\0.php"));
     }
@@ -203,10 +199,6 @@ class ApiUnitTest extends TestCase {
         $this->assertTrue(symlink('../content/unit-storage-content.txt', $link));
 
         $this->assertSame(realpath($target), Api::resolveStoragePath('/unit-storage-content-link'));
-    }
-
-    public function testResolveStorageDirectoryRejectsTraversalBeforeCanonicalization(): void {
-        $this->assertNull(Api::resolveStorageDirectory('../../outside.jpg', 'api'));
     }
 
     public function testResolveStorageDirectoryRejectsTraversalBeforeCanonicalization(): void {
