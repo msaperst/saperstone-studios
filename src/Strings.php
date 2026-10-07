@@ -16,7 +16,7 @@ class Strings {
         return $randomString;
     }
 
-    static function randomToken(int $bytes = 32): string {
+    public static function randomToken(int $bytes = 32): string {
         return bin2hex(random_bytes($bytes));
     }
 
