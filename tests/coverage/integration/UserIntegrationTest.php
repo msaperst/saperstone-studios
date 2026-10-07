@@ -151,9 +151,11 @@ class UserIntegrationTest extends TestCase {
     public function testFromLoginMatch() {
         $user = User::fromLogin('test', 'user');
         $this->assertEquals(899, $user->getId());
-        $storedHash = $this->sql->getRow("SELECT pass FROM users WHERE id = ?", [899])['pass'];
-        $this->assertTrue(password_verify('user', $storedHash));
-        $this->assertNotSame(md5('user'), $storedHash);
+        $stored = $this->sql->getRow("SELECT pass, hash FROM users WHERE id = ?", [899]);
+        $this->assertTrue(password_verify('user', $stored['pass']));
+        $this->assertNotSame(md5('user'), $stored['pass']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $stored['hash']);
+        $this->assertSame($stored['hash'], $user->getHash());
     }
 
     public function testFromLoginRejectsSqlInjectionUsername() {
@@ -760,7 +762,8 @@ class UserIntegrationTest extends TestCase {
             'password' => '12345'
         ];
         $user = User::withParams($params);
-        $this->assertEquals(md5('testUser12345'), $user->getHash());
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $user->getHash());
+        $this->assertNotSame(md5('testUser12345'), $user->getHash());
     }
 
     /**
@@ -791,7 +794,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('', $userDetails['lastName']);
         $this->assertEquals('test@example.org', $userDetails['email']);
         $this->assertEquals('downloader', $userDetails['role']);
-        $this->assertEquals(md5('testUser12345'), $userDetails['hash']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
         $this->assertEquals(1, $userDetails['active']);
         CustomAsserts::timeWithin(2, $userDetails['created']);
         $this->assertNull($userDetails['lastLogin']);
@@ -825,7 +828,7 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('', $userDetails['lastName']);
         $this->assertEquals('test@example.org', $userDetails['email']);
         $this->assertEquals('downloader', $userDetails['role']);
-        $this->assertEquals(md5('testUser12345'), $userDetails['hash']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
         $this->assertEquals(1, $userDetails['active']);
         CustomAsserts::timeWithin(2, $userDetails['created']);
         $this->assertNull($userDetails['lastLogin']);
@@ -1233,7 +1236,8 @@ class UserIntegrationTest extends TestCase {
         $this->assertEquals('User', $userDetails['lastName']);
         $this->assertEquals('uploader@example.org', $userDetails['email']);
         $this->assertEquals('uploader', $userDetails['role']);
-        $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
+        $this->assertNotSame('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
         $this->assertEquals(1, $userDetails['active']);
         $this->assertNull($userDetails['resetKey']);
         $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");
