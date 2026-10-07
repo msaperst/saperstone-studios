@@ -498,8 +498,11 @@ class User {
         }
         $this->password = $params['password'];
         $this->md5Pass = password_hash($this->password, PASSWORD_DEFAULT);
-        $this->hash = self::rotateAuthenticationHash($sql, (int)$this->getId());
-        $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [$this->md5Pass, $this->getId()]);
+        $this->hash = Strings::randomToken();
+        $sql->executeStatement(
+            "UPDATE users SET pass = ?, hash = ? WHERE id = ?",
+            [$this->md5Pass, $this->hash, $this->getId()]
+        );
         if ($systemUser->getId() == $this->getId()) {
             $_SESSION['hash'] = $this->hash;
         }
