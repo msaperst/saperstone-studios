@@ -141,7 +141,11 @@ class Blog {
         $blog->directory = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog'
             . DIRECTORY_SEPARATOR . 'posts' . DIRECTORY_SEPARATOR . sprintf('%04d', $year)
             . DIRECTORY_SEPARATOR . sprintf('%02d', $month) . DIRECTORY_SEPARATOR . sprintf('%02d', $day);
-        Filesystem::createPublicDirectory($blog->directory, true);
+        if (!is_dir($blog->directory)) {
+            $oldMask = umask(0);
+            mkdir($blog->directory, 0775, true);
+            umask($oldMask);
+        }
         //blog tags
         $blog->tags = array();
         if (isset ($params ['tags']) && !empty($params['tags'])) {

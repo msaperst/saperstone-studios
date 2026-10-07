@@ -95,7 +95,11 @@ class File {
 
     function upload($location) {
         $this->location = $location;
-        Filesystem::createPublicDirectory($location, true);
+        if (!is_dir($location)) {
+            $oldMask = umask(0);
+            mkdir($location, 0775, true);
+            umask($oldMask);
+        }
         $files = array();
         foreach ($this->files as $file) {
             move_uploaded_file($file['tmp_name'], $location . $file['name']);

@@ -123,11 +123,11 @@ class BlogImage {
         }
         // setup the image, and add it to the database
         $newLocation = $this->blog->getLocation() . DIRECTORY_SEPARATOR . basename($this->location);
-        Filesystem::createPublicDirectory(
-            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public'
-                . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->blog->getLocation(),
-            true
-        );
+        if (!is_dir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->blog->getLocation())) {
+            $oldMask = umask(0);
+            mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->blog->getLocation(), 0775, true);
+            umask($oldMask);
+        }
         rename(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $this->location, dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $newLocation);
         $fullLocation = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR . $newLocation;
         system("mogrify -resize {$this->width}x \"{$fullLocation}\"");
