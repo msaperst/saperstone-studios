@@ -9,14 +9,13 @@ $api->forceAdmin();
 
 try {
     $imageRequest = $api->retrievePostString('image', 'Image');
-    $image = Api::resolvePublicPath($imageRequest, 'api');
+    $image = Api::resolveStoragePath($imageRequest, 'api');
     if ($image === null) {
+        $resolvedImage = Api::resolvePublicPath($imageRequest, 'api');
+        if ($resolvedImage !== null && !file_exists($resolvedImage)) {
+            throw new BadRequestException('Image does not exist');
+        }
         throw new BadRequestException('Image location is not valid');
-    }
-
-    $image = realpath($image);
-    if ($image === false) {
-        throw new BadRequestException('Image does not exist');
     }
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);

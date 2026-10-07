@@ -10,11 +10,12 @@ $api->forceAdmin();
 try {
     $location = $api->retrievePostString('location', 'Image location');
     $minWidth = $api->retrievePostInt('min-width', 'Image minimum width');
-    $resolvedLocation = Api::resolvePublicPath($location, 'api');
-    if ($resolvedLocation === null) {
+    $filePath = Api::resolveStorageDirectory($location, 'api');
+    if ($filePath === null) {
         throw new BadRequestException('Image location is not valid');
     }
-    $filePath = dirname($resolvedLocation);
+
+    $resolvedLocation = Api::resolvePublicPath($location, 'api');
     $fileName = basename($resolvedLocation);
     $_FILES ['myfile']['name'] = "tmp_$fileName";
     $file = new File($_FILES ['myfile']);

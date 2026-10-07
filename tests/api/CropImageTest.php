@@ -22,6 +22,7 @@ class CropImageTest extends TestCase {
         $this->http = NULL;
         @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/tmp_crop-security.jpeg');
         @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/crop-security.jpeg');
+        @unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'public/security-crop-link.jpeg');
         $this->sql->disconnect();
     }
 
@@ -234,6 +235,31 @@ class CropImageTest extends TestCase {
         $this->assertFalse(file_exists(
             dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/crop-security.jpeg'
         ));
+    }
+
+    public function testRejectsSymlinkEscapeOutsideAllowedStorageRoots(): void {
+        $link = dirname(__DIR__, 2)
+            . DIRECTORY_SEPARATOR . 'public'
+            . DIRECTORY_SEPARATOR . 'security-crop-link.jpeg';
+        @unlink($link);
+        $this->assertTrue(symlink('../src/Strings.php', $link));
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/crop-image.php', [
+            'form_params' => [
+                'image' => '../security-crop-link.jpeg',
+                'max-width' => '300',
+                'top' => '10',
+                'bottom' => '110'
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Image location is not valid', (string)$response->getBody());
+        $this->assertTrue(is_link($link));
     }
 
     public function testProperlyResizedImage() {
