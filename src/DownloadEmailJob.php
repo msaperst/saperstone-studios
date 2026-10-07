@@ -5,7 +5,11 @@ final class DownloadEmailJob {
     private const JOB_DIRECTORY = 'saperstone-download-email-jobs';
     private const TOKEN_PATTERN = '/^[a-f0-9]{32}$/D';
 
-    public static function create(string $email, string $filePath): string {
+    public static function generateToken(): string {
+        return bin2hex(random_bytes(16));
+    }
+
+    public static function create(string $token, string $email, string $filePath): void {
         if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
             throw new InvalidArgumentException('Download email address is not valid');
         }
@@ -17,7 +21,6 @@ final class DownloadEmailJob {
             throw new RuntimeException('Unable to create download email job directory');
         }
 
-        $token = bin2hex(random_bytes(16));
         $payload = json_encode([
             'email' => $email,
             'file' => $filePath
@@ -28,7 +31,6 @@ final class DownloadEmailJob {
         }
 
         chmod(self::getJobPath($token), 0600);
-        return $token;
     }
 
     public static function load(string $token): array {
