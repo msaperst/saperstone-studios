@@ -231,5 +231,6 @@ function saveImg(img) {
 }
 
 function randomImgNumber() {
+    // Cache-busting query parameter only; this value is not used for authentication or authorization.
     return Math.floor(Math.random() * 100000000);
 }
