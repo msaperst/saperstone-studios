@@ -65,6 +65,8 @@ jobs:
 
       - name: Set up full-stack test application
         uses: ./.github/actions/setup-full-stack
+        env:
+          SEND_EMAIL_AFTER: "1"
 
       - name: System Setup
         run: |
