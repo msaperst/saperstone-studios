@@ -132,8 +132,8 @@ test('upload plugin fork passes the failed upload xhr to first-party error handl
         }
     });
 
-    const fileInput = created.inputs[0];
-    assert.ok(fileInput, 'upload plugin did not create its file input');
+    const fileInput = created.inputs.find((input) => input.handlers.has('change'));
+    assert.ok(fileInput, 'upload plugin did not create its interactive file input');
 
     fileInput.val('photo.jpg');
     fileInput.trigger('change');
