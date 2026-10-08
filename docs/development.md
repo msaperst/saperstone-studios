@@ -40,6 +40,8 @@ Code quality is a first-class requirement. Treat Sonar as engineering feedback, 
 
 Apply the same approach to CodeQL, dependency/SCA analysis, container scanning, and other security/static-analysis tools.
 
+Checked-in third-party assets, locally maintained forks, generated files, and MySQL source have explicit analysis/coverage ownership rules. See [Static Asset and Analysis Ownership](static-asset-ownership.md) before adding scanner exclusions or modifying vendor-derived files solely to satisfy analysis.
+
 ### Definition of done
 
 A change is complete when:
