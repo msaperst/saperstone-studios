@@ -55,7 +55,8 @@ if (isset ($_GET ['id'])) {
         <li><strong>Compensation.</strong> In consideration of the Services,
             Client agrees to pay Photographer the following amounts as follows:
             <p>
-                <label for='contract-amount'><select id='contract-session' class='form-control inline-form-control' type='text'
+                <label for='contract-amount'><select id='contract-session' class='form-control inline-form-control'
+                                                     type='text'
                                                      placeholder='Wedding Package'
                                                      value='<?php echo $contract ['session']; ?>'>
                         <option cost=''></option>
@@ -65,7 +66,7 @@ if (isset ($_GET ['id'])) {
 2nd photographer
 Engagement session
 Engagement sign in book
-Photobooth
+Photo Booth
 Web gallery for sharing
 USB of final images
 $200 print credit'
@@ -304,7 +305,7 @@ $100 print credit'
         </div>
     </div>
     <label class="u-width-100"><textarea id='contract-details' class='form-control' type='text'
-                                          placeholder='Wedding Package Details'><?php echo $contract ['details']; ?></textarea></label>
+                                         placeholder='Wedding Package Details'><?php echo $contract ['details']; ?></textarea></label>
     <h3>Standard Terms and Conditions</h3>
     <p>
         <strong>Copyright.</strong> The photographs produced by Photographer

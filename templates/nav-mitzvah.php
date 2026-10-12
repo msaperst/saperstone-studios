@@ -4,39 +4,39 @@ $galleries = $sql->getRows("SELECT * FROM galleries WHERE parent = (SELECT id FR
 $sql->disconnect();
 ?>
 
-        <li class="dropdown"><a href="#"
-                                class="dropdown-toggle" data-toggle="dropdown">Details<strong
-                        class="caret"></strong></a>
-            <ul class="dropdown-menu">
-                <li><a href="sessions.php">Session Information</a></li>
-                <li><a href="process.php">The Process</a></li>
-                <li><a href="products.php">Products and Investment</a></li>
-                <li><a href="experience.php">The Mitzvah Experience</a></li>
-                <li><a href="photobooth.php">Photobooth</a></li>
-            </ul>
-        </li>
-        <li class="dropdown"><a href="#"
-                                class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
-                        class="caret"></strong></a>
-            <ul class="dropdown-menu">
-                <?php
-                for ($i = 0; $i < count($galleries); $i++) {
-                    $id = $galleries[$i]['id'];
-                    $title = $galleries[$i]['title'];
-                    $sql = new Sql ();
-                    $subGalleries = $sql->getRows("SELECT * FROM `galleries` WHERE parent = '" . $id . "';");
-                    $sql->disconnect();
-                    if (sizeof($subGalleries) == 0) {
-                        echo "<li><a href='galleries.php?w=" . $id . "'>" . $title . "</a></li>";
-                    } else {
-                        echo "<li><a href='gallery.php?w=" . $id . "'>" . $title . "</a></li>";
-                    }
-                }
-                ?>
-            </ul>
-        </li>
-        <li><a href="retouch.php">Retouch</a></li>
-        <li><a href="reviews.php?c=4">Raves</a></li>
-        <li><a href="/blog/category.php?t=4">Blog</a></li>
-        <li><a href="/about.php">About</a></li>
-        <li><a href="/contact.php">Contact</a></li>
+<li class="dropdown"><a href="#"
+                        class="dropdown-toggle" data-toggle="dropdown">Details<strong
+                class="caret"></strong></a>
+    <ul class="dropdown-menu">
+        <li><a href="sessions.php">Session Information</a></li>
+        <li><a href="process.php">The Process</a></li>
+        <li><a href="products.php">Products and Investment</a></li>
+        <li><a href="experience.php">The Mitzvah Experience</a></li>
+        <li><a href="photobooth.php">Photo Booth</a></li>
+    </ul>
+</li>
+<li class="dropdown"><a href="#"
+                        class="dropdown-toggle" data-toggle="dropdown">Gallery<strong
+                class="caret"></strong></a>
+    <ul class="dropdown-menu">
+        <?php
+        for ($i = 0; $i < count($galleries); $i++) {
+            $id = $galleries[$i]['id'];
+            $title = $galleries[$i]['title'];
+            $sql = new Sql ();
+            $subGalleries = $sql->getRows("SELECT * FROM `galleries` WHERE parent = '" . $id . "';");
+            $sql->disconnect();
+            if (sizeof($subGalleries) == 0) {
+                echo "<li><a href='galleries.php?w=" . $id . "'>" . $title . "</a></li>";
+            } else {
+                echo "<li><a href='gallery.php?w=" . $id . "'>" . $title . "</a></li>";
+            }
+        }
+        ?>
+    </ul>
+</li>
+<li><a href="retouch.php">Retouch</a></li>
+<li><a href="reviews.php?c=4">Raves</a></li>
+<li><a href="/blog/category.php?t=4">Blog</a></li>
+<li><a href="/about.php">About</a></li>
+<li><a href="/contact.php">Contact</a></li>
