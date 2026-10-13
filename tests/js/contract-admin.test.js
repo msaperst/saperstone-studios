@@ -202,6 +202,7 @@ test('contract admin loads available contract types and starts the selected cont
     assert.equal(select.appended.length, 2);
     assert.equal(select.appended[0].html(), 'Commercial');
     assert.equal(select.appended[1].html(), 'Photo Booth');
+    assert.equal(select.appended[1].val(), 'photobooth');
 
     environment.element('#contract-type').val('photobooth');
     const createDialog = environment.createDialog();
