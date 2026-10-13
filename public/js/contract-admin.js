@@ -192,6 +192,7 @@ function addContract() {
                 $.each(data, function (key, type) {
                     var option = $('<option>');
                     option.html(contractTypeLabel(type));
+                    option.val(type);
                     option.attr('type-id', key);
                     select.append(option);
                 });
