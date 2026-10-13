@@ -41,7 +41,7 @@ if (is_array($decodedDetails) && isset($decodedDetails['photo_booth']) && is_arr
             id='contract-session' type='hidden' value='contractor'/>
     <p>This Photo Booth Attendant Agreement ("Agreement") is entered into between <strong>Saperstone Studios
             LLC</strong> ("Company") and the undersigned Photo Booth Attendant ("Contractor").</p>
-    <ol>
+    <ol class="photo-booth-terms">
         <li><strong>Scope of Services.</strong>
             Contractor agrees to provide photo booth attendant services for the event specified below.
             Responsibilities include:
