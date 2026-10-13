@@ -1,4 +1,4 @@
-FROM golang:1.26.6-bookworm AS gosu-builder
+FROM golang:1.26.9-bookworm AS gosu-builder
 
 # The official MySQL 8.0 image currently bundles gosu 1.19 built with an
 # unsupported Go standard library. Rebuild the same pinned gosu release with a
@@ -8,6 +8,7 @@ RUN git init /src/gosu && \
     git -C /src/gosu fetch --depth 1 https://github.com/tianon/gosu.git "$GOSU_COMMIT" && \
     git -C /src/gosu checkout --detach FETCH_HEAD && \
     cd /src/gosu && \
+    go get github.com/moby/sys/user@v0.4.1 && \
     CGO_ENABLED=0 go build -trimpath -ldflags='-d -w' -o /usr/local/bin/gosu .
 
 FROM mysql:8.0
