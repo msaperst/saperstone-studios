@@ -19,9 +19,6 @@ class Contract {
     private $location;
     private $session;
     private $details;
-    private $arrivalTime;
-    private $operatingHours;
-    private $compensationUnit;
     private $amount = 0;
     private $deposit = 0;
     private $invoice;
@@ -71,9 +68,6 @@ class Contract {
         $contract->location = $contract->raw['location'];
         $contract->session = $contract->raw['session'];
         $contract->details = $contract->raw['details'];
-        $contract->arrivalTime = $contract->raw['arrival_time'] ?? null;
-        $contract->operatingHours = $contract->raw['operating_hours'] ?? null;
-        $contract->compensationUnit = $contract->raw['compensation_unit'] ?? null;
         $contract->amount = $contract->raw['amount'];
         $contract->deposit = $contract->raw['deposit'];
         $contract->invoice = $contract->raw['invoice'];
@@ -209,17 +203,6 @@ class Contract {
         if (isset ($params ['invoice']) && $params ['invoice'] != "") {
             $contract->invoice = $params['invoice'];
         }
-        if ($contract->type === 'photobooth') {
-            foreach (['arrival_time' => 'arrivalTime', 'operating_hours' => 'operatingHours', 'compensation_unit' => 'compensationUnit'] as $key => $property) {
-                if (isset($params[$key])) {
-                    if (!is_string($params[$key]) || mb_strlen($params[$key]) > 100) {
-                        $sql->disconnect();
-                        throw new BadContractException('Invalid photo booth event detail');
-                    }
-                    $contract->$property = $params[$key];
-                }
-            }
-        }
         $sql->disconnect();
         return $contract;
     }
@@ -289,8 +272,8 @@ class Contract {
         $sql = new Sql();
         $this->link = Strings::randomToken();
         $lastId = $sql->executeStatement(
-            "INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,`session`, `details`, `amount`, `deposit`, `invoice`, `content`, `arrival_time`, `operating_hours`, `compensation_unit`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [$this->link, $this->type, $this->name, $this->address, $this->number, $this->email, $this->date, $this->location, $this->session, $this->details, $this->amount, $this->deposit, $this->invoice, $this->content, $this->arrivalTime, $this->operatingHours, $this->compensationUnit]
+            "INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,`session`, `details`, `amount`, `deposit`, `invoice`, `content`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [$this->link, $this->type, $this->name, $this->address, $this->number, $this->email, $this->date, $this->location, $this->session, $this->details, $this->amount, $this->deposit, $this->invoice, $this->content]
         );
         foreach ($this->lineItems as $lineItem) {
             /* @var $lineItem LineItem */
@@ -352,7 +335,7 @@ class Contract {
         }
         self::setVals($this, $params);
         $sql = new Sql();
-        $sql->executeStatement("UPDATE `contracts` SET `type` = ?, `name` = ?, `address` = ?, `number` = ?, `email` = ?, `date` = ?, `location` = ?, `session` = ?, `details` = ?, `amount` = ?, `deposit` = ?, `invoice` = ?, `content` = ?, `arrival_time` = ?, `operating_hours` = ?, `compensation_unit` = ? WHERE `id` = ?", [$this->type, $this->name, $this->address, $this->number, $this->email, $this->date, $this->location, $this->session, $this->details, $this->amount, $this->deposit, $this->invoice, $this->content, $this->arrivalTime, $this->operatingHours, $this->compensationUnit, $this->id]);
+        $sql->executeStatement("UPDATE `contracts` SET `type` = ?, `name` = ?, `address` = ?, `number` = ?, `email` = ?, `date` = ?, `location` = ?, `session` = ?, `details` = ?, `amount` = ?, `deposit` = ?, `invoice` = ?, `content` = ? WHERE `id` = ?", [$this->type, $this->name, $this->address, $this->number, $this->email, $this->date, $this->location, $this->session, $this->details, $this->amount, $this->deposit, $this->invoice, $this->content, $this->id]);
         $sql->executeStatement("DELETE FROM `contract_line_items` WHERE `contract` = ?", [$this->id]);
         foreach ($this->lineItems as $lineItem) {
             /* @var $lineItem LineItem */
