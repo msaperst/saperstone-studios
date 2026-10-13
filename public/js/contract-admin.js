@@ -1,3 +1,9 @@
+function contractTypeLabel(type) {
+    return type === 'photobooth' ? 'Photo Booth' : type.replace(/\b\w/g, function (l) {
+        return l.toUpperCase();
+    });
+}
+
 var contract_table;
 var resultsSelected = false;
 var BootstrapDialog;
@@ -34,9 +40,7 @@ $(document).ready(function () {
             "targets": 2
         }, {
             "data": function (row) {
-                return row.type.replace(/\b\w/g, function (l) {
-                    return l.toUpperCase()
-                });
+                return contractTypeLabel(row.type);
             },
             "className": "contract-type",
             "targets": 3
@@ -187,9 +191,7 @@ function addContract() {
                 select.addClass('form-control');
                 $.each(data, function (key, type) {
                     var option = $('<option>');
-                    option.html(type.replace(/\b\w/g, function (l) {
-                        return l.toUpperCase()
-                    }));
+                    option.html(contractTypeLabel(type));
                     option.attr('type-id', key);
                     select.append(option);
                 });
@@ -229,7 +231,7 @@ function editContract(data) {
         title = 'Edit Contract <b>' + data.name + ' ' + data.session + '</b>';
     } else {
         type = data.toLowerCase();
-        title = 'Add New ' + data + ' Contract';
+        title = 'Add New ' + contractTypeLabel(type) + ' Contract';
     }
     BootstrapDialog.show({
         closable: false,
