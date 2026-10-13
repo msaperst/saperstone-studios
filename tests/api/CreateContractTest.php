@@ -253,6 +253,42 @@ class CreateContractTest extends TestCase {
         }
     }
 
+    public function testPhotoBoothEventDetailsPersist(): void {
+        $contractId = null;
+        try {
+            $cookies = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $response = $this->http->request('POST', 'api/create-contract.php', [
+                'form_params' => [
+                    'type' => 'photobooth',
+                    'name' => 'Photo Booth Test Attendant',
+                    'session' => 'contractor',
+                    'content' => '<p>Photo Booth Agreement</p>',
+                    'arrival_time' => '4:30 PM',
+                    'operating_hours' => '5 PM - 9 PM',
+                    'amount' => '125.00',
+                    'compensation_unit' => 'hour'
+                ],
+                'cookies' => $cookies
+            ]);
+            self::assertSame(200, $response->getStatusCode());
+            $contractId = (int) (string) $response->getBody();
+            self::assertGreaterThan(0, $contractId);
+            $saved = $this->sql->getRow('SELECT * FROM contracts WHERE id = ?', [$contractId]);
+            self::assertSame('photobooth', $saved['type']);
+            self::assertSame('4:30 PM', $saved['arrival_time']);
+            self::assertSame('5 PM - 9 PM', $saved['operating_hours']);
+            self::assertEquals(125.00, $saved['amount']);
+            self::assertSame('hour', $saved['compensation_unit']);
+        } finally {
+            if ($contractId !== null && $contractId > 0) {
+                $this->sql->executeStatement('DELETE FROM contract_line_items WHERE contract = ?', [$contractId]);
+                $this->sql->executeStatement('DELETE FROM contracts WHERE id = ?', [$contractId]);
+            }
+        }
+    }
+
     /**
      * @throws GuzzleException
      */
