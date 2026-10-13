@@ -31,13 +31,23 @@ class ContractTemplatesHttpTest extends HttpTestBase {
         $this->adminLogin();
         $response = $this->get('user/contract/photobooth.php');
         self::assertSame(200, $response->getStatusCode());
-        foreach ([
-            'Services and Responsibilities',
-            'Scheduling and Compensation',
-            'Confidentiality and Media',
-            'Event Details',
-        ] as $section) {
-            self::assertSame(1, $this->elementCount($response, "//h3[normalize-space(.)='$section']"));
+        $terms = [
+            'Scope of Services.',
+            'Professional Conduct.',
+            'Equipment and Supplies.',
+            'Scheduling and Attendance.',
+            'Compensation.',
+            'Cancellation and Unavailability.',
+            'Confidentiality and Client Privacy.',
+            'Photography and Social Media.',
+            'Agreement and Event Details.',
+        ];
+        self::assertSame(count($terms), $this->elementCount($response, '//ol/li'));
+        foreach ($terms as $term) {
+            self::assertSame(1, $this->elementCount($response, "//ol/li/strong[normalize-space(.)='$term']"));
+        }
+        foreach (['contract-arrival-time', 'contract-operating-hours', 'contract-amount', 'contract-compensation-unit'] as $field) {
+            self::assertSame(1, $this->elementCount($response, "//*[@id='$field']"));
         }
         self::assertSame('photobooth', $this->attribute($response, "//*[@id='contract-type']", 'value'));
         self::assertSame(1, $this->elementCount($response, "//*[@id='contract-date']"));
