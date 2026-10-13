@@ -42,6 +42,7 @@ class ContractTemplatesHttpTest extends HttpTestBase {
             'Photography and Social Media.',
         ];
         self::assertSame(count($terms), $this->elementCount($response, '//ol/li'));
+        self::assertSame(1, $this->elementCount($response, "//ol[contains(concat(' ', normalize-space(@class), ' '), ' photo-booth-terms ')]"));
         foreach ($terms as $term) {
             self::assertSame(1, $this->elementCount($response, "//ol/li/strong[normalize-space(.)='$term']"));
         }
