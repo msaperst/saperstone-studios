@@ -12,7 +12,7 @@ $sql->disconnect();
                 <li><a href="process.php">The Process</a></li>
                 <li><a href="products.php">Products and Investment</a></li>
                 <li><a href="experience.php">The Mitzvah Experience</a></li>
-                <li><a href="photobooth.php">Photobooth</a></li>
+                <li><a href="photobooth.php">Photo Booth</a></li>
             </ul>
         </li>
         <li class="dropdown"><a href="#"

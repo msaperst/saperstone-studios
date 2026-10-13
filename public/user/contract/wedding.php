@@ -65,7 +65,7 @@ if (isset ($_GET ['id'])) {
 2nd photographer
 Engagement session
 Engagement sign in book
-Photobooth
+Photo Booth
 Web gallery for sharing
 USB of final images
 $200 print credit'

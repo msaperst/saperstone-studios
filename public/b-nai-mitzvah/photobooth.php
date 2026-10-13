@@ -34,12 +34,12 @@ $sql->disconnect();
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header text-center">Photobooth</h1>
+                <h1 class="page-header text-center">Photo Booth</h1>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
                     <li><a href="index.php">B'nai Mitzvahs</a></li>
                     <li><a href="details.php">Details</a></li>
-                    <li class="active">Photobooth</li>
+                    <li class="active">Photo Booth</li>
                 </ol>
             </div>
         </div>
@@ -58,7 +58,7 @@ $sql->disconnect();
                     <li>Attendant is included for setup/breakdown and is there the
                         entire time to make sure everything runs smoothly</li>
                     <li>3 photos taken per group to be put into photo strips</li>
-                    <li>Strips are printed throughout the photobooth for guests to come
+                    <li>Strips are printed throughout the photo booth for guests to come
                         back and collect</li>
                     <li>Photo strips are customized for your event! Add a logo, the
                         date or your names for a personal touch</li>

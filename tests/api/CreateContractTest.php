@@ -253,6 +253,50 @@ class CreateContractTest extends TestCase {
         }
     }
 
+    public function testPhotoBoothEventDetailsPersist(): void {
+        $contractId = null;
+        try {
+            $cookies = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $response = $this->http->request('POST', 'api/create-contract.php', [
+                'form_params' => [
+                    'type' => 'photobooth',
+                    'name' => 'Photo Booth Test Attendant',
+                    'session' => 'contractor',
+                    'content' => '<p>Photo Booth Agreement</p>',
+                    'details' => json_encode([
+                        'photo_booth' => [
+                            'arrival_time' => '4:30 PM',
+                            'operating_hours' => '5 PM - 9 PM',
+                            'compensation_unit' => 'hour'
+                        ]
+                    ]),
+                    'amount' => '125.00'
+                ],
+                'cookies' => $cookies
+            ]);
+            self::assertSame(200, $response->getStatusCode());
+            $contractId = (int) (string) $response->getBody();
+            self::assertGreaterThan(0, $contractId);
+            $saved = $this->sql->getRow('SELECT * FROM contracts WHERE id = ?', [$contractId]);
+            self::assertSame('photobooth', $saved['type']);
+            self::assertSame([
+                'photo_booth' => [
+                    'arrival_time' => '4:30 PM',
+                    'operating_hours' => '5 PM - 9 PM',
+                    'compensation_unit' => 'hour'
+                ]
+            ], json_decode($saved['details'], true));
+            self::assertEquals(125.00, $saved['amount']);
+        } finally {
+            if ($contractId !== null && $contractId > 0) {
+                $this->sql->executeStatement('DELETE FROM contract_line_items WHERE contract = ?', [$contractId]);
+                $this->sql->executeStatement('DELETE FROM contracts WHERE id = ?', [$contractId]);
+            }
+        }
+    }
+
     /**
      * @throws GuzzleException
      */

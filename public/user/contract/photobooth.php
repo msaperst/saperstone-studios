@@ -22,117 +22,135 @@ $contract ['lineItems'] = array(
                 'unit' => ''
         )
 );
+// Photo Booth event metadata is stored in the existing contract details field.
+$photoBoothDetails = [];
 // get the id if set, and pull these values
 if (isset ($_GET ['id'])) {
     $contract = Contract::withId($_GET['id'])->getDataArray();
 }
+$decodedDetails = json_decode((string) ($contract['details'] ?? ''), true);
+if (is_array($decodedDetails) && isset($decodedDetails['photo_booth']) && is_array($decodedDetails['photo_booth'])) {
+    $photoBoothDetails = $decodedDetails['photo_booth'];
+}
+
 ?>
 
 <div>
-    <h2>Saperstone Studios LLC. Photobooth Contract</h2>
+    <h2>Saperstone Studios LLC. Photo Booth Attendant Contract</h2>
     <input id='contract-type' type='hidden' value='photobooth'/> <input
             id='contract-session' type='hidden' value='contractor'/>
-    <p>
-        <strong>Saperstone Studios</strong> hereby hires the undersigned
-        photographer (the "Contractor") to photograph material for Saperstone
-        Studios and/or its associates on the following terms and conditions:
-        Saperstone Studios will have full ownership of the resulting
-        photographic materials including all rights to copyright in the same
-        with no restrictions on its use thereof except as may be specifically
-        set forth in the space provided below.
-    </p>
-
-    <p>
-        <strong>Saperstone Studios</strong> grants the Contractor a license to
-        include the resulting materials in his/her "portfolio" for the limited
-        purpose of demonstrating his/her work to his/her prospective
-        customers. Images may not be posted online/used for advertising
-        purposes until 3 months after the session date.
-    </p>
-
-    <p>
-        <strong>The Contractor</strong> shall produce works that contains no
-        libelous or unlawful material or instructions that may cause harm or
-        injury; it does not infringe upon or violate any copyright, trademark,
-        trade secret or other right or the privacy of others. The Contractor
-        shall hold Saperstone Studios and its associates harmless against all
-        liability, including expenses and reasonable counsel fees, from any
-        claim which if sustained would constitute a breach of the foregoing
-        warranties.
-    </p>
-
-    <p>
-        <strong>Now therefore</strong>, in consideration of the mutual
-        promises contained herein and other good and valuable consideration,
-        the receipt and sufficiency of which is hereby acknowledged, the
-        parties agree as follows:
-
-
-    <ol>
-        <li><strong>Non Solicitation</strong> While Contractor is employed by
-            Saperstone Studios, and 2 years thereafter, Contractor shall not:
+    <p>This Photo Booth Attendant Agreement ("Agreement") is entered into between <strong>Saperstone Studios
+            LLC</strong> ("Company") and the undersigned Photo Booth Attendant ("Contractor").</p>
+    <ol class="photo-booth-terms">
+        <li><strong>Scope of Services.</strong>
+            Contractor agrees to provide photo booth attendant services for the event specified below.
+            Responsibilities include:
             <ul>
-                <li>encourage any consultant, independent contractor, or any other
-                    person or entity to end their relationship or stop doing business
-                    with Saperstone Studios, or help any person or entity do so or
-                    attempt to do so;
+                <li>Arriving at the designated time for setup, training, and equipment testing.</li>
+                <li>Operating and monitoring the photo booth throughout the contracted event.</li>
+                <li>Greeting guests, explaining how to use the booth, and assisting with photo sessions.</li>
+                <li>Maintaining an organized, clean, and inviting photo booth area.</li>
+                <li>Monitoring photo printing, replenishing supplies, and addressing basic technical issues.</li>
+                <li>Notifying Saperstone Studios promptly of equipment malfunctions, damage, or other significant
+                    concerns.
                 </li>
-
-                <li>solicit or attempt to solicit or obtain business or trade from
-                    Saperstone Studios current client in connection to this assignment
-                    or help any person or entity do so or attempt to do so; or
-                </li>
-
-                <li>obtain or attempt to obtain any Confidential Information for any
-                    purpose whatsoever except as required by Saperstone Studios to
-                    enable Employee to perform his or her job duties.
+                <li>Remaining at the assigned photo booth station throughout the contracted hours, except for approved
+                    breaks or necessary event-related duties.
                 </li>
             </ul>
+            Contractor is not responsible for professional event photography, photo editing, or gallery delivery
+            unless separately agreed upon in writing.
         </li>
-        <li><strong>Image Delivery</strong> The Contractor shall use the provided
-            equipment and memory cards.
+        <li><strong>Professional Conduct.</strong>
+            Contractor agrees to:
+            <ul>
+                <li>Dress professionally in accordance with Saperstone Studios' event attire requirements, typically all
+                    black unless otherwise instructed.
+                </li>
+                <li>Be courteous, friendly, and professional toward guests, clients, and venue staff.</li>
+                <li>Refrain from smoking, vaping, consuming alcohol, or using recreational drugs while working.</li>
+                <li>Limit personal phone use to emergencies or work-related communication.</li>
+                <li>Avoid discussing compensation, internal business matters, or client agreements with guests or
+                    vendors.
+                </li>
+                <li>Represent Saperstone Studios professionally throughout the event.</li>
+            </ul>
         </li>
-
-        <li><strong>Compensation</strong> In consideration of the Services,
-            Saperstone Studios agrees to pay Contractor the following amounts as
-            follows:
-            <?php
-            foreach ($contract ['lineItems'] as $lineItem) {
-                ?>
-                <span class='contract-line-item'>
-                    <input class='form-control contract-item inline-form-control'
-                           aria-label='Item' type='text' placeholder='Item' value='<?php echo $lineItem['item']; ?>'/>:
-                    $<input class='form-control contract-amount inline-form-control'
-                            aria-label='Amount' type='number' step='0.01' min='0' placeholder='Amount'
-                            value='<?php echo $lineItem['amount']; ?>'/></label>
-                    /
-                    <input class='form-control contract-unit inline-form-control'
-                           aria-label='Unit' type='text' placeholder='Unit' value='<?php echo $lineItem['unit']; ?>'/>
-                    <button type="button" class="btn btn-xs btn-danger remove-contract-line-item-btn"
-                            title="Remove Line Item">
-                        <em class="fa fa-minus"></em>
-                    </button>
-                </span>
-                <?php
-            }
-            ?>
-            <button id="add-contract-line-item-btn" type="button"
-                    class="btn btn-xs btn-success"
-                    title="Add New Line Item">
-                <em class="fa fa-plus"></em>
-            </button>
-            <br/></li>
-        <li><strong>Session Details</strong> The above session will take place
-            at the below location on
-            <input id='contract-date' class='form-control inline-form-control' type='date'
-                   aria-label='Date'
-                   placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
+        <li><strong>Equipment and Supplies.</strong>
+            All photo booth equipment, cameras, printers, tablets, lighting, props, cables, memory cards, and other
+            supplies provided by Saperstone Studios remain the property of Saperstone Studios.
             <br/>
-            <label class="u-width-100"><textarea id='contract-location' class='form-control' type='text'
-                                                  placeholder='Session Address'><?php echo $contract ['location']; ?></textarea></label>
+            Contractor agrees to:
+            <ul>
+                <li>Use equipment only for its intended purpose.</li>
+                <li>Exercise reasonable care when handling, transporting, setting up, and operating equipment.</li>
+                <li>Report equipment damage, loss, or malfunction promptly.</li>
+                <li>Return all equipment, supplies, and memory cards as instructed at the conclusion of the event.</li>
+                <li>Not copy, distribute, delete, or use event images for personal purposes without written
+                    authorization.
+                </li>
+            </ul>
+            Contractor may be held responsible for damage or loss resulting from intentional misconduct, gross
+            negligence, or unauthorized use, to the extent permitted by applicable law. Contractor is not responsible
+            for ordinary wear and tear or equipment failure occurring despite reasonable care.
+        </li>
+        <li><strong>Scheduling and Attendance.</strong>
+            <p>Contractor agrees to arrive at the designated reporting time and remain until assigned duties are
+                completed.</p>
+            <p>Contractor must notify Saperstone Studios as soon as possible if an emergency, illness, or other
+                circumstance may prevent timely attendance.</p>
+            <p>Contractor may not send a substitute or leave the event early without prior authorization from Saperstone
+                Studios.</p>
+            <p>Additional hours must be approved by Saperstone Studios.</p>
+        </li>
+        <li><strong>Compensation.</strong>
+            <p>Saperstone Studios agrees to compensate Contractor according to the event details below.</p>
+            <p>Payment will be made the same day after completion of services, unless otherwise agreed in writing.</p>
+            <p>Contractor is responsible for applicable taxes if properly classified as an independent contractor.</p>
+        </li>
+        <li><strong>Cancellation and Unavailability.</strong>
+            <p>If Contractor is unable to fulfill the assignment, Contractor agrees to notify Saperstone Studios
+                immediately.</p>
+            <p>If Saperstone Studios cancels the event assignment, Contractor will be notified as soon as reasonably
+                possible.</p>
+            <p> Any cancellation compensation will be determined by the written terms agreed upon for the specific
+                event. Contractor will be compensated for services already performed as required by applicable law.</p>
+        </li>
+        <li><strong>Confidentiality and Client Privacy.</strong>
+            <p>Contractor agrees to maintain the confidentiality of client information, event details, business
+                operations, pricing, and other nonpublic information obtained while working for Saperstone Studios.</p>
+            <p>Contractor may not use client contact information for personal solicitation or share event images or
+                information without authorization. </p>
+        </li>
+        <li><strong>Photography and Social Media.</strong>
+            <p>All images, digital files, and printed photographs generated through the photo booth equipment are
+                controlled by Saperstone Studios, subject to applicable client agreements and law.</p>
+            <p>Contractor may not post event photographs, behind-the-scenes images, or client information on personal
+                social media accounts without prior approval.</p>
         </li>
     </ol>
-    </p>
+
+    <h4>AGREEMENT AND EVENT DETAILS:</h4>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-date">Event Date:</label></div>
+        <div class="col-md-9"><input id="contract-date" class="form-control" type="date" value="<?php echo htmlspecialchars((string) ($contract['date'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-location">Event Location:</label></div>
+        <div class="col-md-9"><textarea id="contract-location" class="form-control" placeholder="Event Address"><?php echo htmlspecialchars((string) ($contract['location'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea></div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-arrival-time">Contractor Arrival Time:</label></div>
+        <div class="col-md-9"><input id="contract-arrival-time" class="form-control keep" type="text" value="<?php echo htmlspecialchars((string) ($photoBoothDetails['arrival_time'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-operating-hours">Photo Booth Operating Hours:</label></div>
+        <div class="col-md-9"><input id="contract-operating-hours" class="form-control keep" type="text" value="<?php echo htmlspecialchars((string) ($photoBoothDetails['operating_hours'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-amount">Compensation:</label></div>
+        <div class="col-md-9"><div class="row"><div class="col-sm-6"><div class="input-group"><span class="input-group-addon">$</span><input id="contract-amount" class="form-control" type="number" step="0.01" min="0" value="<?php echo htmlspecialchars((string) ($contract['amount'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div></div><div class="col-sm-6"><input id="contract-compensation-unit" class="form-control" type="text" aria-label="Compensation Unit" placeholder="per hour, event, etc." value="<?php echo htmlspecialchars((string) ($photoBoothDetails['compensation_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div></div></div>
+    </div>
 
     <h4>AGREED and ACCEPTED:</h4>
     <div class='row'>
@@ -158,7 +176,7 @@ if (isset ($_GET ['id'])) {
             <label for='contract-signature'>Contractor Signature:</label>
         </div>
         <div class='col-md-9'>
-            <textarea id='contract-signature' class='form-control' type='text'
+            <textarea id='contract-signature' class='form-control'
                       placeholder='Contractor Digital Signature' disabled></textarea>
         </div>
     </div>
@@ -167,7 +185,7 @@ if (isset ($_GET ['id'])) {
             <label for='contract-address'>Contractor Address:</label>
         </div>
         <div class='col-md-9'>
-            <textarea id='contract-address' class='form-control keep' type='text'
+            <textarea id='contract-address' class='form-control keep'
                       placeholder='Contractor Address'><?php echo $contract ['address']; ?></textarea>
         </div>
     </div>
@@ -189,7 +207,7 @@ if (isset ($_GET ['id'])) {
                    value='<?php echo $contract ['email']; ?>'/>
         </div>
     </div>
-    <h4>Photographer:</h4>
+    <h4>Company:</h4>
     <div class='row'>
         <div class='col-md-3'>
             <strong>Name:</strong>
@@ -222,5 +240,4 @@ if (isset ($_GET ['id'])) {
             <a target='_blank' href='mailto:contracts@saperstonestudios.com'>contracts@saperstonestudios.com</a>
         </div>
     </div>
-    </p>
 </div>

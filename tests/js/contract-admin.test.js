@@ -30,6 +30,13 @@ test('contract admin action buttons use native titles', () => {
     assert.doesNotMatch(signed, /data-toggle|data-placement/);
 });
 
+test('contract admin displays Photo Booth while preserving the photobooth identifier', () => {
+    const {environment} = createContext();
+    const renderType = environment.dataTable.config.columnDefs[3].data;
+    assert.equal(renderType({type: 'photobooth'}), 'Photo Booth');
+    assert.equal(renderType({type: 'wedding'}), 'Wedding');
+});
+
 test('dynamically added contract line item uses a native title', () => {
     const {context, environment} = createContext();
     context.setupAddLineItem();
@@ -194,7 +201,8 @@ test('contract admin loads available contract types and starts the selected cont
     const select = loadingDialog.message.appended[0];
     assert.equal(select.appended.length, 2);
     assert.equal(select.appended[0].html(), 'Commercial');
-    assert.equal(select.appended[1].html(), 'Photobooth');
+    assert.equal(select.appended[1].html(), 'Photo Booth');
+    assert.equal(select.appended[1].val(), 'photobooth');
 
     environment.element('#contract-type').val('photobooth');
     const createDialog = environment.createDialog();
@@ -243,6 +251,35 @@ test('contract admin preview serializes contract fields and line items', () => {
     assert.equal(dialog.closable, false);
 });
 
+test('Photo Booth preview submits scheduling and compensation details', () => {
+    const {context, environment} = createContext();
+    const button = environment.createButton('__booth_preview_button__');
+    const dialog = environment.createDialog();
+    environment.element('#contract-type').val('photobooth');
+    environment.element('#contract-name').val('Attendant LLC');
+    environment.element('#contract-session').val('contractor');
+    environment.element('#contract-arrival-time').val('4:30 PM');
+    environment.element('#contract-operating-hours').val('5–9 PM');
+    environment.element('#contract-amount').val('125');
+    environment.element('#contract-compensation-unit').val('hour');
+    environment.element('.bootstrap-dialog-message>div>div').html('<p>Photo Booth Contract</p>');
+    dialog.getModalBody = () => ({html: () => '<div>modal</div>'});
+
+    const inputs = context.previewContract(0, '/api/create-contract.php', dialog, button);
+
+    assert.equal(inputs.type, 'photobooth');
+    assert.deepEqual(JSON.parse(inputs.details), {
+        photo_booth: {
+            arrival_time: '4:30 PM',
+            operating_hours: '5–9 PM',
+            compensation_unit: 'hour'
+        }
+    });
+    assert.equal(inputs.amount, '125');
+    assert.equal(inputs.arrival_time, undefined);
+    assert.equal(inputs.compensation_unit, undefined);
+});
+
 test('contract admin reports malformed success and unauthorized submit responses', () => {
     for (const response of [
         {type: 'success', data: 'Contract could not be saved'},
@@ -283,7 +320,7 @@ test('contract admin edit dialog loads the correct template for existing and new
             'Edit Contract <b>Client Family</b>',
             'contract/portrait.php?id=77'
         ],
-        ['Photobooth', 'Add New Photobooth Contract', 'contract/photobooth.php?']
+        ['Photobooth', 'Add New Photo Booth Contract', 'contract/photobooth.php?']
     ]) {
         const {context, environment} = createContext();
 
