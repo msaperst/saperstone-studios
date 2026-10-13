@@ -34,9 +34,8 @@ if (isset ($_GET ['id'])) {
             id='contract-session' type='hidden' value='contractor'/>
     <p>This Photo Booth Attendant Agreement ("Agreement") is entered into between <strong>Saperstone Studios
             LLC</strong> ("Company") and the undersigned Photo Booth Attendant ("Contractor").</p>
-    <h3>Services and Responsibilities</h3>
-    <div class="contract-term">
-        <h4>Scope of Services</h4>
+    <ol>
+        <li><strong>Scope of Services.</strong>
             Contractor agrees to provide photo booth attendant services for the event specified below.
             Responsibilities include:
             <ul>
@@ -54,10 +53,8 @@ if (isset ($_GET ['id'])) {
             </ul>
             Contractor is not responsible for professional event photography, photo editing, or gallery delivery
             unless separately agreed upon in writing.
-
-    </div>
-    <div class="contract-term">
-        <h4>Professional Conduct</h4>
+        </li>
+        <li><strong>Professional Conduct.</strong>
             Contractor agrees to:
             <ul>
                 <li>Dress professionally in accordance with Saperstone Studios' event attire requirements, typically all
@@ -71,10 +68,8 @@ if (isset ($_GET ['id'])) {
                 </li>
                 <li>Represent Saperstone Studios professionally throughout the event.</li>
             </ul>
-
-    </div>
-    <div class="contract-term">
-        <h4>Equipment and Supplies</h4>
+        </li>
+        <li><strong>Equipment and Supplies.</strong>
             All photo booth equipment, cameras, printers, tablets, lighting, props, cables, memory cards, and other
             supplies provided by Saperstone Studios remain the property of Saperstone Studios.
             <br/>
@@ -91,11 +86,8 @@ if (isset ($_GET ['id'])) {
             Contractor may be held responsible for damage or loss resulting from intentional misconduct, gross
             negligence, or unauthorized use, to the extent permitted by applicable law. Contractor is not responsible
             for ordinary wear and tear or equipment failure occurring despite reasonable care.
-
-    </div>
-    <h3>Scheduling and Compensation</h3>
-    <div class="contract-term">
-        <h4>Scheduling and Attendance</h4>
+        </li>
+        <li><strong>Scheduling and Attendance.</strong>
             <p>Contractor agrees to arrive at the designated reporting time and remain until assigned duties are
                 completed.</p>
             <p>Contractor must notify Saperstone Studios as soon as possible if an emergency, illness, or other
@@ -103,54 +95,54 @@ if (isset ($_GET ['id'])) {
             <p>Contractor may not send a substitute or leave the event early without prior authorization from Saperstone
                 Studios.</p>
             <p>Additional hours must be approved by Saperstone Studios.</p>
-
-    </div>
-    <div class="contract-term">
-        <h4>Compensation</h4>
+        </li>
+        <li><strong>Compensation.</strong>
             <p>Saperstone Studios agrees to compensate Contractor according to the event details below.</p>
             <p>Payment will be made the same day after completion of services, unless otherwise agreed in writing.</p>
             <p>Contractor is responsible for applicable taxes if properly classified as an independent contractor.</p>
-
-    </div>
-    <div class="contract-term">
-        <h4>Cancellation and Unavailability</h4>
+        </li>
+        <li><strong>Cancellation and Unavailability.</strong>
             <p>If Contractor is unable to fulfill the assignment, Contractor agrees to notify Saperstone Studios
                 immediately.</p>
             <p>If Saperstone Studios cancels the event assignment, Contractor will be notified as soon as reasonably
                 possible.</p>
             <p> Any cancellation compensation will be determined by the written terms agreed upon for the specific
                 event. Contractor will be compensated for services already performed as required by applicable law.</p>
-
-    </div>
-    <h3>Confidentiality and Media</h3>
-    <div class="contract-term">
-        <h4>Confidentiality and Client Privacy</h4>
+        </li>
+        <li><strong>Confidentiality and Client Privacy.</strong>
             <p>Contractor agrees to maintain the confidentiality of client information, event details, business
                 operations, pricing, and other nonpublic information obtained while working for Saperstone Studios.</p>
             <p>Contractor may not use client contact information for personal solicitation or share event images or
                 information without authorization. </p>
-
-    </div>
-    <div class="contract-term">
-        <h4>Photography and Social Media</h4>
+        </li>
+        <li><strong>Photography and Social Media.</strong>
             <p>All images, digital files, and printed photographs generated through the photo booth equipment are
                 controlled by Saperstone Studios, subject to applicable client agreements and law.</p>
             <p>Contractor may not post event photographs, behind-the-scenes images, or client information on personal
                 social media accounts without prior approval.</p>
-
-    </div>
-    <h3>Event Details</h3>
-    <div class="contract-term">
-        <h4>Agreement and Event Details</h4> The event will take place
-            at the below location on
-            <input id='contract-date' class='form-control inline-form-control' type='date'
-                   aria-label='Date'
-                   placeholder='Date' value='<?php echo $contract ['date']; ?>'/>
-            <br/>
-            <label class="u-width-100"><textarea id='contract-location' class='form-control'
-                                                 placeholder='Event Address'><?php echo $contract ['location']; ?></textarea></label>
-
-    </div>
+        </li>
+        <li><strong>Agreement and Event Details.</strong>
+            <p><label for="contract-date">Event Date:</label>
+                <input id="contract-date" class="form-control inline-form-control" type="date"
+                       value="<?php echo htmlspecialchars((string) ($contract['date'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
+            <p><label for="contract-location">Event Location:</label>
+                <textarea id="contract-location" class="form-control keep"
+                          placeholder="Event Address"><?php echo htmlspecialchars((string) ($contract['location'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea></p>
+            <p><label for="contract-arrival-time">Contractor Arrival Time:</label>
+                <input id="contract-arrival-time" class="form-control inline-form-control keep" type="text"
+                       value="<?php echo htmlspecialchars((string) ($contract['arrival_time'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
+            <p><label for="contract-operating-hours">Photo Booth Operating Hours:</label>
+                <input id="contract-operating-hours" class="form-control inline-form-control keep" type="text"
+                       value="<?php echo htmlspecialchars((string) ($contract['operating_hours'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
+            <p><label for="contract-amount">Compensation:</label> $
+                <input id="contract-amount" class="form-control inline-form-control" type="number" step="0.01" min="0"
+                       value="<?php echo htmlspecialchars((string) ($contract['amount'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/>
+                / <input id="contract-compensation-unit" class="form-control inline-form-control" type="text"
+                         aria-label="Compensation Unit" placeholder="hour, event, etc."
+                         value="<?php echo htmlspecialchars((string) ($contract['compensation_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/>
+            </p>
+        </li>
+    </ol>
 
     <h4>AGREED and ACCEPTED:</h4>
     <div class='row'>
