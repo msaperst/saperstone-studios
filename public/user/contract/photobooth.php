@@ -128,28 +128,29 @@ if (is_array($decodedDetails) && isset($decodedDetails['photo_booth']) && is_arr
             <p>Contractor may not post event photographs, behind-the-scenes images, or client information on personal
                 social media accounts without prior approval.</p>
         </li>
-        <li><strong>Agreement and Event Details.</strong>
-            <p><label for="contract-date">Event Date:</label>
-                <input id="contract-date" class="form-control inline-form-control" type="date"
-                       value="<?php echo htmlspecialchars((string) ($contract['date'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
-            <p><label for="contract-location">Event Location:</label>
-                <textarea id="contract-location" class="form-control"
-                          placeholder="Event Address"><?php echo htmlspecialchars((string) ($contract['location'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea></p>
-            <p><label for="contract-arrival-time">Contractor Arrival Time:</label>
-                <input id="contract-arrival-time" class="form-control inline-form-control keep" type="text"
-                       value="<?php echo htmlspecialchars((string) ($photoBoothDetails['arrival_time'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
-            <p><label for="contract-operating-hours">Photo Booth Operating Hours:</label>
-                <input id="contract-operating-hours" class="form-control inline-form-control keep" type="text"
-                       value="<?php echo htmlspecialchars((string) ($photoBoothDetails['operating_hours'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
-            <p><label for="contract-amount">Compensation:</label> $
-                <input id="contract-amount" class="form-control inline-form-control" type="number" step="0.01" min="0"
-                       value="<?php echo htmlspecialchars((string) ($contract['amount'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/>
-                / <input id="contract-compensation-unit" class="form-control inline-form-control" type="text"
-                         aria-label="Compensation Unit" placeholder="hour, event, etc."
-                         value="<?php echo htmlspecialchars((string) ($photoBoothDetails['compensation_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/>
-            </p>
-        </li>
     </ol>
+
+    <h4>AGREEMENT AND EVENT DETAILS:</h4>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-date">Event Date:</label></div>
+        <div class="col-md-9"><input id="contract-date" class="form-control" type="date" value="<?php echo htmlspecialchars((string) ($contract['date'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-location">Event Location:</label></div>
+        <div class="col-md-9"><textarea id="contract-location" class="form-control" placeholder="Event Address"><?php echo htmlspecialchars((string) ($contract['location'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea></div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-arrival-time">Contractor Arrival Time:</label></div>
+        <div class="col-md-9"><input id="contract-arrival-time" class="form-control keep" type="text" value="<?php echo htmlspecialchars((string) ($photoBoothDetails['arrival_time'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-operating-hours">Photo Booth Operating Hours:</label></div>
+        <div class="col-md-9"><input id="contract-operating-hours" class="form-control keep" type="text" value="<?php echo htmlspecialchars((string) ($photoBoothDetails['operating_hours'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div>
+    </div>
+    <div class="row form-group">
+        <div class="col-md-3"><label for="contract-amount">Compensation:</label></div>
+        <div class="col-md-9"><div class="row"><div class="col-sm-6"><div class="input-group"><span class="input-group-addon">$</span><input id="contract-amount" class="form-control" type="number" step="0.01" min="0" value="<?php echo htmlspecialchars((string) ($contract['amount'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div></div><div class="col-sm-6"><input id="contract-compensation-unit" class="form-control" type="text" aria-label="Compensation Unit" placeholder="per hour, event, etc." value="<?php echo htmlspecialchars((string) ($photoBoothDetails['compensation_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></div></div></div>
+    </div>
 
     <h4>AGREED and ACCEPTED:</h4>
     <div class='row'>
