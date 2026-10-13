@@ -194,7 +194,7 @@ test('contract admin loads available contract types and starts the selected cont
     const select = loadingDialog.message.appended[0];
     assert.equal(select.appended.length, 2);
     assert.equal(select.appended[0].html(), 'Commercial');
-    assert.equal(select.appended[1].html(), 'Photobooth');
+    assert.equal(select.appended[1].html(), 'Photo Booth');
 
     environment.element('#contract-type').val('photobooth');
     const createDialog = environment.createDialog();
@@ -283,7 +283,7 @@ test('contract admin edit dialog loads the correct template for existing and new
             'Edit Contract <b>Client Family</b>',
             'contract/portrait.php?id=77'
         ],
-        ['Photobooth', 'Add New Photobooth Contract', 'contract/photobooth.php?']
+        ['Photobooth', 'Add New Photo Booth Contract', 'contract/photobooth.php?']
     ]) {
         const {context, environment} = createContext();
 
