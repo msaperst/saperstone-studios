@@ -40,18 +40,17 @@ class ContractTemplatesHttpTest extends HttpTestBase {
             'Cancellation and Unavailability.',
             'Confidentiality and Client Privacy.',
             'Photography and Social Media.',
-            'Agreement and Event Details.',
         ];
         self::assertSame(count($terms), $this->elementCount($response, '//ol/li'));
         foreach ($terms as $term) {
             self::assertSame(1, $this->elementCount($response, "//ol/li/strong[normalize-space(.)='$term']"));
         }
-        foreach (['contract-arrival-time', 'contract-operating-hours', 'contract-amount', 'contract-compensation-unit'] as $field) {
+        self::assertSame(1, $this->elementCount($response, "//h4[normalize-space(.)='AGREEMENT AND EVENT DETAILS:']"));
+        foreach (['contract-date', 'contract-location', 'contract-arrival-time', 'contract-operating-hours', 'contract-amount', 'contract-compensation-unit'] as $field) {
             self::assertSame(1, $this->elementCount($response, "//*[@id='$field']"));
+            self::assertSame(1, $this->elementCount($response, "//div[contains(concat(' ', normalize-space(@class), ' '), ' form-group ')]//label[@for='$field']"));
         }
         self::assertSame('photobooth', $this->attribute($response, "//*[@id='contract-type']", 'value'));
-        self::assertSame(1, $this->elementCount($response, "//*[@id='contract-date']"));
-        self::assertSame(1, $this->elementCount($response, "//*[@id='contract-location']"));
         self::assertSame(1, $this->elementCount($response, "//h4[normalize-space(.)='Company:']"));
     }
 
