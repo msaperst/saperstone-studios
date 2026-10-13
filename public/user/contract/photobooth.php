@@ -126,7 +126,7 @@ if (isset ($_GET ['id'])) {
                 <input id="contract-date" class="form-control inline-form-control" type="date"
                        value="<?php echo htmlspecialchars((string) ($contract['date'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
             <p><label for="contract-location">Event Location:</label>
-                <textarea id="contract-location" class="form-control keep"
+                <textarea id="contract-location" class="form-control"
                           placeholder="Event Address"><?php echo htmlspecialchars((string) ($contract['location'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea></p>
             <p><label for="contract-arrival-time">Contractor Arrival Time:</label>
                 <input id="contract-arrival-time" class="form-control inline-form-control keep" type="text"
