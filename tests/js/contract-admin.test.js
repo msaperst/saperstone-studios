@@ -30,6 +30,13 @@ test('contract admin action buttons use native titles', () => {
     assert.doesNotMatch(signed, /data-toggle|data-placement/);
 });
 
+test('contract admin displays Photo Booth while preserving the photobooth identifier', () => {
+    const {environment} = createContext();
+    const renderType = environment.dataTable.config.columnDefs[3].data;
+    assert.equal(renderType({type: 'photobooth'}), 'Photo Booth');
+    assert.equal(renderType({type: 'wedding'}), 'Wedding');
+});
+
 test('dynamically added contract line item uses a native title', () => {
     const {context, environment} = createContext();
     context.setupAddLineItem();
