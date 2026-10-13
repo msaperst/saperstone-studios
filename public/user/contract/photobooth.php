@@ -29,7 +29,7 @@ if (isset ($_GET ['id'])) {
     $contract = Contract::withId($_GET['id'])->getDataArray();
 }
 $decodedDetails = json_decode((string) ($contract['details'] ?? ''), true);
-if (is_array($decodedDetails) && isset($decodedDetails['photo_booth'])) {
+if (is_array($decodedDetails) && isset($decodedDetails['photo_booth']) && is_array($decodedDetails['photo_booth'])) {
     $photoBoothDetails = $decodedDetails['photo_booth'];
 }
 
