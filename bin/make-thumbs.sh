@@ -36,7 +36,6 @@ fi
 
 if [[ ! -d "$location/full" ]]; then
     mkdir "$location/full"
-    chmod 777 "$location/full"
 fi
 
 if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE albums SET thumbsCreated=FALSE WHERE id='$id';" > /dev/null 2>&1; then
