@@ -8,6 +8,8 @@ RUN git init /src/gosu && \
     git -C /src/gosu fetch --depth 1 https://github.com/tianon/gosu.git "$GOSU_COMMIT" && \
     git -C /src/gosu checkout --detach FETCH_HEAD && \
     cd /src/gosu && \
+    go get github.com/moby/sys/user@v0.4.1 && \
+    test "$(go list -m -f '{{.Version}}' github.com/moby/sys/user)" = v0.4.1 && \
     CGO_ENABLED=0 go build -trimpath -ldflags='-d -w' -o /usr/local/bin/gosu .
 
 FROM mysql:8.0
