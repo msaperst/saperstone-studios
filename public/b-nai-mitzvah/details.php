@@ -69,7 +69,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive" src="img/session.jpg<?php echo $rand; ?>"
                         alt="Session Information">
                 <div class="overlay">
-                    <br/> <br/> <br/> <a class="info" href="sessions.php">See
+                    <br /> <br /> <br /> <a class="info" href="sessions.php">See
                         More</a>
                 </div>
             </div>
@@ -83,7 +83,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive" src="img/process.jpg<?php echo $rand; ?>"
                         alt="The Process">
                 <div class="overlay">
-                    <br/> <br/> <br/> <a class="info" href="process.php">See More</a>
+                    <br /> <br /> <br /> <a class="info" href="process.php">See More</a>
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive" src="img/products.jpg<?php echo $rand; ?>"
                         alt="Products and Investment">
                 <div class="overlay">
-                    <br/> <br/> <br/> <a class="info" href="products.php">See More</a>
+                    <br /> <br /> <br /> <a class="info" href="products.php">See More</a>
                 </div>
             </div>
         </div>
@@ -109,13 +109,13 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive" src="img/mitzvah.jpg<?php echo $rand; ?>"
                         alt="The Mitzvah Experience">
                 <div class="overlay">
-                    <br/> <br/> <br/> <a class="info" href="experience.php">See
+                    <br /> <br /> <br /> <a class="info" href="experience.php">See
                         More</a>
                 </div>
             </div>
         </div>
         <div class="col-md-4 col-sm-6 col-xs-12">
-            <div section="Photo-Booth"
+            <div section="Photo Booth"
                  class="hovereffect img-portfolio<?php if ($user->isAdmin()) {
                      echo " editable horizontal";
                  } ?>">
@@ -123,7 +123,7 @@ require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templat
                         class="img-responsive"
                         src="img/photobooth.jpg<?php echo $rand; ?>" alt="Photo Booth">
                 <div class="overlay">
-                    <br/> <br/> <br/> <a class="info" href="photobooth.php">See
+                    <br /> <br /> <br /> <a class="info" href="photobooth.php">See
                         More</a>
                 </div>
             </div>
