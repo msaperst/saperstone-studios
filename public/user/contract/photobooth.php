@@ -22,10 +22,17 @@ $contract ['lineItems'] = array(
                 'unit' => ''
         )
 );
+// Photo Booth event metadata is stored in the existing contract details field.
+$photoBoothDetails = [];
 // get the id if set, and pull these values
 if (isset ($_GET ['id'])) {
     $contract = Contract::withId($_GET['id'])->getDataArray();
 }
+$decodedDetails = json_decode((string) ($contract['details'] ?? ''), true);
+if (is_array($decodedDetails) && isset($decodedDetails['photo_booth'])) {
+    $photoBoothDetails = $decodedDetails['photo_booth'];
+}
+
 ?>
 
 <div>
@@ -130,16 +137,16 @@ if (isset ($_GET ['id'])) {
                           placeholder="Event Address"><?php echo htmlspecialchars((string) ($contract['location'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea></p>
             <p><label for="contract-arrival-time">Contractor Arrival Time:</label>
                 <input id="contract-arrival-time" class="form-control inline-form-control keep" type="text"
-                       value="<?php echo htmlspecialchars((string) ($contract['arrival_time'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
+                       value="<?php echo htmlspecialchars((string) ($photoBoothDetails['arrival_time'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
             <p><label for="contract-operating-hours">Photo Booth Operating Hours:</label>
                 <input id="contract-operating-hours" class="form-control inline-form-control keep" type="text"
-                       value="<?php echo htmlspecialchars((string) ($contract['operating_hours'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
+                       value="<?php echo htmlspecialchars((string) ($photoBoothDetails['operating_hours'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/></p>
             <p><label for="contract-amount">Compensation:</label> $
                 <input id="contract-amount" class="form-control inline-form-control" type="number" step="0.01" min="0"
                        value="<?php echo htmlspecialchars((string) ($contract['amount'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/>
                 / <input id="contract-compensation-unit" class="form-control inline-form-control" type="text"
                          aria-label="Compensation Unit" placeholder="hour, event, etc."
-                         value="<?php echo htmlspecialchars((string) ($contract['compensation_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/>
+                         value="<?php echo htmlspecialchars((string) ($photoBoothDetails['compensation_unit'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"/>
             </p>
         </li>
     </ol>
