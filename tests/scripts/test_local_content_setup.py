@@ -1,3 +1,4 @@
+import os
 import stat
 import subprocess
 import tempfile
@@ -34,16 +35,18 @@ class PrepareLocalContentScriptTests(unittest.TestCase):
                     str(root),
                 ],
                 check=True,
+                env={**os.environ, "CONTENT_WRITE_GROUP": str(os.getgid())},
             )
 
             for relative_path in expected:
                 path = root / relative_path
                 self.assertTrue(path.is_dir(), f"{relative_path} was not created")
                 self.assertEqual(
-                    0o777,
+                    0o2775,
                     stat.S_IMODE(path.stat().st_mode),
-                    f"{relative_path} is not writable for local Apache",
+                    f"{relative_path} should be owner/group writable, not world-writable",
                 )
+                self.assertEqual(os.getgid(), path.stat().st_gid)
 
 
 if __name__ == "__main__":
