@@ -268,10 +268,16 @@ test('Photo Booth preview submits scheduling and compensation details', () => {
     const inputs = context.previewContract(0, '/api/create-contract.php', dialog, button);
 
     assert.equal(inputs.type, 'photobooth');
-    assert.equal(inputs.arrival_time, '4:30 PM');
-    assert.equal(inputs.operating_hours, '5–9 PM');
+    assert.deepEqual(JSON.parse(inputs.details), {
+        photo_booth: {
+            arrival_time: '4:30 PM',
+            operating_hours: '5–9 PM',
+            compensation_unit: 'hour'
+        }
+    });
     assert.equal(inputs.amount, '125');
-    assert.equal(inputs.compensation_unit, 'hour');
+    assert.equal(inputs.arrival_time, undefined);
+    assert.equal(inputs.compensation_unit, undefined);
 });
 
 test('contract admin reports malformed success and unauthorized submit responses', () => {
