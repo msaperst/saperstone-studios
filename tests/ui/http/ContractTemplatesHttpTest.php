@@ -46,10 +46,14 @@ class ContractTemplatesHttpTest extends HttpTestBase {
             self::assertSame(1, $this->elementCount($response, "//ol/li/strong[normalize-space(.)='$term']"));
         }
         self::assertSame(1, $this->elementCount($response, "//h4[normalize-space(.)='AGREEMENT AND EVENT DETAILS:']"));
-        foreach (['contract-date', 'contract-location', 'contract-arrival-time', 'contract-operating-hours', 'contract-amount', 'contract-compensation-unit'] as $field) {
+        foreach (['contract-date', 'contract-location', 'contract-arrival-time', 'contract-operating-hours', 'contract-amount'] as $field) {
             self::assertSame(1, $this->elementCount($response, "//*[@id='$field']"));
             self::assertSame(1, $this->elementCount($response, "//div[contains(concat(' ', normalize-space(@class), ' '), ' form-group ')]//label[@for='$field']"));
         }
+        self::assertSame(1, $this->elementCount(
+            $response,
+            "//*[@id='contract-compensation-unit' and @aria-label='Compensation Unit']"
+        ));
         self::assertSame('photobooth', $this->attribute($response, "//*[@id='contract-type']", 'value'));
         self::assertSame(1, $this->elementCount($response, "//h4[normalize-space(.)='Company:']"));
     }
