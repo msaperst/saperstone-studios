@@ -307,9 +307,13 @@ function previewContract(id, post, dialogItself, button) {
     inputs.details = $('#contract-details').val();
     inputs.amount = $('#contract-amount').val();
     if (inputs.type === 'photobooth') {
-        inputs.arrival_time = $('#contract-arrival-time').val();
-        inputs.operating_hours = $('#contract-operating-hours').val();
-        inputs.compensation_unit = $('#contract-compensation-unit').val();
+        inputs.details = JSON.stringify({
+            photo_booth: {
+                arrival_time: $('#contract-arrival-time').val(),
+                operating_hours: $('#contract-operating-hours').val(),
+                compensation_unit: $('#contract-compensation-unit').val()
+            }
+        });
     }
     inputs.deposit = $('#contract-deposit').val();
     inputs.invoice = $('#contract-invoice').val();
