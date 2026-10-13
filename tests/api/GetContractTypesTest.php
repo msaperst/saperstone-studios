@@ -60,7 +60,7 @@ class GetContractTypesTest extends TestCase {
         $this->assertEquals("contractor", $contractTypes[3]);
         $this->assertEquals("event", $contractTypes[4]);
         $this->assertEquals("partnership", $contractTypes[5]);
-        $this->assertEquals("photo-booth", $contractTypes[6]);
+        $this->assertEquals("photobooth", $contractTypes[6]);
         $this->assertEquals("other", $contractTypes[7]);
     }
 }
