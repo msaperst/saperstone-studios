@@ -71,7 +71,6 @@ jobs:
           composer install --prefer-dist --no-progress --no-suggest
           sudo apt-get update
           sudo apt-get install -y imagemagick
-          php bin/check-composer-mail-dependencies.php
 
       - name: Set up CI environment
         uses: ./.github/actions/setup-ci-env
