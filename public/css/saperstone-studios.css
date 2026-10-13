@@ -1760,3 +1760,8 @@ label > input, label > u > input, label > textarea {
 .blog-post-preview-content #post-content > li:first-child {
     margin-top: 0;
 }
+
+/* Keep Photo Booth contract clauses as readable as the paragraph-based terms. */
+.photo-booth-terms > li {
+    margin-bottom: 15px;
+}
