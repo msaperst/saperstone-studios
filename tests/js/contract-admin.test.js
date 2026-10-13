@@ -251,6 +251,29 @@ test('contract admin preview serializes contract fields and line items', () => {
     assert.equal(dialog.closable, false);
 });
 
+test('Photo Booth preview submits scheduling and compensation details', () => {
+    const {context, environment} = createContext();
+    const button = environment.createButton('__booth_preview_button__');
+    const dialog = environment.createDialog();
+    environment.element('#contract-type').val('photobooth');
+    environment.element('#contract-name').val('Attendant LLC');
+    environment.element('#contract-session').val('contractor');
+    environment.element('#contract-arrival-time').val('4:30 PM');
+    environment.element('#contract-operating-hours').val('5–9 PM');
+    environment.element('#contract-amount').val('125');
+    environment.element('#contract-compensation-unit').val('hour');
+    environment.element('.bootstrap-dialog-message>div>div').html('<p>Photo Booth Contract</p>');
+    dialog.getModalBody = () => ({html: () => '<div>modal</div>'});
+
+    const inputs = context.previewContract(0, '/api/create-contract.php', dialog, button);
+
+    assert.equal(inputs.type, 'photobooth');
+    assert.equal(inputs.arrival_time, '4:30 PM');
+    assert.equal(inputs.operating_hours, '5–9 PM');
+    assert.equal(inputs.amount, '125');
+    assert.equal(inputs.compensation_unit, 'hour');
+});
+
 test('contract admin reports malformed success and unauthorized submit responses', () => {
     for (const response of [
         {type: 'success', data: 'Contract could not be saved'},
