@@ -66,10 +66,16 @@ if ($thumbnailVersion !== false) {
             $location = $image['location'];
             $directory = str_replace('\\\\', '/', dirname($location));
             $filename = basename($location);
-            $image['thumbnail400'] = $directory . '/thumbs/400/' . $filename . '?v=' . $thumbnailVersion;
-            $image['thumbnail800'] = $directory . '/thumbs/800/' . $filename . '?v=' . $thumbnailVersion;
-            $image['thumbnail1200'] = $directory . '/thumbs/1200/' . $filename . '?v=' . $thumbnailVersion;
             $image['thumbnail1600'] = $location . '?v=' . $thumbnailVersion;
+            // Older albums and freshly uploaded images may not have the smaller
+            // derivatives yet. Fall back to the existing protected root image.
+            foreach ([400, 800, 1200] as $size) {
+                $thumbnailPath = $albumPath . DIRECTORY_SEPARATOR . 'thumbs'
+                    . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $filename;
+                $image['thumbnail' . $size] = is_file($thumbnailPath) && filesize($thumbnailPath) > 0
+                    ? $directory . '/thumbs/' . $size . '/' . $filename . '?v=' . $thumbnailVersion
+                    : $image['thumbnail1600'];
+            }
             // Keep location as the largest protected derivative for backwards compatibility.
             $image['location'] = $image['thumbnail1600'];
         }
