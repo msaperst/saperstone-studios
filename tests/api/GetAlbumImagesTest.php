@@ -121,6 +121,8 @@ class GetAlbumImagesTest extends TestCase {
         $this->assertEquals('Sample caption', $albumImages[0]['caption']);
         $this->assertEquals(1, $albumImages[0]['sequence']);
         $this->assertEquals('', $albumImages[0]['location']);
+        $this->assertArrayNotHasKey('thumbnail400', $albumImages[0]);
+        $this->assertArrayNotHasKey('thumbnail1600', $albumImages[0]);
         $this->assertEquals(300, $albumImages[0]['width']);
         $this->assertEquals(400, $albumImages[0]['height']);
         $this->assertEquals(0, $albumImages[0]['favorite']);
@@ -147,8 +149,18 @@ class GetAlbumImagesTest extends TestCase {
                 'cookies' => $cookieJar
             ]);
 
+            $this->assertSame(200, $response->getStatusCode());
             $albumImages = json_decode($response->getBody(), true)['images'];
             $this->assertMatchesRegularExpression('#^/albums/sample/cache\.jpeg\?v=\d+$#', $albumImages[0]['location']);
+            $this->assertSame($albumImages[0]['location'], $albumImages[0]['thumbnail1600']);
+
+            $version = filemtime($albumPath);
+            foreach ([400, 800, 1200] as $size) {
+                $this->assertSame(
+                    '/albums/sample/thumbs/' . $size . '/cache.jpeg?v=' . $version,
+                    $albumImages[0]['thumbnail' . $size]
+                );
+            }
         } finally {
             system("rm -rf " . escapeshellarg($albumPath));
         }
