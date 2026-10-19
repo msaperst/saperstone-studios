@@ -129,7 +129,8 @@ class AlbumFeatureContext implements Context {
             $sql->executeStatement("DELETE FROM `share_rights` WHERE `share_rights`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `user_logs` WHERE `user_logs`.`album` = $albumId;");
             $sql->executeStatement("DELETE FROM `notification_emails` WHERE `notification_emails`.`album` = $albumId;");
-            if ($albumLocation !== null && is_dir($albumLocation)) {
+            // Apache owns generated derivatives; remove that fixed fixture below from Docker.
+            if ($albumLocation !== null && is_dir($albumLocation) && basename($albumLocation) !== 'sample-album') {
                 system("rm -rf " . escapeshellarg($albumLocation));
             }
             if ($album !== null) {
@@ -139,6 +140,19 @@ class AlbumFeatureContext implements Context {
                 }
             }
         }
+        // Fixed Behat image fixtures can survive an application-level album deletion.
+        // The host runner cannot unlink Apache-owned 775 thumbnail directories.
+        $sampleDirectory = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content/albums/sample-album';
+        if ($this->albumIds !== [] && is_dir($sampleDirectory)) {
+            exec(
+                'docker compose exec -T -u 0 php rm -rf -- /var/www/content/albums/sample-album 2>&1',
+                $output,
+                $status
+            );
+            Assert::assertSame(0, $status, 'Failed to clean Behat album images: ' . implode("\n", $output));
+            Assert::assertDirectoryDoesNotExist($sampleDirectory);
+        }
+
         $count = $sql->getRow("SELECT MAX(`id`) AS `count` FROM `albums`;")['count'];
         $count++;
         $sql->executeStatement("ALTER TABLE `albums` AUTO_INCREMENT = $count;");
@@ -845,6 +859,13 @@ class AlbumFeatureContext implements Context {
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($selector));
         $input = $this->driver->findElement($selector);
         $input->clear()->sendKeys($value);
+        // Wait for the browser to contain the entire requested text. Otherwise,
+        // the expected fixture can capture partially entered values and mask a UI failure.
+        if (in_array($field, ['name', 'description', 'code'], true)) {
+            $this->wait->until(function () use ($selector, $value) {
+                return $this->driver->findElement($selector)->getAttribute('value') === $value;
+            });
+        }
         $this->pendingAlbumFields[$field] = (string) $input->getAttribute('value');
     }
 
@@ -1868,8 +1889,15 @@ Comment',
      */
     public function iSeeThumbnailsBeingCreated() {
         $this->wait->until(WebDriverExpectedCondition::visibilityOf($this->driver->findElement(WebDriverBy::id('resize-progress'))));
-        $this->wait->until(function () {
-            return $this->driver->findElement(WebDriverBy::id('resize-progress'))->getText() == 'Done';
+        // Each source now produces four protected derivatives. Wait for completion,
+        // not an arbitrary fixed delay or the short default UI interaction timeout.
+        $thumbnailWait = new WebDriverWait($this->driver, 120);
+        $thumbnailWait->until(function () {
+            $progress = trim($this->driver->findElement(WebDriverBy::id('resize-progress'))->getText());
+            if (str_starts_with($progress, 'Error:')) {
+                Assert::fail('Thumbnail generation failed: ' . $progress);
+            }
+            return $progress === 'Done' || $progress === 'Done: No missing thumbnails';
         });
     }
 
