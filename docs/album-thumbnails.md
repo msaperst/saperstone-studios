@@ -35,7 +35,7 @@ ImageMagick:
 3. resizes while preserving aspect ratio and without upscaling;
 4. applies restrained post-resize sharpening;
 5. strips EXIF, camera, GPS, and unnecessary profile metadata;
-6. writes progressive JPEG output at quality 88; and
+6. encodes using the source file extension (progressive JPEG at quality 88 for JPEGs); and
 7. applies the selected proof/watermark treatment after resizing.
 
 DPI metadata is intentionally not set. Browser image quality is determined by pixel dimensions and device pixel ratio, not print DPI.

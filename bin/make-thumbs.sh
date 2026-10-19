@@ -36,7 +36,7 @@ if [[ ! -d "$location" ]]; then
 fi
 
 mkdir -p "$full_dir" "$location/thumbs/400" "$location/thumbs/800" "$location/thumbs/1200"
-chmod 777 "$full_dir" "$location/thumbs" "$location/thumbs/400" "$location/thumbs/800" "$location/thumbs/1200"
+chmod 775 "$full_dir" "$location/thumbs" "$location/thumbs/400" "$location/thumbs/800" "$location/thumbs/1200"
 
 if ! mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" -e "UPDATE albums SET thumbsCreated=FALSE WHERE id='$id';" > /dev/null 2>&1; then
     fail "Unable to update thumbnail status"

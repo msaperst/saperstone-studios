@@ -344,6 +344,13 @@ class MakeThumbsTest extends TestCase {
         $this->assertFileExists($medium);
         $this->assertFileExists($large);
         $this->assertFileExists($viewer);
+        foreach (['full', 'thumbs', 'thumbs/400', 'thumbs/800', 'thumbs/1200'] as $directory) {
+            $this->assertSame(
+                0,
+                fileperms($base . $directory) & 0002,
+                'Generated thumbnail directory must not be world-writable: ' . $directory
+            );
+        }
         CustomAsserts::filesAreEqual(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', $full);
 
         $smallSize = getimagesize($small);
