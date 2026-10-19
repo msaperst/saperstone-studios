@@ -65,6 +65,20 @@ class AlbumPagesHttpTest extends HttpTestBase {
         self::assertSame('true', $this->attribute($response, "//*[@id='album-page-config']", 'data-show-title'));
     }
 
+    public function testNonemptyAlbumShowsLoadingFeedbackBeforeClientFetch(): void {
+        $this->adminLogin();
+
+        $response = $this->get('user/album.php?album=99999');
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('3', $this->attribute($response, "//*[@id='album-page-config']", 'data-total'));
+        self::assertSame('Loading album photos…', $this->text($response, "//*[@id='album-load-message']"));
+        self::assertStringNotContainsString(
+            'hidden',
+            $this->attribute($response, "//*[@id='album-load-status']", 'class')
+        );
+        self::assertSame(0, $this->elementCount($response, "//*[@id='album-grid']//img"));
+    }
+
     public function testUploaderOwnerCanAccessAlbumAndGetDataControls(): void {
         $this->sql->executeStatement('UPDATE albums SET owner = 4 WHERE id = 99999');
         $this->loginAs('c90788c0e409eac6a95f6c6360d8dbf7');
@@ -124,6 +138,10 @@ class AlbumPagesHttpTest extends HttpTestBase {
         self::assertSame(1, $this->elementCount($response, "//*[@id='album-empty-state']"));
         self::assertSame('msaperst@gmail.com', $this->attribute($response, "//*[@id='notify-email']", 'value'));
         self::assertSame('0', $this->attribute($response, "//*[@id='album-page-config']", 'data-total'));
+        self::assertStringContainsString(
+            'hidden',
+            $this->attribute($response, "//*[@id='album-load-status']", 'class')
+        );
     }
 
     public function testEmptyAlbumSuppressesNotificationFormAfterRequest(): void {
