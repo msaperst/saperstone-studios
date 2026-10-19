@@ -789,7 +789,10 @@ Album.prototype.loadMoreImages = function (count) {
         updateAllAlbumCardSpans();
         Album.syncPendingImage();
 
-        if (Album.pendingImageId !== null ||
+        if (Album.pendingWrapPrevious && Album.images.length >= Album.totalImages) {
+            Album.pendingWrapPrevious = false;
+            Album.prev();
+        } else if (Album.pendingImageId !== null ||
                 (Album.showFavoritesOnly && Album.images.length < Album.totalImages) ||
                 Album.pendingWrapPrevious) {
             Album.loadRemainingImages();
