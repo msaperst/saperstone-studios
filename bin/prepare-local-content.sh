@@ -2,6 +2,8 @@
 set -euo pipefail
 
 root="${1:-/var/www}"
+# Preserve host ownership of bind mounts while allowing Apache group writes.
+write_group="${CONTENT_WRITE_GROUP:-www-data}"
 
 writable_directories=(
   "${root}/content"
@@ -20,5 +22,6 @@ writable_directories=(
 
 for directory in "${writable_directories[@]}"; do
   mkdir -p "${directory}"
-  chmod 0777 "${directory}"
+  chgrp "${write_group}" "${directory}"
+  chmod 2775 "${directory}"
 done

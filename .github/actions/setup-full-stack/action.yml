@@ -11,6 +11,17 @@ runs:
       shell: bash
       run: sed -i '/letsencrypt/ s/^/#/' .docker/php/default-ssl.conf
 
+    # Compose creates absent bind-mount source directories as root on the host.
+    # Tests also write fixtures from the GitHub runner, so create these as the
+    # runner before Docker starts. prepare-local-content.sh will assign the
+    # Apache write group and setgid permissions without changing ownership.
+    - name: Prepare writable test content mounts
+      shell: bash
+      run: |
+        mkdir -p \
+          content/{commercial,portrait,wedding,b-nai-mitzvah,main,reviews,albums,blog,contracts} \
+          logs tmp
+
     - name: Launch application
       shell: bash
       run: docker compose up --build -d
