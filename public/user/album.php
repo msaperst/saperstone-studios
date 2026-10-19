@@ -326,13 +326,14 @@ $imageCount = (int)$sql->getRow(
                     </button>
                 </div>
             </div>
+            <div id="album-grid" class="album-grid"></div>
             <div id="album-load-status" class="album-load-status text-center<?php echo $imageCount === 0 ? ' hidden' : ''; ?>"
                  role="status" aria-live="polite" aria-atomic="true">
                 <em id="album-load-spinner" class="fa fa-spinner fa-spin" aria-hidden="true"></em>
                 <span id="album-load-message">Loading album photos&hellip;</span>
                 <button id="album-retry-btn" type="button" class="btn btn-default hidden">Try again</button>
             </div>
-            <div id="album-grid" class="album-grid"></div>
+            <div id="album-load-trigger" aria-hidden="true"></div>
 
         <?php
         if ($imageCount === 0) {
