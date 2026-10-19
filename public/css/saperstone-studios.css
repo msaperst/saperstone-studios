@@ -583,6 +583,24 @@ body.album-viewer-open {
     color: #fff;
 }
 
+.album-load-status {
+    margin: 24px auto;
+    padding: 24px 16px;
+    font-size: 16px;
+}
+
+.album-load-status .fa-spinner {
+    margin-right: 8px;
+}
+
+.album-load-status.is-error {
+    color: #a94442;
+}
+
+.album-load-status #album-retry-btn {
+    margin-left: 12px;
+}
+
 .album-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
