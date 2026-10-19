@@ -145,6 +145,79 @@ test('album.js updates the favorite count returned with album metadata', () => {
     assert.equal(environment.element('#favorite-count').hasClass('album-favorite-count-present'), true);
 });
 
+test('album.js shows loading feedback while album metadata is pending', () => {
+    const {context, environment} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {type: 'pending'});
+
+    const album = new context.Album('7', 4, 2000);
+    const status = environment.element('#album-load-status');
+
+    assert.equal(album.loading, true);
+    assert.equal(status.hasClass('hidden'), false);
+    assert.equal(status.hasClass('is-error'), false);
+    assert.equal(environment.element('#album-load-message').text(), 'Loading album photos…');
+    assert.equal(environment.element('#album-load-spinner').hasClass('hidden'), false);
+    assert.equal(environment.element('#album-retry-btn').hasClass('hidden'), true);
+});
+
+test('album.js hides loading feedback when images are ready', () => {
+    const {context, environment} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success',
+        data: {images: sampleImages(), favoriteCount: 1}
+    });
+
+    const album = new context.Album('7', 4, 2);
+
+    assert.equal(album.initialized, true);
+    assert.equal(environment.element('#album-load-status').hasClass('hidden'), true);
+    assert.equal(environment.element('#album-grid').appended.length, 2);
+});
+
+test('album.js leaves the empty album without a loading indicator', () => {
+    const {context, environment} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success',
+        data: {images: [], favoriteCount: 0}
+    });
+
+    const album = new context.Album('7', 4, 0);
+
+    assert.equal(album.initialized, true);
+    assert.equal(environment.element('#album-load-status').hasClass('hidden'), true);
+    assert.equal(environment.element('#album-grid').appended.length, 0);
+});
+
+test('album.js offers a retry after a metadata error without auto-retrying on scroll', () => {
+    const {context, environment, window} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {type: 'failure'});
+
+    const album = new context.Album('7', 4, 2);
+    window.album = album;
+
+    const status = environment.element('#album-load-status');
+    assert.equal(album.loadFailed, true);
+    assert.equal(status.hasClass('hidden'), false);
+    assert.equal(status.hasClass('is-error'), true);
+    assert.equal(environment.element('#album-load-spinner').hasClass('hidden'), true);
+    assert.equal(environment.element('#album-retry-btn').hasClass('hidden'), false);
+
+    album.loadImages();
+    assert.equal(environment.calls.get.length, 1, 'scrolling should not silently retry');
+
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success',
+        data: {images: sampleImages(), favoriteCount: 1}
+    });
+    environment.element('#album-retry-btn').click();
+
+    assert.equal(environment.calls.get.length, 2);
+    assert.equal(album.loadFailed, false);
+    assert.equal(album.initialized, true);
+    assert.equal(status.hasClass('hidden'), true);
+    assert.equal(environment.element('#album-grid').appended.length, 2);
+});
+
 test('album.js stops the loading state when the metadata request fails', () => {
     const {context, environment} = createAlbumDetailContext();
     environment.queueGet('/api/get-album-images.php', {
