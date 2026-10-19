@@ -1184,6 +1184,42 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @Then /^the first album card displays its existing protected image$/
+     */
+    public function theFirstAlbumCardDisplaysItsExistingProtectedImage(): void {
+        $album = new Album($this->driver, $this->wait);
+        $album->waitForImagesToLoad(1);
+
+        $media = $this->driver->findElement(
+            WebDriverBy::cssSelector('#album-grid .album-card[data-image-id="0"] .album-card-media')
+        );
+        $this->wait->until(function () use ($media) {
+            return $media->getCSSValue('background-image') !== 'none';
+        });
+
+        $background = $media->getCSSValue('background-image');
+        Assert::assertStringContainsString(
+            '/albums/sample-album/sample0.jpg',
+            $background,
+            'A gallery without responsive derivatives must show its existing protected image.'
+        );
+        Assert::assertStringNotContainsString('/thumbs/', $background);
+
+        // Verify the CSS background resolves to an actual image. A background
+        // URL with a 404 still looks "loaded" to our placeholder <img> logic.
+        $url = trim(substr($background, 4, -1), "\\"'");
+        $width = $this->driver->executeAsyncScript(
+            'var done = arguments[arguments.length - 1];' .
+            'var image = new Image();' .
+            'image.onload = function () { done(image.naturalWidth); };' .
+            'image.onerror = function () { done(0); };' .
+            'image.src = arguments[0];',
+            [$url]
+        );
+        Assert::assertGreaterThan(0, $width, 'The gallery background image failed to load.');
+    }
+
+    /**
      * @Then /^I see the image controls on album image (\d+)$/
      * @param $imgNum
      */
