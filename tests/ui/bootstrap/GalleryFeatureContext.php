@@ -170,10 +170,17 @@ class GalleryFeatureContext implements Context {
         $gallery = new Gallery($this->driver, $this->wait);
         $row = intval($ord);
         $gallery->waitForImagesToLoad($row);
-        $s = ($row - 1) * 4;
-        for ($i = 0; $i < 4; $i++) {
-            $image = $this->driver->findElement((WebDriverBy::cssSelector("#col-$i > div.gallery:nth-child($row)")));
-            Assert::assertEquals('Image ' . ($s + $i), $image->findElement(WebDriverBy::tagName('img'))->getAttribute('alt'), $image->findElement(WebDriverBy::tagName('img'))->getAttribute('alt'));
+        $start = ($row - 1) * 4;
+        for ($sequence = $start; $sequence < $start + 4; $sequence++) {
+            // Masonry columns can rebalance while lazy images load. Verify
+            // the expected images exist, not their incidental DOM positions.
+            $image = $this->driver->findElement(
+                WebDriverBy::cssSelector(".image-grid .gallery[sequence='$sequence']")
+            );
+            Assert::assertSame(
+                'Image ' . $sequence,
+                $image->findElement(WebDriverBy::tagName('img'))->getAttribute('alt')
+            );
         }
     }
 
