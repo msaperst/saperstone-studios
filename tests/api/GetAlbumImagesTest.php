@@ -239,6 +239,41 @@ class GetAlbumImagesTest extends TestCase {
         $this->assertEquals(1, $albumImages[2]['downloadable']);
     }
 
+    public function testOverlappingDownloadRightsDoNotDuplicatePaginatedImages(): void {
+        // A single image may qualify through both a per-image and an album-wide
+        // rule. Offset pagination must count images, not matching rights rows.
+        $this->sql->executeStatement(
+            "INSERT INTO download_rights (user, album, image) VALUES (0, '999', '997')"
+        );
+        $this->sql->executeStatement(
+            "INSERT INTO download_rights (user, album, image) VALUES (0, '999', '*')"
+        );
+
+        try {
+            $cookieJar = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $first = $this->http->request('GET', 'api/get-album-images.php', [
+                'query' => ['albumId' => 999, 'start' => 0, 'howMany' => 2],
+                'cookies' => $cookieJar
+            ]);
+            $second = $this->http->request('GET', 'api/get-album-images.php', [
+                'query' => ['albumId' => 999, 'start' => 2, 'howMany' => 2],
+                'cookies' => $cookieJar
+            ]);
+
+            $this->assertSame(200, $first->getStatusCode());
+            $this->assertSame(200, $second->getStatusCode());
+            $firstImages = json_decode((string)$first->getBody(), true)['images'];
+            $secondImages = json_decode((string)$second->getBody(), true)['images'];
+            $this->assertSame(['997', '998'], array_column($firstImages, 'id'));
+            $this->assertSame(['999'], array_column($secondImages, 'id'));
+            $this->assertEquals(1, $firstImages[0]['downloadable']);
+        } finally {
+            $this->sql->executeStatement('DELETE FROM download_rights WHERE album = 999');
+        }
+    }
+
     public function testViewSecond() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'
