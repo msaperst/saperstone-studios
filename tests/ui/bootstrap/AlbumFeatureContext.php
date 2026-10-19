@@ -1184,6 +1184,17 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
+     * @Then /^the album loading feedback disappears$/
+     */
+    public function theAlbumLoadingFeedbackDisappears(): void {
+        $this->wait->until(
+            WebDriverExpectedCondition::invisibilityOfElementLocated(
+                WebDriverBy::id('album-load-status')
+            )
+        );
+    }
+
+    /**
      * @Then /^the first album card displays its existing protected image$/
      */
     public function theFirstAlbumCardDisplaysItsExistingProtectedImage(): void {
