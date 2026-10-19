@@ -49,7 +49,8 @@ class MakeThumbsTest extends TestCase {
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '1', '', '/albums/sample/flower1.jpeg', '300', '400', '1');");
         $this->sql->executeStatement("INSERT INTO `album_images` (`id`, `album`, `title`, `sequence`, `caption`, `location`, `width`, `height`, `active`) VALUES (NULL, '999', '', '2', '', '/albums/sample/flower2.jpeg', '300', '400', '1');");
         $oldMask = umask(0);
-        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0777, true);
+        // The runner owns the fixture root; Apache creates protected derivative directories.
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample', 0777, true);
         copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
         copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower2.jpeg');
         chmod(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg', 0777);
@@ -73,7 +74,16 @@ class MakeThumbsTest extends TestCase {
         $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `album_images`;")['count'];
         $count++;
         $this->sql->executeStatement("ALTER TABLE `album_images` AUTO_INCREMENT = $count;");
-        system("rm -rf " . escapeshellarg(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample'));
+        // The thumbnail API runs as www-data in Docker, not as the PHPUnit host user.
+        // Clean the fixed test fixture from inside the container so 775 directories
+        // remain protected and each test starts with an empty filesystem.
+        exec(
+            'docker compose exec -T -u 0 php rm -rf -- /var/www/content/albums/sample',
+            $cleanupOutput,
+            $cleanupStatus
+        );
+        $this->assertSame(0, $cleanupStatus, 'Unable to remove thumbnail test fixture');
+        $this->assertDirectoryDoesNotExist(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample');
         $this->sql->disconnect();
     }
 
@@ -252,6 +262,7 @@ class MakeThumbsTest extends TestCase {
      * @throws GuzzleException
      */
     public function testRecreateAllReappliesTreatmentFromOriginals() {
+        mkdir(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full', 0755);
         copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower1.jpeg');
         copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/full/flower2.jpeg');
         copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'tests/resources/flower-proof.jpeg', dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
