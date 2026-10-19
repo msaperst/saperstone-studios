@@ -8,18 +8,20 @@ $api = new Api ();
 $api->forceAdmin();
 
 try {
-    $image = $api->retrievePostString('image', 'Image');
+    $imageRequest = $api->retrievePostString('image', 'Image');
+    $image = Api::resolveStoragePath($imageRequest, 'api');
+    if ($image === null) {
+        $resolvedImage = Api::resolvePublicPath($imageRequest, 'api');
+        if ($resolvedImage !== null && !file_exists($resolvedImage)) {
+            throw new BadRequestException('Image does not exist');
+        }
+        throw new BadRequestException('Image location is not valid');
+    }
 } catch (Exception $e) {
     Api::setErrorResponseCode($e);
     echo $e->getMessage();
     exit();
 }
-if (!file_exists($_POST['image'])) {
-    http_response_code(400);
-    echo "Image does not exist";
-    exit ();
-}
-
 try {
     $maxWidth = $api->retrievePostInt('max-width', 'Image max-width');
     $top = $api->retrievePostInt('top', 'Image top');
@@ -39,8 +41,8 @@ if ($top < 0) {
 }
 
 // fix our image with it's width
-system("mogrify -resize {$maxWidth}x " . escapeshellarg($image));
-system("mogrify -density 72 " . escapeshellarg($image));
+ImageProcessor::resize($image, $maxWidth);
+ImageProcessor::setDensity($image, 72);
 
 // verify that our image can fit in the specified crop
 if (getimagesize($image) [1] < ($height - 1)) {
@@ -51,7 +53,7 @@ if (getimagesize($image) [1] < ($height - 1)) {
 }
 
 // crop our image
-system("mogrify -crop {$maxWidth}x$height+0+$top " . escapeshellarg($image));
+ImageProcessor::crop($image, $maxWidth, $height, $top);
 
 // rename the image
 $filePath = dirname($image);

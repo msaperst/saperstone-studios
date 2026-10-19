@@ -13,6 +13,11 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ApiTestClient extends Client {
     public function request(string $method, $uri = '', array $options = []): ResponseInterface {
+        $method = strtoupper($method);
+        if (!in_array($method, ['GET', 'HEAD', 'OPTIONS'], true) && !$this->hasOriginHeader($options)) {
+            $options['headers']['Origin'] = $this->baseOrigin();
+        }
+
         $throwAuthorizationErrors = ($options['http_errors'] ?? true) !== false;
         $options['http_errors'] = false;
         $response = parent::request($method, $uri, $options);
@@ -24,5 +29,23 @@ class ApiTestClient extends Client {
             );
         }
         return $response;
+    }
+
+    private function hasOriginHeader(array $options): bool {
+        foreach (($options['headers'] ?? []) as $name => $value) {
+            if (strcasecmp((string)$name, 'Origin') === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function baseOrigin(): string {
+        $baseUri = $this->getConfig('base_uri');
+        $origin = $baseUri->getScheme() . '://' . $baseUri->getHost();
+        if ($baseUri->getPort() !== null) {
+            $origin .= ':' . $baseUri->getPort();
+        }
+        return $origin;
     }
 }

@@ -40,6 +40,7 @@ class CreateContractTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-contract.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -54,6 +55,7 @@ class CreateContractTest extends TestCase {
             $this->http->request('POST', 'api/create-contract.php', [
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
@@ -224,7 +226,7 @@ class CreateContractTest extends TestCase {
             $contractId = (string)$response->getBody();
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = $contractId;");
             $this->assertSame((string)$contractId, (string)$contractDetails['id']);
-            $this->assertEquals(md5($contractId . "weddingMaxMaxMaxfunsies"), $contractDetails['link']);
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $contractDetails['link']);
             $this->assertEquals('wedding', $contractDetails['type']);
             $this->assertEquals('MaxMaxMax', $contractDetails['name']);
             $this->assertNull($contractDetails['address']);
@@ -248,6 +250,50 @@ class CreateContractTest extends TestCase {
             $count = $this->sql->getRow("SELECT MAX(`id`) AS `count` FROM `contracts`;")['count'];
             $count++;
             $this->sql->executeStatement("ALTER TABLE `contracts` AUTO_INCREMENT = $count;");
+        }
+    }
+
+    public function testPhotoBoothEventDetailsPersist(): void {
+        $contractId = null;
+        try {
+            $cookies = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $response = $this->http->request('POST', 'api/create-contract.php', [
+                'form_params' => [
+                    'type' => 'photobooth',
+                    'name' => 'Photo Booth Test Attendant',
+                    'session' => 'contractor',
+                    'content' => '<p>Photo Booth Agreement</p>',
+                    'details' => json_encode([
+                        'photo_booth' => [
+                            'arrival_time' => '4:30 PM',
+                            'operating_hours' => '5 PM - 9 PM',
+                            'compensation_unit' => 'hour'
+                        ]
+                    ]),
+                    'amount' => '125.00'
+                ],
+                'cookies' => $cookies
+            ]);
+            self::assertSame(200, $response->getStatusCode());
+            $contractId = (int) (string) $response->getBody();
+            self::assertGreaterThan(0, $contractId);
+            $saved = $this->sql->getRow('SELECT * FROM contracts WHERE id = ?', [$contractId]);
+            self::assertSame('photobooth', $saved['type']);
+            self::assertSame([
+                'photo_booth' => [
+                    'arrival_time' => '4:30 PM',
+                    'operating_hours' => '5 PM - 9 PM',
+                    'compensation_unit' => 'hour'
+                ]
+            ], json_decode($saved['details'], true));
+            self::assertEquals(125.00, $saved['amount']);
+        } finally {
+            if ($contractId !== null && $contractId > 0) {
+                $this->sql->executeStatement('DELETE FROM contract_line_items WHERE contract = ?', [$contractId]);
+                $this->sql->executeStatement('DELETE FROM contracts WHERE id = ?', [$contractId]);
+            }
         }
     }
 
@@ -313,7 +359,7 @@ class CreateContractTest extends TestCase {
             $contractId = (int)(string)$response->getBody();
             $contractDetails = $this->sql->getRow("SELECT * FROM `contracts` WHERE `contracts`.`id` = $contractId;");
             $this->assertEquals($contractId, $contractDetails['id']);
-            $this->assertEquals(md5($contractId . "weddingMaxMaxMaxfunsies"), $contractDetails['link']);
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $contractDetails['link']);
             $this->assertEquals('wedding', $contractDetails['type']);
             $this->assertEquals('MaxMaxMax', $contractDetails['name']);
             $this->assertEquals('123 Seasame Street', $contractDetails['address']);

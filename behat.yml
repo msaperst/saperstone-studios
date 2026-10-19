@@ -12,20 +12,15 @@ default:
         - ui\bootstrap\AlbumFeatureContext
         - ui\bootstrap\RetouchFeatureContext
         - ui\bootstrap\BlogFeatureContext
+        - ui\bootstrap\BlogAdminFeatureContext
         - ui\bootstrap\GalleryFeatureContext
+        - ui\bootstrap\GalleryAdminFeatureContext
+        - ui\bootstrap\SiteImageAdminFeatureContext
+        - ui\bootstrap\UserAdminFeatureContext
+        - ui\bootstrap\ContractAdminFeatureContext
         - ui\bootstrap\ContractFeatureContext
         - ui\bootstrap\ContactFeatureContext
   formatters:
     pretty: true
     junit:
       output_path: '%paths.base%/reports/behat'
-    html:
-      output_path: '%paths.base%/reports/behat'
-  extensions:
-    emuse\BehatHTMLFormatter\BehatHTMLFormatterExtension:
-      name: html
-      renderer: Twig,Behat2
-      file_name: index
-      print_args: true
-      print_outp: true
-      loop_break: true

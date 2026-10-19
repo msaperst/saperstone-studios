@@ -456,3 +456,119 @@ test('post-admin updatePost invokes follow-up processing with the existing post 
 
     assert.equal(processed, '202');
 });
+
+
+test('post-admin collectPost rejects a missing preview image and restores controls', () => {
+    const {alerts, context, environment} = createAdminContext({
+        lengths: {'#post-preview-holder img': 0}
+    });
+    environment.element('#post-title-input').val('Missing Preview');
+    let called = 0;
+
+    context.collectPost(() => {
+        called += 1;
+    });
+
+    equalStructure(alerts, ['Please select a preview image for your post']);
+    assert.equal(called, 0);
+    assert.equal(environment.element('.btn').prop('disabled'), false);
+    assert.equal(environment.element('#post-information-message').removed, true);
+});
+
+test('post-admin collectPost cancellation with no tags does not persist the post', () => {
+    const {confirmations, context, environment} = createAdminContext({
+        lengths: {'#post-tags span': 0}
+    });
+    environment.element('#post-title-input').val('No Tags');
+    environment.element('#post-preview-holder img').attr('src', '/tmp/preview.jpg');
+    environment.element('#post-content>li').addClass('blog-editable-text');
+    environment.element('#post-content>li .blog-text-content').summernoteCode = '<p>Body</p>';
+    let saved = 0;
+
+    context.collectPost(() => {
+        saved += 1;
+    });
+    confirmations[0].callback(false);
+
+    assert.equal(saved, 0);
+    assert.equal(environment.element('.btn').prop('disabled'), false);
+    assert.equal(environment.element('#post-information-message').removed, true);
+});
+
+test('post-admin newTag displays server validation and restores the dialog', () => {
+    const {context, environment} = createAdminContext();
+    const select = environment.element('#post-tags-select');
+    environment.element('#new-category-name').val('Existing Category');
+    environment.queuePost('/api/create-blog-tag.php', {
+        type: 'success',
+        data: 'Blog tag already exists'
+    });
+
+    context.newTag(select);
+    const config = environment.dialogs[0];
+    const dialog = environment.createDialog();
+    const button = environment.createButton('__duplicate_tag_button__');
+    const modal = environment.element('__duplicate_tag_modal__');
+    button.closestResult = modal;
+    config.buttons[0].action.call(button, dialog);
+
+    assert.match(modal.find('.bootstrap-dialog-body').appended.join(''), /Blog tag already exists/);
+    assert.equal(dialog.buttonsEnabled, true);
+    assert.equal(dialog.closable, true);
+});
+
+test('post-admin publishPost displays request errors and restores controls', () => {
+    const {context, environment} = createAdminContext();
+    environment.queuePost('/api/publish-blog-post.php', {
+        type: 'failure',
+        xhr: {responseText: 'Publish failed'},
+        error: 'Server Error'
+    });
+
+    context.publishPost(303);
+
+    assert.match(environment.element('#post-title-input').closest().appended.join(''), /Publish failed/);
+    assert.equal(environment.element('.btn').prop('disabled'), false);
+});
+
+test('post-admin schedulePost keeps the dialog open for server validation errors', () => {
+    const {context, environment} = createAdminContext();
+    environment.element('#post-publish-date').val('2020-01-01');
+    environment.element('#post-publish-time').val('10:00');
+    environment.queuePost('/api/schedule-blog-post.php', {
+        type: 'success',
+        data: 'This time is not in the future'
+    });
+
+    context.schedulePost(304);
+    const config = environment.dialogs[0];
+    const dialog = environment.createDialog();
+    const button = environment.createButton('__schedule_validation_button__');
+    const modal = environment.element('__schedule_validation_modal__');
+    button.closestResult = modal;
+    config.buttons[0].action.call(button, dialog);
+
+    assert.match(modal.find('.bootstrap-dialog-body').appended.join(''), /not in the future/);
+    assert.notEqual(dialog.closed, true);
+    assert.equal(dialog.buttonsEnabled, true);
+    assert.equal(dialog.closable, true);
+});
+
+test('post-admin published content width follows the responsive breakpoints', () => {
+    const {context, environment, windowObject} = createAdminContext();
+
+    environment.element(String(windowObject)).widthValue = 1300;
+    assert.equal(context.getPublishedPostContentWidth(), 1140);
+
+    environment.element(String(windowObject)).widthValue = 1100;
+    assert.equal(context.getPublishedPostContentWidth(), 940);
+
+    environment.element(String(windowObject)).widthValue = 800;
+    assert.equal(context.getPublishedPostContentWidth(), 720);
+
+    environment.element(String(windowObject)).widthValue = 500;
+    assert.equal(context.getPublishedPostContentWidth(), 470);
+
+    environment.element(String(windowObject)).widthValue = 20;
+    assert.equal(context.getPublishedPostContentWidth(), 1);
+});

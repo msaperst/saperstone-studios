@@ -446,6 +446,212 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         assert.equal(scopeCalls[0][5], parentDialog);
     });
 
+    test(`${label}: saving album details posts edits and restores dialog controls`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queueGet('/api/get-album.php', {
+            type: 'success',
+            data: {
+                name: 'Original',
+                description: 'Old description',
+                date: '2026-09-23',
+                code: 'OLD',
+                imageCount: 2,
+                needsThumbnails: false,
+                hasAnyThumbnails: true
+            }
+        });
+        environment.queuePost('/api/update-album.php', {type: 'success', data: ''});
+
+        context.editAlbum(41);
+        environment.element('#new-album-name').val('Updated');
+        environment.element('#new-album-description').val('New description');
+        environment.element('#new-album-date').val('2026-10-04');
+        environment.element('#new-album-code').val('NEW');
+
+        const config = environment.dialogs.at(-1);
+        const save = config.buttons.find((item) => item.label && item.label.trim() === 'Save Details');
+        const dialog = environment.createDialog();
+        const button = environment.createButton('__save_album_button__');
+        button.closestResult = environment.element('__save_album_modal__');
+
+        save.action.call(button, dialog);
+
+        assert.deepEqual(plain(environment.calls.post[0]), {
+            url: '/api/update-album.php',
+            data: {
+                id: 41,
+                name: 'Updated',
+                description: 'New description',
+                date: '2026-10-04',
+                code: 'NEW'
+            }
+        });
+        assert.equal(dialog.closed, true);
+        assert.equal(button.stopSpinCount, 1);
+        assert.equal(dialog.buttonsEnabled, true);
+        assert.equal(dialog.closable, true);
+    });
+
+    test(`${label}: album save failures show the server response and restore controls`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queueGet('/api/get-album.php', {
+            type: 'success',
+            data: {
+                name: 'Original',
+                description: '',
+                date: '2026-09-23',
+                code: '',
+                imageCount: 1,
+                needsThumbnails: false,
+                hasAnyThumbnails: true
+            }
+        });
+        environment.queuePost('/api/update-album.php', {
+            type: 'failure',
+            xhr: {responseText: 'Album name is required'},
+            error: 'Bad Request'
+        });
+
+        context.editAlbum(42);
+        const config = environment.dialogs.at(-1);
+        const save = config.buttons.find((item) => item.label && item.label.trim() === 'Save Details');
+        const dialog = environment.createDialog();
+        const button = environment.createButton('__save_album_failure_button__');
+        const modal = environment.element('__save_album_failure_modal__');
+        button.closestResult = modal;
+
+        save.action.call(button, dialog);
+
+        assert.match(
+            modal.find('.bootstrap-dialog-body').appended.join(''),
+            /Album name is required/
+        );
+        assert.equal(dialog.closed, false);
+        assert.equal(button.stopSpinCount, 1);
+        assert.equal(dialog.buttonsEnabled, true);
+        assert.equal(dialog.closable, true);
+    });
+
+    test(`${label}: deleting an album closes both dialogs and reloads the table`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queueGet('/api/get-album.php', {
+            type: 'success',
+            data: {
+                name: 'Delete Me',
+                description: '',
+                date: '2026-09-23',
+                code: '',
+                imageCount: 1,
+                needsThumbnails: false,
+                hasAnyThumbnails: true
+            }
+        });
+        environment.queuePost('/api/delete-album.php', {type: 'success', data: ''});
+
+        context.editAlbum(43);
+        const editConfig = environment.dialogs.at(-1);
+        const remove = editConfig.buttons.find((item) => item.label && item.label.trim() === 'Delete Album');
+        const editDialog = environment.createDialog();
+        remove.action.call(environment.createButton('__delete_album_parent_button__'), editDialog);
+
+        const confirmConfig = environment.dialogs.at(-1);
+        const confirmDialog = environment.createDialog();
+        const confirmButton = environment.createButton('__delete_album_confirm_button__');
+        confirmButton.closestResult = environment.element('__delete_album_confirm_modal__');
+        confirmConfig.buttons[0].action.call(confirmButton, confirmDialog);
+
+        assert.deepEqual(plain(environment.calls.post[0]), {
+            url: '/api/delete-album.php',
+            data: {id: 43}
+        });
+        assert.equal(confirmDialog.closed, true);
+        assert.equal(editDialog.closed, true);
+        assert.ok(environment.calls.reload.length >= 1);
+    });
+
+    test(`${label}: album delete failures remain visible and restore confirmation controls`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queueGet('/api/get-album.php', {
+            type: 'success',
+            data: {
+                name: 'Protected Album',
+                description: '',
+                date: '2026-09-23',
+                code: '',
+                imageCount: 1,
+                needsThumbnails: false,
+                hasAnyThumbnails: true
+            }
+        });
+        environment.queuePost('/api/delete-album.php', {
+            type: 'failure',
+            xhr: {responseText: 'Album cannot be deleted'},
+            error: 'Bad Request'
+        });
+
+        context.editAlbum(44);
+        const editConfig = environment.dialogs.at(-1);
+        const remove = editConfig.buttons.find((item) => item.label && item.label.trim() === 'Delete Album');
+        const editDialog = environment.createDialog();
+        remove.action.call(environment.createButton('__delete_album_parent_failure_button__'), editDialog);
+
+        const confirmConfig = environment.dialogs.at(-1);
+        const confirmDialog = environment.createDialog();
+        const confirmButton = environment.createButton('__delete_album_confirm_failure_button__');
+        const modal = environment.element('__delete_album_confirm_failure_modal__');
+        confirmButton.closestResult = modal;
+        confirmConfig.buttons[0].action.call(confirmButton, confirmDialog);
+
+        assert.match(
+            modal.find('.bootstrap-dialog-body').appended.join(''),
+            /Album cannot be deleted/
+        );
+        assert.equal(confirmDialog.closed, false);
+        assert.equal(editDialog.closed, false);
+        assert.equal(confirmButton.stopSpinCount, 1);
+        assert.equal(confirmDialog.buttonsEnabled, true);
+        assert.equal(confirmDialog.closable, true);
+    });
+
+    test(`${label}: thumbnail refresh failures show progress errors and restore controls`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queueGet('/api/get-album.php', {
+            type: 'success',
+            data: {
+                name: 'Album',
+                description: '',
+                date: '2026-09-23',
+                code: '',
+                imageCount: 3,
+                needsThumbnails: true,
+                hasAnyThumbnails: true
+            }
+        });
+        context.editAlbum(45);
+
+        environment.queueGet('/api/get-album.php', {
+            type: 'failure',
+            xhr: {responseText: 'Unable to load album'}
+        });
+
+        const config = environment.dialogs.at(-1);
+        const makeThumbnails = config.buttons.find((item) =>
+            item.label && item.label.trim() === 'Make Thumbnails'
+        );
+        const dialog = environment.createDialog();
+        const button = environment.createButton('__thumbnail_refresh_failure_button__');
+
+        makeThumbnails.action.call(button, dialog);
+
+        const progress = environment.element('#resize-progress .progress-bar');
+        assert.equal(progress.html(), 'Error: Unable to load album');
+        assert.equal(progress.hasClass('progress-bar-danger'), true);
+        assert.equal(environment.element('#resize-progress').visible, true);
+        assert.equal(button.stopSpinCount, 1);
+        assert.equal(dialog.buttonsEnabled, true);
+        assert.equal(dialog.closable, true);
+    });
+
     test(`${label}: thumbnail markup choices pass the selected treatment and mode`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         const calls = [];

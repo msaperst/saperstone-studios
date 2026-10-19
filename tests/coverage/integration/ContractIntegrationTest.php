@@ -408,7 +408,7 @@ class ContractIntegrationTest extends TestCase {
 
         $contractInfo = $contract->getDataArray();
         $this->assertEquals('1000', $contractInfo['id']);
-        $this->assertEquals('30c1cceb0af8ae67a398bc9dc063c7d2', $contractInfo['link']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $contractInfo['link']);
         $this->assertEquals('wedding', $contractInfo['type']);
         $this->assertEquals('Max', $contractInfo['name']);
         $this->assertEquals('', $contractInfo['address']);
@@ -466,7 +466,7 @@ class ContractIntegrationTest extends TestCase {
 
         $contractInfo = $contract->getDataArray();
         $this->assertEquals('1000', $contractInfo['id']);
-        $this->assertEquals('0486b5e99b2af4e1cdc3ac3f1c442879', $contractInfo['link']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $contractInfo['link']);
         $this->assertEquals('wedding', $contractInfo['type']);
         $this->assertEquals('MaxMaxMax', $contractInfo['name']);
         $this->assertEquals('123 Sesame Street', $contractInfo['address']);

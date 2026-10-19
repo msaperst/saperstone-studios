@@ -56,7 +56,7 @@ $sql->disconnect();
                     <li><a href="/">Home</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li class="active">Search</li>
-                    <li class="active"><?php echo $search; ?></li>
+                    <li class="active"><?php echo htmlspecialchars($search, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></li>
                 </ol>
             </div>
         </div>

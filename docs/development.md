@@ -2,6 +2,63 @@
 
 This document provides a practical overview of the Saperstone Studios website development environment. The root README is intentionally kept short; implementation and operational details belong here or in other files under `docs/`.
 
+## Engineering principles
+
+This is a mature production application with legacy code. Improve it incrementally and avoid unnecessary rewrites. Prioritize correctness, testing, security, code quality, maintainability, and performance. Make the smallest coherent change that solves the problem well.
+
+Preserve intentional behavior. Before changing unusual legacy code, understand why it exists. In particular, album image protection is intentional: preserve protected direct access, controlled downloads, blank/protected `src` behavior, background rendering, and server-side authorization where applicable. Gallery or performance work must not make protected images directly downloadable.
+
+Code should be simple, readable, explicit, secure, maintainable, and testable. Follow good PHP, JavaScript, SQL, HTML/CSS, and testing practices. Reduce meaningful duplication and complexity without introducing unnecessary abstractions or unrelated refactors. When touching an area, clean up reasonable nearby issues when safe and appropriately scoped.
+
+Security is part of correctness. Use parameterized SQL, server-side authentication and authorization, input validation, contextual output escaping, CSRF protection, safe DOM APIs, secure cookies/sessions, and restrictive security headers. Fix root causes rather than weakening scanners or security controls, and never expose stack traces or implementation details to users.
+
+Work on feature branches and use pull requests; never push changes directly to `develop`.
+
+### Development workflow
+
+Before changing code:
+
+1. Understand the desired behavior.
+2. Inspect the existing implementation and tests.
+3. Understand intentional legacy behavior.
+4. Identify the appropriate test layers.
+5. Consider security and regression risks.
+6. Make the smallest coherent change.
+
+After changing code:
+
+1. Add or update comprehensive automated tests.
+2. Run focused tests, then broader relevant suites.
+3. Review coverage.
+4. Review Sonar and other static/security results and fix legitimate findings.
+5. Check for unnecessary duplication and complexity.
+6. Verify actual user-visible behavior.
+
+### Code quality and static analysis
+
+Code quality is a first-class requirement. Treat Sonar as engineering feedback, not merely a CI gate. After Sonar runs, review and fix legitimate bugs, vulnerabilities, code smells, uncovered new code, duplication, and unnecessary complexity. Do not blindly suppress findings. New and changed code should leave Sonar clean whenever reasonably possible.
+
+Apply the same approach to CodeQL, dependency/SCA analysis, container scanning, and other security/static-analysis tools.
+
+Checked-in third-party assets, locally maintained forks, generated files, and MySQL source have explicit analysis/coverage ownership rules. See [Static Asset and Analysis Ownership](static-asset-ownership.md) before adding scanner exclusions or modifying vendor-derived files solely to satisfy analysis.
+
+### Definition of done
+
+A change is complete when:
+
+- intended behavior works and intentional behavior is preserved;
+- unit tests cover testable new or changed logic;
+- new user-facing features have appropriate Page/HTTP and/or Behat coverage;
+- meaningful happy, failure, and edge cases are tested;
+- coverage is as complete as reasonably possible;
+- code is clean, secure, maintainable, and appropriately scoped;
+- legitimate Sonar/static/security findings are addressed;
+- relevant CI is green;
+- there are no unexplained runtime or browser errors; and
+- the automated pipeline protects the behavior from regression.
+
+Testing, coverage, code quality, security, and CI are part of implementing a change, not follow-up work.
+
 ## Application stack
 
 The website is a PHP application packaged and deployed with Docker Compose. Current development and CI use PHP 8.4. Composer manages PHP dependencies and the test commands.
@@ -45,6 +102,8 @@ docker compose up --build -d
 ```
 
 The local Compose file includes MySQL, PHP, phpMyAdmin, and Mailpit. Application source directories are bind-mounted into the PHP container, so edits to PHP, JavaScript, CSS, templates, and scripts are visible immediately without rebuilding or restarting the container. Rebuild only when container dependencies or Docker configuration change.
+
+Local Compose runs `bin/prepare-local-content.sh` before Apache starts. The script creates the content directories used by site-image, album, blog, and contract uploads and makes those bind-mounted directories writable by the local Apache process. This is intentionally a local-development setup step; `docker-compose.prod.yml` is unchanged and production continues to use the permissions of its existing `/mnt/server-data` content volume. This also means a fresh checkout can accept the first image upload for a section whose content directory did not previously exist.
 
 Production uses `docker-compose.prod.yml`, which contains only MySQL and PHP and consumes the prebuilt GHCR images. The production PHP image generates minified siblings for first-party JavaScript and CSS during its Docker build. `Strings::assetUrl()` automatically serves the generated `.min.js` or `.min.css` file when present, while local development falls back to the readable source file.
 

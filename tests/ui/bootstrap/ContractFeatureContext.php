@@ -28,6 +28,7 @@ class ContractFeatureContext implements Context {
      */
     private $wait;
     private $contractIds = [];
+    private $contractValues = [];
 
     /** @BeforeScenario
      * @param BeforeScenarioScope $scope
@@ -76,14 +77,18 @@ class ContractFeatureContext implements Context {
      * @param $field
      */
     public function iProvideForTheContract($value, $field) {
-        $this->driver->findElement(WebDriverBy::id('contract-' . $field))->clear()->sendKeys($value);
+        $input = $this->driver->findElement(WebDriverBy::id('contract-' . $field));
+        $input->clear()->sendKeys($value);
+        $this->contractValues[$field] = (string) $input->getAttribute('value');
     }
 
     /**
-     * @When /^I initial the contract$/
+     * @When /^I add my initials to the contract$/
      */
-    public function iInitialTheContract() {
-        $initialCanvas = $this->driver->findElement(WebDriverBy::cssSelector('#contract-initial > canvas'));
+    public function iAddMyInitialsToTheContract() {
+        $selector = WebDriverBy::cssSelector('#contract-initial canvas');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        $initialCanvas = $this->driver->findElement($selector);
         $draw = new WebDriverActions($this->driver);
         $draw->clickAndHold($initialCanvas)->moveByOffset(-5, -10)->moveByOffset(20, 20)->moveByOffset(10, -5)->release()->perform();
     }
@@ -92,13 +97,15 @@ class ContractFeatureContext implements Context {
      * @When /^I sign the contract$/
      */
     public function iSignTheContract() {
-        $initialCanvas = $this->driver->findElement(WebDriverBy::cssSelector('#contract-signature > canvas'));
+        $selector = WebDriverBy::cssSelector('#contract-signature canvas');
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        $signatureCanvas = $this->driver->findElement($selector);
         $draw = new WebDriverActions($this->driver);
-        $draw->clickAndHold($initialCanvas)->moveByOffset(-20, -10)->moveByOffset(20, 30)->moveByOffset(30, -15)->release()->perform();
+        $draw->clickAndHold($signatureCanvas)->moveByOffset(-20, -10)->moveByOffset(20, 30)->moveByOffset(30, -15)->release()->perform();
     }
 
     /**
-     * @Given /^I submit the contract$/
+     * @When /^I submit the contract$/
      * @throws Exception
      */
     public function iSubmitTheContract() {
@@ -136,7 +143,10 @@ class ContractFeatureContext implements Context {
      * @throws Exception
      */
     public function iSeeTheSignedContractDisplayed() {
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::tagName('embed')));
+        if (count($this->driver->findElements(WebDriverBy::tagName('embed'))) === 0) {
+            $this->driver->navigate()->refresh();
+        }
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::tagName('embed')));
         Assert::assertTrue($this->driver->findElement(WebDriverBy::tagName('embed'))->isDisplayed());
     }
 
@@ -148,29 +158,24 @@ class ContractFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I the signed contract exists for (\d+)$/
-     * @param $contractId
-     */
-    public function iTheSignedContractExistsFor($contractId) {
-        $sql = new Sql();
-        $contract = dirname(__DIR__, 3) . '/content/' . substr($sql->getRow("SELECT contracts.file FROM contracts WHERE contracts.id = $contractId")['file'], 6);
-        $sql->disconnect();
-        Assert::assertTrue(file_exists("$contract"));
-    }
-
-    /**
      * @Then /^contract (\d+) was emailed to me$/
      * @param $contractId
      * @throws ExceptionAlias
      */
     public function contractWasEmailedToMe($contractId) {
-        $sql = new Sql();
-        $contractDetails = $sql->getRow("SELECT * FROM contracts WHERE contracts.id = $contractId");
-        $sql->disconnect();
-        CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract',
+        $expectedTo = $this->contractValues['email'] ?? '';
+        Assert::assertNotSame('', $expectedTo, 'Expected the contract email entered through the browser to be recorded');
+
+        CustomAsserts::assertEmailMatches(
+            $expectedTo,
+            'contracts@saperstonestudios.com',
+            'Saperstone Studios Commercial Contract',
             "Thank you for signing your contract. You can pay your invoice online at nope!.\r\n\r\n",
             '<html><body><p>Thank you for signing your contract. You can pay your invoice online <a href=\'nope!\' target=\'_blank\'>here</a>.</p></body></html>',
-            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+            null,
+            null,
+            '.pdf'
+        );
     }
 
     /**
@@ -179,12 +184,17 @@ class ContractFeatureContext implements Context {
      * @throws ExceptionAlias
      */
     public function aCopyOfContractWasEmailedToTheAdmin($contractId) {
-        $sql = new Sql();
-        $contractDetails = $sql->getRow("SELECT * FROM contracts WHERE contracts.id = $contractId");
-        $sql->disconnect();
-        CustomAsserts::assertEmailEquals('Saperstone Studios Commercial Contract Signed',
-            "This is an automatically generated message from Saperstone Studios\r\n\r\nMax has signed their contract, this is a copy of it for your records. \r\n\r\n",
-            '<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>Max has signed their contract, this is a copy of it for your records. </p></body></html>',
-            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'content' . substr($contractDetails['file'], 5));
+        $clientName = $this->contractValues['name-signature'] ?? 'Max';
+
+        CustomAsserts::assertEmailMatches(
+            (string)getenv('EMAIL_CONTRACTS'),
+            'contracts@saperstonestudios.com',
+            'Saperstone Studios Commercial Contract Signed',
+            "This is an automatically generated message from Saperstone Studios\r\n\r\n$clientName has signed their contract, this is a copy of it for your records. \r\n\r\n",
+            "<html><body><p>This is an automatically generated message from Saperstone Studios</p><p>$clientName has signed their contract, this is a copy of it for your records. </p></body></html>",
+            null,
+            null,
+            '.pdf'
+        );
     }
 }

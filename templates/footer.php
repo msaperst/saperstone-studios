@@ -36,7 +36,7 @@ $navUser = User::fromSystem();
     </div>
     <div class="row">
         <div class="col-md-12 text-center">
-            <span class="copyright">Copyright &copy Saperstone Studios <?php echo date("Y"); ?></span>
+            <span class="copyright">Copyright &copy; Saperstone Studios <?php echo date("Y"); ?></span>
         </div>
     </div>
 </footer>

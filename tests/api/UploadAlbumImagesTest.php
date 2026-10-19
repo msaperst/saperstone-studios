@@ -49,6 +49,7 @@ class UploadAlbumImagesTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/upload-album-images.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals('You must be logged in to perform this action', $e->getResponse()->getBody());
@@ -119,6 +120,7 @@ class UploadAlbumImagesTest extends TestCase {
                 ],
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(403, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -137,6 +139,69 @@ class UploadAlbumImagesTest extends TestCase {
         ]);
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("File(s) are required", (string)$response->getBody());
+    }
+
+    public function testRejectsExecutableExtensionEvenForValidImageContent(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/upload-album-images.php', [
+            'multipart' => [
+                [
+                    'name' => 'album',
+                    'contents' => 998,
+                ],
+                [
+                    'name' => 'myfile',
+                    'contents' => fopen(dirname(__DIR__) . '/resources/flower.jpeg', 'r'),
+                    'filename' => 'image.php',
+                    'headers' => ['Content-Type:' => 'image/jpeg']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Uploaded file type is not supported', (string)$response->getBody());
+        $this->assertEquals(0, $this->sql->getRowCount(
+            "SELECT * FROM album_images WHERE album = 998 AND title = 'image.php'"
+        ));
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/image.php'
+        ));
+    }
+
+    public function testRejectsNonImageUploadWithoutDatabaseSideEffects(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('POST', 'api/upload-album-images.php', [
+            'multipart' => [
+                [
+                    'name' => 'album',
+                    'contents' => 998,
+                ],
+                [
+                    'name' => 'myfile',
+                    'contents' => 'not an image',
+                    'filename' => 'not-image.jpg',
+                    'headers' => ['Content-Type:' => 'image/jpeg']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Uploaded file is not a valid image', (string)$response->getBody());
+        $this->assertEquals(0, $this->sql->getRowCount(
+            "SELECT * FROM album_images WHERE album = 998 AND title = 'not-image.jpg'"
+        ));
+        $album = $this->sql->getRow("SELECT * FROM albums WHERE id = 998");
+        $this->assertEquals(0, $album['images']);
+        $this->assertEquals(1, $album['thumbsCreated']);
+        $this->assertFalse(file_exists(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/not-image.jpg'
+        ));
     }
 
     public function testSingleFile() {

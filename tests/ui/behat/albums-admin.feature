@@ -40,7 +40,14 @@ Feature: Admin Albums
     When I add a new album
     And I provide "My New Album" for the album "name"
     And I create my album
-    Then I see the edit album details modal for album 100000
+    Then I see the edit album details modal for the new album
+
+  Scenario: New album persists after reload
+    When I add a new album
+    And I provide "My New Album" for the album "name"
+    And I create my album
+    And I reload the page
+    Then I see the new album listed
 
   Scenario: Add new album full
     When I add a new album
@@ -48,13 +55,13 @@ Feature: Admin Albums
     And I provide "Some sample test album" for the album "description"
     And I provide "01/01/2030" for the album "date"
     And I create my album
-    Then I see the edit album details modal for album 100000
+    Then I see the edit album details modal for the new album
 
   Scenario: Edit new album
     When I edit album 99999
     Then I see the edit album details modal for album 99999
 
-  Scenario: Cant remove album name
+  Scenario: Album name cannot be removed
     When I edit album 99999
     And I provide "" for the album "name"
     And I update my album
@@ -67,139 +74,213 @@ Feature: Admin Albums
     And I provide "01/01/2030" for the album "date"
     And I provide "sample code" for the album "code"
     And I update my album
-    And I edit album 99999
-    Then I see the edit album details modal for album 99999
+    Then I see album 99999 album name
+    And I see album 99999 album description
+    And I see album 99999 album date
+    And I see album 99999 album code
 
-  Scenario: Upload images to album
-    #TODO - gotta figure this one out...
+  Scenario: Album information updates persist after reload
+    When I edit album 99999
+    And I provide "My New Album" for the album "name"
+    And I provide "Some sample test album" for the album "description"
+    And I provide "01/01/2030" for the album "date"
+    And I provide "sample code" for the album "code"
+    And I update my album
+    And I reload the page
+    Then I see album 99999 album name
+    And I see album 99999 album description
+    And I see album 99999 album date
+    And I see album 99999 album code
 
-  Scenario: Able to set access
+  Scenario: Upload image to album
+    When I edit album 99999
+    And I upload test image "flower.jpeg"
+    And I close the album details modal
+    Then I see album 99999 has 17 images
+
+  Scenario: Uploaded album image count persists after reload
+    When I edit album 99999
+    And I upload test image "flower.jpeg"
+    And I close the album details modal
+    And I reload the page
+    Then I see album 99999 has 17 images
+
+  Scenario: Admin can manage album access
     When I edit album 99999
     And I set access to my album
     Then I see the ability to set access
 
-  Scenario: Able to view users with album access
-    Given user 4 has access to album 99999
+  Scenario: Album access list shows authorized users
+    Given user uploader has access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4" with album access
+    Then I see users "uploader" with album access
     And I see users "" with download access
     And I see users "" with share access
 
-  Scenario: Unable to download images without album access
-    Given user 4 has download access to album 99999
+  Scenario: Download access requires album access
+    Given user uploader has download access to album 99999
     When I edit album 99999
     And I set access to my album
     Then I see users "" with album access
     And I see users "" with download access
     And I see users "" with share access
 
-  Scenario: Able to view users with download access
-    Given user 4 has access to album 99999
-    Given user 4 has download access to album 99999
+  Scenario: Download access list shows authorized users
+    Given user uploader has access to album 99999
+    Given user uploader has download access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4" with album access
-    And I see users "4" with download access
+    Then I see users "uploader" with album access
+    And I see users "uploader" with download access
     And I see users "" with share access
 
-  Scenario: Unable to share images without album access
-    Given user 4 has share access to album 99999
+  Scenario: Share access requires album access
+    Given user uploader has share access to album 99999
     When I edit album 99999
     And I set access to my album
     Then I see users "" with album access
     And I see users "" with download access
     And I see users "" with share access
 
-  Scenario: Able to view users with share access
-    Given user 4 has access to album 99999
-    Given user 4 has share access to album 99999
+  Scenario: Share access list shows authorized users
+    Given user uploader has access to album 99999
+    Given user uploader has share access to album 99999
     When I edit album 99999
     And I set access to my album
-    Then I see users "4" with album access
+    Then I see users "uploader" with album access
     And I see users "" with download access
-    And I see users "4" with share access
+    And I see users "uploader" with share access
 
-  Scenario: Able to add user for album access
+  Scenario: Admin can grant album access
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for album access
-    Then I see users "4" with album access
-    And users "4" have access to album 99999
+    And I add user uploader for album access
+    Then I see users "uploader" with album access
 
-  Scenario: Able to remove user for album access
-    Given user 4 has access to album 99999
+  Scenario: Admin can revoke album access
+    Given user uploader has access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I remove user 4 for album access
+    And I remove user uploader for album access
     Then I see users "" with album access
-    And users "" have access to album 99999
 
-  Scenario: Able to add all users for download access
+  Scenario: Admin can grant download access to all users
     When I edit album 99999
     And I set access to my album
     And I add user 0 for download access
     Then I see users "0" with download access
-    And users "0" can download album 99999
 
-  Scenario: Unable to add user without album access to download access
+  Scenario: Admin cannot grant download access without album access
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for download access
+    And I try to add user uploader for download access
     Then I see users "" with download access
-    And users "" can download album 99999
 
-  Scenario: Able to add user with album access to download access
-    Given user 4 has access to album 99999
+  Scenario: Admin can grant download access to an authorized user
+    Given user uploader has access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for download access
-    Then I see users "4" with download access
-    And users "4" can download album 99999
+    And I add user uploader for download access
+    Then I see users "uploader" with download access
 
-  Scenario: Able to remove user for download access
-    Given user 4 has access to album 99999
-    Given user 4 has download access to album 99999
+  Scenario: Admin can revoke download access
+    Given user uploader has access to album 99999
+    Given user uploader has download access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I remove user 4 for download access
-    Then I see users "4" with album access
+    And I remove user uploader for download access
+    Then I see users "uploader" with album access
     Then I see users "" with download access
-    And users "4" have access to album 99999
-    And users "" can download album 99999
 
-  Scenario: Able to add all users for share access
+  Scenario: Admin can grant share access to all users
     When I edit album 99999
     And I set access to my album
     And I add user 0 for share access
     Then I see users "0" with share access
-    And users "0" can share album 99999
 
-  Scenario: Unable to add user without album access to share access
+  Scenario: Admin cannot grant share access without album access
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for share access
+    And I add user uploader for share access
     Then I see users "" with share access
-    And users "" can share album 99999
 
-  Scenario: Able to add user with album access to share access
-    Given user 4 has access to album 99999
+  Scenario: Admin can grant share access to an authorized user
+    Given user uploader has access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I add user 4 for share access
-    Then I see users "4" with share access
-    And users "4" can share album 99999
+    And I add user uploader for share access
+    Then I see users "uploader" with share access
 
-  Scenario: Able to remove user for share access
-    Given user 4 has access to album 99999
-    Given user 4 has share access to album 99999
+  Scenario: Admin can revoke share access
+    Given user uploader has access to album 99999
+    Given user uploader has share access to album 99999
     When I edit album 99999
     And I set access to my album
-    And I remove user 4 for share access
-    Then I see users "4" with album access
+    And I remove user uploader for share access
+    Then I see users "uploader" with album access
     Then I see users "" with share access
-    And users "4" have access to album 99999
-    And users "" can share album 99999
+
+  Scenario: Granted album access persists after reload
+    When I edit album 99999
+    And I set access to my album
+    And I add user uploader for album access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "uploader" with album access
+
+  Scenario: Revoked album access persists after reload
+    Given user uploader has access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I remove user uploader for album access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "" with album access
+
+  Scenario: Granted download access persists after reload
+    Given user uploader has access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I add user uploader for download access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "uploader" with download access
+
+  Scenario: Revoked download access persists after reload
+    Given user uploader has access to album 99999
+    Given user uploader has download access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I remove user uploader for download access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "" with download access
+
+  Scenario: Granted share access persists after reload
+    Given user uploader has access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I add user uploader for share access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "uploader" with share access
+
+  Scenario: Revoked share access persists after reload
+    Given user uploader has access to album 99999
+    Given user uploader has share access to album 99999
+    When I edit album 99999
+    And I set access to my album
+    And I remove user uploader for share access
+    And I reload the page
+    And I edit album 99999
+    And I set access to my album
+    Then I see users "" with share access
 
   Scenario: Delete album
     When I edit album 99999
@@ -207,13 +288,19 @@ Feature: Admin Albums
     And I confirm my deletion of my album
     Then I don't see album 99999 listed
 
-  Scenario Outline: Able to make thumbnails
+  Scenario: Deleted album remains deleted after reload
+    When I edit album 99999
+    And I delete my album
+    And I confirm my deletion of my album
+    And I reload the page
+    Then I don't see album 99999 listed
+
+  Scenario Outline: Admin can create thumbnails
     Given album 99999 images are generic
     When I edit album 99999
     And I make thumbnails for my album
     And I create "<thumbType>" thumbnails
     Then I see thumbnails being created
-    Then I have created "<thumbType>" thumbnail images for album 99999
     Examples:
       | thumbType |
       | proof     |

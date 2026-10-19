@@ -15,6 +15,7 @@
 
         var $element = $(this);
         var cookiePreferences = readCookie('CookiePreferences');
+        var hasValidPreferencesCookie = HasValidPreferencesCookie(cookiePreferences);
         if (readCookie('CookieShow') !== null) {
             deleteCookie('CookieShow');
         }
@@ -74,7 +75,7 @@
             }
         };
 
-        if (!cookiePreferences || event === 'reinit') {
+        if (!hasValidPreferencesCookie || event === 'reinit') {
 
             // Make sure that other instances are gone
             DisposeModal(settings.id);
@@ -204,8 +205,7 @@
      * Returns user preferences saved in cookie
      */
     $.fn.bsgdprcookies.GetUserPreferences = function () {
-        var preferences = readCookie('CookiePreferences');
-        return JSON.parse(preferences);
+        return ParsePreferences(readCookie('CookiePreferences'));
     };
 
     /**
@@ -216,7 +216,7 @@
     $.fn.bsgdprcookies.PreferenceExists = function (pref) {
         var preferences = $.fn.bsgdprcookies.GetUserPreferences();
 
-        if (preferences === false || preferences.indexOf(pref) === -1) {
+        if (preferences.indexOf(pref) === -1) {
             return false;
         }
 
@@ -238,6 +238,17 @@
             $(this).removeData('bs.modal').remove();
         });
         $modal.modal('hide');
+    }
+
+    function HasValidPreferencesCookie(cookiePreferences) {
+        if (cookiePreferences === null) {
+            return false;
+        }
+        try {
+            return Array.isArray(JSON.parse(cookiePreferences));
+        } catch (error) {
+            return false;
+        }
     }
 
     function ParsePreferences(cookiePreferences) {

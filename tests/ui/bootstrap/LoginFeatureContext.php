@@ -4,7 +4,6 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Testwork\Environment\Environment;
 use CustomAsserts;
 use Exception;
@@ -54,9 +53,9 @@ class LoginFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I have cookies disabled$/
+     * @Given /^I have rejected preference cookies$/
      */
-    public function iHaveCookiesDisabled() {
+    public function iHaveRejectedPreferenceCookies() {
         $this->driver->manage()->deleteAllCookies();
         $cookie = new Cookie('CookiePreferences', '[]');
         $this->driver->manage()->addCookie($cookie);
@@ -76,7 +75,7 @@ class LoginFeatureContext implements Context {
      * @When /^I reject preference cookies without reloading$/
      */
     public function iRejectPreferenceCookiesWithoutReloading() {
-        $this->driver->findElement(WebDriverBy::id('edit-cookies'))->click();
+        $this->driver->executeScript("jQuery('body').bsgdprcookies('reinit');");
         $preferences = WebDriverBy::id('bs-gdpr-cookies-modal-option-preferences');
         $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($preferences));
         $checkbox = $this->driver->findElement($preferences);
@@ -91,6 +90,9 @@ class LoginFeatureContext implements Context {
      * @throws Exception
      */
     public function anEnabledUserAccountExists() {
+        $this->user = $this->environment
+            ->getContext('ui\bootstrap\BaseFeatureContext')
+            ->getUser();
         $this->user->create();
     }
 
@@ -225,7 +227,7 @@ class LoginFeatureContext implements Context {
      */
     public function iLogout() {
         $login = new Login($this->driver, $this->wait);
-        $login->logout($this->user->getUsername());
+        $login->logout();
     }
 
     /**
@@ -250,7 +252,7 @@ class LoginFeatureContext implements Context {
      */
     public function iSubmitEmailForReset($email) {
         $login = new Login($this->driver, $this->wait);
-        $login->requestResetKey($email);
+        $login->requestResetKey($email, false);
     }
 
     /**
@@ -259,9 +261,33 @@ class LoginFeatureContext implements Context {
      * @throws TimeoutException
      */
     public function iSubmitInNewCredentials() {
+        $this->submitResetPassword($this->user->getPassword());
+    }
+
+    /**
+     * @When /^I reset my password to "([^"]*)" using the emailed key$/
+     */
+    public function iResetMyPasswordToUsingTheEmailedKey($password): void {
+        $this->submitResetPassword((string) $password);
+    }
+
+    private function submitResetPassword(string $password): void {
         $login = new Login($this->driver, $this->wait);
-        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::className('alert-info')));
-        $login->requestResetPassword($this->user->getEmail(), User::withId($this->user->getId())->getDataBasic()['resetKey'], $this->user->getPassword(), $this->user->getPassword());
+        $emailText = CustomAsserts::getEmailText(
+            $this->user->getEmail(),
+            'noreply@saperstonestudios.com',
+            'Reset Key For Saperstone Studios Account'
+        );
+
+        Assert::assertMatchesRegularExpression('/\\t([A-Za-z0-9]{8})\\s*$/', $emailText);
+        preg_match('/\\t([A-Za-z0-9]{8})\\s*$/', $emailText, $matches);
+
+        $login->requestResetPassword(
+            $this->user->getEmail(),
+            $matches[1],
+            $password,
+            $password
+        );
     }
 
     /**
@@ -290,15 +316,6 @@ class LoginFeatureContext implements Context {
     public function iDonTSeeMyUserNameDisplayed() {
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::id('login-menu-item')));
         Assert::assertEquals(0, sizeof($this->driver->findElements(WebDriverBy::linkText($this->user->getUsername()))));
-    }
-
-    /**
-     * @Then /^I see an info message indicating I successfully logged in$/
-     * @throws NoSuchElementException
-     * @throws TimeoutException
-     */
-    public function iSeeAnInfoMessageIndicatingISuccessfullyLoggedIn() {
-        CustomAsserts::infoMessage($this->driver, 'Successfully Logged In. Please wait as you are redirected.');
     }
 
     /**
@@ -377,7 +394,7 @@ class LoginFeatureContext implements Context {
     public function iSeeACookieWithMyCredentials() {
         $remember = $this->driver->manage()->getCookieNamed('remember_me');
         Assert::assertNotNull($remember);
-        Assert::assertMatchesRegularExpression('/^[a-f0-9]{32}:[a-f0-9]{64}$/', $remember->getValue());
+        Assert::assertMatchesRegularExpression('/^[a-f0-9]{32}:[a-f0-9]{64}$/', rawurldecode($remember->getValue()));
         foreach ($this->driver->manage()->getCookies() as $cookie) {
             Assert::assertNotEquals('hash', $cookie->getName());
             Assert::assertNotEquals('usr', $cookie->getName());
@@ -421,7 +438,7 @@ class LoginFeatureContext implements Context {
      * @throws ExceptionAlias
      */
     public function iReceiveAnEmailWithMyResetKey() {
-        CustomAsserts::assertEmailMatches('Reset Key For Saperstone Studios Account',
+        CustomAsserts::assertEmailMatches($this->user->getEmail(), 'noreply@saperstonestudios.com', 'Reset Key For Saperstone Studios Account',
             "You requested a reset key for your saperstone studios account. Enter the key below to reset your password. If you did not request this key, disregard this message.
 
 \t%s",

@@ -187,7 +187,7 @@ class RegisterUserTest extends TestCase {
             $this->assertEquals('', $userDetails['lastName']);
             $this->assertEquals($userEmail, $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
-            $this->assertEquals('cf0339a5bc2feeee0aef1c553834276a', $userDetails['hash']);
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
             CustomAsserts::timeWithin(5, $userDetails['created']);
             CustomAsserts::timeWithin(5, $userDetails['lastLogin']);
@@ -238,7 +238,7 @@ class RegisterUserTest extends TestCase {
             $this->assertEquals('Saperstone', $userDetails['lastName']);
             $this->assertEquals($userEmail, $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
-            $this->assertEquals('cd1b3237a8d22938f69578a8bef680c5', $userDetails['hash']);
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
             CustomAsserts::timeWithin(5, $userDetails['created']);
             CustomAsserts::timeWithin(5, $userDetails['lastLogin']);

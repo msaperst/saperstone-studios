@@ -119,6 +119,69 @@ class CustomAsserts {
         Assert::assertCount($expectedCount, $data['messages'] ?? [], "Expected exactly $expectedCount emails sent.");
     }
 
+    public static function assertEmailSubjectExists(string $expectedSubject): void {
+        $client = self::getMailpitClient();
+        $response = $client->request('GET', 'messages');
+        $data = json_decode((string)$response->getBody(), true);
+        $subjects = array_column($data['messages'] ?? [], 'Subject');
+
+        Assert::assertContains(
+            $expectedSubject,
+            $subjects,
+            'Expected Mailpit to contain an email with subject ' . $expectedSubject
+        );
+    }
+
+    public static function getEmailText(
+        string $expectedTo,
+        string $expectedFrom,
+        string $expectedSubject
+    ): string {
+        $client = self::getMailpitClient();
+        $seen = [];
+
+        for ($attempt = 0; $attempt < 20; $attempt++) {
+            $response = $client->request('GET', 'messages');
+            $data = json_decode((string)$response->getBody(), true);
+
+            foreach (($data['messages'] ?? []) as $msg) {
+                if (($msg['Subject'] ?? '') !== $expectedSubject) {
+                    continue;
+                }
+
+                $messageId = $msg['ID'];
+                $detailResponse = $client->request('GET', "message/{$messageId}");
+                $detail = json_decode((string)$detailResponse->getBody(), true);
+                $toAddresses = array_column($detail['To'] ?? [], 'Address');
+                $fromAddress = $detail['From']['Address'] ?? '';
+                $seen[] = sprintf(
+                    '%s -> %s: %s',
+                    $fromAddress,
+                    implode(', ', $toAddresses),
+                    $detail['Subject'] ?? ''
+                );
+
+                if (in_array($expectedTo, $toAddresses, true) && $fromAddress === $expectedFrom) {
+                    return (string)($detail['Text'] ?? '');
+                }
+            }
+
+            usleep(250000);
+        }
+
+        Assert::fail(
+            "Expected $expectedFrom -> $expectedTo: $expectedSubject. Mailpit contained: "
+            . implode('; ', $seen)
+        );
+    }
+
+    /**
+     * Error pages send their reports to the webmaster via Mailpit in CI.
+     */
+    public static function assertErrorEmailMatches(string $subject, string $text, string $html): void {
+        self::assertEmailMatches('msaperst@gmail.com', 'error@saperstonestudios.com', $subject, $text, $html);
+    }
+
     /**
      * Finds a specific email and asserts its content, including SMTP credentials and attachments.
      */
@@ -129,17 +192,33 @@ class CustomAsserts {
         string  $expectedText,
         string  $expectedHtml,
         ?string $expectedAuthUser = null,
-        ?string $expectedAttachmentPath = null // <-- Add optional attachment path
+        ?string $expectedAttachmentPath = null,
+        ?string $expectedAttachmentExtension = null
     ): void {
         if ($expectedAuthUser === null) {
-            $expectedAuthUser = (string)getenv('EMAIL_USER');
+            $credentialKey = str_ends_with($expectedTo, '@saperstonestudios.com')
+                ? 'EMAIL_USER_X'
+                : 'EMAIL_USER';
+            $expectedAuthUser = (string)getenv($credentialKey);
         }
 
         $client = self::getMailpitClient();
-        $response = $client->request('GET', 'messages');
-        $data = json_decode((string)$response->getBody(), true);
+        $data = ['messages' => []];
+
+        for ($attempt = 0; $attempt < 20; $attempt++) {
+            $response = $client->request('GET', 'messages');
+            $data = json_decode((string)$response->getBody(), true);
+            $matchingMessages = array_filter($data['messages'] ?? [], static function ($message) use ($expectedSubject) {
+                return ($message['Subject'] ?? '') === $expectedSubject;
+            });
+            if (!empty($matchingMessages)) {
+                break;
+            }
+            usleep(250000);
+        }
 
         $found = false;
+        $seen = [];
 
         foreach (($data['messages'] ?? []) as $msg) {
             $messageId = $msg['ID'];
@@ -148,45 +227,58 @@ class CustomAsserts {
 
             $toAddresses = array_column($detail['To'] ?? [], 'Address');
             $fromAddress = $detail['From']['Address'] ?? '';
+            $seen[] = sprintf('%s -> %s: %s', $fromAddress, implode(', ', $toAddresses), $detail['Subject'] ?? '');
 
             if (in_array($expectedTo, $toAddresses) && $fromAddress === $expectedFrom && $detail['Subject'] === $expectedSubject) {
                 $found = true;
 
                 // Assert contents
-                Assert::assertStringMatchesFormat($expectedText, $detail['Text'], "Text body did not match.");
+                $normalizeLines = static fn(string $value): string => str_replace(["\r\n", "\r"], "\n", $value);
+                Assert::assertStringMatchesFormat($normalizeLines($expectedText), $normalizeLines($detail['Text']), "Text body did not match.");
                 Assert::assertStringMatchesFormat($expectedHtml, $detail['HTML'], "HTML body did not match.");
 
                 // Assert SMTP Authentication username
                 $actualAuthUser = $detail['Username'] ?? '';
                 Assert::assertEquals($expectedAuthUser, $actualAuthUser, "SMTP Username mismatch.");
 
-                // Assert Attachment if expected
-                if ($expectedAttachmentPath !== null) {
+                // Assert externally observable attachment behavior when requested.
+                if ($expectedAttachmentPath !== null || $expectedAttachmentExtension !== null) {
                     Assert::assertNotEmpty($detail['Attachments'], "Expected an attachment, but none were found.");
 
-                    // Grab the first attachment metadata block
                     $attachmentMeta = $detail['Attachments'][0];
                     $partId = $attachmentMeta['PartID'];
                     $fileName = $attachmentMeta['FileName'];
-
-                    // Verify the file name matches what you expect
-                    $expectedFileName = basename($expectedAttachmentPath);
-                    Assert::assertEquals($expectedFileName, $fileName, "Attachment filename mismatch.");
-
-                    // Download the binary attachment payload from Mailpit
                     $downloadResponse = $client->request('GET', "message/{$messageId}/part/{$partId}");
+                    $attachmentBody = (string)$downloadResponse->getBody();
 
-                    // Save it to a temporary local file to run your existing comparison logic
-                    $tmpFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $fileName;
-                    file_put_contents($tmpFile, (string)$downloadResponse->getBody());
+                    if ($expectedAttachmentExtension !== null) {
+                        Assert::assertStringEndsWith(
+                            $expectedAttachmentExtension,
+                            $fileName,
+                            "Attachment filename did not have the expected extension."
+                        );
+                        if (strtolower($expectedAttachmentExtension) === '.pdf') {
+                            Assert::assertStringStartsWith(
+                                '%PDF-',
+                                $attachmentBody,
+                                'Expected the delivered attachment to contain PDF data.'
+                            );
+                        }
+                    }
 
-                    try {
-                        // Use your existing binary file comparison method
-                        self::filesAreEqual($expectedAttachmentPath, $tmpFile);
-                    } finally {
-                        // Clean up the downloaded temp file immediately
-                        if (file_exists($tmpFile)) {
-                            unlink($tmpFile);
+                    if ($expectedAttachmentPath !== null) {
+                        $expectedFileName = basename($expectedAttachmentPath);
+                        Assert::assertEquals($expectedFileName, $fileName, "Attachment filename mismatch.");
+
+                        $tmpFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $fileName;
+                        file_put_contents($tmpFile, $attachmentBody);
+
+                        try {
+                            self::filesAreEqual($expectedAttachmentPath, $tmpFile);
+                        } finally {
+                            if (file_exists($tmpFile)) {
+                                unlink($tmpFile);
+                            }
                         }
                     }
                 }
@@ -194,7 +286,7 @@ class CustomAsserts {
             }
         }
 
-        Assert::assertTrue($found, "Failed asserting that the specified email was sent.");
+        Assert::assertTrue($found, "Expected $expectedFrom -> $expectedTo: $expectedSubject. Mailpit contained: " . implode('; ', $seen));
     }
 
     /**

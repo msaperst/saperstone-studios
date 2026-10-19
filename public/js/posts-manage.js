@@ -180,7 +180,11 @@ function updateManagedPost(post) {
         tags.push($(this).attr('tag-id'));
     });
     var preview = {};
-    preview.img = $('#post-preview-image').val();
+    var previewName = $('#post-preview-image').val();
+    var previewLocation = $('#post').attr('post-location') || '';
+    preview.img = previewLocation
+        ? previewLocation.replace(/\/+$/, '') + '/' + previewName
+        : previewName;
     preview.offset = $('#post-preview-holder img').css('top');
     // send the content
     $.post("/api/update-blog-post.php", {

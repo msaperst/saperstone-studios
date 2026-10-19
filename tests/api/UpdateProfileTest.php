@@ -26,6 +26,7 @@ class UpdateProfileTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/update-profile.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You must be logged in to perform this action", (string)$e->getResponse()->getBody());
@@ -278,7 +279,8 @@ class UpdateProfileTest extends TestCase {
             $this->assertEquals('User', $userDetails['lastName']);
             $this->assertEquals('uploader@example.org', $userDetails['email']);
             $this->assertEquals('uploader', $userDetails['role']);
-            $this->assertEquals('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
+            $this->assertNotSame('c90788c0e409eac6a95f6c6360d8dbf7', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
             $this->assertNull($userDetails['resetKey']);
             $userLogs = $this->sql->getRow("SELECT * FROM `user_logs` WHERE user = 4 ORDER BY time DESC, id DESC");

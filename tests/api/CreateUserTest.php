@@ -48,6 +48,7 @@ class CreateUserTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/create-user.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -66,6 +67,7 @@ class CreateUserTest extends TestCase {
             $this->http->request('POST', 'api/create-user.php', [
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
@@ -249,7 +251,8 @@ class CreateUserTest extends TestCase {
             $this->assertEquals('', $userDetails['lastName']);
             $this->assertEquals($userEmail, $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
-            $this->assertEquals(32, strlen($userDetails['hash']));
+            $this->assertEquals(64, strlen($userDetails['hash']));
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
             $this->assertEquals(1, $userDetails['active']);
             CustomAsserts::timeWithin(10, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);
@@ -302,7 +305,8 @@ For security reasons, once logged in, we recommend you reset your password at ht
             $this->assertEquals('Saperstone', $userDetails['lastName']);
             $this->assertEquals($userEmail, $userDetails['email']);
             $this->assertEquals('downloader', $userDetails['role']);
-            $this->assertEquals(32, strlen($userDetails['hash']));
+            $this->assertEquals(64, strlen($userDetails['hash']));
+            $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/D', $userDetails['hash']);
             $this->assertEquals(0, $userDetails['active']);
             CustomAsserts::timeWithin(10, $userDetails['created']);
             $this->assertNull($userDetails['lastLogin']);

@@ -4,6 +4,7 @@ var my_id;
 $(function () {
     // Replace stale validation/API errors when a visitor retries an action.
     $(document).ajaxSend(function (event, xhr, settings) {
+        addCsrfHeader(xhr, settings);
         if ((settings.type || 'GET').toUpperCase() !== 'GET') {
             $('.alert-danger').remove();
         }
@@ -124,6 +125,17 @@ window.onhashchange = function () {
     var code = getAlbumCodeFromHash();
     if ((window.location.hash || "").toLowerCase().startsWith("#album")) {
         findAlbum(code);
+    }
+}
+
+function addCsrfHeader(xhr, settings) {
+    var method = (settings.type || 'GET').toUpperCase();
+    if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+        return;
+    }
+    var token = $('#csrf-token').val();
+    if (token) {
+        xhr.setRequestHeader('X-CSRF-Token', token);
     }
 }
 

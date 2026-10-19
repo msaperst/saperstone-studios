@@ -302,8 +302,8 @@ function editUser(data) {
                             }).done(function (data) {
                                 if (data !== "") {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
+                                    return;
                                 }
-                                $buttonIn.stopSpin();
                                 $button.stopSpin();
                                 dialogInItself.close();
                                 enableDialogButtons(dialogItself);
@@ -391,6 +391,7 @@ function editUser(data) {
                             }).done(function (data) {
                                 if (data === "") {
                                     user_table.ajax.reload(null, false);
+                                    dialogInItself.close();
                                     dialogItself.close();
                                 } else {
                                     modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>" + data + "</div>");
@@ -405,8 +406,8 @@ function editUser(data) {
                                 }
                             }).always(function () {
                                 $button.stopSpin();
-                                dialogInItself.close();
-                                enableDialogButtons(dialogItself);
+                                dialogInItself.enableButtons(true);
+                                dialogInItself.setClosable(true);
                             });
                         }
                     }, {

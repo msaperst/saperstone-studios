@@ -132,11 +132,11 @@ $user = User::fromSystem();
                 </div>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12">
-                <div section="Photobooth"
+                <div section="Photo Booth"
                     class="hovereffect img-portfolio<?php if ($user->isAdmin ()) { echo " editable horizontal"; } ?>">
-                    <span class='preview-title'>Photobooth</span> <img
+                    <span class='preview-title'>Photo Booth</span> <img
                         class="img-responsive"
-                        src="img/photobooth.jpg<?php echo $rand; ?>" alt="Photobooth">
+                        src="img/photobooth.jpg<?php echo $rand; ?>" alt="Photo Booth">
                     <div class="overlay">
                         <br /> <br /> <br /> <a class="info" href="photobooth.php">See
                             More</a>

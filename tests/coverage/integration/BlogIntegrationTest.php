@@ -96,6 +96,7 @@ class BlogIntegrationTest extends TestCase {
         $this->sql->disconnect();
         system("rm -rf " . escapeshellarg(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/blog/posts'));
         system("rm -rf " . escapeshellarg(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/tmp'));
+        @unlink(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/blog-preview-outside-roots.jpg');
     }
 
 
@@ -627,6 +628,78 @@ class BlogIntegrationTest extends TestCase {
         $blog = Blog::withId(899);
         $this->expectException(BlogException::class);
         $this->expectExceptionMessage('User not authorized to create blog post');
+        $blog->create();
+    }
+
+    public function testCreateRejectsPreviewTraversalOutsidePublicTree(): void {
+        $blog = Blog::withParams([
+            'title' => 'Traversal Preview',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '../../outside.jpg'
+            ],
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'security regression test',
+                    'group' => 1
+                ]
+            ]
+        ]);
+        $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
+
+        $this->expectException(BadBlogException::class);
+        $this->expectExceptionMessage('Blog preview image is not valid');
+
+        $blog->create();
+    }
+
+    public function testCreateRejectsMissingPreviewFile(): void {
+        $blog = Blog::withParams([
+            'title' => 'Missing Preview',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '../tmp/missing-preview.jpg'
+            ],
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'security regression test',
+                    'group' => 1
+                ]
+            ]
+        ]);
+        $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
+
+        $this->expectException(BadBlogException::class);
+        $this->expectExceptionMessage('Blog preview image is not valid');
+
+        $blog->create();
+    }
+
+    public function testCreateRejectsPreviewOutsideAllowedRoots(): void {
+        $previewPath = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public/blog-preview-outside-roots.jpg';
+        copy(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg', $previewPath);
+
+        $blog = Blog::withParams([
+            'title' => 'Outside Preview',
+            'date' => '2020-01-01',
+            'preview' => [
+                'img' => '/blog-preview-outside-roots.jpg'
+            ],
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'security regression test',
+                    'group' => 1
+                ]
+            ]
+        ]);
+        $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
+
+        $this->expectException(BadBlogException::class);
+        $this->expectExceptionMessage('Blog preview image is not valid');
+
         $blog->create();
     }
 

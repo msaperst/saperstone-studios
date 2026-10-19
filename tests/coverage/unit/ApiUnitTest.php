@@ -13,24 +13,28 @@ use SqlException;
 
 class ApiUnitTest extends TestCase {
     private Api $api;
-    private ?string $requestMethod = null;
+    private array $serverState = [];
+    private array $sessionState = [];
 
     protected function setUp(): void {
         parent::setUp();
+        $this->serverState = $_SERVER;
+        $this->sessionState = $_SESSION ?? [];
         $this->api = new Api();
-        $this->requestMethod = $_SERVER['REQUEST_METHOD'] ?? null;
     }
 
     protected function tearDown(): void {
         parent::tearDown();
         $_POST = [];
         $_GET = [];
-        if ($this->requestMethod === null) {
-            unset($_SERVER['REQUEST_METHOD']);
-        } else {
-            $_SERVER['REQUEST_METHOD'] = $this->requestMethod;
-        }
+        $_SERVER = $this->serverState;
+        $_SESSION = $this->sessionState;
         http_response_code(200);
+
+        $projectRoot = dirname(__DIR__, 3);
+        @unlink($projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-escape');
+        @unlink($projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-content-link');
+        @unlink($projectRoot . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR . 'unit-storage-content.txt');
     }
 
     // ------------------------
@@ -59,6 +63,168 @@ class ApiUnitTest extends TestCase {
         // PHPUnit may have already written CLI output, so suppress header()'s CLI-only warning.
         $this->assertFalse(@Api::requireMethod('POST'));
         $this->assertSame(405, http_response_code());
+    }
+
+    public function testCsrfProtectionAllowsSafeMethodsWithoutToken(): void {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        unset($_SERVER['HTTP_ORIGIN'], $_SERVER['HTTP_X_CSRF_TOKEN']);
+
+        $this->assertTrue(Api::requireCsrfProtection());
+    }
+
+    public function testCsrfProtectionAllowsValidSessionToken(): void {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        unset($_SERVER['HTTP_ORIGIN']);
+
+        $session = new \Session();
+        $_SERVER['HTTP_X_CSRF_TOKEN'] = $session->getCsrfToken();
+
+        $this->assertTrue(Api::requireCsrfProtection());
+    }
+
+    public function testCsrfProtectionAllowsMatchingOrigin(): void {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['HTTP_HOST'] = 'example.test';
+        $_SERVER['SERVER_NAME'] = 'example.test';
+        $_SERVER['SERVER_PORT'] = '80';
+        $_SERVER['HTTP_ORIGIN'] = 'http://example.test';
+        unset(
+            $_SERVER['HTTPS'],
+            $_SERVER['HTTP_X_FORWARDED_PROTO'],
+            $_SERVER['HTTP_X_FORWARDED_HOST'],
+            $_SERVER['HTTP_X_CSRF_TOKEN']
+        );
+
+        $this->assertTrue(Api::requireCsrfProtection());
+    }
+
+    public function testCsrfProtectionRejectsCrossOriginRequestWithoutToken(): void {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['HTTP_HOST'] = 'example.test';
+        $_SERVER['SERVER_NAME'] = 'example.test';
+        $_SERVER['HTTP_ORIGIN'] = 'https://evil.example';
+        unset($_SERVER['HTTP_X_CSRF_TOKEN']);
+        unset($_SESSION['csrf_token']);
+        http_response_code(200);
+
+        $this->assertFalse(Api::requireCsrfProtection());
+        $this->assertSame(403, http_response_code());
+    }
+
+    public function testCsrfProtectionRejectsMissingOriginAndToken(): void {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        unset($_SERVER['HTTP_ORIGIN'], $_SERVER['HTTP_X_CSRF_TOKEN']);
+        unset($_SESSION['csrf_token']);
+        http_response_code(200);
+
+        $this->assertFalse(Api::requireCsrfProtection());
+        $this->assertSame(403, http_response_code());
+    }
+
+    public function testResolvePublicPathAllowsApiRelativePathInsidePublicRoot(): void {
+        $path = Api::resolvePublicPath('../img/main/portraits.jpg', 'api');
+
+        $this->assertSame(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'img'
+                . DIRECTORY_SEPARATOR . 'main' . DIRECTORY_SEPARATOR . 'portraits.jpg',
+            $path
+        );
+    }
+
+    public function testResolvePublicPathAllowsPublicAbsolutePathInsidePublicRoot(): void {
+        $path = Api::resolvePublicPath('/portrait/img/sample.jpg');
+
+        $this->assertSame(
+            dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'portrait'
+                . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'sample.jpg',
+            $path
+        );
+    }
+
+    public function testResolvePublicPathRejectsTraversalOutsidePublicRoot(): void {
+        $this->assertNull(Api::resolvePublicPath('../../outside.jpg', 'api'));
+    }
+
+    public function testResolvePublicPathRejectsNullByte(): void {
+        $this->assertNull(Api::resolvePublicPath("/portrait/img/image.jpg\0.php"));
+    }
+
+    public function testResolveStoragePathAllowsExistingPublicFile(): void {
+        $path = Api::resolveStoragePath('/css/saperstone-studios.css');
+
+        $this->assertSame(
+            realpath(
+                dirname(__DIR__, 3)
+                . DIRECTORY_SEPARATOR . 'public'
+                . DIRECTORY_SEPARATOR . 'css'
+                . DIRECTORY_SEPARATOR . 'saperstone-studios.css'
+            ),
+            $path
+        );
+    }
+
+    public function testResolveStoragePathRejectsTraversalBeforeCanonicalization(): void {
+        $this->assertNull(Api::resolveStoragePath('../../outside.jpg', 'api'));
+    }
+
+    public function testResolveStoragePathRejectsNullByteBeforeCanonicalization(): void {
+        $this->assertNull(Api::resolveStoragePath("/portrait/img/image.jpg\0.php"));
+    }
+
+    public function testResolveStoragePathRejectsMissingFile(): void {
+        $this->assertNull(Api::resolveStoragePath('/does-not-exist.jpg'));
+    }
+
+    public function testResolveStoragePathRejectsSymlinkOutsideStorageRoots(): void {
+        $projectRoot = dirname(__DIR__, 3);
+        $link = $projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-escape';
+        @unlink($link);
+        $this->assertTrue(symlink('../src/Strings.php', $link));
+
+        $this->assertNull(Api::resolveStoragePath('/unit-storage-escape'));
+    }
+
+    public function testResolveStoragePathAllowsSymlinkIntoContentStorage(): void {
+        $projectRoot = dirname(__DIR__, 3);
+        $contentRoot = $projectRoot . DIRECTORY_SEPARATOR . 'content';
+        if (!is_dir($contentRoot)) {
+            $this->assertTrue(mkdir($contentRoot));
+        }
+
+        $target = $contentRoot . DIRECTORY_SEPARATOR . 'unit-storage-content.txt';
+        file_put_contents($target, 'fixture');
+
+        $link = $projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-content-link';
+        @unlink($link);
+        $this->assertTrue(symlink('../content/unit-storage-content.txt', $link));
+
+        $this->assertSame(realpath($target), Api::resolveStoragePath('/unit-storage-content-link'));
+    }
+
+    public function testResolveStorageDirectoryRejectsTraversalBeforeCanonicalization(): void {
+        $this->assertNull(Api::resolveStorageDirectory('../../outside.jpg', 'api'));
+    }
+
+    public function testResolveStorageDirectoryRejectsNullByteBeforeCanonicalization(): void {
+        $this->assertNull(Api::resolveStorageDirectory("/portrait/img/image.jpg\0.php"));
+    }
+
+    public function testResolveStorageDirectoryReturnsCanonicalParent(): void {
+        $path = Api::resolveStorageDirectory('/css/example.css');
+
+        $this->assertSame(
+            realpath(dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'css'),
+            $path
+        );
+    }
+
+    public function testResolveStorageDirectoryRejectsSymlinkOutsideStorageRoots(): void {
+        $projectRoot = dirname(__DIR__, 3);
+        $link = $projectRoot . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'unit-storage-escape';
+        @unlink($link);
+        $this->assertTrue(symlink('../src', $link));
+
+        $this->assertNull(Api::resolveStorageDirectory('/unit-storage-escape/image.jpg'));
     }
 
     // ------------------------

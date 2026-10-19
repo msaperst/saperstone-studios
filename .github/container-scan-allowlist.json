@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "rule_id": "ELSA-2026-50075-openssl",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2026-50075-openssl-libs",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2026-50346-gnutls",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2024-12675-openssl",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2024-12675-openssl-libs",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2024-12336-gnutls",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2025-28011-openssl",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2025-28011-openssl-libs",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2025-20606-gnutls",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2026-50379-openssl",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2026-50379-openssl-libs",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2026-50345-openssl",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2026-50345-openssl-libs",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate epoch-10 FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2024-12364-gnutls",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2026-50149-gnutls",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate FIPS-stream erratum."
+    },
+    {
+      "rule_id": "ELSA-2026-500145-libgcrypt",
+      "reason": "Oracle Linux 9 standard-stream package is incorrectly compared with an alternate FIPS-stream erratum."
+    },
+    {
+      "rule_id": "GO-2026-5024-golang.org/x/sys",
+      "reason": "Advisory affects golang.org/x/sys/windows NewNTUnicodeString; the scanned gosu binary is built for Linux and the vulnerable Windows symbol is not present/reachable."
+    }
+  ]
+}

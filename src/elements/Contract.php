@@ -270,9 +270,11 @@ class Contract {
             throw new ContractException("User not authorized to create contract");
         }
         $sql = new Sql();
-        $lastId = $sql->executeStatement("INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,`session`, `details`, `amount`, `deposit`, `invoice`, `content`) VALUES ('', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [$this->type, $this->name, $this->address, $this->number, $this->email, $this->date, $this->location, $this->session, $this->details, $this->amount, $this->deposit, $this->invoice, $this->content]);
-        $link = md5($lastId . $this->type . $this->name . $this->session);
-        $sql->executeStatement("UPDATE `contracts` SET `link` = ? WHERE `id` = ?", [$link, $lastId]);
+        $this->link = Strings::randomToken();
+        $lastId = $sql->executeStatement(
+            "INSERT INTO `contracts` (`link`, `type`, `name`, `address`, `number`, `email`, `date`, `location`,`session`, `details`, `amount`, `deposit`, `invoice`, `content`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [$this->link, $this->type, $this->name, $this->address, $this->number, $this->email, $this->date, $this->location, $this->session, $this->details, $this->amount, $this->deposit, $this->invoice, $this->content]
+        );
         foreach ($this->lineItems as $lineItem) {
             /* @var $lineItem LineItem */
             $lineItem->setContract($lastId);

@@ -72,7 +72,7 @@ class User {
         $user->md5Pass = password_hash($user->password, PASSWORD_DEFAULT);
         // some common values
         $sql->disconnect();
-        $user->hash = md5($user->username . $user->password);
+        $user->hash = Strings::randomToken();
         return $user;
     }
 
@@ -272,7 +272,10 @@ class User {
         $row = $sql->getRow("SELECT * FROM users WHERE usr = ?", [$username]);
         if ($row != null && self::passwordMatches($password, $row['pass'])) {
             if (password_needs_rehash($row['pass'], PASSWORD_DEFAULT)) {
-                $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [password_hash($password, PASSWORD_DEFAULT), $row['id']]);
+                $sql->executeStatement(
+                    "UPDATE users SET pass = ? WHERE id = ?",
+                    [password_hash($password, PASSWORD_DEFAULT), $row['id']]
+                );
             }
         } else {
             $row = null;
@@ -482,8 +485,20 @@ class User {
         }
         $this->password = $params['password'];
         $this->md5Pass = password_hash($this->password, PASSWORD_DEFAULT);
-        $sql->executeStatement("UPDATE users SET pass = ? WHERE id = ?", [$this->md5Pass, $this->getId()]);
+        $this->hash = Strings::randomToken();
+        $sql->executeStatement(
+            "UPDATE users SET pass = ?, hash = ? WHERE id = ?",
+            [$this->md5Pass, $this->hash, $this->getId()]
+        );
+        $this->updateCurrentSessionHash($systemUser);
+        $sql->disconnect();
         RememberMe::forgetAllForUser((int)$this->getId());
+    }
+
+    private function updateCurrentSessionHash(User $systemUser): void {
+        if ($systemUser->getId() == $this->getId()) {
+            $_SESSION['hash'] = $this->hash;
+        }
     }
 
     /**

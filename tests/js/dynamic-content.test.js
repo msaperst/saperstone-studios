@@ -19,6 +19,8 @@ test('dynamic content toggles the child and switches plus to minus when visible'
     environment.runReady();
     header.trigger('click');
 
+    assert.equal(context.$icon, undefined);
+    assert.equal(context.$child, undefined);
     assert.equal(icon.hasClass('fa-minus-square'), true);
     assert.equal(icon.hasClass('fa-plus-square'), false);
 });

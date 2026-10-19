@@ -39,22 +39,47 @@ jobs:
           severity-cutoff: high
           output-format: sarif
           output-file: php-results.sarif
+          config: .grype.yaml
 
-      - name: Upload Anchore Scan SARIF Report 📊
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: php-results.sarif
-          category: php
-
-      - name: Fail on fixable high or critical vulnerabilities
+      - name: Generate fixable vulnerability report
         uses: anchore/scan-action@v7
         with:
           image: "saperstone-studios/php:latest"
-          fail-build: true
+          fail-build: false
           severity-cutoff: high
           only-fixed: true
-          output-format: table
+          output-format: sarif
+          output-file: php-fixable-results.sarif
+          config: .grype.yaml
+
+      - name: PHP Container Scan Summary 📊
+        if: always()
+        run: |
+          set -o pipefail
+          python3 .github/scripts/container-scan-summary.py \
+            --image "PHP" \
+            --all php-results.sarif \
+            --fixable php-fixable-results.sarif \
+            --allowlist .github/container-scan-allowlist.json \
+            --filtered-sarif php-security-results.sarif | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload PHP Anchore SARIF Report 📊
+        if: always() && hashFiles('php-security-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: php-security-results.sarif
+          category: php
+
+      - name: Upload PHP container scan reports 📊
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: php-container-scan-reports
+          path: |
+            php-results.sarif
+            php-fixable-results.sarif
+            php-security-results.sarif
+          if-no-files-found: warn
 
   sql:
     name: SQL Container Scan
@@ -80,19 +105,44 @@ jobs:
           severity-cutoff: high
           output-format: sarif
           output-file: sql-results.sarif
+          config: .grype.yaml
 
-      - name: Upload Anchore Scan SARIF Report 📊
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: sql-results.sarif
-          category: sql
-
-      - name: Fail on fixable high or critical vulnerabilities
+      - name: Generate fixable vulnerability report
         uses: anchore/scan-action@v7
         with:
           image: "saperstone-studios/sql:latest"
-          fail-build: true
+          fail-build: false
           severity-cutoff: high
           only-fixed: true
-          output-format: table
+          output-format: sarif
+          output-file: sql-fixable-results.sarif
+          config: .grype.yaml
+
+      - name: SQL Container Scan Summary 📊
+        if: always()
+        run: |
+          set -o pipefail
+          python3 .github/scripts/container-scan-summary.py \
+            --image "SQL" \
+            --all sql-results.sarif \
+            --fixable sql-fixable-results.sarif \
+            --allowlist .github/container-scan-allowlist.json \
+            --filtered-sarif sql-security-results.sarif | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload SQL Anchore SARIF Report 📊
+        if: always() && hashFiles('sql-security-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: sql-security-results.sarif
+          category: sql
+
+      - name: Upload SQL container scan reports 📊
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: sql-container-scan-reports
+          path: |
+            sql-results.sarif
+            sql-fixable-results.sarif
+            sql-security-results.sarif
+          if-no-files-found: warn

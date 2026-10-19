@@ -115,6 +115,7 @@ class Image {
             // cleanup other tables
             $sql->executeStatement("DELETE FROM `favorites` WHERE `album` = ? AND `image` = ?", [$this->album, $this->getId()]);
             $sql->executeStatement("DELETE FROM `download_rights` WHERE `album` = ? AND `image` = ?", [$this->album, $this->getId()]);
+            $sql->executeStatement("DELETE FROM `share_rights` WHERE `album` = ? AND `image` = ?", [$this->album, $this->getId()]);
         }
         if ($this->gallery != NULL) {
             // if we're in a gallery, delete from the table

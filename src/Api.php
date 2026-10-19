@@ -3,6 +3,8 @@
 //TODO - redo this by throwing errors?
 
 class Api {
+    public const CSRF_ERROR = 'Your session has expired. Please refresh the page and try again.';
+
     private $user;
 
     function __construct() {
@@ -23,6 +25,120 @@ class Api {
         }
 
         return true;
+    }
+
+    /**
+     * Protect authenticated state-changing requests against cross-site request forgery.
+     *
+     * Browser requests normally provide both a same-origin Origin header and the
+     * synchronizer token added by nav.js. Accept either defense so normal requests
+     * remain robust if a proxy or browser strips one of them.
+     */
+    public static function requireCsrfProtection(): bool {
+        $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+        if (in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+            return true;
+        }
+
+        $session = new Session();
+        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf_token'] ?? null);
+        if ($session->isCsrfTokenValid($token)) {
+            return true;
+        }
+
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if ($origin !== '' && rtrim(strtolower($origin), '/') === strtolower($session->getBaseURL())) {
+            return true;
+        }
+
+        http_response_code(403);
+        return false;
+    }
+
+    /**
+     * Resolve a browser-supplied path without allowing it to escape the public tree.
+     *
+     * Absolute-style paths are treated as public-root relative. Relative paths are
+     * resolved from the supplied public subdirectory, which is "api" for legacy
+     * image-edit requests such as ../img/main/example.jpg.
+     */
+    public static function resolvePublicPath(string $path, string $base = ''): ?string {
+        if (str_contains($path, "\0")) {
+            return null;
+        }
+
+        $path = str_replace('\\', '/', $path);
+        $base = str_replace('\\', '/', $base);
+        $relativePath = str_starts_with($path, '/')
+            ? ltrim($path, '/')
+            : trim($base, '/') . ($base === '' ? '' : '/') . $path;
+
+        $segments = [];
+        foreach (explode('/', $relativePath) as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+            if ($segment === '..') {
+                if ($segments === []) {
+                    return null;
+                }
+                array_pop($segments);
+                continue;
+            }
+            $segments[] = $segment;
+        }
+
+        $publicRoot = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public';
+        return $publicRoot . ($segments === []
+            ? ''
+            : DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $segments));
+    }
+
+    /**
+     * Resolve an existing browser-supplied path and require its canonical target
+     * to remain inside application-controlled public/content storage.
+     */
+    public static function resolveStoragePath(string $path, string $base = ''): ?string {
+        $resolved = self::resolvePublicPath($path, $base);
+        if ($resolved === null) {
+            return null;
+        }
+
+        return self::validateStoragePath($resolved);
+    }
+
+    /**
+     * Resolve the parent directory for a browser-supplied public path and require
+     * the canonical directory to remain inside application-controlled storage.
+     */
+    public static function resolveStorageDirectory(string $path, string $base = ''): ?string {
+        $resolved = self::resolvePublicPath($path, $base);
+        if ($resolved === null) {
+            return null;
+        }
+
+        return self::validateStoragePath(dirname($resolved));
+    }
+
+    private static function validateStoragePath(string $path): ?string {
+        $canonicalPath = realpath($path);
+        if ($canonicalPath === false) {
+            return null;
+        }
+
+        foreach ([
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . 'public',
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . 'content'
+        ] as $storageRoot) {
+            $canonicalRoot = realpath($storageRoot);
+            if ($canonicalRoot !== false
+                && ($canonicalPath === $canonicalRoot
+                    || str_starts_with($canonicalPath, $canonicalRoot . DIRECTORY_SEPARATOR))) {
+                return $canonicalPath;
+            }
+        }
+
+        return null;
     }
 
     private function retrievePost($variable, $variableName, $type) {
@@ -130,6 +246,10 @@ class Api {
             echo "You must be logged in to perform this action";
             exit ();
         }
+        if (!self::requireCsrfProtection()) {
+            echo self::CSRF_ERROR;
+            exit ();
+        }
     }
 
     function forceAdmin() {
@@ -138,6 +258,10 @@ class Api {
             if ($this->user->isLoggedIn()) {
                 echo "You do not have appropriate rights to perform this action";
             }
+            exit ();
+        }
+        if (!self::requireCsrfProtection()) {
+            echo self::CSRF_ERROR;
             exit ();
         }
     }

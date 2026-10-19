@@ -18,6 +18,10 @@ if (!$album->canUserGetData()) {
     header('HTTP/1.0 401 Unauthorized');
     exit ();
 }
+if (!Api::requireCsrfProtection()) {
+    echo Api::CSRF_ERROR;
+    exit ();
+}
 try {
     $album->update($_POST);
 } catch (Exception $e) {

@@ -236,7 +236,7 @@ function saveGallery(id) {
         return a.height - b.height;
     });
     for (var i = 0; i < imgs.length; i++) {
-        $("div.gallery[sequence='" + imgs[i].sequence + "'").attr('new-sequence', i);
+        $("div.gallery[sequence='" + imgs[i].sequence + "']").attr('new-sequence', i);
     }
 
     // save our updates
@@ -288,10 +288,12 @@ function editGallery(id) {
                     // element.
                     $button.spin();
                     disableDialogButtons(dialogItself);
+                    var title = $('#new-gallery-title').val();
                     $.post("/api/update-gallery.php", {
                         id: id,
-                        title: $('#new-gallery-title').val()
+                        title: title
                     }).done(function () {
+                        $('.page-header').text(title + ' Gallery');
                         dialogItself.close();
                     });
                 }
@@ -330,8 +332,8 @@ function editGallery(id) {
                         if ($.isArray(data)) {
                             pd.statusbar.remove();
                             $.each(files, function () {
-                                total++;
-                                loaded = gallery.loadImages(1);
+                                gallery.totalImages++;
+                                gallery.loadImages(1);
                             });
                         } else {
                             pd.statusbar.parent().removeClass('ajax-file-upload-container');

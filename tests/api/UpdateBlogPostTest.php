@@ -61,6 +61,7 @@ class UpdateBlogPostTest extends TestCase {
     public function testNotLoggedIn() {
         try {
             $this->http->request('POST', 'api/update-blog-post.php');
+            self::fail('Expected authorization request to be rejected');
         } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("", $e->getResponse()->getBody());
@@ -75,6 +76,7 @@ class UpdateBlogPostTest extends TestCase {
             $this->http->request('POST', 'api/update-blog-post.php', [
                 'cookies' => $cookieJar
             ]);
+            self::fail('Expected authorization request to be rejected');
         } catch (GuzzleException|ClientException $e) {
             $this->assertEquals(401, $e->getResponse()->getStatusCode());
             $this->assertEquals("You do not have appropriate rights to perform this action", $e->getResponse()->getBody());
@@ -296,6 +298,27 @@ class UpdateBlogPostTest extends TestCase {
         ]);
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertEquals("Blog preview image can not be blank", (string)$response->getBody());
+    }
+
+    public function testRejectsPreviewImagePathTraversal(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+
+        $response = $this->http->request('POST', 'api/update-blog-post.php', [
+            'form_params' => [
+                'post' => 999,
+                'title' => 'Sample Blog',
+                'date' => '2030-01-01',
+                'preview' => [
+                    'img' => '../../../../etc/passwd'
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('Blog preview image is not valid', (string)$response->getBody());
     }
 
     /**

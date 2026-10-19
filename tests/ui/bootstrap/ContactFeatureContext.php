@@ -4,13 +4,9 @@ namespace ui\bootstrap;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
-use coverage\integration\EmailIntegrationTest;
 use CustomAsserts;
 use Exception;
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -50,10 +46,29 @@ class ContactFeatureContext implements Context {
     }
 
     /**
-     * @Given /^I submit the contact form$/
+     * @When /^I submit the contact form$/
      */
     public function iSubmitTheContactForm() {
+        $loadTime = base_convert((string) (time() - 4), 10, 36);
+        $this->driver->executeScript("document.getElementById('loadtime').value = arguments[0];", [$loadTime]);
         $this->driver->findElement(WebDriverBy::id('submit-contact-form'))->click();
+    }
+
+
+    /**
+     * @When /^I submit the contact form too quickly$/
+     */
+    public function iSubmitTheContactFormTooQuickly() {
+        $loadTime = base_convert((string) time(), 10, 36);
+        $this->driver->executeScript("document.getElementById('loadtime').value = arguments[0];", [$loadTime]);
+        $this->driver->findElement(WebDriverBy::id('submit-contact-form'))->click();
+    }
+
+    /**
+     * @Then /^no contact emails are sent$/
+     */
+    public function noContactEmailsAreSent() {
+        CustomAsserts::assertEmailCount(0);
     }
 
     /**
@@ -92,23 +107,6 @@ class ContactFeatureContext implements Context {
     }
 
     /**
-     * @Then /^I see a warning message indicating my message is being sent$/
-     * @throws Exception
-     */
-    public function iSeeAWarningMessageIndicatingMyMessageIsBeingSent() {
-        CustomAsserts::warningMessage($this->driver, 'Sending your message.');
-    }
-
-    /**
-     * @Given /^the submit contact button is disabled$/
-     * @throws Exception
-     */
-    public function theSubmitContactButtonIsDisabled() {
-        $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('submit-contact-form'))));
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('submit-contact-form'))->isEnabled());
-    }
-
-    /**
      * @Then /^I see a success message indicating my message was sent$/
      * @throws Exception
      */
@@ -121,17 +119,17 @@ class ContactFeatureContext implements Context {
      * @throws ExceptionAlias
      */
     public function iSeeAContactEmailSentToTheUser() {
-        CustomAsserts::assertEmailEquals('Thank you for contacting Saperstone Studios', 'Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.', '<html><body>Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.</body></html>');
+        CustomAsserts::assertEmailMatches('msaperst+sstest@gmail.com', 'noreply@saperstonestudios.com', 'Thank you for contacting Saperstone Studios', 'Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.', '<html><body>Thank you for contacting Saperstone Studios. We will respond to your request as soon as we are able to. We are typically able to get back to you within 24 hours.</body></html>');
     }
 
     /**
-     * @Then /^I see a contact email send to the admin with:$/
+     * @Then /^I see a contact email sent to the admin with:$/
      * @param TableNode $table
      * @throws ExceptionAlias
      */
     public function iSeeAContactEmailSendToTheAdminWith(TableNode $table) {
         $data = $table->getRow(1);
-        CustomAsserts::assertEmailMatches('Saperstone Studios Contact Form: Max', "This is an automatically generated message from Saperstone Studios
+        CustomAsserts::assertEmailMatches('contact@saperstonestudios.com', $data[2], 'Saperstone Studios Contact Form: Max', "This is an automatically generated message from Saperstone Studios
 Name: {$data[0]}
 Phone: {$data[1]}
 Email: {$data[2]}

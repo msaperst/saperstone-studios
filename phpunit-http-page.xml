@@ -3,17 +3,13 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true">
-
-    <!-- Define test suites -->
     <testsuites>
-        <testsuite name="UI Page Tests">
-            <directory>tests/ui/page</directory>
+        <testsuite name="HTTP Page Tests">
+            <directory>tests/ui/http</directory>
         </testsuite>
     </testsuites>
-
-    <!-- Logging -->
     <logging>
-        <junit outputFile="reports/ui-junit.xml"/>
-        <testdoxHtml outputFile="reports/ui-results.html"/>
+        <junit outputFile="reports/http-page-junit.xml"/>
+        <testdoxHtml outputFile="reports/http-page-results.html"/>
     </logging>
 </phpunit>

@@ -6,7 +6,8 @@ $api = new Api();
 $errors = new Errors();
 
 try {
-    $contract = Contract::withLink($api->retrieveGetString('c', 'Contract id'));
+    $contractLink = $api->retrieveGetString('c', 'Contract link');
+    $contract = Contract::withLink($contractLink);
 } catch (Exception $e) {
     $errors->throw404();
 }
@@ -40,8 +41,8 @@ try {
     </div>
     <!-- /.row -->
 
-    <input type='hidden' id='contract-id'
-           value='<?php echo $contract->getId(); ?>'/>
+    <input type='hidden' id='contract-link'
+           value='<?php echo Strings::escapeHtmlAttribute($contractLink); ?>'/>
 
     <?php
     // if the contract is already signed
