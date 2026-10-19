@@ -72,9 +72,28 @@ jobs:
         run: |
           composer clean
           composer install --prefer-dist --no-progress --no-suggest
+          # GitHub's Ubuntu runner already provides a matched Chrome/ChromeDriver pair.
+          # Installing chromium-chromedriver through apt triggers a snap download,
+          # which is an unnecessary external dependency and can time out.
           sudo apt-get update -qq
-          sudo apt install chromium-chromedriver imagemagick
-          chromedriver --port=4444 &
+          sudo apt-get install -y imagemagick
+          google-chrome --version
+          "${CHROMEWEBDRIVER}/chromedriver" --version
+          "${CHROMEWEBDRIVER}/chromedriver" --port=4444 > "${RUNNER_TEMP}/chromedriver.log" 2>&1 &
+
+          # Fail with driver diagnostics if WebDriver cannot start.
+          ready=false
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4444/status > /dev/null; then
+              ready=true
+              break
+            fi
+            sleep 1
+          done
+          if [[ "$ready" != true ]]; then
+            cat "${RUNNER_TEMP}/chromedriver.log"
+            exit 1
+          fi
 
       - name: Behat Tests
         env:

@@ -105,6 +105,7 @@ class BaseFeatureContext implements Context {
                 'download.directory_upgrade' => true,
             ]);
             $desiredCapabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
+            $desiredCapabilities->setCapability('goog:loggingPrefs', ['browser' => 'ALL']);
         }
         if (getenv('PROXY') != NULL) {
             $desiredCapabilities->setCapability(WebDriverCapabilityType::PROXY, ['proxyType' => 'MANUAL', 'httpProxy' => getenv('PROXY'), 'ftpProxy' => NULL, 'sslProxy' => NULL, 'noProxy' => NULL]);
@@ -141,6 +142,15 @@ class BaseFeatureContext implements Context {
             $scenarioName = $scope->getFeature()->getTitle() . ' : ' . $scope->getScenario()->getTitle() . ' : ' . $scope->getScenario()->getLine();
             $safeScenarioName = preg_replace('/[^A-Za-z0-9._-]+/', '-', $scenarioName);
             $this->driver->takeScreenshot(BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $safeScenarioName . '.png');
+            try {
+                $logs = $this->driver->manage()->getLog('browser');
+                file_put_contents(
+                    BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $safeScenarioName . '.json',
+                    json_encode($logs, JSON_PRETTY_PRINT)
+                );
+            } catch (\Throwable $exception) {
+                error_log('Browser console unavailable: ' . $exception->getMessage());
+            }
         }
         $this->driver->quit();
         // if we created a new user
