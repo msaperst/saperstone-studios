@@ -11,7 +11,7 @@ test('album.php always renders the gallery shell for an initially empty album', 
     );
 
     const gridIndex = template.indexOf('id="album-grid"');
-    const emptyStateConditionIndex = template.indexOf('if (count($images) === 0)');
+    const emptyStateConditionIndex = template.indexOf('if ($imageCount === 0)');
 
     assert.notEqual(gridIndex, -1);
     assert.notEqual(emptyStateConditionIndex, -1);
