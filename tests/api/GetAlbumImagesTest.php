@@ -131,8 +131,12 @@ class GetAlbumImagesTest extends TestCase {
 
     public function testThumbnailLocationIncludesCacheVersion() {
         $albumPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample';
-        mkdir($albumPath, 0777, true);
-        touch($albumPath . DIRECTORY_SEPARATOR . 'cache.jpeg');
+        $source = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg';
+        mkdir($albumPath . '/thumbs/400', 0777, true);
+        mkdir($albumPath . '/thumbs/1200', 0777, true);
+        copy($source, $albumPath . '/cache.jpeg');
+        copy($source, $albumPath . '/thumbs/400/cache.jpeg');
+        copy($source, $albumPath . '/thumbs/1200/cache.jpeg');
         touch($albumPath);
         $this->sql->executeStatement("UPDATE album_images SET location = '/albums/sample/cache.jpeg' WHERE id = 996");
 
@@ -141,25 +145,48 @@ class GetAlbumImagesTest extends TestCase {
                 'hash' => '1d7505e7f434a7713e84ba399e937191'
             ], getenv('DB_HOST'));
             $response = $this->http->request('GET', 'api/get-album-images.php', [
-                'query' => [
-                    'albumId' => 998,
-                    'start' => 0,
-                    'howMany' => 1,
-                ],
+                'query' => ['albumId' => 998, 'start' => 0, 'howMany' => 1],
                 'cookies' => $cookieJar
             ]);
 
             $this->assertSame(200, $response->getStatusCode());
-            $albumImages = json_decode($response->getBody(), true)['images'];
-            $this->assertMatchesRegularExpression('#^/albums/sample/cache\.jpeg\?v=\d+$#', $albumImages[0]['location']);
-            $this->assertSame($albumImages[0]['location'], $albumImages[0]['thumbnail1600']);
-
+            $image = json_decode($response->getBody(), true)['images'][0];
             $version = filemtime($albumPath);
+            $protectedRoot = '/albums/sample/cache.jpeg?v=' . $version;
+            $this->assertSame($protectedRoot, $image['location']);
+            $this->assertSame($protectedRoot, $image['thumbnail1600']);
+            $this->assertSame('/albums/sample/thumbs/400/cache.jpeg?v=' . $version, $image['thumbnail400']);
+            $this->assertSame($protectedRoot, $image['thumbnail800']);
+            $this->assertSame('/albums/sample/thumbs/1200/cache.jpeg?v=' . $version, $image['thumbnail1200']);
+        } finally {
+            system("rm -rf " . escapeshellarg($albumPath));
+        }
+    }
+
+    public function testMissingOrEmptyResponsiveThumbnailsUseProtectedRoot() {
+        $albumPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample';
+        $source = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'resources/flower.jpeg';
+        mkdir($albumPath . '/thumbs/400', 0777, true);
+        copy($source, $albumPath . '/cache.jpeg');
+        touch($albumPath . '/thumbs/400/cache.jpeg');
+        touch($albumPath);
+        $this->sql->executeStatement("UPDATE album_images SET location = '/albums/sample/cache.jpeg' WHERE id = 996");
+
+        try {
+            $cookieJar = CookieJar::fromArray([
+                'hash' => '1d7505e7f434a7713e84ba399e937191'
+            ], getenv('DB_HOST'));
+            $response = $this->http->request('GET', 'api/get-album-images.php', [
+                'query' => ['albumId' => 998, 'start' => 0, 'howMany' => 1],
+                'cookies' => $cookieJar
+            ]);
+
+            $this->assertSame(200, $response->getStatusCode());
+            $image = json_decode($response->getBody(), true)['images'][0];
+            $protectedRoot = $image['thumbnail1600'];
+            $this->assertMatchesRegularExpression('#^/albums/sample/cache\\.jpeg\\?v=\\d+$#', $protectedRoot);
             foreach ([400, 800, 1200] as $size) {
-                $this->assertSame(
-                    '/albums/sample/thumbs/' . $size . '/cache.jpeg?v=' . $version,
-                    $albumImages[0]['thumbnail' . $size]
-                );
+                $this->assertSame($protectedRoot, $image['thumbnail' . $size]);
             }
         } finally {
             system("rm -rf " . escapeshellarg($albumPath));
