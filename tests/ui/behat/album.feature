@@ -14,6 +14,10 @@ Feature: Album
     When I am on the "user/album.php?album=99999" page
     Then I see the "1st" album images load
 
+  Scenario: Existing album images display before responsive thumbnail generation
+    When I am on the "user/album.php?album=99999" page
+    Then the first album card displays its existing protected image
+
   Scenario: Album images keep loading
     Given I am on the "user/album.php?album=99999" page
     When I scroll to the bottom of the page
