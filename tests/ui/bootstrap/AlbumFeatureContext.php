@@ -1207,7 +1207,7 @@ class AlbumFeatureContext implements Context {
 
         // Verify the CSS background resolves to an actual image. A background
         // URL with a 404 still looks "loaded" to our placeholder <img> logic.
-        $url = trim(substr($background, 4, -1), "\\"'");
+        $url = trim(substr($background, 4, -1), "\"'");
         $width = $this->driver->executeAsyncScript(
             'var done = arguments[arguments.length - 1];' .
             'var image = new Image();' .
