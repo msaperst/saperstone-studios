@@ -10,6 +10,15 @@ function createAlbumDetailContext(options = {}) {
         }
     });
 
+    // Default to the next-page trigger being below the viewport. Individual
+    // scroll tests move it into view to request additional metadata pages.
+    environment.element('#album-load-trigger').rect = {
+        top: 2000,
+        bottom: 2001,
+        width: 1,
+        height: 1
+    };
+
     const windowObject = {
         innerHeight: options.innerHeight ?? 800,
         location: {
