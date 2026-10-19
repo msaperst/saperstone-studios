@@ -35,7 +35,7 @@ function sampleImages() {
     }];
 }
 
-test('album.js loads all image metadata during initialization', () => {
+test('album.js loads the initial page of image metadata', () => {
     const {context, environment, window} = createAlbumDetailContext();
     environment.queueGet('/api/get-album-images.php', {
         type: 'success',
@@ -59,6 +59,143 @@ test('album.js loads all image metadata during initialization', () => {
     assert.equal(album.initialized, true);
     assert.equal(album.loading, false);
     assert.equal(album.images.length, 2);
+});
+
+function imageBatch(start, count) {
+    return Array.from({length: count}, (_, index) => ({
+        ...sampleImages()[0],
+        sequence: String(start + index),
+        title: 'Image ' + (start + index)
+    }));
+}
+
+test('album.js requests four metadata rows first even for a very large album', () => {
+    const {context, environment} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(0, 4), favoriteCount: 0}
+    });
+
+    const album = new context.Album('7', 4, 2500);
+
+    assert.deepEqual(plain(environment.calls.get), [{
+        url: '/api/get-album-images.php',
+        data: {albumId: '7', start: 0, howMany: 4}
+    }]);
+    assert.equal(album.images.length, 4);
+    assert.equal(environment.element('#album-grid').appended.length, 4);
+});
+
+test('album.js loads the next page on scroll and stops at the album total', () => {
+    const {context, environment} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(0, 4), favoriteCount: 0}
+    });
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(4, 2), favoriteCount: 0}
+    });
+
+    const album = new context.Album('7', 4, 6);
+    assert.equal(environment.calls.get.length, 1, 'offscreen footer must not preload');
+
+    environment.element('#album-load-trigger').rect.top = 200;
+    album.loadImages();
+
+    assert.equal(environment.calls.get.length, 2);
+    assert.deepEqual(plain(environment.calls.get[1].data), {
+        albumId: '7', start: 4, howMany: 2
+    });
+    assert.deepEqual(album.images.map(image => image.sequence), ['0','1','2','3','4','5']);
+    album.loadImages();
+    assert.equal(environment.calls.get.length, 2, 'album must not fetch beyond its total');
+});
+
+test('album.js avoids overlapping metadata requests during rapid scroll events', () => {
+    const {context, environment} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(0, 4), favoriteCount: 0}
+    });
+    environment.queueGet('/api/get-album-images.php', {type: 'pending'});
+
+    const album = new context.Album('7', 4, 8);
+    environment.element('#album-load-trigger').rect.top = 200;
+    album.loadImages();
+    album.loadImages();
+    album.loadImages();
+
+    assert.equal(environment.calls.get.length, 2);
+    assert.equal(album.loading, true);
+});
+
+test('album.js can retry a failed subsequent page without losing prior cards', () => {
+    const {context, environment, window} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(0, 4), favoriteCount: 0}
+    });
+    environment.queueGet('/api/get-album-images.php', {type: 'failure'});
+
+    const album = new context.Album('7', 4, 6);
+    window.album = album;
+    environment.element('#album-load-trigger').rect.top = 200;
+    album.loadImages();
+    assert.equal(album.loadFailed, true);
+    assert.equal(album.images.length, 4);
+    assert.equal(environment.element('#album-retry-btn').hasClass('hidden'), false);
+
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(4, 2), favoriteCount: 0}
+    });
+    environment.element('#album-retry-btn').click();
+
+    assert.equal(environment.calls.get.length, 3);
+    assert.deepEqual(plain(environment.calls.get[2].data), {
+        albumId: '7', start: 4, howMany: 2
+    });
+    assert.equal(album.images.length, 6);
+    assert.equal(album.loadFailed, false);
+});
+
+test('album.js favorite filtering includes photos in unloaded pages', () => {
+    const {context, environment} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(0, 4), favoriteCount: 1}
+    });
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(4, 2), favoriteCount: 1}
+    });
+
+    const album = new context.Album('7', 4, 6);
+    album.showFavoritesOnly = true;
+    album.applyFilter();
+
+    assert.equal(environment.calls.get.length, 2);
+    assert.deepEqual(plain(environment.calls.get[1].data), {
+        albumId: '7', start: 4, howMany: 2
+    });
+    assert.equal(album.images.length, 6);
+});
+
+test('album.js opens a deep link into a later metadata page', () => {
+    const {context, environment, window} = createAlbumDetailContext({hash: '#5'});
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(0, 4), favoriteCount: 0}
+    });
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(4, 2), favoriteCount: 0}
+    });
+
+    const originalGetImageCard = context.Album.prototype.getImageCard;
+    context.Album.prototype.getImageCard = function (imageId) {
+        const card = originalGetImageCard.call(this, imageId);
+        card.length = this.images.some(image => String(image.sequence) === String(imageId)) ? 1 : 0;
+        return card;
+    };
+
+    const album = new context.Album('7', 4, 6);
+    window.album = album;
+
+    assert.equal(environment.calls.get.length, 2);
+    assert.equal(album.currentImageId, '5');
+    assert.equal(album.pendingImageId, null);
 });
 
 test('album.js preserves server image order and metadata in its local cache', () => {
@@ -407,7 +544,7 @@ test('album.js refreshImages appends metadata added after the page initialized',
         data: {
             albumId: '7',
             start: 2,
-            howMany: 3
+            howMany: 1
         }
     });
     assert.deepEqual(plain(album.images.map((image) => image.sequence)), ['10', '11', '12']);
