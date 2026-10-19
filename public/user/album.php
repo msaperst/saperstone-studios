@@ -44,8 +44,11 @@ $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE 
 <?php
 require_once dirname($_SERVER ['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/nav.php";
 
-// get our gallery images
-$images = $sql->getRows("SELECT album_images.*, albums.name, albums.description, albums.date FROM `album_images` JOIN `albums` ON album_images.album = albums.id WHERE albums.id = '{$album->getId()}' ORDER BY `sequence`;");
+// The page only needs the count; image metadata is loaded asynchronously.
+$imageCount = (int)$sql->getRow(
+    'SELECT COUNT(*) AS total FROM album_images WHERE album = ?',
+    [$album->getId()]
+)['total'];
 ?>
 
 <!-- Page Content -->
@@ -323,10 +326,16 @@ $images = $sql->getRows("SELECT album_images.*, albums.name, albums.description,
                     </button>
                 </div>
             </div>
+            <div id="album-load-status" class="album-load-status text-center<?php echo $imageCount === 0 ? ' hidden' : ''; ?>"
+                 role="status" aria-live="polite" aria-atomic="true">
+                <em id="album-load-spinner" class="fa fa-spinner fa-spin" aria-hidden="true"></em>
+                <span id="album-load-message">Loading album photos&hellip;</span>
+                <button id="album-retry-btn" type="button" class="btn btn-default hidden">Try again</button>
+            </div>
             <div id="album-grid" class="album-grid"></div>
 
         <?php
-        if (count($images) === 0) {
+        if ($imageCount === 0) {
             ?>
             <div id="album-empty-state" class="row">
                 <div class="col-md-offset-2 col-md-8 text-center">
@@ -502,7 +511,7 @@ if ($user->getRole() == "uploader" && $user->getId() == $album->getOwner()) {
 
 <div id="album-page-config" class="hidden"
      data-album-id="<?php echo $album->getId(); ?>"
-     data-total="<?php echo count($images); ?>"
+     data-total="<?php echo $imageCount; ?>"
      data-can-download="<?php echo ($user->isLoggedIn() || $isAlbumDownloadable) ? 'true' : 'false'; ?>"
      data-show-title="<?php echo $user->isAdmin() ? 'true' : 'false'; ?>"></div>
 <script src="<?php echo Strings::assetUrl('/js/album-init.js'); ?>"></script>
