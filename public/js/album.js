@@ -169,6 +169,24 @@ function refreshAlbumThumbnailImages() {
     }
 }
 
+function setAlbumLoadingState(state) {
+    var status = $('#album-load-status');
+    if (!status.length) {
+        return;
+    }
+
+    status.toggleClass('hidden', state === 'ready');
+    status.toggleClass('is-error', state === 'error');
+    $('#album-load-spinner').toggleClass('hidden', state !== 'loading');
+    $('#album-retry-btn').toggleClass('hidden', state !== 'error');
+
+    if (state === 'loading') {
+        $('#album-load-message').text('Loading album photos…');
+    } else if (state === 'error') {
+        $('#album-load-message').text('Unable to load album photos. Please try again.');
+    }
+}
+
 function updateFavoriteCount(count) {
     var total = parseInt(count, 10);
     if (isNaN(total) || total < 0) {
@@ -243,6 +261,7 @@ function Album(albumId, columns, totalImages) {
     Album.pendingImageId = null;
     Album.initialized = false;
     Album.showFavoritesOnly = false;
+    Album.loadFailed = false;
 
     Album.loadImages();
 
@@ -471,6 +490,7 @@ Album.prototype.refreshImages = function (totalImages) {
     Album.loaded = Album.images.length;
     Album.initialized = false;
     Album.loading = false;
+    Album.loadFailed = false;
     Album.loadImages();
     return Album.images.length;
 };
@@ -618,10 +638,11 @@ Album.prototype.loadImages = function () {
         Album.loaded += loadedNow;
         return Album.loaded;
     }
-    if (Album.loading) {
+    if (Album.loading || Album.loadFailed) {
         return Album.loaded;
     }
     Album.loading = true;
+    setAlbumLoadingState(Album.totalImages > 0 ? 'loading' : 'ready');
     $.get("/api/get-album-images.php", {
         albumId: Album.albumId,
         start: Album.loaded,
@@ -746,11 +767,15 @@ Album.prototype.loadImages = function () {
         });
         Album.initialized = true;
         Album.loading = false;
+        Album.loadFailed = false;
+        setAlbumLoadingState('ready');
         updateAllAlbumCardSpans();
         Album.loadImages();
         Album.syncPendingImage();
     }, "json").fail(function () {
         Album.loading = false;
+        Album.loadFailed = true;
+        setAlbumLoadingState('error');
     });
     return Album.loaded;
 };
@@ -759,6 +784,13 @@ $(document).ready(function () {
     var albumResizeTimer = null;
     const urlParams = new URLSearchParams(window.location.search);
     const albumId = urlParams.get('album');
+
+    $('#album-retry-btn').click(function () {
+        if (window.album) {
+            window.album.loadFailed = false;
+            window.album.loadImages();
+        }
+    });
 
     $('#album-grid').on('click', '.album-card-media', function (event) {
         event.preventDefault();
