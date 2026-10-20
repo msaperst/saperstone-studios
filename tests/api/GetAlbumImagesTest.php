@@ -266,8 +266,8 @@ class GetAlbumImagesTest extends TestCase {
             $this->assertSame(200, $second->getStatusCode());
             $firstImages = json_decode((string)$first->getBody(), true)['images'];
             $secondImages = json_decode((string)$second->getBody(), true)['images'];
-            $this->assertSame(['997', '998'], array_column($firstImages, 'id'));
-            $this->assertSame(['999'], array_column($secondImages, 'id'));
+            $this->assertSame([997, 998], array_column($firstImages, 'id'));
+            $this->assertSame([999], array_column($secondImages, 'id'));
             $this->assertEquals(1, $firstImages[0]['downloadable']);
         } finally {
             $this->sql->executeStatement('DELETE FROM download_rights WHERE album = 999');
