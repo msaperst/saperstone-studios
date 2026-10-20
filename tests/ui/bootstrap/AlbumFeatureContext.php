@@ -1439,7 +1439,9 @@ class AlbumFeatureContext implements Context {
      * @Then /^the download favorites button is disabled$/
      */
     public function theDownloadFavoritesButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->isEnabled());
+        $this->wait->until(function () {
+            return !$this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->isEnabled();
+        });
     }
 
     /**
@@ -1453,7 +1455,9 @@ class AlbumFeatureContext implements Context {
      * @Then /^the submit favorites button is disabled$/
      */
     public function theSubmitFavoritesButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('submit-favorites-btn'))->isEnabled());
+        $this->wait->until(function () {
+            return !$this->driver->findElement(WebDriverBy::id('submit-favorites-btn'))->isEnabled();
+        });
     }
 
     /**
