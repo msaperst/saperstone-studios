@@ -1190,7 +1190,7 @@ class AlbumFeatureContext implements Context {
     }
 
     /**
-     * @Given /^album (\\d+) has mixed image aspect ratios$/
+     * @Given /^album (\d+) has mixed image aspect ratios$/
      */
     public function albumHasMixedImageAspectRatios(int $albumId): void {
         $sql = new Sql();
