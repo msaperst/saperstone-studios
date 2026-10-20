@@ -841,7 +841,8 @@ Album.prototype.loadImages = function () {
             img.one('load', function () {
                 markAlbumCardLoaded(card);
             });
-            img.attr('src', img.attr('data-src'));
+            // Keep the actual img blank; protected thumbnails are rendered as CSS backgrounds.
+            img.attr('src', '/img/image.png');
             if (img.get(0).complete && img.get(0).naturalWidth > 0) {
                 markAlbumCardLoaded(card);
             }
