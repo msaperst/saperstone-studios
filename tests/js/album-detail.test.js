@@ -468,7 +468,7 @@ test('album.js loads the real thumbnail only when its card is near the viewport'
     album.loadImages();
 
     assert.equal(image.attr('src'), '/img/image.png');
-    assert.equal(image.attr('data-src'), '/img/image.png');
+    assert.equal(image.attr('data-src'), 'https://example.org/unprotected-photo.jpg');
     assert.equal(media.css('background-image'), 'url("/albums/sample/thumbs/lazy.jpg")');
     assert.equal(card.attr('data-loading'), '1');
     assert.equal(album.loaded, 1);
