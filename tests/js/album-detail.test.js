@@ -144,6 +144,7 @@ test('album.js can retry a failed subsequent page without losing prior cards', (
     environment.queueGet('/api/get-album-images.php', {
         type: 'success', data: {images: imageBatch(4, 2), favoriteCount: 0}
     });
+    environment.element('#album-load-trigger').rect.top = 2000;
     environment.element('#album-retry-btn').click();
 
     assert.equal(environment.calls.get.length, 3);
@@ -280,7 +281,7 @@ test('album.js updates the favorite count returned with album metadata', () => {
 
     new context.Album('7', 4, 2);
 
-    assert.equal(environment.element('#favorite-count').html(), 3);
+    assert.equal(environment.element('#favorite-count').text(), 3);
     assert.equal(environment.element('#favorite-count').hasClass('album-favorite-count-present'), true);
 });
 
