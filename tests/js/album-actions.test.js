@@ -31,7 +31,7 @@ test('album.js toggles a card favorite on and updates the returned count', () =>
     });
     assert.equal(card.attr('data-favorite'), '1');
     assert.equal(card.hasClass('is-favorite'), true);
-    assert.equal(environment.element('#favorite-count').html(), 2);
+    assert.equal(environment.element('#favorite-count').text(), 2);
 });
 
 test('album.js toggles the current favorite off and reapplies an active favorites filter', () => {
@@ -67,7 +67,7 @@ test('album.js toggles the current favorite off and reapplies an active favorite
     });
     assert.equal(card.attr('data-favorite'), '0');
     assert.equal(card.hasClass('is-favorite'), false);
-    assert.equal(environment.element('#favorite-count').html(), '');
+    assert.equal(environment.element('#favorite-count').text(), '');
     assert.equal(environment.element('#set-favorite-image-btn').hasClass('hidden'), false);
     assert.equal(environment.element('#unset-favorite-image-btn').hasClass('hidden'), true);
     assert.equal(filterCalls, 1);
