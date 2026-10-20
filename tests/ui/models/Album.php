@@ -618,7 +618,9 @@ class Album {
 
     private function getAdjacentImageId(int $current, int $offset): int {
         $cards = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'));
-        $count = count($cards);
+        $config = $this->driver->findElements(WebDriverBy::id('album-page-config'));
+        // A paginated gallery can render only four cards while the album contains many more.
+        $count = $config === [] ? count($cards) : (int)$config[0]->getAttribute('data-total');
         if ($count === 0) {
             return $current;
         }
