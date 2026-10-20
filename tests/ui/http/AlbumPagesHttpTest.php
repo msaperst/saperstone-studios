@@ -71,6 +71,7 @@ class AlbumPagesHttpTest extends HttpTestBase {
         $response = $this->get('user/album.php?album=99999');
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('3', $this->attribute($response, "//*[@id='album-page-config']", 'data-total'));
+        self::assertSame(1, $this->elementCount($response, "//output[@id='album-load-status']"));
         self::assertSame('Loading album photos…', $this->text($response, "//*[@id='album-load-message']"));
         self::assertStringNotContainsString(
             'hidden',
