@@ -177,6 +177,29 @@ test('album.js favorite filtering includes photos in unloaded pages', () => {
     assert.equal(album.images.length, 6);
 });
 
+test('album.js updates favorites controls immediately while later metadata is loading', () => {
+    const {context, environment} = createAlbumDetailContext();
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: imageBatch(0, 4), favoriteCount: 1}
+    });
+    environment.queueGet('/api/get-album-images.php', {type: 'pending'});
+
+    const album = new context.Album('7', 4, 6);
+    const breadcrumbs = environment.element('.breadcrumb > li');
+    breadcrumbs.last = () => breadcrumbs;
+    album.showFavoritesOnly = true;
+    album.applyFilter();
+
+    assert.equal(album.loading, true);
+    assert.equal(environment.calls.get.length, 2);
+    assert.equal(environment.element('#favorite-count').visible, false);
+    assert.equal(environment.element('#downloadable-all-btn').visible, false);
+    assert.equal(environment.element('#downloadable-favorites-btn').visible, true);
+    assert.equal(environment.element('#submit-favorites-btn').visible, true);
+    assert.equal(environment.element('#downloadable-favorites-btn').prop('disabled'), true);
+    assert.equal(environment.element('#submit-favorites-btn').prop('disabled'), true);
+});
+
 test('album.js opens a deep link into a later metadata page', () => {
     const {context, environment, window} = createAlbumDetailContext({hash: '#5'});
     environment.queueGet('/api/get-album-images.php', {
