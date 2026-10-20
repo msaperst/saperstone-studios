@@ -104,7 +104,7 @@ test('album.js loads the next page on scroll and stops at the album total', () =
     assert.deepEqual(plain(environment.calls.get[1].data), {
         albumId: '7', start: 4, howMany: 2
     });
-    assert.deepEqual(album.images.map(image => image.sequence), ['0','1','2','3','4','5']);
+    assert.deepEqual(plain(album.images.map(image => image.sequence)), ['0','1','2','3','4','5']);
     album.loadImages();
     assert.equal(environment.calls.get.length, 2, 'album must not fetch beyond its total');
 });
@@ -164,6 +164,8 @@ test('album.js favorite filtering includes photos in unloaded pages', () => {
     });
 
     const album = new context.Album('7', 4, 6);
+    const breadcrumbs = environment.element('.breadcrumb > li');
+    breadcrumbs.last = () => breadcrumbs;
     album.showFavoritesOnly = true;
     album.applyFilter();
 
