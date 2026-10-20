@@ -584,6 +584,7 @@ body.album-viewer-open {
 }
 
 .album-load-status {
+    display: block;
     margin: 24px auto;
     padding: 24px 16px;
     font-size: 16px;
