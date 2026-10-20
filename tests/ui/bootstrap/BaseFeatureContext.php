@@ -151,6 +151,84 @@ class BaseFeatureContext implements Context {
             } catch (\Throwable $exception) {
                 error_log('Browser console unavailable: ' . $exception->getMessage());
             }
+
+            // Capture enough browser state to distinguish a missing event binding,
+            // an unfinished metadata request, and a server/AJAX failure. Screenshots
+            // alone show only the final page, not why a click had no effect.
+            try {
+                $diagnostic = $this->driver->executeScript(<<<'JS'
+                    return (function () {
+                        var jq = window.jQuery;
+                        function inspect(selector) {
+                            var element = document.querySelector(selector);
+                            if (!element) {
+                                return {exists: false};
+                            }
+                            var style = window.getComputedStyle(element);
+                            var events = jq && typeof jq._data === 'function'
+                                ? jq._data(element, 'events') || {} : {};
+                            return {
+                                exists: true,
+                                visible: style.display !== 'none' && style.visibility !== 'hidden'
+                                    && element.getClientRects().length > 0,
+                                disabled: !!element.disabled,
+                                classes: String(element.className || ''),
+                                listeners: Object.keys(events)
+                            };
+                        }
+                        var album = window.album;
+                        return {
+                            url: window.location.pathname + window.location.search + window.location.hash,
+                            readyState: document.readyState,
+                            jqueryActiveRequests: jq ? jq.active : null,
+                            album: album ? {
+                                initialized: album.initialized,
+                                loading: album.loading,
+                                loadFailed: album.loadFailed,
+                                imagesLoaded: album.images.length,
+                                totalImages: album.totalImages,
+                                currentImageId: album.currentImageId,
+                                pendingImageId: album.pendingImageId
+                            } : null,
+                            cardCount: document.querySelectorAll('#album-grid .album-card').length,
+                            viewerImageId: document.querySelector('#album-viewer-overlay')
+                                ? document.querySelector('#album-viewer-overlay').getAttribute('image-id') : null,
+                            ui: {
+                                viewer: inspect('#album-viewer-overlay'),
+                                viewerClose: inspect('#album-viewer-close'),
+                                viewerNext: inspect('#album-next-btn'),
+                                imageSubmit: inspect('#submit-image-btn'),
+                                imageDownload: inspect('#downloadable-image-btn'),
+                                notifySubmit: inspect('#notify-submit'),
+                                favoriteButton: inspect('#favorite-btn'),
+                                albumGrid: inspect('#album-grid'),
+                                newAlbumButton: inspect('.add-album-btn'),
+                                editAlbumButton: inspect('.edit-album-btn'),
+                                submitModal: inspect('#submit'),
+                                bootstrapDialog: inspect('.bootstrap-dialog')
+                            },
+                            ajaxResources: window.performance.getEntriesByType('resource')
+                                .filter(function (entry) {
+                                    return entry.name.indexOf('/api/') !== -1;
+                                })
+                                .slice(-20)
+                                .map(function (entry) {
+                                    return {
+                                        path: new URL(entry.name).pathname,
+                                        status: entry.responseStatus || null,
+                                        duration: Math.round(entry.duration)
+                                    };
+                                })
+                        };
+                    })();
+                    JS);
+                file_put_contents(
+                    BaseFeatureContext::reportDir . 'screenshots' . DIRECTORY_SEPARATOR . $safeScenarioName . '.state.json',
+                    json_encode($diagnostic, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+                );
+            } catch (\Throwable $exception) {
+                error_log('Browser state unavailable: ' . $exception->getMessage());
+            }
         }
         $this->driver->quit();
         // if we created a new user

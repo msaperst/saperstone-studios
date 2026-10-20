@@ -44,7 +44,7 @@ class Email {
     /**
      * Helper to safely fetch geo info from ipinfo.io without generating PHP warnings.
      */
-    private function fetchGeoInfo($IP) {
+    protected function fetchGeoInfo($IP) {
         if (!is_string($IP) || filter_var($IP, FILTER_VALIDATE_IP) === false) {
             return (object)[];
         }

@@ -29,6 +29,8 @@ function prepareFilterContext(showFavoritesOnly) {
     let loadCalls = 0;
     const album = Object.assign(Object.create(context.Album.prototype), {
         showFavoritesOnly,
+        images: [{sequence: '10'}],
+        totalImages: 1,
         originalFavoritesBackup: null,
         viewingAdminUserFavorites: null,
         loadImages() {

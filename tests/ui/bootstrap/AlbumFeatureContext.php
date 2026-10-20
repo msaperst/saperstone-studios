@@ -1034,6 +1034,12 @@ class AlbumFeatureContext implements Context {
                 $config = $this->driver->findElement(WebDriverBy::id('album-page-config'));
                 $expected = (int)$config->getAttribute('data-total');
                 $cards = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'));
+                if ($expected > 0 && count($cards) < $expected) {
+                    // The gallery now loads metadata in pages as the footer approaches.
+                    $this->driver->executeScript(
+                        "window.scrollTo(0, document.body.scrollHeight); window.dispatchEvent(new Event('scroll'));"
+                    );
+                }
                 return $expected > 0 && count($cards) === $expected;
             });
         } catch (TimeoutException $e) {
@@ -1181,6 +1187,102 @@ class AlbumFeatureContext implements Context {
             );
             Assert::assertEquals('Image ' . $sequence, $image->getAttribute('data-title'));
         }
+    }
+
+    /**
+     * @Given /^album (\d+) has mixed image aspect ratios$/
+     */
+    public function albumHasMixedImageAspectRatios(int $albumId): void {
+        $sql = new Sql();
+        try {
+            $sql->executeStatement(
+                'UPDATE album_images SET width = 300, height = 400 WHERE album = ? AND sequence = 0',
+                [$albumId]
+            );
+            $sql->executeStatement(
+                'UPDATE album_images SET width = 400, height = 300 WHERE album = ? AND sequence = 1',
+                [$albumId]
+            );
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
+    /**
+     * @Then /^gallery image slots retain their dimensions when more images are fetched$/
+     */
+    public function galleryImageSlotsRemainStable(): void {
+        $selector = '#album-grid .album-card';
+        $script = <<<'JS'
+            return Array.from(document.querySelectorAll('#album-grid .album-card'))
+                .slice(0, 2)
+                .map(function (card) {
+                    var rect = card.getBoundingClientRect();
+                    return {
+                        left: rect.left,
+                        top: rect.top,
+                        width: rect.width,
+                        height: rect.height,
+                        imageWidth: Number(card.getAttribute('data-width')),
+                        imageHeight: Number(card.getAttribute('data-height'))
+                    };
+                });
+            JS;
+
+        $this->wait->until(function () {
+            return (bool)$this->driver->executeScript(
+                'return window.album && window.album.images.length >= 4 && !window.album.loading;'
+            );
+        });
+        $before = $this->driver->executeScript($script);
+        Assert::assertCount(2, $before);
+
+        foreach ($before as $slot) {
+            Assert::assertGreaterThan(0, $slot['width']);
+            Assert::assertEqualsWithDelta(
+                $slot['width'] * $slot['imageHeight'] / $slot['imageWidth'],
+                $slot['height'],
+                2.0,
+                'Album photo cards must reserve their aspect-ratio height before image load'
+            );
+        }
+        Assert::assertGreaterThan($before[0]['width'], $before[0]['height']);
+        Assert::assertLessThan($before[1]['width'], $before[1]['height']);
+
+        $this->driver->executeScript('window.album.loadRemainingImages();');
+        $this->wait->until(function () use ($selector) {
+            return count($this->driver->findElements(WebDriverBy::cssSelector($selector))) === 16;
+        });
+        $after = $this->driver->executeScript($script);
+        foreach ($before as $index => $slot) {
+            foreach (['left', 'top', 'width', 'height'] as $dimension) {
+                Assert::assertEqualsWithDelta(
+                    $slot[$dimension],
+                    $after[$index][$dimension],
+                    2.0,
+                    "Fetching another page must not shift existing image card $index ($dimension)"
+                );
+            }
+        }
+
+        // Simulate an unloaded thumbnail: the reserved slot must not collapse.
+        $this->driver->executeScript(
+            "document.querySelector('#album-grid .album-card').setAttribute('data-loaded', '0');"
+        );
+        $unloaded = $this->driver->executeScript($script);
+        Assert::assertEqualsWithDelta($after[0]['width'], $unloaded[0]['width'], 2.0);
+        Assert::assertEqualsWithDelta($after[0]['height'], $unloaded[0]['height'], 2.0);
+    }
+
+    /**
+     * @Then /^the album loading feedback disappears$/
+     */
+    public function theAlbumLoadingFeedbackDisappears(): void {
+        $this->wait->until(
+            WebDriverExpectedCondition::invisibilityOfElementLocated(
+                WebDriverBy::id('album-load-status')
+            )
+        );
     }
 
     /**
@@ -1337,7 +1439,9 @@ class AlbumFeatureContext implements Context {
      * @Then /^the download favorites button is disabled$/
      */
     public function theDownloadFavoritesButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->isEnabled());
+        $this->wait->until(function () {
+            return !$this->driver->findElement(WebDriverBy::id('downloadable-favorites-btn'))->isEnabled();
+        });
     }
 
     /**
@@ -1351,7 +1455,9 @@ class AlbumFeatureContext implements Context {
      * @Then /^the submit favorites button is disabled$/
      */
     public function theSubmitFavoritesButtonIsDisabled() {
-        Assert::assertFalse($this->driver->findElement(WebDriverBy::id('submit-favorites-btn'))->isEnabled());
+        $this->wait->until(function () {
+            return !$this->driver->findElement(WebDriverBy::id('submit-favorites-btn'))->isEnabled();
+        });
     }
 
     /**

@@ -187,3 +187,50 @@ test('album.js syncPendingImage selects a requested image once its card exists',
         }
     }]);
 });
+
+
+test('album.js next fetches the next page rather than wrapping at the loaded boundary', () => {
+    const {context, environment} = createAlbumDetailContext();
+    const batch = (start, count) => Array.from({length: count}, (_, i) => ({
+        sequence: String(start + i), location: '/albums/sample/' + (start + i) + '.jpg',
+        height: 800, width: 1200, favorite: '0', downloadable: '0'
+    }));
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: batch(0, 4), favoriteCount: 0}
+    });
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: batch(4, 2), favoriteCount: 0}
+    });
+
+    const album = new context.Album('7', 4, 6);
+    album.currentImageId = '3';
+    album.next();
+
+    assert.deepEqual(plain(environment.calls.get[1].data), {
+        albumId: '7', start: 4, howMany: 2
+    });
+    assert.equal(album.currentImageId, '4');
+});
+
+test('album.js previous preserves wraparound to the true final photo', () => {
+    const {context, environment} = createAlbumDetailContext();
+    const batch = (start, count) => Array.from({length: count}, (_, i) => ({
+        sequence: String(start + i), location: '/albums/sample/' + (start + i) + '.jpg',
+        height: 800, width: 1200, favorite: '0', downloadable: '0'
+    }));
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: batch(0, 4), favoriteCount: 0}
+    });
+    environment.queueGet('/api/get-album-images.php', {
+        type: 'success', data: {images: batch(4, 2), favoriteCount: 0}
+    });
+
+    const album = new context.Album('7', 4, 6);
+    album.currentImageId = '0';
+    album.prev();
+
+    assert.deepEqual(plain(environment.calls.get[1].data), {
+        albumId: '7', start: 4, howMany: 2
+    });
+    assert.equal(album.currentImageId, '5');
+});

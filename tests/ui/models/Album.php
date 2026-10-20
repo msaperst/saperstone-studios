@@ -282,6 +282,14 @@ class Album {
 
     public function viewFavorites() {
         $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
+        // Favorites must be evaluated over the entire album, including
+        // metadata pages not yet loaded when the filter was activated.
+        $this->wait->until(function () {
+            return (bool)$this->driver->executeScript(
+                'return !!window.album && window.album.showFavoritesOnly ' .
+                '&& !window.album.loading && window.album.images.length >= window.album.totalImages;'
+            );
+        });
     }
 
     /**
@@ -612,13 +620,25 @@ class Album {
     }
 
     private function getActiveImageId(): int {
-        $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
-        return (int) $overlay->getAttribute('image-id');
+        // An album deep link opens asynchronously. Missing image-id must not
+        // be mistaken for image zero while the initial metadata request runs.
+        $this->wait->until(function () {
+            $overlays = $this->driver->findElements(WebDriverBy::id('album-viewer-overlay'));
+            return count($overlays) === 1 && $overlays[0]->isDisplayed()
+                && $overlays[0]->getAttribute('image-id') !== null
+                && (bool)$this->driver->executeScript(
+                    'return !!window.album && window.album.currentImageId !== null;'
+                );
+        });
+        return (int)$this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
+            ->getAttribute('image-id');
     }
 
     private function getAdjacentImageId(int $current, int $offset): int {
         $cards = $this->driver->findElements(WebDriverBy::cssSelector('#album-grid .album-card'));
-        $count = count($cards);
+        $config = $this->driver->findElements(WebDriverBy::id('album-page-config'));
+        // A paginated gallery can render only four cards while the album contains many more.
+        $count = $config === [] ? count($cards) : (int)$config[0]->getAttribute('data-total');
         if ($count === 0) {
             return $current;
         }
