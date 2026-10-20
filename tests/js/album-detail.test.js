@@ -453,7 +453,8 @@ test('album.js loads the real thumbnail only when its card is near the viewport'
     card.find = (selector) => selector === '.album-card-media' ? media : environment.element('__lazy_find__');
     image.closestResult = card;
     image.attr('src', 'placeholder');
-    image.attr('data-src', '/img/image.png');
+    // A manipulated DOM data-src must never become a directly loadable image source.
+    image.attr('data-src', 'https://example.org/unprotected-photo.jpg');
 
     const album = Object.create(context.Album.prototype);
     Object.assign(album, {
