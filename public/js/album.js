@@ -193,9 +193,9 @@ function updateFavoriteCount(count) {
         total = 0;
     }
     if (total > 0) {
-        $('#favorite-count').html(total).addClass('album-favorite-count-present');
+        $('#favorite-count').text(total).addClass('album-favorite-count-present');
     } else {
-        $('#favorite-count').html("").removeClass('album-favorite-count-present');
+        $('#favorite-count').text("").removeClass('album-favorite-count-present');
     }
 }
 
@@ -557,11 +557,9 @@ function setFavoriteActionAvailability(hasFavorites) {
 Album.prototype.applyFilter = function () {
     var Album = this;
 
-    // Favorites are an album-wide filter, not just the visible first page.
-    if (Album.showFavoritesOnly && Album.images.length < Album.totalImages) {
-        Album.loadRemainingImages();
-        return;
-    }
+    // Apply the controls immediately, even while fetching additional favorites.
+    // Waiting until every page arrives leaves stale buttons and an unfiltered grid.
+    var fetchingFavorites = Album.showFavoritesOnly && Album.images.length < Album.totalImages;
 
     $('#album-grid .album-card').each(function () {
         var card = $(this);
@@ -614,7 +612,7 @@ Album.prototype.applyFilter = function () {
         $('#downloadable-favorites-btn').show();
         $('#submit-favorites-btn').show();
         setFavoriteActionAvailability(
-            $('#album-grid .album-card[data-favorite="1"]').length > 0
+            !fetchingFavorites && $('#album-grid .album-card[data-favorite="1"]').length > 0
         );
     }
     rebuildAlbumBreadcrumbs();
@@ -625,6 +623,9 @@ Album.prototype.applyFilter = function () {
 
     updateAllAlbumCardSpans();
     Album.loadImages();     // lazy-load any newly visible images
+    if (fetchingFavorites) {
+        Album.loadRemainingImages();
+    }
 };
 
 Album.prototype.isNearLoadTrigger = function () {
@@ -864,7 +865,8 @@ $(document).ready(function () {
     $('#album-retry-btn').click(function () {
         if (window.album) {
             window.album.loadFailed = false;
-            window.album.loadImages();
+            // Retry the failed metadata request regardless of the current scroll position.
+            window.album.loadMoreImages();
         }
     });
 
