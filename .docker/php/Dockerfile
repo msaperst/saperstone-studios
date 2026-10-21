@@ -49,7 +49,13 @@ COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY .docker/php/security.ini /usr/local/etc/php/conf.d/security.ini
 RUN a2enmod headers rewrite expires speling ssl && a2enconf zz-saperstone-security
 RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif && \
-    pecl install imagick && \
+    # Install the verified Imagick 3.8.1 source directly: pecl.php.net can return HTTP 504.
+    # Keep PECL's package.xml installer for the same build and installation behavior.
+    wget --tries=3 --timeout=30 --waitretry=2 -O /tmp/imagick.tar.gz \
+        https://codeload.github.com/Imagick/imagick/tar.gz/70087bab33eab913e99ac77d64d04d1a2fd0b7b0 && \
+    tar -xzf /tmp/imagick.tar.gz -C /tmp && \
+    pecl install /tmp/imagick-70087bab33eab913e99ac77d64d04d1a2fd0b7b0/package.xml && \
+    rm -rf /tmp/imagick.tar.gz /tmp/imagick-70087bab33eab913e99ac77d64d04d1a2fd0b7b0 && \
     docker-php-ext-enable imagick && \
     php -r 'if (!extension_loaded("imagick")) { fwrite(STDERR, "Imagick extension is required" . PHP_EOL); exit(1); }' && \
     apt-get purge -y --auto-remove $PHPIZE_DEPS libmagickwand-dev
