@@ -11,7 +11,11 @@ RUN find /build/public/js -maxdepth 1 -type f -name '*.js' ! -name '*.min.js' \
 
 FROM composer:2 AS composer
 
-FROM php:8.4-apache-bookworm
+FROM php:8.4.27-apache-bookworm
+
+# Fail closed if this base ever resolves to an unpatched PHP runtime.
+# CVE-2026-109618 / CVE-2026-109619 allow unauthenticated RCE.
+RUN php -r 'if (PHP_VERSION_ID < 80427 || PHP_VERSION_ID >= 80500) { fwrite(STDERR, "Unpatched PHP runtime: require PHP 8.4.27+ in the 8.4 series" . PHP_EOL); exit(1); }'
 
 # setup additional tooling
 RUN apt-get update && \
