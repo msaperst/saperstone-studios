@@ -11,7 +11,11 @@ RUN find /build/public/js -maxdepth 1 -type f -name '*.js' ! -name '*.min.js' \
 
 FROM composer:2 AS composer
 
-FROM php:8.4-apache-bookworm
+FROM php:8.4.27-apache-bookworm
+
+# Fail closed if this base ever resolves to an unpatched PHP runtime.
+# CVE-2026-109618 / CVE-2026-109619 allow unauthenticated RCE.
+RUN php -r 'if (PHP_VERSION_ID < 80427 || PHP_VERSION_ID >= 80500) { fwrite(STDERR, "Unpatched PHP runtime: require PHP 8.4.27+ in the 8.4 series" . PHP_EOL); exit(1); }'
 
 # setup additional tooling
 RUN apt-get update && \
@@ -44,8 +48,14 @@ COPY .docker/php/security-headers.conf /etc/apache2/conf-available/zz-saperstone
 COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY .docker/php/security.ini /usr/local/etc/php/conf.d/security.ini
 RUN a2enmod headers rewrite expires speling ssl && a2enconf zz-saperstone-security
+# Pin Imagick 3.8.1 to its upstream release commit to avoid pecl.php.net download 504s.
+# Retain PECL's local package.xml build/install behavior.
 RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif && \
-    pecl install imagick && \
+    wget --tries=3 --timeout=30 --waitretry=2 -O /tmp/imagick.tar.gz \
+        https://codeload.github.com/Imagick/imagick/tar.gz/70087bab33eab913e99ac77d64d04d1a2fd0b7b0 && \
+    tar -xzf /tmp/imagick.tar.gz -C /tmp && \
+    pecl install /tmp/imagick-70087bab33eab913e99ac77d64d04d1a2fd0b7b0/package.xml && \
+    rm -rf /tmp/imagick.tar.gz /tmp/imagick-70087bab33eab913e99ac77d64d04d1a2fd0b7b0 && \
     docker-php-ext-enable imagick && \
     php -r 'if (!extension_loaded("imagick")) { fwrite(STDERR, "Imagick extension is required" . PHP_EOL); exit(1); }' && \
     apt-get purge -y --auto-remove $PHPIZE_DEPS libmagickwand-dev

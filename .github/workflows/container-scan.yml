@@ -28,7 +28,7 @@ jobs:
 
       - name: Build Dockerfile 🐋
         run: |
-          docker build -t saperstone-studios/php:latest -f .docker/php/Dockerfile .
+          docker build --pull -t saperstone-studios/php:latest -f .docker/php/Dockerfile .
 
       - name: Generate complete vulnerability report 🕵️‍♂️
         id: report-php
