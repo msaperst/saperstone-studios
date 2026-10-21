@@ -1,0 +1,141 @@
+# Scan the GHCR images that could be deployed, not freshly rebuilt Dockerfiles.
+name: Published Image Security Watch
+
+on:
+  schedule:
+    - cron: '17 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  packages: read
+  issues: write
+
+concurrency:
+  group: published-image-security-watch
+  cancel-in-progress: false
+
+env:
+  PHP_IMAGE: ghcr.io/${{ github.repository }}/php:develop
+  SQL_IMAGE: ghcr.io/${{ github.repository }}/sql:develop
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  published-images:
+    name: Scan published production images
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Pull published images and record their versions
+        run: |
+          set -euo pipefail
+          docker pull "$PHP_IMAGE"
+          docker pull "$SQL_IMAGE"
+          docker image inspect --format '{{.Id}}' "$PHP_IMAGE" > php-image-id.txt
+          docker image inspect --format '{{.Id}}' "$SQL_IMAGE" > sql-image-id.txt
+          docker run --rm --entrypoint php "$PHP_IMAGE" -r 'echo PHP_VERSION;' > current-php-version.txt
+          curl --fail --show-error --silent --location --retry 3 --max-time 30 \
+            'https://www.php.net/releases/?json&version=8.4' > upstream-php-release.json
+
+      - name: Scan published PHP image
+        uses: anchore/scan-action@v7
+        with:
+          image: ${{ env.PHP_IMAGE }}
+          fail-build: false
+          severity-cutoff: high
+          output-format: sarif
+          output-file: published-php.sarif
+          config: .grype.yaml
+
+      - name: Scan published SQL image
+        uses: anchore/scan-action@v7
+        with:
+          image: ${{ env.SQL_IMAGE }}
+          fail-build: false
+          severity-cutoff: high
+          output-format: sarif
+          output-file: published-sql.sarif
+          config: .grype.yaml
+
+      - name: Read last scan snapshot
+        run: |
+          set -euo pipefail
+          mkdir -p previous
+          # Avoid comparing this attempt against itself.
+          while IFS= read -r run_id; do
+            if gh run download "$run_id" --repo "$GITHUB_REPOSITORY" \
+                 --name published-image-security-snapshot --dir previous >/dev/null 2>&1 \
+                && test -s previous/snapshot.json; then
+              echo "Comparing with previous scan $run_id"
+              exit 0
+            fi
+          done < <(gh run list --repo "$GITHUB_REPOSITORY" \
+              --workflow runtime-security-watch.yml --branch develop --limit 30 \
+              --json databaseId,status \
+              --jq '.[] | select(.status == "completed") | .databaseId')
+          echo 'No prior snapshot found; requiring an initial baseline review.'
+
+      - name: Evaluate images and official PHP release
+        run: |
+          python3 .github/scripts/runtime-security-watch.py \
+            --scan published-php.sarif \
+            --sql-scan published-sql.sarif \
+            --image "$PHP_IMAGE" --image-id php-image-id.txt \
+            --sql-image "$SQL_IMAGE" --sql-image-id sql-image-id.txt \
+            --current-version current-php-version.txt \
+            --upstream-release upstream-php-release.json \
+            --allowlist .github/container-scan-allowlist.json \
+            --previous previous/snapshot.json \
+            --snapshot snapshot.json --report security-report.md --alert alert.txt \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Save daily vulnerability snapshot
+        uses: actions/upload-artifact@v7
+        with:
+          name: published-image-security-snapshot
+          path: snapshot.json
+          if-no-files-found: error
+
+      - name: Open or update security issue
+        if: hashFiles('alert.txt') != ''
+        run: |
+          set -euo pipefail
+          if ! grep -qx true alert.txt; then
+            exit 0
+          fi
+          title='Published image security watch requires review'
+          issue=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+              --search 'in:title "Published image security watch requires review"' \
+              --limit 100 --json number,title \
+              --jq '.[] | select(.title == "Published image security watch requires review") | .number' \
+              | head -n 1)
+          if [ -n "$issue" ]; then
+            # Notify watchers only if the status/digest/findings changed.
+            old_body=$(gh issue view "$issue" --repo "$GITHUB_REPOSITORY" --json body --jq .body)
+            new_body=$(cat security-report.md)
+            if [ "$old_body" != "$new_body" ]; then
+              gh issue comment "$issue" --repo "$GITHUB_REPOSITORY" --body-file security-report.md
+              gh issue edit "$issue" --repo "$GITHUB_REPOSITORY" --body-file security-report.md
+            fi
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" \
+              --body-file security-report.md
+          fi
+
+      - name: Block unreviewed runtime security regressions
+        run: |
+          if grep -qx true alert.txt; then
+            echo '::error::Published images require security review. See the GitHub issue and job summary.'
+            exit 1
+          fi
