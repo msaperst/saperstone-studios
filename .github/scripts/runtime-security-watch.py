@@ -28,7 +28,9 @@ def high_severity_findings(sarif, reviewed):
     for finding in container_scan.findings_from_sarif(sarif):
         rule_id = finding["rule_id"]
         if finding["severity"] in {"critical", "high"} and rule_id not in reviewed:
-            findings[rule_id] = finding["severity"]
+            # A SARIF rule can occur multiple times: preserve the worst severity.
+            if rule_id not in findings or finding["severity"] == "critical":
+                findings[rule_id] = finding["severity"]
     return dict(sorted(findings.items()))
 
 
@@ -64,13 +66,24 @@ def report(image, image_id, installed, latest, findings, evaluation):
         f"- PHP image ID: `{image_id}`",
         f"- Published PHP version: `{installed}`",
         f"- Latest official PHP 8.4 release: `{latest}`",
-        f"- Unreviewed high/critical findings: **{len(findings)}**",
+        f"- Unreviewed findings: **{sum(s == 'critical' for s in findings.values())} critical**, "
+        f"**{sum(s == 'high' for s in findings.values())} high**",
         f"- New or escalated high/critical findings: **{len(evaluation['new'])}**", "",
     ]
     if evaluation["initial_baseline"]:
         lines += [
             "**Baseline review required.** First scan; existing findings are not approved or ignored.", ""
         ]
+    if evaluation["initial_baseline"] and findings:
+        lines += ["### Existing findings requiring baseline review", ""]
+        examples = sorted(findings.items(), key=lambda item: (item[1] != "critical", item[0]))
+        lines += [
+            f"- **{severity.upper()}** `{identifier}`"
+            for identifier, severity in examples[:20]
+        ]
+        if len(examples) > 20:
+            lines += [f"- …and {len(examples) - 20} more in the scan snapshot"]
+        lines += [""]
     if evaluation["outdated"]:
         lines += [
             "**PHP update required.** Published GHCR PHP is behind its upstream release. "
