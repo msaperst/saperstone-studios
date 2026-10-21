@@ -39,18 +39,24 @@ jobs:
       - name: Pull published images and record their versions
         run: |
           set -euo pipefail
-          docker pull "$PHP_IMAGE"
-          docker pull "$SQL_IMAGE"
+          # Production runs on Raspberry Pi ARM64; scan that exact image variant.
+          docker pull --platform linux/arm64 "$PHP_IMAGE"
+          docker pull --platform linux/arm64 "$SQL_IMAGE"
+          test "$(docker image inspect --format '{{.Architecture}}' "$PHP_IMAGE")" = arm64
+          test "$(docker image inspect --format '{{.Architecture}}' "$SQL_IMAGE")" = arm64
           docker image inspect --format '{{.Id}}' "$PHP_IMAGE" > php-image-id.txt
           docker image inspect --format '{{.Id}}' "$SQL_IMAGE" > sql-image-id.txt
-          docker run --rm --entrypoint php "$PHP_IMAGE" -r 'echo PHP_VERSION;' > current-php-version.txt
+          # Read metadata without trying to execute ARM64 PHP on the x86_64 runner.
+          docker image inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$PHP_IMAGE" \
+            | sed -n 's/^PHP_VERSION=//p' > current-php-version.txt
+          test -s current-php-version.txt
           curl --fail --show-error --silent --location --retry 3 --max-time 30 \
             'https://www.php.net/releases/?json&version=8.4' > upstream-php-release.json
 
       - name: Scan published PHP image
         uses: anchore/scan-action@v7
         with:
-          image: ${{ env.PHP_IMAGE }}
+          image: docker:${{ env.PHP_IMAGE }}
           fail-build: false
           severity-cutoff: high
           output-format: sarif
@@ -60,7 +66,7 @@ jobs:
       - name: Scan published SQL image
         uses: anchore/scan-action@v7
         with:
-          image: ${{ env.SQL_IMAGE }}
+          image: docker:${{ env.SQL_IMAGE }}
           fail-build: false
           severity-cutoff: high
           output-format: sarif
