@@ -80,6 +80,18 @@ class RuntimeSecurityWatchTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             watch.high_severity_findings({}, {})
 
+    def test_duplicate_cve_preserves_critical_severity(self):
+        sarif = {"runs": [{"tool": {"driver": {"rules": [
+            {"id": "CVE-duplicate"}
+        ]}}, "results": [
+            {"ruleId": "CVE-duplicate", "properties": {"severity": "critical"}},
+            {"ruleId": "CVE-duplicate", "properties": {"severity": "high"}},
+        ]}]}
+        self.assertEqual(
+            {"CVE-duplicate": "critical"},
+            watch.high_severity_findings(sarif, {}),
+        )
+
     def test_sql_findings_are_namespaced_from_php(self):
         combined = {"php:CVE-shared": "high", "sql:CVE-shared": "critical"}
         previous = {"schema": 1, "findings": {"php:CVE-shared": "high"}}
