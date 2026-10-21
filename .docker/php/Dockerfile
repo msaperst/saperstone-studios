@@ -48,9 +48,9 @@ COPY .docker/php/security-headers.conf /etc/apache2/conf-available/zz-saperstone
 COPY .docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 COPY .docker/php/security.ini /usr/local/etc/php/conf.d/security.ini
 RUN a2enmod headers rewrite expires speling ssl && a2enconf zz-saperstone-security
+# Pin Imagick 3.8.1 to its upstream release commit to avoid pecl.php.net download 504s.
+# Retain PECL's local package.xml build/install behavior.
 RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif && \
-    # Install the verified Imagick 3.8.1 source directly: pecl.php.net can return HTTP 504.
-    # Keep PECL's package.xml installer for the same build and installation behavior.
     wget --tries=3 --timeout=30 --waitretry=2 -O /tmp/imagick.tar.gz \
         https://codeload.github.com/Imagick/imagick/tar.gz/70087bab33eab913e99ac77d64d04d1a2fd0b7b0 && \
     tar -xzf /tmp/imagick.tar.gz -C /tmp && \
