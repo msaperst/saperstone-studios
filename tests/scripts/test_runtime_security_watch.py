@@ -21,7 +21,7 @@ watch = load_script("runtime_security_watch", ".github/scripts/runtime-security-
 class RuntimeSecurityWatchTests(unittest.TestCase):
     def test_php_versions_compare_numerically(self):
         self.assertEqual((8, 4, 27), watch.php_version("8.4.27\n"))
-        self.assertTrue(watch.php_version("8.4.28") > watch.php_version("8.4.27"))
+        self.assertGreater(watch.php_version("8.4.28"), watch.php_version("8.4.27"))
         with self.assertRaises(ValueError):
             watch.php_version("8.4.27-rc1")
 
