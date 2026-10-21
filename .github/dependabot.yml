@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # Only reviewable patch-version PRs for PHP, not PHP minor/major upgrades.
+  - package-ecosystem: docker
+    directory: /.docker/php
+    schedule:
+      interval: daily
+    allow:
+      - dependency-name: php
+    ignore:
+      - dependency-name: php
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
