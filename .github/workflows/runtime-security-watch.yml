@@ -19,7 +19,6 @@ concurrency:
 env:
   PHP_IMAGE: ghcr.io/${{ github.repository }}/php:develop
   SQL_IMAGE: ghcr.io/${{ github.repository }}/sql:develop
-  GH_TOKEN: ${{ github.token }}
 
 jobs:
   published-images:
@@ -69,6 +68,8 @@ jobs:
           config: .grype.yaml
 
       - name: Read last scan snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -p previous
@@ -109,6 +110,8 @@ jobs:
 
       - name: Open or update security issue
         if: hashFiles('alert.txt') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if ! grep -qx true alert.txt; then
@@ -134,8 +137,16 @@ jobs:
           fi
 
       - name: Block unreviewed runtime security regressions
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if grep -qx true alert.txt; then
-            echo '::error::Published images require security review. See the GitHub issue and job summary.'
+          set -euo pipefail
+          issue=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+              --search 'in:title "Published image security watch requires review"' \
+              --limit 100 --json number,title \
+              --jq '.[] | select(.title == "Published image security watch requires review") | .number' \
+              | head -n 1)
+          if grep -qx true alert.txt || [ -n "$issue" ]; then
+            echo '::error::Published images require security review. See the open issue and job summary.'
             exit 1
           fi
