@@ -45,11 +45,13 @@ def evaluate(current, latest, findings, previous):
     if not isinstance(prior, dict):
         raise ValueError("Invalid previous vulnerability snapshot")
 
-    new = {
+    first_run = previous is None
+    # The initial scan inventories existing findings; nothing can be called
+    # "new" until a prior snapshot exists for comparison.
+    new = {} if first_run else {
         rule: level for rule, level in findings.items()
         if rule not in prior or (level == "critical" and prior[rule] != "critical")
     }
-    first_run = previous is None
     outdated = installed < upstream
     return {
         "initial_baseline": first_run,
