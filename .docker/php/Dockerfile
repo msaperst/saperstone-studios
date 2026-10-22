@@ -13,10 +13,6 @@ FROM composer:2 AS composer
 
 FROM php:8.4.27-apache-bookworm
 
-# Fail closed if this base ever resolves to an unpatched PHP runtime.
-# CVE-2026-109618 / CVE-2026-109619 allow unauthenticated RCE.
-RUN php -r 'if (PHP_VERSION_ID < 80427 || PHP_VERSION_ID >= 80500) { fwrite(STDERR, "Unpatched PHP runtime: require PHP 8.4.27+ in the 8.4 series" . PHP_EOL); exit(1); }'
-
 # setup additional tooling
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -33,6 +29,9 @@ RUN apt-get update && \
         wget \
         zip && \
     rm -rf /var/lib/apt/lists/*
+
+# Allow only the image coders required by the site (JPEG, PNG and GIF).
+COPY .docker/php/image-processing-policy.xml /etc/ImageMagick-6/policy.xml
 
 # Copy Composer from its official image instead of executing a downloaded installer.
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
@@ -57,7 +56,6 @@ RUN docker-php-ext-install mbstring pdo pdo_mysql mysqli zip gd exif && \
     pecl install /tmp/imagick-70087bab33eab913e99ac77d64d04d1a2fd0b7b0/package.xml && \
     rm -rf /tmp/imagick.tar.gz /tmp/imagick-70087bab33eab913e99ac77d64d04d1a2fd0b7b0 && \
     docker-php-ext-enable imagick && \
-    php -r 'if (!extension_loaded("imagick")) { fwrite(STDERR, "Imagick extension is required" . PHP_EOL); exit(1); }' && \
     apt-get purge -y --auto-remove $PHPIZE_DEPS libmagickwand-dev
 
 # copy over files
@@ -65,16 +63,6 @@ COPY bin /var/www/bin
 COPY --from=assets /build/public /var/www/public
 COPY src /var/www/src
 COPY templates /var/www/templates
-
-# Fail the image build if generated assets or the PHP production URL selection
-# disappear. Local Compose hides these image assets with its source bind mount.
-RUN php -r 'require "/var/www/src/Strings.php"; \
-    foreach (["/js/album.js" => "/js/album.min.js", "/css/saperstone-studios.css" => "/css/saperstone-studios.min.css"] as $source => $minified) { \
-        if (!is_file("/var/www/public" . $source) || !is_file("/var/www/public" . $minified) || \
-            !str_starts_with(Strings::assetUrl($source, "/var/www/public"), $minified . "?v=")) { \
-            fwrite(STDERR, "Missing production asset or incorrect URL: " . $minified . PHP_EOL); exit(1); \
-        } \
-    }'
 
 # install plugins
 RUN cd /var/www && \

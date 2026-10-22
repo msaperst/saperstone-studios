@@ -30,6 +30,9 @@ jobs:
         run: |
           docker build --pull -t saperstone-studios/php:latest -f .docker/php/Dockerfile .
 
+      - name: Production PHP image integration tests
+        run: sh tests/container/run-php-runtime-security.sh saperstone-studios/php:latest
+
       - name: Generate complete vulnerability report 🕵️‍♂️
         id: report-php
         uses: anchore/scan-action@v7

@@ -204,6 +204,37 @@ class UploadAlbumImagesTest extends TestCase {
         ));
     }
 
+    public function testRejectsMismatchedImageFormatWithoutSavingOrChangingAlbum(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+
+        $response = $this->http->request('POST', 'api/upload-album-images.php', [
+            'multipart' => [
+                ['name' => 'album', 'contents' => 998],
+                [
+                    'name' => 'myfile',
+                    'contents' => fopen(dirname(__DIR__) . '/resources/flower.jpeg', 'r'),
+                    'filename' => 'disguised.png',
+                    'headers' => ['Content-Type' => 'image/png']
+                ]
+            ],
+            'cookies' => $cookieJar
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame('Uploaded file is not a valid image', (string)$response->getBody());
+        $this->assertSame(0, $this->sql->getRowCount(
+            "SELECT * FROM album_images WHERE album = 998 AND title = 'disguised.png'"
+        ));
+        $album = $this->sql->getRow("SELECT * FROM albums WHERE id = 998");
+        $this->assertEquals(0, $album['images']);
+        $this->assertEquals(1, $album['thumbsCreated']);
+        $this->assertFileDoesNotExist(
+            dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/disguised.png'
+        );
+    }
+
     public function testSingleFile() {
         $cookieJar = CookieJar::fromArray([
             'hash' => '1d7505e7f434a7713e84ba399e937191'

@@ -59,6 +59,26 @@ class File {
         }
     }
 
+    /**
+     * Check the actual bytes before placing an upload under a web-accessible
+     * directory. The client-provided Content-Type header is not trustworthy.
+     * Only photographic formats used by the site may reach image decoders.
+     */
+    public static function validateUploadedImage(string $filename, string $temporaryPath): void {
+        self::validateImageExtension($filename);
+
+        $expectedType = match (strtolower(pathinfo($filename, PATHINFO_EXTENSION))) {
+            'jpg', 'jpeg' => IMAGETYPE_JPEG,
+            'png' => IMAGETYPE_PNG,
+            'gif' => IMAGETYPE_GIF,
+        };
+        $dimensions = @getimagesize($temporaryPath);
+        if ($dimensions === false || ($dimensions[2] ?? null) !== $expectedType
+            || $dimensions[0] <= 0 || $dimensions[1] <= 0) {
+            throw new BadRequestException('Uploaded file is not a valid image');
+        }
+    }
+
     private function removeUploadedFiles(): void {
         foreach ($this->files as $uploadedFile) {
             $uploadedPath = $this->location . $uploadedFile;
@@ -94,6 +114,11 @@ class File {
     }
 
     function upload($location) {
+        // Validate the entire batch before the first file is moved. This also
+        // avoids leaving partially uploaded image sets or database records.
+        foreach ($this->files as $file) {
+            self::validateUploadedImage($file['name'], $file['tmp_name']);
+        }
         $this->location = $location;
         if (!is_dir($location)) {
             $oldMask = umask(0);
