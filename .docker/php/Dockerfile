@@ -34,6 +34,23 @@ RUN apt-get update && \
         zip && \
     rm -rf /var/lib/apt/lists/*
 
+# Apply the same restrictive ImageMagick 6 policy to CLI thumbnail commands
+# and the PHP Imagick extension. Fail the build if safe formats break or the
+# dangerous MVG decoder remains usable.
+COPY .docker/php/image-processing-policy.xml /etc/ImageMagick-6/policy.xml
+COPY tests/resources/flower.jpeg /tmp/policy-smoke.jpeg
+COPY public/img/proof.png /tmp/policy-smoke-overlay.png
+RUN set -eu; \
+    convert /tmp/policy-smoke.jpeg -resize '400x400>' /tmp/policy-smoke-output.jpeg; \
+    composite -dissolve 30 /tmp/policy-smoke-overlay.png /tmp/policy-smoke-output.jpeg /tmp/policy-smoke-output.jpeg; \
+    identify -format '%m %w %h' /tmp/policy-smoke-output.jpeg | grep -q '^JPEG '; \
+    printf 'push graphic-context\\nviewbox 0 0 10 10\\nrectangle 0,0 10,10\\npop graphic-context\\n' > /tmp/policy-smoke.mvg; \
+    if convert MVG:/tmp/policy-smoke.mvg /tmp/policy-smoke-denied.png > /tmp/policy-smoke.log 2>&1; then \
+        echo 'ERROR: ImageMagick MVG coder remains enabled' >&2; exit 1; \
+    fi; \
+    grep -Eiq 'security policy|not authorized' /tmp/policy-smoke.log; \
+    rm -f /tmp/policy-smoke*
+
 # Copy Composer from its official image instead of executing a downloaded installer.
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 COPY .docker/php/composer.json /var/www/
