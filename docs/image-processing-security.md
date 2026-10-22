@@ -40,10 +40,15 @@ policy in the **production PHP image**. Both PHP Imagick and the CLI tools
   exceed 8,192 pixels. The size/format contract can be narrowed after a
   real inventory of legacy originals, not by silently breaking galleries.
 
-The Dockerfile runs a smoke test in the final image build: JPEG reading/
-resizing, PNG watermark composition, JPEG dimension detection must work, and
-an actual MVG source must fail specifically due to the security policy. Script
-tests guard policy settings and the Dockerfile enforcement.
+The Dockerfile **only installs the policy**; it does not execute tests.
+The existing PHP Container Scan CI job builds the production image and then
+invokes `tests/container/run-php-runtime-security.sh`. Its in-container
+integration suite (`php-runtime-security.sh`) runs as `www-data` and
+verifies the actual built image: patched PHP runtime, enabled Imagick,
+production assets, JPEG reading/resizing, tiled PNG proof composition, and
+an actual MVG source rejected specifically by the security policy.
+The script tests verify policy configuration and enforce this separation.
+These checks do not depend on starting the web application or database.
 
 This policy narrows the reachable vulnerable decoder/delegate surface; it
 **does not establish that all image libraries are patched** or that image
@@ -57,8 +62,11 @@ findings on the basis of this configuration.
   fixtures, invalid content and pre-flight batch rejection.
 - API: unauthorized upload contracts, malformed/disguised upload 400 responses,
   DB/thumbnail-status invariants, ordinary album/gallery/blog/site-image flows.
-- Docker: the production image must pass the policy smoke test and container
-  scan; the shared ImageMagick commands must still create thumbnails.
+- Runtime image integration: run `sh tests/container/run-php-runtime-security.sh
+  saperstone-studios/php:latest` after building the image. The suite tests
+  actual PHP, asset, and ImageMagick behavior; container scanning remains
+  separately enforced. The shared ImageMagick commands must still create
+  thumbnails.
 - Browser: existing admin/uploader album image uploads and thumbnail generation
   tests remain part of CI.
 - Do not alter symlinks, protected originals in `full/`, blank/protected image
