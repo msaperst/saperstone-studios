@@ -30,7 +30,7 @@ def grouped_outcomes(outcomes):
     for test, detail in outcomes:
         parent = getattr(test, "test_case", test)
         grouped.setdefault(parent.id(), []).append(detail)
-    return {test_id: "\\n\\n".join(details) for test_id, details in grouped.items()}
+    return {test_id: "\n\n".join(details) for test_id, details in grouped.items()}
 
 
 def write_junit(path, tests, result, elapsed):
