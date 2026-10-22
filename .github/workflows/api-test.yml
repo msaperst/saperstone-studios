@@ -30,6 +30,19 @@ jobs:
       - name: API Tests
         run: COMPOSER_PROCESS_TIMEOUT=1200 composer api-test
 
+      # Capture actual Apache/PHP failures instead of treating network-level
+      # "empty reply from server" errors as intermittent Guzzle problems.
+      - name: Diagnose application container on API failure
+        if: failure()
+        run: |
+          echo "::group::Docker container status"
+          docker compose ps
+          docker inspect --format 'State={{.State.Status}} Exit={{.State.ExitCode}} OOMKilled={{.State.OOMKilled}} RestartCount={{.RestartCount}}' saperstonestudios_php
+          echo "::endgroup::"
+          echo "::group::PHP/Apache container logs"
+          docker compose logs --no-color --tail=200 php
+          echo "::endgroup::"
+
       - name: API Test Summary 📊
         if: always()
         run: |
