@@ -24,9 +24,21 @@ def test_identity(test):
     return classname, name
 
 
+def grouped_outcomes(outcomes):
+    """Group subtest outcomes under the test case written to the JUnit report."""
+    grouped = {}
+    for test, detail in outcomes:
+        parent = getattr(test, "test_case", test)
+        # unittest omits subTest parameters from tracebacks; preserve their
+        # labels so multiple failed variants remain distinguishable in JUnit.
+        message = f"{test}\n{detail}" if parent is not test else detail
+        grouped.setdefault(parent.id(), []).append(message)
+    return {test_id: "\n\n".join(details) for test_id, details in grouped.items()}
+
+
 def write_junit(path, tests, result, elapsed):
-    failures = {test.id(): detail for test, detail in result.failures}
-    errors = {test.id(): detail for test, detail in result.errors}
+    failures = grouped_outcomes(result.failures)
+    errors = grouped_outcomes(result.errors)
     skipped = {test.id(): reason for test, reason in result.skipped}
     expected_failures = {test.id(): detail for test, detail in result.expectedFailures}
     unexpected_successes = {test.id() for test in result.unexpectedSuccesses}
@@ -35,8 +47,8 @@ def write_junit(path, tests, result, elapsed):
         "testsuite",
         {
             "tests": str(result.testsRun),
-            "failures": str(len(result.failures) + len(result.unexpectedSuccesses)),
-            "errors": str(len(result.errors)),
+            "failures": str(len(failures) + len(result.unexpectedSuccesses)),
+            "errors": str(len(errors)),
             "skipped": str(len(result.skipped) + len(result.expectedFailures)),
             "time": f"{elapsed:.6f}",
         },

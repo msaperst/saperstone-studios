@@ -1,4 +1,4 @@
-FROM golang:1.26.9-bookworm AS gosu-builder
+FROM golang:1.26.10-bookworm AS gosu-builder
 
 # The official MySQL 8.0 image currently bundles gosu 1.19 built with an
 # unsupported Go standard library. Rebuild the same pinned gosu release with a

@@ -233,6 +233,33 @@ class UnittestJunitScriptTests(unittest.TestCase):
         self.assertEqual(1, parsed["skipped"])
 
 
+    def test_subtest_failures_are_reported_under_parent_test(self):
+        class FailingSubtests(unittest.TestCase):
+            def test_values(self):
+                for value in (1, 2):
+                    with self.subTest(value=value):
+                        self.assertEqual(0, value)
+
+        suite = unittest.defaultTestLoader.loadTestsFromTestCase(FailingSubtests)
+        tests = list(unittest_junit.iter_tests(suite))
+        result = unittest.TestResult()
+        suite.run(result)
+
+        self.assertEqual(2, len(result.failures))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "subtest-junit.xml"
+            unittest_junit.write_junit(path, tests, result, 0.2)
+            parsed = test_summary.parse_junit(path)
+            content = path.read_text(encoding="utf-8")
+
+        self.assertEqual(1, parsed["total"])
+        self.assertEqual(0, parsed["passed"])
+        self.assertEqual(1, parsed["failed"])
+        self.assertEqual(0, parsed["errors"])
+        self.assertIn("value=1", content)
+        self.assertIn("value=2", content)
+
+
 class ContainerScanSummaryScriptTests(unittest.TestCase):
     def test_parse_sarif_prefers_grype_severity_over_security_score(self):
         sarif = {
