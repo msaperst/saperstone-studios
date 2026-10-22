@@ -29,7 +29,10 @@ def grouped_outcomes(outcomes):
     grouped = {}
     for test, detail in outcomes:
         parent = getattr(test, "test_case", test)
-        grouped.setdefault(parent.id(), []).append(detail)
+        # unittest omits subTest parameters from tracebacks; preserve their
+        # labels so multiple failed variants remain distinguishable in JUnit.
+        message = f"{test}\n{detail}" if parent is not test else detail
+        grouped.setdefault(parent.id(), []).append(message)
     return {test_id: "\n\n".join(details) for test_id, details in grouped.items()}
 
 
