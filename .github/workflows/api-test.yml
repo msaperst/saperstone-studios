@@ -36,11 +36,11 @@ jobs:
         if: failure()
         run: |
           echo "::group::Docker container status"
-          docker compose ps
-          docker inspect --format 'State={{.State.Status}} Exit={{.State.ExitCode}} OOMKilled={{.State.OOMKilled}} RestartCount={{.RestartCount}}' saperstonestudios_php
+          docker compose ps || true
+          docker inspect --format 'State={{.State.Status}} Exit={{.State.ExitCode}} OOMKilled={{.State.OOMKilled}} RestartCount={{.RestartCount}}' saperstonestudios_php || true
           echo "::endgroup::"
           echo "::group::PHP/Apache container logs"
-          docker compose logs --no-color --tail=200 php
+          docker compose logs --no-color --tail=200 php || true
           echo "::endgroup::"
 
       - name: API Test Summary 📊
