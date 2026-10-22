@@ -2039,14 +2039,14 @@ Comment',
             if (str_starts_with($progress, 'Error:')) {
                 Assert::fail('Thumbnail generation failed: ' . $progress);
             }
-            return $progress === 'Done' || $progress === 'Done: No missing thumbnails';
+            if ($progress !== 'Done' && $progress !== 'Done: No missing thumbnails') {
+                return false;
+            }
+            // Wait for the completion handler to stop the animation as well:
+            // asserting immediately after a text update would race the DOM.
+            $bar = $this->driver->findElement(WebDriverBy::cssSelector('#resize-progress .progress-bar'));
+            return !str_contains((string)$bar->getAttribute('class'), 'active');
         });
-        // Completion must also end the spinner and release the dialog controls.
-        $progressBar = $this->driver->findElement(WebDriverBy::cssSelector('#resize-progress .progress-bar'));
-        Assert::assertFalse(
-            str_contains((string)$progressBar->getAttribute('class'), 'active'),
-            'Thumbnail completion must stop the progress animation'
-        );
     }
 
     /**
