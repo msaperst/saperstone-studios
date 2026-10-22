@@ -48,16 +48,16 @@ class ImageProcessingPolicyTests(unittest.TestCase):
             "disk": "2GiB", "time": "180", "file": "256"
         }, resources)
 
-    def test_docker_image_applies_policy_and_smoke_tests_enforcement(self):
+    def test_production_image_installs_policy_without_running_tests_during_build(self):
         text = DOCKERFILE.read_text(encoding="utf-8")
         self.assertIn(
             "COPY .docker/php/image-processing-policy.xml /etc/ImageMagick-6/policy.xml",
             text,
         )
-        self.assertIn("convert /tmp/policy-smoke.jpeg", text)
-        self.assertIn("composite -dissolve 30", text)
-        self.assertIn("convert MVG:/tmp/policy-smoke.mvg", text)
-        self.assertIn("grep -Eiq 'security policy|not authorized'", text)
+        for inline_test in ("policy-smoke", "PHP_VERSION_ID", "extension_loaded(",
+                            "Strings::assetUrl("):
+            with self.subTest(inline_test=inline_test):
+                self.assertNotIn(inline_test, text)
 
 
 if __name__ == "__main__":
