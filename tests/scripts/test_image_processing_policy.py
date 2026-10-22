@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 POLICY = ROOT / ".docker/php/image-processing-policy.xml"
 DOCKERFILE = ROOT / ".docker/php/Dockerfile"
+CONTAINER_SCAN_WORKFLOW = ROOT / ".github/workflows/container-scan.yml"
 
 
 class ImageProcessingPolicyTests(unittest.TestCase):
@@ -47,6 +48,13 @@ class ImageProcessingPolicyTests(unittest.TestCase):
             "thread": "2", "memory": "256MiB", "map": "512MiB",
             "disk": "2GiB", "time": "180", "file": "256"
         }, resources)
+
+    def test_built_image_integration_suite_is_invoked_by_ci(self):
+        workflow = CONTAINER_SCAN_WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn(
+            "run: sh tests/container/run-php-runtime-security.sh saperstone-studios/php:latest",
+            workflow,
+        )
 
     def test_production_image_installs_policy_without_running_tests_during_build(self):
         text = DOCKERFILE.read_text(encoding="utf-8")
