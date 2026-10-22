@@ -35,7 +35,14 @@ policy in the **production PHP image**. Both PHP Imagick and the CLI tools
 - Block external delegates, filters and indirect `@file` / pipe reads. In
   particular, MVG, MSL, SVG, EPS, PDF, and remote URL coders cannot process.
 - Cap threads (2), pixel-cache RAM (256 MiB), mmap (512 MiB), on-disk cache
-  (2 GiB), open files (256) and operation duration (180 seconds).
+  (2 GiB), and open pixel-cache files (256).
+- **Do not use a global ImageMagick time limit in the mod_php image.**
+  ImageMagick 6 measures elapsed process time; an Apache PHP worker remains
+  alive across requests. A finite policy timeout can abruptly terminate it
+  while processing an otherwise ordinary image, producing HTTP disconnects
+  (Guzzle cURL error 52) rather than a catchable exception. Timeouts for
+  individual thumbnail commands should use subprocess-level control instead
+  of a shared ImageMagick policy.
 - Deliberately avoid low image width/height ceilings: camera originals can
   exceed 8,192 pixels. The size/format contract can be narrowed after a
   real inventory of legacy originals, not by silently breaking galleries.
@@ -45,8 +52,9 @@ The existing PHP Container Scan CI job builds the production image and then
 invokes `tests/container/run-php-runtime-security.sh`. Its in-container
 integration suite (`php-runtime-security.sh`) runs as `www-data` and
 verifies the actual built image: patched PHP runtime, enabled Imagick,
-production assets, JPEG reading/resizing, tiled PNG proof composition, and
-an actual MVG source rejected specifically by the security policy.
+production assets, a safe ImageMagick process time limit, JPEG
+reading/resizing, tiled PNG proof composition, and an actual MVG source
+rejected specifically by the security policy.
 The script tests verify policy configuration and enforce this separation.
 These checks do not depend on starting the web application or database.
 
