@@ -7,15 +7,17 @@
   ImageMagick delegate/coder attack surface to untrusted photographs.
 
   Deliberately leave per-image width/height limits unset: professional camera
-  originals may exceed 8K pixels. Limit bounded resources and runtime instead.
-  Revisit only with real-format inventory and end-to-end tests.
+  originals may exceed 8K pixels. Bound pixel-cache resources instead.
+  Do not set a global ImageMagick time limit: mod_php workers are long-lived
+  and ImageMagick 6 may terminate the worker after cumulative wall-clock time
+  (rather than returning a catchable exception for an individual image).
+  Revisit per-request and subprocess deadlines separately.
 -->
 <policymap>
   <policy domain="resource" name="thread" value="2"/>
   <policy domain="resource" name="memory" value="256MiB"/>
   <policy domain="resource" name="map" value="512MiB"/>
   <policy domain="resource" name="disk" value="2GiB"/>
-  <policy domain="resource" name="time" value="180"/>
   <policy domain="resource" name="file" value="256"/>
 
   <!-- No external commands, downloaded resources, image filters or @file reads. -->
