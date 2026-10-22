@@ -51,7 +51,7 @@ class SqlRuntimeSecurityTests(unittest.TestCase):
             key = f"ELSA-2026-500448-{name}"
             with self.subTest(package=name):
                 self.assertIn(key, reasons)
-                self.assertIn("FIPS", reasons[key])
+                self.assertIn("_fips", reasons[key].lower())
                 self.assertIn("ELSA-2026-77396", reasons[key])
 
         # GO-2026-6809 is fixed in the rebuilt binary, not exempted.
