@@ -46,14 +46,17 @@ class RuntimeSecurityWatchTests(unittest.TestCase):
         self.assertTrue(status["outdated"])
         self.assertEqual({}, status["new"])
 
-    def test_first_run_requires_review_instead_of_silently_approving_baseline(self):
-        status = watch.evaluate("8.4.27", "8.4.27", {"CVE-old": "high"}, None)
+    def test_first_run_requires_review_without_mislabeling_existing_cves_as_new(self):
+        findings = {"CVE-old": "high"}
+        status = watch.evaluate("8.4.27", "8.4.27", findings, None)
         self.assertTrue(status["alert"])
         self.assertTrue(status["initial_baseline"])
-        self.assertIn(
-            "Baseline review required",
-            watch.report("image", "sha256:a", "8.4.27", "8.4.27", {}, status),
-        )
+        self.assertEqual({}, status["new"])
+        report = watch.report("image", "sha256:a", "8.4.27", "8.4.27", findings, status)
+        self.assertIn("Baseline review required", report)
+        self.assertIn("Existing findings requiring baseline review", report)
+        self.assertIn("New or escalated high/critical findings: **0**", report)
+        self.assertNotIn("### New or escalated vulnerabilities", report)
 
     def test_rejects_wrong_runtime_branch_and_invalid_snapshot(self):
         with self.assertRaises(ValueError):
