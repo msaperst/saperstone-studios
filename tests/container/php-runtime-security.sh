@@ -17,6 +17,14 @@ php -r '
         fwrite(STDERR, "Production Imagick extension is not enabled" . PHP_EOL);
         exit(1);
     }
+    // ImageMagick 6 measures global time against a long-lived PHP process,
+    // not just the current request. A short policy limit may terminate an
+    // Apache worker with no HTTP response.
+    $timeLimit = Imagick::getResourceLimit(Imagick::RESOURCETYPE_TIME);
+    if ($timeLimit !== 0 && $timeLimit < 3600) {
+        fwrite(STDERR, "Unsafe global ImageMagick time limit: " . $timeLimit . PHP_EOL);
+        exit(1);
+    }
 '
 
 # Production JavaScript/CSS must be generated and referenced by Strings.
