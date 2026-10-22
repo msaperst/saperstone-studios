@@ -24,7 +24,7 @@ class GetThumbnailStatusTest extends TestCase {
 
     private function runPhpInContainer(string $code): void {
         exec(
-            'docker compose exec -T php php -r ' . escapeshellarg($code),
+            'docker compose exec -T -u www-data php php -r ' . escapeshellarg($code),
             $output,
             $exitCode
         );
@@ -75,6 +75,28 @@ class GetThumbnailStatusTest extends TestCase {
 
         $this->assertEquals(404, $response->getStatusCode());
         $this->assertEquals('', (string)$response->getBody());
+    }
+
+    /**
+     * Terminal results must survive more than one poll. The previous worker
+     * deleted Done/Error after one second, leaving the UI stuck on 404s.
+     */
+    public function testTerminalStatusRemainsReadableAcrossPolls(): void {
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+
+        foreach (['Done', 'Done: No missing thumbnails', 'Error: Unable to resize image'] as $status) {
+            $this->writeStatusFile($status);
+            for ($poll = 0; $poll < 2; $poll++) {
+                $response = $this->http->request('GET', 'api/get-thumbnail-status.php', [
+                    'cookies' => $cookieJar
+                ]);
+                $this->assertSame(200, $response->getStatusCode());
+                $this->assertSame($status, (string)$response->getBody());
+                $this->assertStringContainsString('no-store', $response->getHeaderLine('Cache-Control'));
+            }
+        }
     }
 
     /**
