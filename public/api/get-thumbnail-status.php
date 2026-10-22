@@ -10,5 +10,6 @@ if (!is_file($statusPath)) {
     exit();
 }
 
-header('Content-Type: text/plain');
+header('Content-Type: text/plain; charset=UTF-8');
+header('Cache-Control: no-store');
 readfile($statusPath);

@@ -747,6 +747,75 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         assert.equal(dialog.closable, true);
     });
 
+    test(`${label}: makeThumbs retries a temporary status failure before finishing`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queuePost('/api/make-thumbs.php', {type: 'success', data: ''});
+        environment.queueGet('/api/get-thumbnail-status.php', {
+            type: 'failure',
+            xhr: {status: 404}
+        });
+        environment.queueGet('/api/get-thumbnail-status.php', {
+            type: 'success',
+            data: 'Done'
+        });
+        const button = environment.createButton('__thumb_retry_button__');
+        const dialog = environment.createDialog();
+
+        context.makeThumbs(16, button, dialog, 'none', 'missing');
+        environment.runIntervalsOnce();
+        assert.equal(button.stopSpinCount, 0);
+        assert.equal(environment.element('#resize-progress .progress-bar').hasClass('active'), true);
+
+        environment.runIntervalsOnce();
+        assert.equal(button.stopSpinCount, 1);
+        assert.equal(dialog.buttonsEnabled, true);
+        assert.equal(environment.element('#resize-progress .progress-bar').text(), 'Done');
+        assert.equal(environment.calls.reload.length, 1);
+    });
+
+    test(`${label}: makeThumbs stops polling after repeated missing-status responses`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        environment.queuePost('/api/make-thumbs.php', {type: 'success', data: ''});
+        for (let count = 0; count < 4; count += 1) {
+            environment.queueGet('/api/get-thumbnail-status.php', {
+                type: 'failure',
+                xhr: {status: 404}
+            });
+        }
+        const button = environment.createButton('__thumb_lost_status_button__');
+        const dialog = environment.createDialog();
+
+        context.makeThumbs(17, button, dialog, 'proof', 'all');
+        for (let count = 0; count < 4; count += 1) {
+            environment.runIntervalsOnce();
+        }
+
+        const progress = environment.element('#resize-progress .progress-bar');
+        assert.equal(progress.text(), 'Error: Unable to check thumbnail generation status');
+        assert.equal(progress.hasClass('active'), false);
+        assert.equal(progress.hasClass('progress-bar-danger'), true);
+        assert.equal(button.stopSpinCount, 1);
+        assert.equal(dialog.buttonsEnabled, true);
+        assert.equal(dialog.closable, true);
+        assert.equal(environment.calls.get.length, 3);
+        assert.equal(environment.calls.reload.length, 0);
+    });
+
+    test(`${label}: makeThumbs renders status as text, not filename-supplied HTML`, () => {
+        const {context, environment} = createAlbumContext(scriptPath);
+        const status = 'Creating thumbnails <img src=x onerror=alert(1)>.jpg...';
+        environment.queuePost('/api/make-thumbs.php', {type: 'success', data: ''});
+        environment.queueGet('/api/get-thumbnail-status.php', {type: 'success', data: status});
+
+        context.makeThumbs(18, environment.createButton('__thumb_html_button__'),
+            environment.createDialog(), 'none', 'all');
+        environment.runIntervalsOnce();
+
+        const progress = environment.element('#resize-progress .progress-bar');
+        assert.equal(progress.text(), status);
+        assert.equal(progress.html(), '');
+    });
+
     test(`${label}: makeThumbs uses the fallback message when the request fails without a response body`, () => {
         const {context, environment} = createAlbumContext(scriptPath);
         environment.queuePost('/api/make-thumbs.php', {
@@ -761,7 +830,7 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         context.makeThumbs(16, button, dialog, 'none', 'all');
 
         const progress = environment.element('#resize-progress .progress-bar');
-        assert.equal(progress.html(), 'Error: Unable to start thumbnail generation');
+        assert.equal(progress.text(), 'Error: Unable to start thumbnail generation');
         assert.equal(progress.hasClass('progress-bar-danger'), true);
         assert.equal(button.stopSpinCount, 1);
         assert.equal(dialog.buttonsEnabled, true);
@@ -782,7 +851,7 @@ function registerSharedAlbumManagementTests(label, scriptPath) {
         context.makeThumbs(16, button, dialog, 'none', 'all');
 
         const progress = environment.element('#resize-progress .progress-bar');
-        assert.equal(progress.html(), 'Error: Unable to create thumbnails');
+        assert.equal(progress.text(), 'Error: Unable to create thumbnails');
         assert.equal(progress.hasClass('progress-bar-danger'), true);
         assert.equal(button.stopSpinCount, 1);
         assert.equal(dialog.buttonsEnabled, true);

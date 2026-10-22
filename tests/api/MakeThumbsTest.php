@@ -342,6 +342,57 @@ class MakeThumbsTest extends TestCase {
         $this->assertEquals(1, $this->sql->getRow("SELECT thumbsCreated FROM albums WHERE id = 999")['thumbsCreated']);
     }
 
+    /**
+     * Run the worker to exit, not merely until it flips the DB flag.
+     * This catches the prior bug where the worker wrote Done, slept one
+     * second, and deleted the file before the browser's next poll.
+     */
+    public function testWorkerRetainsCompletionStatusAfterExiting(): void {
+        $output = [];
+        $status = 0;
+        exec(
+            'docker compose exec -T -u www-data php bash /var/www/bin/make-thumbs.sh 998 none all',
+            $output,
+            $status
+        );
+        $this->assertSame(0, $status, 'Thumbnail generation process should succeed');
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        for ($poll = 0; $poll < 2; $poll++) {
+            $response = $this->http->request('GET', 'api/get-thumbnail-status.php', [
+                'cookies' => $cookieJar
+            ]);
+            $this->assertSame(200, $response->getStatusCode());
+            $this->assertSame('Done', trim((string)$response->getBody()));
+        }
+    }
+
+    public function testWorkerRetainsErrorStatusAfterExiting(): void {
+        unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
+
+        $output = [];
+        $status = 0;
+        exec(
+            'docker compose exec -T -u www-data php bash /var/www/bin/make-thumbs.sh 998 none all',
+            $output,
+            $status
+        );
+        $this->assertNotSame(0, $status, 'Missing source should fail thumbnail generation');
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        for ($poll = 0; $poll < 2; $poll++) {
+            $response = $this->http->request('GET', 'api/get-thumbnail-status.php', [
+                'cookies' => $cookieJar
+            ]);
+            $this->assertSame(200, $response->getStatusCode());
+            $this->assertStringStartsWith('Error: Full-resolution source missing', trim((string)$response->getBody()));
+        }
+    }
+
     private function assertResponsiveDerivatives(string $filename): void {
         $base = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/';
         $full = $base . 'full/' . $filename;

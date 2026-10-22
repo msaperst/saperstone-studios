@@ -5,12 +5,12 @@ PARENT_DIR="$( dirname "${DIR}" )"
 
 output="${PARENT_DIR}/status/thumbnail-status.txt"
 mkdir -p "$( dirname "${output}" )"
-touch "${output}"
+# The UI polls asynchronously; keep the terminal status available until the
+# next run rather than deleting it before the browser observes completion.
+echo "Starting thumbnail generation..." > "$output"
 
 fail() {
     echo "Error: $1" > "$output"
-    sleep 1
-    rm -f "$output"
     exit 1
 }
 
@@ -129,5 +129,3 @@ else
     echo "Done" > "$output"
 fi
 
-sleep 1
-rm -f "$output"

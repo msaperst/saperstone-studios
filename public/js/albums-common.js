@@ -273,18 +273,21 @@ function makeThumbs(id, button, dialog, markup, mode) {
     $('#resize-progress .progress-bar')
         .removeClass('progress-bar-danger')
         .addClass('active')
-        .html('Starting thumbnail generation...');
+        .text('Starting thumbnail generation...');
     $("#resize-progress").show();
     $.post("/api/make-thumbs.php", {
         id: id,
         markup: markup,
         mode: mode
     }).done(function () {
-        var myVar = setInterval(function () {
+        var failedPolls = 0;
+        var pollTimer = setInterval(function () {
             $.get("/api/get-thumbnail-status.php", function (data) {
-                $('#resize-progress .progress-bar').html(data);
+                failedPolls = 0;
+                // Filenames appear in status messages: never interpret them as HTML.
+                $('#resize-progress .progress-bar').text(data);
                 if (data.indexOf("Done") === 0) {
-                    clearInterval(myVar);
+                    clearInterval(pollTimer);
                     $('#resize-progress .progress-bar').removeClass('active');
                     setTimeout(function () {
                         $('#resize-progress').hide();
@@ -298,21 +301,31 @@ function makeThumbs(id, button, dialog, markup, mode) {
                     if ($('#albums').length) {
                         album_table.ajax.reload(null, false);
                     }
-                }
-                if (data.indexOf("Error") === 0) {
-                    clearInterval(myVar);
+                } else if (data.indexOf("Error") === 0) {
+                    clearInterval(pollTimer);
                     $('#resize-progress .progress-bar').removeClass('active').addClass('progress-bar-danger');
                     button.stopSpin();
                     enableDialogButtons(dialog);
                 }
             }).fail(function () {
-                // The status file is transient. Keep polling unless the API request itself failed.
+                // A transient transport failure need not stop image generation,
+                // but a missing/unavailable status must not leave a spinner forever.
+                failedPolls += 1;
+                if (failedPolls >= 3) {
+                    clearInterval(pollTimer);
+                    $('#resize-progress .progress-bar')
+                        .text('Error: Unable to check thumbnail generation status')
+                        .removeClass('active')
+                        .addClass('progress-bar-danger');
+                    button.stopSpin();
+                    enableDialogButtons(dialog);
+                }
             });
         }, 100);
     }).fail(function (xhr) {
         var message = xhr.responseText || 'Unable to start thumbnail generation';
         $('#resize-progress .progress-bar')
-            .html('Error: ' + message)
+            .text('Error: ' + message)
             .removeClass('active')
             .addClass('progress-bar-danger');
         button.stopSpin();

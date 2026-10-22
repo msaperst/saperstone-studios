@@ -62,6 +62,18 @@ if (!$systemUser->isAdmin()) {
 $scriptPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "bin/make-thumbs.sh";
 $albumId = (int)$album->getId();
 
+// Reset any terminal status before returning the successful launch response.
+// Otherwise an immediate poll may read "Done" left by the previous run
+// before the asynchronous worker starts.
+$statusDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'status';
+$statusPath = $statusDir . DIRECTORY_SEPARATOR . 'thumbnail-status.txt';
+if ((!is_dir($statusDir) && !mkdir($statusDir, 0775, true))
+    || file_put_contents($statusPath, "Starting thumbnail generation...\n", LOCK_EX) === false) {
+    http_response_code(500);
+    echo 'Unable to initialize thumbnail status';
+    exit();
+}
+
 system("$scriptPath $albumId $markup $mode > /dev/null 2>&1 &");
 
 exit ();
