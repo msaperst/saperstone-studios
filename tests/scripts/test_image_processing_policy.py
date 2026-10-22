@@ -41,13 +41,17 @@ class ImageProcessingPolicyTests(unittest.TestCase):
                     self.policies,
                 )
 
-    def test_process_resources_have_bounded_limits(self):
+    def test_process_resources_have_bounded_limits_without_global_time_limit(self):
         resources = {p["name"]: p["value"] for p in self.policies
                      if p.get("domain") == "resource"}
         self.assertEqual({
             "thread": "2", "memory": "256MiB", "map": "512MiB",
-            "disk": "2GiB", "time": "180", "file": "256"
+            "disk": "2GiB", "file": "256"
         }, resources)
+        # ImageMagick 6 may terminate a long-lived Apache PHP worker if
+        # its elapsed process time exceeds a global time policy, producing
+        # "empty reply from server" instead of a catchable Imagick exception.
+        self.assertNotIn("time", resources)
 
     def test_built_image_integration_suite_is_invoked_by_ci(self):
         workflow = CONTAINER_SCAN_WORKFLOW.read_text(encoding="utf-8")
