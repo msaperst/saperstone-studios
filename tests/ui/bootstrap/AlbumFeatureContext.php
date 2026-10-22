@@ -2041,6 +2041,12 @@ Comment',
             }
             return $progress === 'Done' || $progress === 'Done: No missing thumbnails';
         });
+        // Completion must also end the spinner and release the dialog controls.
+        $progressBar = $this->driver->findElement(WebDriverBy::cssSelector('#resize-progress .progress-bar'));
+        Assert::assertFalse(
+            str_contains((string)$progressBar->getAttribute('class'), 'active'),
+            'Thumbnail completion must stop the progress animation'
+        );
     }
 
     /**
