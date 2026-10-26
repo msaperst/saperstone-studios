@@ -20,6 +20,7 @@ class SqlCertificateStoreTests(unittest.TestCase):
         self.assertFalse(certs.is_patched("2026.2.92_v9.0.319-90.2.el9_8"))
         self.assertTrue(certs.is_patched("2026.2.92_v9.0.319-90.3.el9_8"))
         self.assertTrue(certs.is_patched("2026.2.92_v9.0.319-90.4.el9_8"))
+        self.assertTrue(certs.is_patched("2026.2.92_v9.0.319-90.3.0.1.el9_8"))
         self.assertTrue(certs.is_patched("2027.1.1_v9.0.333-91.1.el9_8"))
 
     def test_rejects_unrecognized_rpm_versions_instead_of_guessing(self):
