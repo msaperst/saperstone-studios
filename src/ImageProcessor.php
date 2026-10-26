@@ -64,6 +64,12 @@ class ImageProcessor {
         if ($canonicalPath === false || !is_file($canonicalPath)) {
             throw new ImageProcessingException('Image file does not exist');
         }
+        // ImageMagick 6 can transparently unpack BZh blobs even when its
+        // photo-only module policy denies non-photo coders (CVE-2026-116149).
+        // Preserve legacy non-fatal behavior for an unsupported image.
+        if (file_get_contents($canonicalPath, false, null, 0, 3) === 'BZh') {
+            return;
+        }
 
         try {
             $image = new Imagick($canonicalPath);
