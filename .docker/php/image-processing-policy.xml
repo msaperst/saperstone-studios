@@ -25,6 +25,9 @@
   <policy domain="filter" rights="none" pattern="*"/>
   <policy domain="path" rights="none" pattern="@*"/>
   <policy domain="path" rights="none" pattern="|*"/>
+  <!-- CVE-2026-116149: bzip2 blobs bypass module/coder allowlists on read. -->
+  <policy domain="path" rights="none" pattern="*.[Bb][Zz]2"/>
+  <policy domain="path" rights="none" pattern="*.[Bb][Zz]"/>
 
   <!-- All non-photographic modules (MVG/MSL/SVG/PDF/PS/URL/etc.) are denied. -->
   <policy domain="module" rights="none" pattern="*"/>
