@@ -64,6 +64,31 @@ parsing is free of vulnerabilities. Continue reviewing ImageMagick, zlib,
 JPEG, PNG, and GIF advisories in #273 and #283. Do not wholesale dismiss
 findings on the basis of this configuration.
 
+## Newly disclosed bzip2 image-input vulnerability (October 26, 2026)
+
+The October 26 [published-image security watch](https://github.com/msaperst/saperstone-studios/actions/runs/40385972776)
+identified six package findings for one root vulnerability,
+[`CVE-2026-116149`](https://security-tracker.debian.org/tracker/CVE-2026-116149):
+an ImageMagick 6 stack overwrite while reading bzip2-compressed image
+content. The upstream 6.9.13-58 release fixes it; Debian Bookworm had no
+fixed package when this review was written.
+
+Image uploads validate real JPEG/PNG/GIF bytes before storage and the
+production policy denies image decoding modules except those three formats.
+Neither measure constitutes a patched ImageMagick binary. To verify this
+specific restriction against the **built production container**, the
+`tests/container/php-runtime-security.sh` suite checks that an actual
+bzip2-compressed GIF is rejected both by file suffix and by explicitly
+requesting the compressed reader, while ordinary GIF conversion continues
+to work. The fixture validity is checked in Script Testing. All checks
+remain outside Dockerfiles.
+
+These checks confirm rejection of the tested inputs, not formal
+unreachability of every bzip2 code path. Keep the CVE in security baseline
+review (#283/#273) until the upstream patch reaches our Debian Bookworm
+package or application-specific non-reachability is independently validated.
+Do not add a generic package allowlist for it.
+
 ## Verification / supported formats
 
 - Unit/integration: file extension and byte-format consistency, JPEG/PNG/GIF
