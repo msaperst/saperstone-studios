@@ -58,6 +58,19 @@ class ImageProcessorIntegrationTest extends TestCase {
         self::assertNotFalse(getimagesize($this->imagePath));
     }
 
+    public function testBzip2CompressedImageIsNotPassedToImagick(): void {
+        // This is a complete GIF compressed with bzip2, disguised by a .jpeg
+        // filename. ImageMagick transparently opens bzip2 blobs before coder
+        // policy checks unless we reject the BZh magic at the call site.
+        $payload = base64_decode(
+            'QlpoOTFBWSZTWUsvjV4AABDdQOTAAAQAyAGgIAAgAAAAoAAxTAAA1PIQB6lFkCGUaQKVmRmZgZ32H5uR8XckU4UJBLL41eA='
+        );
+        file_put_contents($this->imagePath, $payload);
+
+        ImageProcessor::resize($this->imagePath, 2);
+        self::assertSame($payload, file_get_contents($this->imagePath));
+    }
+
     public function testInvalidImagePreservesLegacyNonFatalBehavior(): void {
         file_put_contents($this->imagePath, 'not an image');
 
