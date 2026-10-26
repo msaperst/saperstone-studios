@@ -116,6 +116,7 @@ jobs:
           context: .
           file: .docker/sql/Dockerfile
           platforms: linux/amd64,linux/arm64
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
