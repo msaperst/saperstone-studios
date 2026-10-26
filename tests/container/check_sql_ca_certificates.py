@@ -22,9 +22,14 @@ def version_components(value):
     not a general substitute for RPM's package version comparison semantics.
     """
     value = value.strip()
-    if not re.match(r"^\d{4}\.\d+\.\d+_v\d+\.\d+\.\d+-\d+\.\d+", value):
+    if not re.fullmatch(
+        r"\d{4}\.\d+\.\d+_v\d+\.\d+\.\d+-\d+\.\d+(?:\.\d+)*\.el\d+_\d+",
+        value,
+    ):
         raise ValueError(f"Unrecognized ca-certificates RPM version: {value!r}")
-    return tuple(int(part) for part in re.findall(r"\d+", value))
+    # Only compare the upstream version and first two release components.
+    # Oracle downstream build suffixes do not change the advisory floor.
+    return tuple(int(part) for part in re.findall(r"\d+", value)[:8])
 
 
 def is_patched(version):
