@@ -72,4 +72,24 @@ if ! grep -Eiq 'security policy|not authorized' "$work/mvg.log"; then
     exit 1
 fi
 
+# CVE-2026-116149: ImageMagick 6's bzip2 blob-reader can overflow when
+# decoding crafted compressed images. Use a real bzip2-compressed, 1x1 GIF:
+# JPEG/PNG/GIF must remain usable, but the bzip2 wrapper must not be decoded.
+# Fixture: bz2.compress(base64.b64decode('R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='))
+printf '%s' 'QlpoOTFBWSZTWZxYWbUAAAvdAPAAAAQAaAGgIAAAAKAAMQNA0BKnlNAemVhgiUwiPcc/JVi7kinChITiws2o' \
+    | base64 -d > "$work/photo.gif.bz2"
+convert /fixtures/flower.jpeg "$work/allowed.gif"
+test "$(identify -format '%m' "$work/allowed.gif")" = 'GIF'
+for source in "$work/photo.gif.bz2" "BZ2:$work/photo.gif.bz2"; do
+    rm -f "$work/bzip-decoded.gif"
+    if convert "$source" "$work/bzip-decoded.gif" >"$work/bzip.log" 2>&1; then
+        echo "ImageMagick decoded bzip2-compressed input despite the photo-only policy: $source" >&2
+        exit 1
+    fi
+    if test -e "$work/bzip-decoded.gif"; then
+        echo "ImageMagick left an output after rejecting bzip2-compressed input" >&2
+        exit 1
+    fi
+done
+
 echo 'PHP image runtime, production assets, and ImageMagick policy passed'
