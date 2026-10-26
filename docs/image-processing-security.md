@@ -69,25 +69,41 @@ findings on the basis of this configuration.
 The October 26 [published-image security watch](https://github.com/msaperst/saperstone-studios/actions/runs/40385972776)
 identified six package findings for one root vulnerability,
 [`CVE-2026-116149`](https://security-tracker.debian.org/tracker/CVE-2026-116149):
-an ImageMagick 6 stack overwrite while reading bzip2-compressed image
-content. The upstream 6.9.13-58 release fixes it; Debian Bookworm had no
-fixed package when this review was written.
+an ImageMagick 6 stack overwrite in its bzip2 compressed-image blob reader.
+The upstream 6.9.13-58 release fixes it; Debian Bookworm had no fixed
+package at the time of this review.
 
-Image uploads validate real JPEG/PNG/GIF bytes before storage and the
-production policy denies image decoding modules except those three formats.
-Neither measure constitutes a patched ImageMagick binary. To verify this
-specific restriction against the **built production container**, the
-`tests/container/php-runtime-security.sh` suite checks that an actual
-bzip2-compressed GIF is rejected both by file suffix and by explicitly
-requesting the compressed reader, while ordinary GIF conversion continues
-to work. The fixture validity is checked in Script Testing. All checks
-remain outside Dockerfiles.
+**Important policy limitation:** the JPEG/PNG/GIF ImageMagick module allowlist
+does **not** necessarily prevent transparent bzip2 decompression. The image
+library can recognize the `BZh` magic before selecting an allowed image
+decoder, including when a compressed image is renamed to an allowed filename.
+Do not assume an allowed decoder module implies a safe blob reader.
 
-These checks confirm rejection of the tested inputs, not formal
-unreachability of every bzip2 code path. Keep the CVE in security baseline
-review (#283/#273) until the upstream patch reaches our Debian Bookworm
-package or application-specific non-reachability is independently validated.
-Do not add a generic package allowlist for it.
+Until the Debian patch arrives, the site uses layered input restrictions:
+
+- New uploads must match real JPEG/PNG/GIF data. The PHP upload validator's
+  byte-format check rejects compressed files before they are stored.
+- `ImageProcessor` skips inputs beginning with bzip2 magic (`BZh`) before
+  constructing an Imagick instance. It retains the existing nonfatal
+  behavior for unsupported images.
+- The thumbnail shell worker rejects stored/legacy full-resolution originals
+  with the `BZh` signature before invoking any `convert` command, leaving
+  the protected source intact and providing an explicit error status.
+- The ImageMagick policy denies paths ending in `.bz` / `.bz2` (including
+  case variants). This is **not** sufficient by itself for compressed data
+  disguised with a different extension, hence the entry-point checks.
+
+The production-image runtime suite tests normal image operations and the
+compressed-GIF rejection, including magic-disguised input to
+`ImageProcessor`; the API suite verifies rejected legacy originals leave
+thumbnail data unmodified. Script Testing validates that the compressed
+fixture is a real GIF. All tests run outside the Dockerfile.
+
+**Residual risk:** These mitigations harden known application entry points
+but do **not** patch ImageMagick itself, nor prove that every possible
+library invocation is unreachable. Keep the CVE tracked in #283/#273,
+monitor Debian's patched package, and prefer installing the vendor fix once
+available. Do not add a broad Grype suppression.
 
 ## Verification / supported formats
 
