@@ -75,8 +75,8 @@ fi
 # CVE-2026-116149: ImageMagick 6's bzip2 blob-reader can overflow when
 # decoding crafted compressed images. Use a real bzip2-compressed, 1x1 GIF:
 # JPEG/PNG/GIF must remain usable, but the bzip2 wrapper must not be decoded.
-# Fixture: bz2.compress(base64.b64decode('R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='))
-printf '%s' 'QlpoOTFBWSZTWZxYWbUAAAvdAPAAAAQAaAGgIAAAAKAAMQNA0BKnlNAemVhgiUwiPcc/JVi7kinChITiws2o' \
+# Fixture: bz2.compress(base64.b64decode('R0lGODdhAQABAIEAAP8AAAAAAAAAAAAAACwAAAAAAQABAAAIBAABBAQAOw=='))
+printf '%s' 'QlpoOTFBWSZTWUsvjV4AABDdQOTAAAQAyAGgIAAgAAAAoAAxTAAA1PIQB6lFkCGUaQKVmRmZgZ32H5uR8XckU4UJBLL41eA=' \
     | base64 -d > "$work/photo.gif.bz2"
 convert /fixtures/flower.jpeg "$work/allowed.gif"
 test "$(identify -format '%m' "$work/allowed.gif")" = 'GIF'
