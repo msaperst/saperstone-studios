@@ -97,7 +97,10 @@ jobs:
 
       - name: Build Dockerfile 🐋
         run: |
-          docker build -t saperstone-studios/sql:latest -f .docker/sql/Dockerfile .
+          docker build --pull -t saperstone-studios/sql:latest -f .docker/sql/Dockerfile .
+
+      - name: Verify SQL image certificate trust-store security update
+        run: python3 tests/container/check_sql_ca_certificates.py saperstone-studios/sql:latest
 
       - name: Generate complete vulnerability report 🕵️‍♂️
         id: report-sql
