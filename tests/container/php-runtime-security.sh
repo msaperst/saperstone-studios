@@ -95,4 +95,17 @@ for source in "$work/photo.gif.bz2" "BZ2:$work/photo.gif.bz2"; do
     fi
 done
 
+# Compression can be recognized from the BZh magic even if the filename uses
+# an allowed extension. Application code must reject this before calling
+# Imagick; restricting modules/filename extensions alone is insufficient.
+cp "$work/photo.gif.bz2" "$work/disguised.gif"
+php -r '
+    require "/var/www/src/autoloader.php";
+    ImageProcessor::resize($argv[1], 2);
+    if (file_get_contents($argv[1], false, null, 0, 3) !== "BZh") {
+        fwrite(STDERR, "Disguised bzip2 blob reached Imagick decoding" . PHP_EOL);
+        exit(1);
+    }
+' "$work/disguised.gif"
+
 echo 'PHP image runtime, production assets, and ImageMagick policy passed'
