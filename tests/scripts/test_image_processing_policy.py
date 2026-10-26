@@ -65,7 +65,10 @@ class ImageProcessingPolicyTests(unittest.TestCase):
         match = re.search(r"'(Qlpo[A-Za-z0-9+/=]+)'", script)
         self.assertIsNotNone(match)
         decoded = bz2.decompress(base64.b64decode(match.group(1)))
-        self.assertTrue(decoded.startswith(b"GIF89a"))
+        self.assertEqual(
+            decoded,
+            base64.b64decode("R0lGODdhAQABAIEAAP8AAAAAAAAAAAAAACwAAAAAAQABAAAIBAABBAQAOw=="),
+        )
         self.assertIn('convert "$source" "$work/bzip-decoded.gif"', script)
         self.assertIn('test -e "$work/bzip-decoded.gif"', script)
 
