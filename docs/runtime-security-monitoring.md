@@ -10,6 +10,28 @@ The website uses Apache/mod_php and MySQL containers. PHP interpreter CVEs are n
 - Alerts fail the scheduled job and create/update the issue `Published image security watch requires review`; changed findings notify the issue's watchers via a comment. Do not close without reviewing the vulnerability and deployment.
 - **Dependabot** (`.github/dependabot.yml`) checks the pinned PHP Docker base daily for patch-version updates and proposes PRs against the default `develop` branch. These remain approval-based and must pass the normal CI before merging.
 
+### Remediating newly published OS security updates
+
+The SQL image inherits Oracle Linux packages from `mysql:8.0`. Its build
+runs `microdnf update -y`; rebuilding an old published image is therefore
+required after an Oracle package advisory. The production SQL image build now
+uses `pull: true` and the PR SQL container scan uses `docker build --pull`.
+The container-scan job verifies the actual built `ca-certificates` package
+version against the Oracle Linux 9 eMudhra certificate-distrust security update
+([ELSA-2026-88459](https://linux.oracle.com/errata/ELSA-2026-88459.html)),
+without putting test assertions in the Dockerfile.
+
+A passing PR scan does **not** republish or redeploy images. Merge an approved,
+tested change to `develop` to publish fresh multi-architecture images, then
+verify the Raspberry Pi has actually picked them up. Do not clear the persistent
+security-watch issue merely because an image rebuild fixes one advisory.
+
+**Important:** The daily published-image watch intentionally fails while the
+open baseline-review issue remains, including on days with zero *new*
+findings. Read the snapshot summary and issue diff to distinguish unchanged
+baseline debt from actionable new regressions; the workflow failure alone
+does not identify a new exposure.
+
 The watch depends on upstream PHP release metadata and the vulnerability scanner's database. It cannot prove a newly disclosed, unindexed vulnerability exists unless a new upstream PHP release or scanner finding appears. It **does not auto-deploy**.
 
 ## Verify production on DietPi
