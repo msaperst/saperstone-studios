@@ -78,8 +78,11 @@ fi
 # Fixture: bz2.compress(base64.b64decode('R0lGODdhAQABAIEAAP8AAAAAAAAAAAAAACwAAAAAAQABAAAIBAABBAQAOw=='))
 printf '%s' 'QlpoOTFBWSZTWUsvjV4AABDdQOTAAAQAyAGgIAAgAAAAoAAxTAAA1PIQB6lFkCGUaQKVmRmZgZ32H5uR8XckU4UJBLL41eA=' \
     | base64 -d > "$work/photo.gif.bz2"
-convert /fixtures/flower.jpeg "$work/allowed.gif"
-test "$(identify -format '%m' "$work/allowed.gif")" = 'GIF'
+# Decode the uncompressed control image using the same ImageMagick build.
+printf '%s' 'R0lGODdhAQABAIEAAP8AAAAAAAAAAAAAACwAAAAAAQABAAAIBAABBAQAOw==' \
+    | base64 -d > "$work/allowed.gif"
+convert "$work/allowed.gif" "$work/uncompressed.png"
+test "$(identify -format '%m %wx%h' "$work/uncompressed.png")" = 'PNG 1x1'
 for source in "$work/photo.gif.bz2" "BZ2:$work/photo.gif.bz2"; do
     rm -f "$work/bzip-decoded.gif"
     if convert "$source" "$work/bzip-decoded.gif" >"$work/bzip.log" 2>&1; then
