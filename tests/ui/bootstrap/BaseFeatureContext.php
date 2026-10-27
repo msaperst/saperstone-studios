@@ -167,12 +167,22 @@ class BaseFeatureContext implements Context {
                             var style = window.getComputedStyle(element);
                             var events = jq && typeof jq._data === 'function'
                                 ? jq._data(element, 'events') || {} : {};
+                            var rect = element.getBoundingClientRect();
+                            var center = document.elementFromPoint(
+                                rect.left + rect.width / 2, rect.top + rect.height / 2
+                            );
                             return {
                                 exists: true,
                                 visible: style.display !== 'none' && style.visibility !== 'hidden'
                                     && element.getClientRects().length > 0,
                                 disabled: !!element.disabled,
                                 classes: String(element.className || ''),
+                                opacity: style.opacity,
+                                pointerEvents: style.pointerEvents,
+                                hovered: element.matches(':hover'),
+                                dataLoaded: element.getAttribute('data-loaded'),
+                                centerHit: center ? center.tagName.toLowerCase() + '.' +
+                                    String(center.className || '').replace(/\\s+/g, '.') : null,
                                 listeners: Object.keys(events)
                             };
                         }
@@ -197,6 +207,13 @@ class BaseFeatureContext implements Context {
                                 viewer: inspect('#album-viewer-overlay'),
                                 viewerClose: inspect('#album-viewer-close'),
                                 viewerNext: inspect('#album-next-btn'),
+                                viewerPrevious: inspect('#album-prev-btn'),
+                                viewerFavoriteSet: inspect('#set-favorite-image-btn'),
+                                viewerFavoriteUnset: inspect('#unset-favorite-image-btn'),
+                                firstCard: inspect('#album-grid .album-card'),
+                                firstCardMedia: inspect('#album-grid .album-card .album-card-media'),
+                                firstCardOverlay: inspect('#album-grid .album-card .album-card-overlay'),
+                                firstCardActions: inspect('#album-grid .album-card .album-card-actions'),
                                 imageSubmit: inspect('#submit-image-btn'),
                                 imageDownload: inspect('#downloadable-image-btn'),
                                 notifySubmit: inspect('#notify-submit'),
