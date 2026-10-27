@@ -59,6 +59,16 @@ php -r '
     $image->clear();
 ' "$work/resized.jpeg"
 
+# A real blog preview passes through both operations in one request.
+# Simply constructing Imagick would not detect the API timeout regression.
+cp "$work/resized.jpeg" "$work/blog-preview.jpeg"
+timeout 30s php -r '
+    require "/var/www/src/autoloader.php";
+    ImageProcessor::resize($argv[1], 200);
+    ImageProcessor::setDensity($argv[1], 72);
+' "$work/blog-preview.jpeg"
+test "$(identify -format '%m %wx%h' "$work/blog-preview.jpeg")" = 'JPEG 200x150'
+
 # A dangerous MVG payload must fail *because of the policy*, not because
 # the decoder is missing or an unrelated image-processing operation failed.
 printf 'push graphic-context\nviewbox 0 0 10 10\nrectangle 0,0 10,10\npop graphic-context\n' > "$work/payload.mvg"
