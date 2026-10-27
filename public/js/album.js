@@ -123,16 +123,21 @@ function updateViewerMeta(image) {
 }
 
 function getResponsiveThumbnailLocation(card) {
-    var width = card.get(0)?.getBoundingClientRect().width || 400;
-    var requiredWidth = width * (window.devicePixelRatio || 1);
+    var bounds = card.get(0)?.getBoundingClientRect();
+    var width = bounds?.width || 400;
+    // Thumbnail sizes cap the longest image edge, not just its width.
+    // Cards retain the image aspect ratio, including very tall portraits.
+    var height = bounds?.height || width * (Number.parseFloat(card.attr('data-height')) || 1) /
+        (Number.parseFloat(card.attr('data-width')) || 1);
+    var requiredSize = Math.max(width, height) * (window.devicePixelRatio || 1);
 
-    if (requiredWidth <= 400 && card.attr('data-thumbnail-400')) {
+    if (requiredSize <= 400 && card.attr('data-thumbnail-400')) {
         return card.attr('data-thumbnail-400');
     }
-    if (requiredWidth <= 800 && card.attr('data-thumbnail-800')) {
+    if (requiredSize <= 800 && card.attr('data-thumbnail-800')) {
         return card.attr('data-thumbnail-800');
     }
-    if (requiredWidth <= 1200 && card.attr('data-thumbnail-1200')) {
+    if (requiredSize <= 1200 && card.attr('data-thumbnail-1200')) {
         return card.attr('data-thumbnail-1200');
     }
     return card.attr('data-thumbnail-1600') || card.attr('data-location');

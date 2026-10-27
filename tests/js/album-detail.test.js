@@ -643,6 +643,62 @@ test('album.js chooses responsive protected derivatives for grid cards', () => {
     assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/10.jpg');
 });
 
+test('album.js sizes portrait thumbnails by the full rendered box, not only width', () => {
+    const {context, environment, window} = createAlbumDetailContext();
+    const card = environment.element('__tall_responsive_card__');
+    card.rect = {top: 0, bottom: 733, width: 276, height: 733};
+    card.attr('data-location', '/albums/sample/strip.jpg');
+    card.attr('data-thumbnail-400', '/albums/sample/thumbs/400/strip.jpg');
+    card.attr('data-thumbnail-800', '/albums/sample/thumbs/800/strip.jpg');
+    card.attr('data-thumbnail-1200', '/albums/sample/thumbs/1200/strip.jpg');
+    card.attr('data-thumbnail-1600', '/albums/sample/strip.jpg');
+
+    window.devicePixelRatio = 1;
+    assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/thumbs/800/strip.jpg');
+
+    window.devicePixelRatio = 2;
+    assert.equal(context.getResponsiveThumbnailLocation(card), '/albums/sample/strip.jpg');
+});
+
+test('album.js selects the smallest thumbnail covering the longest edge at each boundary', () => {
+    const {context, environment, window} = createAlbumDetailContext();
+    const card = environment.element('__long_edge_boundaries__');
+    card.attr('data-location', '/albums/sample/strip.jpg');
+    card.attr('data-thumbnail-400', '400');
+    card.attr('data-thumbnail-800', '800');
+    card.attr('data-thumbnail-1200', '1200');
+    card.attr('data-thumbnail-1600', '1600');
+    window.devicePixelRatio = 1;
+
+    for (const [width, height, expected] of [
+        [200, 400, '400'],
+        [200, 401, '800'],
+        [800, 200, '800'],
+        [200, 801, '1200'],
+        [1201, 200, '1600']
+    ]) {
+        card.rect = {top: 0, bottom: height, width, height};
+        assert.equal(context.getResponsiveThumbnailLocation(card), expected,
+            `Unexpected derivative for ${width}x${height} card`);
+    }
+});
+
+test('album.js uses image aspect ratio if the card height is not measurable', () => {
+    const {context, environment, window} = createAlbumDetailContext();
+    const card = environment.element('__unmeasured_tall_card__');
+    card.rect = {top: 0, bottom: 0, width: 250, height: 0};
+    card.attr('data-width', '590');
+    card.attr('data-height', '1568');
+    card.attr('data-thumbnail-400', '400');
+    card.attr('data-thumbnail-800', '800');
+    card.attr('data-thumbnail-1200', '1200');
+    card.attr('data-thumbnail-1600', '1600');
+    window.devicePixelRatio = 2;
+
+    // 250px column rendered at 1568/590 aspect = 664px tall, 1329px at 2x.
+    assert.equal(context.getResponsiveThumbnailLocation(card), '1600');
+});
+
 test('album.js viewer uses the 1600px protected derivative', () => {
     const {context, environment} = createAlbumDetailContext();
     const card = environment.element('__viewer_card__');
