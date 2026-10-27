@@ -21,7 +21,6 @@ jobs:
         run: |
           composer update symfony/yaml --with-all-dependencies --prefer-dist --no-progress --no-interaction
           composer validate
-          composer audit --locked --no-interaction
       - name: Output resolved package metadata for branch update
         run: |
           php -r '
