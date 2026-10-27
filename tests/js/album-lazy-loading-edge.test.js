@@ -110,6 +110,26 @@ test('album.js marks a lazy card loaded when the placeholder load event fires', 
     assert.equal(card.hasClass('is-loaded'), true);
 });
 
+test('album.js lazy loads a tall card with a sharp protected background derivative', () => {
+    const {album, card, image, media} = createInitializedLazyAlbum({
+        rect: {top: 100, bottom: 833, width: 276, height: 733}
+    });
+    card.attr('data-thumbnail-400', '/albums/sample/thumbs/400/tall.jpg');
+    card.attr('data-thumbnail-800', '/albums/sample/thumbs/800/tall.jpg');
+    card.attr('data-thumbnail-1200', '/albums/sample/thumbs/1200/tall.jpg');
+    card.attr('data-thumbnail-1600', '/albums/sample/tall.jpg');
+
+    album.loadImages();
+
+    assert.equal(
+        media.css('background-image'),
+        'url("/albums/sample/thumbs/800/tall.jpg")'
+    );
+    // The real thumbnail URL must remain in CSS, never exposed through img.src.
+    assert.equal(image.attr('src'), '/img/image.png');
+    assert.equal(card.attr('data-loading'), '1');
+});
+
 test('album.js immediately marks cached placeholder images loaded', () => {
     const {album, card, image} = createInitializedLazyAlbum({
         complete: true,
