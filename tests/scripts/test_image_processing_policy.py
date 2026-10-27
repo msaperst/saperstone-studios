@@ -47,12 +47,15 @@ class ImageProcessingPolicyTests(unittest.TestCase):
     def test_bzip2_paths_are_denied_even_when_photo_decoders_are_allowed(self):
         # Transparent BZh blob decompression can happen independently of the
         # decoder module policy. Explicit paths must be blocked too.
-        for pattern in ("*.[Bb][Zz]", "*.[Bb][Zz]2"):
-            with self.subTest(pattern=pattern):
-                self.assertIn(
-                    {"domain": "path", "rights": "none", "pattern": pattern},
-                    self.policies,
-                )
+        for suffix in (".bz", ".bz2"):
+            for first in ("b", "B"):
+                for second in ("z", "Z"):
+                    pattern = f"*.{first}{second}{suffix[3:]}"
+                    with self.subTest(pattern=pattern):
+                        self.assertIn(
+                            {"domain": "path", "rights": "none", "pattern": pattern},
+                            self.policies,
+                        )
 
     def test_process_resources_have_bounded_limits_without_global_time_limit(self):
         resources = {p["name"]: p["value"] for p in self.policies
