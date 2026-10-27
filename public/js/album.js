@@ -127,8 +127,8 @@ function getResponsiveThumbnailLocation(card) {
     var width = bounds?.width || 400;
     // Thumbnail sizes cap the longest image edge, not just its width.
     // Cards retain the image aspect ratio, including very tall portraits.
-    var height = bounds?.height || width * (parseFloat(card.attr('data-height')) || 1) /
-        (parseFloat(card.attr('data-width')) || 1);
+    var height = bounds?.height || width * (Number.parseFloat(card.attr('data-height')) || 1) /
+        (Number.parseFloat(card.attr('data-width')) || 1);
     var requiredSize = Math.max(width, height) * (window.devicePixelRatio || 1);
 
     if (requiredSize <= 400 && card.attr('data-thumbnail-400')) {
