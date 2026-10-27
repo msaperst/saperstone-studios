@@ -29,9 +29,13 @@
        ImageMagick 6.9.11 path-policy character classes caused regular JPEG
        processing to stall. Call sites also reject BZh regardless of suffix. -->
   <policy domain="path" rights="none" pattern="*.bz2"/>
-  <policy domain="path" rights="none" pattern="*.bz"/>
   <policy domain="path" rights="none" pattern="*.BZ2"/>
+  <policy domain="path" rights="none" pattern="*.Bz2"/>
+  <policy domain="path" rights="none" pattern="*.bZ2"/>
+  <policy domain="path" rights="none" pattern="*.bz"/>
   <policy domain="path" rights="none" pattern="*.BZ"/>
+  <policy domain="path" rights="none" pattern="*.Bz"/>
+  <policy domain="path" rights="none" pattern="*.bZ"/>
 
   <!-- All non-photographic modules (MVG/MSL/SVG/PDF/PS/URL/etc.) are denied. -->
   <policy domain="module" rights="none" pattern="*"/>
