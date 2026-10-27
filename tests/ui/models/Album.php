@@ -175,11 +175,11 @@ class Album {
      */
     public function openSlideShow($imgNum) {
         $card = $this->getImageCard($imgNum);
-        $overlaySelector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . ' .album-card-overlay');
-        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
-        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($overlaySelector));
-        $this->driver->findElement($overlaySelector)->click();
+        // The media button opens the viewer directly for users. Clicking it
+        // avoids a separate hover transition on the overlaid controls.
+        $media = $card->findElement(WebDriverBy::className('album-card-media'));
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($media));
+        $media->click();
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOf(
                 $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
@@ -222,14 +222,19 @@ class Album {
      */
     public function hoverOverImage($imgNum): WebDriverElement {
         $card = $this->getImageCard($imgNum);
-        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($card));
-        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
-        $this->wait->until(
-            WebDriverExpectedCondition::visibilityOf(
-                $card->findElement(WebDriverBy::className('album-card-actions'))
-            )
-        );
+        $media = $card->findElement(WebDriverBy::className('album-card-media'));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOf($media));
+        (new WebDriverActions($this->driver))->moveToElement($media)->perform();
+        // An opacity transition reveals controls on hover. WebDriver's
+        // isDisplayed() alone is not a reliable assertion for opacity.
+        $this->wait->until(function () use ($card) {
+            return (bool)$this->driver->executeScript(<<<'JS'
+                var card = arguments[0];
+                var overlay = card.querySelector('.album-card-overlay');
+                return overlay && card.matches(':hover')
+                    && Number.parseFloat(getComputedStyle(overlay).opacity) > 0.95;
+                JS, [$card]);
+        });
         return $card;
     }
 
@@ -616,6 +621,14 @@ class Album {
         $this->waitForImagesToLoad((int) ceil(((int) $imgNum) / 4));
         $selector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum));
         $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated($selector));
+        $card = $this->driver->findElement($selector);
+        $this->driver->executeScript("arguments[0].scrollIntoView({block: 'center'});", [$card]);
+        // Metadata is appended before the lazy-loaded card becomes interactive.
+        // Wait for the actual image-ready state, not merely DOM presence.
+        $this->wait->until(function () use ($selector) {
+            $cards = $this->driver->findElements($selector);
+            return count($cards) === 1 && $cards[0]->getAttribute('data-loaded') === '1';
+        });
         return $this->driver->findElement($selector);
     }
 
