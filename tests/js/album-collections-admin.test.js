@@ -80,6 +80,7 @@ test('an uploader collection edit cannot contain access-code controls', () => {
         owner: 4,
         shared: false
     }, 'uploader');
+    assert.equal(environment.dialogs.at(-1).cssClass, 'album-management-dialog');
     const message = environment.dialogs.at(-1).message();
     assert.doesNotMatch(message, /collection-code|Access Code/);
 });
