@@ -74,7 +74,7 @@ test('albums-uploader.js edit dialog omits admin-only access and code controls',
     assert.doesNotMatch(message, /SECRET/);
     assert.deepEqual(
         Array.from(config.buttons, (button) => button.label.trim()),
-        ['Delete Album', 'Make Thumbnails', 'Save Details', 'Close']
+        ['Delete Album', 'Choose Cover', 'Make Thumbnails', 'Save Details', 'Close']
     );
 });
 
@@ -96,9 +96,24 @@ test('albums-uploader.js never submits an access-code field when saving details'
     const dialog = environment.createDialog();
     const button = environment.createButton('__save_collection_details__');
     button.closestResult = environment.element('__uploader_edit_modal__');
-    environment.dialogs.at(-1).buttons[2].action.call(button, dialog);
+    environment.dialogs.at(-1).buttons.find(item => item.label.trim() === 'Save Details')
+        .action.call(button, dialog);
     assert.equal(environment.calls.post.at(-1).url, '/api/update-album.php');
     assert.equal(Object.hasOwn(environment.calls.post.at(-1).data, 'code'), false);
+});
+
+test('albums-uploader.js opens the shared protected cover picker', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    environment.queueGet('/api/get-album.php', {
+        type: 'success',
+        data: {name: 'Owned Album', description: '', date: '', code: '', imageCount: 2}
+    });
+    context.editAlbum(28);
+    const calls = [];
+    context.openAlbumCoverPicker = id => calls.push(id);
+    environment.dialogs.at(-1).buttons.find(item => item.label.trim() === 'Choose Cover')
+        .action(environment.createDialog());
+    assert.deepEqual(calls, [28]);
 });
 
 test('albums-uploader.js configures album image uploads for the edited album', () => {
