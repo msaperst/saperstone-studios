@@ -93,7 +93,7 @@ class AlbumCollectionPagesHttpTest extends HttpTestBase {
 
     public function testAlbumPageRedirectsCollectionIdsToTheirDistinctUrl(): void {
         $this->adminLogin();
-        $response = $this->get('user/album.php?album=98870', ['allow_redirects' => false]);
+        $response = $this->get('user/album.php?album=98870');
         self::assertSame(302, $response->getStatusCode());
         self::assertSame('/user/collection.php?collection=98870', $response->getHeaderLine('Location'));
     }
