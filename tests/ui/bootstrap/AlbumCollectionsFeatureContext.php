@@ -291,7 +291,12 @@ class AlbumCollectionsFeatureContext implements Context {
             if (!is_dir($directory)) {
                 Assert::assertTrue(mkdir($directory, 0775, true));
             }
-            Assert::assertTrue(copy($source, $directory . '/' . basename($image['location'])));
+            // A deterministic valid 1px derivative exercises the HTTP
+            // image-loading path without running ImageMagick during Behat.
+            Assert::assertNotFalse(file_put_contents(
+                $directory . '/' . basename($image['location']),
+                base64_decode('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==')
+            ));
             $sql->executeStatement('UPDATE albums SET thumbsCreated = 1 WHERE id = ?', [$albumId]);
         } finally {
             $sql->disconnect();
