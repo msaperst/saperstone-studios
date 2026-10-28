@@ -441,9 +441,6 @@ class Album {
         if ($this->isCollection) {
             throw new BadAlbumException('A collection cannot belong to another collection');
         }
-        if ($parentId === $this->parentId) {
-            return;
-        }
         $target = $parentId === null ? null : self::withId($parentId);
         if ($target !== null && !$target->isCollection()) {
             throw new BadAlbumException('Parent must be a collection');
@@ -467,6 +464,9 @@ class Album {
         }
         if (!$canChange) {
             throw new AlbumException('User not authorized to organize this album');
+        }
+        if ($parentId === $this->parentId) {
+            return;
         }
         $sql = new Sql();
         try {
@@ -507,6 +507,12 @@ class Album {
             throw new BadAlbumException('Order must contain every child album exactly once');
         }
         $user = User::fromSystem();
+        if (!AlbumCollectionPolicy::canEdit(
+            $user->isAdmin(), $user->isUploader(),
+            (int)$user->getId(), (int)$this->owner
+        ) || (!$user->isAdmin() && $this->isShared())) {
+            throw new AlbumException('User not authorized to reorder collection');
+        }
         foreach ($this->getChildren() as $child) {
             if (!AlbumCollectionPolicy::canChangeMembership(
                 $user->isAdmin(), $user->isUploader(), (int)$user->getId(),
