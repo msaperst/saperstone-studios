@@ -13,8 +13,8 @@ Feature: Organizational parent and child albums
     When I logout
     And I search for album "EVENT99999"
     Then I see the "Mitzvah" collection landing page
-    And I see "sample-album" as a child gallery
-    When I open the "sample-album" child gallery
+    And I see "Album 99999" as a child gallery
+    When I open the "Album 99999" child gallery
     Then the "Mitzvah" breadcrumb links back to the collection
     When I follow the "Mitzvah" breadcrumb
     Then I see the "Mitzvah" collection landing page
