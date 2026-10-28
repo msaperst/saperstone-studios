@@ -167,6 +167,38 @@ class AlbumCollectionApiTest extends TestCase {
         self::assertNull($this->sql->getRow('SELECT code FROM albums WHERE id = 98860')['code']);
     }
 
+    public function testCollectionCannotBeUsedAsPhotoUploadOrThumbnailTarget(): void {
+        foreach (['upload-album-images.php', 'make-thumbs.php'] as $path) {
+            $response = $this->http->request('POST', 'api/' . $path, [
+                'cookies' => $this->role('admin'),
+                'form_params' => ['album' => 98860, 'id' => 98860, 'markup' => 'none'],
+                'http_errors' => false,
+            ]);
+            self::assertSame(400, $response->getStatusCode(), $path);
+        }
+        self::assertSame(0, $this->sql->getRowCount(
+            'SELECT id FROM album_images WHERE album = 98860'
+        ));
+    }
+
+    public function testProtectedCoverCannotBeReadThroughCollectionCodeWithoutChildViewingAccess(): void {
+        $response = $this->http->request('GET', 'api/get-album-cover.php?album=98861', [
+            'http_errors' => false
+        ]);
+        self::assertSame(403, $response->getStatusCode());
+    }
+
+    public function testMutationEndpointsRejectMissingCsrfProtection(): void {
+        $response = $this->http->request('POST', 'api/delete-collection.php', [
+            'cookies' => $this->role('admin'),
+            'headers' => ['Origin' => 'https://attacker.example', 'X-CSRF-Token' => 'invalid'],
+            'form_params' => ['id' => 98860],
+            'http_errors' => false
+        ]);
+        self::assertSame(403, $response->getStatusCode());
+        self::assertNotNull($this->sql->getRow('SELECT id FROM albums WHERE id = 98860'));
+    }
+
     public function testDeleteCollectionNeverDeletesChildAlbums(): void {
         $response = $this->http->request('POST', 'api/delete-collection.php', [
             'cookies' => $this->role('admin'),

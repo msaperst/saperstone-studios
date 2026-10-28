@@ -115,6 +115,25 @@ class AlbumCollectionIntegrationTest extends TestCase {
         self::assertSame(98880, Album::withId(98881)->getParentId());
     }
 
+    public function testUploaderEditingAlbumDetailsPreservesAdminConfiguredCode(): void {
+        $_SESSION['hash'] = 'c90788c0e409eac6a95f6c6360d8dbf7';
+        Album::withId(98881)->update([
+            'name' => 'Updated Bimah',
+            'description' => '',
+            'date' => ''
+        ]);
+        self::assertSame(
+            'BIMAH98881',
+            $this->sql->getRow('SELECT code FROM albums WHERE id = 98881')['code']
+        );
+    }
+
+    public function testUploaderCannotDeleteChildOfSharedCollection(): void {
+        $_SESSION['hash'] = 'c90788c0e409eac6a95f6c6360d8dbf7';
+        $this->expectException(AlbumException::class);
+        Album::withId(98881)->delete();
+    }
+
     public function testARegularAlbumCannotBecomeAParent(): void {
         $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
         $this->expectException(BadAlbumException::class);
