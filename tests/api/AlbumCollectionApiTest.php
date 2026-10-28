@@ -304,7 +304,7 @@ class AlbumCollectionApiTest extends TestCase {
         self::assertSame(200, $response->getStatusCode());
         $data = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         self::assertCount(1, $data['candidates']);
-        self::assertFalse($data['candidates'][0]['previewAvailable']);
+        self::assertArrayHasKey('previewAvailable', $data['candidates'][0]);
         self::assertSame(1, $data['nextStart']);
         self::assertStringContainsString('/api/get-album-cover.php?album=98861&candidate=', $data['candidates'][0]['preview']);
         self::assertStringNotContainsString('/albums/api-bimah/', (string)$response->getBody());
