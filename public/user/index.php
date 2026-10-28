@@ -101,6 +101,11 @@ $user->forceLogIn();
                                     title="Add New Album">
                                     <em class="fa fa-plus"></em>
                                 </button>
+                                <button id="add-collection-btn" type="button"
+                                        class="btn btn-xs btn-success"
+                                        title="Add New Collection" aria-label="Add New Collection">
+                                    <em class="fa fa-folder"></em>
+                                </button>
                             </th>
                             <?php
                             }
@@ -154,6 +159,12 @@ $user->forceLogIn();
         ?>
     <script src="<?php echo Strings::assetUrl('/js/albums.js'); ?>"></script>
     <?php
+    }
+    if ($user->isAdmin() || $user->isUploader()) {
+        ?>
+        <script src="<?php echo Strings::assetUrl('/js/album-collections-admin.js'); ?>"></script>
+        <script src="<?php echo Strings::assetUrl('/js/album-collections-list.js'); ?>"></script>
+        <?php
     }
     ?>
 

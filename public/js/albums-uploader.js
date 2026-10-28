@@ -50,7 +50,11 @@ $(document).ready(function () {
 function setupEdit() {
     $('.edit-album-btn').off().click(function () {
         var id = $(this).closest('tr').attr('album-id');
-        editAlbum(id);
+        if ($(this).closest('tr').attr('data-is-collection') === '1') {
+            editCollection(id);
+        } else {
+            editAlbum(id);
+        }
     });
 }
 
