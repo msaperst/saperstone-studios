@@ -134,6 +134,27 @@ class AlbumCollectionIntegrationTest extends TestCase {
         Album::withId(98881)->delete();
     }
 
+    public function testCoverMayOnlyReferenceAnImageInTheAlbumOrItsChildren(): void {
+        $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
+        $image = $this->sql->getRow('SELECT id FROM album_images WHERE album = 98881')['id'];
+        Album::withId(98881)->setCoverImage((int)$image);
+        Album::withId(98880)->setCoverImage((int)$image);
+        self::assertSame((int)$image, (int)$this->sql->getRow(
+            'SELECT coverImage FROM albums WHERE id = 98880'
+        )['coverImage']);
+        $this->expectException(BadAlbumException::class);
+        Album::withId(98882)->setCoverImage((int)$image);
+    }
+
+    public function testRemovingSelectedCoverFallsBackWithoutDeletingPhoto(): void {
+        $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
+        $image = $this->sql->getRow('SELECT id FROM album_images WHERE album = 98881')['id'];
+        Album::withId(98880)->setCoverImage((int)$image);
+        $this->sql->executeStatement('DELETE FROM album_images WHERE id = ?', [$image]);
+        self::assertNull(Album::withId(98880)->resolveCoverImage());
+        self::assertSame(2, $this->sql->getRowCount('SELECT id FROM albums WHERE parent = 98880'));
+    }
+
     public function testARegularAlbumCannotBecomeAParent(): void {
         $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
         $this->expectException(BadAlbumException::class);

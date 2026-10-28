@@ -199,6 +199,36 @@ class AlbumCollectionApiTest extends TestCase {
         self::assertNotNull($this->sql->getRow('SELECT id FROM albums WHERE id = 98860'));
     }
 
+    public function testCoverSelectionRequiresOwnerAndExistingChildImage(): void {
+        $this->sql->executeStatement(
+            "INSERT INTO album_images (album, title, sequence, caption, location, width, height, active)
+             VALUES (98861, '', 1, '', '/albums/api-bimah/test.jpg', 400, 300, 1)"
+        );
+        $imageId = (int)$this->sql->getRow(
+            'SELECT id FROM album_images WHERE album = 98861 ORDER BY id DESC LIMIT 1'
+        )['id'];
+        $response = $this->http->request('POST', 'api/set-album-cover.php', [
+            'cookies' => $this->role('admin'),
+            'form_params' => ['album' => 98860, 'image' => $imageId]
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame($imageId, (int)$this->sql->getRow(
+            'SELECT coverImage FROM albums WHERE id = 98860'
+        )['coverImage']);
+        $invalid = $this->http->request('POST', 'api/set-album-cover.php', [
+            'cookies' => $this->role('admin'),
+            'form_params' => ['album' => 98862, 'image' => $imageId]
+        ]);
+        self::assertSame(400, $invalid->getStatusCode());
+        $denied = $this->http->request('POST', 'api/set-album-cover.php', [
+            'cookies' => $this->role('client'),
+            'form_params' => ['album' => 98861, 'image' => $imageId],
+            'http_errors' => false
+        ]);
+        self::assertSame(403, $denied->getStatusCode());
+        $this->sql->executeStatement('DELETE FROM album_images WHERE id = ?', [$imageId]);
+    }
+
     public function testDeleteCollectionNeverDeletesChildAlbums(): void {
         $response = $this->http->request('POST', 'api/delete-collection.php', [
             'cookies' => $this->role('admin'),
