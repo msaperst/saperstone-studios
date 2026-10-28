@@ -78,6 +78,29 @@ test('albums-uploader.js edit dialog omits admin-only access and code controls',
     );
 });
 
+test('albums-uploader.js never submits an access-code field when saving details', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    environment.queueGet('/api/get-album.php', {
+        type: 'success',
+        data: {
+            name: 'Uploader Album',
+            description: '',
+            date: '2026-09-22',
+            code: 'ADMIN-CODE',
+            imageCount: 1,
+            needsThumbnails: true
+        }
+    });
+    context.editAlbum(28);
+    environment.queuePost('/api/update-album.php', {type: 'success', data: ''});
+    const dialog = environment.createDialog();
+    const button = environment.createButton('__save_collection_details__');
+    button.closestResult = environment.element('__uploader_edit_modal__');
+    environment.dialogs.at(-1).buttons[2].action.call(button, dialog);
+    assert.equal(environment.calls.post.at(-1).url, '/api/update-album.php');
+    assert.equal(Object.hasOwn(environment.calls.post.at(-1).data, 'code'), false);
+});
+
 test('albums-uploader.js configures album image uploads for the edited album', () => {
     const {context, environment} = createAlbumContext(scriptPath);
     environment.queueGet('/api/get-album.php', {
