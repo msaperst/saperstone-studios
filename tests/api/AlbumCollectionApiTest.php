@@ -164,6 +164,25 @@ class AlbumCollectionApiTest extends TestCase {
         ));
     }
 
+    public function testUnauthorizedReorderOfEmptyCollectionIsForbidden(): void {
+        $this->sql->executeStatement('UPDATE albums SET parent = NULL, collectionOrder = NULL WHERE parent = 98863');
+        $response = $this->http->request('POST', 'api/reorder-collection.php', [
+            'cookies' => $this->role('client'),
+            'form_params' => ['collection' => 98863, 'order' => '[]'],
+            'http_errors' => false
+        ]);
+        self::assertSame(403, $response->getStatusCode());
+    }
+
+    public function testUnauthorizedNoopMoveIsForbidden(): void {
+        $response = $this->http->request('POST', 'api/set-album-parent.php', [
+            'cookies' => $this->role('client'),
+            'form_params' => ['album' => 98861, 'parent' => 98860],
+            'http_errors' => false
+        ]);
+        self::assertSame(403, $response->getStatusCode());
+    }
+
     public function testCodeCollisionDoesNotReplaceExistingCollectionCode(): void {
         $response = $this->http->request('POST', 'api/update-collection.php', [
             'cookies' => $this->role('admin'),
