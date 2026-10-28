@@ -40,8 +40,8 @@ test('cover picker previews only authorized derivative endpoints and saves photo
     config.onshown(dialog);
     const buttons = environment.element('#album-cover-options').appended;
     assert.equal(buttons.length, 1);
-    assert.match(buttons[0].css('background-image'), /api\\/get-album-cover.php/);
-    assert.doesNotMatch(buttons[0].css('background-image'), /\\/albums\\/.*\\.jpg/);
+    assert.ok(buttons[0].css('background-image').includes('/api/get-album-cover.php'));
+    assert.ok(!buttons[0].css('background-image').includes('/albums/'));
     environment.queuePost('/api/set-album-cover.php', {type: 'success', data: ''});
     buttons[0].trigger('click');
     assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post.at(-1))), {
