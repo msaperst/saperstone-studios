@@ -42,6 +42,9 @@ $isAlbumDownloadable = $sql->getRowCount("SELECT * FROM `download_rights` WHERE 
 <head>
 
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
+    <?php if ($album->canUserGetData()) { ?>
+    <link href="<?php echo Strings::assetUrl('/css/album-collections-admin.css'); ?>" rel="stylesheet">
+    <?php } ?>
     <link href="<?php echo Strings::assetUrl('/css/hover-effect.css'); ?>" rel="stylesheet">
     <link href="<?php echo Strings::assetUrl('/css/uploadfile.css'); ?>" rel="stylesheet">
     </head>
