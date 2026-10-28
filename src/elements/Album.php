@@ -546,27 +546,45 @@ class Album {
      * @throws SqlException
      */
     function update($params) {
+        if ($this->isCollection) {
+            throw new BadAlbumException('Use collection management for collections');
+        }
         $user = User::fromSystem();
         if (!$this->canUserGetData()) {
-            throw new AlbumException("User not authorized to update album");
+            throw new AlbumException('User not authorized to update album');
+        }
+        if (array_key_exists('code', $params) && !$user->isAdmin()) {
+            throw new AlbumException('User not authorized to set album codes');
         }
         self::setVals($this, $params);
         $sql = new Sql();
-        $sql->executeStatement("UPDATE albums SET name = ?, description = ?, date = ?, code = NULL WHERE id = ?", [$this->name, $this->description, $this->date, $this->getId()]);
-        $this->raw = $sql->getRow(self::SELECT_BY_ID, [$this->getId()]);
-        if (isset ($params['code']) && $params['code'] != "" && $user->isAdmin()) {
-            $code = $params['code'];
-            $codeExist = $sql->getRowCount("SELECT * FROM `albums` WHERE code = ?", [$code]);
-            if ($codeExist == 0) {
+        try {
+            if (array_key_exists('code', $params)) {
+                $code = trim((string)$params['code']);
+                $code = $code === '' ? null : $code;
+                if ($code !== null && $sql->getRowCount(
+                    'SELECT 1 FROM albums WHERE code = ? AND id != ?',
+                    [$code, $this->getId()]
+                ) > 0) {
+                    throw new BadAlbumException('Album code already exists');
+                }
+                $sql->executeStatement(
+                    'UPDATE albums SET name = ?, description = ?, date = ?, code = ? WHERE id = ?',
+                    [$this->name, $this->description, $this->date, $code, $this->getId()]
+                );
                 $this->code = $code;
-                $sql->executeStatement("UPDATE albums SET code = ? WHERE id = ?", [$code, $this->getId()]);
             } else {
-                $sql->disconnect();
-                throw new BadAlbumException("Album code already exists");
+                // Uploaders editing names/dates must not revoke an admin's
+                // access code. Only an explicit admin edit can change it.
+                $sql->executeStatement(
+                    'UPDATE albums SET name = ?, description = ?, date = ? WHERE id = ?',
+                    [$this->name, $this->description, $this->date, $this->getId()]
+                );
             }
+            $this->raw = $sql->getRow(self::SELECT_BY_ID, [$this->getId()]);
+        } finally {
+            $sql->disconnect();
         }
-        $this->raw = $sql->getRow(self::SELECT_BY_ID, [$this->getId()]);
-        $sql->disconnect();
     }
 
     function getId() {
@@ -581,6 +599,10 @@ class Album {
     function delete() {
         if (!$this->canUserGetData()) {
             throw new AlbumException("User not authorized to delete album");
+        }
+        if (!$this->isCollection && $this->parentId !== null && !User::fromSystem()->isAdmin()
+            && self::withId($this->parentId)->isShared()) {
+            throw new AlbumException('Only administrators may delete albums from shared collections');
         }
         if ($this->isCollection) {
             $user = User::fromSystem();
