@@ -36,17 +36,19 @@ function albumMetadataInputs(prefix, noun, details) {
         field('date', 'Date', 'date');
 }
 
+function albumThumbnailState(row) {
+    if (row.isCollection || Number.parseInt(row.images, 10) === 0) {
+        return {label: 'N/A', style: 'default'};
+    }
+    if (row.thumbsCreated === true || String(row.thumbsCreated) === '1') {
+        return {label: 'Ready', style: 'success'};
+    }
+    return {label: 'Missing', style: 'warning'};
+}
+
 function thumbnailStatus(row) {
-    if (row.isCollection) {
-        return '<span class="label label-default">N/A</span>';
-    }
-    if (Number.parseInt(row.images, 10) === 0) {
-        return '<span class="label label-default">N/A</span>';
-    }
-    if (String(row.thumbsCreated) === '1') {
-        return '<span class="label label-success">Ready</span>';
-    }
-    return '<span class="label label-warning">Missing</span>';
+    const status = albumThumbnailState(row);
+    return '<span class="label label-' + status.style + '">' + status.label + '</span>';
 }
 
 function albumManagementColumns(actionColumn) {
