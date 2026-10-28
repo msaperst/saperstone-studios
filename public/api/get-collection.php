@@ -18,7 +18,7 @@ if (!$collection->canUserAccess()) {
 }
 header('Content-Type: application/json');
 header('Cache-Control: private, no-store');
-echo json_encode([
+$payload = [
     'id' => $collection->getId(),
     'name' => $collection->getName(),
     'description' => $collection->getDescription(),
@@ -28,4 +28,13 @@ echo json_encode([
         'name' => $child->getName(),
         'imageCount' => (int)$child->getDataArray()['images'],
     ], $collection->getChildren()),
-]);
+];
+if ($collection->canUserGetData()) {
+    $user = User::fromSystem();
+    $payload['owner'] = (int)$collection->getOwner();
+    $payload['shared'] = $collection->isShared();
+    if ($user->isAdmin()) {
+        $payload['code'] = $collection->getCode() ?? '';
+    }
+}
+echo json_encode($payload);
