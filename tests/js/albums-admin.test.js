@@ -19,6 +19,29 @@ test('albums-admin.js opens the shared create album dialog', () => {
     assert.equal(environment.dialogs.at(-1).title, 'Add A New Album');
 });
 
+test('shared album creation can attach a new child without duplicating the top-level table row', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    environment.element('#new-album-name').val('Photo Booth');
+    environment.queuePost('/api/create-album.php', {type: 'success', data: '31'});
+    environment.queuePost('/api/set-album-parent.php', {type: 'success', data: ''});
+    context.editAlbum = () => {};
+    context.openCreateAlbumDialog(55);
+    const config = environment.dialogs.at(-1);
+    const button = environment.createButton('__new_child__');
+    button.closestResult = environment.element('__new_child_modal__');
+    config.buttons[0].action.call(button, environment.createDialog());
+    assert.deepEqual(
+        environment.calls.post.map(call => call.url),
+        ['/api/create-album.php', '/api/set-album-parent.php']
+    );
+    assert.deepEqual(
+        JSON.parse(JSON.stringify(environment.calls.post[1].data)),
+        {album: '31', parent: 55}
+    );
+    assert.equal(environment.calls.rowAdd.length, 0);
+    assert.equal(environment.calls.reload.length, 1);
+});
+
 test('albums-admin.js configures admin columns and thumbnail filtering', () => {
     const {environment} = createAlbumContext(scriptPath);
     const config = environment.dataTable.config;
