@@ -99,6 +99,22 @@ class AlbumCollectionApiTest extends TestCase {
         ));
     }
 
+    public function testUploaderCanReadCollectionStructureButNotItsAccessCode(): void {
+        $response = $this->http->request('GET', 'api/get-collection.php?id=98860', [
+            'cookies' => $this->role('uploader')
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        $data = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertTrue($data['shared']);
+        self::assertArrayNotHasKey('code', $data);
+
+        $admin = $this->http->request('GET', 'api/get-collection.php?id=98860', [
+            'cookies' => $this->role('admin')
+        ]);
+        $adminData = json_decode((string)$admin->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame('EVENT98860', $adminData['code']);
+    }
+
     public function testUploaderCannotModifySharedCollectionMembership(): void {
         $response = $this->http->request('POST', 'api/set-album-parent.php', [
             'cookies' => $this->role('uploader'),
