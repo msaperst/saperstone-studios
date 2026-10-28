@@ -17,10 +17,10 @@ class AlbumCoverFileTest extends TestCase {
 
     protected function tearDown(): void {
         foreach ([
-            $this->root . '/album/thumbs/400/sample.jpeg',
-            $this->root . '/album/thumbs/800/sample.jpeg',
-            $this->root . '/album/full/sample.jpeg',
-            $this->root . '/album/sample.jpeg',
+            $this->root . '/album/thumbs/400/sample.gif',
+            $this->root . '/album/thumbs/800/sample.gif',
+            $this->root . '/album/full/sample.gif',
+            $this->root . '/album/sample.gif',
         ] as $path) {
             if (is_file($path)) {
                 unlink($path);
@@ -45,47 +45,50 @@ class AlbumCoverFileTest extends TestCase {
         if (!is_dir(dirname($target))) {
             self::assertTrue(mkdir(dirname($target), 0775, true));
         }
-        self::assertTrue(copy(dirname(__DIR__, 2) . '/resources/flower.jpeg', $target));
+        self::assertNotFalse(file_put_contents(
+            $target,
+            base64_decode('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==')
+        ));
     }
 
     public function testExisting400DerivativeIsPreferredAndMimeIsVerified(): void {
-        $this->image('thumbs/400/sample.jpeg');
-        $this->image('thumbs/800/sample.jpeg');
-        $file = AlbumCoverFile::resolve('album', '/albums/album/sample.jpeg', false, $this->root);
+        $this->image('thumbs/400/sample.gif');
+        $this->image('thumbs/800/sample.gif');
+        $file = AlbumCoverFile::resolve('album', '/albums/album/sample.gif', false, $this->root);
         self::assertNotNull($file);
-        self::assertSame($this->root . '/album/thumbs/400/sample.jpeg', $file['path']);
-        self::assertSame('image/jpeg', $file['mime']);
+        self::assertSame($this->root . '/album/thumbs/400/sample.gif', $file['path']);
+        self::assertSame('image/gif', $file['mime']);
     }
 
     public function testOnlyAnOriginalReturnsNoFile(): void {
-        $this->image('sample.jpeg');
-        self::assertNull(AlbumCoverFile::resolve('album', '/albums/album/sample.jpeg', false, $this->root));
+        $this->image('sample.gif');
+        self::assertNull(AlbumCoverFile::resolve('album', '/albums/album/sample.gif', false, $this->root));
     }
 
     public function testCompletedMigrationCanUseProtected1600DerivativeWithFullBackup(): void {
-        $this->image('sample.jpeg');
-        $this->image('full/sample.jpeg');
-        $file = AlbumCoverFile::resolve('album', '/albums/album/sample.jpeg', true, $this->root);
+        $this->image('sample.gif');
+        $this->image('full/sample.gif');
+        $file = AlbumCoverFile::resolve('album', '/albums/album/sample.gif', true, $this->root);
         self::assertNotNull($file);
-        self::assertSame($this->root . '/album/sample.jpeg', $file['path']);
+        self::assertSame($this->root . '/album/sample.gif', $file['path']);
     }
 
     public function testFullBackupAloneDoesNotAuthorizeAnUnfinishedMigration(): void {
-        $this->image('sample.jpeg');
-        $this->image('full/sample.jpeg');
-        self::assertNull(AlbumCoverFile::resolve('album', '/albums/album/sample.jpeg', false, $this->root));
+        $this->image('sample.gif');
+        $this->image('full/sample.gif');
+        self::assertNull(AlbumCoverFile::resolve('album', '/albums/album/sample.gif', false, $this->root));
     }
 
     public function testTraversalAndUnknownPathsAreRejected(): void {
-        $this->image('thumbs/400/sample.jpeg');
-        self::assertNull(AlbumCoverFile::resolve('../', '/albums/album/sample.jpeg', true, $this->root));
-        self::assertNull(AlbumCoverFile::resolve('missing', '/albums/missing/sample.jpeg', true, $this->root));
-        self::assertNull(AlbumCoverFile::resolve('', '/albums/album/sample.jpeg', true, $this->root));
+        $this->image('thumbs/400/sample.gif');
+        self::assertNull(AlbumCoverFile::resolve('../', '/albums/album/sample.gif', true, $this->root));
+        self::assertNull(AlbumCoverFile::resolve('missing', '/albums/missing/sample.gif', true, $this->root));
+        self::assertNull(AlbumCoverFile::resolve('', '/albums/album/sample.gif', true, $this->root));
     }
 
     public function testNonImagesInThumbFolderAreRejected(): void {
         self::assertTrue(mkdir($this->root . '/album/thumbs/400', 0775, true));
-        self::assertNotFalse(file_put_contents($this->root . '/album/thumbs/400/sample.jpeg', 'not an image'));
-        self::assertNull(AlbumCoverFile::resolve('album', '/albums/album/sample.jpeg', true, $this->root));
+        self::assertNotFalse(file_put_contents($this->root . '/album/thumbs/400/sample.gif', 'not an image'));
+        self::assertNull(AlbumCoverFile::resolve('album', '/albums/album/sample.gif', true, $this->root));
     }
 }
