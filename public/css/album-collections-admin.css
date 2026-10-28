@@ -22,3 +22,27 @@
 .collection-child-item .btn {
     margin-left: 8px;
 }
+
+/* Only editor dialogs need denser actions. Preserve comfortable tap targets
+   and natural wrapping on narrow/mobile screens. */
+@media (min-width: 768px) {
+    .album-management-dialog .bootstrap-dialog-footer-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 4px;
+        flex-wrap: nowrap;
+    }
+
+    .album-management-dialog .bootstrap-dialog-footer-buttons > .btn {
+        margin-left: 0 !important;
+        padding: 6px 8px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+}
+
+.collection-thumbnail-status {
+    margin-left: 10px;
+    vertical-align: middle;
+}
