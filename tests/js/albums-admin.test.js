@@ -112,8 +112,22 @@ test('albums-admin.js edit dialog includes admin-only access and code controls',
     assert.match(config.message(), /CODE123/);
     assert.deepEqual(
         Array.from(config.buttons, (button) => button.label.trim()),
-        ['Set Access', 'Delete Album', 'Make Thumbnails', 'Save Details', 'Close']
+        ['Set Access', 'Delete Album', 'Choose Cover', 'Make Thumbnails', 'Save Details', 'Close']
     );
+});
+
+test('albums-admin.js opens the shared cover picker', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    environment.queueGet('/api/get-album.php', {
+        type: 'success',
+        data: {name: 'Client Album', description: '', date: '', code: '', imageCount: 2}
+    });
+    context.editAlbum(32);
+    const calls = [];
+    context.openAlbumCoverPicker = id => calls.push(id);
+    environment.dialogs.at(-1).buttons.find(item => item.label.trim() === 'Choose Cover')
+        .action(environment.createDialog());
+    assert.deepEqual(calls, [32]);
 });
 
 test('albums-admin.js configures album image uploads for the edited album', () => {
