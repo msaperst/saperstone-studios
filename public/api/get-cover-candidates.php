@@ -14,6 +14,12 @@ if (!$album->canUserGetData()) {
     exit();
 }
 
+if ($album->isCollection()) {
+    http_response_code(400);
+    echo 'Choose covers on individual albums';
+    exit();
+}
+
 $start = filter_var($_GET['start'] ?? 0, FILTER_VALIDATE_INT);
 $count = filter_var($_GET['count'] ?? 36, FILTER_VALIDATE_INT);
 if ($start === false || $start < 0 || $count === false || $count < 1 || $count > 60) {
@@ -26,27 +32,12 @@ if ($start === false || $start < 0 || $count === false || $count < 1 || $count >
 // Never send raw public file paths or full-resolution image locations to JS.
 $sql = new Sql();
 try {
-    $params = [$album->getId()];
-    if ($album->isCollection()) {
-        $actor = User::fromSystem();
-        $ownerFilter = $actor->isAdmin() ? '' : ' AND child.owner = ?';
-        if (!$actor->isAdmin()) {
-            $params[] = $actor->getId();
-        }
-        $query = 'SELECT ai.id, ai.album, child.name AS galleryName FROM album_images ai
-                  JOIN albums child ON child.id = ai.album
-                  WHERE child.parent = ?' . $ownerFilter . '
-                  ORDER BY child.collectionOrder, child.id, ai.sequence, ai.id
-                  LIMIT ?, ?';
-    } else {
-        $query = 'SELECT ai.id, ai.album, a.name AS galleryName FROM album_images ai
-                  JOIN albums a ON a.id = ai.album
-                  WHERE ai.album = ?
-                  ORDER BY ai.sequence, ai.id
-                  LIMIT ?, ?';
-    }
-    $params[] = $start;
-    $params[] = $count + 1;
+    $query = 'SELECT ai.id, ai.album, a.name AS galleryName FROM album_images ai
+              JOIN albums a ON a.id = ai.album
+              WHERE ai.album = ?
+              ORDER BY ai.sequence, ai.id
+              LIMIT ?, ?';
+    $params = [$album->getId(), $start, $count + 1];
     $rows = $sql->getRows($query, $params);
 } finally {
     $sql->disconnect();
