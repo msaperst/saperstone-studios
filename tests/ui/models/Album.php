@@ -291,13 +291,33 @@ class Album {
         $this->waitForAlbumInitialization();
         $favoriteButton = WebDriverBy::id('favorite-btn');
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($favoriteButton));
+
+        // Observe native click delivery without triggering or changing the
+        // application event handler. The failure artifact can then distinguish
+        // a missed browser click from an album-filtering failure.
+        $this->driver->executeScript(<<<'JS'
+            window.__behatFavoriteClickEvents = [];
+            document.getElementById('favorite-btn').addEventListener('click', function (event) {
+                window.__behatFavoriteClickEvents.push({
+                    target: event.target.tagName,
+                    initialized: !!window.album && window.album.initialized,
+                    filterBeforeClick: !!window.album && window.album.showFavoritesOnly
+                });
+            }, {capture: true});
+            JS);
         $this->driver->findElement($favoriteButton)->click();
-        // Favorites must be evaluated over the entire album, including
-        // metadata pages not yet loaded when the filter was activated.
+
+        // The filter must activate from the browser click before we wait for
+        // its asynchronous metadata pages. Keep both assertions independent.
         $this->wait->until(function () {
             return (bool)$this->driver->executeScript(
-                'return !!window.album && window.album.showFavoritesOnly ' .
-                '&& !window.album.loading && window.album.images.length >= window.album.totalImages;'
+                'return !!window.album && window.album.showFavoritesOnly;'
+            );
+        });
+        $this->wait->until(function () {
+            return (bool)$this->driver->executeScript(
+                'return !!window.album && !window.album.loading ' .
+                '&& window.album.images.length >= window.album.totalImages;'
             );
         });
     }
