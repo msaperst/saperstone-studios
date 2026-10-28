@@ -174,7 +174,7 @@ class Album {
      * @throws TimeoutException
      */
     public function openSlideShow($imgNum) {
-        $card = $this->getImageCard($imgNum);
+        $this->getImageCard($imgNum);
         // The media button opens the viewer directly for users. Clicking it
         // avoids a separate hover transition on the overlaid controls.
         $mediaSelector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . ' .album-card-media');
