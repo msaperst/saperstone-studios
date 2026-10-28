@@ -148,6 +148,7 @@ function showEditCollectionDialog(data, role) {
     BootstrapDialog.show({
         draggable: true,
         size: BootstrapDialog.SIZE_WIDE,
+        cssClass: 'album-management-dialog',
         title: 'Edit Collection',
         message: function () {
             let fields = albumMetadataInputs('edit-collection', 'Collection', data);
