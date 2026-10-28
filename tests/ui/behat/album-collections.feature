@@ -56,3 +56,24 @@ Feature: Organizational parent and child albums
     Then the confirmation says child albums will be preserved
     When I confirm deleting the "Mitzvah" collection
     Then album 99999 is still listed as a standalone album
+
+  Scenario: Expanded child rows retain the album thumbnail generation status
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And a collection named "Mitzvah" exists
+    And album 99999 exists with 16 images
+    And album 99998 exists with 0 images
+    And album 99999 belongs to that collection
+    And album 99998 belongs to that collection
+    When I am on the "user/" page
+    And I expand the "Mitzvah" collection
+    Then child album 99999 shows "Missing" thumbnail status
+    And child album 99998 shows "N/A" thumbnail status
+
+  Scenario: Album editing actions stay in one row with the new cover picker
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And album 99999 exists with 16 images
+    And I am on the "user/" page
+    When I edit album 99999
+    Then the album editor action buttons fit on one row
