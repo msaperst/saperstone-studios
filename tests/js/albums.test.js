@@ -24,6 +24,23 @@ test('albums.js configures the album table and album links', () => {
     assert.equal(row.attr('album-id'), '7');
 });
 
+test('albums.js uses a separate collection URL without changing normal album links', () => {
+    const {environment} = createAlbumContext(scriptPath);
+    const link = environment.dataTable.config.columnDefs[0].data;
+    assert.equal(
+        link({id: 13, name: 'Family Mitzvah', isCollection: true}),
+        "<a href='collection.php?collection=13'>Family Mitzvah</a>"
+    );
+    assert.equal(
+        link({id: 14, name: 'Bimah'}),
+        "<a href='album.php?album=14'>Bimah</a>"
+    );
+    assert.equal(
+        link({id: 15, name: '<script>alert(1)</script>', isCollection: true}),
+        "<a href='collection.php?collection=15'>&lt;script&gt;alert(1)&lt;/script&gt;</a>"
+    );
+});
+
 test('albums.js submits an album code when Enter is pressed', () => {
     const {context, environment} = createAlbumContext(scriptPath);
     let calls = 0;

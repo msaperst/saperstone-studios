@@ -39,6 +39,15 @@ test('albums-admin.js configures admin columns and thumbnail filtering', () => {
     });
 });
 
+test('albums-admin.js shows a collection link using shared album-link rendering', () => {
+    const {environment} = createAlbumContext(scriptPath);
+    const link = environment.dataTable.config.columnDefs[1].data;
+    assert.equal(
+        link({id: 27, name: 'Mitzvah', isCollection: true}),
+        "<a href='collection.php?collection=27'>Mitzvah</a>"
+    );
+});
+
 test('albums-admin.js wires edit and activity buttons to their album id', () => {
     const {context, environment} = createAlbumContext(scriptPath);
     const editCalls = [];
