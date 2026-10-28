@@ -60,6 +60,7 @@ function editAlbum(id) {
         BootstrapDialog.show({
             draggable: true,
             size: BootstrapDialog.SIZE_WIDE,
+            cssClass: 'album-management-dialog',
             title: 'Edit Album <b>' + data.name + '</b>',
             message: function () {
                 return '<div id="album" album-id="' + id + '" class="hidden"><div id="album-title">' + data.name + '</div></div><input placeholder="Album Name" id="new-album-name" type="text" class="form-control" value="' + data.name + '" />' + '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control" value="' + data.description + '" />' + '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control" value="' + data.date + '" />' + '<p></p>' + '<input placeholder="Album Code" id="new-album-code" type="text" class="form-control" value="' + data.code + '" />' + '<p></p>' + '<div id="upload-container"></div>' + '<div id="resize-progress" class="progress">' + '<div class="progress-bar progress-bar-striped active upload-progress-full" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Checking files...</div></div>';
