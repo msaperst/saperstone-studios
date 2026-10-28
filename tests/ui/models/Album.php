@@ -177,9 +177,9 @@ class Album {
         $card = $this->getImageCard($imgNum);
         // The media button opens the viewer directly for users. Clicking it
         // avoids a separate hover transition on the overlaid controls.
-        $media = $card->findElement(WebDriverBy::className('album-card-media'));
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($media));
-        $media->click();
+        $mediaSelector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . ' .album-card-media');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($mediaSelector));
+        $this->driver->findElement($mediaSelector)->click();
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOf(
                 $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
