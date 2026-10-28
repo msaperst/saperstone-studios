@@ -68,9 +68,19 @@ class AlbumCoverFileTest extends TestCase {
     public function testCompletedMigrationCanUseProtected1600DerivativeWithFullBackup(): void {
         $this->image('sample.gif');
         $this->image('full/sample.gif');
+        // The finished web derivative must differ from the preserved original.
+        file_put_contents($this->root . '/album/sample.gif', "\n", FILE_APPEND);
         $file = AlbumCoverFile::resolve('album', '/albums/album/sample.gif', true, $this->root);
         self::assertNotNull($file);
         self::assertSame($this->root . '/album/sample.gif', $file['path']);
+    }
+
+    public function testProcessedStatusCannotExposeAnUnmodifiedOriginal(): void {
+        $this->image('sample.gif');
+        $this->image('full/sample.gif');
+        self::assertNull(AlbumCoverFile::resolve(
+            'album', '/albums/album/sample.gif', true, $this->root
+        ));
     }
 
     public function testFullBackupAloneDoesNotAuthorizeAnUnfinishedMigration(): void {
