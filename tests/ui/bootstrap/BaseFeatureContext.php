@@ -197,6 +197,7 @@ class BaseFeatureContext implements Context {
                             url: window.location.pathname + window.location.search + window.location.hash,
                             readyState: document.readyState,
                             jqueryActiveRequests: jq ? jq.active : null,
+                            favoriteClickEvents: window.__behatFavoriteClickEvents || [],
                             album: album ? {
                                 initialized: album.initialized,
                                 loading: album.loading,
