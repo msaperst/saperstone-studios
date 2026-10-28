@@ -21,7 +21,25 @@ function albumRowLink(row) {
 }
 
 
+// Used by ordinary album and collection dialogs: one place to escape
+// values and keep the site's familiar metadata inputs consistent.
+function albumMetadataInputs(prefix, noun, details) {
+    const values = details || {};
+    const field = function (name, title, type) {
+        const value = name === 'date' ? String(values[name] || '').slice(0, 10) : String(values[name] || '');
+        return '<input placeholder="' + noun + ' ' + title + '" aria-label="' + noun + ' ' + title +
+            '" id="' + prefix + '-' + name + '" type="' + type +
+            '" class="form-control" value="' + escapeAlbumListHtml(value) + '"/>';
+    };
+    return field('name', 'Name', 'text') +
+        field('description', 'Description', 'text') +
+        field('date', 'Date', 'date');
+}
+
 function thumbnailStatus(row) {
+    if (row.isCollection) {
+        return '<span class="label label-default">N/A</span>';
+    }
     if (Number.parseInt(row.images, 10) === 0) {
         return '<span class="label label-default">N/A</span>';
     }
@@ -34,7 +52,10 @@ function thumbnailStatus(row) {
 function albumManagementColumns(actionColumn) {
     return [actionColumn, {
         "data": function (row) {
-            return albumRowLink(row);
+            const expand = row.isCollection
+                ? '<button type="button" class="btn btn-xs btn-default collection-expand-btn" aria-label="Expand collection" title="Expand collection"><i class="fa fa-caret-right"></i></button> '
+                : '';
+            return expand + albumRowLink(row);
         },
         "className": "album-name",
         "targets": 1
@@ -59,6 +80,7 @@ function albumManagementColumns(actionColumn) {
 
 function setAlbumRowId(nRow, aData) {
     $(nRow).attr('album-id', aData.id);
+    $(nRow).attr('data-is-collection', aData.isCollection ? '1' : '0');
 }
 
 function openCreateAlbumDialog() {
@@ -66,9 +88,7 @@ function openCreateAlbumDialog() {
         draggable: true,
         title: 'Add A New Album',
         message: function () {
-            return '<input placeholder="Album Name" id="new-album-name" type="text" class="form-control"/>' +
-                '<input placeholder="Album Description" id="new-album-description" type="text" class="form-control"/>' +
-                '<input placeholder="Album Date" id="new-album-date" type="date" class="form-control"/>';
+            return albumMetadataInputs('new-album', 'Album', {});
         },
         buttons: [{
             icon: 'glyphicon glyphicon-folder-close',
