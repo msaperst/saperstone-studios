@@ -83,7 +83,7 @@ function setAlbumRowId(nRow, aData) {
     $(nRow).attr('data-is-collection', aData.isCollection ? '1' : '0');
 }
 
-function openCreateAlbumDialog() {
+function openCreateAlbumDialog(parentId) {
     BootstrapDialog.show({
         draggable: true,
         title: 'Add A New Album',
@@ -107,19 +107,39 @@ function openCreateAlbumDialog() {
                     date: $('#new-album-date').val()
                 }).done(function (data) {
                     if ($.isNumeric(data) && data !== '0') {
-                        $('#albums').DataTable().row.add({
-                            "id": data,
-                            "name": $('#new-album-name').val(),
-                            "description": $('#new-album-description').val(),
-                            "date": $('#new-album-date').val(),
-                            "images": "0",
-                            "thumbsCreated": "0",
-                            "lastAccessed": "0000-00-00 00:00:00",
-                            "location": "",
-                            "code": ""
-                        }).draw(false);
-                        dialogItself.close();
-                        editAlbum(data);
+                        if (parentId !== undefined && parentId !== null) {
+                            // Use the same album creation workflow for children:
+                            // only the organizational attachment is new.
+                            $.post('/api/set-album-parent.php', {
+                                album: data,
+                                parent: parentId
+                            }).done(function () {
+                                $('#albums').DataTable().ajax.reload(null, false);
+                                dialogItself.close();
+                                editAlbum(data);
+                            }).fail(function (xhr) {
+                                const message = xhr.responseText || 'The album was created, but could not be added to the collection.';
+                                // Do not delete a successfully created album on
+                                // a failed attachment. It stays standalone.
+                                modal.find('.bootstrap-dialog-body').append(
+                                    $('<div>').addClass('alert alert-danger').text(message)
+                                );
+                            });
+                        } else {
+                            $('#albums').DataTable().row.add({
+                                "id": data,
+                                "name": $('#new-album-name').val(),
+                                "description": $('#new-album-description').val(),
+                                "date": $('#new-album-date').val(),
+                                "images": "0",
+                                "thumbsCreated": "0",
+                                "lastAccessed": "0000-00-00 00:00:00",
+                                "location": "",
+                                "code": ""
+                            }).draw(false);
+                            dialogItself.close();
+                            editAlbum(data);
+                        }
                     } else if (data === '0') {
                         modal.find('.bootstrap-dialog-body').append("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close' title='close'>×</a>Some unexpected error occurred while creating your album.<br/>Please <a class='gen' target='_blank' href='mailto:admin@saperstonestudios.com'>Contact our System Administrators</a> for more details, or try resubmitting.</div>");
                     } else {
