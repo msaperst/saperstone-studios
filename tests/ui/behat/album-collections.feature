@@ -77,3 +77,15 @@ Feature: Organizational parent and child albums
     And I am on the "user/" page
     When I edit album 99999
     Then the album editor action buttons fit on one row
+
+  Scenario: Album cover picker renders protected photo previews and persists selection
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And album 99999 exists with 16 images
+    And album 99999 has a protected thumbnail for image 1
+    And I am on the "user/" page
+    When I edit album 99999
+    And I open the album cover picker
+    Then I can see a loaded protected cover preview
+    When I select the first cover preview
+    Then album 99999 uses the selected cover image
