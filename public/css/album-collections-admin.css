@@ -46,3 +46,18 @@
     margin-left: 10px;
     vertical-align: middle;
 }
+
+.album-cover-unavailable {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 125px;
+    min-height: 95px;
+    padding: 8px;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    background-color: #f5f5f5;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+}
