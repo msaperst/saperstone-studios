@@ -183,7 +183,8 @@ class BaseFeatureContext implements Context {
                                 dataLoaded: element.getAttribute('data-loaded'),
                                 centerHit: center ? center.tagName.toLowerCase() + '.' +
                                     String(center.className || '').replace(/\\s+/g, '.') : null,
-                                listeners: Object.keys(events)
+                                listeners: Object.keys(events),
+                                clickListenerCount: events.click ? events.click.length : 0
                             };
                         }
                         var album = window.album;
@@ -198,7 +199,12 @@ class BaseFeatureContext implements Context {
                                 imagesLoaded: album.images.length,
                                 totalImages: album.totalImages,
                                 currentImageId: album.currentImageId,
-                                pendingImageId: album.pendingImageId
+                                pendingImageId: album.pendingImageId,
+                                showFavoritesOnly: album.showFavoritesOnly,
+                                pendingAdvance: album.pendingAdvance,
+                                pendingWrapPrevious: album.pendingWrapPrevious,
+                                nearLoadTrigger: typeof album.isNearLoadTrigger === 'function'
+                                    ? album.isNearLoadTrigger() : null
                             } : null,
                             cardCount: document.querySelectorAll('#album-grid .album-card').length,
                             viewerImageId: document.querySelector('#album-viewer-overlay')
@@ -218,6 +224,9 @@ class BaseFeatureContext implements Context {
                                 imageDownload: inspect('#downloadable-image-btn'),
                                 notifySubmit: inspect('#notify-submit'),
                                 favoriteButton: inspect('#favorite-btn'),
+                                downloadAllButton: inspect('#downloadable-all-btn'),
+                                downloadFavoritesButton: inspect('#downloadable-favorites-btn'),
+                                submitFavoritesButton: inspect('#submit-favorites-btn'),
                                 albumGrid: inspect('#album-grid'),
                                 newAlbumButton: inspect('.add-album-btn'),
                                 editAlbumButton: inspect('.edit-album-btn'),
