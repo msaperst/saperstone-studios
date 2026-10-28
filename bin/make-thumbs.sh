@@ -96,6 +96,11 @@ while IFS= read -r image_location; do
     fi
 
     if [[ "$process_file" == true ]]; then
+        # The decoder allowlist does not prevent automatic bzip2 blob
+        # decompression (CVE-2026-116149). Reject it before invoking convert.
+        if [[ "$(head -c 3 "$full_file")" == "BZh" ]]; then
+            fail "Bzip2-compressed originals are not supported for $filename"
+        fi
         echo "Creating responsive thumbnails $filename..." > "$output"
 
         create_derivative "$full_file" "$small_file" 400 || fail "Unable to create 400px thumbnail for $filename"

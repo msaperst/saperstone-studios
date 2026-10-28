@@ -475,7 +475,10 @@ class CreateBlogPostTest extends TestCase {
                         ]
                     ]
                 ],
-                'cookies' => $cookieJar
+                'cookies' => $cookieJar,
+                // If ImageMagick stalls while decoding an otherwise valid JPEG,
+                // fail this API regression clearly instead of hanging CI for 20 minutes.
+                'timeout' => 30
             ]);
             $this->assertEquals(200, $response->getStatusCode());
             $blogId = (string)$response->getBody();

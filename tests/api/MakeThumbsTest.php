@@ -369,6 +369,42 @@ class MakeThumbsTest extends TestCase {
         }
     }
 
+    public function testWorkerRejectsBzip2CompressedOriginalBeforeImageMagick(): void {
+        $base = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/';
+        $payload = base64_decode(
+            'QlpoOTFBWSZTWUsvjV4AABDdQOTAAAQAyAGgIAAgAAAAoAAxTAAA1PIQB6lFkCGUaQKVmRmZgZ32H5uR8XckU4UJBLL41eA='
+        );
+        file_put_contents($base . 'flower1.jpeg', $payload);
+
+        $output = [];
+        $status = 0;
+        exec(
+            'docker compose exec -T -u www-data php bash /var/www/bin/make-thumbs.sh 998 none all',
+            $output,
+            $status
+        );
+
+        self::assertNotSame(0, $status);
+        self::assertSame($payload, file_get_contents($base . 'full/flower1.jpeg'));
+        self::assertFileDoesNotExist($base . 'thumbs/400/flower1.jpeg');
+        self::assertSame(
+            0,
+            (int)$this->sql->getRow('SELECT thumbsCreated FROM albums WHERE id = 998')['thumbsCreated']
+        );
+
+        $cookieJar = CookieJar::fromArray([
+            'hash' => '1d7505e7f434a7713e84ba399e937191'
+        ], getenv('DB_HOST'));
+        $response = $this->http->request('GET', 'api/get-thumbnail-status.php', [
+            'cookies' => $cookieJar
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        self::assertStringContainsString(
+            'Error: Bzip2-compressed originals are not supported for flower1.jpeg',
+            (string)$response->getBody()
+        );
+    }
+
     public function testWorkerRetainsErrorStatusAfterExiting(): void {
         unlink(dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'content/albums/sample/flower1.jpeg');
 
