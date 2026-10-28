@@ -19,8 +19,9 @@ Status: requirements approved; implementation in progress on \`feature/122-paren
 - Reordering is drag-and-drop with keyboard-accessible controls; order persists, newly attached children go last.
 - Deleting a parent **only** deletes its grouping. All children, photos, favorites, individual codes and permissions survive as standalone albums. Show explicit confirmation of lost inherited access, never offer a cascading delete.
 - Moving a child preserves its ID, images, favorites, owner, code, direct URL and individual permissions. Inherited viewing access is recalculated.
-- Automatic cover uses the first available photo; admin/owning uploader can select a photo already in the appropriate child. The parent defaults to a child's cover. No separate image upload in #122.
-- Covers must be served with server-side viewing authorization and protected derivatives only. Missing/deleted covers use a safe fallback. Do not reuse the public image-crop endpoint as a protected image endpoint.
+- Every individual album has its own automatic cover (first photo), optionally selected from images already in that album. Collection pages show each child album's cover; there is no redundant collection-level cover picker. No separate cover upload in #122.
+- Expanded management rows retain per-child thumbnail generation status (Ready, Missing, N/A), using the same state calculation as standalone album rows.
+- Covers must be served with server-side viewing authorization and protected, bounded derivatives only. Missing or incomplete thumbnails show an actionable unavailable state instead of a blank selectable choice. The verified 1600px derivative is a fallback only for completed migrations with preserved originals in full/. Do not reuse the public image-crop endpoint as a protected image endpoint.
 
 ## Test-first acceptance matrix
 
@@ -35,3 +36,7 @@ Status: requirements approved; implementation in progress on \`feature/122-paren
 | Existing regression | Standalone albums, uploaders' upload workflow, favorites, sharing, downloads, lazy loading, thumbnail protection |
 
 Test implementation must precede each production slice; do not claim the feature complete until all layers and CI are green.
+
+## Deferred follow-up
+
+- Collection-wide favorites and Download All need separate UX/API design: aggregate across child albums without granting or implying new permissions, verify authorization on every image, and preserve each child's current download/share restrictions. Not part of #122.
