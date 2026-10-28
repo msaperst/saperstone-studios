@@ -10,6 +10,7 @@ default:
         - ui\bootstrap\NavigationFeatureContext
         - ui\bootstrap\RegistrationFeatureContext
         - ui\bootstrap\AlbumFeatureContext
+        - ui\bootstrap\AlbumCollectionsFeatureContext
         - ui\bootstrap\RetouchFeatureContext
         - ui\bootstrap\BlogFeatureContext
         - ui\bootstrap\BlogAdminFeatureContext
