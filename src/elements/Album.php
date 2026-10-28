@@ -16,6 +16,10 @@ class Album {
     private $owner;
     private $images = array();
     private $thumbsCreated;
+    private bool $isCollection = false;
+    private ?int $parentId = null;
+    private ?int $collectionOrder = null;
+    private ?int $coverImage = null;
     private $users = array();
 
     /**
@@ -72,6 +76,35 @@ class Album {
 
     function getName() {
         return $this->name;
+    }
+
+    public function isCollection(): bool {
+        return $this->isCollection;
+    }
+
+    public function getParentId(): ?int {
+        return $this->parentId;
+    }
+
+    /**
+     * A collection contains albums, never photos. Returned order is the
+     * persisted display order, not an incidental database or upload order.
+     * @return Album[]
+     */
+    public function getChildren(): array {
+        if (!$this->isCollection) {
+            throw new BadAlbumException('Only collections have child albums');
+        }
+        $sql = new Sql();
+        try {
+            $rows = $sql->getRows(
+                'SELECT id FROM albums WHERE parent = ? ORDER BY collectionOrder, id',
+                [$this->id]
+            );
+        } finally {
+            $sql->disconnect();
+        }
+        return array_map(static fn(array $row): Album => self::withId($row['id']), $rows);
     }
 
     function getDescription() {
@@ -152,7 +185,13 @@ class Album {
     function canUserAccess(): bool {
         $user = User::fromSystem();
         //(it's your own stuff) || (it's stored in your cookies) || (your user is authorized to view the album)
-        return ($this->canUserGetData() || $this->isSearchedFor() || ($user->isLoggedIn() && in_array($user->getId(), $this->users)));
+        if ($this->canUserGetData() || $this->isSearchedFor()
+            || ($user->isLoggedIn() && in_array($user->getId(), $this->users))) {
+            return true;
+        }
+        // Inherit viewing permission only. Download and sharing grants are
+        // always resolved against the particular child album.
+        return $this->parentId !== null && self::withId($this->parentId)->canUserAccess();
     }
 
     /**
@@ -235,6 +274,161 @@ class Album {
         return $lastId;
     }
 
+
+    /**
+     * Create a non-photographic collection. No directory or image record is
+     * created; album codes share the existing unique database index.
+     */
+    public function createCollection(): int {
+        $user = User::fromSystem();
+        if (!$user->isAdmin() && !$user->isUploader()) {
+            throw new AlbumException('User not authorized to create collection');
+        }
+        $sql = new Sql();
+        try {
+            $id = (int)$sql->executeStatement(
+                'INSERT INTO albums (name, description, date, location, owner, isCollection, images, thumbsCreated) VALUES (?, ?, ?, ?, ?, 1, 0, 0)',
+                [$this->name, $this->description, $this->date, '', $user->getId()]
+            );
+        } finally {
+            $sql->disconnect();
+        }
+        $this->id = $id;
+        $this->isCollection = true;
+        $this->raw = self::withId($id)->getDataArray();
+        return $id;
+    }
+
+    /**
+     * A collection is shared when its code or a downloader account's explicit
+     * grant makes its children accessible outside the owner/admin workflow.
+     * The uploader's own albums_for_users entry is not a sharing grant.
+     */
+    public function isShared(): bool {
+        if (!$this->isCollection) {
+            throw new BadAlbumException('Only collections have sharing state');
+        }
+        if ($this->hasCode()) {
+            return true;
+        }
+        $sql = new Sql();
+        try {
+            return $sql->getRowCount(
+                "SELECT 1 FROM albums_for_users au JOIN users u ON u.id = au.user
+                 WHERE au.album = ? AND u.role NOT IN ('admin', 'uploader')",
+                [$this->id]
+            ) > 0;
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
+    /**
+     * Move an existing photo album without changing its owner, images, code
+     * or image permissions. Uploaders may only touch their own unshared
+     * collections; administrators may move between shared collections.
+     */
+    public function setParent(?int $parentId): void {
+        if ($this->isCollection) {
+            throw new BadAlbumException('A collection cannot belong to another collection');
+        }
+        if ($parentId === $this->parentId) {
+            return;
+        }
+        $target = $parentId === null ? null : self::withId($parentId);
+        if ($target !== null && !$target->isCollection()) {
+            throw new BadAlbumException('Parent must be a collection');
+        }
+        $source = $this->parentId === null ? null : self::withId($this->parentId);
+        $user = User::fromSystem();
+        $sourceShared = $source !== null && $source->isShared();
+        $targetShared = $target !== null && $target->isShared();
+        $collectionOwner = (int)($target ?? $source)?->getOwner();
+        $canChange = AlbumCollectionPolicy::canChangeMembership(
+            $user->isAdmin(),
+            $user->isUploader(),
+            (int)$user->getId(),
+            $collectionOwner,
+            (int)$this->owner,
+            $sourceShared,
+            $targetShared
+        );
+        if ($source !== null && !$user->isAdmin() && (int)$source->getOwner() !== (int)$user->getId()) {
+            $canChange = false;
+        }
+        if (!$canChange) {
+            throw new AlbumException('User not authorized to organize this album');
+        }
+        $sql = new Sql();
+        try {
+            $position = null;
+            if ($parentId !== null) {
+                $row = $sql->getRow(
+                    'SELECT COALESCE(MAX(collectionOrder), -1) + 1 AS nextPosition FROM albums WHERE parent = ?',
+                    [$parentId]
+                );
+                $position = (int)$row['nextPosition'];
+            }
+            $sql->executeStatement(
+                'UPDATE albums SET parent = ?, collectionOrder = ? WHERE id = ?',
+                [$parentId, $position, $this->id]
+            );
+            $this->parentId = $parentId;
+            $this->collectionOrder = $position;
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
+    /**
+     * Require an exact permutation of the collection's existing children,
+     * then update every position with a single atomic SQL statement.
+     */
+    public function reorderChildren(array $orderedIds): void {
+        if (!$this->isCollection) {
+            throw new BadAlbumException('Only collections can order albums');
+        }
+        $existing = array_map(static fn(Album $album): int => (int)$album->getId(), $this->getChildren());
+        $requested = array_map('intval', $orderedIds);
+        $sortedExisting = $existing;
+        $sortedRequested = $requested;
+        sort($sortedExisting);
+        sort($sortedRequested);
+        if ($sortedExisting !== $sortedRequested || count($requested) !== count(array_unique($requested))) {
+            throw new BadAlbumException('Order must contain every child album exactly once');
+        }
+        $user = User::fromSystem();
+        foreach ($this->getChildren() as $child) {
+            if (!AlbumCollectionPolicy::canChangeMembership(
+                $user->isAdmin(), $user->isUploader(), (int)$user->getId(),
+                (int)$this->owner, (int)$child->getOwner(), $this->isShared(), $this->isShared()
+            )) {
+                throw new AlbumException('User not authorized to reorder collection');
+            }
+        }
+        if ($requested === []) {
+            return;
+        }
+        $cases = [];
+        $values = [];
+        foreach ($requested as $position => $id) {
+            $cases[] = 'WHEN ? THEN ?';
+            $values[] = $id;
+            $values[] = $position;
+        }
+        $values[] = $this->id;
+        $sql = new Sql();
+        try {
+            $sql->executeStatement(
+                'UPDATE albums SET collectionOrder = CASE id ' . implode(' ', $cases)
+                . ' END WHERE parent = ?',
+                $values
+            );
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
     /**
      * @param $code
      * @return Album
@@ -289,6 +483,10 @@ class Album {
         //consider changing this to an array of matching images
         $album->images = $album->raw['images'];
         $album->thumbsCreated = $album->raw['thumbsCreated'];
+        $album->isCollection = (bool)$album->raw['isCollection'];
+        $album->parentId = $album->raw['parent'] === null ? null : (int)$album->raw['parent'];
+        $album->collectionOrder = $album->raw['collectionOrder'] === null ? null : (int)$album->raw['collectionOrder'];
+        $album->coverImage = $album->raw['coverImage'] === null ? null : (int)$album->raw['coverImage'];
         $album->users = array_column($sql->getRows("SELECT user FROM albums_for_users WHERE album = ?", [$album->id]), 'user');
         $sql->disconnect();
         return $album;
@@ -341,6 +539,25 @@ class Album {
     function delete() {
         if (!$this->canUserGetData()) {
             throw new AlbumException("User not authorized to delete album");
+        }
+        if ($this->isCollection) {
+            $user = User::fromSystem();
+            if (!AlbumCollectionPolicy::canDelete(
+                $user->isAdmin(), $user->isUploader(), (int)$user->getId(),
+                (int)$this->owner, $this->isShared()
+            )) {
+                throw new AlbumException('User not authorized to delete a shared collection');
+            }
+            $sql = new Sql();
+            try {
+                // fk_album_collection_parent uses ON DELETE SET NULL. Deleting
+                // the collection cannot delete its child albums or photos.
+                $sql->executeStatement('DELETE FROM albums WHERE id = ?', [$this->id]);
+                $sql->executeStatement('DELETE FROM albums_for_users WHERE album = ?', [$this->id]);
+            } finally {
+                $sql->disconnect();
+            }
+            return;
         }
         $sql = new Sql();
         $sql->executeStatement("DELETE FROM albums WHERE id = ?", [$this->id]);
