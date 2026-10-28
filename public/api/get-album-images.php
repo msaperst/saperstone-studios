@@ -18,6 +18,12 @@ if (!$album->canUserAccess()) {
     exit ();
 }
 
+if ($album->isCollection()) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Collections cannot contain photographs']);
+    exit();
+}
+
 if (isset ($_GET ['start'])) {
     $start = (int)$_GET ['start'];
 }

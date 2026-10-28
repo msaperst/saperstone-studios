@@ -9,6 +9,11 @@ $api->forceLoggedIn();
 
 try {
     $album = Album::withId($api->retrievePostString('id', 'Album id'));
+    if ($album->isCollection()) {
+        http_response_code(400);
+        echo 'Collections must be deleted separately';
+        exit();
+    }
     if (!$album->canUserGetData()) {
         header('HTTP/1.0 403 Unauthorized');
         exit ();

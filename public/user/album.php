@@ -13,6 +13,13 @@ if (!$album->canUserAccess()) {
     $errors->throw401();
 }
 
+// Keep existing album-code links working, but collections have a distinct
+// landing-page URL and are never rendered as a photo gallery.
+if ($album->isCollection()) {
+    header('Location: /user/collection.php?collection=' . $album->getId(), true, 302);
+    exit();
+}
+
 $session = new Session();
 $session->initialize();
 $user = User::fromSystem();

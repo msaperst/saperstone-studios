@@ -21,6 +21,12 @@ if (!$album->canUserGetData()) {
     exit ();
 }
 
+if ($album->isCollection()) {
+    http_response_code(400);
+    echo 'Collections cannot contain photographs';
+    exit();
+}
+
 $imageLocation = DIRECTORY_SEPARATOR . "albums" . DIRECTORY_SEPARATOR . $album->getLocation() . DIRECTORY_SEPARATOR;
 $outputDir = dirname(__DIR__) . $imageLocation;
 try {

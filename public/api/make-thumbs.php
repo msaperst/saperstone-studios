@@ -21,6 +21,12 @@ if (!$album->canUserGetData()) {
     exit ();
 }
 
+if ($album->isCollection()) {
+    http_response_code(400);
+    echo 'Collections cannot contain photographs';
+    exit();
+}
+
 try {
     $requestedMarkup = $api->retrievePostString('markup', 'Markup');
 } catch (Exception $e) {

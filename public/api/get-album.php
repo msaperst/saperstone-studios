@@ -20,6 +20,11 @@ if (!$album->canUserGetData()) {
     header('HTTP/1.0 403 Unauthorized');
     exit ();
 }
+if ($album->isCollection()) {
+    http_response_code(400);
+    echo 'Use collection management for collections';
+    exit();
+}
 
 $albumInfo = $album->getDataBasic();
 $albumInfo['imageCount'] = (int)$album->getDataArray()['images'];
