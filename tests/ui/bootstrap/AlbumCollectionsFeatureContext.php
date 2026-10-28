@@ -243,6 +243,36 @@ class AlbumCollectionsFeatureContext implements Context {
         ));
     }
 
+    /** @Then /^child album (\d+) shows "([^"]+)" thumbnail status$/ */
+    public function childThumbnailStatus(int $id, string $expected): void {
+        $locator = WebDriverBy::cssSelector(
+            '.collection-child-item[data-child-id="' . $id . '"] .collection-thumbnail-status'
+        );
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($locator));
+        Assert::assertSame($expected, trim($this->driver->findElement($locator)->getText()));
+    }
+
+    /** @Then /^the album editor action buttons fit on one row$/ */
+    public function albumEditorButtonsStayOnOneRow(): void {
+        $dialog = $this->lastDialog();
+        $buttons = $dialog->findElements(WebDriverBy::cssSelector('.bootstrap-dialog-footer-buttons button'));
+        Assert::assertGreaterThanOrEqual(5, count($buttons));
+        $previousY = null;
+        foreach ($buttons as $button) {
+            Assert::assertTrue($button->isDisplayed());
+            $location = $button->getLocation();
+            if ($previousY !== null) {
+                Assert::assertEqualsWithDelta(
+                    $previousY,
+                    $location->getY(),
+                    3,
+                    'Album editor action buttons wrap to a second row'
+                );
+            }
+            $previousY = $location->getY();
+        }
+    }
+
     private function lastDialog() {
         $dialogs = $this->driver->findElements(WebDriverBy::cssSelector('.bootstrap-dialog.modal.in'));
         Assert::assertNotEmpty($dialogs);
