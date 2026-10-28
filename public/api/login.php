@@ -3,9 +3,9 @@ require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPAR
 if (!Api::requireMethod('POST')) {
     exit();
 }
-$systemUser = User::fromSystem();
 $session = new Session();
 $session->initialize();
+$systemUser = User::fromSystem();
 $api = new Api();
 
 if (isset($_POST['submit']) && in_array($_POST['submit'], ['Login', 'Logout'], true)) {
