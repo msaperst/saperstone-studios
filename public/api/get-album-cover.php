@@ -13,11 +13,28 @@ if (!$album->canUserAccess()) {
     exit();
 }
 
+$candidateId = null;
+if (isset($_GET['candidate'])) {
+    // A specific photo picker preview is management-only. General clients
+    // can request only the public-facing, resolved cover of an album they may
+    // view, not browse arbitrary cover candidates through this endpoint.
+    if (!$album->canUserGetData()) {
+        http_response_code(403);
+        exit();
+    }
+    try {
+        $candidateId = $api->retrieveGetInt('candidate', 'Candidate image id');
+    } catch (Exception $exception) {
+        http_response_code(400);
+        exit();
+    }
+}
+
 header('Cache-Control: private, no-store, max-age=0');
 header('X-Content-Type-Options: nosniff');
 header('Cross-Origin-Resource-Policy: same-origin');
 
-$image = $album->resolveCoverImage();
+$image = $album->resolveCoverImage($candidateId);
 if ($image === null) {
     http_response_code(404);
     exit();
