@@ -119,7 +119,7 @@ class LoginTest extends TestCase {
         $this->assertNull($this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME));
 
         $loggedInPage = $this->http->request('GET', '/');
-        $this->assertStringContainsString('id="logout-button"', (string)$loggedInPage->getBody());
+        $this->assertStringContainsString("id='logout-button'", (string)$loggedInPage->getBody());
 
         $logout = $this->http->request('POST', 'api/login.php', [
             'form_params' => [
@@ -131,7 +131,7 @@ class LoginTest extends TestCase {
 
         $loggedOutPage = $this->http->request('GET', '/');
         $this->assertStringContainsString('id="login-menu-item"', (string)$loggedOutPage->getBody());
-        $this->assertStringNotContainsString('id="logout-button"', (string)$loggedOutPage->getBody());
+        $this->assertStringNotContainsString("id='logout-button'", (string)$loggedOutPage->getBody());
     }
 
     public function testLoginNoUsername() {
