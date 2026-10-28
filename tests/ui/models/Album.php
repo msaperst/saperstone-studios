@@ -174,12 +174,12 @@ class Album {
      * @throws TimeoutException
      */
     public function openSlideShow($imgNum) {
-        $this->getImageCard($imgNum);
-        // The media button opens the viewer directly for users. Clicking it
-        // avoids a separate hover transition on the overlaid controls.
-        $mediaSelector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . ' .album-card-media');
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($mediaSelector));
-        $this->driver->findElement($mediaSelector)->click();
+        // The overlay sits above the media button and handles clicks to open
+        // the viewer. Hover first to expose it, then perform a real user click.
+        $this->hoverOverImage($imgNum);
+        $overlaySelector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum) . ' .album-card-overlay');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($overlaySelector));
+        $this->driver->findElement($overlaySelector)->click();
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOf(
                 $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
