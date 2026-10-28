@@ -22,6 +22,10 @@ if (isset($_GET['candidate'])) {
         http_response_code(403);
         exit();
     }
+    if ($album->isCollection()) {
+        http_response_code(400);
+        exit();
+    }
     try {
         $candidateId = $api->retrieveGetInt('candidate', 'Candidate image id');
     } catch (Exception $exception) {
@@ -75,5 +79,32 @@ foreach (['400', '800', '1200'] as $size) {
     header('Content-Length: ' . filesize($path));
     readfile($path);
     exit();
+}
+// Older completed migrations can retain a protected 1600px derivative even
+// when a smaller thumbnail has not yet been generated. The original is stored
+// under full/, so never use the album root as a fallback for an unmigrated
+// photograph or when the backup is absent.
+if (!$album->isCollection() && $album->hasThumbnails()) {
+    $fullRoot = realpath($folder . '/full');
+    $fullImage = $fullRoot === false ? false : realpath($fullRoot . '/' . $filename);
+    $rootImage = realpath($folder . '/' . $filename);
+    if ($fullRoot !== false
+        && str_starts_with($fullRoot, $folder . DIRECTORY_SEPARATOR)
+        && $fullImage !== false
+        && str_starts_with($fullImage, $fullRoot . DIRECTORY_SEPARATOR)
+        && is_file($fullImage)
+        && $rootImage !== false
+        && str_starts_with($rootImage, $folder . DIRECTORY_SEPARATOR)
+        && is_file($rootImage)) {
+        $dimensions = @getimagesize($rootImage);
+        $mime = $dimensions['mime'] ?? '';
+        if ($dimensions !== false && max($dimensions[0], $dimensions[1]) <= 1600
+            && in_array($mime, ['image/jpeg', 'image/png', 'image/gif'], true)) {
+            header('Content-Type: ' . $mime);
+            header('Content-Length: ' . filesize($rootImage));
+            readfile($rootImage);
+            exit();
+        }
+    }
 }
 http_response_code(404);
