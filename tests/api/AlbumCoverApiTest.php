@@ -158,6 +158,7 @@ class AlbumCoverApiTest extends TestCase {
     public function testCompletedMigrationCanUseProtected1600DerivativeWhenSmallThumbnailIsMissing(): void {
         $this->installImage('full/sample.gif');
         $this->installImage('sample.gif');
+        file_put_contents($this->albumFolder . '/sample.gif', "\n", FILE_APPEND);
         $this->sql->executeStatement(
             'UPDATE albums SET thumbsCreated = 1 WHERE id = ?', [self::ALBUM_ID]
         );
@@ -168,6 +169,15 @@ class AlbumCoverApiTest extends TestCase {
             file_get_contents($this->albumFolder . '/sample.gif'),
             (string)$response->getBody()
         );
+    }
+
+    public function testIncorrectCompletedFlagDoesNotExposeBitIdenticalOriginal(): void {
+        $this->installImage('full/sample.gif');
+        $this->installImage('sample.gif');
+        $this->sql->executeStatement(
+            'UPDATE albums SET thumbsCreated = 1 WHERE id = ?', [self::ALBUM_ID]
+        );
+        self::assertSame(404, $this->requestCover(true)->getStatusCode());
     }
 
     public function testOriginalRootIsNotAcceptedAsAProcessedDerivativeWithoutThumbnailCompletion(): void {
