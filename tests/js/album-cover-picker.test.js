@@ -62,3 +62,26 @@ test('cover picker can restore automatic cover selection without deleting any im
         data: {album: 27, image: ''}
     });
 });
+
+test('missing protected thumbnails display a clear non-selectable fallback instead of a blank button', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    context.openAlbumCoverPicker(27);
+    const config = environment.dialogs.at(-1);
+    environment.queueGet('/api/get-cover-candidates.php', {
+        type: 'success',
+        data: {
+            candidates: [{
+                id: 211, album: 27, galleryName: 'Album',
+                preview: '/api/get-album-cover.php?album=27&candidate=211',
+                previewAvailable: false
+            }],
+            nextStart: null
+        }
+    });
+    config.onshown(environment.createDialog());
+    const choices = environment.element('#album-cover-options').appended;
+    assert.equal(choices.length, 1);
+    assert.equal(choices[0].tagName, 'span');
+    assert.match(choices[0].text(), /Generate thumbnails/i);
+    assert.equal(choices[0].handlers.has('click'), false);
+});
