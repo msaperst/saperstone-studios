@@ -57,6 +57,15 @@ function collectionChildItem(child, canManage) {
         .text(child.name));
     item.append($('<span>').addClass('text-muted').text(' — ' + child.imageCount + ' photos'));
     if (canManage) {
+        const status = albumThumbnailState({
+            images: child.imageCount,
+            thumbsCreated: child.thumbsCreated
+        });
+        item.append($('<span>')
+            .addClass('collection-thumbnail-status label label-' + status.style)
+            .text(status.label));
+    }
+    if (canManage) {
         item.append($('<button>').attr({type: 'button', 'aria-label': 'Move ' + child.name + ' up'})
             .addClass('btn btn-xs btn-default collection-move-up').text('↑'));
         item.append($('<button>').attr({type: 'button', 'aria-label': 'Move ' + child.name + ' down'})
