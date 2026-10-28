@@ -32,7 +32,9 @@ if ($start === false || $start < 0 || $count === false || $count < 1 || $count >
 // Never send raw public file paths or full-resolution image locations to JS.
 $sql = new Sql();
 try {
-    $query = 'SELECT ai.id, ai.album, a.name AS galleryName FROM album_images ai
+    $query = 'SELECT ai.id, ai.album, ai.location AS imageLocation,
+                     a.location AS albumLocation, a.thumbsCreated,
+                     a.name AS galleryName FROM album_images ai
               JOIN albums a ON a.id = ai.album
               WHERE ai.album = ?
               ORDER BY ai.sequence, ai.id
@@ -52,6 +54,11 @@ $candidates = array_map(static fn(array $row): array => [
     'galleryName' => $row['galleryName'],
     'preview' => '/api/get-album-cover.php?album=' . (int)$album->getId()
         . '&candidate=' . (int)$row['id'],
+    'previewAvailable' => AlbumCoverFile::resolve(
+        (string)$row['albumLocation'],
+        (string)$row['imageLocation'],
+        (bool)$row['thumbsCreated']
+    ) !== null,
 ], $rows);
 header('Content-Type: application/json');
 header('Cache-Control: private, no-store');
