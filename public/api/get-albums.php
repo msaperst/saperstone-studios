@@ -6,15 +6,43 @@ $api = new Api ();
 $api->forceLoggedIn();
 
 $response = array();
+// Keep the existing role-specific response columns for ordinary albums.
+// Collection rows add isCollection only when necessary for the UI. Children
+// are loaded through get-collection.php instead of duplicated in this list.
+$imageCount = "CASE WHEN a.isCollection = 1
+    THEN (SELECT COALESCE(SUM(ch.images), 0) FROM albums ch WHERE ch.parent = a.id)
+    ELSE a.images END";
 if ($systemUser->isAdmin()) {
-    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums.thumbsCreated, albums.lastAccessed, albums.code FROM albums;";
+    $query = "SELECT a.id, a.name, a.description, a.date, $imageCount AS images,
+                     a.thumbsCreated, a.lastAccessed, a.code, a.isCollection
+              FROM albums a WHERE a.parent IS NULL";
     $params = [];
 } elseif ($systemUser->isUploader()) {
-    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images, albums.thumbsCreated, albums.owner FROM albums LEFT JOIN albums_for_users ON albums_for_users.album = albums.id WHERE albums_for_users.user = ? OR albums.owner = ? GROUP BY albums.id;";
-    $params = [$systemUser->getId(), $systemUser->getId()];
+    $query = "SELECT a.id, a.name, a.description, a.date, $imageCount AS images,
+                     a.thumbsCreated, a.owner, a.isCollection
+              FROM albums a
+              LEFT JOIN albums_for_users au ON au.album = a.id
+              WHERE (au.user = ? OR a.owner = ?)
+                AND (a.parent IS NULL OR NOT EXISTS (
+                    SELECT 1 FROM albums p
+                    LEFT JOIN albums_for_users pa ON pa.album = p.id AND pa.user = ?
+                    WHERE p.id = a.parent AND (p.owner = ? OR pa.user IS NOT NULL)
+                ))
+              GROUP BY a.id";
+    $params = [$systemUser->getId(), $systemUser->getId(),
+               $systemUser->getId(), $systemUser->getId()];
 } else {
-    $query = "SELECT albums.id, albums.name, albums.description, albums.date, albums.images FROM albums_for_users LEFT JOIN albums ON albums_for_users.album = albums.id WHERE albums_for_users.user = ? GROUP BY albums.id;";
-    $params = [$systemUser->getId()];
+    $query = "SELECT a.id, a.name, a.description, a.date, $imageCount AS images,
+                     a.isCollection
+              FROM albums_for_users au
+              LEFT JOIN albums a ON au.album = a.id
+              WHERE au.user = ?
+                AND (a.parent IS NULL OR NOT EXISTS (
+                    SELECT 1 FROM albums_for_users pa
+                    WHERE pa.user = ? AND pa.album = a.parent
+                ))
+              GROUP BY a.id";
+    $params = [$systemUser->getId(), $systemUser->getId()];
 }
 $sanitizedAlbums = array();
 $sql = new Sql();
@@ -24,6 +52,11 @@ foreach ($albums as $album) {
         $album ['date'] = substr($album ['date'], 0, 10);
     }
     if ($album['id'] != NULL) {
+        if ((int)$album['isCollection'] === 1) {
+            $album['isCollection'] = true;
+        } else {
+            unset($album['isCollection']);
+        }
         array_push($sanitizedAlbums, $album);
     }
 }
