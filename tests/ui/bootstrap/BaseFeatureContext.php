@@ -12,6 +12,7 @@ use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
+use Facebook\WebDriver\WebDriverDimension;
 use Sql;
 use User;
 
@@ -112,6 +113,10 @@ class BaseFeatureContext implements Context {
         }
 
         $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
+        // Keep desktop user workflows on a stable viewport across Chrome versions.
+        // The browser default is only 780x437, which changes album grid columns
+        // and causes sticky navigation to overlap thumbnail interactions.
+        $this->driver->manage()->window()->setSize(new WebDriverDimension(1440, 900));
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':' . getenv('HTTP_PORT') . '/';
         $this->user = new User();
 
