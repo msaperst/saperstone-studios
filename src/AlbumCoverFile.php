@@ -55,7 +55,15 @@ final class AlbumCoverFile {
         // An original-only album (or a partially completed migration)
         // cannot satisfy both guards.
         $full = self::containedDirectory($folder, $folder . '/full');
-        if ($full === null || self::containedFile($full, $filename) === null) {
+        $original = $full === null ? null : self::containedFile($full, $filename);
+        $webDerivative = self::containedFile($folder, $filename);
+        if ($original === null || $webDerivative === null) {
+            return null;
+        }
+        // A status flag alone is not proof of completed processing: legacy
+        // migrations could have a backed-up but unchanged public original.
+        if (filesize($original) === filesize($webDerivative)
+            && hash_file('sha256', $original) === hash_file('sha256', $webDerivative)) {
             return null;
         }
         return self::imageFile($folder, $filename, 1600);
