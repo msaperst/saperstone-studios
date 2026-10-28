@@ -146,6 +146,21 @@ class AlbumCollectionIntegrationTest extends TestCase {
         Album::withId(98882)->setCoverImage((int)$image);
     }
 
+    public function testUploaderCannotSelectCoverPhotoFromAnotherOwnersChild(): void {
+        $imageId = (int)$this->sql->getRow(
+            'SELECT id FROM album_images WHERE album = 98881 LIMIT 1'
+        )['id'];
+        // Admin may move another owner's album into the uploader's collection;
+        // that must not grant its owner access to all other child originals.
+        $this->sql->executeStatement(
+            'UPDATE albums SET owner = 5, parent = 98880 WHERE id = 98881'
+        );
+        $this->sql->executeStatement('UPDATE albums SET code = NULL WHERE id = 98880');
+        $_SESSION['hash'] = 'c90788c0e409eac6a95f6c6360d8dbf7';
+        $this->expectException(AlbumException::class);
+        Album::withId(98880)->setCoverImage($imageId);
+    }
+
     public function testRemovingSelectedCoverFallsBackWithoutDeletingPhoto(): void {
         $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
         $image = $this->sql->getRow('SELECT id FROM album_images WHERE album = 98881')['id'];
