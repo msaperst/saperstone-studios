@@ -162,6 +162,7 @@ $user->forceLogIn();
     }
     if ($user->isAdmin() || $user->isUploader()) {
         ?>
+        <script src="<?php echo Strings::assetUrl('/js/album-cover-picker.js'); ?>"></script>
         <script src="<?php echo Strings::assetUrl('/js/album-collections-admin.js'); ?>"></script>
         <script src="<?php echo Strings::assetUrl('/js/album-collections-list.js'); ?>"></script>
         <?php

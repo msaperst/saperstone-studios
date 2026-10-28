@@ -1,0 +1,24 @@
+/* Extend the existing Bootstrap album editor for choosing protected covers. */
+.album-cover-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.album-cover-option {
+    width: 125px;
+    height: 95px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.album-cover-more {
+    align-self: center;
+}
+.collection-drag-handle {
+    cursor: grab;
+    display: inline-block;
+    padding: 6px 10px;
+}
+.collection-child-item .btn {
+    margin-left: 8px;
+}

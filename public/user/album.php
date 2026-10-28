@@ -512,6 +512,9 @@ if ($user->isAdmin() && sizeof($notification_emails) > 0) {
 <script src="<?php echo Strings::assetUrl('/js/album.js'); ?>"></script>
 <script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
 <?php
+if ($album->canUserGetData()) { ?>
+    <script src="<?php echo Strings::assetUrl('/js/album-cover-picker.js'); ?>"></script>
+<?php }
 if ($user->isAdmin()) {
     ?>
     <script src="<?php echo Strings::assetUrl('/js/album-admin.js'); ?>"></script>
