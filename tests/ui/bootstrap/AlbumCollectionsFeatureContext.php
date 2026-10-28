@@ -7,7 +7,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
-use Facebook\WebDriver\WebDriverActions;
+use Facebook\WebDriver\Interactions\WebDriverActions;
 use PHPUnit\Framework\Assert;
 use Sql;
 
