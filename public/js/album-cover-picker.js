@@ -1,4 +1,4 @@
-// Shared existing-image picker for normal albums and organizational parents.
+// Shared protected existing-image picker for individual albums.
 // All candidates and images go through server-authorized collection endpoints.
 // No duplicate images, direct originals, or public upload/crop routes.
 function saveAlbumCoverChoice(albumId, imageId, dialog) {
@@ -25,6 +25,11 @@ function loadCoverCandidatePage(albumId, start, dialog) {
         const holder = $('#album-cover-options');
         holder.find('.album-cover-more').remove();
         data.candidates.forEach(function (candidate) {
+            if (candidate.previewAvailable === false) {
+                holder.append($('<span>').addClass('album-cover-unavailable')
+                    .text('Generate thumbnails to preview this photo'));
+                return;
+            }
             const button = $('<button>').attr({
                 type: 'button',
                 'aria-label': 'Use image from ' + candidate.galleryName + ' as cover'
@@ -58,7 +63,7 @@ function openAlbumCoverPicker(albumId) {
         message: function () {
             const content = $('<div>');
             content.append($('<p>').addClass('text-muted')
-                .text('Choose a photo already in this gallery or its collection.'));
+                .text('Choose a photo already in this gallery. Missing previews require thumbnail generation.'));
             content.append($('<div>').attr('id', 'album-cover-error')
                 .addClass('alert alert-danger').hide());
             content.append($('<div>').attr('id', 'album-cover-options')
