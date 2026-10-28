@@ -260,7 +260,7 @@ class AlbumCollectionApiTest extends TestCase {
         self::assertNotNull($this->sql->getRow('SELECT id FROM albums WHERE id = 98860'));
     }
 
-    public function testCoverSelectionRequiresOwnerAndExistingChildImage(): void {
+    public function testOnlyAnIndividualAlbumCanChooseItsExistingCoverImage(): void {
         $this->sql->executeStatement(
             "INSERT INTO album_images (album, title, sequence, caption, location, width, height, active)
              VALUES (98861, '', 1, '', '/albums/api-bimah/test.jpg', 400, 300, 1)"
@@ -270,17 +270,19 @@ class AlbumCollectionApiTest extends TestCase {
         )['id'];
         $response = $this->http->request('POST', 'api/set-album-cover.php', [
             'cookies' => $this->role('admin'),
-            'form_params' => ['album' => 98860, 'image' => $imageId]
+            'form_params' => ['album' => 98861, 'image' => $imageId]
         ]);
         self::assertSame(200, $response->getStatusCode());
         self::assertSame($imageId, (int)$this->sql->getRow(
-            'SELECT coverImage FROM albums WHERE id = 98860'
+            'SELECT coverImage FROM albums WHERE id = 98861'
         )['coverImage']);
-        $invalid = $this->http->request('POST', 'api/set-album-cover.php', [
-            'cookies' => $this->role('admin'),
-            'form_params' => ['album' => 98862, 'image' => $imageId]
-        ]);
-        self::assertSame(400, $invalid->getStatusCode());
+        foreach ([98860, 98862] as $otherAlbum) {
+            $invalid = $this->http->request('POST', 'api/set-album-cover.php', [
+                'cookies' => $this->role('admin'),
+                'form_params' => ['album' => $otherAlbum, 'image' => $imageId]
+            ]);
+            self::assertSame(400, $invalid->getStatusCode());
+        }
         $denied = $this->http->request('POST', 'api/set-album-cover.php', [
             'cookies' => $this->role('client'),
             'form_params' => ['album' => 98861, 'image' => $imageId],
@@ -290,23 +292,26 @@ class AlbumCollectionApiTest extends TestCase {
         $this->sql->executeStatement('DELETE FROM album_images WHERE id = ?', [$imageId]);
     }
 
-    public function testCoverCandidatesAreManagerOnlyAndPaginated(): void {
+    public function testCoverCandidatesAreAlbumOnlyManagerOnlyAndPaginated(): void {
         $this->sql->executeStatement(
             "INSERT INTO album_images (album, title, sequence, caption, location, width, height, active)
              VALUES (98861, 'First', 1, '', '/albums/api-bimah/first.jpg', 400, 300, 1),
                     (98861, 'Second', 2, '', '/albums/api-bimah/second.jpg', 400, 300, 1)"
         );
-        $response = $this->http->request('GET', 'api/get-cover-candidates.php?album=98860&start=0&count=1', [
+        $response = $this->http->request('GET', 'api/get-cover-candidates.php?album=98861&start=0&count=1', [
             'cookies' => $this->role('admin')
         ]);
         self::assertSame(200, $response->getStatusCode());
         $data = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
         self::assertCount(1, $data['candidates']);
         self::assertSame(1, $data['nextStart']);
-        self::assertStringContainsString('/api/get-album-cover.php?album=98860&candidate=', $data['candidates'][0]['preview']);
+        self::assertStringContainsString('/api/get-album-cover.php?album=98861&candidate=', $data['candidates'][0]['preview']);
         self::assertStringNotContainsString('/albums/api-bimah/', (string)$response->getBody());
-
-        $denied = $this->http->request('GET', 'api/get-cover-candidates.php?album=98860', [
+        $parent = $this->http->request('GET', 'api/get-cover-candidates.php?album=98860', [
+            'cookies' => $this->role('admin')
+        ]);
+        self::assertSame(400, $parent->getStatusCode());
+        $denied = $this->http->request('GET', 'api/get-cover-candidates.php?album=98861', [
             'cookies' => $this->role('client'),
             'http_errors' => false
         ]);
