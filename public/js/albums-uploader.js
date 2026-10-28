@@ -159,7 +159,6 @@ function editAlbum(id) {
                         name: $('#new-album-name').val(),
                         description: $('#new-album-description').val(),
                         date: $('#new-album-date').val(),
-                        code: $('#new-album-code').val(),
                     }).done(function (data) {
                         if (data === "") {
                             dialogItself.close();
