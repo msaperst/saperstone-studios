@@ -273,6 +273,85 @@ class AlbumCollectionsFeatureContext implements Context {
         }
     }
 
+    /** @Given /^album (\d+) has a protected thumbnail for image (\d+)$/ */
+    public function protectedAlbumThumbnail(int $albumId, int $imageNumber): void {
+        $sql = new Sql();
+        try {
+            $album = $sql->getRow('SELECT location FROM albums WHERE id = ?', [$albumId]);
+            Assert::assertNotNull($album);
+            $image = $sql->getRow(
+                'SELECT location FROM album_images WHERE album = ? ORDER BY sequence, id LIMIT ?, 1',
+                [$albumId, $imageNumber - 1]
+            );
+            Assert::assertNotNull($image);
+            $folder = dirname(__DIR__, 3) . '/content/albums/' . $album['location'];
+            $source = $folder . '/' . basename($image['location']);
+            $directory = $folder . '/thumbs/400';
+            Assert::assertFileExists($source);
+            if (!is_dir($directory)) {
+                Assert::assertTrue(mkdir($directory, 0775, true));
+            }
+            Assert::assertTrue(copy($source, $directory . '/' . basename($image['location'])));
+            $sql->executeStatement('UPDATE albums SET thumbsCreated = 1 WHERE id = ?', [$albumId]);
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
+    /** @When /^I open the album cover picker$/ */
+    public function openAlbumCoverPicker(): void {
+        $this->lastDialogButton('Choose Cover')->click();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(
+            WebDriverBy::cssSelector('.album-cover-option')
+        ));
+    }
+
+    /** @Then /^I can see a loaded protected cover preview$/ */
+    public function coverPreviewLoads(): void {
+        $loaded = $this->driver->executeAsyncScript(<<<'JS'
+            const done = arguments[arguments.length - 1];
+            const cover = document.querySelector('.album-cover-option');
+            if (!cover) {
+                done(false);
+                return;
+            }
+            const background = getComputedStyle(cover).backgroundImage;
+            const match = background.match(/^url\(["']?(.*?)["']?\)$/);
+            if (!match || !match[1].includes('/api/get-album-cover.php?')) {
+                done(false);
+                return;
+            }
+            const image = new Image();
+            image.onload = () => done(image.naturalWidth > 0 && image.naturalHeight > 0);
+            image.onerror = () => done(false);
+            image.src = match[1];
+            JS);
+        Assert::assertTrue($loaded, 'Protected cover preview failed to load valid image bytes');
+    }
+
+    /** @When /^I select the first cover preview$/ */
+    public function selectFirstCoverPreview(): void {
+        $this->driver->findElement(WebDriverBy::cssSelector('.album-cover-option'))->click();
+    }
+
+    /** @Then /^album (\d+) uses the selected cover image$/ */
+    public function selectedCoverPersists(int $albumId): void {
+        $this->wait->until(function () use ($albumId) {
+            $sql = new Sql();
+            try {
+                $album = $sql->getRow('SELECT coverImage FROM albums WHERE id = ?', [$albumId]);
+                $first = $sql->getRow(
+                    'SELECT id FROM album_images WHERE album = ? ORDER BY sequence, id LIMIT 1',
+                    [$albumId]
+                );
+                return $album !== null && $first !== null &&
+                    (int)$album['coverImage'] === (int)$first['id'];
+            } finally {
+                $sql->disconnect();
+            }
+        });
+    }
+
     private function lastDialog() {
         $dialogs = $this->driver->findElements(WebDriverBy::cssSelector('.bootstrap-dialog.modal.in'));
         Assert::assertNotEmpty($dialogs);
