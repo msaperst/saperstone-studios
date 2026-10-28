@@ -56,7 +56,7 @@ test('deletion confirmation explicitly preserves child albums and warns about ac
 });
 
 test('collection editor has no collection-level cover picker for either management role', () => {
-    const {context, environment} = createAlbumContext(scriptPath);
+    const {context, environment} = createAlbumContext(scriptPath, {myId: 4});
     const data = {
         id: 27, name: 'Family Event', description: '', date: '2026-10-28',
         children: [], owner: 4, shared: false
