@@ -285,11 +285,17 @@ class Album {
         try {
             if ($candidateId !== null) {
                 if ($this->isCollection) {
+                    $user = User::fromSystem();
+                    $ownerFilter = $user->isAdmin() ? '' : ' AND a.owner = ?';
+                    $params = [$candidateId, $this->id];
+                    if (!$user->isAdmin()) {
+                        $params[] = $user->getId();
+                    }
                     return $sql->getRow(
                         'SELECT ai.id, ai.album, ai.location, a.location AS albumLocation
                          FROM album_images ai JOIN albums a ON a.id = ai.album
-                         WHERE ai.id = ? AND a.parent = ?',
-                        [$candidateId, $this->id]
+                         WHERE ai.id = ? AND a.parent = ?' . $ownerFilter,
+                        $params
                     );
                 }
                 return $sql->getRow(
@@ -336,10 +342,15 @@ class Album {
         try {
             if ($imageId !== null) {
                 if ($this->isCollection) {
+                    $ownerFilter = $user->isAdmin() ? '' : ' AND a.owner = ?';
+                    $params = [$imageId, $this->id];
+                    if (!$user->isAdmin()) {
+                        $params[] = $user->getId();
+                    }
                     $count = $sql->getRowCount(
                         'SELECT 1 FROM album_images ai JOIN albums a ON a.id = ai.album
-                         WHERE ai.id = ? AND a.parent = ?',
-                        [$imageId, $this->id]
+                         WHERE ai.id = ? AND a.parent = ?' . $ownerFilter,
+                        $params
                     );
                 } else {
                     $count = $sql->getRowCount(
