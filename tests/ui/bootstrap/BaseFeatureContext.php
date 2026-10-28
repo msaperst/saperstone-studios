@@ -12,6 +12,7 @@ use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\WebDriverCapabilityType;
+use Facebook\WebDriver\WebDriverDimension;
 use Sql;
 use User;
 
@@ -112,6 +113,10 @@ class BaseFeatureContext implements Context {
         }
 
         $this->driver = RemoteWebDriver::create($host, $desiredCapabilities);
+        // Keep desktop user workflows on a stable viewport across Chrome versions.
+        // The browser default is only 780x437, which changes album grid columns
+        // and causes sticky navigation to overlap thumbnail interactions.
+        $this->driver->manage()->window()->setSize(new WebDriverDimension(1440, 900));
         $this->baseUrl = 'http://' . getenv('APP_URL') . ':' . getenv('HTTP_PORT') . '/';
         $this->user = new User();
 
@@ -183,7 +188,8 @@ class BaseFeatureContext implements Context {
                                 dataLoaded: element.getAttribute('data-loaded'),
                                 centerHit: center ? center.tagName.toLowerCase() + '.' +
                                     String(center.className || '').replace(/\\s+/g, '.') : null,
-                                listeners: Object.keys(events)
+                                listeners: Object.keys(events),
+                                clickListenerCount: events.click ? events.click.length : 0
                             };
                         }
                         var album = window.album;
@@ -191,6 +197,7 @@ class BaseFeatureContext implements Context {
                             url: window.location.pathname + window.location.search + window.location.hash,
                             readyState: document.readyState,
                             jqueryActiveRequests: jq ? jq.active : null,
+                            favoriteClickEvents: window.__behatFavoriteClickEvents || [],
                             album: album ? {
                                 initialized: album.initialized,
                                 loading: album.loading,
@@ -198,7 +205,12 @@ class BaseFeatureContext implements Context {
                                 imagesLoaded: album.images.length,
                                 totalImages: album.totalImages,
                                 currentImageId: album.currentImageId,
-                                pendingImageId: album.pendingImageId
+                                pendingImageId: album.pendingImageId,
+                                showFavoritesOnly: album.showFavoritesOnly,
+                                pendingAdvance: album.pendingAdvance,
+                                pendingWrapPrevious: album.pendingWrapPrevious,
+                                nearLoadTrigger: typeof album.isNearLoadTrigger === 'function'
+                                    ? album.isNearLoadTrigger() : null
                             } : null,
                             cardCount: document.querySelectorAll('#album-grid .album-card').length,
                             viewerImageId: document.querySelector('#album-viewer-overlay')
@@ -218,6 +230,9 @@ class BaseFeatureContext implements Context {
                                 imageDownload: inspect('#downloadable-image-btn'),
                                 notifySubmit: inspect('#notify-submit'),
                                 favoriteButton: inspect('#favorite-btn'),
+                                downloadAllButton: inspect('#downloadable-all-btn'),
+                                downloadFavoritesButton: inspect('#downloadable-favorites-btn'),
+                                submitFavoritesButton: inspect('#submit-favorites-btn'),
                                 albumGrid: inspect('#album-grid'),
                                 newAlbumButton: inspect('.add-album-btn'),
                                 editAlbumButton: inspect('.edit-album-btn'),
