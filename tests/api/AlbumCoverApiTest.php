@@ -117,6 +117,38 @@ class AlbumCoverApiTest extends TestCase {
         }
     }
 
+    public function testPickerAndImageEndpointAgreeThatThePreviewIsAvailable(): void {
+        $this->installImage('thumbs/400/sample.gif');
+        $response = $this->http->request(
+            'GET',
+            'api/get-cover-candidates.php?album=' . self::ALBUM_ID,
+            ['cookies' => $this->adminCookies()]
+        );
+        self::assertSame(200, $response->getStatusCode());
+        $data = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(1, $data['candidates']);
+        self::assertTrue($data['candidates'][0]['previewAvailable']);
+        $preview = $this->http->request('GET', $data['candidates'][0]['preview'], [
+            'cookies' => $this->adminCookies()
+        ]);
+        self::assertSame(200, $preview->getStatusCode());
+        self::assertSame('image/gif', $preview->getHeaderLine('Content-Type'));
+        self::assertNotSame('', (string)$preview->getBody());
+    }
+
+    public function testPickerDoesNotOfferAnUnavailableOriginalAsASelectableCover(): void {
+        $this->installImage('sample.gif');
+        $response = $this->http->request(
+            'GET',
+            'api/get-cover-candidates.php?album=' . self::ALBUM_ID,
+            ['cookies' => $this->adminCookies()]
+        );
+        $data = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(1, $data['candidates']);
+        self::assertFalse($data['candidates'][0]['previewAvailable']);
+        self::assertSame(404, $this->requestCover(true)->getStatusCode());
+    }
+
     public function testOriginalIsNeverServedWhenNoWebDerivativeExists(): void {
         $this->installImage('sample.gif');
         self::assertSame(404, $this->requestCover()->getStatusCode());
