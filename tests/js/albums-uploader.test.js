@@ -70,6 +70,7 @@ test('albums-uploader.js edit dialog omits admin-only access and code controls',
     const config = environment.dialogs.at(-1);
     const message = config.message();
     assert.equal(config.title, 'Edit Album <b>Uploader Album</b>');
+    assert.equal(config.cssClass, 'album-management-dialog');
     assert.doesNotMatch(message, /Album Code/);
     assert.doesNotMatch(message, /SECRET/);
     assert.deepEqual(
