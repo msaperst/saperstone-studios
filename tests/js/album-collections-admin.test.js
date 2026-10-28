@@ -55,17 +55,18 @@ test('deletion confirmation explicitly preserves child albums and warns about ac
     assert.deepEqual(config.buttons.map(button => button.label), ['Delete Collection', 'Cancel']);
 });
 
-test('collection editor uses the same protected cover picker', () => {
+test('collection editor has no collection-level cover picker for either management role', () => {
     const {context, environment} = createAlbumContext(scriptPath);
-    const calls = [];
-    context.openAlbumCoverPicker = id => calls.push(id);
-    context.showEditCollectionDialog({
+    const data = {
         id: 27, name: 'Family Event', description: '', date: '2026-10-28',
         children: [], owner: 4, shared: false
-    }, 'admin');
-    environment.dialogs.at(-1).buttons.find(item => item.label.trim() === 'Choose Cover')
-        .action(environment.createDialog());
-    assert.deepEqual(calls, [27]);
+    };
+    for (const role of ['admin', 'uploader']) {
+        context.showEditCollectionDialog(data, role);
+        const actions = environment.dialogs.at(-1).buttons.map(item => item.label.trim());
+        assert.equal(actions.includes('Choose Cover'), false);
+        assert.deepEqual(actions, ['Add New Child', 'Attach Existing Album', 'Delete Collection', 'Save Details', 'Close']);
+    }
 });
 
 test('an uploader collection edit cannot contain access-code controls', () => {
