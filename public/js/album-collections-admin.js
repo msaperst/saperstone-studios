@@ -102,6 +102,10 @@ function showEditCollectionDialog(data, role) {
     const actions = [];
     if (canOrganize) {
         actions.push({
+            label: 'Choose Cover',
+            cssClass: 'btn-info',
+            action: function () { openAlbumCoverPicker(data.id); }
+        }, {
             label: 'Add New Child',
             cssClass: 'btn-info',
             action: function () { openCreateAlbumDialog(data.id); }
