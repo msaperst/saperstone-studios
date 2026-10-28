@@ -35,7 +35,7 @@ class AlbumCoverApiTest extends TestCase {
         $this->sql->executeStatement(
             "INSERT INTO album_images (album, title, sequence, caption, location, width, height, active)
              VALUES (?, 'Cover', 0, '', ?, 400, 300, 1)",
-            [self::ALBUM_ID, '/albums/' . self::FOLDER . '/sample.jpg']
+            [self::ALBUM_ID, '/albums/' . self::FOLDER . '/sample.gif']
         );
         $this->imageId = (int)$this->sql->getRow(
             'SELECT id FROM album_images WHERE album = ? ORDER BY id DESC LIMIT 1',
@@ -49,10 +49,10 @@ class AlbumCoverApiTest extends TestCase {
 
     protected function tearDown(): void {
         foreach ([
-            $this->albumFolder . '/thumbs/400/sample.jpg',
-            $this->albumFolder . '/thumbs/800/sample.jpg',
-            $this->albumFolder . '/full/sample.jpg',
-            $this->albumFolder . '/sample.jpg',
+            $this->albumFolder . '/thumbs/400/sample.gif',
+            $this->albumFolder . '/thumbs/800/sample.gif',
+            $this->albumFolder . '/full/sample.gif',
+            $this->albumFolder . '/sample.gif',
         ] as $path) {
             if (is_file($path)) {
                 unlink($path);
@@ -97,17 +97,20 @@ class AlbumCoverApiTest extends TestCase {
         if (!is_dir($directory)) {
             self::assertTrue(mkdir($directory, 0775, true));
         }
-        self::assertTrue(copy(dirname(__DIR__) . '/resources/flower.jpeg', $target));
+        self::assertNotFalse(file_put_contents(
+            $target,
+            base64_decode('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==')
+        ));
     }
 
     public function testGeneratedThumbnailIsReturnedAsImageBytesForCoverAndPickerPreview(): void {
-        $this->installImage('thumbs/400/sample.jpg');
+        $this->installImage('thumbs/400/sample.gif');
         foreach ([false, true] as $candidate) {
             $response = $this->requestCover($candidate);
             self::assertSame(200, $response->getStatusCode());
-            self::assertSame('image/jpeg', $response->getHeaderLine('Content-Type'));
+            self::assertSame('image/gif', $response->getHeaderLine('Content-Type'));
             self::assertSame(
-                file_get_contents($this->albumFolder . '/thumbs/400/sample.jpg'),
+                file_get_contents($this->albumFolder . '/thumbs/400/sample.gif'),
                 (string)$response->getBody()
             );
             self::assertSame('nosniff', $response->getHeaderLine('X-Content-Type-Options'));
@@ -115,34 +118,34 @@ class AlbumCoverApiTest extends TestCase {
     }
 
     public function testOriginalIsNeverServedWhenNoWebDerivativeExists(): void {
-        $this->installImage('sample.jpg');
+        $this->installImage('sample.gif');
         self::assertSame(404, $this->requestCover()->getStatusCode());
         self::assertSame(404, $this->requestCover(true)->getStatusCode());
     }
 
     public function testCompletedMigrationCanUseProtected1600DerivativeWhenSmallThumbnailIsMissing(): void {
-        $this->installImage('full/sample.jpg');
-        $this->installImage('sample.jpg');
+        $this->installImage('full/sample.gif');
+        $this->installImage('sample.gif');
         $this->sql->executeStatement(
             'UPDATE albums SET thumbsCreated = 1 WHERE id = ?', [self::ALBUM_ID]
         );
         $response = $this->requestCover(true);
         self::assertSame(200, $response->getStatusCode());
-        self::assertSame('image/jpeg', $response->getHeaderLine('Content-Type'));
+        self::assertSame('image/gif', $response->getHeaderLine('Content-Type'));
         self::assertSame(
-            file_get_contents($this->albumFolder . '/sample.jpg'),
+            file_get_contents($this->albumFolder . '/sample.gif'),
             (string)$response->getBody()
         );
     }
 
     public function testOriginalRootIsNotAcceptedAsAProcessedDerivativeWithoutThumbnailCompletion(): void {
-        $this->installImage('full/sample.jpg');
-        $this->installImage('sample.jpg');
+        $this->installImage('full/sample.gif');
+        $this->installImage('sample.gif');
         self::assertSame(404, $this->requestCover(true)->getStatusCode());
     }
 
     public function testUnauthorizedUserCannotRetrieveCoverOrCandidate(): void {
-        $this->installImage('thumbs/400/sample.jpg');
+        $this->installImage('thumbs/400/sample.gif');
         $anonymous = new CookieJar();
         foreach ([false, true] as $candidate) {
             $response = $this->requestCover($candidate, $anonymous);
@@ -152,7 +155,7 @@ class AlbumCoverApiTest extends TestCase {
     }
 
     public function testCandidatePreviewRejectsAnImageFromAnotherAlbum(): void {
-        $this->installImage('thumbs/400/sample.jpg');
+        $this->installImage('thumbs/400/sample.gif');
         $response = $this->http->request(
             'GET',
             'api/get-album-cover.php?album=' . self::ALBUM_ID . '&candidate=' . ($this->imageId + 100000),
