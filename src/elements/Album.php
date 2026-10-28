@@ -280,9 +280,25 @@ class Album {
      * this collection's CURRENT children, otherwise fall back by display
      * order. Never return public paths without the request's permission check.
      */
-    public function resolveCoverImage(): ?array {
+    public function resolveCoverImage(?int $candidateId = null): ?array {
         $sql = new Sql();
         try {
+            if ($candidateId !== null) {
+                if ($this->isCollection) {
+                    return $sql->getRow(
+                        'SELECT ai.id, ai.album, ai.location, a.location AS albumLocation
+                         FROM album_images ai JOIN albums a ON a.id = ai.album
+                         WHERE ai.id = ? AND a.parent = ?',
+                        [$candidateId, $this->id]
+                    );
+                }
+                return $sql->getRow(
+                    'SELECT ai.id, ai.album, ai.location, a.location AS albumLocation
+                     FROM album_images ai JOIN albums a ON a.id = ai.album
+                     WHERE ai.id = ? AND ai.album = ?',
+                    [$candidateId, $this->id]
+                );
+            }
             if ($this->isCollection) {
                 return $sql->getRow(
                     'SELECT ai.id, ai.album, ai.location, child.location AS albumLocation
