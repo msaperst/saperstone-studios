@@ -196,7 +196,8 @@ class AlbumCollectionApiTest extends TestCase {
         $this->sql->executeStatement('UPDATE albums SET code = NULL WHERE id = 98860');
         $response = $this->http->request('POST', 'api/update-collection.php', [
             'cookies' => $this->role('uploader'),
-            'form_params' => ['id' => 98860, 'name' => 'New Name', 'code' => 'SECRET']
+            'form_params' => ['id' => 98860, 'name' => 'New Name', 'code' => 'SECRET'],
+            'http_errors' => false
         ]);
         self::assertSame(403, $response->getStatusCode());
         self::assertNull($this->sql->getRow('SELECT code FROM albums WHERE id = 98860')['code']);
