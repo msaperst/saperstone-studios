@@ -108,6 +108,7 @@ test('albums-admin.js edit dialog includes admin-only access and code controls',
 
     const config = environment.dialogs.at(-1);
     assert.equal(config.title, 'Edit Album <b>Admin Album</b>');
+    assert.equal(config.cssClass, 'album-management-dialog');
     assert.match(config.message(), /Album Code/);
     assert.match(config.message(), /CODE123/);
     assert.deepEqual(
