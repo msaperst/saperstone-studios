@@ -134,39 +134,30 @@ class AlbumCollectionIntegrationTest extends TestCase {
         Album::withId(98881)->delete();
     }
 
-    public function testCoverMayOnlyReferenceAnImageInTheAlbumOrItsChildren(): void {
+    public function testOnlyAnOrdinaryAlbumCanChooseAnExistingImageFromItself(): void {
         $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
-        $image = $this->sql->getRow('SELECT id FROM album_images WHERE album = 98881')['id'];
-        Album::withId(98881)->setCoverImage((int)$image);
-        Album::withId(98880)->setCoverImage((int)$image);
-        self::assertSame((int)$image, (int)$this->sql->getRow(
-            'SELECT coverImage FROM albums WHERE id = 98880'
+        $imageId = (int)$this->sql->getRow('SELECT id FROM album_images WHERE album = 98881')['id'];
+        Album::withId(98881)->setCoverImage($imageId);
+        self::assertSame($imageId, (int)$this->sql->getRow(
+            'SELECT coverImage FROM albums WHERE id = 98881'
         )['coverImage']);
         $this->expectException(BadAlbumException::class);
-        Album::withId(98882)->setCoverImage((int)$image);
+        Album::withId(98882)->setCoverImage($imageId);
     }
 
-    public function testUploaderCannotSelectCoverPhotoFromAnotherOwnersChild(): void {
-        $imageId = (int)$this->sql->getRow(
-            'SELECT id FROM album_images WHERE album = 98881 LIMIT 1'
-        )['id'];
-        // Admin may move another owner's album into the uploader's collection;
-        // that must not grant its owner access to all other child originals.
-        $this->sql->executeStatement(
-            'UPDATE albums SET owner = 5, parent = 98880 WHERE id = 98881'
-        );
-        $this->sql->executeStatement('UPDATE albums SET code = NULL WHERE id = 98880');
-        $_SESSION['hash'] = 'c90788c0e409eac6a95f6c6360d8dbf7';
-        $this->expectException(AlbumException::class);
+    public function testCollectionCoverIsAlwaysAutomaticEvenForAnAdministrator(): void {
+        $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
+        $imageId = (int)$this->sql->getRow('SELECT id FROM album_images WHERE album = 98881')['id'];
+        $this->expectException(BadAlbumException::class);
         Album::withId(98880)->setCoverImage($imageId);
     }
 
-    public function testRemovingSelectedCoverFallsBackWithoutDeletingPhoto(): void {
+    public function testDeletingASelectedImageResolvesToTheNextAlbumPhotoWithoutDestroyingChildren(): void {
         $_SESSION['hash'] = '1d7505e7f434a7713e84ba399e937191';
-        $image = $this->sql->getRow('SELECT id FROM album_images WHERE album = 98881')['id'];
-        Album::withId(98880)->setCoverImage((int)$image);
-        $this->sql->executeStatement('DELETE FROM album_images WHERE id = ?', [$image]);
-        self::assertNull(Album::withId(98880)->resolveCoverImage());
+        $imageId = (int)$this->sql->getRow('SELECT id FROM album_images WHERE album = 98881')['id'];
+        Album::withId(98881)->setCoverImage($imageId);
+        $this->sql->executeStatement('DELETE FROM album_images WHERE id = ?', [$imageId]);
+        self::assertNull(Album::withId(98881)->resolveCoverImage());
         self::assertSame(2, $this->sql->getRowCount('SELECT id FROM albums WHERE parent = 98880'));
     }
 
