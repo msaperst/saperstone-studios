@@ -221,21 +221,22 @@ class Album {
      * @throws TimeoutException
      */
     public function hoverOverImage($imgNum): WebDriverElement {
-        $card = $this->getImageCard($imgNum);
-        $media = $card->findElement(WebDriverBy::className('album-card-media'));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($media));
-        (new WebDriverActions($this->driver))->moveToElement($media)->perform();
-        // An opacity transition reveals controls on hover. WebDriver's
-        // isDisplayed() alone is not a reliable assertion for opacity.
-        $this->wait->until(function () use ($card) {
-            return (bool)$this->driver->executeScript(<<<'JS'
+        $this->getImageCard($imgNum);
+        $selector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum));
+        // Loading later metadata pages can shift the grid after the first
+        // pointer move. Reposition the pointer as part of the wait instead of
+        // assuming hover remains active through the layout change.
+        return $this->wait->until(function () use ($selector) {
+            $card = $this->driver->findElement($selector);
+            (new WebDriverActions($this->driver))->moveToElement($card)->perform();
+            $visible = (bool)$this->driver->executeScript(<<<'JS'
                 var card = arguments[0];
                 var overlay = card.querySelector('.album-card-overlay');
                 return overlay && card.matches(':hover')
                     && Number.parseFloat(getComputedStyle(overlay).opacity) > 0.95;
                 JS, [$card]);
+            return $visible ? $card : null;
         });
-        return $card;
     }
 
     /**
