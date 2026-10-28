@@ -104,6 +104,36 @@ class LoginTest extends TestCase {
         //TODO - assert cookie doesn't exist anymore
     }
 
+    public function testLogoutInvalidatesSessionOnlyLogin(): void {
+        // This user logs in without Remember Me or a legacy hash cookie.
+        // Logout must read their authenticated PHP session, not just cookies.
+        $login = $this->http->request('POST', 'api/login.php', [
+            'form_params' => [
+                'csrf_token' => $this->csrfToken,
+                'submit' => 'Login',
+                'username' => 'downloader',
+                'password' => 'password'
+            ]
+        ]);
+        $this->assertSame(200, $login->getStatusCode());
+        $this->assertNull($this->cookieJar->getCookieByName(RememberMe::COOKIE_NAME));
+
+        $loggedInPage = $this->http->request('GET', '/');
+        $this->assertStringContainsString("id='logout-button'", (string)$loggedInPage->getBody());
+
+        $logout = $this->http->request('POST', 'api/login.php', [
+            'form_params' => [
+                'csrf_token' => $this->csrfToken,
+                'submit' => 'Logout'
+            ]
+        ]);
+        $this->assertSame(200, $logout->getStatusCode());
+
+        $loggedOutPage = $this->http->request('GET', '/');
+        $this->assertStringContainsString('id="login-menu-item"', (string)$loggedOutPage->getBody());
+        $this->assertStringNotContainsString("id='logout-button'", (string)$loggedOutPage->getBody());
+    }
+
     public function testLoginNoUsername() {
         $response = $this->http->request('POST', 'api/login.php', [
             'form_params' => [

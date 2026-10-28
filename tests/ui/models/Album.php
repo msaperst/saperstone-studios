@@ -174,12 +174,11 @@ class Album {
      * @throws TimeoutException
      */
     public function openSlideShow($imgNum) {
-        $card = $this->getImageCard($imgNum);
-        // The media button opens the viewer directly for users. Clicking it
-        // avoids a separate hover transition on the overlaid controls.
-        $media = $card->findElement(WebDriverBy::className('album-card-media'));
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($media));
-        $media->click();
+        // The card's overlay is the click target, including before hover.
+        // Click the loaded card through WebDriver: its overlay is a descendant,
+        // so the real pointer click reaches the overlay handler without trying
+        // to click the media button underneath it.
+        $this->getImageCard($imgNum)->click();
         $this->wait->until(
             WebDriverExpectedCondition::visibilityOf(
                 $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'))
@@ -221,21 +220,22 @@ class Album {
      * @throws TimeoutException
      */
     public function hoverOverImage($imgNum): WebDriverElement {
-        $card = $this->getImageCard($imgNum);
-        $media = $card->findElement(WebDriverBy::className('album-card-media'));
-        $this->wait->until(WebDriverExpectedCondition::visibilityOf($media));
-        (new WebDriverActions($this->driver))->moveToElement($media)->perform();
-        // An opacity transition reveals controls on hover. WebDriver's
-        // isDisplayed() alone is not a reliable assertion for opacity.
-        $this->wait->until(function () use ($card) {
-            return (bool)$this->driver->executeScript(<<<'JS'
+        $this->getImageCard($imgNum);
+        $selector = WebDriverBy::cssSelector($this->getImageCardSelector($imgNum));
+        // Loading later metadata pages can shift the grid after the first
+        // pointer move. Reposition the pointer as part of the wait instead of
+        // assuming hover remains active through the layout change.
+        return $this->wait->until(function () use ($selector) {
+            $card = $this->driver->findElement($selector);
+            (new WebDriverActions($this->driver))->moveToElement($card)->perform();
+            $visible = (bool)$this->driver->executeScript(<<<'JS'
                 var card = arguments[0];
                 var overlay = card.querySelector('.album-card-overlay');
                 return overlay && card.matches(':hover')
                     && Number.parseFloat(getComputedStyle(overlay).opacity) > 0.95;
                 JS, [$card]);
+            return $visible ? $card : null;
         });
-        return $card;
     }
 
     /**
@@ -286,13 +286,38 @@ class Album {
     }
 
     public function viewFavorites() {
-        $this->driver->findElement(WebDriverBy::id('favorite-btn'))->click();
-        // Favorites must be evaluated over the entire album, including
-        // metadata pages not yet loaded when the filter was activated.
+        // The toolbar can appear before the asynchronous album instance is
+        // initialized. Clicking then is ignored by toggleFavorites().
+        $this->waitForAlbumInitialization();
+        $favoriteButton = WebDriverBy::id('favorite-btn');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($favoriteButton));
+
+        // Observe native click delivery without triggering or changing the
+        // application event handler. The failure artifact can then distinguish
+        // a missed browser click from an album-filtering failure.
+        $this->driver->executeScript(<<<'JS'
+            window.__behatFavoriteClickEvents = [];
+            document.getElementById('favorite-btn').addEventListener('click', function (event) {
+                window.__behatFavoriteClickEvents.push({
+                    target: event.target.tagName,
+                    initialized: !!window.album && window.album.initialized,
+                    filterBeforeClick: !!window.album && window.album.showFavoritesOnly
+                });
+            }, {capture: true});
+            JS);
+        $this->driver->findElement($favoriteButton)->click();
+
+        // The filter must activate from the browser click before we wait for
+        // its asynchronous metadata pages. Keep both assertions independent.
         $this->wait->until(function () {
             return (bool)$this->driver->executeScript(
-                'return !!window.album && window.album.showFavoritesOnly ' .
-                '&& !window.album.loading && window.album.images.length >= window.album.totalImages;'
+                'return !!window.album && window.album.showFavoritesOnly;'
+            );
+        });
+        $this->wait->until(function () {
+            return (bool)$this->driver->executeScript(
+                'return !!window.album && !window.album.loading ' .
+                '&& window.album.images.length >= window.album.totalImages;'
             );
         });
     }
@@ -304,8 +329,9 @@ class Album {
      */
     public function removeFavorite($image) {
         $selector = "#album-grid .album-card[data-image-id='" . ($image - 1) . "']";
-        $card = $this->driver->findElement(WebDriverBy::cssSelector($selector));
-        (new WebDriverActions($this->driver))->moveToElement($card)->perform();
+        // Favorited cards move as the grid is filtered. Wait for their
+        // lazy-loaded media and hover overlay before clicking the action.
+        $this->hoverOverImage($image);
         $buttonSelector = WebDriverBy::cssSelector(
             $selector . " .album-card-action[data-action='favorite']"
         );
@@ -376,6 +402,7 @@ class Album {
      * @throws TimeoutException
      */
     public function downloadAll() {
+        $this->waitForAlbumInitialization();
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable(WebDriverBy::id('downloadable-all-btn')));
         $this->driver->findElement(WebDriverBy::id('downloadable-all-btn'))->click();
     }
@@ -611,6 +638,14 @@ class Album {
         $overlay = $this->driver->findElement(WebDriverBy::id('album-viewer-overlay'));
         $this->driver->findElement(WebDriverBy::id('album-viewer-close'))->click();
         $this->wait->until(WebDriverExpectedCondition::not(WebDriverExpectedCondition::visibilityOf($overlay)));
+    }
+
+    private function waitForAlbumInitialization(): void {
+        $this->wait->until(function () {
+            return (bool)$this->driver->executeScript(
+                'return !!window.album && window.album.initialized;'
+            );
+        });
     }
 
     private function getImageCardSelector($imgNum): string {

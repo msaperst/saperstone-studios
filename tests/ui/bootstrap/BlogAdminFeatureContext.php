@@ -434,9 +434,7 @@ class BlogAdminFeatureContext implements Context {
      * @When /^I try to schedule the blog administration draft in the past$/
      */
     public function iTryToScheduleTheBlogAdministrationDraftInThePast(): void {
-        $button = WebDriverBy::id('schedule-saved-post');
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
-        $this->driver->findElement($button)->click();
+        $this->clickEditorButton('schedule-saved-post');
 
         $date = WebDriverBy::id('post-publish-date');
         $time = WebDriverBy::id('post-publish-time');
@@ -478,9 +476,7 @@ class BlogAdminFeatureContext implements Context {
      * @When /^I publish the blog administration draft$/
      */
     public function iPublishTheBlogAdministrationDraft(): void {
-        $button = WebDriverBy::id('publish-saved-post');
-        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
-        $this->driver->findElement($button)->click();
+        $this->clickEditorButton('publish-saved-post');
 
         $this->waitForPostRedirect();
     }
@@ -659,6 +655,25 @@ class BlogAdminFeatureContext implements Context {
     private function clickEditorButton(string $id): void {
         $button = WebDriverBy::id($id);
         $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+
+        // The editor's sticky sidebar can be taller than the browser viewport.
+        // Scroll to the bottom of its containing page so the publish actions
+        // are genuinely reachable instead of accepting isDisplayed() alone.
+        $this->driver->executeScript('window.scrollTo(0, document.documentElement.scrollHeight);');
+        $this->wait->until(function () use ($button) {
+            $element = $this->driver->findElement($button);
+            return (bool)$this->driver->executeScript(<<<'JS'
+                const element = arguments[0];
+                const rect = element.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                const target = document.elementFromPoint(x, y);
+                return x >= 0 && x < window.innerWidth
+                    && y >= 0 && y < window.innerHeight
+                    && target !== null && element.contains(target);
+                JS, [$element]);
+        });
+
         $this->driver->findElement($button)->click();
     }
 
