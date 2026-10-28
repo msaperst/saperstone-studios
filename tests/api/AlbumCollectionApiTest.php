@@ -99,6 +99,31 @@ class AlbumCollectionApiTest extends TestCase {
         ));
     }
 
+    public function testManagerSeesThumbnailStatusForEveryChildWithoutChangingTheImageCounts(): void {
+        $this->sql->executeStatement('UPDATE albums SET images = 7, thumbsCreated = 1 WHERE id = 98861');
+        $this->sql->executeStatement('UPDATE albums SET images = 131, thumbsCreated = 0 WHERE id = 98862');
+        $response = $this->http->request('GET', 'api/get-collection.php?id=98860', [
+            'cookies' => $this->role('admin')
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        $children = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR)['children'];
+        self::assertSame(7, $children[0]['imageCount']);
+        self::assertTrue($children[0]['thumbsCreated']);
+        self::assertSame(131, $children[1]['imageCount']);
+        self::assertFalse($children[1]['thumbsCreated']);
+    }
+
+    public function testClientCannotRetrieveInternalThumbnailStatusFromCollectionApi(): void {
+        $this->sql->executeStatement('INSERT INTO albums_for_users (user, album) VALUES (3, 98860)');
+        $response = $this->http->request('GET', 'api/get-collection.php?id=98860', [
+            'cookies' => $this->role('client')
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        $children = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR)['children'];
+        self::assertArrayNotHasKey('thumbsCreated', $children[0]);
+        self::assertArrayNotHasKey('thumbsCreated', $children[1]);
+    }
+
     public function testUploaderCanReadCollectionStructureButNotItsAccessCode(): void {
         $response = $this->http->request('GET', 'api/get-collection.php?id=98860', [
             'cookies' => $this->role('uploader')
