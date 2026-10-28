@@ -75,6 +75,16 @@ $imageCount = (int)$sql->getRow(
                     echo "<li><a href=\"index.php\">Albums</a></li>";
                 }
                 ?>
+                <?php
+                // Do not reveal a collection name or URL to child-code-only visitors.
+                if ($album->getParentId() !== null) {
+                    $parent = Album::withId($album->getParentId());
+                    if ($parent->canUserAccess()) {
+                        echo '<li><a href="collection.php?collection=' . (int)$parent->getId() . '">' .
+                            Strings::escapeHtmlAttribute($parent->getName()) . '</a></li>';
+                    }
+                }
+                ?>
                 <li class="active"><?php echo $album->getName(); ?></li>
 
                 <span id="actions">
