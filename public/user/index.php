@@ -12,6 +12,9 @@ $user->forceLogIn();
 <head>
 
     <?php require_once dirname( $_SERVER['DOCUMENT_ROOT'] ) . DIRECTORY_SEPARATOR . "templates/header.php"; ?>
+    <?php if ($user->isAdmin() || $user->isUploader()) { ?>
+    <link href="<?php echo Strings::assetUrl('/css/album-collections-admin.css'); ?>" rel="stylesheet">
+    <?php } ?>
     <link
     href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"
     rel="stylesheet"
