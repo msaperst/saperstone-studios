@@ -26,10 +26,16 @@ if ($start === false || $start < 0 || $count === false || $count < 1 || $count >
 // Never send raw public file paths or full-resolution image locations to JS.
 $sql = new Sql();
 try {
+    $params = [$album->getId()];
     if ($album->isCollection()) {
+        $actor = User::fromSystem();
+        $ownerFilter = $actor->isAdmin() ? '' : ' AND child.owner = ?';
+        if (!$actor->isAdmin()) {
+            $params[] = $actor->getId();
+        }
         $query = 'SELECT ai.id, ai.album, child.name AS galleryName FROM album_images ai
                   JOIN albums child ON child.id = ai.album
-                  WHERE child.parent = ?
+                  WHERE child.parent = ?' . $ownerFilter . '
                   ORDER BY child.collectionOrder, child.id, ai.sequence, ai.id
                   LIMIT ?, ?';
     } else {
@@ -39,7 +45,9 @@ try {
                   ORDER BY ai.sequence, ai.id
                   LIMIT ?, ?';
     }
-    $rows = $sql->getRows($query, [$album->getId(), $start, $count + 1]);
+    $params[] = $start;
+    $params[] = $count + 1;
+    $rows = $sql->getRows($query, $params);
 } finally {
     $sql->disconnect();
 }
