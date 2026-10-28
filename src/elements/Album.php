@@ -276,6 +276,73 @@ class Album {
 
 
     /**
+     * Resolve the selected cover if it is still in this album or one of
+     * this collection's CURRENT children, otherwise fall back by display
+     * order. Never return public paths without the request's permission check.
+     */
+    public function resolveCoverImage(): ?array {
+        $sql = new Sql();
+        try {
+            if ($this->isCollection) {
+                return $sql->getRow(
+                    'SELECT ai.id, ai.album, ai.location, child.location AS albumLocation
+                     FROM album_images ai
+                     JOIN albums child ON child.id = ai.album
+                     WHERE child.parent = ?
+                     ORDER BY (ai.id = ?) DESC, child.collectionOrder, child.id,
+                              ai.sequence, ai.id LIMIT 1',
+                    [$this->id, $this->coverImage]
+                );
+            }
+            return $sql->getRow(
+                'SELECT ai.id, ai.album, ai.location, a.location AS albumLocation
+                 FROM album_images ai JOIN albums a ON a.id = ai.album
+                 WHERE ai.album = ?
+                 ORDER BY (ai.id = ?) DESC, ai.sequence, ai.id LIMIT 1',
+                [$this->id, $this->coverImage]
+            );
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
+    /**
+     * Change only the reference to an existing image. Never copy, move,
+     * upload, or expose an album original while choosing a cover.
+     */
+    public function setCoverImage(?int $imageId): void {
+        $user = User::fromSystem();
+        if (!$this->canUserGetData()
+            || ($this->isCollection && !$user->isAdmin() && $this->isShared())) {
+            throw new AlbumException('User not authorized to change this cover');
+        }
+        $sql = new Sql();
+        try {
+            if ($imageId !== null) {
+                if ($this->isCollection) {
+                    $count = $sql->getRowCount(
+                        'SELECT 1 FROM album_images ai JOIN albums a ON a.id = ai.album
+                         WHERE ai.id = ? AND a.parent = ?',
+                        [$imageId, $this->id]
+                    );
+                } else {
+                    $count = $sql->getRowCount(
+                        'SELECT 1 FROM album_images WHERE id = ? AND album = ?',
+                        [$imageId, $this->id]
+                    );
+                }
+                if ($count !== 1) {
+                    throw new BadAlbumException('Cover must be an image in the album or collection');
+                }
+            }
+            $sql->executeStatement('UPDATE albums SET coverImage = ? WHERE id = ?', [$imageId, $this->id]);
+            $this->coverImage = $imageId;
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
+    /**
      * Create a non-photographic collection. No directory or image record is
      * created; album codes share the existing unique database index.
      */
