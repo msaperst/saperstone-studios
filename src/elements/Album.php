@@ -300,6 +300,48 @@ class Album {
     }
 
     /**
+     * Update collection metadata without changing other albums or images.
+     * Only administrators may change a code. The albums table's unique index
+     * enforces uniqueness across collections and ordinary albums.
+     */
+    public function updateCollection(array $params): void {
+        if (!$this->isCollection) {
+            throw new BadAlbumException('Album is not a collection');
+        }
+        $user = User::fromSystem();
+        if (!AlbumCollectionPolicy::canEdit(
+            $user->isAdmin(), $user->isUploader(), (int)$user->getId(), (int)$this->owner
+        ) || (!$user->isAdmin() && $this->isShared())) {
+            throw new AlbumException('User not authorized to edit collection');
+        }
+        if (array_key_exists('code', $params) && !AlbumCollectionPolicy::canSetCode($user->isAdmin())) {
+            throw new AlbumException('User not authorized to set collection codes');
+        }
+        self::setVals($this, $params);
+        $code = $this->code;
+        if (array_key_exists('code', $params)) {
+            $code = trim((string)$params['code']);
+            $code = $code === '' ? null : $code;
+        }
+        $sql = new Sql();
+        try {
+            if ($code !== null && $sql->getRowCount(
+                'SELECT 1 FROM albums WHERE code = ? AND id != ?', [$code, $this->id]
+            ) > 0) {
+                throw new BadAlbumException('Album code already exists');
+            }
+            $sql->executeStatement(
+                'UPDATE albums SET name = ?, description = ?, date = ?, code = ? WHERE id = ?',
+                [$this->name, $this->description, $this->date, $code, $this->id]
+            );
+            $this->code = $code;
+            $this->raw = $sql->getRow(self::SELECT_BY_ID, [$this->id]);
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
+    /**
      * A collection is shared when its code or a downloader account's explicit
      * grant makes its children accessible outside the owner/admin workflow.
      * The uploader's own albums_for_users entry is not a sharing grant.
