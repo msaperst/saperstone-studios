@@ -1,5 +1,26 @@
 // Shared album management helpers.
 
+// Keep album and collection URL generation in one place. Escape all
+// user-controlled album names, including within management tables.
+function escapeAlbumListHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (character) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[character];
+    });
+}
+
+function albumRowLink(row) {
+    const path = row.isCollection ? 'collection.php?collection=' : 'album.php?album=';
+    return "<a href='" + path + encodeURIComponent(String(row.id)) + "'>" +
+        escapeAlbumListHtml(row.name) + "</a>";
+}
+
+
 function thumbnailStatus(row) {
     if (Number.parseInt(row.images, 10) === 0) {
         return '<span class="label label-default">N/A</span>';
@@ -13,7 +34,7 @@ function thumbnailStatus(row) {
 function albumManagementColumns(actionColumn) {
     return [actionColumn, {
         "data": function (row) {
-            return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
+            return albumRowLink(row);
         },
         "className": "album-name",
         "targets": 1

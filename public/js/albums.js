@@ -6,7 +6,7 @@ $(document).ready(function () {
         "order": [[0, "asc"]],
         "columnDefs": [{
             "data": function (row) {
-                return "<a href='album.php?album=" + row.id + "'>" + row.name + "</a>";
+                    return albumRowLink(row);
             },
             "className": "album-name",
             "targets": 0
