@@ -127,6 +127,13 @@ function editAlbum(id) {
                     });
                 }
             }, {
+                icon: 'glyphicon glyphicon-picture',
+                label: ' Choose Cover',
+                cssClass: 'btn-info',
+                action: function () {
+                    openAlbumCoverPicker(id);
+                }
+            }, {
                 icon: 'glyphicon glyphicon-refresh',
                 label: ' Make Thumbnails',
                 cssClass: 'btn-warning',
