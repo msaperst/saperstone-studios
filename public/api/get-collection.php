@@ -18,18 +18,25 @@ if (!$collection->canUserAccess()) {
 }
 header('Content-Type: application/json');
 header('Cache-Control: private, no-store');
+$canManage = $collection->canUserGetData();
 $payload = [
     'id' => $collection->getId(),
     'name' => $collection->getName(),
     'description' => $collection->getDescription(),
     'date' => $collection->getDataArray()['date'],
-    'children' => array_map(static fn(Album $child): array => [
-        'id' => $child->getId(),
-        'name' => $child->getName(),
-        'imageCount' => (int)$child->getDataArray()['images'],
-    ], $collection->getChildren()),
+    'children' => array_map(static function (Album $child) use ($canManage): array {
+        $row = [
+            'id' => $child->getId(),
+            'name' => $child->getName(),
+            'imageCount' => (int)$child->getDataArray()['images'],
+        ];
+        if ($canManage) {
+            $row['thumbsCreated'] = $child->hasThumbnails();
+        }
+        return $row;
+    }, $collection->getChildren()),
 ];
-if ($collection->canUserGetData()) {
+if ($canManage) {
     $user = User::fromSystem();
     $payload['owner'] = (int)$collection->getOwner();
     $payload['shared'] = $collection->isShared();
