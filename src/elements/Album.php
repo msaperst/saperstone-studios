@@ -311,9 +311,9 @@ class Album {
                      FROM album_images ai
                      JOIN albums child ON child.id = ai.album
                      WHERE child.parent = ?
-                     ORDER BY (ai.id = ?) DESC, child.collectionOrder, child.id,
-                              ai.sequence, ai.id LIMIT 1',
-                    [$this->id, $this->coverImage]
+                     ORDER BY child.collectionOrder, child.id,
+                              (ai.id = child.coverImage) DESC, ai.sequence, ai.id LIMIT 1',
+                    [$this->id]
                 );
             }
             return $sql->getRow(
@@ -333,31 +333,20 @@ class Album {
      * upload, or expose an album original while choosing a cover.
      */
     public function setCoverImage(?int $imageId): void {
+        if ($this->isCollection) {
+            throw new BadAlbumException('Covers are selected on individual albums');
+        }
         $user = User::fromSystem();
-        if (!$this->canUserGetData()
-            || ($this->isCollection && !$user->isAdmin() && $this->isShared())) {
+        if (!$this->canUserGetData()) {
             throw new AlbumException('User not authorized to change this cover');
         }
         $sql = new Sql();
         try {
             if ($imageId !== null) {
-                if ($this->isCollection) {
-                    $ownerFilter = $user->isAdmin() ? '' : ' AND a.owner = ?';
-                    $params = [$imageId, $this->id];
-                    if (!$user->isAdmin()) {
-                        $params[] = $user->getId();
-                    }
-                    $count = $sql->getRowCount(
-                        'SELECT 1 FROM album_images ai JOIN albums a ON a.id = ai.album
-                         WHERE ai.id = ? AND a.parent = ?' . $ownerFilter,
-                        $params
-                    );
-                } else {
-                    $count = $sql->getRowCount(
-                        'SELECT 1 FROM album_images WHERE id = ? AND album = ?',
-                        [$imageId, $this->id]
-                    );
-                }
+                $count = $sql->getRowCount(
+                    'SELECT 1 FROM album_images WHERE id = ? AND album = ?',
+                    [$imageId, $this->id]
+                );
                 if ($count !== 1) {
                     throw new BadAlbumException('Cover must be an image in the album or collection');
                 }
