@@ -32,6 +32,7 @@ test('cover picker previews only authorized derivative endpoints and saves photo
                 id: 211,
                 album: 27,
                 galleryName: 'Bimah',
+                previewAvailable: true,
                 preview: '/api/get-album-cover.php?album=27&candidate=211'
             }],
             nextStart: null
