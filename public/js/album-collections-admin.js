@@ -20,7 +20,13 @@ function collectionError(modal, xhr, fallback) {
 }
 
 function collectionReload() {
-    $('#albums').DataTable().ajax.reload(null, false);
+    // The same editor is used from the management table and the collection
+    // landing page. Only the former has an initialized DataTable.
+    if ($('#albums').length) {
+        $('#albums').DataTable().ajax.reload(null, false);
+    } else {
+        window.location.reload();
+    }
 }
 
 function openCreateCollectionDialog() {
@@ -79,9 +85,14 @@ function confirmDeleteCollection(data, editDialog) {
                 button.spin();
                 dialog.enableButtons(false);
                 $.post('/api/delete-collection.php', {id: data.id}).done(function () {
-                    collectionReload();
                     dialog.close();
                     if (editDialog) editDialog.close();
+                    if ($('#albums').length) {
+                        collectionReload();
+                    } else {
+                        // The current URL is no longer valid after deletion.
+                        window.location.assign('/user/index.php');
+                    }
                 }).fail(function (xhr) {
                     collectionError(button.closest('.modal-content'), xhr, 'Unable to delete collection.');
                 }).always(function () {
@@ -176,4 +187,7 @@ function editCollection(id) {
 
 $(document).ready(function () {
     $('#add-collection-btn').click(openCreateCollectionDialog);
+    $('#edit-collection-btn').click(function () {
+        editCollection(Number($(this).attr('data-collection-id')));
+    });
 });
