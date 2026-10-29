@@ -159,7 +159,7 @@ test('new child album from collection page attaches and refreshes without a Data
 });
 
 test('album attachment list API failure is shown without opening an empty picker', () => {
-    const {context, environment} = createAlbumContext('public/js/album-collections-list.js', {
+    const {context, environment} = createAlbumContext(scriptPath, {
         lengths: {'#albums': 0}
     });
     environment.queueGet('/api/get-albums.php', {
@@ -169,3 +169,18 @@ test('album attachment list API failure is shown without opening an empty picker
     assert.equal(environment.alerts.at(-1), 'Could not load albums');
     assert.equal(environment.dialogs.length, 0);
 });
+
+test('attaching an existing album on the collection page reuses authorized album listing API', () => {
+    const {context, environment} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
+    environment.queueGet('/api/get-albums.php', {
+        type: 'success',
+        data: {data: [
+            {id: 30, name: 'Standalone album'},
+            {id: 31, name: 'Another collection', isCollection: true}
+        ]}
+    });
+    context.openAttachAlbumDialog({id: 27, name: 'Family Event'});
+    assert.equal(environment.calls.get.at(-1).url, '/api/get-albums.php');
+    assert.equal(environment.dialogs.at(-1).title, 'Attach Existing Album');
+});
+
