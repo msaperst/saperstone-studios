@@ -26,6 +26,9 @@ $date = $collection->getDataArray()['date'];
 <head>
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . '/templates/header.php'; ?>
     <link href="<?php echo Strings::assetUrl('/css/album-collections.css'); ?>" rel="stylesheet">
+    <?php if ($user->isAdmin()) { ?>
+        <link href="<?php echo Strings::assetUrl('/css/album-collections-admin.css'); ?>" rel="stylesheet">
+    <?php } ?>
 </head>
 <body>
 <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . '/templates/nav.php'; ?>
@@ -41,6 +44,16 @@ $date = $collection->getDataArray()['date'];
                 <li><a href="/">Home</a></li>
                 <?php if ($user->isLoggedIn()) { ?><li><a href="index.php">Albums</a></li><?php } ?>
                 <li class="active"><?php echo $collectionName; ?></li>
+                <?php if ($user->isAdmin()) { ?>
+                    <li class="no-before pull-right">
+                        <button id="edit-collection-btn" type="button"
+                                class="btn btn-xs btn-warning"
+                                data-collection-id="<?php echo (int)$collection->getId(); ?>"
+                                title="Edit collection details" aria-label="Edit collection details">
+                            <em class="fa fa-pencil-square-o" aria-hidden="true"></em>
+                        </button>
+                    </li>
+                <?php } ?>
             </ol>
         </div>
     </div>
@@ -81,5 +94,10 @@ $date = $collection->getDataArray()['date'];
     <?php require_once dirname($_SERVER['DOCUMENT_ROOT']) . '/templates/footer.php'; ?>
 </div>
 <script src="<?php echo Strings::assetUrl('/js/album-collections.js'); ?>"></script>
+<?php if ($user->isAdmin()) { ?>
+    <script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/album-collections-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/album-collections-list.js'); ?>"></script>
+<?php } ?>
 </body>
 </html>
