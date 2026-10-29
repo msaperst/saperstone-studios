@@ -261,3 +261,24 @@ test('failed collection removal leaves the child in place and shows an error', (
     assert.equal(refreshes, 0);
     assert.equal(environment.calls.post.length, 1);
 });
+
+test('removing a member is wired from the shared editor dialog, not just a standalone helper', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    const calls = [];
+    context.confirmRemoveFromCollection = (collection, child, callback) => {
+        calls.push({collection: collection.id, child: child.id, hasCallback: typeof callback === 'function'});
+    };
+    context.showEditCollectionDialog({
+        id: 27, name: 'Family Event', description: '', date: '',
+        owner: 1, shared: false, children: [{id: 41, name: 'Bimah', imageCount: 7}]
+    }, 'admin');
+    const config = environment.dialogs.at(-1);
+    const dialog = environment.createDialog();
+    config.onshown(dialog);
+    const handler = dialog.getModal().delegatedHandlers.get('click .collection-member-remove');
+    assert.equal(typeof handler, 'function');
+    const button = environment.createButton('__member_remove__');
+    button.attr('data-child-id', '41');
+    handler.call(button);
+    assert.deepEqual(calls, [{collection: 27, child: 41, hasCallback: true}]);
+});
