@@ -184,3 +184,80 @@ test('attaching an existing album on the collection page reuses authorized album
     assert.equal(environment.dialogs.at(-1).title, 'Attach Existing Album');
 });
 
+
+test('collection editor lists children and shows a clear non-destructive remove action', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    context.showEditCollectionDialog({
+        id: 27, name: 'Family Event', description: '', date: '',
+        owner: 1, shared: true, children: [
+            {id: 41, name: 'Bimah <Session>', imageCount: 7},
+            {id: 42, name: 'Celebration', imageCount: 18}
+        ]
+    }, 'admin');
+    const markup = environment.dialogs.at(-1).message();
+    assert.match(markup, /Albums in this collection/);
+    assert.match(markup, /Bimah &lt;Session&gt;/);
+    assert.doesNotMatch(markup, /Bimah <Session>/);
+    assert.match(markup, /data-child-id="41"/);
+    assert.match(markup, /data-child-id="42"/);
+    assert.match(markup, /Remove from collection/);
+    assert.doesNotMatch(markup, /Delete Album/);
+});
+
+test('shared collection shows its children but no remove controls to an uploader', () => {
+    const {context, environment} = createAlbumContext(scriptPath, {myId: 4});
+    context.showEditCollectionDialog({
+        id: 27, name: 'Shared Event', description: '', date: '',
+        owner: 4, shared: true, children: [{id: 41, name: 'Bimah', imageCount: 7}]
+    }, 'uploader');
+    const markup = environment.dialogs.at(-1).message();
+    assert.match(markup, /Bimah/);
+    assert.doesNotMatch(markup, /collection-member-remove/);
+});
+
+test('collection removal confirmation explains lost inherited access and preserves children', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    context.confirmRemoveFromCollection({id: 27, name: 'Family Event'}, {
+        id: 41, name: 'Bimah'
+    }, () => {});
+    const dialog = environment.dialogs.at(-1);
+    assert.equal(dialog.title, 'Remove Album from Collection?');
+    assert.match(dialog.message, /Bimah/);
+    assert.match(dialog.message, /remain available as a standalone album/);
+    assert.match(dialog.message, /inherited access/);
+    assert.deepEqual(dialog.buttons.map(b => b.label), ['Remove from Collection', 'Cancel']);
+});
+
+test('confirmed collection removal reuses the membership API and reloads children', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    let refreshes = 0;
+    context.confirmRemoveFromCollection({id: 27, name: 'Family Event'}, {
+        id: 41, name: 'Bimah'
+    }, () => { refreshes++; });
+    environment.queuePost('/api/set-album-parent.php', {type: 'success', data: ''});
+    const dialog = environment.createDialog();
+    const button = environment.createButton('__confirm_detach__');
+    button.closestResult = environment.element('__detach_dialog__');
+    environment.dialogs.at(-1).buttons[0].action.call(button, dialog);
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post.at(-1))), {
+        url: '/api/set-album-parent.php',
+        data: {album: 41, parent: ''}
+    });
+    assert.equal(refreshes, 1);
+});
+
+test('failed collection removal leaves the child in place and shows an error', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    let refreshes = 0;
+    context.confirmRemoveFromCollection({id: 27, name: 'Family Event'}, {
+        id: 41, name: 'Bimah'
+    }, () => { refreshes++; });
+    environment.queuePost('/api/set-album-parent.php', {
+        type: 'failure', xhr: {responseText: 'You cannot modify a shared collection'}
+    });
+    const button = environment.createButton('__failed_detach__');
+    button.closestResult = environment.element('__detach_dialog__');
+    environment.dialogs.at(-1).buttons[0].action.call(button, environment.createDialog());
+    assert.equal(refreshes, 0);
+    assert.equal(environment.calls.post.length, 1);
+});
