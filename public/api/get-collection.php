@@ -25,13 +25,20 @@ $payload = [
     'description' => $collection->getDescription(),
     'date' => $collection->getDataArray()['date'],
     'children' => array_map(static function (Album $child) use ($canManage): array {
+        $raw = $child->getDataArray();
         $row = [
             'id' => $child->getId(),
             'name' => $child->getName(),
-            'imageCount' => (int)$child->getDataArray()['images'],
+            'imageCount' => (int)$raw['images'],
         ];
         if ($canManage) {
+            $row['description'] = $raw['description'];
+            $row['date'] = $raw['date'];
             $row['thumbsCreated'] = $child->hasThumbnails();
+            if (User::fromSystem()->isAdmin()) {
+                $row['lastAccessed'] = $raw['lastAccessed'];
+                $row['code'] = $raw['code'] ?? '';
+            }
         }
         return $row;
     }, $collection->getChildren()),
