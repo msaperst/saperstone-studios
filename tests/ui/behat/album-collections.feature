@@ -89,3 +89,24 @@ Feature: Organizational parent and child albums
     Then I can see a loaded protected cover preview
     When I select the first cover preview
     Then album 99999 uses the selected cover image
+
+  Scenario: Admin can edit collection details directly from the collection page
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And a collection named "Mitzvah" exists
+    When I am on the "user/collection.php?collection=98875" page
+    And I open the collection editor from its page
+    Then I see the existing "Edit Collection" management dialog
+    When I set the collection description to "Updated from collection page"
+    And I save the collection details from its page
+    Then the collection page shows "Updated from collection page"
+    And the collection database description is "Updated from collection page"
+
+  Scenario: A visitor using a collection code cannot see the edit control
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And a collection named "Mitzvah" exists with code "EVENT99999"
+    When I logout
+    And I search for album "EVENT99999"
+    Then I see the "Mitzvah" collection landing page
+    And the collection edit control is not shown
