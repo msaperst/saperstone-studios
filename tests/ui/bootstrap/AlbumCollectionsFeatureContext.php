@@ -482,9 +482,31 @@ class AlbumCollectionsFeatureContext implements Context {
         $this->lastDialogButton('Remove from Collection')->click();
     }
 
+    /** @Then /^album (\d+) remains standalone with (\d+) photos$/ */
+    public function albumRetainsPhotosAfterDetach(int $albumId, int $expectedCount): void {
+        $this->wait->until(function () use ($albumId) {
+            $sql = new Sql();
+            try {
+                $row = $sql->getRow('SELECT parent FROM albums WHERE id = ?', [$albumId]);
+                return $row !== null && $row['parent'] === null;
+            } finally {
+                $sql->disconnect();
+            }
+        });
+        $sql = new Sql();
+        try {
+            Assert::assertSame(
+                $expectedCount,
+                $sql->getRowCount('SELECT 1 FROM album_images WHERE album = ?', [$albumId])
+            );
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
     /** @Then /^the collection editor no longer lists album (\d+)$/ */
     public function memberNoLongerListed(int $albumId): void {
-        $this->driver->get('/user/collection.php?collection=' . self::COLLECTION_ID);
+        $this->driver->navigate()->refresh();
         $this->editFromCollectionPage();
         Assert::assertCount(0, $this->lastDialog()->findElements(
             WebDriverBy::cssSelector(
