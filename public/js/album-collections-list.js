@@ -1,7 +1,21 @@
 // Child rows are an extension of the existing albums DataTable, never a
 // replacement table. All mutation endpoints recheck ownership server-side.
 function openAttachAlbumDialog(collection) {
-    const rows = $('#albums').DataTable().rows().data().toArray().filter(function (row) {
+    if ($('#albums').length) {
+        showAttachableAlbums(collection, $('#albums').DataTable().rows().data().toArray());
+        return;
+    }
+    // The collection landing page has no DataTable; use its existing
+    // authorized album-list API to populate exactly the same picker.
+    $.get('/api/get-albums.php', function (result) {
+        showAttachableAlbums(collection, result.data);
+    }, 'json').fail(function (xhr) {
+        BootstrapDialog.alert(xhr.responseText || 'Unable to load available albums.');
+    });
+}
+
+function showAttachableAlbums(collection, albums) {
+    const rows = albums.filter(function (row) {
         return !row.isCollection && !row.parent &&
             (collectionRole() === 'admin' || Number(row.owner) === Number(collectionActorId()));
     });
