@@ -120,3 +120,18 @@ Feature: Organizational parent and child albums
     And I open the collection editor from its page
     And I attach album 99998 from the collection editor
     Then gallery 99998 appears on the collection landing page
+
+  Scenario: Admin detaches an album from the collection editor without deleting it
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And a collection named "Mitzvah" exists with code "EVENT99999"
+    And album 99999 exists with 16 images
+    And album 99999 belongs to that collection
+    When I am on the "user/collection.php?collection=98875" page
+    And I open the collection editor from its page
+    Then I see album 99999 in the collection editor
+    When I choose to remove album 99999 from the collection editor
+    Then the detach confirmation explains that inherited access will end
+    When I confirm removing the album from the collection
+    Then album 99999 is still listed as a standalone album
+    And the collection editor no longer lists album 99999
