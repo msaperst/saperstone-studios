@@ -71,3 +71,19 @@ test('child thumbnail status is informational and does not replace per-album upl
     assert.equal(link.attr('href'), '/user/album.php?album=88');
     assert.equal(item.appended.filter(entry => entry.tagName === 'button').length, 3);
 });
+
+test('compact child details show photos, thumbnail state, last access and code in separate cells', () => {
+    const {context} = createAlbumContext(scriptPath);
+    const row = context.collectionChildItem({
+        id: 88, name: 'Reception', description: 'The evening',
+        date: '2026-10-12', imageCount: 12,
+        thumbsCreated: true, lastAccessed: '2026-10-15 12:34:56', code: 'RECEPTION88'
+    }, true);
+    assert.equal(row.tagName, 'tr');
+    assert.equal(row.attr('data-child-id'), '88');
+    const cells = row.appended.filter(item => item.tagName === 'td');
+    assert.equal(cells.length, 8);
+    assert.ok(cells.some(item => item.text().includes('RECEPTION88')));
+    assert.ok(cells.some(item => item.text().includes('2026-10-15')));
+    assert.ok(cells.some(item => item.text().includes('2026-10-12')));
+});
