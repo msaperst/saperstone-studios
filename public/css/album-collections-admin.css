@@ -19,8 +19,47 @@
     display: inline-block;
     padding: 6px 10px;
 }
-.collection-child-item .btn {
-    margin-left: 8px;
+/* Compact child rows follow the existing eight DataTable columns. On narrow
+   screens the inner table scrolls instead of dropping admin-only fields. */
+.collection-children-table {
+    margin-bottom: 0;
+    min-width: 900px;
+    table-layout: fixed;
+}
+.collection-children-table td {
+    vertical-align: middle !important;
+    overflow-wrap: anywhere;
+}
+.collection-children-table td:nth-child(1) { width: 8%; }
+.collection-children-table td:nth-child(2) { width: 19%; }
+.collection-children-table td:nth-child(3) { width: 20%; }
+.collection-children-table td:nth-child(4) { width: 11%; }
+.collection-children-table td:nth-child(5) { width: 7%; }
+.collection-children-table td:nth-child(6) { width: 10%; }
+.collection-children-table td:nth-child(7) { width: 14%; }
+.collection-children-table td:nth-child(8) { width: 11%; }
+.collection-child-actions { white-space: nowrap; }
+.collection-child-actions .btn { margin-left: 3px; }
+.collection-child-holder { padding: 0; }
+.collection-child-item .collection-drag-handle { padding: 2px 4px; }
+.collection-editor-members {
+    margin-top: 18px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+.collection-editor-members .collection-member-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.collection-editor-members .collection-member-row a { min-width: 0; }
+.collection-editor-members .collection-member-remove {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+@media (max-width: 767px) {
+    .collection-editor-members .collection-member-row { flex-wrap: wrap; }
+    .collection-editor-members .collection-member-remove { margin-left: 0; }
 }
 
 /* Only editor dialogs need denser actions. Preserve comfortable tap targets
