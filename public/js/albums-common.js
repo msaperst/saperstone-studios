@@ -116,9 +116,15 @@ function openCreateAlbumDialog(parentId) {
                                 album: data,
                                 parent: parentId
                             }).done(function () {
-                                $('#albums').DataTable().ajax.reload(null, false);
                                 dialogItself.close();
-                                editAlbum(data);
+                                if ($('#albums').length) {
+                                    $('#albums').DataTable().ajax.reload(null, false);
+                                    editAlbum(data);
+                                } else {
+                                    // New children can also be created from the parent
+                                    // landing page, which has no album DataTable.
+                                    window.location.reload();
+                                }
                             }).fail(function (xhr) {
                                 const message = xhr.responseText || 'The album was created, but could not be added to the collection.';
                                 // Do not delete a successfully created album on
