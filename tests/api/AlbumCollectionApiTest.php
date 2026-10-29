@@ -208,6 +208,27 @@ class AlbumCollectionApiTest extends TestCase {
         self::assertSame(403, $response->getStatusCode());
     }
 
+    public function testAdminCanUpdateCollectionDetailsUsingExistingEndpoint(): void {
+        $response = $this->http->request('POST', 'api/update-collection.php', [
+            'cookies' => $this->role('admin'),
+            'form_params' => [
+                'id' => 98860,
+                'name' => 'Updated collection',
+                'description' => 'Edited from collection page',
+                'date' => '2026-10-28',
+                'code' => 'EVENT98860'
+            ],
+            'http_errors' => false
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        $updated = $this->sql->getRow(
+            'SELECT name, description, code FROM albums WHERE id = ?', [98860]
+        );
+        self::assertSame('Updated collection', $updated['name']);
+        self::assertSame('Edited from collection page', $updated['description']);
+        self::assertSame('EVENT98860', $updated['code']);
+    }
+
     public function testCodeCollisionDoesNotReplaceExistingCollectionCode(): void {
         $response = $this->http->request('POST', 'api/update-collection.php', [
             'cookies' => $this->role('admin'),
