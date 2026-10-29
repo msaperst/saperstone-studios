@@ -140,6 +140,80 @@ class AlbumCollectionApiTest extends TestCase {
         self::assertSame('EVENT98860', $adminData['code']);
     }
 
+    public function testAdminGetsChildManagementMetadataAndCodesInDisplayOrder(): void {
+        $this->sql->executeStatement(
+            "UPDATE albums SET description = 'Reception photos', date = '2026-10-12',
+             lastAccessed = '2026-10-15 12:34:56' WHERE id = 98861"
+        );
+        $response = $this->http->request('GET', 'api/get-collection.php?id=98860', [
+            'cookies' => $this->role('admin')
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        $children = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR)['children'];
+        self::assertSame([98861, 98862], array_map('intval', array_column($children, 'id')));
+        self::assertSame('Reception photos', $children[0]['description']);
+        self::assertSame('2026-10-12', substr($children[0]['date'], 0, 10));
+        self::assertSame('2026-10-15 12:34:56', $children[0]['lastAccessed']);
+        self::assertSame('BIMAH98861', $children[0]['code']);
+        self::assertSame('', $children[1]['code']);
+    }
+
+    public function testUploaderCanSeeOwnedChildMetadataWithoutCodesOrLastAccess(): void {
+        $response = $this->http->request('GET', 'api/get-collection.php?id=98860', [
+            'cookies' => $this->role('uploader')
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        $child = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR)['children'][0];
+        self::assertArrayHasKey('description', $child);
+        self::assertArrayHasKey('date', $child);
+        self::assertArrayHasKey('thumbsCreated', $child);
+        self::assertArrayNotHasKey('code', $child);
+        self::assertArrayNotHasKey('lastAccessed', $child);
+    }
+
+    public function testClientCannotSeeChildManagementMetadata(): void {
+        $this->sql->executeStatement('INSERT INTO albums_for_users (user, album) VALUES (3, 98860)');
+        $response = $this->http->request('GET', 'api/get-collection.php?id=98860', [
+            'cookies' => $this->role('client')
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        $child = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR)['children'][0];
+        foreach (['thumbsCreated', 'code', 'lastAccessed', 'description', 'date'] as $field) {
+            self::assertArrayNotHasKey($field, $child);
+        }
+    }
+
+    public function testDetachingChildPreservesCodeAndItsPhotos(): void {
+        $this->sql->executeStatement(
+            "INSERT INTO album_images (album, title, sequence, caption, location, width, height, active)
+             VALUES (98861, 'Retained', 1, '', '/albums/api-bimah/stays.jpg', 400, 300, 1)"
+        );
+        $response = $this->http->request('POST', 'api/set-album-parent.php', [
+            'cookies' => $this->role('admin'),
+            'form_params' => ['album' => 98861, 'parent' => ''],
+            'http_errors' => false
+        ]);
+        self::assertSame(200, $response->getStatusCode());
+        $album = $this->sql->getRow('SELECT parent, code FROM albums WHERE id = 98861');
+        self::assertNull($album['parent']);
+        self::assertSame('BIMAH98861', $album['code']);
+        self::assertSame(1, $this->sql->getRowCount(
+            'SELECT 1 FROM album_images WHERE album = 98861'
+        ));
+    }
+
+    public function testUploaderCannotDetachChildFromSharedCollection(): void {
+        $response = $this->http->request('POST', 'api/set-album-parent.php', [
+            'cookies' => $this->role('uploader'),
+            'form_params' => ['album' => 98861, 'parent' => ''],
+            'http_errors' => false
+        ]);
+        self::assertSame(403, $response->getStatusCode());
+        self::assertSame(98860, (int)$this->sql->getRow(
+            'SELECT parent FROM albums WHERE id = 98861'
+        )['parent']);
+    }
+
     public function testUploaderCannotModifySharedCollectionMembership(): void {
         $response = $this->http->request('POST', 'api/set-album-parent.php', [
             'cookies' => $this->role('uploader'),
