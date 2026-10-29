@@ -420,6 +420,33 @@ class AlbumCollectionsFeatureContext implements Context {
         Assert::assertCount(0, $this->driver->findElements(WebDriverBy::id('edit-collection-btn')));
     }
 
+    /** @When /^I attach album (\d+) from the collection editor$/ */
+    public function attachFromCollectionPage(int $albumId): void {
+        $this->lastDialogButton('Attach Existing Album')->click();
+        $selector = WebDriverBy::id('collection-attach-album');
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($selector));
+        $picker = $this->driver->findElement($selector);
+        $picker->findElement(WebDriverBy::cssSelector('option[value="' . $albumId . '"]'))->click();
+        $this->lastDialogButton('Attach Album')->click();
+    }
+
+    /** @Then /^gallery (\d+) appears on the collection landing page$/ */
+    public function galleryAppearsOnCollectionPage(int $albumId): void {
+        $this->wait->until(WebDriverExpectedCondition::urlContains(
+            'collection.php?collection=' . self::COLLECTION_ID
+        ));
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(
+            WebDriverBy::cssSelector('[data-child-album-id="' . $albumId . '"]')
+        ));
+        $sql = new Sql();
+        try {
+            $row = $sql->getRow('SELECT parent FROM albums WHERE id = ?', [$albumId]);
+            Assert::assertSame(self::COLLECTION_ID, (int)$row['parent']);
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
     private function lastDialog() {
         $dialogs = $this->driver->findElements(WebDriverBy::cssSelector('.bootstrap-dialog.modal.in'));
         Assert::assertNotEmpty($dialogs);
