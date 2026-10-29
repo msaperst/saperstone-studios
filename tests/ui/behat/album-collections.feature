@@ -110,3 +110,13 @@ Feature: Organizational parent and child albums
     And I search for album "EVENT99999"
     Then I see the "Mitzvah" collection landing page
     And the collection edit control is not shown
+
+  Scenario: Admin can attach an existing standalone album from the collection page
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And a collection named "Mitzvah" exists
+    And album 99998 exists with 0 images
+    When I am on the "user/collection.php?collection=98875" page
+    And I open the collection editor from its page
+    And I attach album 99998 from the collection editor
+    Then gallery 99998 appears on the collection landing page
