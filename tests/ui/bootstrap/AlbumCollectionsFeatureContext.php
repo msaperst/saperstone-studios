@@ -357,6 +357,69 @@ class AlbumCollectionsFeatureContext implements Context {
         });
     }
 
+    /** @When /^I open the collection editor from its page$/ */
+    public function editFromCollectionPage(): void {
+        $edit = WebDriverBy::id('edit-collection-btn');
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($edit));
+        $this->driver->findElement($edit)->click();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(
+            WebDriverBy::id('edit-collection-description')
+        ));
+    }
+
+    /** @Then /^I see the existing "([^"]+)" management dialog$/ */
+    public function sharedCollectionEditorTitle(string $title): void {
+        Assert::assertStringContainsString($title, $this->lastDialog()->getText());
+        Assert::assertNotEmpty($this->lastDialog()->findElements(
+            WebDriverBy::id('collection-code')
+        ));
+    }
+
+    /** @When /^I set the collection description to "([^"]+)"$/ */
+    public function editCollectionDescription(string $description): void {
+        $field = $this->driver->findElement(WebDriverBy::id('edit-collection-description'));
+        $field->clear();
+        $field->sendKeys($description);
+    }
+
+    /** @When /^I save the collection details from its page$/ */
+    public function saveCollectionFromPage(): void {
+        $this->lastDialogButton('Save Details')->click();
+    }
+
+    /** @Then /^the collection page shows "([^"]+)"$/ */
+    public function collectionPageShowsDescription(string $description): void {
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(
+            WebDriverBy::cssSelector('h1.page-header small')
+        ));
+        $this->wait->until(function () use ($description) {
+            return str_contains(
+                $this->driver->findElement(WebDriverBy::cssSelector('h1.page-header small'))->getText(),
+                $description
+            );
+        });
+        Assert::assertStringContainsString(
+            'collection.php?collection=' . self::COLLECTION_ID,
+            $this->driver->getCurrentURL()
+        );
+    }
+
+    /** @Then /^the collection database description is "([^"]+)"$/ */
+    public function savedCollectionDescription(string $description): void {
+        $sql = new Sql();
+        try {
+            $row = $sql->getRow('SELECT description FROM albums WHERE id = ?', [self::COLLECTION_ID]);
+            Assert::assertSame($description, $row['description']);
+        } finally {
+            $sql->disconnect();
+        }
+    }
+
+    /** @Then /^the collection edit control is not shown$/ */
+    public function noCollectionEditButton(): void {
+        Assert::assertCount(0, $this->driver->findElements(WebDriverBy::id('edit-collection-btn')));
+    }
+
     private function lastDialog() {
         $dialogs = $this->driver->findElements(WebDriverBy::cssSelector('.bootstrap-dialog.modal.in'));
         Assert::assertNotEmpty($dialogs);
