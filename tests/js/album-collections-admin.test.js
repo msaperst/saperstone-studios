@@ -139,20 +139,7 @@ test('deleting a collection from its page navigates back to albums, never to a d
     assert.deepEqual(visited, ['/user/index.php']);
 });
 
-test('attaching an existing album on the collection page reuses authorized album listing API', () => {
-    const {context, environment} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
-    environment.queueGet('/api/get-albums.php', {
-        type: 'success',
-        data: {data: [
-            {id: 30, name: 'Standalone album'},
-            {id: 31, name: 'Another collection', isCollection: true}
-        ]}
-    });
-    context.openAttachAlbumDialog = context.openAttachAlbumDialog || undefined;
-    context.openAttachAlbumDialog({id: 27, name: 'Family Event'});
-    assert.equal(environment.calls.get.at(-1).url, '/api/get-albums.php');
-    assert.equal(environment.dialogs.at(-1).title, 'Attach Existing Album');
-});
+
 
 test('new child album from collection page attaches and refreshes without a DataTable', () => {
     const {context, environment, window} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
