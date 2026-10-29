@@ -107,6 +107,65 @@ function confirmDeleteCollection(data, editDialog) {
     });
 }
 
+function openAttachAlbumDialog(collection) {
+    if ($('#albums').length) {
+        showAttachableAlbums(collection, $('#albums').DataTable().rows().data().toArray());
+        return;
+    }
+    // The collection landing page has no DataTable; use its existing
+    // authorized album-list API to populate exactly the same picker.
+    $.get('/api/get-albums.php', function (result) {
+        showAttachableAlbums(collection, result.data);
+    }, 'json').fail(function (xhr) {
+        BootstrapDialog.alert(xhr.responseText || 'Unable to load available albums.');
+    });
+}
+
+function showAttachableAlbums(collection, albums) {
+    const rows = albums.filter(function (row) {
+        return !row.isCollection && !row.parent &&
+            (collectionRole() === 'admin' || Number(row.owner) === Number(collectionActorId()));
+    });
+    BootstrapDialog.show({
+        draggable: true,
+        title: 'Attach Existing Album',
+        message: function () {
+            const holder = $('<div>');
+            holder.append($('<label>').attr('for', 'collection-attach-album').text('Choose an album'));
+            const select = $('<select>').attr('id', 'collection-attach-album').addClass('form-control');
+            rows.forEach(function (row) {
+                select.append($('<option>').val(String(row.id)).text(row.name));
+            });
+            holder.append(select);
+            return holder;
+        },
+        buttons: [{
+            label: 'Attach Album',
+            cssClass: 'btn-success',
+            action: function (dialog) {
+                const button = this;
+                button.spin();
+                dialog.enableButtons(false);
+                $.post('/api/set-album-parent.php', {
+                    album: $('#collection-attach-album').val(),
+                    parent: collection.id
+                }).done(function () {
+                    collectionReload();
+                    dialog.close();
+                }).fail(function (xhr) {
+                    collectionError(button.closest('.modal-content'), xhr, 'Unable to attach album.');
+                }).always(function () {
+                    button.stopSpin();
+                    dialog.enableButtons(true);
+                });
+            }
+        }, {
+            label: 'Cancel',
+            action: function (dialog) { dialog.close(); }
+        }]
+    });
+}
+
 function showEditCollectionDialog(data, role) {
     const currentRole = role || collectionRole();
     const canOrganize = collectionCanOrganize(data, currentRole, collectionActorId());
