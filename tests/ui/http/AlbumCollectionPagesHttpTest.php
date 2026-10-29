@@ -68,6 +68,26 @@ class AlbumCollectionPagesHttpTest extends HttpTestBase {
         self::assertStringNotContainsString('<img src="/albums/', (string)$response->getBody());
     }
 
+    public function testAdminCollectionPageHasMatchingBreadcrumbEditButtonAndSharedEditorScripts(): void {
+        $this->adminLogin();
+        $response = $this->get('user/collection.php?collection=98870');
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(1, $this->elementCount($response, "//ol[contains(@class,'breadcrumb')]//button[@id='edit-collection-btn' and @type='button']"));
+        self::assertStringContainsString('Edit collection details', (string)$response->getBody());
+        self::assertStringContainsString('/js/album-collections-admin', (string)$response->getBody());
+        self::assertStringContainsString('/js/albums-common', (string)$response->getBody());
+        self::assertStringContainsString('/css/album-collections-admin', (string)$response->getBody());
+    }
+
+    public function testCollectionCodeViewerHasNoAdminEditButtonOrEditorAssets(): void {
+        $this->grantCode(98870, 'EVENT98870');
+        $response = $this->get('user/collection.php?collection=98870');
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(0, $this->elementCount($response, "//*[@id='edit-collection-btn']"));
+        self::assertStringNotContainsString('/js/album-collections-admin', (string)$response->getBody());
+        self::assertStringNotContainsString('/js/albums-common', (string)$response->getBody());
+    }
+
     public function testChildPageShowsParentBreadcrumbOnlyWithParentAccess(): void {
         $this->grantCode(98870, 'EVENT98870');
         $response = $this->get('user/album.php?album=98871');
