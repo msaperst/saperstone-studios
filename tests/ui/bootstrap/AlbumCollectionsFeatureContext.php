@@ -447,6 +447,52 @@ class AlbumCollectionsFeatureContext implements Context {
         }
     }
 
+    /** @Then /^I see album (\d+) in the collection editor$/ */
+    public function collectionEditorHasAlbum(int $albumId): void {
+        $locator = WebDriverBy::cssSelector(
+            '#collection-members .collection-member-row[data-child-id="' . $albumId . '"]'
+        );
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated($locator));
+        Assert::assertNotEmpty($this->lastDialog()->findElements($locator));
+    }
+
+    /** @When /^I choose to remove album (\d+) from the collection editor$/ */
+    public function chooseRemoveCollectionMember(int $albumId): void {
+        $this->collectionEditorHasAlbum($albumId);
+        $button = WebDriverBy::cssSelector(
+            '#collection-members .collection-member-remove[data-child-id="' . $albumId . '"]'
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $this->driver->findElement($button)->click();
+        $this->wait->until(function () {
+            return str_contains($this->lastDialog()->getText(), 'Remove Album from Collection?');
+        });
+    }
+
+    /** @Then /^the detach confirmation explains that inherited access will end$/ */
+    public function detachConfirmationExplainsAccess(): void {
+        $text = $this->lastDialog()->getText();
+        Assert::assertStringContainsString('remain available as a standalone album', $text);
+        Assert::assertStringContainsString('inherited access', $text);
+        Assert::assertStringNotContainsString('Delete Album', $text);
+    }
+
+    /** @When /^I confirm removing the album from the collection$/ */
+    public function confirmRemoveCollectionMember(): void {
+        $this->lastDialogButton('Remove from Collection')->click();
+    }
+
+    /** @Then /^the collection editor no longer lists album (\d+)$/ */
+    public function memberNoLongerListed(int $albumId): void {
+        $this->driver->get('/user/collection.php?collection=' . self::COLLECTION_ID);
+        $this->editFromCollectionPage();
+        Assert::assertCount(0, $this->lastDialog()->findElements(
+            WebDriverBy::cssSelector(
+                '#collection-members .collection-member-row[data-child-id="' . $albumId . '"]'
+            )
+        ));
+    }
+
     private function lastDialog() {
         $dialogs = $this->driver->findElements(WebDriverBy::cssSelector('.bootstrap-dialog.modal.in'));
         Assert::assertNotEmpty($dialogs);
