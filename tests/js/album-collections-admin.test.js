@@ -153,3 +153,32 @@ test('attaching an existing album on the collection page reuses authorized album
     assert.equal(environment.calls.get.at(-1).url, '/api/get-albums.php');
     assert.equal(environment.dialogs.at(-1).title, 'Attach Existing Album');
 });
+
+test('new child album from collection page attaches and refreshes without a DataTable', () => {
+    const {context, environment, window} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
+    let reloads = 0;
+    window.location = {reload: () => { reloads++; }};
+    environment.queuePost('/api/create-album.php', {type: 'success', data: '31'});
+    environment.queuePost('/api/set-album-parent.php', {type: 'success', data: ''});
+    context.openCreateAlbumDialog(27);
+    const config = environment.dialogs.at(-1);
+    const button = environment.createButton('__create_child_on_collection_page__');
+    button.closestResult = environment.element('__new_child_modal__');
+    config.buttons[0].action.call(button, environment.createDialog());
+    assert.deepEqual(environment.calls.post.map(call => call.url),
+        ['/api/create-album.php', '/api/set-album-parent.php']);
+    assert.equal(environment.calls.reload.length, 0);
+    assert.equal(reloads, 1);
+});
+
+test('album attachment list API failure is shown without opening an empty picker', () => {
+    const {context, environment} = createAlbumContext('public/js/album-collections-list.js', {
+        lengths: {'#albums': 0}
+    });
+    environment.queueGet('/api/get-albums.php', {
+        type: 'failure', xhr: {responseText: 'Could not load albums'}
+    });
+    context.openAttachAlbumDialog({id: 27});
+    assert.equal(environment.alerts.at(-1), 'Could not load albums');
+    assert.equal(environment.dialogs.length, 0);
+});
