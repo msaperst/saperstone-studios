@@ -166,6 +166,65 @@ function showAttachableAlbums(collection, albums) {
     });
 }
 
+
+// Use the same collection payload and escaping everywhere. Detaching only
+// clears album membership; it must never call the album deletion endpoint.
+function collectionMembersMarkup(data, canOrganize) {
+    const children = data.children || [];
+    const rows = children.map(function (child) {
+        const id = Number(child.id);
+        const name = escapeAlbumListHtml(child.name);
+        const count = Number(child.imageCount);
+        const remove = canOrganize
+            ? '<button type="button" class="btn btn-xs btn-default collection-member-remove" ' +
+              'data-child-id="' + id + '" aria-label="Remove ' + name +
+              ' from collection">Remove from collection</button>'
+            : '';
+        return '<div class="list-group-item collection-member-row" data-child-id="' + id + '">' +
+            '<a href="/user/album.php?album=' + id + '">' + name + '</a>' +
+            '<span class="text-muted"> — ' + count + ' photos</span>' + remove + '</div>';
+    }).join('');
+    return '<div class="collection-editor-members">' +
+        '<h4>Albums in this collection (' + children.length + ')</h4>' +
+        '<div id="collection-members" class="list-group">' +
+        (rows || '<p class="text-muted">No albums in this collection yet.</p>') +
+        '</div></div>';
+}
+
+function confirmRemoveFromCollection(collection, child, onSuccess) {
+    BootstrapDialog.show({
+        draggable: true,
+        title: 'Remove Album from Collection?',
+        message: 'Remove "' + escapeAlbumListHtml(child.name) + '" from "' +
+            escapeAlbumListHtml(collection.name) + '"? The album and all of its photos, ' +
+            'favorites and individual code will remain available as a standalone album. ' +
+            'Any inherited access through this collection will end.',
+        buttons: [{
+            label: 'Remove from Collection',
+            cssClass: 'btn-warning',
+            action: function (dialog) {
+                const button = this;
+                button.spin();
+                dialog.enableButtons(false);
+                $.post('/api/set-album-parent.php', {
+                    album: child.id, parent: ''
+                }).done(function () {
+                    dialog.close();
+                    onSuccess();
+                }).fail(function (xhr) {
+                    collectionError(button.closest('.modal-content'), xhr, 'Unable to remove album from collection.');
+                }).always(function () {
+                    button.stopSpin();
+                    dialog.enableButtons(true);
+                });
+            }
+        }, {
+            label: 'Cancel',
+            action: function (dialog) { dialog.close(); }
+        }]
+    });
+}
+
 function showEditCollectionDialog(data, role) {
     const currentRole = role || collectionRole();
     const canOrganize = collectionCanOrganize(data, currentRole, collectionActorId());
@@ -230,9 +289,29 @@ function showEditCollectionDialog(data, role) {
             if (data.shared && currentRole !== 'admin') {
                 fields += '<p class="text-muted">Only administrators may reorganize a shared collection.</p>';
             }
-            return fields;
+            return fields + collectionMembersMarkup(data, canOrganize);
         },
-        buttons: actions
+        buttons: actions,
+        onshown: function (dialog) {
+            if (!canOrganize) {
+                return;
+            }
+            dialog.getModal().on('click', '.collection-member-remove', function () {
+                const childId = Number($(this).attr('data-child-id'));
+                const child = (data.children || []).find(function (entry) {
+                    return Number(entry.id) === childId;
+                });
+                if (!child) {
+                    return;
+                }
+                confirmRemoveFromCollection(data, child, function () {
+                    // Reuse the existing list/page refresh and authorization
+                    // logic; the album survives as a standalone entry.
+                    collectionReload();
+                    dialog.close();
+                });
+            });
+        }
     });
 }
 
