@@ -97,7 +97,6 @@ $date = $collection->getDataArray()['date'];
 <?php if ($user->isAdmin()) { ?>
     <script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
     <script src="<?php echo Strings::assetUrl('/js/album-collections-admin.js'); ?>"></script>
-    <script src="<?php echo Strings::assetUrl('/js/album-collections-list.js'); ?>"></script>
 <?php } ?>
 </body>
 </html>
