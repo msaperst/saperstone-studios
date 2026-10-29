@@ -84,3 +84,72 @@ test('an uploader collection edit cannot contain access-code controls', () => {
     const message = environment.dialogs.at(-1).message();
     assert.doesNotMatch(message, /collection-code|Access Code/);
 });
+
+test('collection page edit control invokes the same editor as the albums table', () => {
+    const {environment} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
+    environment.element('#edit-collection-btn').attr('data-collection-id', '27');
+    environment.queueGet('/api/get-collection.php', {
+        type: 'success',
+        data: {id: 27, name: 'Family Event', description: 'Before',
+            date: '', code: 'EVENT', owner: 1, shared: true, children: []}
+    });
+    environment.element('#edit-collection-btn').trigger('click');
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.get.at(-1))), {
+        url: '/api/get-collection.php',
+        data: {id: 27}
+    });
+    const dialog = environment.dialogs.at(-1);
+    assert.equal(dialog.title, 'Edit Collection');
+    assert.equal(dialog.message().includes('collection-code'), true);
+});
+
+test('saving collection from its page refreshes the page without requiring DataTables', () => {
+    const {context, environment, window} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
+    let refreshes = 0;
+    window.location = {reload: () => { refreshes++; }};
+    context.showEditCollectionDialog({
+        id: 27, name: 'Family Event', description: 'Before',
+        date: '', code: 'EVENT', owner: 1, shared: true, children: []
+    }, 'admin');
+    environment.element('#edit-collection-name').val('Family Event');
+    environment.element('#edit-collection-description').val('After');
+    environment.element('#edit-collection-date').val('');
+    environment.element('#collection-code').val('EVENT');
+    environment.queuePost('/api/update-collection.php', {type: 'success', data: ''});
+    const config = environment.dialogs.at(-1);
+    const save = config.buttons.find(button => button.label === 'Save Details');
+    const button = environment.createButton('__save_collection_page__');
+    button.closestResult = environment.element('__collection_page_modal__');
+    save.action.call(button, environment.createDialog());
+    assert.equal(environment.calls.post.at(-1).url, '/api/update-collection.php');
+    assert.equal(environment.calls.post.at(-1).data.description, 'After');
+    assert.equal(environment.calls.reload.length, 0);
+    assert.equal(refreshes, 1);
+});
+
+test('deleting a collection from its page navigates back to albums, never to a deleted URL', () => {
+    const {context, environment, window} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
+    const visited = [];
+    window.location = {assign: path => visited.push(path)};
+    context.confirmDeleteCollection({id: 27, name: 'Family Event', children: []});
+    environment.queuePost('/api/delete-collection.php', {type: 'success', data: ''});
+    const button = environment.createButton('__delete_collection__');
+    button.closestResult = environment.element('__collection_delete_modal__');
+    environment.dialogs.at(-1).buttons[0].action.call(button, environment.createDialog());
+    assert.deepEqual(visited, ['/user/index.php']);
+});
+
+test('attaching an existing album on the collection page reuses authorized album listing API', () => {
+    const {context, environment} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
+    environment.queueGet('/api/get-albums.php', {
+        type: 'success',
+        data: {data: [
+            {id: 30, name: 'Standalone album'},
+            {id: 31, name: 'Another collection', isCollection: true}
+        ]}
+    });
+    context.openAttachAlbumDialog = context.openAttachAlbumDialog || undefined;
+    context.openAttachAlbumDialog({id: 27, name: 'Family Event'});
+    assert.equal(environment.calls.get.at(-1).url, '/api/get-albums.php');
+    assert.equal(environment.dialogs.at(-1).title, 'Attach Existing Album');
+});
