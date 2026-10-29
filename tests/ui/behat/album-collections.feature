@@ -133,5 +133,5 @@ Feature: Organizational parent and child albums
     When I choose to remove album 99999 from the collection editor
     Then the detach confirmation explains that inherited access will end
     When I confirm removing the album from the collection
-    Then album 99999 is still listed as a standalone album
+    Then album 99999 remains standalone with 16 photos
     And the collection editor no longer lists album 99999
