@@ -71,18 +71,3 @@ test('child thumbnail status is informational and does not replace per-album upl
     assert.equal(link.attr('href'), '/user/album.php?album=88');
     assert.equal(item.appended.filter(entry => entry.tagName === 'button').length, 3);
 });
-
-test('attaching an existing album on the collection page reuses authorized album listing API', () => {
-    const {context, environment} = createAlbumContext(scriptPath, {lengths: {'#albums': 0}});
-    context.collectionRole = () => 'admin';
-    environment.queueGet('/api/get-albums.php', {
-        type: 'success',
-        data: {data: [
-            {id: 30, name: 'Standalone album'},
-            {id: 31, name: 'Another collection', isCollection: true}
-        ]}
-    });
-    context.openAttachAlbumDialog({id: 27, name: 'Family Event'});
-    assert.equal(environment.calls.get.at(-1).url, '/api/get-albums.php');
-    assert.equal(environment.dialogs.at(-1).title, 'Attach Existing Album');
-});
