@@ -103,6 +103,8 @@ $date = $collection->getDataArray()['date'];
 </div>
 <script src="<?php echo Strings::assetUrl('/js/album-collections.js'); ?>"></script>
 <?php if ($user->isAdmin()) { ?>
+    <div id="collection-user-context" class="hidden" data-role="admin"
+         data-id="<?php echo (int)$user->getId(); ?>"></div>
     <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
     <script src="<?php echo Strings::assetUrl('/js/album-admin.js'); ?>"></script>
