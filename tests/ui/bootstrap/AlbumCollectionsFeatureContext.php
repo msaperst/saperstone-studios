@@ -370,9 +370,8 @@ class AlbumCollectionsFeatureContext implements Context {
     /** @Then /^I see the existing "([^"]+)" management dialog$/ */
     public function sharedCollectionEditorTitle(string $title): void {
         Assert::assertStringContainsString($title, $this->lastDialog()->getText());
-        Assert::assertNotEmpty($this->lastDialog()->findElements(
-            WebDriverBy::id('collection-code')
-        ));
+        $field = $title === 'Edit Collection' ? 'collection-code' : 'new-album-name';
+        Assert::assertNotEmpty($this->lastDialog()->findElements(WebDriverBy::id($field)));
     }
 
     /** @When /^I set the collection description to "([^"]+)"$/ */
@@ -384,6 +383,7 @@ class AlbumCollectionsFeatureContext implements Context {
 
     /** @When /^I save the collection details from its page$/ */
     public function saveCollectionFromPage(): void {
+        $this->driver->executeScript('window.__behatCollectionPageMarker = "no-navigation";');
         $this->lastDialogButton('Save Details')->click();
     }
 
@@ -401,6 +401,11 @@ class AlbumCollectionsFeatureContext implements Context {
         Assert::assertStringContainsString(
             'collection.php?collection=' . self::COLLECTION_ID,
             $this->driver->getCurrentURL()
+        );
+        Assert::assertSame(
+            'no-navigation',
+            $this->driver->executeScript('return window.__behatCollectionPageMarker || null;'),
+            'Saving collection metadata navigated or reloaded the page'
         );
     }
 
@@ -513,6 +518,82 @@ class AlbumCollectionsFeatureContext implements Context {
                 '#collection-members .collection-member-row[data-child-id="' . $albumId . '"]'
             )
         ));
+    }
+
+    /** @When /^I open the child album (\d+) editor from the collection page$/ */
+    public function editChildFromCollectionPage(int $albumId): void {
+        $button = WebDriverBy::cssSelector(
+            '.album-collection-card[data-child-album-id="' . $albumId .
+            '"] .collection-edit-album-btn'
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $this->driver->findElement($button)->click();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(
+            WebDriverBy::id('new-album-name')
+        ));
+    }
+
+    /** @When /^I open the child album (\d+) editor from the album list$/ */
+    public function editChildFromAlbumList(int $albumId): void {
+        $button = WebDriverBy::cssSelector(
+            '.collection-child-item[data-child-id="' . $albumId .
+            '"] .collection-child-edit-album'
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $this->driver->findElement($button)->click();
+        $this->wait->until(WebDriverExpectedCondition::visibilityOfElementLocated(
+            WebDriverBy::id('new-album-name')
+        ));
+    }
+
+    /** @When /^I move album (\d+) above album (\d+) inside the collection editor$/ */
+    public function moveMemberUpInCollectionEditor(int $movingId, int $precedingId): void {
+        $button = WebDriverBy::cssSelector(
+            '#collection-members .collection-member-row[data-child-id="' . $movingId .
+            '"] .collection-member-move-up'
+        );
+        $this->wait->until(WebDriverExpectedCondition::elementToBeClickable($button));
+        $this->driver->findElement($button)->click();
+        $this->wait->until(function () use ($movingId, $precedingId) {
+            $sql = new Sql();
+            try {
+                $moving = $sql->getRow('SELECT collectionOrder FROM albums WHERE id = ?', [$movingId]);
+                $preceding = $sql->getRow('SELECT collectionOrder FROM albums WHERE id = ?', [$precedingId]);
+                return $moving !== null && $preceding !== null &&
+                    (int)$moving['collectionOrder'] < (int)$preceding['collectionOrder'];
+            } finally {
+                $sql->disconnect();
+            }
+        });
+    }
+
+    /** @Then /^the collection editor lists album (\d+) before album (\d+)$/ */
+    public function collectionEditorMemberOrder(int $first, int $second): void {
+        $order = $this->driver->executeScript(<<<'JS'
+            return Array.from(document.querySelectorAll('#collection-members .collection-member-row'))
+                .map(el => Number(el.dataset.childId));
+            JS);
+        Assert::assertContains($first, $order);
+        Assert::assertContains($second, $order);
+        Assert::assertLessThan(
+            array_search($second, $order, true), array_search($first, $order, true)
+        );
+    }
+
+    /** @Then /^the collection card for album (\d+) precedes album (\d+)$/ */
+    public function collectionCardOrder(int $first, int $second): void {
+        $this->wait->until(WebDriverExpectedCondition::presenceOfElementLocated(
+            WebDriverBy::cssSelector('#collection-galleries .album-collection-card')
+        ));
+        $order = $this->driver->executeScript(<<<'JS'
+            return Array.from(document.querySelectorAll('#collection-galleries .album-collection-card'))
+                .map(el => Number(el.dataset.childAlbumId));
+            JS);
+        Assert::assertContains($first, $order);
+        Assert::assertContains($second, $order);
+        Assert::assertLessThan(
+            array_search($second, $order, true), array_search($first, $order, true)
+        );
     }
 
     private function lastDialog() {
