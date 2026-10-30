@@ -227,3 +227,28 @@ test('saving a child album from its collection card updates the displayed title 
     assert.equal(reloads, 0);
     assert.equal(environment.calls.reload.length, 0);
 });
+
+
+test('deleting an album from the collection card removes the stale card without navigation', () => {
+    const {context, environment} = createAlbumContext(scriptPath, {
+        lengths: {'#albums': 0, '#collection-galleries': 1}
+    });
+    environment.queueGet('/api/get-album.php', {
+        type: 'success',
+        data: {name: 'Old Title', description: '', date: '', code: '', imageCount: 3}
+    });
+    context.editAlbum(41);
+    const albumDialog = environment.dialogs.at(-1);
+    const deleteButton = environment.createButton('__delete__');
+    albumDialog.buttons.find(b => b.label.trim() === 'Delete Album')
+        .action.call(deleteButton, environment.createDialog());
+    const confirmation = environment.dialogs.at(-1);
+    environment.queuePost('/api/delete-album.php', {type: 'success', data: ''});
+    const button = environment.createButton('__confirm_delete__');
+    button.closestResult = environment.element('__delete_modal__');
+    confirmation.buttons.find(b => b.label.trim() === 'Delete')
+        .action.call(button, environment.createDialog());
+    assert.equal(environment.calls.post.at(-1).url, '/api/delete-album.php');
+    assert.equal(environment.element('#collection-galleries .album-collection-card[data-child-album-id="41"]').removed, true);
+    assert.equal(environment.calls.reload.length, 0);
+});
