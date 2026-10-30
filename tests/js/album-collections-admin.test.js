@@ -65,7 +65,7 @@ test('collection editor has no collection-level cover picker for either manageme
         context.showEditCollectionDialog(data, role);
         const actions = environment.dialogs.at(-1).buttons.map(item => item.label.trim());
         assert.equal(actions.includes('Choose Cover'), false);
-        assert.deepEqual(actions, ['Add New Child', 'Attach Existing Album', 'Delete Collection', 'Save Details', 'Close']);
+        assert.deepEqual(actions, ['Add New Album', 'Attach Existing Album', 'Delete Collection', 'Save Details', 'Close']);
     }
 });
 
@@ -358,6 +358,8 @@ test('collection page edit album action delegates to the existing admin editor',
     const {context, environment} = createAlbumContext(scriptPath);
     const calls = [];
     context.editAlbum = id => calls.push(id);
-    environment.element('.collection-edit-album-btn').attr('data-album-id', '41').trigger('click');
+    const button = environment.element('.collection-edit-album-btn').attr('data-album-id', '41');
+    environment.element('__document__').delegatedHandlers
+        .get('click .collection-edit-album-btn').call(button);
     assert.deepEqual(calls, [41]);
 });
