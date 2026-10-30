@@ -198,3 +198,32 @@ test('albums-admin.js refreshes visible album cards after uploads finish', () =>
     assert.equal(environment.calls.get.at(-1).data.id, 22);
     assert.deepEqual(refreshCalls, [4]);
 });
+
+
+test('saving a child album from its collection card updates the displayed title without navigation', () => {
+    const {context, environment, window} = createAlbumContext(scriptPath, {
+        lengths: {'#albums': 0, '#collection-galleries': 1}
+    });
+    let reloads = 0;
+    window.location = {reload: () => { reloads++; }};
+    environment.queueGet('/api/get-album.php', {
+        type: 'success',
+        data: {name: 'Old Title', description: '', date: '', code: '', imageCount: 3}
+    });
+    context.editAlbum(41);
+    environment.element('#new-album-name').val('New Title');
+    environment.element('#new-album-description').val('');
+    environment.element('#new-album-date').val('');
+    environment.element('#new-album-code').val('');
+    environment.queuePost('/api/update-album.php', {type: 'success', data: ''});
+    const save = environment.dialogs.at(-1).buttons.find(button => button.label.trim() === 'Save Details');
+    const button = environment.createButton('__save_child_album__');
+    button.closestResult = environment.element('__album_modal__');
+    save.action.call(button, environment.createDialog());
+    assert.equal(
+        environment.element('#collection-galleries .album-collection-card[data-child-album-id="41"] h3').text(),
+        'New Title'
+    );
+    assert.equal(reloads, 0);
+    assert.equal(environment.calls.reload.length, 0);
+});
