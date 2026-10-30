@@ -37,13 +37,13 @@ $date = $collection->getDataArray()['date'];
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header text-center">
-                <?php echo $collectionName; ?>
-                <?php if ($description !== '') { ?><small><?php echo $description; ?></small><?php } ?>
+                <span id="collection-page-name"><?php echo $collectionName; ?></span>
+                <small id="collection-page-description"<?php echo $description === '' ? ' class="hidden"' : ''; ?>><?php echo $description; ?></small>
             </h1>
             <ol class="breadcrumb">
                 <li><a href="/">Home</a></li>
                 <?php if ($user->isLoggedIn()) { ?><li><a href="index.php">Albums</a></li><?php } ?>
-                <li class="active"><?php echo $collectionName; ?></li>
+                <li class="active" id="collection-breadcrumb-name"><?php echo $collectionName; ?></li>
                 <?php if ($user->isAdmin()) { ?>
                     <li class="no-before pull-right">
                         <button id="edit-collection-btn" type="button"
@@ -57,9 +57,7 @@ $date = $collection->getDataArray()['date'];
             </ol>
         </div>
     </div>
-    <?php if ($date !== null) { ?>
-        <p class="text-center text-muted"><?php echo Strings::escapeHtmlAttribute(substr($date, 0, 10)); ?></p>
-    <?php } ?>
+    <p id="collection-page-date" class="text-center text-muted<?php echo $date === null || $date === '' ? ' hidden' : ''; ?>"><?php echo $date ? Strings::escapeHtmlAttribute(substr($date, 0, 10)) : ''; ?></p>
     <?php if ($children === []) { ?>
         <div id="collection-empty-state" class="row">
             <div class="col-md-offset-2 col-md-8 text-center">
@@ -84,9 +82,19 @@ $date = $collection->getDataArray()['date'];
                             <h3><?php echo $childName; ?></h3>
                             <p class="text-muted"><?php echo $imageCount; ?>
                                 <?php echo $imageCount === 1 ? 'photo' : 'photos'; ?></p>
-                            <span class="btn btn-primary">View Gallery</span>
                         </div>
                     </a>
+                    <div class="collection-card-actions text-center">
+                        <a href="/user/album.php?album=<?php echo $childId; ?>" class="btn btn-primary btn-sm">View Gallery</a>
+                        <?php if ($user->isAdmin()) { ?>
+                            <button type="button" class="btn btn-warning btn-sm collection-edit-album-btn"
+                                    data-album-id="<?php echo $childId; ?>"
+                                    aria-label="Edit <?php echo $childName; ?> album"
+                                    title="Edit album">
+                                <em class="fa fa-pencil-square-o" aria-hidden="true"></em> Edit
+                            </button>
+                        <?php } ?>
+                    </div>
                 </div>
             <?php } ?>
         </div>
@@ -95,7 +103,11 @@ $date = $collection->getDataArray()['date'];
 </div>
 <script src="<?php echo Strings::assetUrl('/js/album-collections.js'); ?>"></script>
 <?php if ($user->isAdmin()) { ?>
+    <script src="<?php echo Strings::assetUrl('/js/jquery.uploadfile.js'); ?>"></script>
     <script src="<?php echo Strings::assetUrl('/js/albums-common.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/album-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/albums-admin.js'); ?>"></script>
+    <script src="<?php echo Strings::assetUrl('/js/album-cover-picker.js'); ?>"></script>
     <script src="<?php echo Strings::assetUrl('/js/album-collections-admin.js'); ?>"></script>
 <?php } ?>
 </body>
