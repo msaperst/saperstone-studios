@@ -88,6 +88,27 @@ class AlbumCollectionPagesHttpTest extends HttpTestBase {
         self::assertStringNotContainsString('/js/albums-common', (string)$response->getBody());
     }
 
+    public function testAdminCardsHaveDistinctEditButtonsOutsideViewGalleryLinks(): void {
+        $this->adminLogin();
+        $response = $this->get('user/collection.php?collection=98870');
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(1, $this->elementCount(
+            $response, "//*[@data-child-album-id='98871']//button[@data-album-id='98871' and contains(@class,'collection-edit-album-btn')]"
+        ));
+        self::assertSame(0, $this->elementCount(
+            $response, "//*[@data-child-album-id='98871']//a//button[contains(@class,'collection-edit-album-btn')]"
+        ));
+        self::assertStringContainsString('/js/albums-admin', (string)$response->getBody());
+    }
+
+    public function testChildOnlyUserDoesNotSeeAlbumEditActions(): void {
+        $this->grantCode(98870, 'EVENT98870');
+        $response = $this->get('user/collection.php?collection=98870');
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(0, $this->elementCount($response, "//*[contains(@class,'collection-edit-album-btn')]"));
+        self::assertStringNotContainsString('/js/albums-admin', (string)$response->getBody());
+    }
+
     public function testChildPageShowsParentBreadcrumbOnlyWithParentAccess(): void {
         $this->grantCode(98870, 'EVENT98870');
         $response = $this->get('user/album.php?album=98871');
