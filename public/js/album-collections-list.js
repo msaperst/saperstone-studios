@@ -8,6 +8,13 @@ function collectionChildItem(child, canManage) {
 
     const actions = $('<td>').addClass('collection-child-actions');
     if (canManage) {
+        if (collectionRole() === 'admin') {
+            actions.append($('<button>')
+                .attr({type: 'button', 'aria-label': 'Edit ' + child.name + ' album'})
+                .addClass('btn btn-xs btn-warning collection-child-edit-album')
+                .attr('data-album-id', String(child.id))
+                .append($('<i>').addClass('fa fa-pencil-square-o')));
+        }
         actions.append($('<span>').addClass('collection-drag-handle')
             .attr('title', 'Drag to reorder')
             .append($('<i>').addClass('fa fa-arrows-v')));
@@ -84,6 +91,11 @@ function renderCollectionChildren(id, holder) {
             handle: '.collection-drag-handle',
             update: function () { saveCollectionOrder(id, list, holder); }
         });
+        if (collectionRole() === 'admin') {
+            list.on('click', '.collection-child-edit-album', function () {
+                editAlbum(Number($(this).attr('data-album-id')));
+            });
+        }
         list.on('click', '.collection-move-up, .collection-move-down', function () {
             const child = $(this).closest('.collection-child-item');
             if ($(this).hasClass('collection-move-up')) {
