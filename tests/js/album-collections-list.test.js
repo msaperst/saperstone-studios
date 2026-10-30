@@ -87,3 +87,14 @@ test('compact child details show photos, thumbnail state, last access and code i
     assert.ok(cells.some(item => item.text().includes('2026-10-15')));
     assert.ok(cells.some(item => item.text().includes('2026-10-12')));
 });
+
+test('admin child rows provide a direct edit control; non-admin rows do not', () => {
+    const {context} = createAlbumContext(scriptPath);
+    const child = {id: 88, name: 'Reception', imageCount: 12};
+    const adminRow = context.collectionChildItem(child, true);
+    const controls = adminRow.appended.flatMap(cell => cell.appended);
+    assert.ok(controls.some(item => item.hasClass && item.hasClass('collection-child-edit-album')));
+    const nonAdmin = context.collectionChildItem(child, false);
+    assert.ok(!nonAdmin.appended.flatMap(cell => cell.appended)
+        .some(item => item.hasClass && item.hasClass('collection-child-edit-album')));
+});
