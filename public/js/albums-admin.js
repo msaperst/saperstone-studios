@@ -179,6 +179,11 @@ function editAlbum(id) {
                             dialogItself.close();
                             if ($('#albums').length) {
                                 album_table.ajax.reload(null, false);
+                            } else if ($('#collection-galleries').length) {
+                                // This shared editor also opens from collection cards.
+                                // Keep the page's title in sync without navigation.
+                                $('#collection-galleries .album-collection-card[data-child-album-id="' +
+                                    id + '"] h3').text($('#new-album-name').val());
                             }
                             enableDialogButtons(dialogItself);
                         } else {
