@@ -142,6 +142,11 @@ $user->forceLogIn();
     </div>
     <!-- /.container -->
 
+    <?php if ($user->isAdmin() || $user->isUploader()) { ?>
+    <div id="collection-user-context" class="hidden"
+         data-role="<?php echo Strings::escapeHtmlAttribute($user->getRole()); ?>"
+         data-id="<?php echo (int)$user->getId(); ?>"></div>
+    <?php } ?>
     <script
         src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"
         integrity="sha384-89aj/hOsfOyfD0Ll+7f2dobA15hDyiNb8m1dJ+rJuqgrGR+PVqNU8pybx4pbF3Cc"
