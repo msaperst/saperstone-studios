@@ -135,3 +135,39 @@ Feature: Organizational parent and child albums
     When I confirm removing the album from the collection
     Then album 99999 remains standalone with 16 photos
     And the collection editor no longer lists album 99999
+
+  Scenario: Admin edits a child gallery directly from the collection page
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And a collection named "Mitzvah" exists
+    And album 99999 exists with 16 images
+    And album 99999 belongs to that collection
+    When I am on the "user/collection.php?collection=98875" page
+    And I open the child album 99999 editor from the collection page
+    Then I see the existing "Edit Album" management dialog
+
+  Scenario: Admin edits a child gallery from the expanded album list
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And a collection named "Mitzvah" exists
+    And album 99999 exists with 16 images
+    And album 99999 belongs to that collection
+    When I am on the "user/" page
+    And I expand the "Mitzvah" collection
+    And I open the child album 99999 editor from the album list
+    Then I see the existing "Edit Album" management dialog
+
+  Scenario: Admin reorders galleries from the collection editor
+    Given an enabled admin user account exists
+    And I am logged in with saved credentials
+    And a collection named "Mitzvah" exists
+    And album 99999 exists with 16 images
+    And album 99998 exists with 0 images
+    And album 99999 belongs to that collection
+    And album 99998 belongs to that collection
+    When I am on the "user/collection.php?collection=98875" page
+    And I open the collection editor from its page
+    And I move album 99998 above album 99999 inside the collection editor
+    Then the collection editor lists album 99998 before album 99999
+    When I reload the page
+    Then the collection card for album 99998 precedes album 99999
