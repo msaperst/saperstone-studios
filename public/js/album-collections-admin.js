@@ -6,10 +6,18 @@ function collectionCanOrganize(data, role, userId) {
 }
 
 function collectionRole() {
+    const role = $('#collection-user-context').attr('data-role');
+    if (role) {
+        return role;
+    }
     return typeof my_role === 'undefined' ? 'admin' : my_role;
 }
 
 function collectionActorId() {
+    const id = $('#collection-user-context').attr('data-id');
+    if (id) {
+        return Number(id);
+    }
     return typeof my_id === 'undefined' ? null : my_id;
 }
 
