@@ -21,3 +21,22 @@
 .album-collection-card .btn {
     margin-bottom: 5px;
 }
+
+/* The view link and admin-only edit button are separate controls, never
+   nested interactive elements. Keep gallery cards at a consistent height. */
+.album-collection-link {
+    margin-bottom: 0;
+    border-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.collection-card-actions {
+    padding: 5px 8px 14px;
+    border: 1px solid #ddd;
+    border-top: 0;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+.collection-card-actions .btn + .btn {
+    margin-left: 6px;
+}
