@@ -102,6 +102,9 @@ function editAlbum(id) {
                                 }).done(function () {
                                     if ($('#albums').length) {
                                         album_table.ajax.reload(null, false);
+                                    } else if ($('#collection-galleries').length) {
+                                        $('#collection-galleries .album-collection-card[data-child-album-id="' +
+                                            id + '"]').remove();
                                     }
                                     dialogInItself.close();
                                     dialogItself.close();
