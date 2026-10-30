@@ -22,7 +22,7 @@ test('authorized child rows have drag handles and accessible keyboard controls',
         id: 88, name: 'Reception', imageCount: 12
     }, true);
     const buttons = item.appended.flatMap(cell => cell.appended).filter(entry => entry.tagName === 'button');
-    assert.equal(buttons.length, 2);
+    assert.equal(buttons.length, 3);
     assert.ok(buttons.some(entry => entry.attr('aria-label') === 'Move Reception up'));
     assert.ok(buttons.some(entry => entry.attr('aria-label') === 'Move Reception down'));
     assert.ok(!buttons.some(entry => /Detach Reception/.test(entry.attr('aria-label') || '')));
@@ -69,7 +69,7 @@ test('child thumbnail status is informational and does not replace per-album upl
     }, true);
     const link = item.appended.find(entry => entry.tagName === 'a');
     assert.equal(link.attr('href'), '/user/album.php?album=88');
-    assert.equal(item.appended.flatMap(cell => cell.appended).filter(entry => entry.tagName === 'button').length, 2);
+    assert.equal(item.appended.flatMap(cell => cell.appended).filter(entry => entry.tagName === 'button').length, 3);
 });
 
 test('compact child details show photos, thumbnail state, last access and code in separate cells', () => {
