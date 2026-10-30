@@ -20,14 +20,75 @@ function collectionError(modal, xhr, fallback) {
 }
 
 function collectionReload() {
-    // The same editor is used from the management table and the collection
-    // landing page. Only the former has an initialized DataTable.
+    // Membership changes affect the cards, so refresh the collection page
+    // when necessary; metadata saves update in place separately below.
     if ($('#albums').length) {
         $('#albums').DataTable().ajax.reload(null, false);
     } else {
         window.location.reload();
     }
 }
+
+function updateCollectionPageDetails(fields) {
+    if (!$('#collection-page-name').length) {
+        collectionReload();
+        return;
+    }
+    $('#collection-page-name').text(fields.name);
+    $('#collection-breadcrumb-name').text(fields.name);
+    $('#collection-page-description').text(fields.description)
+        .toggleClass('hidden', !fields.description);
+    $('#collection-page-date').text(fields.date ? String(fields.date).slice(0, 10) : '')
+        .toggleClass('hidden', !fields.date);
+}
+
+function saveCollectionMemberOrder(id, orderedIds, onSuccess, onError) {
+    $.post('/api/reorder-collection.php', {
+        collection: id,
+        order: JSON.stringify(orderedIds)
+    }).done(onSuccess).fail(function (xhr) {
+        onError(xhr.responseText || 'Unable to save album order.');
+    });
+}
+
+function currentCollectionMemberIds(list) {
+    return list.children('.collection-member-row').map(function () {
+        return Number($(this).attr('data-child-id'));
+    }).get();
+}
+
+function restoreCollectionMemberOrder(list, children) {
+    children.forEach(function (child) {
+        list.append(list.find('.collection-member-row[data-child-id="' + Number(child.id) + '"]'));
+    });
+}
+
+function applyCollectionCardOrder(ids) {
+    const holder = $('#collection-galleries');
+    if (!holder.length) {
+        collectionReload();
+        return;
+    }
+    ids.forEach(function (id) {
+        holder.append(holder.find('.album-collection-card[data-child-album-id="' + Number(id) + '"]'));
+    });
+}
+
+function persistCollectionMemberOrder(data, list) {
+    const ids = currentCollectionMemberIds(list);
+    if (ids.every(function (id, index) { return Number(data.children[index].id) === id; })) {
+        return;
+    }
+    saveCollectionMemberOrder(data.id, ids, function () {
+        const byId = new Map(data.children.map(function (child) { return [Number(child.id), child]; }));
+        data.children = ids.map(function (id) { return byId.get(id); });
+        applyCollectionCardOrder(ids);
+    }, function (message) {
+        restoreCollectionMemberOrder(list, data.children);
+        BootstrapDialog.alert(message);
+    });
+}
+
 
 function openCreateCollectionDialog() {
     BootstrapDialog.show({
@@ -175,13 +236,20 @@ function collectionMembersMarkup(data, canOrganize) {
         const id = Number(child.id);
         const name = escapeAlbumListHtml(child.name);
         const count = Number(child.imageCount);
+        const reorder = canOrganize
+            ? '<span class="collection-member-drag-handle" title="Drag to reorder" aria-hidden="true">☷</span>' +
+              '<button type="button" class="btn btn-xs btn-default collection-member-move-up" ' +
+              'aria-label="Move ' + name + ' up">↑</button>' +
+              '<button type="button" class="btn btn-xs btn-default collection-member-move-down" ' +
+              'aria-label="Move ' + name + ' down">↓</button>'
+            : '';
         const remove = canOrganize
             ? '<button type="button" class="btn btn-xs btn-default collection-member-remove" ' +
               'data-child-id="' + id + '" aria-label="Remove ' + name +
               ' from collection">Remove from collection</button>'
             : '';
         return '<div class="list-group-item collection-member-row" data-child-id="' + id + '">' +
-            '<a href="/user/album.php?album=' + id + '">' + name + '</a>' +
+            reorder + '<a href="/user/album.php?album=' + id + '">' + name + '</a>' +
             '<span class="text-muted"> — ' + count + ' photos</span>' + remove + '</div>';
     }).join('');
     return '<div class="collection-editor-members">' +
@@ -231,7 +299,7 @@ function showEditCollectionDialog(data, role) {
     const actions = [];
     if (canOrganize) {
         actions.push({
-            label: 'Add New Child',
+            label: 'Add New Album',
             cssClass: 'btn-info',
             action: function () { openCreateAlbumDialog(data.id); }
         }, {
@@ -261,7 +329,7 @@ function showEditCollectionDialog(data, role) {
                 fields.code = $('#collection-code').val();
             }
             $.post('/api/update-collection.php', fields).done(function () {
-                collectionReload();
+                updateCollectionPageDetails(fields);
                 dialog.close();
             }).fail(function (xhr) {
                 collectionError(button.closest('.modal-content'), xhr, 'Unable to save collection.');
@@ -296,6 +364,27 @@ function showEditCollectionDialog(data, role) {
             if (!canOrganize) {
                 return;
             }
+            const list = dialog.getModal().find('#collection-members');
+            if ((data.children || []).length > 1) {
+                list.sortable({
+                    axis: 'y',
+                    handle: '.collection-member-drag-handle',
+                    update: function () { persistCollectionMemberOrder(data, list); }
+                });
+            }
+            dialog.getModal().on('click', '.collection-member-move-up, .collection-member-move-down', function () {
+                const member = $(this).closest('.collection-member-row');
+                if ($(this).hasClass('collection-member-move-up')) {
+                    const previous = member.prev('.collection-member-row');
+                    if (!previous.length) return;
+                    member.insertBefore(previous);
+                } else {
+                    const next = member.next('.collection-member-row');
+                    if (!next.length) return;
+                    member.insertAfter(next);
+                }
+                persistCollectionMemberOrder(data, list);
+            });
             dialog.getModal().on('click', '.collection-member-remove', function () {
                 const childId = Number($(this).attr('data-child-id'));
                 const child = (data.children || []).find(function (entry) {
@@ -327,5 +416,8 @@ $(document).ready(function () {
     $('#add-collection-btn').click(openCreateCollectionDialog);
     $('#edit-collection-btn').click(function () {
         editCollection(Number($(this).attr('data-collection-id')));
+    });
+    $(document).on('click', '.collection-edit-album-btn', function () {
+        editAlbum(Number($(this).attr('data-album-id')));
     });
 });
