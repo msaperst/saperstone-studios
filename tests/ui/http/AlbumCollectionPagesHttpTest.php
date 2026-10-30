@@ -58,7 +58,7 @@ class AlbumCollectionPagesHttpTest extends HttpTestBase {
         self::assertSame(1, $this->elementCount(
             $response, "//*[@data-child-album-id='98871']"
         ));
-        self::assertSame(1, $this->elementCount(
+        self::assertSame(2, $this->elementCount(
             $response, "//a[@href='/user/album.php?album=98871']"
         ));
         self::assertStringContainsString(
