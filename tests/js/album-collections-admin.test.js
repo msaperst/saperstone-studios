@@ -282,3 +282,82 @@ test('removing a member is wired from the shared editor dialog, not just a stand
     handler.call(button);
     assert.deepEqual(calls, [{collection: 27, child: 41, hasCallback: true}]);
 });
+
+test('collection editor names its creation action Add New Album', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    context.showEditCollectionDialog({
+        id: 27, name: 'Mitzvah', description: '', date: '', owner: 1,
+        shared: false, children: []
+    }, 'admin');
+    const labels = environment.dialogs.at(-1).buttons.map(b => b.label);
+    assert.ok(labels.includes('Add New Album'));
+    assert.ok(!labels.includes('Add New Child'));
+});
+
+test('collection save updates visible collection details without reloading page', () => {
+    const {context, environment, window} = createAlbumContext(scriptPath, {lengths: {'#albums': 0, '#collection-page-name': 1}});
+    let reloads = 0;
+    window.location = {reload: () => { reloads++; }};
+    environment.element('#collection-page-name').text('Before');
+    context.showEditCollectionDialog({
+        id: 27, name: 'Before', description: 'Old', date: '2026-01-01',
+        owner: 1, shared: false, code: '', children: []
+    }, 'admin');
+    environment.element('#edit-collection-name').val('After');
+    environment.element('#edit-collection-description').val('Updated description');
+    environment.element('#edit-collection-date').val('2026-10-30');
+    environment.element('#collection-code').val('');
+    environment.queuePost('/api/update-collection.php', {type: 'success', data: ''});
+    const config = environment.dialogs.at(-1);
+    const button = environment.createButton('__save__');
+    button.closestResult = environment.element('__save-modal__');
+    config.buttons.find(b => b.label === 'Save Details').action.call(button, environment.createDialog());
+    assert.equal(environment.element('#collection-page-name').text(), 'After');
+    assert.equal(environment.element('#collection-page-description').text(), 'Updated description');
+    assert.equal(environment.element('#collection-breadcrumb-name').text(), 'After');
+    assert.equal(environment.element('#collection-page-date').text(), '2026-10-30');
+    assert.equal(reloads, 0);
+    assert.equal(environment.calls.reload.length, 0);
+});
+
+test('collection editor renders drag and keyboard controls only when user may organize it', () => {
+    const {context, environment} = createAlbumContext(scriptPath, {myId: 4});
+    const data = {id: 27, name: 'Mitzvah', owner: 4, shared: false,
+        children: [{id: 41, name: 'Ceremony', imageCount: 1}, {id: 42, name: 'Party', imageCount: 1}]};
+    context.showEditCollectionDialog(data, 'uploader');
+    let markup = environment.dialogs.at(-1).message();
+    assert.match(markup, /collection-member-drag-handle/);
+    assert.match(markup, /collection-member-move-up/);
+    assert.match(markup, /collection-member-move-down/);
+    data.shared = true;
+    context.showEditCollectionDialog(data, 'uploader');
+    markup = environment.dialogs.at(-1).message();
+    assert.doesNotMatch(markup, /collection-member-drag-handle/);
+    assert.doesNotMatch(markup, /collection-member-move-up/);
+});
+
+test('reordering albums from edit collection uses existing API and reports failures', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    environment.queuePost('/api/reorder-collection.php', {type: 'success', data: ''});
+    let completed = 0;
+    context.saveCollectionMemberOrder(27, [42, 41], () => { completed++; }, () => {});
+    assert.deepEqual(JSON.parse(JSON.stringify(environment.calls.post.at(-1))), {
+        url: '/api/reorder-collection.php',
+        data: {collection: 27, order: '[42,41]'}
+    });
+    assert.equal(completed, 1);
+    environment.queuePost('/api/reorder-collection.php', {
+        type: 'failure', xhr: {responseText: 'Reordering forbidden'}
+    });
+    let errors = [];
+    context.saveCollectionMemberOrder(27, [41, 42], () => {}, (message) => { errors.push(message); });
+    assert.deepEqual(errors, ['Reordering forbidden']);
+});
+
+test('collection page edit album action delegates to the existing admin editor', () => {
+    const {context, environment} = createAlbumContext(scriptPath);
+    const calls = [];
+    context.editAlbum = id => calls.push(id);
+    environment.element('.collection-edit-album-btn').attr('data-album-id', '41').trigger('click');
+    assert.deepEqual(calls, [41]);
+});
