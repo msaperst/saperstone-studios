@@ -11,7 +11,7 @@ RUN find /build/public/js -maxdepth 1 -type f -name '*.js' ! -name '*.min.js' \
 
 FROM composer:2 AS composer
 
-FROM php:8.4.27-apache-bookworm
+FROM php:8.4.28-apache-bookworm
 
 # setup additional tooling
 RUN apt-get update && \
